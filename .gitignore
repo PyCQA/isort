@@ -1,0 +1,53 @@
+*.py[cod]
+.DS_Store
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+npm-debug.log
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+htmlcov
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# SQLite
+test_exp_framework
+
+# npm
+node_modules/
+
+# dolphin
+.directory
+libpeerconnection.log
+
+# IDE Files
+atlassian-ide-plugin.xml
+.idea/
+*.swp
+*.kate-swp
+.ropeproject/
