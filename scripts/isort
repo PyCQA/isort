@@ -1,0 +1,30 @@
+#! /usr/bin/env python
+'''
+    Tool for sorting imports alphabetically, and automatically separated into sections.
+'''
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import argparse
+from pies import *
+
+from isort import __version__, SortImports
+
+parser = argparse.ArgumentParser(description="Sort Python import definitions alphabetically within logical sections.")
+parser.add_argument("files", nargs="+", help="One or more Python source files that need their imports sorted.")
+parser.add_argument("-l", "--lines", help="The max length of an import line (used for wrapping long imports).",
+                    dest="line_length", type=int)
+parser.add_argument("-s", "--skip", help="Files that sort imports should skip over.", dest="skip", action="append")
+parser.add_argument("-t", "--top", help="Force specific imports to the top of their appropriate section.",
+                    dest="force_to_top", action="append")
+parser.add_argument("-b", "--builtin", dest="known_standard_library", action="append",
+                    help="Force sortImports to recognize a module as part of the python standard library.")
+parser.add_argument("-o", "--thirdparty", dest="known_third_party", action="append",
+                    help="Force sortImports to recognize a module as being part of a third party library.")
+parser.add_argument("-p", "--project", dest="known_first_party", action="append",
+                    help="Force sortImports to recognize a module as being part of the current python project.")
+
+parser.add_argument('--version', action='version', version='isort {0}'.format(__version__))
+
+arguments = dict((key, value) for (key, value) in iteritems(vars(parser.parse_args())) if value)
+for file_name in arguments.pop('files', []):
+    SortImports(file_name, **arguments)
