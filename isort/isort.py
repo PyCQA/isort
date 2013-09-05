@@ -30,7 +30,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import os
 from pies import *
-from sys import path as PYTHONPATH
+from sys import path as PYTHONPATH, stderr
 
 from . import settings
 
@@ -56,20 +56,17 @@ class SortImports(object):
             if "/" in file_name:
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:
-                print(file_path + ": refusing to proceed, listed in 'skip' setting.")
+                print(file_path + ": refusing to proceed, listed in 'skip' setting.", file=stderr)
                 sys.exit(1)
             self.file_path = file_path
             with open(file_path) as file:
                 file_contents = file.read()
 
-        if not file_contents:
+        if file_contents is None:
             return
 
         self.in_lines = file_contents.split("\n")
         self.number_of_lines = len(self.in_lines)
-        if self.number_of_lines < 2:
-            print("File is too small!")
-            return
 
         self.out_lines = []
         self.imports = {}
@@ -216,7 +213,7 @@ class SortImports(object):
         """
         comment_start = line.find("#")
         if comment_start != -1:
-            print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:])
+            print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:], file=stderr)
             line = line[:comment_start]
 
         return line
@@ -270,7 +267,7 @@ class SortImports(object):
                         self.as_map[from_import] = imports[index + 1]
                         module_placment = self.place_module(from_import)
                         imports = ["{0} as {1}".format(imports[index - 1], imports[index + 1])]
-                        self.imports[module_placment][import_type].setdefualt(from_import, set()).update(imports)
+                        self.imports[module_placment][import_type].setdefault(from_import, set()).update(imports)
                         del imports[index -1:index + 1]
                 if import_type == "from":
                     impot_from = imports.pop(0)
@@ -285,7 +282,8 @@ class SortImports(object):
 
                 if self._at_end():
                     print(self.file_path + ": Either you have an import at the end of your file, or something"
-                                           " went horribly wrong!")
+                                           " went horribly wrong!",
+                          file=stderr)
                     sys.exit(1)
 
             else:
