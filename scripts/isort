@@ -26,5 +26,13 @@ parser.add_argument("-p", "--project", dest="known_first_party", action="append"
 parser.add_argument('--version', action='version', version='isort {0}'.format(__version__))
 
 arguments = dict((key, value) for (key, value) in iteritems(vars(parser.parse_args())) if value)
-for file_name in arguments.pop('files', []):
-    SortImports(file_name, **arguments)
+file_names = arguments.pop('files', [])
+
+if file_names == ['-']:
+    import sys
+    sorted_file = SortImports(file_contents=sys.stdin.read(), **arguments)
+    print(sorted_file.output)
+
+else:
+    for file_name in file_names:
+        SortImports(file_name, **arguments)
