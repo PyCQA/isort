@@ -14,4 +14,4 @@ setup(name='isort',
       scripts=['scripts/isort'],
       packages=['isort'],
       requires=['pies'],
-      install_requires=['pies>=1.0.2'])
+      install_requires=['pies>=1.0.3'])
