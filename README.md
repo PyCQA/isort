@@ -94,7 +94,7 @@ Installing isort's Kate plugin
 ===================
 To install the kate plugin you must either have pate installed or the very latest version of Kate:
 
-    wget https://raw.github.com/timothycrosley/isort/master/kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort.py
+    wget https://raw.github.com/timothycrosley/isort/master/kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
 
 You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.
 

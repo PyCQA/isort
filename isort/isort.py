@@ -51,8 +51,8 @@ class SortImports(object):
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
 
+        file_name = file_path
         if file_path:
-            file_name = file_path
             if "/" in file_name:
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:

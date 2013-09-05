@@ -30,5 +30,5 @@ from isort import SortImports
 @kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
 def sortImports():
     document = kate.activeDocument()
-    document.setText(SortImports(file_content=document.text()).output)
+    document.setText(SortImports(file_contents=document.text()).output)
     document.activeView().setCursorPosition(KTextEditor.Cursor(0, 0))
