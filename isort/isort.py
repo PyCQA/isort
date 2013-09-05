@@ -30,7 +30,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import os
 from pies import *
-from sys import path as PYTHONPATH
+from sys import path as PYTHONPATH, stderr
 
 from . import settings
 
@@ -56,7 +56,7 @@ class SortImports(object):
             if "/" in file_name:
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:
-                print(file_path + ": refusing to proceed, listed in 'skip' setting.")
+                print(file_path + ": refusing to proceed, listed in 'skip' setting.", file=stderr)
                 sys.exit(1)
             self.file_path = file_path
             with open(file_path) as file:
@@ -213,7 +213,7 @@ class SortImports(object):
         """
         comment_start = line.find("#")
         if comment_start != -1:
-            print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:])
+            print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:], file=stderr)
             line = line[:comment_start]
 
         return line
@@ -282,7 +282,8 @@ class SortImports(object):
 
                 if self._at_end():
                     print(self.file_path + ": Either you have an import at the end of your file, or something"
-                                           " went horribly wrong!")
+                                           " went horribly wrong!",
+                          file=stderr)
                     sys.exit(1)
 
             else:
