@@ -10,29 +10,31 @@
 
     Copyright (C) 2013  Timothy Edmund Crosley
 
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+    to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    The above copyright notice and this permission notice shall be included in all copies or
+    substantial portions of the Software.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+    TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 import os
-from pies import *
 from sys import path as PYTHONPATH
 
+from pies import *
+
 from . import settings
+from natsort import natsorted
 
 
 class Sections(object):
@@ -166,11 +168,11 @@ class SortImports(object):
                     output.append("import {0}".format(module))
 
             from_modules = list(self.imports[section]['from'].keys())
-            from_modules.sort(key=lambda key: self._module_key(key, self.config))
+            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
             for module in from_modules:
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
-                from_imports.sort(key=lambda key: self._module_key(key, self.config))
+                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
@@ -196,16 +198,16 @@ class SortImports(object):
         while output[-1:] == [""]:
             output.pop()
 
-        if self.import_index + 2 < len(self.out_lines):
-            while self.out_lines[self.import_index + 1] == "":
-                self.out_lines.pop(self.import_index + 1)
+        while self.import_index + 2 < len(self.out_lines) and self.out_lines[self.import_index + 1] == "":
+            self.out_lines.pop(self.import_index + 1)
 
-            if len(self.out_lines) > self.import_index + 1:
-                next_construct = self.out_lines[self.import_index + 1]
-                if next_construct.startswith("def") or next_construct.startswith("class"):
-                    output += ["", ""]
-                else:
-                    output += [""]
+        if len(self.out_lines) > self.import_index + 1:
+            next_construct = self.out_lines[self.import_index + 1]
+            if next_construct.startswith("def") or next_construct.startswith("class") or \
+               next_construct.startswith("@"):
+                output += ["", ""]
+            else:
+                output += [""]
 
         self.out_lines[self.import_index:1] = output
 
@@ -245,8 +247,10 @@ class SortImports(object):
                         line = self._strip_comments(self._get_line())
                         import_string += "\n" + line
 
+                import_string = import_string.replace("_import", "[[i]]")
                 for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
                     import_string = import_string.replace(remove_syntax, " ")
+                import_string = import_string.replace("[[i]]", "_import")
 
                 imports = import_string.split()
                 if "as" in imports and import_type != 'from':
@@ -255,8 +259,8 @@ class SortImports(object):
                             index = imports.index('as')
                         except:
                             break
-                        self.as_map[imports[0]] = imports[index + 1]
-                        from_import = imports[0]
+                        self.as_map[imports[index - 1]] = imports[index + 1]
+                        from_import = imports[index - 1]
                         module_placment = self.place_module(from_import)
                         self.imports[module_placment][import_type].update([from_import])
                         del imports[index -1:index + 1]
@@ -270,7 +274,7 @@ class SortImports(object):
                         self.as_map[from_import] = imports[index + 1]
                         module_placment = self.place_module(from_import)
                         imports = ["{0} as {1}".format(imports[index - 1], imports[index + 1])]
-                        self.imports[module_placment][import_type].setdefualt(from_import, set()).update(imports)
+                        self.imports[module_placment][import_type].setdefault(from_import, set()).update(imports)
                         del imports[index -1:index + 1]
                 if import_type == "from":
                     impot_from = imports.pop(0)

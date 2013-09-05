@@ -10,8 +10,8 @@ setup(name='isort',
       url='https://github.com/timothycrosley/isort',
       download_url='https://github.com/timothycrosley/isort/blob/master'
                    '/dist/isort-1.0.0.tar.gz?raw=true',
-      license="GNU GPLv2",
+      license="MIT",
       scripts=['scripts/isort'],
       packages=['isort'],
-      requires=['pies'],
-      install_requires=['pies>=1.0.3'])
+      requires=['pies', 'natsort'],
+      install_requires=['pies>=1.0.3', 'natsort>=3.0.0'])
