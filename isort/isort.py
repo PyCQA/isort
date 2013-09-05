@@ -198,15 +198,14 @@ class SortImports(object):
         while output[-1:] == [""]:
             output.pop()
 
-        if self.import_index + 2 < len(self.out_lines):
-            while self.out_lines[self.import_index + 1] == "":
-                self.out_lines.pop(self.import_index + 1)
+        while self.import_index + 2 < len(self.out_lines) and self.out_lines[self.import_index + 1] == "":
+            self.out_lines.pop(self.import_index + 1)
 
-            if len(self.out_lines) > self.import_index + 1:
-                next_construct = self.out_lines[self.import_index + 1]
-                if next_construct.startswith("def") or next_construct.startswith("class") or \
-                   next_construct.startswith("@"):
-                    output += [""]
+        if len(self.out_lines) > self.import_index + 1:
+            next_construct = self.out_lines[self.import_index + 1]
+            if next_construct.startswith("def") or next_construct.startswith("class") or \
+               next_construct.startswith("@"):
+                output += [""]
 
         self.out_lines[self.import_index:1] = output
 
@@ -258,8 +257,8 @@ class SortImports(object):
                             index = imports.index('as')
                         except:
                             break
-                        self.as_map[imports[0]] = imports[index + 1]
-                        from_import = imports[0]
+                        self.as_map[imports[index - 1]] = imports[index + 1]
+                        from_import = imports[index - 1]
                         module_placment = self.place_module(from_import)
                         self.imports[module_placment][import_type].update([from_import])
                         del imports[index -1:index + 1]
