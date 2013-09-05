@@ -270,7 +270,7 @@ class SortImports(object):
                         self.as_map[from_import] = imports[index + 1]
                         module_placment = self.place_module(from_import)
                         imports = ["{0} as {1}".format(imports[index - 1], imports[index + 1])]
-                        self.imports[module_placment][import_type].setdefualt(from_import, set()).update(imports)
+                        self.imports[module_placment][import_type].setdefault(from_import, set()).update(imports)
                         del imports[index -1:index + 1]
                 if import_type == "from":
                     impot_from = imports.pop(0)
