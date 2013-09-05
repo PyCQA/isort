@@ -62,14 +62,11 @@ class SortImports(object):
             with open(file_path) as file:
                 file_contents = file.read()
 
-        if not file_contents:
+        if file_contents is None:
             return
 
         self.in_lines = file_contents.split("\n")
         self.number_of_lines = len(self.in_lines)
-        if self.number_of_lines < 2:
-            print("File is too small!")
-            return
 
         self.out_lines = []
         self.imports = {}
