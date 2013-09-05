@@ -1,7 +1,7 @@
 isort
 =====
 
-isort your python imports you so you don't have to.
+isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.
