@@ -21,10 +21,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
+from isort import SortImports
 from PyKDE4.ktexteditor import KTextEditor
 
 import kate
-from isort import SortImports
 
 
 @kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
