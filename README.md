@@ -1,7 +1,7 @@
 isort
 =====
 
-isort your python imports you so you don't have to.
+isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.
@@ -26,6 +26,8 @@ Before isort:
 
     from third_party import lib3
 
+    print("yo")
+
 After isort:
 
     from __future__ import absolute_import
@@ -34,12 +36,6 @@ After isort:
     import sys
 
     from third_party import (lib1,
-                             lib10,
-                             lib11,
-                             lib12,
-                             lib13,
-                             lib14,
-                             lib15,
                              lib2,
                              lib3,
                              lib4,
@@ -47,11 +43,18 @@ After isort:
                              lib6,
                              lib7,
                              lib8,
-                             lib9)
+                             lib9,
+                             lib10,
+                             lib11,
+                             lib12,
+                             lib13,
+                             lib14,
+                             lib15)
 
     from my_lib import Object, Object2
 
     print("Hey")
+    print("yo")
 
 Installing isort
 ===================
@@ -137,6 +140,7 @@ If you find the default isort settings do not work well for your project, isort 
 the behavior.
 
 To configure isort for a single user create a ~/.isort.cfg file:
+
     [settings]
     line_length=120
     force_to_top=file1.py,file2.py
