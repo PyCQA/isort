@@ -137,6 +137,7 @@ If you find the default isort settings do not work well for your project, isort 
 the behavior.
 
 To configure isort for a single user create a ~/.isort.cfg file:
+
     [settings]
     line_length=120
     force_to_top=file1.py,file2.py
