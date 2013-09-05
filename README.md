@@ -26,6 +26,8 @@ Before isort:
 
     from third_party import lib3
 
+    print("yo")
+
 After isort:
 
     from __future__ import absolute_import
@@ -34,12 +36,6 @@ After isort:
     import sys
 
     from third_party import (lib1,
-                             lib10,
-                             lib11,
-                             lib12,
-                             lib13,
-                             lib14,
-                             lib15,
                              lib2,
                              lib3,
                              lib4,
@@ -47,11 +43,18 @@ After isort:
                              lib6,
                              lib7,
                              lib8,
-                             lib9)
+                             lib9,
+                             lib10,
+                             lib11,
+                             lib12,
+                             lib13,
+                             lib14,
+                             lib15)
 
     from my_lib import Object, Object2
 
     print("Hey")
+    print("yo")
 
 Installing isort
 ===================
