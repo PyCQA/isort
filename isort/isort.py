@@ -205,6 +205,8 @@ class SortImports(object):
             next_construct = self.out_lines[self.import_index + 1]
             if next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
+                output += ["", ""]
+            else:
                 output += [""]
 
         self.out_lines[self.import_index:1] = output
