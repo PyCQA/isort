@@ -29,8 +29,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 import os
-from pies import *
 from sys import path as PYTHONPATH
+
+from pies import *
 
 from . import settings
 
@@ -202,9 +203,8 @@ class SortImports(object):
 
             if len(self.out_lines) > self.import_index + 1:
                 next_construct = self.out_lines[self.import_index + 1]
-                if next_construct.startswith("def") or next_construct.startswith("class"):
-                    output += ["", ""]
-                else:
+                if next_construct.startswith("def") or next_construct.startswith("class") or \
+                   next_construct.startswith("@"):
                     output += [""]
 
         self.out_lines[self.import_index:1] = output
@@ -245,8 +245,10 @@ class SortImports(object):
                         line = self._strip_comments(self._get_line())
                         import_string += "\n" + line
 
+                import_string = import_string.replace("_import", "[[i]]")
                 for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
                     import_string = import_string.replace(remove_syntax, " ")
+                import_string = import_string.replace("[[i]]", "_import")
 
                 imports = import_string.split()
                 if "as" in imports and import_type != 'from':
