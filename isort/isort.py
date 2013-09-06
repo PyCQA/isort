@@ -133,9 +133,11 @@ class SortImports(object):
         """ If the current line is an import line it will
             return its type (from or straight)
         """
-        if line.startswith('import '):
+        if "isort:skip" in line:
+            return
+        elif line.startswith('import '):
             return "straight"
-        if line.startswith('from ') and "import" in line:
+        elif line.startswith('from ') and "import" in line:
             return "from"
 
     def _at_end(self):

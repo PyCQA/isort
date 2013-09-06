@@ -35,21 +35,8 @@ After isort:
     import os
     import sys
 
-    from third_party import (lib1,
-                             lib2,
-                             lib3,
-                             lib4,
-                             lib5,
-                             lib6,
-                             lib7,
-                             lib8,
-                             lib9,
-                             lib10,
-                             lib11,
-                             lib12,
-                             lib13,
-                             lib14,
-                             lib15)
+    from third_party import (lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8,
+                             lib9, lib10, lib11, lib12, lib13, lib14, lib15)
 
     from my_lib import Object, Object2
 
@@ -203,6 +190,19 @@ This will result in the following output style:
         DecayDict,
         UnexpectedCodePath,
     )
+
+Skip processing of a single import
+======================
+
+To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'
+
+    import module # isort:skip
+
+or
+
+    from xyz import (abc, # isort:skip
+                     yo,
+                     hey)
 
 Why isort?
 ======================
