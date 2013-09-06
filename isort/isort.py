@@ -146,7 +146,8 @@ class SortImports(object):
     @staticmethod
     def _module_key(module_name, config):
         module_name = str(module_name).lower()
-        return "{0}{1}".format(module_name in config['force_to_top'] and "A" or "B", module_name)
+        return "{0}{1}".format(module_name in config['force_to_top'] and "A" or "B",
+                               config['length_sort'] and len(module_name) or module_name)
 
     def _add_formatted_imports(self):
         """ Adds the imports back to the file
@@ -181,11 +182,38 @@ class SortImports(object):
                         import_statement = "{0}*".format(import_start)
                     else:
                         import_statement = import_start + (", ").join(from_imports)
-                        if len(import_statement) > self.config['line_length']:
-                            import_statement = import_start + "("
-                            size = len(import_statement)
-                            import_statement += (",\n" + " " * size).join(from_imports)
-                            import_statement += ")"
+                        if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
+                            import_statement = import_start
+                            if self.config['multi_line_output'] != settings.MultiLineOutput.HANGING_INDENT:
+                                import_statement += "("
+                                white_space = " " * len(import_statement)
+                            if self.config['multi_line_output'] == settings.MultiLineOutput.GRID:
+                                import_statement += from_imports.pop(0)
+                                while from_imports:
+                                    next_import = from_imports.pop(0)
+                                    next_statement = import_statement + ", " + next_import
+                                    if len(next_statement.split("\n")[-1]) + 1 > self.config['line_length']:
+                                        next_statement = "{0},\n{1}{2}".format(import_statement, white_space,
+                                                                               next_import)
+                                    import_statement = next_statement
+                                import_statement += ")"
+                            elif self.config['multi_line_output'] == settings.MultiLineOutput.VERTICAL:
+                                import_statement += (",\n" + white_space).join(from_imports)
+                                import_statement += ")"
+                            elif self.config['multi_line_output'] == settings.MultiLineOutput.VERTICAL_HANGING_INDENT:
+                                import_statement += "\n" + self.config['indent']
+                                import_statement += (",\n" + self.config['indent']).join(from_imports)
+                                import_statement += "\n)"
+                            elif self.config['multi_line_output'] == settings.MultiLineOutput.HANGING_INDENT:
+                                import_statement += " " + from_imports.pop(0)
+                                while from_imports:
+                                    next_import = from_imports.pop(0)
+                                    next_statement = import_statement + ", " + next_import
+                                    if len(next_statement.split("\n")[-1]) + 3 > self.config['line_length']:
+                                        next_statement = "{0}, \\\n{1}{2}".format(import_statement,
+                                                                                  self.config['indent'],
+                                                                                  next_import)
+                                    import_statement = next_statement
 
                     output.append(import_statement)
 
@@ -260,7 +288,7 @@ class SortImports(object):
                         from_import = imports[index - 1]
                         module_placment = self.place_module(from_import)
                         self.imports[module_placment][import_type].update([from_import])
-                        del imports[index -1:index + 1]
+                        del imports[index -1:index + 2]
                 elif import_type == 'from' and "as" in imports:
                     while True:
                         try:
