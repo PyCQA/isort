@@ -58,8 +58,7 @@ class SortImports(object):
             if "/" in file_name:
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:
-                print(file_path + ": refusing to proceed, listed in 'skip' setting.", file=stderr)
-                sys.exit(1)
+                print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path), file=stderr)
             self.file_path = file_path
             with open(file_path) as file:
                 file_contents = file.read()
