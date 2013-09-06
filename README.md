@@ -148,9 +148,61 @@ To configure isort for a single user create a ~/.isort.cfg file:
     known_standard_libary=std,std2
     known_third_party=randomthirdparty
     known_first_party=mylib1,mylib2
+    indent='    '
+    multi_line_output=3
+    length_sort=1
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
+
+Multi line output modes
+======================
+You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
+past the line_length limit and has 4 possible settings:
+
+0 - Grid
+
+    from third_party import (lib1, lib2, lib3
+                             lib4, lib5, ...)
+
+1 - Vertical
+
+    from third_party import (lib1,
+                             lib2,
+                             lib3
+                             lib4,
+                             lib5,
+                             ...)
+
+2 - Hanging Indent
+
+    from third_party import \
+        lib1, lib2, lib3, \
+        lib4, lib5, lib6
+
+3 - Vertical Hanging Indent
+
+    from third_party import (
+        lib1,
+        lib2,
+        lib3,
+        lib4,
+    )
+
+Ordering by import length
+======================
+
+isort also makes it easy to sort your imports by length, simply by setting the length_sort option to True.
+This will result in the following output style:
+
+    from evn.util import (
+        Pool,
+        Dict,
+        Options,
+        Constant,
+        DecayDict,
+        UnexpectedCodePath,
+    )
 
 Why isort?
 ======================
