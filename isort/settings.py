@@ -29,13 +29,24 @@ import os
 from configparser import SafeConfigParser
 from pies import *
 
+
+class MultiLineOutput(object):
+    GRID = 0
+    VERTICAL = 1
+    HANGING_INDENT = 2
+    VERTICAL_HANGING_INDENT = 3
+
+
 default = {'force_to_top': [],
            'skip': ['__init__.py', ],
            'line_length': 80,
            'known_standard_library': ['os', 'sys', 'time', 'copy', 're', '__builtin__', 'thread', 'signal', 'gc',
                                       'exceptions', 'email'],
            'known_third_party': ['google.appengine.api'],
-           'known_first_party': []}
+           'known_first_party': [],
+           'multi_line_output': MultiLineOutput.GRID,
+           'indent': ' ' * 4,
+           'length_sort': False}
 
 try:
     with open(os.path.expanduser('~/.isort.cfg')) as config_file:
