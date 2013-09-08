@@ -29,12 +29,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 import os
-from sys import path as PYTHONPATH, stderr
+from sys import path as PYTHONPATH
+from sys import stderr
 
-from natsort import natsorted
 from pies import *
 
 from . import settings
+from natsort import natsorted
 
 
 class Sections(object):
@@ -227,7 +228,7 @@ class SortImports(object):
 
         self.out_lines[self.import_index:1] = output
 
-        imports_tail = self.import_index + len(output) + 1
+        imports_tail = self.import_index + len(output)
         while map(unicode.strip, self.out_lines[imports_tail: imports_tail + 1]) == [""]:
             self.out_lines.pop(imports_tail)
 
@@ -281,29 +282,14 @@ class SortImports(object):
                 import_string = import_string.replace("[[i]]", "_import")
 
                 imports = import_string.split()
-                if "as" in imports and import_type != 'from':
-                    while True:
-                        try:
-                            index = imports.index('as')
-                        except:
-                            break
-                        self.as_map[imports[index - 1]] = imports[index + 1]
-                        from_import = imports[index - 1]
-                        module_placment = self.place_module(from_import)
-                        self.imports[module_placment][import_type].update([from_import])
-                        del imports[index -1:index + 2]
-                elif import_type == 'from' and "as" in imports:
-                    while True:
-                        try:
-                            index = imports.index('as')
-                        except:
-                            break
-                        from_import = imports[0]
-                        self.as_map[from_import] = imports[index + 1]
-                        module_placment = self.place_module(from_import)
-                        imports = ["{0} as {1}".format(imports[index - 1], imports[index + 1])]
-                        self.imports[module_placment][import_type].setdefault(from_import, set()).update(imports)
-                        del imports[index -1:index + 1]
+                if "as" in imports:
+                    while "as" in imports:
+                        index = imports.index('as')
+                        if import_type == "from":
+                            self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
+                        else:
+                            self.as_map[imports[index -1]] = imports[index + 1]
+                        del imports[index:index + 2]
                 if import_type == "from":
                     impot_from = imports.pop(0)
                     root = self.imports[self.place_module(impot_from)][import_type]
