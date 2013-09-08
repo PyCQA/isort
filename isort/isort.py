@@ -222,21 +222,22 @@ class SortImports(object):
             if straight_modules or from_modules:
                 output.append("")
 
-        while output[-1:] == [""]:
+        while map(unicode.strip, output[-1:]) == [""]:
             output.pop()
 
-        while self.import_index + 2 < len(self.out_lines) and self.out_lines[self.import_index + 1] == "":
-            self.out_lines.pop(self.import_index + 1)
+        self.out_lines[self.import_index:1] = output
 
-        if len(self.out_lines) > self.import_index + 1:
-            next_construct = self.out_lines[self.import_index + 1]
+        imports_tail = self.import_index + len(output) + 1
+        while map(unicode.strip, self.out_lines[imports_tail: imports_tail + 1]) == [""]:
+            self.out_lines.pop(imports_tail)
+
+        if len(self.out_lines) > imports_tail:
+            next_construct = self.out_lines[imports_tail]
             if next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
-                output += ["", ""]
+                self.out_lines[imports_tail:1] = ["", ""]
             else:
-                output += [""]
-
-        self.out_lines[self.import_index:1] = output
+                self.out_lines[imports_tail:1] = [""]
 
     @staticmethod
     def _strip_comments(line):
