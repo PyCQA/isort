@@ -55,6 +55,7 @@ class SortImports(object):
 
         file_name = file_path
         if file_path:
+            file_path = os.path.abspath(file_path)
             if "/" in file_name:
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:
@@ -83,7 +84,7 @@ class SortImports(object):
 
         self.output = "\n".join(self.out_lines)
         if file_name:
-            with open(file_name, "w") as outputFile:
+            with open(self.file_path, "w") as outputFile:
                 outputFile.write(self.output)
 
     def place_module(self, moduleName):
