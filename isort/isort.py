@@ -29,12 +29,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 import os
-from sys import path as PYTHONPATH, stderr
+from sys import path as PYTHONPATH
+from sys import stderr
 
-from natsort import natsorted
 from pies import *
 
 from . import settings
+from natsort import natsorted
 
 
 class Sections(object):
@@ -60,9 +61,11 @@ class SortImports(object):
                 file_name = file_name[file_name.rfind('/') + 1:]
             if file_name in self.config['skip']:
                 print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path), file=stderr)
-            self.file_path = file_path
-            with open(file_path) as file:
-                file_contents = file.read()
+                file_contents = None
+            else:
+                self.file_path = file_path
+                with open(file_path) as file:
+                    file_contents = file.read()
 
         if file_contents is None:
             return
@@ -222,21 +225,22 @@ class SortImports(object):
             if straight_modules or from_modules:
                 output.append("")
 
-        while output[-1:] == [""]:
+        while map(unicode.strip, output[-1:]) == [""]:
             output.pop()
 
-        while self.import_index + 2 < len(self.out_lines) and self.out_lines[self.import_index + 1] == "":
-            self.out_lines.pop(self.import_index + 1)
+        self.out_lines[self.import_index:1] = output
 
-        if len(self.out_lines) > self.import_index + 1:
-            next_construct = self.out_lines[self.import_index + 1]
+        imports_tail = self.import_index + len(output)
+        while map(unicode.strip, self.out_lines[imports_tail: imports_tail + 1]) == [""]:
+            self.out_lines.pop(imports_tail)
+
+        if len(self.out_lines) > imports_tail:
+            next_construct = self.out_lines[imports_tail]
             if next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
-                output += ["", ""]
+                self.out_lines[imports_tail:1] = ["", ""]
             else:
-                output += [""]
-
-        self.out_lines[self.import_index:1] = output
+                self.out_lines[imports_tail:1] = [""]
 
     @staticmethod
     def _strip_comments(line):
@@ -280,29 +284,14 @@ class SortImports(object):
                 import_string = import_string.replace("[[i]]", "_import")
 
                 imports = import_string.split()
-                if "as" in imports and import_type != 'from':
-                    while True:
-                        try:
-                            index = imports.index('as')
-                        except:
-                            break
-                        self.as_map[imports[index - 1]] = imports[index + 1]
-                        from_import = imports[index - 1]
-                        module_placment = self.place_module(from_import)
-                        self.imports[module_placment][import_type].update([from_import])
-                        del imports[index -1:index + 2]
-                elif import_type == 'from' and "as" in imports:
-                    while True:
-                        try:
-                            index = imports.index('as')
-                        except:
-                            break
-                        from_import = imports[0]
-                        self.as_map[from_import] = imports[index + 1]
-                        module_placment = self.place_module(from_import)
-                        imports = ["{0} as {1}".format(imports[index - 1], imports[index + 1])]
-                        self.imports[module_placment][import_type].setdefault(from_import, set()).update(imports)
-                        del imports[index -1:index + 1]
+                if "as" in imports:
+                    while "as" in imports:
+                        index = imports.index('as')
+                        if import_type == "from":
+                            self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
+                        else:
+                            self.as_map[imports[index -1]] = imports[index + 1]
+                        del imports[index:index + 2]
                 if import_type == "from":
                     impot_from = imports.pop(0)
                     root = self.imports[self.place_module(impot_from)][import_type]
