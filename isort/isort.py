@@ -304,10 +304,11 @@ class SortImports(object):
                         self.imports[self.place_module(module)][import_type].add(module)
 
                 if self._at_end():
-                    print(self.file_path + ": Either you have an import at the end of your file, or something"
-                                           " went horribly wrong!",
-                          file=stderr)
-                    sys.exit(1)
+                    if self.file_path:
+                        print(self.file_path + ": Either you have an import at the end of your file, or something"
+                                               " went horribly wrong!",
+                            file=stderr)
+                        sys.exit(1)
 
             else:
                 self.out_lines.append(line)
