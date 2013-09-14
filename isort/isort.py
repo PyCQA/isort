@@ -95,6 +95,9 @@ class SortImports(object):
            third party import, or project code:
            if it can't determine - it assumes it is project code
         """
+        if moduleName.startswith("."):
+            return Sections.FIRSTPARTY
+
         index = moduleName.find('.')
         if index:
             firstPart = moduleName[:index]
