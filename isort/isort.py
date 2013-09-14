@@ -32,10 +32,10 @@ import os
 from sys import path as PYTHONPATH
 from sys import stderr
 
+from natsort import natsorted
 from pies import *
 
 from . import settings
-from natsort import natsorted
 
 
 class Sections(object):
@@ -312,3 +312,4 @@ class SortImports(object):
 
             else:
                 self.out_lines.append(line)
+
