@@ -228,7 +228,7 @@ class SortImports(object):
         while map(unicode.strip, output[-1:]) == [""]:
             output.pop()
 
-        self.out_lines[self.import_index:1] = output
+        self.out_lines[self.import_index:0] = output
 
         imports_tail = self.import_index + len(output)
         while map(unicode.strip, self.out_lines[imports_tail: imports_tail + 1]) == [""]:
@@ -238,9 +238,9 @@ class SortImports(object):
             next_construct = self.out_lines[imports_tail]
             if next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
-                self.out_lines[imports_tail:1] = ["", ""]
+                self.out_lines[imports_tail:0] = ["", ""]
             else:
-                self.out_lines[imports_tail:1] = [""]
+                self.out_lines[imports_tail:0] = [""]
 
     @staticmethod
     def _strip_comments(line):
