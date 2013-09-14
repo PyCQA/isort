@@ -26,7 +26,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
-from configparser import SafeConfigParser
+
 from pies import *
 
 
@@ -49,6 +49,8 @@ default = {'force_to_top': [],
            'length_sort': False}
 
 try:
+    from configparser import SafeConfigParser
+
     with open(os.path.expanduser('~/.isort.cfg')) as config_file:
         config = SafeConfigParser()
         config.readfp(config_file)
@@ -59,5 +61,5 @@ try:
                 default[key.lower()] = value.split(",")
             else:
                 default[key.lower()] = existing_value_type(value)
-except EnvironmentError:
+except (ImportError, EnvironmentError):
     pass
