@@ -45,6 +45,9 @@ node_modules/
 .directory
 libpeerconnection.log
 
+# setuptools
+dist
+
 # IDE Files
 atlassian-ide-plugin.xml
 .idea/

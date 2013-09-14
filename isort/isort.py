@@ -32,10 +32,10 @@ import os
 from sys import path as PYTHONPATH
 from sys import stderr
 
+from natsort import natsorted
 from pies import *
 
 from . import settings
-from natsort import natsorted
 
 
 class Sections(object):
@@ -95,6 +95,9 @@ class SortImports(object):
            third party import, or project code:
            if it can't determine - it assumes it is project code
         """
+        if moduleName.startswith("."):
+            return Sections.FIRSTPARTY
+
         index = moduleName.find('.')
         if index:
             firstPart = moduleName[:index]
@@ -228,7 +231,7 @@ class SortImports(object):
         while map(unicode.strip, output[-1:]) == [""]:
             output.pop()
 
-        self.out_lines[self.import_index:1] = output
+        self.out_lines[self.import_index:0] = output
 
         imports_tail = self.import_index + len(output)
         while map(unicode.strip, self.out_lines[imports_tail: imports_tail + 1]) == [""]:
@@ -238,9 +241,9 @@ class SortImports(object):
             next_construct = self.out_lines[imports_tail]
             if next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
-                self.out_lines[imports_tail:1] = ["", ""]
+                self.out_lines[imports_tail:0] = ["", ""]
             else:
-                self.out_lines[imports_tail:1] = [""]
+                self.out_lines[imports_tail:0] = [""]
 
     @staticmethod
     def _strip_comments(line):
@@ -303,11 +306,6 @@ class SortImports(object):
                     for module in imports:
                         self.imports[self.place_module(module)][import_type].add(module)
 
-                if self._at_end():
-                    print(self.file_path + ": Either you have an import at the end of your file, or something"
-                                           " went horribly wrong!",
-                          file=stderr)
-                    sys.exit(1)
-
             else:
                 self.out_lines.append(line)
+
