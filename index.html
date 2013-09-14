@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Isort by timothycrosley</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Isort</h1>
+        <h2>A Python utility / library to sort imports.</h2>
+        <a href="https://github.com/timothycrosley/isort" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="isort" class="anchor" href="#isort"><span class="octicon octicon-link"></span></a>isort</h1>
+
+<p>isort your python imports for you so you don't have to.</p>
+
+<p>isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
+It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.</p>
+
+<p>Before isort:</p>
+
+<pre><code>from my_lib import Object
+
+print("Hey")
+
+import os
+
+from my_lib import Object2
+
+import sys
+
+from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14, lib15
+
+import sys
+
+from __future__ import absolute_import
+
+from third_party import lib3
+
+print("yo")
+</code></pre>
+
+<p>After isort:</p>
+
+<pre><code>from __future__ import absolute_import
+
+import os
+import sys
+
+from third_party import (lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8,
+                         lib9, lib10, lib11, lib12, lib13, lib14, lib15)
+
+from my_lib import Object, Object2
+
+print("Hey")
+print("yo")
+</code></pre>
+
+<h1>
+<a name="installing-isort" class="anchor" href="#installing-isort"><span class="octicon octicon-link"></span></a>Installing isort</h1>
+
+<p>Installing isort is as simple as:</p>
+
+<pre><code>pip install isort
+</code></pre>
+
+<p>or if you prefer</p>
+
+<pre><code>easy_install isort
+</code></pre>
+
+<h1>
+<a name="using-isort" class="anchor" href="#using-isort"><span class="octicon octicon-link"></span></a>Using isort</h1>
+
+<p>from the command line:</p>
+
+<pre><code>isort mypythonfile.py mypythonfile2.py
+</code></pre>
+
+<p>from within Python:</p>
+
+<pre><code>from isort import SortImports
+
+SortImports("pythonfile.py")
+</code></pre>
+
+<p>or</p>
+
+<pre><code>from isort import SortImports
+
+new_contents = SortImports(file_contents=old_contents).output
+</code></pre>
+
+<p>from within Kate:</p>
+
+<pre><code>ctrl+[
+</code></pre>
+
+<p>or</p>
+
+<pre><code>menu &gt; Python &gt; Sort Imports
+</code></pre>
+
+<h1>
+<a name="installing-isorts-kate-plugin" class="anchor" href="#installing-isorts-kate-plugin"><span class="octicon octicon-link"></span></a>Installing isort's Kate plugin</h1>
+
+<p>To install the kate plugin you must either have pate installed or the very latest version of Kate:</p>
+
+<pre><code>wget https://raw.github.com/timothycrosley/isort/master/kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
+</code></pre>
+
+<p>You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.</p>
+
+<h1>
+<a name="plugins-for-other-text-editors" class="anchor" href="#plugins-for-other-text-editors"><span class="octicon octicon-link"></span></a>Plugins for other text editors</h1>
+
+<p>I use Kate, and Kate provides a very nice Python plugin API so I wrote a Kate plugin.
+That said I will enthusiastically accept pull requests that include plugins for other text editors
+and add documentation for them as I am notified.</p>
+
+<h1>
+<a name="how-does-isort-work" class="anchor" href="#how-does-isort-work"><span class="octicon octicon-link"></span></a>How does isort work?</h1>
+
+<p>isort parses specified files for global level import lines (imports outside of try / excepts blocks, functions, etc..)
+and puts them all at the top of the file grouped together by the type of import:</p>
+
+<ul>
+<li>Future</li>
+<li>Python Standard Library</li>
+<li>Third Party</li>
+<li>Current Python Project</li>
+</ul><p>Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
+and wraps long from imports to the specified line length (defaults to 80).</p>
+
+<h1>
+<a name="when-will-isort-not-work" class="anchor" href="#when-will-isort-not-work"><span class="octicon octicon-link"></span></a>When will isort not work?</h1>
+
+<p>If you ever have the situation where you need to have a try / except block in the middle of top-level imports or if
+your import order is directly linked to precedence.</p>
+
+<p>For example: a common practice in Django settings files is importing * from various settings files to form
+a new settings file. In this case if any of the imports change order you are changing the settings definition itself.</p>
+
+<p>However, you can configure isort to skip over just these files - or even to force certain imports to the top.</p>
+
+<h1>
+<a name="configuring-isort" class="anchor" href="#configuring-isort"><span class="octicon octicon-link"></span></a>Configuring isort</h1>
+
+<p>If you find the default isort settings do not work well for your project, isort provides several ways to adjust
+the behavior.</p>
+
+<p>To configure isort for a single user create a ~/.isort.cfg file:</p>
+
+<pre><code>[settings]
+line_length=120
+force_to_top=file1.py,file2.py
+skip=file3.py,file4.py
+known_standard_libary=std,std2
+known_third_party=randomthirdparty
+known_first_party=mylib1,mylib2
+indent='    '
+multi_line_output=3
+length_sort=1
+</code></pre>
+
+<p>You can then override any of these settings by using command line arguments, or by passing in override values to the
+SortImports class.</p>
+
+<h1>
+<a name="multi-line-output-modes" class="anchor" href="#multi-line-output-modes"><span class="octicon octicon-link"></span></a>Multi line output modes</h1>
+
+<p>You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
+past the line_length limit and has 4 possible settings:</p>
+
+<p>0 - Grid</p>
+
+<pre><code>from third_party import (lib1, lib2, lib3
+                         lib4, lib5, ...)
+</code></pre>
+
+<p>1 - Vertical</p>
+
+<pre><code>from third_party import (lib1,
+                         lib2,
+                         lib3
+                         lib4,
+                         lib5,
+                         ...)
+</code></pre>
+
+<p>2 - Hanging Indent</p>
+
+<pre><code>from third_party import \
+    lib1, lib2, lib3, \
+    lib4, lib5, lib6
+</code></pre>
+
+<p>3 - Vertical Hanging Indent</p>
+
+<pre><code>from third_party import (
+    lib1,
+    lib2,
+    lib3,
+    lib4,
+)
+</code></pre>
+
+<h1>
+<a name="ordering-by-import-length" class="anchor" href="#ordering-by-import-length"><span class="octicon octicon-link"></span></a>Ordering by import length</h1>
+
+<p>isort also makes it easy to sort your imports by length, simply by setting the length_sort option to True.
+This will result in the following output style:</p>
+
+<pre><code>from evn.util import (
+    Pool,
+    Dict,
+    Options,
+    Constant,
+    DecayDict,
+    UnexpectedCodePath,
+)
+</code></pre>
+
+<h1>
+<a name="skip-processing-of-a-single-import" class="anchor" href="#skip-processing-of-a-single-import"><span class="octicon octicon-link"></span></a>Skip processing of a single import</h1>
+
+<p>To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'</p>
+
+<pre><code>import module # isort:skip
+</code></pre>
+
+<p>or</p>
+
+<pre><code>from xyz import (abc, # isort:skip
+                 yo,
+                 hey)
+</code></pre>
+
+<h1>
+<a name="why-isort" class="anchor" href="#why-isort"><span class="octicon octicon-link"></span></a>Why isort?</h1>
+
+<p>isort simply stands for import sort. It was originally called "sortImports" however I got tired of typing the extra
+characters and came to the realization camelCase is not pythonic.</p>
+
+<p>I wrote isort because in an organization I used to work in the manager came in one day and decided all code must
+have alphabetically sorted imports. The code base was huge - and he meant for us to do it by hand. However, being a
+programmer - I'm too lazy to spend 8 hours mindlessly performing a function, but not too lazy to spend 16
+hours automating it. I was given permission to open source sortImports and here we are :)</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/timothycrosley/isort/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/timothycrosley/isort/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/timothycrosley/isort"></a> is maintained by <a href="https://github.com/timothycrosley">timothycrosley</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
