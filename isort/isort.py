@@ -27,6 +27,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import codecs
 import copy
 import os
 from sys import path as PYTHONPATH
@@ -64,8 +65,10 @@ class SortImports(object):
                 file_contents = None
             else:
                 self.file_path = file_path
-                with open(file_path) as file:
-                    file_contents = file.read()
+                with open(file_path) as file_to_import_sort:
+                    file_contents = file_to_import_sort.read()
+                    if sys.version < '3':
+                        file_contents = file_contents.decode('utf8')
 
         if file_contents is None:
             return
@@ -87,8 +90,8 @@ class SortImports(object):
 
         self.output = "\n".join(self.out_lines)
         if file_name:
-            with open(self.file_path, "w") as outputFile:
-                outputFile.write(self.output)
+            with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
+                output_file.write(self.output)
 
     def place_module(self, moduleName):
         """Trys to determine if a module is a python std import,
@@ -308,4 +311,3 @@ class SortImports(object):
 
             else:
                 self.out_lines.append(line)
-
