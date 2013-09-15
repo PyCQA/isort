@@ -1,6 +1,9 @@
 isort
 =====
 
+[![PyPi version](https://pypip.in/v/isort/badge.png)](https://crate.io/packages/isort/)
+[![PyPi downloads](https://pypip.in/d/isort/badge.png)](https://crate.io/packages/isort/)
+
 isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
