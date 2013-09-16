@@ -6,12 +6,12 @@ except ImportError:
     from distutils.core import setup
 
 setup(name='isort',
-      version='1.3.1',
+      version='1.3.2',
       description='A Python utility / library to sort Python imports.',
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/1.3.1.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/1.3.2.tar.gz',
       license="MIT",
       scripts=['scripts/isort'],
       packages=['isort'],
