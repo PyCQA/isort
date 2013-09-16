@@ -1,4 +1,4 @@
-isort
+[![isort](https://raw.github.com/timothycrosley/isort/develop/logo.png)]
 =====
 
 [![PyPi version](https://pypip.in/v/isort/badge.png)](https://crate.io/packages/isort/)
