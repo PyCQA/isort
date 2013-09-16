@@ -30,6 +30,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import codecs
 import copy
 import os
+import os.path
 from sys import path as PYTHONPATH
 from sys import stderr
 
@@ -120,7 +121,8 @@ class SortImports(object):
         for prefix in PYTHONPATH:
             fixed_module_name = moduleName.replace('.', '/')
             base_path = prefix + "/" + fixed_module_name
-            if os.path.exists(base_path + ".py") or os.path.exists(base_path) or os.path.exists(base_path + ".so"):
+            if (os.path.exists(base_path + ".py") or os.path.exists(base_path + ".so") or
+                (os.path.exists(base_path) and os.path.isdir(base_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
                     return Sections.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
