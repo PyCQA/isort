@@ -199,11 +199,11 @@ Skip processing of a single import
 
 To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'
 
-    import module # isort:skip
+    import module  # isort:skip
 
 or
 
-    from xyz import (abc, # isort:skip
+    from xyz import (abc,  # isort:skip
                      yo,
                      hey)
 
