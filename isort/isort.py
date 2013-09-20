@@ -160,7 +160,7 @@ class SortImports(object):
     def _module_key(module_name, config):
         module_name = str(module_name).lower()
         return "{0}{1}".format(module_name in config['force_to_top'] and "A" or "B",
-                               config['length_sort'] and len(module_name) or module_name)
+                               config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_formatted_imports(self):
         """ Adds the imports back to the file
@@ -170,7 +170,7 @@ class SortImports(object):
         output = []
         for section in Sections.ALL:
             straight_modules = list(self.imports[section]['straight'])
-            straight_modules.sort(key=lambda key: self._module_key(key, self.config))
+            straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 
             for module in straight_modules:
                 if module in self.as_map:
