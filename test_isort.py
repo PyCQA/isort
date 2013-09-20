@@ -48,7 +48,7 @@ def test_happy_path():
 def test_code_intermixed():
     """
         Defines what should happen when isort encounters imports intermixed with code
-        (it should pull them all to the top)
+        (it should pull them all to the top).
     """
     test_input = ("import sys\n"
                   "print('yo')\n"
@@ -110,7 +110,7 @@ def test_correct_space_between_imports():
 
 def test_sort_on_number():
     """
-        Ensure numbers get sorted logically (10 > 9 not the other way around)
+        Ensure numbers get sorted logically (10 > 9 not the other way around).
     """
     test_input = ("import lib10\n"
                   "import lib9\n")
@@ -258,7 +258,7 @@ def test_convert_hanging():
 
 def test_custom_indent():
     """
-        Ensure setting a custom indent will work as expected
+        Ensure setting a custom indent will work as expected.
     """
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=MultiLineOutput.HANGING_INDENT,
                               line_length=40, indent="  ").output
@@ -271,7 +271,7 @@ def test_custom_indent():
 
 def test_skip():
     """
-        Ensure setting a custom indent will work as expected
+        Ensure skipping a single import will work as expected.
     """
     test_input = ("import myproject\n"
                   "import django\n"
