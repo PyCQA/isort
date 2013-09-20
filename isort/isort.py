@@ -122,7 +122,7 @@ class SortImports(object):
             fixed_module_name = moduleName.replace('.', '/')
             base_path = prefix + "/" + fixed_module_name
             if (os.path.exists(base_path + ".py") or os.path.exists(base_path + ".so") or
-                (os.path.exists(base_path) and os.path.isdir(base_path))):
+               (os.path.exists(base_path) and os.path.isdir(base_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
                     return Sections.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
@@ -266,50 +266,47 @@ class SortImports(object):
         """
             Parses a python file taking out and categorizing imports
         """
-        while True:
-            if self._at_end():
-                return None
-
+        while not self._at_end():
             line = self._get_line()
             import_type = self._import_type(line)
-            if import_type:
-                if self.import_index == -1:
-                    self.import_index = self.index - 1
-
-                import_string = self._strip_comments(line)
-                if "(" in line and not self._at_end():
-                    while not line.strip().endswith(")") and not self._at_end():
-                        line = self._strip_comments(self._get_line())
-                        import_string += "\n" + line
-                else:
-                    while line.strip().endswith("\\"):
-                        line = self._strip_comments(self._get_line())
-                        import_string += "\n" + line
-
-                import_string = import_string.replace("_import", "[[i]]")
-                for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
-                    import_string = import_string.replace(remove_syntax, " ")
-                import_string = import_string.replace("[[i]]", "_import")
-
-                imports = import_string.split()
-                if "as" in imports:
-                    while "as" in imports:
-                        index = imports.index('as')
-                        if import_type == "from":
-                            self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
-                        else:
-                            self.as_map[imports[index -1]] = imports[index + 1]
-                        del imports[index:index + 2]
-                if import_type == "from":
-                    import_from = imports.pop(0)
-                    root = self.imports[self.place_module(import_from)][import_type]
-                    if root.get(import_from, False):
-                        root[import_from].update(imports)
-                    else:
-                        root[import_from] = set(imports)
-                else:
-                    for module in imports:
-                        self.imports[self.place_module(module)][import_type].add(module)
-
-            else:
+            if not import_type:
                 self.out_lines.append(line)
+                continue
+
+            if self.import_index == -1:
+                self.import_index = self.index - 1
+
+            import_string = self._strip_comments(line)
+            if "(" in line and not self._at_end():
+                while not line.strip().endswith(")") and not self._at_end():
+                    line = self._strip_comments(self._get_line())
+                    import_string += "\n" + line
+            else:
+                while line.strip().endswith("\\"):
+                    line = self._strip_comments(self._get_line())
+                    import_string += "\n" + line
+
+            import_string = import_string.replace("_import", "[[i]]")
+            for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
+                import_string = import_string.replace(remove_syntax, " ")
+            import_string = import_string.replace("[[i]]", "_import")
+
+            imports = import_string.split()
+            if "as" in imports:
+                while "as" in imports:
+                    index = imports.index('as')
+                    if import_type == "from":
+                        self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
+                    else:
+                        self.as_map[imports[index -1]] = imports[index + 1]
+                    del imports[index:index + 2]
+            if import_type == "from":
+                import_from = imports.pop(0)
+                root = self.imports[self.place_module(import_from)][import_type]
+                if root.get(import_from, False):
+                    root[import_from].update(imports)
+                else:
+                    root[import_from] = set(imports)
+            else:
+                for module in imports:
+                    self.imports[self.place_module(module)][import_type].add(module)
