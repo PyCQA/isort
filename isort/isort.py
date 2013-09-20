@@ -301,12 +301,12 @@ class SortImports(object):
                             self.as_map[imports[index -1]] = imports[index + 1]
                         del imports[index:index + 2]
                 if import_type == "from":
-                    impot_from = imports.pop(0)
-                    root = self.imports[self.place_module(impot_from)][import_type]
-                    if root.get(impot_from, False):
-                        root[impot_from].update(imports)
+                    import_from = imports.pop(0)
+                    root = self.imports[self.place_module(import_from)][import_type]
+                    if root.get(import_from, False):
+                        root[import_from].update(imports)
                     else:
-                        root[impot_from] = set(imports)
+                        root[import_from] = set(imports)
                 else:
                     for module in imports:
                         self.imports[self.place_module(module)][import_type].add(module)
