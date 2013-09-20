@@ -26,6 +26,7 @@ npm-debug.log
 .tox
 nosetests.xml
 htmlcov
+.cache
 
 # Translations
 *.mo
