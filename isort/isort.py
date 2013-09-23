@@ -95,7 +95,7 @@ class SortImports(object):
                 output_file.write(self.output)
 
     def place_module(self, moduleName):
-        """Trys to determine if a module is a python std import,
+        """Tries to determine if a module is a python std import,
            third party import, or project code:
            if it can't determine - it assumes it is project code
         """
