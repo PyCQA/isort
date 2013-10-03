@@ -7,7 +7,7 @@
 isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
-It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.
+It provides a command line utility, Python library, Vim plugin, Sublime plugin, and Kate plugin to quickly sort all your imports.
 
 Before isort:
 
@@ -82,6 +82,16 @@ from within Kate:
 or
 
     menu > Python > Sort Imports
+
+Installing isort's Vim plugin
+===================
+The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
+here: https://github.com/fisadev/vim-isort#installation
+
+Installing isort's Sublime plugin
+===================
+The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
+repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
 
 Installing isort's Kate plugin
 ===================
