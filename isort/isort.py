@@ -32,7 +32,7 @@ import copy
 import os
 import os.path
 from sys import path as PYTHONPATH
-from sys import stderr
+from sys import stderr, stdout
 
 from natsort import natsorted
 from pies import *
@@ -51,7 +51,8 @@ class Sections(object):
 class SortImports(object):
     config = settings.default
 
-    def __init__(self, file_path=None, file_contents=None, **setting_overrides):
+    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, **setting_overrides):
+        self.write_to_stdout = write_to_stdout
         if setting_overrides:
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
@@ -92,7 +93,9 @@ class SortImports(object):
             self._add_formatted_imports()
 
         self.output = "\n".join(self.out_lines)
-        if file_name:
+        if self.write_to_stdout:
+            stdout.write(self.output)
+        elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
 
@@ -322,3 +325,5 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
+
+
