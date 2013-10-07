@@ -75,6 +75,8 @@ class SortImports(object):
             return
 
         self.in_lines = file_contents.split("\n")
+        for add_import in self.config['add_imports']:
+            self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
@@ -173,6 +175,9 @@ class SortImports(object):
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 
             for module in straight_modules:
+                if module in self.config['remove_imports']:
+                    continue
+
                 if module in self.as_map:
                     output.append("import {0} as {1}".format(module, self.as_map[module]))
                 else:
@@ -181,9 +186,16 @@ class SortImports(object):
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
             for module in from_modules:
+                if module in self.config['remove_imports']:
+                    continue
+
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
                 from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
+                if self.config['remove_imports']:
+                    from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
+                                    self.config['remove_imports']]
+
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:

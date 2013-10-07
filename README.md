@@ -217,6 +217,41 @@ or
                      yo,
                      hey)
 
+Adding an import to multiple files
+======================
+
+isort makes it easy to add an import statement across multiple files, while being assured it's correctly placed.
+
+from the command line:
+
+    isort -a "from __future__ import print_function" *.py
+
+from within Kate:
+
+    ctrl+]
+
+or:
+
+    menu > Python > Add Import
+
+Removing an import from multiple files
+======================
+
+isort makes it easy to remove an import from multiple files, without having to be concerned with how it was originally
+formatted
+
+from the command line:
+
+    isort -r "os.system" *.py
+
+from within Kate:
+
+    ctrl+shift+]
+
+or:
+
+    menu > Python > Remove Import
+
 Why isort?
 ======================
 
