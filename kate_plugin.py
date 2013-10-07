@@ -22,13 +22,45 @@
 """
 
 from isort import SortImports
-from PyKDE4.ktexteditor import KTextEditor
 
 import kate
 
+try:
+    from PySide import QtGui
+except ImportError:
+    from PyQt4 import QtGui
+
 
 @kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
-def sortImports():
+def sort_imports():
     document = kate.activeDocument()
+    view = document.activeView()
+    position = view.cursorPosition()
     document.setText(SortImports(file_contents=document.text()).output)
-    document.activeView().setCursorPosition(KTextEditor.Cursor(0, 0))
+    view.setCursorPosition(position)
+
+
+@kate.action(text="Add Import", shortcut="Ctrl+]", menu="Python")
+def add_imports():
+    text, ok = QtGui.QInputDialog.getText(None,
+                                          'Add Import',
+                                          'Enter an import line to add (example: from os import path):')
+    if ok:
+        document = kate.activeDocument()
+        view = document.activeView()
+        position = view.cursorPosition()
+        document.setText(SortImports(file_contents=document.text(), add_imports=text.split(";")).output)
+        view.setCursorPosition(position)
+
+
+@kate.action(text="Remove Import", shortcut="Ctrl+Shift+]", menu="Python")
+def remove_imports():
+    text, ok = QtGui.QInputDialog.getText(None,
+                                          'Remove Import',
+                                          'Enter an import line to remove (example: os.path):')
+    if ok:
+        document = kate.activeDocument()
+        view = document.activeView()
+        position = view.cursorPosition()
+        document.setText(SortImports(file_contents=document.text(), remove_imports=text.split(";")).output)
+        view.setCursorPosition(position)

@@ -7,7 +7,7 @@
 isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
-It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.
+It provides a command line utility, Python library, Vim plugin, Sublime plugin, and Kate plugin to quickly sort all your imports.
 
 Before isort:
 
@@ -82,6 +82,16 @@ from within Kate:
 or
 
     menu > Python > Sort Imports
+
+Installing isort's Vim plugin
+===================
+The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
+here: https://github.com/fisadev/vim-isort#installation
+
+Installing isort's Sublime plugin
+===================
+The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
+repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
 
 Installing isort's Kate plugin
 ===================
@@ -199,13 +209,48 @@ Skip processing of a single import
 
 To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'
 
-    import module # isort:skip
+    import module  # isort:skip
 
 or
 
-    from xyz import (abc, # isort:skip
+    from xyz import (abc,  # isort:skip
                      yo,
                      hey)
+
+Adding an import to multiple files
+======================
+
+isort makes it easy to add an import statement across multiple files, while being assured it's correctly placed.
+
+from the command line:
+
+    isort -a "from __future__ import print_function" *.py
+
+from within Kate:
+
+    ctrl+]
+
+or:
+
+    menu > Python > Add Import
+
+Removing an import from multiple files
+======================
+
+isort makes it easy to remove an import from multiple files, without having to be concerned with how it was originally
+formatted
+
+from the command line:
+
+    isort -r "os.system" *.py
+
+from within Kate:
+
+    ctrl+shift+]
+
+or:
+
+    menu > Python > Remove Import
 
 Why isort?
 ======================
