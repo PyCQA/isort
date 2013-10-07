@@ -63,7 +63,9 @@ default = {'force_to_top': [],
            'known_first_party': [],
            'multi_line_output': MultiLineOutput.GRID,
            'indent': ' ' * 4,
-           'length_sort': False}
+           'length_sort': False,
+           'add_imports': [],
+           'remove_imports': []}
 
 try:
     from configparser import SafeConfigParser
