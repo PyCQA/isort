@@ -19,7 +19,8 @@
     OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from isort.isort import SortImports
 from isort.settings import MultiLineOutput
@@ -300,3 +301,33 @@ def test_force_to_top():
                            "import lib1\n"
                            "import lib2\n"
                            "import lib6")
+
+
+def test_add_imports():
+    """
+        Ensures adding imports works as expected.
+    """
+    test_input = ("import lib6\n"
+                  "import lib2\n"
+                  "import lib5\n"
+                  "import lib1")
+    test_output = SortImports(file_contents=test_input, add_imports=['import lib4', 'import lib7']).output
+    assert test_output == ("import lib1\n"
+                           "import lib2\n"
+                           "import lib4\n"
+                           "import lib5\n"
+                           "import lib6\n"
+                           "import lib7")
+
+
+def test_remove_imports():
+    """
+        Ensures removing imports works as expected.
+    """
+    test_input = ("import lib6\n"
+                  "import lib2\n"
+                  "import lib5\n"
+                  "import lib1")
+    test_output = SortImports(file_contents=test_input, remove_imports=['lib2', 'lib6']).output
+    assert test_output == ("import lib1\n"
+                           "import lib5")
