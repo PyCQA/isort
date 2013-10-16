@@ -313,7 +313,7 @@ class SortImports(object):
             import_string = import_string.replace("[[i]]", "_import")
 
             imports = import_string.split()
-            if "as" in imports:
+            if "as" in imports and (imports.index('as') + 1) < len(imports):
                 while "as" in imports:
                     index = imports.index('as')
                     if import_type == "from":
