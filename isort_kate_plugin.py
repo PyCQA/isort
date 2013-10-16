@@ -1,4 +1,4 @@
-""" Sorts Python imports definitions, and groups them based on type (stdlib, third-party, local).
+""" Sorts Python import definitions, and groups them based on type (stdlib, third-party, local).
 
     isort/isort_kate_plugin.py
 
