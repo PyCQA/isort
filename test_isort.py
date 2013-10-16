@@ -42,7 +42,7 @@ def test_happy_path():
                            "\n"
                            "import django.settings\n"
                            "\n"
-                           "import myproject.test")
+                           "import myproject.test\n")
 
 
 def test_code_intermixed():
@@ -116,7 +116,7 @@ def test_sort_on_number():
                   "import lib9\n")
     test_output = SortImports(file_contents=test_input).output
     assert test_output == ("import lib9\n"
-                           "import lib10")
+                           "import lib10\n")
 
 
 def test_line_length():
@@ -135,7 +135,7 @@ def test_line_length():
                            "                         lib14, lib15,\n"
                            "                         lib16, lib17,\n"
                            "                         lib18, lib20,\n"
-                           "                         lib21, lib22)")
+                           "                         lib21, lib22)\n")
 
 
 def test_output_modes():
@@ -154,7 +154,7 @@ def test_output_modes():
                                 "                         lib15, lib16,\n"
                                 "                         lib17, lib18,\n"
                                 "                         lib20, lib21,\n"
-                                "                         lib22)")
+                                "                         lib22)\n")
 
     test_output_vertical = SortImports(file_contents=REALLY_LONG_IMPORT,
                                        multi_line_output=MultiLineOutput.VERTICAL, line_length=40).output
@@ -178,7 +178,7 @@ def test_output_modes():
                                     "                         lib18,\n"
                                     "                         lib20,\n"
                                     "                         lib21,\n"
-                                    "                         lib22)")
+                                    "                         lib22)\n")
 
     test_output_hanging_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
                                              multi_line_output=MultiLineOutput.HANGING_INDENT,
@@ -187,7 +187,7 @@ def test_output_modes():
                                           "    lib3, lib4, lib5, lib6, lib7, \\\n"
                                           "    lib8, lib9, lib10, lib11, lib12, \\\n"
                                           "    lib13, lib14, lib15, lib16, lib17, \\\n"
-                                          "    lib18, lib20, lib21, lib22")
+                                          "    lib18, lib20, lib21, lib22\n")
 
     test_output_vertical_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
                                               multi_line_output=MultiLineOutput.VERTICAL_HANGING_INDENT,
@@ -214,7 +214,7 @@ def test_output_modes():
                                     "    lib20,\n"
                                     "    lib21,\n"
                                     "    lib22\n"
-                                    ")")
+                                    ")\n")
 
 
 def test_length_sort():
@@ -224,12 +224,12 @@ def test_length_sort():
     test_input = ("import medium_sizeeeeeeeeeeeeee\n"
                   "import shortie\n"
                   "import looooooooooooooooooooooooooooooooooooooong\n"
-                  "import medium_sizeeeeeeeeeeeeea")
+                  "import medium_sizeeeeeeeeeeeeea\n")
     test_output = SortImports(file_contents=test_input, length_sort=True).output
     assert test_output == ("import shortie\n"
                            "import medium_sizeeeeeeeeeeeeea\n"
                            "import medium_sizeeeeeeeeeeeeee\n"
-                           "import looooooooooooooooooooooooooooooooooooooong")
+                           "import looooooooooooooooooooooooooooooooooooooong\n")
 
 
 def test_convert_hanging():
@@ -240,7 +240,7 @@ def test_convert_hanging():
                   "    lib3, lib4, lib5, lib6, lib7, \\\n"
                   "    lib8, lib9, lib10, lib11, lib12, \\\n"
                   "    lib13, lib14, lib15, lib16, lib17, \\\n"
-                  "    lib18, lib20, lib21, lib22")
+                  "    lib18, lib20, lib21, lib22\n")
     test_output = SortImports(file_contents=test_input, multi_line_output=MultiLineOutput.GRID,
                               line_length=40).output
     assert test_output == ("from third_party import (lib1, lib2,\n"
@@ -253,7 +253,7 @@ def test_convert_hanging():
                            "                         lib15, lib16,\n"
                            "                         lib17, lib18,\n"
                            "                         lib20, lib21,\n"
-                           "                         lib22)")
+                           "                         lib22)\n")
 
 
 def test_custom_indent():
@@ -266,7 +266,7 @@ def test_custom_indent():
                            "  lib3, lib4, lib5, lib6, lib7, lib8, \\\n"
                            "  lib9, lib10, lib11, lib12, lib13, \\\n"
                            "  lib14, lib15, lib16, lib17, lib18, \\\n"
-                           "  lib20, lib21, lib22")
+                           "  lib20, lib21, lib22\n")
 
 
 def test_skip():
@@ -276,7 +276,7 @@ def test_skip():
     test_input = ("import myproject\n"
                   "import django\n"
                   "print('hey')\n"
-                  "import sys  # isort:skip this import needs to be placed here")
+                  "import sys  # isort:skip this import needs to be placed here\n\n\n\n\n\n\n")
 
     test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
     assert test_output == ("import django\n"
@@ -284,7 +284,7 @@ def test_skip():
                            "import myproject\n"
                            "\n"
                            "print('hey')\n"
-                           "import sys  # isort:skip this import needs to be placed here")
+                           "import sys  # isort:skip this import needs to be placed here\n")
 
 
 def test_force_to_top():
@@ -294,12 +294,12 @@ def test_force_to_top():
     test_input = ("import lib6\n"
                   "import lib2\n"
                   "import lib5\n"
-                  "import lib1")
+                  "import lib1\n")
     test_output = SortImports(file_contents=test_input, force_to_top=['lib5']).output
     assert test_output == ("import lib5\n"
                            "import lib1\n"
                            "import lib2\n"
-                           "import lib6")
+                           "import lib6\n")
 
 
 def test_add_imports():
@@ -309,14 +309,14 @@ def test_add_imports():
     test_input = ("import lib6\n"
                   "import lib2\n"
                   "import lib5\n"
-                  "import lib1")
+                  "import lib1\n\n")
     test_output = SortImports(file_contents=test_input, add_imports=['import lib4', 'import lib7']).output
     assert test_output == ("import lib1\n"
                            "import lib2\n"
                            "import lib4\n"
                            "import lib5\n"
                            "import lib6\n"
-                           "import lib7")
+                           "import lib7\n")
 
 
 def test_remove_imports():
@@ -329,4 +329,4 @@ def test_remove_imports():
                   "import lib1")
     test_output = SortImports(file_contents=test_input, remove_imports=['lib2', 'lib6']).output
     assert test_output == ("import lib1\n"
-                           "import lib5")
+                           "import lib5\n")
