@@ -76,6 +76,7 @@ class SortImports(object):
             return
 
         self.in_lines = file_contents.split("\n")
+        self.original_length = len(self.in_lines)
         for add_import in self.config['add_imports']:
             self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
@@ -91,6 +92,11 @@ class SortImports(object):
         self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
+
+        self.length_change = len(self.out_lines) - self.original_length
+        while self.out_lines and self.out_lines[-1].strip() == "":
+            self.out_lines.pop(-1)
+        self.out_lines.append("")
 
         self.output = "\n".join(self.out_lines)
         if self.write_to_stdout:
@@ -307,7 +313,7 @@ class SortImports(object):
             import_string = import_string.replace("[[i]]", "_import")
 
             imports = import_string.split()
-            if "as" in imports:
+            if "as" in imports and (imports.index('as') + 1) < len(imports):
                 while "as" in imports:
                     index = imports.index('as')
                     if import_type == "from":
@@ -325,5 +331,3 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
-
-
