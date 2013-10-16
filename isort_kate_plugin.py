@@ -1,5 +1,6 @@
-"""
-    isort/kate_plugin.py
+""" Sorts Python imports definitions, and groups them based on type (stdlib, third-party, local).
+
+    isort/isort_kate_plugin.py
 
     Provides a simple kate plugin that enables the use of isort to sort Python imports
     in the currently open kate file.
