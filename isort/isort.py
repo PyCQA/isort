@@ -331,5 +331,3 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
-
-
