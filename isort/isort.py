@@ -92,6 +92,10 @@ class SortImports(object):
         if self.import_index != -1:
             self._add_formatted_imports()
 
+        while self.out_lines and self.out_lines[-1].strip() == "":
+            self.out_lines.pop(-1)
+        self.out_lines.append("")
+
         self.output = "\n".join(self.out_lines)
         if self.write_to_stdout:
             stdout.write(self.output)
