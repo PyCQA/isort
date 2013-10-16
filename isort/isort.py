@@ -76,6 +76,7 @@ class SortImports(object):
             return
 
         self.in_lines = file_contents.split("\n")
+        self.original_length = len(self.in_lines)
         for add_import in self.config['add_imports']:
             self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
@@ -92,6 +93,7 @@ class SortImports(object):
         if self.import_index != -1:
             self._add_formatted_imports()
 
+        self.length_change = len(self.out_lines) - self.original_length
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")

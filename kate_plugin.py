@@ -31,13 +31,22 @@ except ImportError:
     from PyQt4 import QtGui
 
 
-@kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
-def sort_imports():
+def sort_kate_imports(add_imports=(), remove_imports=()):
+    """
+        Sorts imports within Kate while maintaining cursor position, even if length of file changes.
+    """
     document = kate.activeDocument()
     view = document.activeView()
     position = view.cursorPosition()
-    document.setText(SortImports(file_contents=document.text()).output)
+    sorter = SortImports(file_contents=document.text(), add_imports=add_imports, remove_imports=remove_imports)
+    document.setText(sorter.output)
+    position.setLine(position.line() + sorter.length_change)
     view.setCursorPosition(position)
+
+
+@kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
+def sort_imports():
+    sort_kate_imports()
 
 
 @kate.action(text="Add Import", shortcut="Ctrl+]", menu="Python")
@@ -46,11 +55,7 @@ def add_imports():
                                           'Add Import',
                                           'Enter an import line to add (example: from os import path):')
     if ok:
-        document = kate.activeDocument()
-        view = document.activeView()
-        position = view.cursorPosition()
-        document.setText(SortImports(file_contents=document.text(), add_imports=text.split(";")).output)
-        view.setCursorPosition(position)
+        sort_kate_imports(add_imports=text.split(";"))
 
 
 @kate.action(text="Remove Import", shortcut="Ctrl+Shift+]", menu="Python")
@@ -59,8 +64,4 @@ def remove_imports():
                                           'Remove Import',
                                           'Enter an import line to remove (example: os.path):')
     if ok:
-        document = kate.activeDocument()
-        view = document.activeView()
-        position = view.cursorPosition()
-        document.setText(SortImports(file_contents=document.text(), remove_imports=text.split(";")).output)
-        view.setCursorPosition(position)
+        sort_kate_imports(remove_imports=text.split(";"))
