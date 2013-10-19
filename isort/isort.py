@@ -130,10 +130,10 @@ class SortImports(object):
             return Sections.FIRSTPARTY
 
         for prefix in PYTHONPATH:
-            fixed_module_name = moduleName.replace('.', '/')
-            base_path = prefix + "/" + fixed_module_name
-            if (os.path.exists(base_path + ".py") or os.path.exists(base_path + ".so") or
-               (os.path.exists(base_path) and os.path.isdir(base_path))):
+            module_path = "/".join((prefix, moduleName.replace(".", "/")))
+            package_path = "/".join((prefix, moduleName.split(".")[0]))
+            if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
+               (os.path.exists(package_path) and os.path.isdir(package_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
                     return Sections.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
