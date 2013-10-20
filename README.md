@@ -191,6 +191,19 @@ past the line_length limit and has 4 possible settings:
         lib4,
     )
 
+4 - Hanging Grid
+
+    from third_party import (
+        lib1, lib2, lib3, lib4
+        lib5, ...)
+
+5 - Hanging Grid Grouped
+
+    from third_party import (
+        lib1, lib2, lib3, lib4
+        lib5, ...
+    )
+
 Ordering by import length
 ======================
 
