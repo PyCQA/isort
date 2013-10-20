@@ -22,7 +22,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from isort.isort import SortImports
-from isort.settings import MultiLineOutput
+from isort.settings import WrapModes
 
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
@@ -143,7 +143,7 @@ def test_output_modes():
         Test setting isort to use various output modes works as expected
     """
     test_output_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
-                                   multi_line_output=MultiLineOutput.GRID, line_length=40).output
+                                   multi_line_output=WrapModes.GRID, line_length=40).output
     assert test_output_grid == ("from third_party import (lib1, lib2,\n"
                                 "                         lib3, lib4,\n"
                                 "                         lib5, lib6,\n"
@@ -157,7 +157,7 @@ def test_output_modes():
                                 "                         lib22)\n")
 
     test_output_vertical = SortImports(file_contents=REALLY_LONG_IMPORT,
-                                       multi_line_output=MultiLineOutput.VERTICAL, line_length=40).output
+                                       multi_line_output=WrapModes.VERTICAL, line_length=40).output
     assert test_output_vertical == ("from third_party import (lib1,\n"
                                     "                         lib2,\n"
                                     "                         lib3,\n"
@@ -181,7 +181,7 @@ def test_output_modes():
                                     "                         lib22)\n")
 
     test_output_hanging_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
-                                             multi_line_output=MultiLineOutput.HANGING_INDENT,
+                                             multi_line_output=WrapModes.HANGING_INDENT,
                                              line_length=40, indent="    ").output
     assert test_output_hanging_indent == ("from third_party import  lib1, lib2, \\\n"
                                           "    lib3, lib4, lib5, lib6, lib7, \\\n"
@@ -190,31 +190,50 @@ def test_output_modes():
                                           "    lib18, lib20, lib21, lib22\n")
 
     test_output_vertical_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
-                                              multi_line_output=MultiLineOutput.VERTICAL_HANGING_INDENT,
+                                              multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
                                               line_length=40, indent="    ").output
-    test_output_vertical_indent == ("from third_party import (\n"
-                                    "    lib1,\n"
-                                    "    lib2,\n"
-                                    "    lib3,\n"
-                                    "    lib4,\n"
-                                    "    lib5,\n"
-                                    "    lib6,\n"
-                                    "    lib7,\n"
-                                    "    lib8,\n"
-                                    "    lib9,\n"
-                                    "    lib10,\n"
-                                    "    lib11,\n"
-                                    "    lib12,\n"
-                                    "    lib13,\n"
-                                    "    lib14,\n"
-                                    "    lib15,\n"
-                                    "    lib16,\n"
-                                    "    lib17,\n"
-                                    "    lib18,\n"
-                                    "    lib20,\n"
-                                    "    lib21,\n"
-                                    "    lib22\n"
-                                    ")\n")
+    assert test_output_vertical_indent == ("from third_party import (\n"
+                                           "    lib1,\n"
+                                           "    lib2,\n"
+                                           "    lib3,\n"
+                                           "    lib4,\n"
+                                           "    lib5,\n"
+                                           "    lib6,\n"
+                                           "    lib7,\n"
+                                           "    lib8,\n"
+                                           "    lib9,\n"
+                                           "    lib10,\n"
+                                           "    lib11,\n"
+                                           "    lib12,\n"
+                                           "    lib13,\n"
+                                           "    lib14,\n"
+                                           "    lib15,\n"
+                                           "    lib16,\n"
+                                           "    lib17,\n"
+                                           "    lib18,\n"
+                                           "    lib20,\n"
+                                           "    lib21,\n"
+                                           "    lib22\n"
+                                           ")\n")
+
+    test_output_vertical_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
+                                            multi_line_output=WrapModes.VERTICAL_GRID,
+                                            line_length=40, indent="    ").output
+    assert test_output_vertical_grid == ("from third_party import (\n"
+                                         "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                         "    lib7, lib8, lib9, lib10, lib11,\n"
+                                         "    lib12, lib13, lib14, lib15, lib16,\n"
+                                         "    lib17, lib18, lib20, lib21, lib22)\n")
+
+    test_output_vertical_grid_grouped = SortImports(file_contents=REALLY_LONG_IMPORT,
+                                                    multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+                                                    line_length=40, indent="    ").output
+    assert test_output_vertical_grid_grouped == ("from third_party import (\n"
+                                                 "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                                 "    lib7, lib8, lib9, lib10, lib11,\n"
+                                                 "    lib12, lib13, lib14, lib15, lib16,\n"
+                                                 "    lib17, lib18, lib20, lib21, lib22\n"
+                                                 ")\n")
 
 
 def test_length_sort():
@@ -241,7 +260,7 @@ def test_convert_hanging():
                   "    lib8, lib9, lib10, lib11, lib12, \\\n"
                   "    lib13, lib14, lib15, lib16, lib17, \\\n"
                   "    lib18, lib20, lib21, lib22\n")
-    test_output = SortImports(file_contents=test_input, multi_line_output=MultiLineOutput.GRID,
+    test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.GRID,
                               line_length=40).output
     assert test_output == ("from third_party import (lib1, lib2,\n"
                            "                         lib3, lib4,\n"
@@ -260,7 +279,7 @@ def test_custom_indent():
     """
         Ensure setting a custom indent will work as expected.
     """
-    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=MultiLineOutput.HANGING_INDENT,
+    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
                               line_length=40, indent="  ").output
     assert test_output == ("from third_party import  lib1, lib2, \\\n"
                            "  lib3, lib4, lib5, lib6, lib7, lib8, \\\n"

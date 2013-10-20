@@ -31,6 +31,7 @@ import codecs
 import copy
 import os
 import os.path
+from collections import namedtuple
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
@@ -39,14 +40,8 @@ from pies import *
 
 from . import settings
 
-
-class Sections(object):
-    FUTURE = 1
-    STDLIB = 2
-    THIRDPARTY = 3
-    FIRSTPARTY = 4
-    ALL = (FUTURE, STDLIB, THIRDPARTY, FIRSTPARTY)
-
+Sections = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY")
+Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
 
 class SortImports(object):
     config = settings.default
@@ -84,7 +79,7 @@ class SortImports(object):
         self.out_lines = []
         self.imports = {}
         self.as_map = {}
-        for section in Sections.ALL:
+        for section in Sections:
             self.imports[section] = {'straight':set(), 'from':{}}
 
         self.index = 0
@@ -130,10 +125,10 @@ class SortImports(object):
             return Sections.FIRSTPARTY
 
         for prefix in PYTHONPATH:
-            fixed_module_name = moduleName.replace('.', '/')
-            base_path = prefix + "/" + fixed_module_name
-            if (os.path.exists(base_path + ".py") or os.path.exists(base_path + ".so") or
-               (os.path.exists(base_path) and os.path.isdir(base_path))):
+            module_path = "/".join((prefix, moduleName.replace(".", "/")))
+            package_path = "/".join((prefix, moduleName.split(".")[0]))
+            if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
+               (os.path.exists(package_path) and os.path.isdir(package_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
                     return Sections.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
@@ -179,7 +174,7 @@ class SortImports(object):
             sorted alphabetically and split between groups
         """
         output = []
-        for section in Sections.ALL:
+        for section in Sections:
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 
@@ -217,37 +212,10 @@ class SortImports(object):
                     else:
                         import_statement = import_start + (", ").join(from_imports)
                         if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
-                            import_statement = import_start
-                            if self.config['multi_line_output'] != settings.MultiLineOutput.HANGING_INDENT:
-                                import_statement += "("
-                                white_space = " " * len(import_statement)
-                            if self.config['multi_line_output'] == settings.MultiLineOutput.GRID:
-                                import_statement += from_imports.pop(0)
-                                while from_imports:
-                                    next_import = from_imports.pop(0)
-                                    next_statement = import_statement + ", " + next_import
-                                    if len(next_statement.split("\n")[-1]) + 1 > self.config['line_length']:
-                                        next_statement = "{0},\n{1}{2}".format(import_statement, white_space,
-                                                                               next_import)
-                                    import_statement = next_statement
-                                import_statement += ")"
-                            elif self.config['multi_line_output'] == settings.MultiLineOutput.VERTICAL:
-                                import_statement += (",\n" + white_space).join(from_imports)
-                                import_statement += ")"
-                            elif self.config['multi_line_output'] == settings.MultiLineOutput.VERTICAL_HANGING_INDENT:
-                                import_statement += "\n" + self.config['indent']
-                                import_statement += (",\n" + self.config['indent']).join(from_imports)
-                                import_statement += "\n)"
-                            elif self.config['multi_line_output'] == settings.MultiLineOutput.HANGING_INDENT:
-                                import_statement += " " + from_imports.pop(0)
-                                while from_imports:
-                                    next_import = from_imports.pop(0)
-                                    next_statement = import_statement + ", " + next_import
-                                    if len(next_statement.split("\n")[-1]) + 3 > self.config['line_length']:
-                                        next_statement = "{0}, \\\n{1}{2}".format(import_statement,
-                                                                                  self.config['indent'],
-                                                                                  next_import)
-                                    import_statement = next_statement
+                            output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
+                            formatter = getattr(self, "_output_" + output_mode, self._output_grid)
+                            import_statement = formatter(import_start, from_imports, " " * (len(import_start) + 1),
+                                                         self.config['indent'], self.config['line_length'])
 
                     output.append(import_statement)
 
@@ -270,6 +238,55 @@ class SortImports(object):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
                 self.out_lines[imports_tail:0] = [""]
+
+    @staticmethod
+    def _output_grid(statement, imports, white_space, indent, line_length):
+        statement += "(" + imports.pop(0)
+        while imports:
+            next_import = imports.pop(0)
+            next_statement = statement + ", " + next_import
+            if len(next_statement.split("\n")[-1]) + 1 > line_length:
+                next_statement = "{0},\n{1}{2}".format(statement, white_space, next_import)
+            statement = next_statement
+        return statement + ")"
+
+    @staticmethod
+    def _output_vertical(statement, imports, white_space, indent, line_length):
+        return "{0}({1})".format(statement, (",\n" + white_space).join(imports))
+
+    @staticmethod
+    def _output_hanging_indent(statement, imports, white_space, indent, line_length):
+        statement += " " + imports.pop(0)
+        while imports:
+            next_import = imports.pop(0)
+            next_statement = statement + ", " + next_import
+            if len(next_statement.split("\n")[-1]) + 3 > line_length:
+                next_statement = "{0}, \\\n{1}{2}".format(statement, indent, next_import)
+            statement = next_statement
+        return statement
+
+    @staticmethod
+    def _output_vertical_hanging_indent(statement, imports, white_space, indent, line_length):
+        return "{0}(\n{1}{2}\n)".format(statement, indent, (",\n" + indent).join(imports))
+
+    @staticmethod
+    def _output_vertical_grid_common(statement, imports, white_space, indent, line_length):
+        statement += "(\n" + indent + imports.pop(0)
+        while imports:
+            next_import = imports.pop(0)
+            next_statement = "{0}, {1}".format(statement, next_import)
+            if len(next_statement.split("\n")[-1]) + 1 > line_length:
+                next_statement = "{0},\n{1}{2}".format(statement, indent, next_import)
+            statement = next_statement
+        return statement
+
+    @classmethod
+    def _output_vertical_grid(cls, statement, imports, white_space, indent, line_length):
+        return cls._output_vertical_grid_common(statement, imports, white_space, indent, line_length) + ")"
+
+    @classmethod
+    def _output_vertical_grid_grouped(cls, statement, imports, white_space, indent, line_length):
+        return cls._output_vertical_grid_common(statement, imports, white_space, indent, line_length) + "\n)"
 
     @staticmethod
     def _strip_comments(line):
