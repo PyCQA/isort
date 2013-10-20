@@ -22,19 +22,15 @@
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
 """
-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+from collections import namedtuple
 
 from pies import *
 
-
-class MultiLineOutput(object):
-    GRID = 0
-    VERTICAL = 1
-    HANGING_INDENT = 2
-    VERTICAL_HANGING_INDENT = 3
+WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
+WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
@@ -61,7 +57,7 @@ default = {'force_to_top': [],
                                       "zipimport", "zlib"],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
-           'multi_line_output': MultiLineOutput.GRID,
+           'multi_line_output': WrapModes.GRID,
            'indent': ' ' * 4,
            'length_sort': False,
            'add_imports': [],
