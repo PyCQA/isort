@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import sys, subprocess
+import subprocess
+import sys
 
 try:
     from setuptools import setup
