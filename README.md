@@ -3,6 +3,7 @@
 
 [![PyPi version](https://pypip.in/v/isort/badge.png)](https://crate.io/packages/isort/)
 [![PyPi downloads](https://pypip.in/d/isort/badge.png)](https://crate.io/packages/isort/)
+[![Build Status](https://travis-ci.org/timothycrosley/isort.png?branch=master)](https://travis-ci.org/timothycrosley/isort)
 
 isort your python imports for you so you don't have to.
 
