@@ -121,6 +121,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Python Standard Library
 - Third Party
 - Current Python Project
+- Explicitly Local (. before import, as in: from . import x)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).

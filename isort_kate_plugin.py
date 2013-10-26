@@ -33,14 +33,22 @@ except ImportError:
 
 def sort_kate_imports(add_imports=(), remove_imports=()):
     """
-        Sorts imports within Kate while maintaining cursor position, even if length of file changes.
+        Sorts imports within Kate while maintaining cursor position, and selection, even if length of file changes.
     """
     document = kate.activeDocument()
     view = document.activeView()
     position = view.cursorPosition()
+    selection = view.selectionRange()
     sorter = SortImports(file_contents=document.text(), add_imports=add_imports, remove_imports=remove_imports)
     document.setText(sorter.output)
     position.setLine(position.line() + sorter.length_change)
+    if selection:
+        start = selection.start()
+        start.setLine(start.line() + sorter.length_change)
+        end = selection.end()
+        end.setLine(end.line() + sorter.length_change)
+        selection.setRange(start, end)
+        view.setSelection(selection)
     view.setCursorPosition(position)
 
 
