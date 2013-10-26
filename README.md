@@ -283,6 +283,16 @@ or:
 
     menu > Python > Remove Import
 
+Using isort to verify code
+======================
+isort can also be used to used to verify that code is correctly formatted by running it with -c.
+Any files that contain incorrectly sorted imports will be outputted to stderr.
+
+    isort **/*.py -c
+
+    SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
+    ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
+
 Why isort?
 ======================
 
