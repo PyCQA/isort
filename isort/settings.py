@@ -74,12 +74,12 @@ try:
     tries = 0
     current_directory = os.getcwd()
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, "isort.cfg")
+        potential_path = os.path.join(current_directory, ".isort.cfg")
         if os.path.exists(potential_path):
             isort_config_file = potential_path
             break
 
-        current_directory = path.split()[0]
+        current_directory = os.path.split(current_directory)[0]
         tries += 1
 
     with open(os.path.expanduser(isort_config_file)) as config_file:
