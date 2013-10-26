@@ -156,6 +156,9 @@ To configure isort for a single user create a ~/.isort.cfg file:
     multi_line_output=3
     length_sort=1
 
+Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
+project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.
+
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
 
