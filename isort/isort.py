@@ -47,7 +47,7 @@ Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
 class SortImports(object):
     config = settings.default
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, **setting_overrides):
+    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False, **setting_overrides):
         self.write_to_stdout = write_to_stdout
         if setting_overrides:
             self.config = settings.default.copy()
@@ -94,6 +94,12 @@ class SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
 
+        if check:
+            if self.out_lines == self.in_lines:
+                print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
+            else:
+                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
+            return
         self.output = "\n".join(self.out_lines)
         if self.write_to_stdout:
             stdout.write(self.output)
