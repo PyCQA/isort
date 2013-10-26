@@ -68,7 +68,7 @@ class SortImports(object):
                     if sys.version < '3':
                         file_contents = file_contents.decode('utf8')
 
-        if file_contents is None:
+        if file_contents is None or ("isort:" + "skip_file") in file_contents:
             return
 
         self.in_lines = file_contents.split("\n")

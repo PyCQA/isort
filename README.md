@@ -224,7 +224,7 @@ This will result in the following output style:
         UnexpectedCodePath,
     )
 
-Skip processing of a single import
+Skip processing of imports (outside of configuration)
 ======================
 
 To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'
@@ -236,6 +236,17 @@ or
     from xyz import (abc,  # isort:skip
                      yo,
                      hey)
+
+To make isort skip an entire file simply add the following to the modules doc string: 'isort:skip_file'
+
+    """ my_module.py
+        Best module ever
+
+       isort:skip_file
+    """
+
+    import b
+    import a
 
 Adding an import to multiple files
 ======================
