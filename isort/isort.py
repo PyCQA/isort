@@ -43,6 +43,7 @@ from . import settings
 Sections = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY")
 Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
 
+
 class SortImports(object):
     config = settings.default
 
@@ -80,7 +81,7 @@ class SortImports(object):
         self.imports = {}
         self.as_map = {}
         for section in Sections:
-            self.imports[section] = {'straight':set(), 'from':{}}
+            self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
         self.import_index = -1
@@ -334,9 +335,9 @@ class SortImports(object):
                 while "as" in imports:
                     index = imports.index('as')
                     if import_type == "from":
-                        self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
+                        self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
                     else:
-                        self.as_map[imports[index -1]] = imports[index + 1]
+                        self.as_map[imports[index - 1]] = imports[index + 1]
                     del imports[index:index + 2]
             if import_type == "from":
                 import_from = imports.pop(0)
