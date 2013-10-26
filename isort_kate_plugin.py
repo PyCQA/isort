@@ -22,8 +22,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-import kate
 from isort import SortImports
+
+import kate
 
 try:
     from PySide import QtGui
