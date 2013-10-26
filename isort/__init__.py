@@ -25,4 +25,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from . import settings
 from .isort import SortImports
 
-__version__ = "2.2.1"
+__version__ = "2.3.0"
