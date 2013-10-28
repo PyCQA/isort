@@ -169,7 +169,7 @@ past the line_length limit and has 4 possible settings:
 
 0 - Grid
 
-    from third_party import (lib1, lib2, lib3
+    from third_party import (lib1, lib2, lib3,
                              lib4, lib5, ...)
 
 1 - Vertical
@@ -199,13 +199,13 @@ past the line_length limit and has 4 possible settings:
 4 - Hanging Grid
 
     from third_party import (
-        lib1, lib2, lib3, lib4
+        lib1, lib2, lib3, lib4,
         lib5, ...)
 
 5 - Hanging Grid Grouped
 
     from third_party import (
-        lib1, lib2, lib3, lib4
+        lib1, lib2, lib3, lib4,
         lib5, ...
     )
 
