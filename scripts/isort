@@ -47,5 +47,10 @@ file_names = arguments.pop('files', [])
 if file_names == ['-']:
     SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
 else:
+    wrong_sorted_files = False
     for file_name in file_names:
-        SortImports(file_name, **arguments)
+        incorrectly_sorted = SortImports(file_name, **arguments).incorrectly_sorted
+        if arguments.get('check', False) and incorrectly_sorted:
+            wrong_sorted_files = True
+    if wrong_sorted_files:
+        exit(1)
