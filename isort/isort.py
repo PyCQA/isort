@@ -55,6 +55,7 @@ class SortImports(object):
             self.config.update(setting_overrides)
 
         file_name = file_path
+        self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
             if "/" in file_name:
