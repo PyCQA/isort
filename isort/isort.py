@@ -55,6 +55,7 @@ class SortImports(object):
             self.config.update(setting_overrides)
 
         file_name = file_path
+        self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
             if "/" in file_name:
@@ -95,14 +96,15 @@ class SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
 
+        self.output = "\n".join(self.out_lines)
         if check:
-            if self.out_lines == self.in_lines:
+            if self.output == file_contents:
                 print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
                 print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
                 self.incorrectly_sorted = True
             return
-        self.output = "\n".join(self.out_lines)
+
         if self.write_to_stdout:
             stdout.write(self.output)
         elif file_name:
@@ -357,3 +359,4 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
+

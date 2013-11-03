@@ -21,6 +21,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from mock import patch
+
 from isort.isort import SortImports
 from isort.settings import WrapModes
 
@@ -364,3 +366,18 @@ def test_explicitly_local_import():
                                                             "\n"
                                                             "import .lib6\n"
                                                             "from . import lib7\n")
+
+
+def test_check_newline_in_imports(capsys):
+    """
+        Ensure tests works correctly when new lines are in imports.
+    """
+    test_input = ('from lib1 import (\n'
+                  '    sub1,\n'
+                  '    sub2,\n'
+                  '    sub3\n)\n')
+
+    SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20,
+                check=True)
+    out, err = capsys.readouterr()
+    assert 'SUCCESS' in out
