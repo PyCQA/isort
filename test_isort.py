@@ -368,7 +368,7 @@ def test_explicitly_local_import():
                                                             "from . import lib7\n")
 
 
-def test_check_newline_in_imports():
+def test_check_newline_in_imports(capsys):
     """
         Ensure tests works correctly when new lines are in imports.
     """
@@ -376,7 +376,8 @@ def test_check_newline_in_imports():
                   '    sub1,\n'
                   '    sub2,\n'
                   '    sub3\n)\n')
-    with patch('__builtin__.print') as mock_print:
-        SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20,
-                    check=True)
-    assert 'SUCCESS' in mock_print.call_args[0][0]
+
+    SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20,
+                check=True)
+    out, err = capsys.readouterr()
+    assert 'SUCCESS' in out

@@ -8,7 +8,7 @@ try:
     from setuptools.command.test import test as TestCommand
 
     class PyTest(TestCommand):
-        extra_kwargs = {'tests_require': ['pytest']}
+        extra_kwargs = {'tests_require': ['pytest', 'mock']}
 
         def finalize_options(self):
             TestCommand.finalize_options(self)
