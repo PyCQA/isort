@@ -364,3 +364,17 @@ def test_explicitly_local_import():
                                                             "\n"
                                                             "import .lib6\n"
                                                             "from . import lib7\n")
+
+
+def test_quotes_in_file():
+    """
+        Ensure imports within triple quotes don't get imported.
+    """
+    test_input = ('import os\n'
+                  '\n'
+                  '"""\n'
+                  'Let us\n'
+                  'import foo\n'
+                  'okay?\n'
+                  '"""\n')
+    assert SortImports(file_contents=test_input).output == test_input
