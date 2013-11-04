@@ -40,13 +40,14 @@ from pies import *
 
 from . import settings
 
-Sections = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY")
+Sections = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
+
 
 class SortImports(object):
     config = settings.default
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, **setting_overrides):
+    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False, **setting_overrides):
         self.write_to_stdout = write_to_stdout
         if setting_overrides:
             self.config = settings.default.copy()
@@ -67,7 +68,7 @@ class SortImports(object):
                     if sys.version < '3':
                         file_contents = file_contents.decode('utf8')
 
-        if file_contents is None:
+        if file_contents is None or ("isort:" + "skip_file") in file_contents:
             return
 
         self.in_lines = file_contents.split("\n")
@@ -80,7 +81,7 @@ class SortImports(object):
         self.imports = {}
         self.as_map = {}
         for section in Sections:
-            self.imports[section] = {'straight':set(), 'from':{}}
+            self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
         self.import_index = -1
@@ -93,6 +94,12 @@ class SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
 
+        if check:
+            if self.out_lines == self.in_lines:
+                print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
+            else:
+                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
+            return
         self.output = "\n".join(self.out_lines)
         if self.write_to_stdout:
             stdout.write(self.output)
@@ -106,7 +113,7 @@ class SortImports(object):
            if it can't determine - it assumes it is project code
         """
         if moduleName.startswith("."):
-            return Sections.FIRSTPARTY
+            return Sections.LOCALFOLDER
 
         index = moduleName.find('.')
         if index:
@@ -334,9 +341,9 @@ class SortImports(object):
                 while "as" in imports:
                     index = imports.index('as')
                     if import_type == "from":
-                        self.as_map[imports[0] + "." + imports[index -1]] = imports[index + 1]
+                        self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
                     else:
-                        self.as_map[imports[index -1]] = imports[index + 1]
+                        self.as_map[imports[index - 1]] = imports[index + 1]
                     del imports[index:index + 2]
             if import_type == "from":
                 import_from = imports.pop(0)

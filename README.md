@@ -121,6 +121,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Python Standard Library
 - Third Party
 - Current Python Project
+- Explicitly Local (. before import, as in: from . import x)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).
@@ -154,6 +155,9 @@ To configure isort for a single user create a ~/.isort.cfg file:
     indent='    '
     multi_line_output=3
     length_sort=1
+
+Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
+project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
@@ -220,7 +224,7 @@ This will result in the following output style:
         UnexpectedCodePath,
     )
 
-Skip processing of a single import
+Skip processing of imports (outside of configuration)
 ======================
 
 To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'
@@ -232,6 +236,17 @@ or
     from xyz import (abc,  # isort:skip
                      yo,
                      hey)
+
+To make isort skip an entire file simply add the following to the modules doc string: 'isort:skip_file'
+
+    """ my_module.py
+        Best module ever
+
+       isort:skip_file
+    """
+
+    import b
+    import a
 
 Adding an import to multiple files
 ======================
@@ -267,6 +282,16 @@ from within Kate:
 or:
 
     menu > Python > Remove Import
+
+Using isort to verify code
+======================
+isort can also be used to used to verify that code is correctly formatted by running it with -c.
+Any files that contain incorrectly sorted imports will be outputted to stderr.
+
+    isort **/*.py -c
+
+    SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
+    ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
 
 Why isort?
 ======================

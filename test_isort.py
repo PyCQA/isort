@@ -349,3 +349,18 @@ def test_remove_imports():
     test_output = SortImports(file_contents=test_input, remove_imports=['lib2', 'lib6']).output
     assert test_output == ("import lib1\n"
                            "import lib5\n")
+
+
+def test_explicitly_local_import():
+    """
+        Ensure that explicitly local imports are separated.
+    """
+    test_input = ("import lib1\n"
+                  "import lib2\n"
+                  "import .lib6\n"
+                  "from . import lib7")
+    assert SortImports(file_contents=test_input).output == ("import lib1\n"
+                                                            "import lib2\n"
+                                                            "\n"
+                                                            "import .lib6\n"
+                                                            "from . import lib7\n")

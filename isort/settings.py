@@ -29,6 +29,8 @@ from collections import namedtuple
 
 from pies import *
 
+MAX_CONFIG_SEARCH_DEPTH = 20 # The number '..' directories isort will look for config file within
+
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 
@@ -66,7 +68,20 @@ default = {'force_to_top': [],
 try:
     from configparser import SafeConfigParser
 
-    with open(os.path.expanduser('~/.isort.cfg')) as config_file:
+    isort_config_file = '~/.isort.cfg'
+
+    tries = 0
+    current_directory = os.getcwd()
+    while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+        potential_path = os.path.join(current_directory, ".isort.cfg")
+        if os.path.exists(potential_path):
+            isort_config_file = potential_path
+            break
+
+        current_directory = os.path.split(current_directory)[0]
+        tries += 1
+
+    with open(os.path.expanduser(isort_config_file)) as config_file:
         config = SafeConfigParser()
         config.readfp(config_file)
         settings = dict(config.items('settings'))
