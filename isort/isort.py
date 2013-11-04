@@ -29,6 +29,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import codecs
 import copy
+import itertools
 import os
 import os.path
 from collections import namedtuple
@@ -46,6 +47,7 @@ Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
 
 class SortImports(object):
     config = settings.default
+    incorrectly_sorted = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False, **setting_overrides):
         self.write_to_stdout = write_to_stdout
@@ -54,6 +56,7 @@ class SortImports(object):
             self.config.update(setting_overrides)
 
         file_name = file_path
+        self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
             if "/" in file_name:
@@ -80,7 +83,7 @@ class SortImports(object):
         self.out_lines = []
         self.imports = {}
         self.as_map = {}
-        for section in Sections:
+        for section in itertools.chain(Sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
@@ -94,13 +97,15 @@ class SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
 
+        self.output = "\n".join(self.out_lines)
         if check:
-            if self.out_lines == self.in_lines:
+            if self.output == file_contents:
                 print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
                 print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
+                self.incorrectly_sorted = True
             return
-        self.output = "\n".join(self.out_lines)
+
         if self.write_to_stdout:
             stdout.write(self.output)
         elif file_name:
@@ -120,6 +125,10 @@ class SortImports(object):
             firstPart = moduleName[:index]
         else:
             firstPart = None
+
+        for forced_separate in self.config['forced_separate']:
+            if moduleName.startswith(forced_separate):
+                return forced_separate
 
         if moduleName == "__future__" or (firstPart == "__future__"):
             return Sections.FUTURE
@@ -181,7 +190,7 @@ class SortImports(object):
             sorted alphabetically and split between groups
         """
         output = []
-        for section in Sections:
+        for section in itertools.chain(Sections, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 
@@ -311,10 +320,29 @@ class SortImports(object):
         """
             Parses a python file taking out and categorizing imports
         """
+        in_quote = False
         while not self._at_end():
             line = self._get_line()
+            skip_line = in_quote
+            if '"' in line or "'" in line:
+                index = 0
+                while index < len(line):
+                    if in_quote:
+                        if line[index:index + len(in_quote)] == in_quote:
+                            in_quote = False
+                    elif line[index] in ("'", '"'):
+                        long_quote = line[index:index + 3]
+                        if long_quote in ('"""', "'''"):
+                            in_quote = long_quote
+                            index += 2
+                        else:
+                            in_quote = line[index]
+                    elif line[index] == "#":
+                        break
+                    index += 1
+
             import_type = self._import_type(line)
-            if not import_type:
+            if not import_type or skip_line:
                 self.out_lines.append(line)
                 continue
 

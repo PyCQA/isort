@@ -21,6 +21,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from mock import patch
+
 from isort.isort import SortImports
 from isort.settings import WrapModes
 
@@ -364,3 +366,98 @@ def test_explicitly_local_import():
                                                             "\n"
                                                             "import .lib6\n"
                                                             "from . import lib7\n")
+
+
+def test_quotes_in_file():
+    """
+        Ensure imports within triple quotes don't get imported.
+    """
+    test_input = ('import os\n'
+                  '\n'
+                  '"""\n'
+                  'Let us\n'
+                  'import foo\n'
+                  'okay?\n'
+                  '"""\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ('import os\n'
+                  '\n'
+                  "'\"\"\"'\n"
+                  'import foo\n')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            "'\"\"\"'\n")
+
+    test_input = ('import os\n'
+                  '\n'
+                  '"""Let us"""\n'
+                  'import foo\n'
+                  '"""okay?"""\n')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            '"""Let us"""\n'
+                                                            '"""okay?"""\n')
+
+    test_input = ('import os\n'
+                  '\n'
+                  '#"""\n'
+                  'import foo\n'
+                  '#"""')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            '#"""\n'
+                                                            '#"""\n')
+
+    test_input = ('import os\n'
+                  '\n'
+                  "'\\\n"
+                  "import foo'\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_check_newline_in_imports(capsys):
+    """
+        Ensure tests works correctly when new lines are in imports.
+    """
+    test_input = ('from lib1 import (\n'
+                  '    sub1,\n'
+                  '    sub2,\n'
+                  '    sub3\n)\n')
+
+    SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20,
+                check=True)
+    out, err = capsys.readouterr()
+    assert 'SUCCESS' in out
+
+
+def test_forced_separate():
+    """
+        Ensure that forcing certain sub modules to show separately works as expected.
+    """
+    test_input = ('import sys\n'
+                  'import warnings\n'
+                  'from collections import OrderedDict\n'
+                  '\n'
+                  'from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation\n'
+                  'from django.core.paginator import InvalidPage\n'
+                  'from django.core.urlresolvers import reverse\n'
+                  'from django.db import models\n'
+                  'from django.db.models.fields import FieldDoesNotExist\n'
+                  'from django.utils import six\n'
+                  'from django.utils.deprecation import RenameMethodsBase\n'
+                  'from django.utils.encoding import force_str, force_text\n'
+                  'from django.utils.http import urlencode\n'
+                  'from django.utils.translation import ugettext, ugettext_lazy\n'
+                  '\n'
+                  'from django.contrib.admin import FieldListFilter\n'
+                  'from django.contrib.admin.exceptions import DisallowedModelAdminLookup\n'
+                  'from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n')
+    assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
+                       known_third_party=['django']).output == test_input

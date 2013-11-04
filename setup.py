@@ -8,7 +8,7 @@ try:
     from setuptools.command.test import test as TestCommand
 
     class PyTest(TestCommand):
-        extra_kwargs = {'tests_require': ['pytest']}
+        extra_kwargs = {'tests_require': ['pytest', 'mock']}
 
         def finalize_options(self):
             TestCommand.finalize_options(self)
@@ -37,12 +37,12 @@ except ImportError:
 
 
 setup(name='isort',
-      version='2.3.0',
+      version='2.4.0',
       description='A Python utility / library to sort Python imports.',
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/2.3.0.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/2.4.0.tar.gz',
       license="MIT",
       scripts=['scripts/isort'],
       packages=['isort'],

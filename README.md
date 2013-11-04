@@ -122,6 +122,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Third Party
 - Current Python Project
 - Explicitly Local (. before import, as in: from . import x)
+- Custom Separate Sections (Defined by forced_separate list in configuration file)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).
@@ -155,6 +156,7 @@ To configure isort for a single user create a ~/.isort.cfg file:
     indent='    '
     multi_line_output=3
     length_sort=1
+    forced_separate=django.contrib,django.utils
 
 Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
 project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.
@@ -169,7 +171,7 @@ past the line_length limit and has 4 possible settings:
 
 0 - Grid
 
-    from third_party import (lib1, lib2, lib3
+    from third_party import (lib1, lib2, lib3,
                              lib4, lib5, ...)
 
 1 - Vertical
@@ -199,13 +201,13 @@ past the line_length limit and has 4 possible settings:
 4 - Hanging Grid
 
     from third_party import (
-        lib1, lib2, lib3, lib4
+        lib1, lib2, lib3, lib4,
         lib5, ...)
 
 5 - Hanging Grid Grouped
 
     from third_party import (
-        lib1, lib2, lib3, lib4
+        lib1, lib2, lib3, lib4,
         lib5, ...
     )
 
