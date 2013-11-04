@@ -368,6 +368,54 @@ def test_explicitly_local_import():
                                                             "from . import lib7\n")
 
 
+def test_quotes_in_file():
+    """
+        Ensure imports within triple quotes don't get imported.
+    """
+    test_input = ('import os\n'
+                  '\n'
+                  '"""\n'
+                  'Let us\n'
+                  'import foo\n'
+                  'okay?\n'
+                  '"""\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ('import os\n'
+                  '\n'
+                  "'\"\"\"'\n"
+                  'import foo\n')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            "'\"\"\"'\n")
+
+    test_input = ('import os\n'
+                  '\n'
+                  '"""Let us"""\n'
+                  'import foo\n'
+                  '"""okay?"""\n')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            '"""Let us"""\n'
+                                                            '"""okay?"""\n')
+
+    test_input = ('import os\n'
+                  '\n'
+                  '#"""\n'
+                  'import foo\n'
+                  '#"""')
+    assert SortImports(file_contents=test_input).output == ('import os\n'
+                                                            '\n'
+                                                            'import foo\n'
+                                                            '\n'
+                                                            '#"""\n'
+                                                            '#"""\n')
+
+
 def test_check_newline_in_imports(capsys):
     """
         Ensure tests works correctly when new lines are in imports.
