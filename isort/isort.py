@@ -320,27 +320,29 @@ class SortImports(object):
         """
             Parses a python file taking out and categorizing imports
         """
-        in_long_quote = False
+        in_quote = False
         while not self._at_end():
             line = self._get_line()
-            if ('"""' in line or "'''" in line) and not line.startswith("#"):
-                in_short_quote = False
-                for index, character in enumerate(line):
-                    if in_short_quote:
-                        if in_short_quote == character:
-                            in_short_quote = False
-                    elif character in ("'", '"'):
+            skip_line = in_quote
+            if '"' in line or "'" in line:
+                index = 0
+                while index < len(line):
+                    if in_quote:
+                        if line[index:index + len(in_quote)] == in_quote:
+                            in_quote = False
+                    elif line[index] in ("'", '"'):
                         long_quote = line[index:index + 3]
                         if long_quote in ('"""', "'''"):
-                            if in_long_quote == long_quote:
-                                in_long_quote = False
-                            else:
-                                in_long_quote = long_quote
-                        elif not in_long_quote:
-                            in_short_quote = character
+                            in_quote = long_quote
+                            index += 2
+                        else:
+                            in_quote = line[index]
+                    elif line[index] == "#":
+                        break
+                    index += 1
 
             import_type = self._import_type(line)
-            if not import_type or in_long_quote:
+            if not import_type or skip_line:
                 self.out_lines.append(line)
                 continue
 
