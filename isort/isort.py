@@ -29,6 +29,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import codecs
 import copy
+import itertools
 import os
 import os.path
 from collections import namedtuple
@@ -82,7 +83,7 @@ class SortImports(object):
         self.out_lines = []
         self.imports = {}
         self.as_map = {}
-        for section in Sections:
+        for section in itertools.chain(Sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
@@ -124,6 +125,10 @@ class SortImports(object):
             firstPart = moduleName[:index]
         else:
             firstPart = None
+
+        for forced_separate in self.config['forced_separate']:
+            if moduleName.startswith(forced_separate):
+                return forced_separate
 
         if moduleName == "__future__" or (firstPart == "__future__"):
             return Sections.FUTURE
@@ -185,7 +190,7 @@ class SortImports(object):
             sorted alphabetically and split between groups
         """
         output = []
-        for section in Sections:
+        for section in itertools.chain(Sections, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 
@@ -376,4 +381,3 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
-

@@ -429,3 +429,29 @@ def test_check_newline_in_imports(capsys):
                 check=True)
     out, err = capsys.readouterr()
     assert 'SUCCESS' in out
+
+
+def test_forced_separate():
+    """
+        Ensure that forcing certain sub modules to show separately works as expected.
+    """
+    test_input = ('import sys\n'
+                  'import warnings\n'
+                  'from collections import OrderedDict\n'
+                  '\n'
+                  'from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation\n'
+                  'from django.core.paginator import InvalidPage\n'
+                  'from django.core.urlresolvers import reverse\n'
+                  'from django.db import models\n'
+                  'from django.db.models.fields import FieldDoesNotExist\n'
+                  'from django.utils import six\n'
+                  'from django.utils.deprecation import RenameMethodsBase\n'
+                  'from django.utils.encoding import force_str, force_text\n'
+                  'from django.utils.http import urlencode\n'
+                  'from django.utils.translation import ugettext, ugettext_lazy\n'
+                  '\n'
+                  'from django.contrib.admin import FieldListFilter\n'
+                  'from django.contrib.admin.exceptions import DisallowedModelAdminLookup\n'
+                  'from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n')
+    assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
+                       known_third_party=['django']).output == test_input
