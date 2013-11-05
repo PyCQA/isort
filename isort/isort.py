@@ -327,7 +327,9 @@ class SortImports(object):
             if '"' in line or "'" in line:
                 index = 0
                 while index < len(line):
-                    if in_quote:
+                    if line[index] == "\\":
+                        index += 1
+                    elif in_quote:
                         if line[index:index + len(in_quote)] == in_quote:
                             in_quote = False
                     elif line[index] in ("'", '"'):
