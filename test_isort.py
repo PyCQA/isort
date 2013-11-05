@@ -421,6 +421,14 @@ def test_quotes_in_file():
                   "import foo'\n")
     assert SortImports(file_contents=test_input).output == test_input
 
+    test_input = ('import os\n'
+                  '\n'
+                  "'''\n"
+                  "\\'''\n"
+                  'import junk\n'
+                  "'''\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
 
 def test_check_newline_in_imports(capsys):
     """
