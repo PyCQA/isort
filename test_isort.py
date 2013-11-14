@@ -468,3 +468,29 @@ def test_forced_separate():
                   'from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n')
     assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
                        known_third_party=['django']).output == test_input
+
+
+def test_default_section():
+    """
+        Test to ensure changing the default section works as expected.
+    """
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import myproject.test\n"
+                  "import django.settings")
+    test_output = SortImports(file_contents=test_input, known_third_party=['django'],
+                              default_section="FIRSTPARTY").output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import django.settings\n"
+                           "\n"
+                           "import myproject.test\n")
+
+    test_output_custom = SortImports(file_contents=test_input, known_third_party=['django'],
+                                     default_section="STDLIB").output
+    assert test_output_custom == ("import myproject.test\n"
+                                  "import os\n"
+                                  "import sys\n"
+                                  "\n"
+                                  "import django.settings\n")

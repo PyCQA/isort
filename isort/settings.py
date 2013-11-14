@@ -64,7 +64,8 @@ default = {'force_to_top': [],
            'indent': ' ' * 4,
            'length_sort': False,
            'add_imports': [],
-           'remove_imports': []}
+           'remove_imports': [],
+           'default_section': 'FIRSTPARTY'}
 
 try:
     import configparser
