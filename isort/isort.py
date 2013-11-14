@@ -33,6 +33,7 @@ import itertools
 import os
 import os.path
 from collections import namedtuple
+from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
@@ -49,8 +50,8 @@ class SortImports(object):
     config = settings.default
     incorrectly_sorted = False
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False, **setting_overrides):
-        self.write_to_stdout = write_to_stdout
+    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
+                 show_diff=False, **setting_overrides):
         if setting_overrides:
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
@@ -105,7 +106,11 @@ class SortImports(object):
                 self.incorrectly_sorted = True
             return
 
-        if self.write_to_stdout:
+        if show_diff:
+            for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
+                                     fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
+                stdout.write(line)
+        elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
