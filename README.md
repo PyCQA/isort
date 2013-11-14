@@ -161,6 +161,7 @@ To configure isort for a single user create a ~/.isort.cfg file:
     multi_line_output=3
     length_sort=1
     forced_separate=django.contrib,django.utils
+    default_section=FIRSTPARTY
 
 Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
 project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.
