@@ -33,6 +33,7 @@ import itertools
 import os
 import os.path
 from collections import namedtuple
+from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
@@ -41,16 +42,16 @@ from pies.overrides import *
 
 from . import settings
 
-Sections = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
-Sections = namedtuple('Sections', Sections)(*range(len(Sections)))
+SECTION_NAMES = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
+SECTIONS = namedtuple('Sections', SECTION_NAMES)(*range(len(SECTION_NAMES)))
 
 
 class SortImports(object):
     config = settings.default
     incorrectly_sorted = False
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False, **setting_overrides):
-        self.write_to_stdout = write_to_stdout
+    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
+                 show_diff=False, **setting_overrides):
         if setting_overrides:
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
@@ -82,7 +83,7 @@ class SortImports(object):
         self.out_lines = []
         self.imports = {}
         self.as_map = {}
-        for section in itertools.chain(Sections, self.config['forced_separate']):
+        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
@@ -105,7 +106,11 @@ class SortImports(object):
                 self.incorrectly_sorted = True
             return
 
-        if self.write_to_stdout:
+        if show_diff:
+            for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
+                                     fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
+                stdout.write(line)
+        elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
@@ -117,7 +122,7 @@ class SortImports(object):
            if it can't determine - it assumes it is project code
         """
         if moduleName.startswith("."):
-            return Sections.LOCALFOLDER
+            return SECTIONS.LOCALFOLDER
 
         index = moduleName.find('.')
         if index:
@@ -130,14 +135,14 @@ class SortImports(object):
                 return forced_separate
 
         if moduleName == "__future__" or (firstPart == "__future__"):
-            return Sections.FUTURE
+            return SECTIONS.FUTURE
         elif moduleName in self.config['known_standard_library'] or \
                 (firstPart in self.config['known_standard_library']):
-            return Sections.STDLIB
+            return SECTIONS.STDLIB
         elif moduleName in self.config['known_third_party'] or (firstPart in self.config['known_third_party']):
-            return Sections.THIRDPARTY
+            return SECTIONS.THIRDPARTY
         elif moduleName in self.config['known_first_party'] or (firstPart in self.config['known_first_party']):
-            return Sections.FIRSTPARTY
+            return SECTIONS.FIRSTPARTY
 
         for prefix in PYTHONPATH:
             module_path = "/".join((prefix, moduleName.replace(".", "/")))
@@ -145,13 +150,13 @@ class SortImports(object):
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
-                    return Sections.THIRDPARTY
+                    return SECTIONS.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
-                    return Sections.STDLIB
+                    return SECTIONS.STDLIB
                 else:
-                    return Sections.FIRSTPARTY
+                    return SECTIONS.FIRSTPARTY
 
-        return Sections.FIRSTPARTY
+        return SECTION_NAMES.index(self.config['default_section'])
 
     def _get_line(self):
         """ Returns the current line from the file while
@@ -189,7 +194,7 @@ class SortImports(object):
             sorted alphabetically and split between groups
         """
         output = []
-        for section in itertools.chain(Sections, self.config['forced_separate']):
+        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
 

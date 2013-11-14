@@ -8,7 +8,7 @@ import argparse
 
 from pies.overrides import *
 
-from isort import __version__, SortImports
+from isort import __version__, SortImports, SECTION_NAMES
 
 parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically within logical sections.')
 parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
@@ -39,6 +39,10 @@ parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, in
 parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
                     help='Checks the file for unsorted imports and prints them to the command line without modifying '
                          'the file.')
+parser.add_argument('-sd', '--section-default', dest='default_section',
+                    help='Sets the default section for imports (by default FIRSTPARTY) options: ' + str(SECTION_NAMES))
+parser.add_argument('-df', '--diff', dest='show_diff', default=False, action='store_true',
+                    help="Prints a diff of all the changes isort would make to a file, instead of changing it in place")
 parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
 arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)

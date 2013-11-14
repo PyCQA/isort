@@ -64,26 +64,29 @@ default = {'force_to_top': [],
            'indent': ' ' * 4,
            'length_sort': False,
            'add_imports': [],
-           'remove_imports': []}
+           'remove_imports': [],
+           'default_section': 'FIRSTPARTY'}
 
 try:
-    from configparser import SafeConfigParser
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
-    isort_config_file = '~/.isort.cfg'
+isort_config_file = os.path.expanduser('~/.isort.cfg')
+tries = 0
+current_directory = os.getcwd()
+while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+    potential_path = os.path.join(current_directory, ".isort.cfg")
+    if os.path.exists(potential_path):
+        isort_config_file = potential_path
+        break
 
-    tries = 0
-    current_directory = os.getcwd()
-    while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, ".isort.cfg")
-        if os.path.exists(potential_path):
-            isort_config_file = potential_path
-            break
+    current_directory = os.path.split(current_directory)[0]
+    tries += 1
 
-        current_directory = os.path.split(current_directory)[0]
-        tries += 1
-
-    with open(os.path.expanduser(isort_config_file)) as config_file:
-        config = SafeConfigParser()
+if os.path.exists(isort_config_file):
+    with open(isort_config_file) as config_file:
+        config = configparser.SafeConfigParser()
         config.readfp(config_file)
         settings = dict(config.items('settings'))
         for key, value in settings.items():
@@ -92,5 +95,3 @@ try:
                 default[key.lower()] = value.split(",")
             else:
                 default[key.lower()] = existing_value_type(value)
-except (ImportError, EnvironmentError):
-    pass
