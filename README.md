@@ -51,6 +51,7 @@ After isort:
 
 Installing isort
 ===================
+
 Installing isort is as simple as:
 
     pip install isort
@@ -86,23 +87,26 @@ or
 
     menu > Python > Sort Imports
 
-Installing isort's Vim plugin
-===================
-The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
-here: https://github.com/fisadev/vim-isort#installation
-
-Installing isort's Sublime plugin
-===================
-The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
-repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
-
 Installing isort's Kate plugin
 ===================
+
 To install the kate plugin you must either have pate installed or the very latest version of Kate:
 
     wget https://raw.github.com/timothycrosley/isort/master/isort_kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
 
 You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.
+
+Installing isort's Vim plugin
+===================
+
+The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
+here: https://github.com/fisadev/vim-isort#installation
+
+Installing isort's Sublime plugin
+===================
+
+The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
+repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
 
 Plugins for other text editors
 ===================
@@ -166,6 +170,7 @@ SortImports class.
 
 Multi line output modes
 ======================
+
 You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
 past the line_length limit and has 4 possible settings:
 
@@ -287,6 +292,7 @@ or:
 
 Using isort to verify code
 ======================
+
 isort can also be used to used to verify that code is correctly formatted by running it with -c.
 Any files that contain incorrectly sorted imports will be outputted to stderr.
 

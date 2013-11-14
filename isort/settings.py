@@ -27,7 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 from collections import namedtuple
 
-from pies import *
+from pies.overrides import *
 
 MAX_CONFIG_SEARCH_DEPTH = 20 # The number '..' directories isort will look for config file within
 
@@ -86,7 +86,7 @@ try:
         config = SafeConfigParser()
         config.readfp(config_file)
         settings = dict(config.items('settings'))
-        for key, value in iteritems(settings):
+        for key, value in settings.items():
             existing_value_type = type(default.get(key, ''))
             if existing_value_type in (list, tuple):
                 default[key.lower()] = value.split(",")

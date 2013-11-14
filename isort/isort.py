@@ -37,7 +37,7 @@ from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
 from natsort import natsorted
-from pies import *
+from pies.overrides import *
 
 from . import settings
 
@@ -68,8 +68,7 @@ class SortImports(object):
                 self.file_path = file_path
                 with open(file_path) as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
-                    if sys.version < '3':
-                        file_contents = file_contents.decode('utf8')
+                    file_contents = PY2 and file_contents.decode('utf8') or file_contents
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             return
@@ -327,7 +326,9 @@ class SortImports(object):
             if '"' in line or "'" in line:
                 index = 0
                 while index < len(line):
-                    if in_quote:
+                    if line[index] == "\\":
+                        index += 1
+                    elif in_quote:
                         if line[index:index + len(in_quote)] == in_quote:
                             in_quote = False
                     elif line[index] in ("'", '"'):

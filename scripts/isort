@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import argparse
 
-from pies import *
+from pies.overrides import *
 
 from isort import __version__, SortImports
 
@@ -41,7 +41,7 @@ parser.add_argument('-c', '--check-only', action='store_true', default=False, de
                          'the file.')
 parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
-arguments = dict((key, value) for (key, value) in iteritems(vars(parser.parse_args())) if value)
+arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
 file_names = arguments.pop('files', [])
 
 if file_names == ['-']:

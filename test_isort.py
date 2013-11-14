@@ -21,10 +21,9 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from mock import patch
-
 from isort.isort import SortImports
 from isort.settings import WrapModes
+from pies.overrides import *
 
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
@@ -419,6 +418,14 @@ def test_quotes_in_file():
                   '\n'
                   "'\\\n"
                   "import foo'\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ('import os\n'
+                  '\n'
+                  "'''\n"
+                  "\\'''\n"
+                  'import junk\n'
+                  "'''\n")
     assert SortImports(file_contents=test_input).output == test_input
 
 
