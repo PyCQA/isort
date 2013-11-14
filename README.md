@@ -51,6 +51,7 @@ After isort:
 
 Installing isort
 ===================
+
 Installing isort is as simple as:
 
     pip install isort
@@ -88,16 +89,19 @@ or
 
 Installing isort's Vim plugin
 ===================
+
 The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
 here: https://github.com/fisadev/vim-isort#installation
 
 Installing isort's Sublime plugin
 ===================
+
 The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
 repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
 
 Installing isort's Kate plugin
 ===================
+
 To install the kate plugin you must either have pate installed or the very latest version of Kate:
 
     wget https://raw.github.com/timothycrosley/isort/master/isort_kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
