@@ -68,8 +68,7 @@ class SortImports(object):
                 self.file_path = file_path
                 with open(file_path) as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
-                    if sys.version < '3':
-                        file_contents = file_contents.decode('utf8')
+                    file_contents = PY2 and file_contents.decode('utf8') or file_contents
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             return
