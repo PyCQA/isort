@@ -23,6 +23,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from . import settings
-from .isort import SortImports
+from .isort import SECTION_NAMES, SECTIONS, SortImports
 
 __version__ = "2.4.1"
