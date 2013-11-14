@@ -87,6 +87,15 @@ or
 
     menu > Python > Sort Imports
 
+Installing isort's Kate plugin
+===================
+
+To install the kate plugin you must either have pate installed or the very latest version of Kate:
+
+    wget https://raw.github.com/timothycrosley/isort/master/isort_kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
+
+You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.
+
 Installing isort's Vim plugin
 ===================
 
@@ -98,15 +107,6 @@ Installing isort's Sublime plugin
 
 The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
 repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
-
-Installing isort's Kate plugin
-===================
-
-To install the kate plugin you must either have pate installed or the very latest version of Kate:
-
-    wget https://raw.github.com/timothycrosley/isort/master/isort_kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
-
-You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.
 
 Plugins for other text editors
 ===================
