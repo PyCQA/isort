@@ -37,7 +37,7 @@ from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
 from natsort import natsorted
-from pies import *
+from pies.overrides import *
 
 from . import settings
 

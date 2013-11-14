@@ -21,7 +21,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from mock import patch
+from pies.overrides import *
 
 from isort.isort import SortImports
 from isort.settings import WrapModes
