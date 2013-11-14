@@ -170,6 +170,7 @@ SortImports class.
 
 Multi line output modes
 ======================
+
 You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
 past the line_length limit and has 4 possible settings:
 
@@ -291,6 +292,7 @@ or:
 
 Using isort to verify code
 ======================
+
 isort can also be used to used to verify that code is correctly formatted by running it with -c.
 Any files that contain incorrectly sorted imports will be outputted to stderr.
 
