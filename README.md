@@ -1,7 +1,7 @@
 ![isort](https://raw.github.com/timothycrosley/isort/master/logo.png)
 =====
 
-[![PyPi version](https://pypip.in/v/isort/badge.png)](https://crate.io/packages/isort/)
+[![PyPI version](https://badge.fury.io/py/isort.png)](http://badge.fury.io/py/isort)
 [![PyPi downloads](https://pypip.in/d/isort/badge.png)](https://crate.io/packages/isort/)
 [![Build Status](https://travis-ci.org/timothycrosley/isort.png?branch=master)](https://travis-ci.org/timothycrosley/isort)
 
