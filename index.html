@@ -40,13 +40,14 @@
 <a name="" class="anchor" href="#"><span class="octicon octicon-link"></span></a><img src="https://raw.github.com/timothycrosley/isort/master/logo.png" alt="isort">
 </h1>
 
-<p><a href="https://crate.io/packages/isort/"><img src="https://pypip.in/v/isort/badge.png" alt="PyPi version"></a>
-<a href="https://crate.io/packages/isort/"><img src="https://pypip.in/d/isort/badge.png" alt="PyPi downloads"></a></p>
+<p><a href="http://badge.fury.io/py/isort"><img src="https://badge.fury.io/py/isort.png" alt="PyPI version"></a>
+<a href="https://crate.io/packages/isort/"><img src="https://pypip.in/d/isort/badge.png" alt="PyPi downloads"></a>
+<a href="https://travis-ci.org/timothycrosley/isort"><img src="https://travis-ci.org/timothycrosley/isort.png?branch=master" alt="Build Status"></a></p>
 
 <p>isort your python imports for you so you don't have to.</p>
 
 <p>isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
-It provides a command line utility, Python library, and Kate plugin to quickly sort all your imports.</p>
+It provides a command line utility, Python library, Vim plugin, Sublime plugin, and Kate plugin to quickly sort all your imports.</p>
 
 <p>Before isort:</p>
 
@@ -56,11 +57,13 @@ print("Hey")
 
 import os
 
+from my_lib import Object3
+
 from my_lib import Object2
 
 import sys
 
-from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14, lib15
+from third_party import lib15, lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14
 
 import sys
 
@@ -81,7 +84,7 @@ import sys
 from third_party import (lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8,
                          lib9, lib10, lib11, lib12, lib13, lib14, lib15)
 
-from my_lib import Object, Object2
+from my_lib import Object, Object2, Object3
 
 print("Hey")
 print("yo")
@@ -106,6 +109,11 @@ print("yo")
 <p>from the command line:</p>
 
 <pre><code>isort mypythonfile.py mypythonfile2.py
+</code></pre>
+
+<p>or to see the proposed changes without applying them</p>
+
+<pre><code>isort mypythonfile.py --diff
 </code></pre>
 
 <p>from within Python:</p>
@@ -137,10 +145,22 @@ new_contents = SortImports(file_contents=old_contents).output
 
 <p>To install the kate plugin you must either have pate installed or the very latest version of Kate:</p>
 
-<pre><code>wget https://raw.github.com/timothycrosley/isort/master/kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
+<pre><code>wget https://raw.github.com/timothycrosley/isort/master/isort_kate_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
 </code></pre>
 
 <p>You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.</p>
+
+<h1>
+<a name="installing-isorts-vim-plugin" class="anchor" href="#installing-isorts-vim-plugin"><span class="octicon octicon-link"></span></a>Installing isort's Vim plugin</h1>
+
+<p>The Vim plugin for isort is maintained by <a href="https://github.com/fisadev" class="user-mention">@fisadev</a> with installation directions located on the dedicated vim-isort repository
+here: <a href="https://github.com/fisadev/vim-isort#installation">https://github.com/fisadev/vim-isort#installation</a></p>
+
+<h1>
+<a name="installing-isorts-sublime-plugin" class="anchor" href="#installing-isorts-sublime-plugin"><span class="octicon octicon-link"></span></a>Installing isort's Sublime plugin</h1>
+
+<p>The sublime plugin for isort is maintained by <a href="https://github.com/thijsdezoete" class="user-mention">@thijsdezoete</a> with installation directions located on the dedicated sublime-text-isort-plugin
+repository here: <a href="https://github.com/thijsdezoete/sublime-text-isort-plugin#install">https://github.com/thijsdezoete/sublime-text-isort-plugin#install</a></p>
 
 <h1>
 <a name="plugins-for-other-text-editors" class="anchor" href="#plugins-for-other-text-editors"><span class="octicon octicon-link"></span></a>Plugins for other text editors</h1>
@@ -160,6 +180,8 @@ and puts them all at the top of the file grouped together by the type of import:
 <li>Python Standard Library</li>
 <li>Third Party</li>
 <li>Current Python Project</li>
+<li>Explicitly Local (. before import, as in: from . import x)</li>
+<li>Custom Separate Sections (Defined by forced_separate list in configuration file)</li>
 </ul><p>Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).</p>
 
@@ -192,7 +214,12 @@ known_first_party=mylib1,mylib2
 indent='    '
 multi_line_output=3
 length_sort=1
+forced_separate=django.contrib,django.utils
+default_section=FIRSTPARTY
 </code></pre>
+
+<p>Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
+project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.</p>
 
 <p>You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.</p>
@@ -205,7 +232,7 @@ past the line_length limit and has 4 possible settings:</p>
 
 <p>0 - Grid</p>
 
-<pre><code>from third_party import (lib1, lib2, lib3
+<pre><code>from third_party import (lib1, lib2, lib3,
                          lib4, lib5, ...)
 </code></pre>
 
@@ -236,6 +263,21 @@ past the line_length limit and has 4 possible settings:</p>
 )
 </code></pre>
 
+<p>4 - Hanging Grid</p>
+
+<pre><code>from third_party import (
+    lib1, lib2, lib3, lib4,
+    lib5, ...)
+</code></pre>
+
+<p>5 - Hanging Grid Grouped</p>
+
+<pre><code>from third_party import (
+    lib1, lib2, lib3, lib4,
+    lib5, ...
+)
+</code></pre>
+
 <h1>
 <a name="ordering-by-import-length" class="anchor" href="#ordering-by-import-length"><span class="octicon octicon-link"></span></a>Ordering by import length</h1>
 
@@ -253,18 +295,83 @@ This will result in the following output style:</p>
 </code></pre>
 
 <h1>
-<a name="skip-processing-of-a-single-import" class="anchor" href="#skip-processing-of-a-single-import"><span class="octicon octicon-link"></span></a>Skip processing of a single import</h1>
+<a name="skip-processing-of-imports-outside-of-configuration" class="anchor" href="#skip-processing-of-imports-outside-of-configuration"><span class="octicon octicon-link"></span></a>Skip processing of imports (outside of configuration)</h1>
 
 <p>To make isort ignore a single import simply add a comment at the end of the import line containing the text 'isort:skip'</p>
 
-<pre><code>import module # isort:skip
+<pre><code>import module  # isort:skip
 </code></pre>
 
 <p>or</p>
 
-<pre><code>from xyz import (abc, # isort:skip
+<pre><code>from xyz import (abc,  # isort:skip
                  yo,
                  hey)
+</code></pre>
+
+<p>To make isort skip an entire file simply add the following to the modules doc string: 'isort:skip_file'</p>
+
+<pre><code>""" my_module.py
+    Best module ever
+
+   isort:skip_file
+"""
+
+import b
+import a
+</code></pre>
+
+<h1>
+<a name="adding-an-import-to-multiple-files" class="anchor" href="#adding-an-import-to-multiple-files"><span class="octicon octicon-link"></span></a>Adding an import to multiple files</h1>
+
+<p>isort makes it easy to add an import statement across multiple files, while being assured it's correctly placed.</p>
+
+<p>from the command line:</p>
+
+<pre><code>isort -a "from __future__ import print_function" *.py
+</code></pre>
+
+<p>from within Kate:</p>
+
+<pre><code>ctrl+]
+</code></pre>
+
+<p>or:</p>
+
+<pre><code>menu &gt; Python &gt; Add Import
+</code></pre>
+
+<h1>
+<a name="removing-an-import-from-multiple-files" class="anchor" href="#removing-an-import-from-multiple-files"><span class="octicon octicon-link"></span></a>Removing an import from multiple files</h1>
+
+<p>isort makes it easy to remove an import from multiple files, without having to be concerned with how it was originally
+formatted</p>
+
+<p>from the command line:</p>
+
+<pre><code>isort -r "os.system" *.py
+</code></pre>
+
+<p>from within Kate:</p>
+
+<pre><code>ctrl+shift+]
+</code></pre>
+
+<p>or:</p>
+
+<pre><code>menu &gt; Python &gt; Remove Import
+</code></pre>
+
+<h1>
+<a name="using-isort-to-verify-code" class="anchor" href="#using-isort-to-verify-code"><span class="octicon octicon-link"></span></a>Using isort to verify code</h1>
+
+<p>isort can also be used to used to verify that code is correctly formatted by running it with -c.
+Any files that contain incorrectly sorted imports will be outputted to stderr.</p>
+
+<pre><code>isort **/*.py -c
+
+SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
+ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
 </code></pre>
 
 <h1>
@@ -282,12 +389,12 @@ hours automating it. I was given permission to open source sortImports and here 
     </div>
     <footer>
       <div class="owner">
-      <p><a href="https://github.com/timothycrosley" class="avatar"><img src="https://1.gravatar.com/avatar/789a20c723e22cf1bfe698636ff5a28c?d=https%3A%2F%2Fidenticons.github.com%2Fec4be6dd11605955ceb0b9004f1ce4c7.png&amp;s=30" width="48" height="48"/></a> <a href="https://github.com/timothycrosley">timothycrosley</a> maintains <a href="https://github.com/timothycrosley/isort">Isort</a></p>
+      <p><a href="https://github.com/timothycrosley" class="avatar"><img src="https://0.gravatar.com/avatar/789a20c723e22cf1bfe698636ff5a28c?d=https%3A%2F%2Fidenticons.github.com%2Fec4be6dd11605955ceb0b9004f1ce4c7.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/timothycrosley">timothycrosley</a> maintains <a href="https://github.com/timothycrosley/isort">Isort</a></p>
 
 
       </div>
       <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+        <small>This page generated using <a href="http://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
       </div>
     </footer>
   </div>
