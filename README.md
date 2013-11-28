@@ -4,6 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/isort.png)](http://badge.fury.io/py/isort)
 [![PyPi downloads](https://pypip.in/d/isort/badge.png)](https://crate.io/packages/isort/)
 [![Build Status](https://travis-ci.org/timothycrosley/isort.png?branch=master)](https://travis-ci.org/timothycrosley/isort)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/timothycrosley/isort/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 isort your python imports for you so you don't have to.
 
