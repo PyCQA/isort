@@ -37,12 +37,12 @@ except ImportError:
 
 
 setup(name='isort',
-      version='2.5.0',
+      version='2.6.0',
       description='A Python utility / library to sort Python imports.',
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/2.5.0.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/2.6.0.tar.gz',
       license="MIT",
       scripts=['scripts/isort'],
       packages=['isort'],
