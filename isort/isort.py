@@ -229,6 +229,10 @@ class SortImports(object):
                 if from_imports:
                     if "*" in from_imports:
                         import_statement = "{0}*".format(import_start)
+                    elif self.config['force_single_line']:
+                        import_statement = import_start + from_imports.pop(0)
+                        for from_import in from_imports:
+                            import_statement += "\n{0}{1}".format(import_start, from_import)
                     else:
                         import_statement = import_start + (", ").join(from_imports)
                         if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
