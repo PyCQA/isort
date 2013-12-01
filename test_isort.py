@@ -494,3 +494,38 @@ def test_default_section():
                                   "import sys\n"
                                   "\n"
                                   "import django.settings\n")
+
+
+def test_force_single_line_imports():
+    """
+        Test to ensure forcing imports to each have their own line works as expected.
+    """
+    test_input = ("from third_party import  lib1, lib2, \\\n"
+                  "    lib3, lib4, lib5, lib6, lib7, \\\n"
+                  "    lib8, lib9, lib10, lib11, lib12, \\\n"
+                  "    lib13, lib14, lib15, lib16, lib17, \\\n"
+                  "    lib18, lib20, lib21, lib22\n")
+    test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.GRID,
+                              line_length=40, force_single_line=True).output
+    assert test_output == ("from third_party import lib1\n"
+                           "from third_party import lib2\n"
+                           "from third_party import lib3\n"
+                           "from third_party import lib4\n"
+                           "from third_party import lib5\n"
+                           "from third_party import lib6\n"
+                           "from third_party import lib7\n"
+                           "from third_party import lib8\n"
+                           "from third_party import lib9\n"
+                           "from third_party import lib10\n"
+                           "from third_party import lib11\n"
+                           "from third_party import lib12\n"
+                           "from third_party import lib13\n"
+                           "from third_party import lib14\n"
+                           "from third_party import lib15\n"
+                           "from third_party import lib16\n"
+                           "from third_party import lib17\n"
+                           "from third_party import lib18\n"
+                           "from third_party import lib19\n"
+                           "from third_party import lib20\n"
+                           "from third_party import lib21\n"
+                           "from third_party import lib22\n")
