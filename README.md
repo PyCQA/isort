@@ -222,6 +222,14 @@ past the line_length limit and has 4 possible settings:
         lib5, ...
     )
 
+Alternatively, you can set force_single_line to True (-sl on the command line) and every import will appear on its
+own line
+
+    from third_party import lib1
+    from third_party import lib2
+    from third_party import lib3
+    ...
+
 Ordering by import length
 ======================
 
