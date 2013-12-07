@@ -38,7 +38,7 @@ except ImportError:
 try:
    import pypandoc
    readme = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError):
+except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
 setup(name='isort',
