@@ -35,10 +35,16 @@ except ImportError:
         def run(self):
             raise SystemExit(subprocess.call([sys.executable, 'runtests.py']))
 
+try:
+   import pypandoc
+   readme = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+   readme = ''
 
 setup(name='isort',
       version='2.6.0',
       description='A Python utility / library to sort Python imports.',
+      long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
@@ -49,4 +55,21 @@ setup(name='isort',
       requires=['pies', 'natsort'],
       install_requires=['pies>=2.0.0', 'natsort>=3.0.0'],
       cmdclass={'test': PyTest},
+      keywords='Refactor, Python, Python2, Python3, Refactoring, Imports, Sort, Clean',
+      classifiers=['Development Status :: 5 - Production/Stable',
+                   'Intended Audience :: Developers',
+                   'Natural Language :: English',
+                   'Environment :: Console',
+                   'License :: OSI Approved :: MIT License',
+                   'Programming Language :: Python',
+                   'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 2.6',
+                   'Programming Language :: Python :: 2.7',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.0',
+                   'Programming Language :: Python :: 3.1',
+                   'Programming Language :: Python :: 3.2',
+                   'Programming Language :: Python :: 3.3',
+                   'Topic :: Software Development :: Libraries',
+                   'Topic :: Utilities'],
       **PyTest.extra_kwargs)
