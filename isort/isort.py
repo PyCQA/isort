@@ -56,6 +56,15 @@ class SortImports(object):
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
 
+        indent = str(self.config['indent'])
+        if indent.isdigit():
+            indent = " " * int(indent)
+        else:
+            indent = indent.strip("'").strip('"')
+            if indent.lower() == "tab":
+                indent = "\t"
+        self.config['indent'] = indent
+
         file_name = file_path
         self.file_path = file_path or ""
         if file_path:

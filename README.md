@@ -230,6 +230,11 @@ own line
     from third_party import lib3
     ...
 
+Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:
+*   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
+*   Tab
+*   A verbatim string with quotes around it. For example: "    " is equivalent to 4
+
 Ordering by import length
 ======================
 
@@ -325,3 +330,9 @@ I wrote isort because in an organization I used to work in the manager came in o
 have alphabetically sorted imports. The code base was huge - and he meant for us to do it by hand. However, being a
 programmer - I'm too lazy to spend 8 hours mindlessly performing a function, but not too lazy to spend 16
 hours automating it. I was given permission to open source sortImports and here we are :)
+
+--------------------------------------------
+
+Thanks and I hope you find isort useful!
+
+~Timothy Crosley
