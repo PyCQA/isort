@@ -325,3 +325,9 @@ I wrote isort because in an organization I used to work in the manager came in o
 have alphabetically sorted imports. The code base was huge - and he meant for us to do it by hand. However, being a
 programmer - I'm too lazy to spend 8 hours mindlessly performing a function, but not too lazy to spend 16
 hours automating it. I was given permission to open source sortImports and here we are :)
+
+--------------------------------------------
+
+Thanks and I hope you find isort useful!
+
+~Timothy Crosley
