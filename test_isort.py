@@ -304,6 +304,14 @@ def test_custom_indent():
                            "\tlib14, lib15, lib16, lib17, lib18, \\\n"
                            "\tlib20, lib21, lib22\n")
 
+    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
+                              line_length=40, indent=2).output
+    assert test_output == ("from third_party import  lib1, lib2, \\\n"
+                           "  lib3, lib4, lib5, lib6, lib7, lib8, \\\n"
+                           "  lib9, lib10, lib11, lib12, lib13, \\\n"
+                           "  lib14, lib15, lib16, lib17, lib18, \\\n"
+                           "  lib20, lib21, lib22\n")
+
 
 def test_skip():
     """
