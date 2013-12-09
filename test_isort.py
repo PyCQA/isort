@@ -184,7 +184,7 @@ def test_output_modes():
     test_output_hanging_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
                                              multi_line_output=WrapModes.HANGING_INDENT,
                                              line_length=40, indent="    ").output
-    assert test_output_hanging_indent == ("from third_party import  lib1, lib2, \\\n"
+    assert test_output_hanging_indent == ("from third_party import lib1, lib2, \\\n"
                                           "    lib3, lib4, lib5, lib6, lib7, \\\n"
                                           "    lib8, lib9, lib10, lib11, lib12, \\\n"
                                           "    lib13, lib14, lib15, lib16, lib17, \\\n"
@@ -524,7 +524,7 @@ def test_force_single_line_imports():
     """
         Test to ensure forcing imports to each have their own line works as expected.
     """
-    test_input = ("from third_party import  lib1, lib2, \\\n"
+    test_input = ("from third_party import lib1, lib2, \\\n"
                   "    lib3, lib4, lib5, lib6, lib7, \\\n"
                   "    lib8, lib9, lib10, lib11, lib12, \\\n"
                   "    lib13, lib14, lib15, lib16, lib17, \\\n"
