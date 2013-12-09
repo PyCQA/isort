@@ -289,7 +289,7 @@ class SortImports(object):
 
     @staticmethod
     def _output_hanging_indent(statement, imports, white_space, indent, line_length):
-        statement += " " + imports.pop(0)
+        statement += imports.pop(0)
         while imports:
             next_import = imports.pop(0)
             next_statement = statement + ", " + next_import
