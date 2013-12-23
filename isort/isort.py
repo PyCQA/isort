@@ -126,9 +126,9 @@ class SortImports(object):
                 output_file.write(self.output)
 
     def place_module(self, moduleName):
-        """Tries to determine if a module is a python std import,
-           third party import, or project code:
-           if it can't determine - it assumes it is project code
+        """ Tries to determine if a module is a python std import,
+            third party import, or project code:
+            if it can't determine - it assumes it is project code
         """
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
@@ -206,15 +206,16 @@ class SortImports(object):
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            section_output = []
 
             for module in straight_modules:
                 if module in self.config['remove_imports']:
                     continue
 
                 if module in self.as_map:
-                    output.append("import {0} as {1}".format(module, self.as_map[module]))
+                    section_output.append("import {0} as {1}".format(module, self.as_map[module]))
                 else:
-                    output.append("import {0}".format(module))
+                    section_output.append("import {0}".format(module))
 
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
@@ -232,7 +233,7 @@ class SortImports(object):
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
-                        output.append(import_start + "{0} as {1}".format(from_import, import_as))
+                        section_output.append(import_start + "{0} as {1}".format(from_import, import_as))
                         from_imports.remove(from_import)
 
                 if from_imports:
@@ -250,10 +251,16 @@ class SortImports(object):
                             import_statement = formatter(import_start, from_imports, " " * (len(import_start) + 1),
                                                          self.config['indent'], self.config['line_length'])
 
-                    output.append(import_statement)
+                    section_output.append(import_statement)
 
-            if straight_modules or from_modules:
-                output.append("")
+            if section_output:
+                section_name = section
+                if section in SECTIONS:
+                    section_name = SECTION_NAMES[section]
+                section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
+                if section_title:
+                    section_output.insert(0, "# " + section_title)
+                output += section_output + ['']
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()

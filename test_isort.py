@@ -552,3 +552,22 @@ def test_force_single_line_imports():
                            "from third_party import lib20\n"
                            "from third_party import lib21\n"
                            "from third_party import lib22\n")
+
+def test_titled_imports():
+    """
+        Tests setting custom titled/commented import sections
+    """
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import myproject.test\n"
+                  "import django.settings")
+    test_output = SortImports(file_contents=test_input, known_third_party=['django'],
+                              import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
+    assert test_output == ("# Standard Library\n"
+                           "import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import django.settings\n"
+                           "\n"
+                           "# My Stuff\n"
+                           "import myproject.test\n")
