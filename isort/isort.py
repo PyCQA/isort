@@ -1,5 +1,4 @@
-"""
-    isort.py
+""" isort.py
 
     Exposes a simple library to sort through imports within Python code
 
@@ -23,6 +22,7 @@
     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
+
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -129,6 +129,7 @@ class SortImports(object):
         """ Tries to determine if a module is a python std import,
             third party import, or project code:
             if it can't determine - it assumes it is project code
+
         """
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
@@ -168,8 +169,8 @@ class SortImports(object):
         return SECTION_NAMES.index(self.config['default_section'])
 
     def _get_line(self):
-        """ Returns the current line from the file while
-            incrementing the index
+        """ Returns the current line from the file while incrementing the index
+
         """
         line = self.in_lines[self.index]
         self.index += 1
@@ -179,6 +180,7 @@ class SortImports(object):
     def _import_type(line):
         """ If the current line is an import line it will
             return its type (from or straight)
+
         """
         if "isort:skip" in line:
             return
@@ -201,6 +203,7 @@ class SortImports(object):
         """ Adds the imports back to the file
             (at the index of the first import)
             sorted alphabetically and split between groups
+
         """
         output = []
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
@@ -330,8 +333,8 @@ class SortImports(object):
 
     @staticmethod
     def _strip_comments(line):
-        """
-            Removes comments from import line.
+        """ Removes comments from import line
+
         """
         comment_start = line.find("#")
         if comment_start != -1:
@@ -341,8 +344,8 @@ class SortImports(object):
         return line
 
     def _parse(self):
-        """
-            Parses a python file taking out and categorizing imports
+        """ Parses a python file taking out and categorizing imports
+
         """
         in_quote = False
         while not self._at_end():

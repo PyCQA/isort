@@ -1,5 +1,4 @@
-'''
-    test_isort.py
+''' test_isort.py
 
     Tests all major functionality of the isort library
     Should be ran using py.test by simply running by.test in the isort project directory
@@ -17,6 +16,7 @@
     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
+
 '''
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -30,8 +30,8 @@ REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib
 
 
 def test_happy_path():
-    """
-        Test the most basic use case, straight imports no code, simply not organized by category.
+    """ Test the most basic use case, straight imports no code, simply not organized by category
+
     """
     test_input = ("import sys\n"
                   "import os\n"
@@ -47,9 +47,9 @@ def test_happy_path():
 
 
 def test_code_intermixed():
-    """
-        Defines what should happen when isort encounters imports intermixed with code
-        (it should pull them all to the top).
+    """ Defines what should happen when isort encounters imports intermixed with code
+        (it should pull them all to the top)
+
     """
     test_input = ("import sys\n"
                   "print('yo')\n"
@@ -65,9 +65,9 @@ def test_code_intermixed():
 
 
 def test_correct_space_between_imports():
-    """
-        Ensure after imports a correct amount of space (in newlines) is enforced
+    """ Ensure after imports a correct amount of space (in newlines) is enforced
         (2 for method, class, or decorator definitions 1 for anything else)
+
     """
     test_input_method = ("import sys\n"
                          "def my_method():\n"
@@ -110,8 +110,8 @@ def test_correct_space_between_imports():
 
 
 def test_sort_on_number():
-    """
-        Ensure numbers get sorted logically (10 > 9 not the other way around).
+    """ Ensure numbers get sorted logically (10 > 9 not the other way around)
+
     """
     test_input = ("import lib10\n"
                   "import lib9\n")
@@ -121,8 +121,8 @@ def test_sort_on_number():
 
 
 def test_line_length():
-    """
-        Ensure isort enforces the set line_length
+    """ Ensure isort enforces the set line_length
+
     """
     assert len(SortImports(file_contents=REALLY_LONG_IMPORT, line_length=80).output.split("\n")[0]) <= 80
     assert len(SortImports(file_contents=REALLY_LONG_IMPORT, line_length=120).output.split("\n")[0]) <= 120
@@ -140,8 +140,8 @@ def test_line_length():
 
 
 def test_output_modes():
-    """
-        Test setting isort to use various output modes works as expected
+    """ Test setting isort to use various output modes works as expected\
+
     """
     test_output_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
                                    multi_line_output=WrapModes.GRID, line_length=40).output
@@ -238,8 +238,8 @@ def test_output_modes():
 
 
 def test_length_sort():
-    """
-        Test setting isort to sort on length instead of alphabetically.
+    """ Test setting isort to sort on length instead of alphabetically
+
     """
     test_input = ("import medium_sizeeeeeeeeeeeeee\n"
                   "import shortie\n"
@@ -253,8 +253,8 @@ def test_length_sort():
 
 
 def test_convert_hanging():
-    """
-        Ensure that isort will convert hanging indents to correct indent method.
+    """ Ensure that isort will convert hanging indents to correct indent method
+
     """
     test_input = ("from third_party import lib1, lib2, \\\n"
                   "    lib3, lib4, lib5, lib6, lib7, \\\n"
@@ -277,8 +277,8 @@ def test_convert_hanging():
 
 
 def test_custom_indent():
-    """
-        Ensure setting a custom indent will work as expected.
+    """ Ensure setting a custom indent will work as expected
+
     """
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
                               line_length=40, indent="   ").output
@@ -314,8 +314,8 @@ def test_custom_indent():
 
 
 def test_skip():
-    """
-        Ensure skipping a single import will work as expected.
+    """ Ensure skipping a single import will work as expected
+
     """
     test_input = ("import myproject\n"
                   "import django\n"
@@ -332,8 +332,8 @@ def test_skip():
 
 
 def test_force_to_top():
-    """
-        Ensure forcing a single import to the top of its category works as expected.
+    """ Ensure forcing a single import to the top of its category works as expected
+
     """
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -347,8 +347,8 @@ def test_force_to_top():
 
 
 def test_add_imports():
-    """
-        Ensures adding imports works as expected.
+    """ Ensures adding imports works as expected
+
     """
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -364,8 +364,8 @@ def test_add_imports():
 
 
 def test_remove_imports():
-    """
-        Ensures removing imports works as expected.
+    """ Ensures removing imports works as expected
+
     """
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -377,8 +377,8 @@ def test_remove_imports():
 
 
 def test_explicitly_local_import():
-    """
-        Ensure that explicitly local imports are separated.
+    """ Ensure that explicitly local imports are separated
+
     """
     test_input = ("import lib1\n"
                   "import lib2\n"
@@ -392,8 +392,8 @@ def test_explicitly_local_import():
 
 
 def test_quotes_in_file():
-    """
-        Ensure imports within triple quotes don't get imported.
+    """ Ensure imports within triple quotes don't get imported
+
     """
     test_input = ('import os\n'
                   '\n'
@@ -454,8 +454,8 @@ def test_quotes_in_file():
 
 
 def test_check_newline_in_imports(capsys):
-    """
-        Ensure tests works correctly when new lines are in imports.
+    """ Ensure tests works correctly when new lines are in imports
+
     """
     test_input = ('from lib1 import (\n'
                   '    sub1,\n'
@@ -469,8 +469,8 @@ def test_check_newline_in_imports(capsys):
 
 
 def test_forced_separate():
-    """
-        Ensure that forcing certain sub modules to show separately works as expected.
+    """ Ensure that forcing certain sub modules to show separately works as expected
+
     """
     test_input = ('import sys\n'
                   'import warnings\n'
@@ -495,8 +495,8 @@ def test_forced_separate():
 
 
 def test_default_section():
-    """
-        Test to ensure changing the default section works as expected.
+    """ Test to ensure changing the default section works as expected
+
     """
     test_input = ("import sys\n"
                   "import os\n"
@@ -521,8 +521,8 @@ def test_default_section():
 
 
 def test_force_single_line_imports():
-    """
-        Test to ensure forcing imports to each have their own line works as expected.
+    """ Test to ensure forcing imports to each have their own line works as expected
+
     """
     test_input = ("from third_party import lib1, lib2, \\\n"
                   "    lib3, lib4, lib5, lib6, lib7, \\\n"
@@ -553,9 +553,10 @@ def test_force_single_line_imports():
                            "from third_party import lib21\n"
                            "from third_party import lib22\n")
 
+
 def test_titled_imports():
-    """
-        Tests setting custom titled/commented import sections
+    """ Tests setting custom titled/commented import sections
+
     """
     test_input = ("import sys\n"
                   "import os\n"

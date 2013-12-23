@@ -20,6 +20,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 """
 
 from isort import SortImports
@@ -33,8 +34,9 @@ except ImportError:
 
 
 def sort_kate_imports(add_imports=(), remove_imports=()):
-    """
-        Sorts imports within Kate while maintaining cursor position, and selection, even if length of file changes.
+    """ Sorts imports within Kate while maintaining cursor position
+        and selection, even if length of file changes
+
     """
     document = kate.activeDocument()
     view = document.activeView()
