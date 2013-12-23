@@ -238,7 +238,7 @@ Note: to change the how constant indents appear - simply change the indent prope
 Auto-comment import sections
 ======================
 
-Some projects prefer to have the sections of imports uniquely titled to aid in identifying the sections quickly
+Some projects prefer to have import sections uniquely titled to aid in identifying the sections quickly
 when visually scanning. isort can automate this as well. To do this simply set the import_heading_{section_name}
 setting for each section you wish to have auto commented - to the desired comment.
 
@@ -247,7 +247,7 @@ For Example:
     import_heading_stdlib=Standard Library
     import_heading_firstparty=My Stuff
 
-Would lead output looking like the following:
+Would lead to output looking like the following:
 
     # Standard Library
     import os
