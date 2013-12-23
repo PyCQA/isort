@@ -56,7 +56,7 @@ default = {'force_to_top': [],
                                       "sysconfig", "tabnanny", "tarfile", "tempfile", "textwrap", "threading", "time",
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
-                                      "xmlrpclib", "zipfile", "zipimport", "zlib"],
+                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -66,7 +66,12 @@ default = {'force_to_top': [],
            'add_imports': [],
            'remove_imports': [],
            'force_single_line': False,
-           'default_section': 'FIRSTPARTY'}
+           'default_section': 'FIRSTPARTY',
+           'import_heading_future': '',
+           'import_heading_stdlib': '',
+           'import_heading_thirdparty': '',
+           'import_heading_firstparty': '',
+           'import_heading_localfolder': ''}
 
 try:
     import configparser
