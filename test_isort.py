@@ -552,4 +552,3 @@ def test_force_single_line_imports():
                            "from third_party import lib20\n"
                            "from third_party import lib21\n"
                            "from third_party import lib22\n")
-
