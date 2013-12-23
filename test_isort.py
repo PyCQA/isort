@@ -562,7 +562,7 @@ def test_titled_imports():
                   "import myproject.test\n"
                   "import django.settings")
     test_output = SortImports(file_contents=test_input, known_third_party=['django'],
-                              import_heading_stdlib="Standard Library", import_heading_localfolder="My Stuff").output
+                              import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
     assert test_output == ("# Standard Library\n"
                            "import os\n"
                            "import sys\n"
