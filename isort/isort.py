@@ -66,6 +66,7 @@ class SortImports(object):
         self.config['indent'] = indent
 
         self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
+        self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
 
         file_name = file_path
         self.file_path = file_path or ""
@@ -87,7 +88,7 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        for add_import in self.config['add_imports']:
+        for add_import in self.add_imports:
             self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
@@ -353,6 +354,18 @@ class SortImports(object):
             import_line = import_line.replace(" import ", ".")
         elif import_line.startswith("import "):
             import_line = import_line.replace("import ", "")
+
+        return import_line
+
+    @staticmethod
+    def _format_natural(import_line):
+        import_line = import_line.strip()
+        if not import_line.startswith("from ") and not import_line.startswith("import "):
+            if not "." in import_line:
+                return "import {0}".format(import_line)
+            parts = import_line.split(".")
+            end = parts.pop(-1)
+            return "from {0} import {1}".format(".".join(parts), end)
 
         return import_line
 
