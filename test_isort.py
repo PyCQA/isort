@@ -393,12 +393,12 @@ def test_remove_imports():
     test_input = ("import lib6\n"
                   "import lib2\n"
                   "import lib5\n"
-                  "import lib1")
+                  "import lib1\n"
+                  "from lib8 import a")
     test_output = SortImports(file_contents=test_input, remove_imports=['import lib2', 'import lib6',
                                                                         'from lib8 import a']).output
     assert test_output == ("import lib1\n"
-                           "import lib5\n"
-                           "from lib8 import a\n")
+                           "import lib5\n")
 
 
 
