@@ -79,6 +79,56 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
+editor_config_file = os.path.expanduser('~/.editorconfig')
+tries = 0
+current_directory = os.getcwd()
+while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+    potential_path = os.path.join(current_directory, ".editorconfig")
+    if os.path.exists(potential_path):
+        editor_config_file = potential_path
+        break
+
+    current_directory = os.path.split(current_directory)[0]
+    tries += 1
+
+if os.path.exists(editor_config_file):
+    with open(editor_config_file) as config_file:
+        line = "\n"
+        last_position = config_file.tell()
+        while line:
+            line = config_file.readline()
+            if "[" in line:
+                config_file.seek(last_position)
+                break
+            last_position = config_file.tell()
+                
+        config = configparser.SafeConfigParser()
+        config.readfp(config_file)
+        settings = {}
+        if config.has_section('*'):
+            settings.update(dict(config.items('*')))
+        if config.has_section('*.py'):
+            settings.update(dict(config.items('*.py')))
+        if config.has_section('**.py'):
+            settings.update(dict(config.items('**.py')))
+        indent_style = settings.pop('indent_style', "").strip()
+        indent_size = settings.pop('indent_size', "").strip()
+        if indent_style == "space":
+            default['indent'] = " " * (indent_size and int(indent_size) or 4)
+        elif indent_style == "tab":
+            default['indent'] = "\t" * (indent_size and int(indent_size) or 1)
+
+        max_line_length = settings.pop('max_line_length', "").strip()
+        if max_line_length:
+            default['line_length'] = int(max_line_length)
+
+        for key, value in settings.items():
+            existing_value_type = type(default.get(key, ''))
+            if existing_value_type in (list, tuple):
+                default[key.lower()] = value.split(",")
+            else:
+                default[key.lower()] = existing_value_type(value)
+
 isort_config_file = os.path.expanduser('~/.isort.cfg')
 tries = 0
 current_directory = os.getcwd()

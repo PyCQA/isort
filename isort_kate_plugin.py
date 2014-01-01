@@ -23,9 +23,9 @@
 
 """
 
-from isort import SortImports
-
 import kate
+
+from isort import SortImports
 
 try:
     from PySide import QtGui
