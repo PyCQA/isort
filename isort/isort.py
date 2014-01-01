@@ -65,6 +65,8 @@ class SortImports(object):
                 indent = "\t"
         self.config['indent'] = indent
 
+        self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
+
         file_name = file_path
         self.file_path = file_path or ""
         if file_path:
@@ -212,7 +214,7 @@ class SortImports(object):
             section_output = []
 
             for module in straight_modules:
-                if module in self.config['remove_imports']:
+                if module in self.remove_imports:
                     continue
 
                 if module in self.as_map:
@@ -223,15 +225,15 @@ class SortImports(object):
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
             for module in from_modules:
-                if module in self.config['remove_imports']:
+                if module in self.remove_imports:
                     continue
 
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
                 from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
-                if self.config['remove_imports']:
+                if self.remove_imports:
                     from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
-                                    self.config['remove_imports']]
+                                    self.remove_imports]
 
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
@@ -343,6 +345,17 @@ class SortImports(object):
 
         return line
 
+    @staticmethod
+    def _format_simplified(import_line):
+        import_line = import_line.strip()
+        if import_line.startswith("from "):
+            import_line = import_line.replace("from ", "")
+            import_line = import_line.replace(" import ", ".")
+        elif import_line.startswith("import "):
+            import_line = import_line.replace("import ", "")
+
+        return import_line
+
     def _parse(self):
         """ Parses a python file taking out and categorizing imports
 
@@ -412,3 +425,4 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
+
