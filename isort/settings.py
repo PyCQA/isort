@@ -30,7 +30,7 @@ from collections import namedtuple
 
 from pies.overrides import *
 
-MAX_CONFIG_SEARCH_DEPTH = 20 # The number '..' directories isort will look for config file within
+MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
