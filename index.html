@@ -42,7 +42,8 @@
 
 <p><a href="http://badge.fury.io/py/isort"><img src="https://badge.fury.io/py/isort.png" alt="PyPI version"></a>
 <a href="https://crate.io/packages/isort/"><img src="https://pypip.in/d/isort/badge.png" alt="PyPi downloads"></a>
-<a href="https://travis-ci.org/timothycrosley/isort"><img src="https://travis-ci.org/timothycrosley/isort.png?branch=master" alt="Build Status"></a></p>
+<a href="https://travis-ci.org/timothycrosley/isort"><img src="https://travis-ci.org/timothycrosley/isort.png?branch=master" alt="Build Status"></a>
+<a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/timothycrosley/isort/trend.png" alt="Bitdeli Badge"></a></p>
 
 <p>isort your python imports for you so you don't have to.</p>
 
@@ -224,6 +225,12 @@ project. isort will look up to 20 directories up, from the one it is ran, to fin
 <p>You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.</p>
 
+<p>Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
+<a href="http://editorconfig.org/">http://editorconfig.org/</a></p>
+
+<p>You can also place any standard isort configuration parameters within an editorconfig file under the *.py section
+and they will be honored.</p>
+
 <h1>
 <a name="multi-line-output-modes" class="anchor" href="#multi-line-output-modes"><span class="octicon octicon-link"></span></a>Multi line output modes</h1>
 
@@ -276,6 +283,46 @@ past the line_length limit and has 4 possible settings:</p>
     lib1, lib2, lib3, lib4,
     lib5, ...
 )
+</code></pre>
+
+<p>Alternatively, you can set force_single_line to True (-sl on the command line) and every import will appear on its
+own line</p>
+
+<pre><code>from third_party import lib1
+from third_party import lib2
+from third_party import lib3
+...
+</code></pre>
+
+<p>Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:</p>
+
+<ul>
+<li>  Number of spaces you would like. For example: 4 would cause standard 4 space indentation.</li>
+<li>  Tab</li>
+<li>  A verbatim string with quotes around it. For example: "    " is equivalent to 4</li>
+</ul><h1>
+<a name="auto-comment-import-sections" class="anchor" href="#auto-comment-import-sections"><span class="octicon octicon-link"></span></a>Auto-comment import sections</h1>
+
+<p>Some projects prefer to have import sections uniquely titled to aid in identifying the sections quickly
+when visually scanning. isort can automate this as well. To do this simply set the import_heading_{section_name}
+setting for each section you wish to have auto commented - to the desired comment.</p>
+
+<p>For Example:</p>
+
+<pre><code>import_heading_stdlib=Standard Library
+import_heading_firstparty=My Stuff
+</code></pre>
+
+<p>Would lead to output looking like the following:</p>
+
+<pre><code># Standard Library
+import os
+import sys
+
+import django.settings
+
+# My Stuff
+import myproject.test
 </code></pre>
 
 <h1>
@@ -384,6 +431,10 @@ characters and came to the realization camelCase is not pythonic.</p>
 have alphabetically sorted imports. The code base was huge - and he meant for us to do it by hand. However, being a
 programmer - I'm too lazy to spend 8 hours mindlessly performing a function, but not too lazy to spend 16
 hours automating it. I was given permission to open source sortImports and here we are :)</p>
+
+<hr><p>Thanks and I hope you find isort useful!</p>
+
+<p>~Timothy Crosley</p>
         </article>
       </div>
     </div>
