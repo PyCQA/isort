@@ -174,6 +174,12 @@ project. isort will look up to 20 directories up, from the one it is ran, to fin
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
 
+Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
+http://editorconfig.org/
+
+You can also place any standard isort configuration parameters within an editorconfig file under the *.py section
+and they will be honored.
+
 Multi line output modes
 ======================
 
@@ -234,6 +240,29 @@ Note: to change the how constant indents appear - simply change the indent prope
 *   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
 *   Tab
 *   A verbatim string with quotes around it. For example: "    " is equivalent to 4
+
+Auto-comment import sections
+======================
+
+Some projects prefer to have import sections uniquely titled to aid in identifying the sections quickly
+when visually scanning. isort can automate this as well. To do this simply set the import_heading_{section_name}
+setting for each section you wish to have auto commented - to the desired comment.
+
+For Example:
+
+    import_heading_stdlib=Standard Library
+    import_heading_firstparty=My Stuff
+
+Would lead to output looking like the following:
+
+    # Standard Library
+    import os
+    import sys
+
+    import django.settings
+
+    # My Stuff
+    import myproject.test
 
 Ordering by import length
 ======================

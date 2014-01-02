@@ -1,5 +1,4 @@
-"""
-    isort.py
+""" isort.py
 
     Exposes a simple library to sort through imports within Python code
 
@@ -23,6 +22,7 @@
     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
+
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -65,6 +65,9 @@ class SortImports(object):
                 indent = "\t"
         self.config['indent'] = indent
 
+        self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
+        self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
+
         file_name = file_path
         self.file_path = file_path or ""
         if file_path:
@@ -85,7 +88,7 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        for add_import in self.config['add_imports']:
+        for add_import in self.add_imports:
             self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
@@ -126,9 +129,10 @@ class SortImports(object):
                 output_file.write(self.output)
 
     def place_module(self, moduleName):
-        """Tries to determine if a module is a python std import,
-           third party import, or project code:
-           if it can't determine - it assumes it is project code
+        """ Tries to determine if a module is a python std import,
+            third party import, or project code:
+            if it can't determine - it assumes it is project code
+
         """
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
@@ -168,8 +172,8 @@ class SortImports(object):
         return SECTION_NAMES.index(self.config['default_section'])
 
     def _get_line(self):
-        """ Returns the current line from the file while
-            incrementing the index
+        """ Returns the current line from the file while incrementing the index
+
         """
         line = self.in_lines[self.index]
         self.index += 1
@@ -179,6 +183,7 @@ class SortImports(object):
     def _import_type(line):
         """ If the current line is an import line it will
             return its type (from or straight)
+
         """
         if "isort:skip" in line:
             return
@@ -201,38 +206,40 @@ class SortImports(object):
         """ Adds the imports back to the file
             (at the index of the first import)
             sorted alphabetically and split between groups
+
         """
         output = []
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            section_output = []
 
             for module in straight_modules:
-                if module in self.config['remove_imports']:
+                if module in self.remove_imports:
                     continue
 
                 if module in self.as_map:
-                    output.append("import {0} as {1}".format(module, self.as_map[module]))
+                    section_output.append("import {0} as {1}".format(module, self.as_map[module]))
                 else:
-                    output.append("import {0}".format(module))
+                    section_output.append("import {0}".format(module))
 
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
             for module in from_modules:
-                if module in self.config['remove_imports']:
+                if module in self.remove_imports:
                     continue
 
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
                 from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
-                if self.config['remove_imports']:
+                if self.remove_imports:
                     from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
-                                    self.config['remove_imports']]
+                                    self.remove_imports]
 
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
-                        output.append(import_start + "{0} as {1}".format(from_import, import_as))
+                        section_output.append(import_start + "{0} as {1}".format(from_import, import_as))
                         from_imports.remove(from_import)
 
                 if from_imports:
@@ -250,10 +257,16 @@ class SortImports(object):
                             import_statement = formatter(import_start, from_imports, " " * (len(import_start) + 1),
                                                          self.config['indent'], self.config['line_length'])
 
-                    output.append(import_statement)
+                    section_output.append(import_statement)
 
-            if straight_modules or from_modules:
-                output.append("")
+            if section_output:
+                section_name = section
+                if section in SECTIONS:
+                    section_name = SECTION_NAMES[section]
+                section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
+                if section_title:
+                    section_output.insert(0, "# " + section_title)
+                output += section_output + ['']
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()
@@ -323,8 +336,8 @@ class SortImports(object):
 
     @staticmethod
     def _strip_comments(line):
-        """
-            Removes comments from import line.
+        """ Removes comments from import line
+
         """
         comment_start = line.find("#")
         if comment_start != -1:
@@ -333,9 +346,32 @@ class SortImports(object):
 
         return line
 
+    @staticmethod
+    def _format_simplified(import_line):
+        import_line = import_line.strip()
+        if import_line.startswith("from "):
+            import_line = import_line.replace("from ", "")
+            import_line = import_line.replace(" import ", ".")
+        elif import_line.startswith("import "):
+            import_line = import_line.replace("import ", "")
+
+        return import_line
+
+    @staticmethod
+    def _format_natural(import_line):
+        import_line = import_line.strip()
+        if not import_line.startswith("from ") and not import_line.startswith("import "):
+            if not "." in import_line:
+                return "import {0}".format(import_line)
+            parts = import_line.split(".")
+            end = parts.pop(-1)
+            return "from {0} import {1}".format(".".join(parts), end)
+
+        return import_line
+
     def _parse(self):
-        """
-            Parses a python file taking out and categorizing imports
+        """ Parses a python file taking out and categorizing imports
+
         """
         in_quote = False
         while not self._at_end():
@@ -402,3 +438,4 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
+

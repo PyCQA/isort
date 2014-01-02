@@ -1,5 +1,4 @@
-"""
-    isort/settings.py
+""" isort/settings.py
 
     Defines how the default settings for isort should be loaded
 
@@ -21,7 +20,9 @@
     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
+
 """
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
@@ -29,7 +30,7 @@ from collections import namedtuple
 
 from pies.overrides import *
 
-MAX_CONFIG_SEARCH_DEPTH = 20 # The number '..' directories isort will look for config file within
+MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
@@ -56,7 +57,7 @@ default = {'force_to_top': [],
                                       "sysconfig", "tabnanny", "tarfile", "tempfile", "textwrap", "threading", "time",
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
-                                      "xmlrpclib", "zipfile", "zipimport", "zlib"],
+                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -66,12 +67,67 @@ default = {'force_to_top': [],
            'add_imports': [],
            'remove_imports': [],
            'force_single_line': False,
-           'default_section': 'FIRSTPARTY'}
+           'default_section': 'FIRSTPARTY',
+           'import_heading_future': '',
+           'import_heading_stdlib': '',
+           'import_heading_thirdparty': '',
+           'import_heading_firstparty': '',
+           'import_heading_localfolder': ''}
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+editor_config_file = os.path.expanduser('~/.editorconfig')
+tries = 0
+current_directory = os.getcwd()
+while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+    potential_path = os.path.join(current_directory, ".editorconfig")
+    if os.path.exists(potential_path):
+        editor_config_file = potential_path
+        break
+
+    current_directory = os.path.split(current_directory)[0]
+    tries += 1
+
+if os.path.exists(editor_config_file):
+    with open(editor_config_file) as config_file:
+        line = "\n"
+        last_position = config_file.tell()
+        while line:
+            line = config_file.readline()
+            if "[" in line:
+                config_file.seek(last_position)
+                break
+            last_position = config_file.tell()
+                
+        config = configparser.SafeConfigParser()
+        config.readfp(config_file)
+        settings = {}
+        if config.has_section('*'):
+            settings.update(dict(config.items('*')))
+        if config.has_section('*.py'):
+            settings.update(dict(config.items('*.py')))
+        if config.has_section('**.py'):
+            settings.update(dict(config.items('**.py')))
+        indent_style = settings.pop('indent_style', "").strip()
+        indent_size = settings.pop('indent_size', "").strip()
+        if indent_style == "space":
+            default['indent'] = " " * (indent_size and int(indent_size) or 4)
+        elif indent_style == "tab":
+            default['indent'] = "\t" * (indent_size and int(indent_size) or 1)
+
+        max_line_length = settings.pop('max_line_length', "").strip()
+        if max_line_length:
+            default['line_length'] = int(max_line_length)
+
+        for key, value in settings.items():
+            existing_value_type = type(default.get(key, ''))
+            if existing_value_type in (list, tuple):
+                default[key.lower()] = value.split(",")
+            else:
+                default[key.lower()] = existing_value_type(value)
 
 isort_config_file = os.path.expanduser('~/.isort.cfg')
 tries = 0

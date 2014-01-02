@@ -20,11 +20,12 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 """
 
-from isort import SortImports
-
 import kate
+
+from isort import SortImports
 
 try:
     from PySide import QtGui
@@ -33,8 +34,9 @@ except ImportError:
 
 
 def sort_kate_imports(add_imports=(), remove_imports=()):
-    """
-        Sorts imports within Kate while maintaining cursor position, and selection, even if length of file changes.
+    """ Sorts imports within Kate while maintaining cursor position
+        and selection, even if length of file changes
+
     """
     document = kate.activeDocument()
     view = document.activeView()
@@ -62,7 +64,7 @@ def sort_imports():
 def add_imports():
     text, ok = QtGui.QInputDialog.getText(None,
                                           'Add Import',
-                                          'Enter an import line to add (example: from os import path):')
+                                          'Enter an import line to add (example: from os import path or os.path):')
     if ok:
         sort_kate_imports(add_imports=text.split(";"))
 
@@ -71,6 +73,6 @@ def add_imports():
 def remove_imports():
     text, ok = QtGui.QInputDialog.getText(None,
                                           'Remove Import',
-                                          'Enter an import line to remove (example: os.path):')
+                                          'Enter an import line to remove (example: os.path or from os import path):')
     if ok:
         sort_kate_imports(remove_imports=text.split(";"))

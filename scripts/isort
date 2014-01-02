@@ -1,6 +1,6 @@
 #! /usr/bin/env python
-'''
-    Tool for sorting imports alphabetically, and automatically separated into sections.
+'''  Tool for sorting imports alphabetically, and automatically separated into sections.
+
 '''
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -56,8 +56,11 @@ if file_names == ['-']:
 else:
     wrong_sorted_files = False
     for file_name in file_names:
-        incorrectly_sorted = SortImports(file_name, **arguments).incorrectly_sorted
-        if arguments.get('check', False) and incorrectly_sorted:
-            wrong_sorted_files = True
+        try:
+            incorrectly_sorted = SortImports(file_name, **arguments).incorrectly_sorted
+            if arguments.get('check', False) and incorrectly_sorted:
+                wrong_sorted_files = True
+        except IOError as e:
+            print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
     if wrong_sorted_files:
         exit(1)
