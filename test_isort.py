@@ -599,3 +599,14 @@ def test_titled_imports():
                            "\n"
                            "# My Stuff\n"
                            "import myproject.test\n")
+
+
+def test_balanced_wrapping():
+    """ Tests balanced wrapping mode, where the length of individual lines maintain width
+
+    """
+    test_input = ("from __future__ import (absolute_import, division, print_function,\n"
+                  "                        unicode_literals)")
+    test_output = SortImports(file_contents=test_input, line_length=70, balanced_wrapping=True).output
+    assert test_output == ("from __future__ import (absolute_import, division,\n"
+                           "                        print_function, unicode_literals)\n")
