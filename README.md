@@ -241,6 +241,20 @@ Note: to change the how constant indents appear - simply change the indent prope
 *   Tab
 *   A verbatim string with quotes around it. For example: "    " is equivalent to 4
 
+Finally, as of isort 3.1.0 support for balanced multi-line imports has been added.
+With this enabled isort will dynamically change the import length to the one that produces the most balanced grid,
+while staying below the maximum import length defined.
+
+Example:
+    from __future__ import (absolute_import, division,
+                            print_function, unicode_literals)
+Will be produced instead of:
+    from __future__ import (absolute_import, division, print_function,
+                            unicode_literals)
+
+To enable this set 'balanced_wrapping' to True in your config or pass the -e option into the command line utility.
+
+
 Auto-comment import sections
 ======================
 
