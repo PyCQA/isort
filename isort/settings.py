@@ -72,7 +72,8 @@ default = {'force_to_top': [],
            'import_heading_stdlib': '',
            'import_heading_thirdparty': '',
            'import_heading_firstparty': '',
-           'import_heading_localfolder': ''}
+           'import_heading_localfolder': '',
+           'balanced_wrapping': False}
 
 try:
     import configparser
@@ -101,7 +102,7 @@ if os.path.exists(editor_config_file):
                 config_file.seek(last_position)
                 break
             last_position = config_file.tell()
-                
+
         config = configparser.SafeConfigParser()
         config.readfp(config_file)
         settings = {}
