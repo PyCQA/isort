@@ -246,9 +246,12 @@ With this enabled isort will dynamically change the import length to the one tha
 while staying below the maximum import length defined.
 
 Example:
+
     from __future__ import (absolute_import, division,
                             print_function, unicode_literals)
+
 Will be produced instead of:
+
     from __future__ import (absolute_import, division, print_function,
                             unicode_literals)
 
