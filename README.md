@@ -252,7 +252,7 @@ Will be produced instead of:
     from __future__ import (absolute_import, division, print_function,
                             unicode_literals)
 
-To enable this set 'balanced_wrapping' to True in your config or pass the -b option into the command line utility.
+To enable this set 'balanced_wrapping' to True in your config or pass the -e option into the command line utility.
 
 
 Auto-comment import sections
