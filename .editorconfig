@@ -7,3 +7,4 @@ indent_size = 4
 known_first_party = isort
 known_third_party = kate
 skip =
+balanced_wrapping = true

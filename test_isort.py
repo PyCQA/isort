@@ -282,7 +282,7 @@ def test_custom_indent():
 
     """
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
-                              line_length=40, indent="   ").output
+                              line_length=40, indent="   ", balanced_wrapping=False).output
     assert test_output == ("from third_party import lib1, lib2, \\\n"
                            "   lib3, lib4, lib5, lib6, lib7, lib8, \\\n"
                            "   lib9, lib10, lib11, lib12, lib13, \\\n"
@@ -290,7 +290,7 @@ def test_custom_indent():
                            "   lib20, lib21, lib22\n")
 
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
-                              line_length=40, indent="'  '").output
+                              line_length=40, indent="'  '", balanced_wrapping=False).output
     assert test_output == ("from third_party import lib1, lib2, \\\n"
                            "  lib3, lib4, lib5, lib6, lib7, lib8, \\\n"
                            "  lib9, lib10, lib11, lib12, lib13, \\\n"
@@ -298,7 +298,7 @@ def test_custom_indent():
                            "  lib20, lib21, lib22\n")
 
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
-                              line_length=40, indent="tab").output
+                              line_length=40, indent="tab", balanced_wrapping=False).output
     assert test_output == ("from third_party import lib1, lib2, \\\n"
                            "\tlib3, lib4, lib5, lib6, lib7, lib8, \\\n"
                            "\tlib9, lib10, lib11, lib12, lib13, \\\n"
@@ -306,7 +306,7 @@ def test_custom_indent():
                            "\tlib20, lib21, lib22\n")
 
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
-                              line_length=40, indent=2).output
+                              line_length=40, indent=2, balanced_wrapping=False).output
     assert test_output == ("from third_party import lib1, lib2, \\\n"
                            "  lib3, lib4, lib5, lib6, lib7, lib8, \\\n"
                            "  lib9, lib10, lib11, lib12, lib13, \\\n"
@@ -599,3 +599,17 @@ def test_titled_imports():
                            "\n"
                            "# My Stuff\n"
                            "import myproject.test\n")
+    test_second_run = SortImports(file_contents=test_output, known_third_party=['django'],
+                                  import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
+    assert test_second_run == test_output
+
+
+def test_balanced_wrapping():
+    """ Tests balanced wrapping mode, where the length of individual lines maintain width
+
+    """
+    test_input = ("from __future__ import (absolute_import, division, print_function,\n"
+                  "                        unicode_literals)")
+    test_output = SortImports(file_contents=test_input, line_length=70, balanced_wrapping=True).output
+    assert test_output == ("from __future__ import (absolute_import, division,\n"
+                           "                        print_function, unicode_literals)\n")
