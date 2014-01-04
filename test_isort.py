@@ -599,3 +599,6 @@ def test_titled_imports():
                            "\n"
                            "# My Stuff\n"
                            "import myproject.test\n")
+    test_second_run = SortImports(file_contents=test_output, known_third_party=['django'],
+                                  import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
+    assert test_second_run == test_output
