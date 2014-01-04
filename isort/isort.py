@@ -256,8 +256,22 @@ class SortImports(object):
                         if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
                             output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
                             formatter = getattr(self, "_output_" + output_mode, self._output_grid)
-                            import_statement = formatter(import_start, from_imports, " " * (len(import_start) + 1),
-                                                         self.config['indent'], self.config['line_length'])
+                            dynamic_indent = " " * (len(import_start) + 1)
+                            indent = self.config['indent']
+                            line_length = self.config['line_length']
+                            import_statement = formatter(import_start, copy.copy(from_imports),
+                                                         dynamic_indent, indent, line_length)
+                            if self.config['balanced_wrapping']:
+                                lines = import_statement.split("\n")
+                                line_count = len(lines)
+                                minimum_length = min([len(line) for line in lines[:-1]])
+                                new_import_statement = import_statement
+                                while len(lines[-1]) < minimum_length and len(lines) == line_count and line_length > 10:
+                                    import_statement = new_import_statement
+                                    line_length -= 1
+                                    new_import_statement = formatter(import_start, copy.copy(from_imports),
+                                                                     dynamic_indent, indent, line_length)
+                                    lines = new_import_statement.split("\n")
 
                     section_output.append(import_statement)
 
@@ -445,4 +459,3 @@ class SortImports(object):
             else:
                 for module in imports:
                     self.imports[self.place_module(module)][import_type].add(module)
-
