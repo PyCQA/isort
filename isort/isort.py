@@ -67,6 +67,8 @@ class SortImports(object):
 
         self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
         self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
+        self._section_comments = ["# " + value for key, value in self.config.iteritems() if
+                                  key.startswith('import_heading') and value]
 
         file_name = file_path
         self.file_path = file_path or ""
@@ -395,6 +397,11 @@ class SortImports(object):
                     elif line[index] == "#":
                         break
                     index += 1
+
+            if line in self._section_comments and not skip_line:
+                if self.import_index == -1:
+                    self.import_index = self.index - 1
+                continue
 
             import_type = self._import_type(line)
             if not import_type or skip_line:
