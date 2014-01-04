@@ -67,7 +67,7 @@ class SortImports(object):
 
         self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
         self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
-        self._section_comments = ["# " + value for key, value in self.config.iteritems() if
+        self._section_comments = ["# " + value for key, value in itemsview(self.config) if
                                   key.startswith('import_heading') and value]
 
         file_name = file_path
