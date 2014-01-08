@@ -377,6 +377,19 @@ def test_add_imports():
                            "import lib7\n"
                            "from lib8 import a\n")
 
+    # On a file that has no pre-existing imports
+    test_input = ('"""Module docstring"""\n'
+                  '\n'
+                  'class MyClass(object):\n'
+                  '    pass\n')
+    test_output = SortImports(file_contents=test_input, add_imports=['from __future__ import print_function']).output
+    assert test_output == ('"""Module docstring"""\n'
+                           'from __future__ import print_function\n'
+                           '\n'
+                           '\n'
+                           'class MyClass(object):\n'
+                           '    pass\n')
+
 
 def test_remove_imports():
     """ Ensures removing imports works as expected
