@@ -390,6 +390,16 @@ def test_add_imports():
                            'class MyClass(object):\n'
                            '    pass\n')
 
+    # On a file that has no pre-existing imports, and no doc-string
+    test_input = ('class MyClass(object):\n'
+                  '    pass\n')
+    test_output = SortImports(file_contents=test_input, add_imports=['from __future__ import print_function']).output
+    assert test_output == ('from __future__ import print_function\n'
+                           '\n'
+                           '\n'
+                           'class MyClass(object):\n'
+                           '    pass\n')
+
 
 def test_remove_imports():
     """ Ensures removing imports works as expected
