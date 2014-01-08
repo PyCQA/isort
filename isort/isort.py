@@ -292,7 +292,7 @@ class SortImports(object):
         output_at = 0
         if self.import_index < self.original_length:
             output_at = self.import_index
-        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 4:
+        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
             output_at = self._first_comment_index_end
         self.out_lines[output_at:0] = output
 
