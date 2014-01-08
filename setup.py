@@ -42,13 +42,13 @@ except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
 setup(name='isort',
-      version='3.1.0',
+      version='3.1.1',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/3.1.0.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/3.1.1.tar.gz',
       license="MIT",
       scripts=['scripts/isort'],
       packages=['isort'],
