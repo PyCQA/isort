@@ -102,6 +102,8 @@ class SortImports(object):
 
         self.index = 0
         self.import_index = -1
+        self._first_comment_index_start = -1
+        self._first_comment_index_end = -1
         self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
@@ -287,9 +289,14 @@ class SortImports(object):
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()
 
-        self.out_lines[self.import_index:0] = output
+        output_at = 0
+        if self.import_index < self.original_length:
+            output_at = self.import_index
+        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 4:
+            output_at = self._first_comment_index_end
+        self.out_lines[output_at:0] = output
 
-        imports_tail = self.import_index + len(output)
+        imports_tail = output_at + len(output)
         while [character.strip() for character in self.out_lines[imports_tail: imports_tail + 1]] == [""]:
             self.out_lines.pop(imports_tail)
 
@@ -395,12 +402,16 @@ class SortImports(object):
             skip_line = in_quote
             if '"' in line or "'" in line:
                 index = 0
+                if self._first_comment_index_start == -1:
+                    self._first_comment_index_start = self.index
                 while index < len(line):
                     if line[index] == "\\":
                         index += 1
                     elif in_quote:
                         if line[index:index + len(in_quote)] == in_quote:
                             in_quote = False
+                            if self._first_comment_index_end == -1:
+                                self._first_comment_index_end = self.index
                     elif line[index] in ("'", '"'):
                         long_quote = line[index:index + 3]
                         if long_quote in ('"""', "'''"):
