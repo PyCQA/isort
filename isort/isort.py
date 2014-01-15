@@ -1,30 +1,29 @@
-""" isort.py
+"""isort.py.
 
-    Exposes a simple library to sort through imports within Python code
+Exposes a simple library to sort through imports within Python code
 
-    usage:
-        SortImports(file_name)
-    or:
-        sorted = SortImports(file_contents=file_contents).output
+usage:
+    SortImports(file_name)
+or:
+    sorted = SortImports(file_contents=file_contents).output
 
-    Copyright (C) 2013  Timothy Edmund Crosley
+Copyright (C) 2013  Timothy Edmund Crosley
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-    the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-    to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in all copies or
-    substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-    TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-    OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
 """
-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import codecs
@@ -133,9 +132,9 @@ class SortImports(object):
                 output_file.write(self.output)
 
     def place_module(self, moduleName):
-        """ Tries to determine if a module is a python std import,
-            third party import, or project code:
-            if it can't determine - it assumes it is project code
+        """ Tries to determine if a module is a python std import, third party import, or project code:
+
+        if it can't determine - it assumes it is project code
 
         """
         if moduleName.startswith("."):
@@ -176,19 +175,14 @@ class SortImports(object):
         return SECTION_NAMES.index(self.config['default_section'])
 
     def _get_line(self):
-        """ Returns the current line from the file while incrementing the index
-
-        """
+        """Returns the current line from the file while incrementing the index."""
         line = self.in_lines[self.index]
         self.index += 1
         return line
 
     @staticmethod
     def _import_type(line):
-        """ If the current line is an import line it will
-            return its type (from or straight)
-
-        """
+        """If the current line is an import line it will return its type (from or straight)"""
         if "isort:skip" in line:
             return
         elif line.startswith('import '):
@@ -197,7 +191,7 @@ class SortImports(object):
             return "from"
 
     def _at_end(self):
-        """ returns True if we are at the end of the file """
+        """returns True if we are at the end of the file."""
         return self.index == self.number_of_lines
 
     @staticmethod
@@ -207,9 +201,9 @@ class SortImports(object):
                                config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_formatted_imports(self):
-        """ Adds the imports back to the file
-            (at the index of the first import)
-            sorted alphabetically and split between groups
+        """Adds the imports back to the file.
+
+        (at the index of the first import) sorted alphabetically and split between groups
 
         """
         output = []
@@ -359,9 +353,7 @@ class SortImports(object):
 
     @staticmethod
     def _strip_comments(line):
-        """ Removes comments from import line
-
-        """
+        """Removes comments from import line."""
         comment_start = line.find("#")
         if comment_start != -1:
             print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:], file=stderr)
@@ -393,9 +385,7 @@ class SortImports(object):
         return import_line
 
     def _parse(self):
-        """ Parses a python file taking out and categorizing imports
-
-        """
+        """Parses a python file taking out and categorizing imports."""
         in_quote = False
         while not self._at_end():
             line = self._get_line()
