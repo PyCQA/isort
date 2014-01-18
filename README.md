@@ -177,7 +177,7 @@ SortImports class.
 Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
 http://editorconfig.org/
 
-You can also place any standard isort configuration parameters within a .editorconfig file under the *.py section
+Meaning you place any standard isort configuration parameters within a .editorconfig file under the *.py section
 and they will be honored.
 
 Multi line output modes
