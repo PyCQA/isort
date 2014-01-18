@@ -169,7 +169,7 @@ To configure isort for a single user create a ~/.isort.cfg file:
     default_section=FIRSTPARTY
 
 Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
-project. isort will look up to 20 directories up, from the one it is ran, to find a project specific configuration.
+project. isort will look up to 25 directories up, from the one it is ran, to find a project specific configuration.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
@@ -177,7 +177,7 @@ SortImports class.
 Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
 http://editorconfig.org/
 
-You can also place any standard isort configuration parameters within an editorconfig file under the *.py section
+You can also place any standard isort configuration parameters within a .editorconfig file under the *.py section
 and they will be honored.
 
 Multi line output modes
