@@ -10,6 +10,7 @@ isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library, Vim plugin, Sublime plugin, and Kate plugin to quickly sort all your imports.
+It currently cleanly supports Python 2.6 - 3.4 using pies (https://github.com/timothycrosley/pies) to achieve this without ugly hacks and/or py2to3.
 
 Before isort:
 
