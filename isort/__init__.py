@@ -25,4 +25,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from . import settings
 from .isort import SECTION_NAMES, SECTIONS, SortImports
 
-__version__ = "3.1.1"
+__version__ = "3.1.2"
