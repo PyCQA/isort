@@ -1,28 +1,27 @@
 """ Sorts Python import definitions, and groups them based on type (stdlib, third-party, local).
 
-    isort/isort_kate_plugin.py
+isort/isort_kate_plugin.py
 
-    Provides a simple kate plugin that enables the use of isort to sort Python imports
-    in the currently open kate file.
+Provides a simple kate plugin that enables the use of isort to sort Python imports
+in the currently open kate file.
 
-    Copyright (C) 2013  Timothy Edmund Crosley
+Copyright (C) 2013  Timothy Edmund Crosley
 
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-
 import kate
 
 from isort import SortImports
@@ -34,10 +33,7 @@ except ImportError:
 
 
 def sort_kate_imports(add_imports=(), remove_imports=()):
-    """ Sorts imports within Kate while maintaining cursor position
-        and selection, even if length of file changes
-
-    """
+    """Sorts imports within Kate while maintaining cursor position and selection, even if length of file changes."""
     document = kate.activeDocument()
     view = document.activeView()
     position = view.cursorPosition()
