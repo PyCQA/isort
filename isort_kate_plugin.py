@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 import os
 
 import kate
+
 from isort import SortImports
 
 try:
