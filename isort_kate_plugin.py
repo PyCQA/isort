@@ -22,8 +22,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-import kate
+import os
 
+import kate
 from isort import SortImports
 
 try:
@@ -38,7 +39,8 @@ def sort_kate_imports(add_imports=(), remove_imports=()):
     view = document.activeView()
     position = view.cursorPosition()
     selection = view.selectionRange()
-    sorter = SortImports(file_contents=document.text(), add_imports=add_imports, remove_imports=remove_imports)
+    sorter = SortImports(file_contents=document.text(), add_imports=add_imports, remove_imports=remove_imports,
+                         settings_path=os.path.dirname(os.path.abspath(str(document.url().path()))))
     document.setText(sorter.output)
     position.setLine(position.line() + sorter.length_change)
     if selection:

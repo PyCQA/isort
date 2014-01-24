@@ -30,7 +30,6 @@ import codecs
 import copy
 import itertools
 import os
-import os.path
 from collections import namedtuple
 from difflib import unified_diff
 from sys import path as PYTHONPATH
@@ -46,14 +45,13 @@ SECTIONS = namedtuple('Sections', SECTION_NAMES)(*range(len(SECTION_NAMES)))
 
 
 class SortImports(object):
-    config = settings.default
     incorrectly_sorted = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, **setting_overrides):
-        if setting_overrides:
-            self.config = settings.default.copy()
-            self.config.update(setting_overrides)
+                 show_diff=False, settings_path=None, **setting_overrides):
+        self.config = settings.from_path(settings_path or
+                                         os.path.dirname(os.path.abspath(file_path or os.getcwd()))).copy()
+        self.config.update(setting_overrides)
 
         indent = str(self.config['indent'])
         if indent.isdigit():
