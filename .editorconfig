@@ -6,5 +6,6 @@ indent_style = space
 indent_size = 4
 known_first_party = isort
 known_third_party = kate
-skip =
+ignore_frosted_errors = E103
+skip = __init__.py,runtests.py
 balanced_wrapping = true
