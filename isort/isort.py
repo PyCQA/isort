@@ -50,7 +50,7 @@ class SortImports(object):
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
                  show_diff=False, settings_path=None, **setting_overrides):
-        self.config = settings.from_path(settings_path or os.path.dirname(os.path.abspath(file_path)))
+        self.config = settings.from_path(settings_path or os.path.dirname(os.path.abspath(file_path or os.getcwd())))
         if setting_overrides:
             self.config = settings.default.copy()
             self.config.update(setting_overrides)
