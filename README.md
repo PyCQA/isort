@@ -66,7 +66,7 @@ or if you prefer
 Using isort
 ===================
 
-from the command line:
+**from the command line**:
 
     isort mypythonfile.py mypythonfile2.py
 
@@ -82,7 +82,7 @@ or to see the proposed changes without applying them
 
     isort mypythonfile.py --diff
 
-from within Python:
+**from within Python**:
 
     from isort import SortImports
 
@@ -94,7 +94,7 @@ or
 
     new_contents = SortImports(file_contents=old_contents).output
 
-from within Kate:
+**from within Kate**:
 
     ctrl+[
 
