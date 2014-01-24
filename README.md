@@ -4,6 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/isort.png)](http://badge.fury.io/py/isort)
 [![PyPi downloads](https://pypip.in/d/isort/badge.png)](https://crate.io/packages/isort/)
 [![Build Status](https://travis-ci.org/timothycrosley/isort.png?branch=master)](https://travis-ci.org/timothycrosley/isort)
+[![License](https://pypip.in/license/isort/badge.png)](https://pypi.python.org/pypi/isort/)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/timothycrosley/isort/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 isort your python imports for you so you don't have to.
@@ -65,15 +66,23 @@ or if you prefer
 Using isort
 ===================
 
-from the command line:
+**from the command line**:
 
     isort mypythonfile.py mypythonfile2.py
+
+or recursively:
+
+    isort -rc .
+
+ *which is equivalent to*
+
+    isort **/*.py
 
 or to see the proposed changes without applying them
 
     isort mypythonfile.py --diff
 
-from within Python:
+**from within Python**:
 
     from isort import SortImports
 
@@ -85,7 +94,7 @@ or
 
     new_contents = SortImports(file_contents=old_contents).output
 
-from within Kate:
+**from within Kate**:
 
     ctrl+[
 
