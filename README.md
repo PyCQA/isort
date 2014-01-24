@@ -70,6 +70,14 @@ from the command line:
 
     isort mypythonfile.py mypythonfile2.py
 
+or recursively:
+
+    isort -rc .
+
+ *which is equivalent to*
+
+    isort **/*.py
+
 or to see the proposed changes without applying them
 
     isort mypythonfile.py --diff
