@@ -50,7 +50,11 @@ setup(name='isort',
       url='https://github.com/timothycrosley/isort',
       download_url='https://github.com/timothycrosley/isort/archive/3.1.2.tar.gz',
       license="MIT",
-      scripts=['scripts/isort'],
+      entry_points={
+        'console_scripts': [
+            'isort = isort.main:main',
+        ]
+      },
       packages=['isort'],
       requires=['pies', 'natsort'],
       install_requires=['pies>=2.5.5', 'natsort>=3.0.0'],
