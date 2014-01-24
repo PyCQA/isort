@@ -21,6 +21,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
+import os
 import sys
 
 from pies.overrides import *
@@ -28,8 +29,21 @@ from pies.overrides import *
 from isort import __version__, SECTION_NAMES, SortImports
 
 
+def iter_source_code(paths):
+    """Iterate over all Python source files defined in paths."""
+    for path in paths:
+        if os.path.isdir(path):
+            for dirpath, dirnames, filenames in os.walk(path):
+                for filename in filenames:
+                    if filename.endswith('.py'):
+                        yield os.path.join(dirpath, filename)
+        else:
+            yield path
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically within logical sections.')
+    parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
+                                                 'within logical sections.')
     parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
     parser.add_argument('-l', '--lines', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
@@ -48,7 +62,8 @@ def main():
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
-                        help='Adds the specified import line to all files, automatically determining correct placement.')
+                        help='Adds the specified import line to all files, '
+                             'automatically determining correct placement.')
     parser.add_argument('-r', '--remove_import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-ls', '--length_sort', help='Sort imports by their string length.',
@@ -56,16 +71,20 @@ def main():
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
-                        help='Checks the file for unsorted imports and prints them to the command line without modifying '
-                            'the file.')
+                        help='Checks the file for unsorted imports and prints them to the '
+                             'command line without modifying the file.')
     parser.add_argument('-sl', '--force_single_line_imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('-sd', '--section-default', dest='default_section',
-                        help='Sets the default section for imports (by default FIRSTPARTY) options: ' + str(SECTION_NAMES))
+                        help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
+                        str(SECTION_NAMES))
     parser.add_argument('-df', '--diff', dest='show_diff', default=False, action='store_true',
-                        help="Prints a diff of all the changes isort would make to a file, instead of changing it in place")
+                        help="Prints a diff of all the changes isort would make to a file, instead of "
+                             "changing it in place")
     parser.add_argument('-e', '--balanced', dest='balanced_wrapping', action='store_true',
                         help='Balances wrapping to produce the most consistent line length possible')
+    parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
+                        help='Recursively look for Python files of which to sort imports')
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
@@ -75,6 +94,8 @@ def main():
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
         wrong_sorted_files = False
+        if arguments.get('recursive', False):
+            file_names = iter_source_code(file_names)
         for file_name in file_names:
             try:
                 incorrectly_sorted = SortImports(file_name, **arguments).incorrectly_sorted
