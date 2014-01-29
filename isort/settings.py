@@ -85,15 +85,15 @@ default = {'force_to_top': [],
 def from_path(path):
     computed_settings = default.copy()
     _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
-    _update_settings_with_config(path, 'setup.cfg', None, ('isort ', ), computed_settings)
+    _update_settings_with_config(path, 'setup.cfg', None, ('isort', ), computed_settings)
     _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', ), computed_settings)
     return computed_settings
 
 
 def _update_settings_with_config(path, name, default, sections, computed_settings):
-    editor_config_file = default
+    editor_config_file = default and os.path.expanduser(default)
     tries = 0
-    current_directory = path and os.path.expanduser(path)
+    current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
         potential_path = os.path.join(current_directory, native_str(name))
         if os.path.exists(potential_path):
