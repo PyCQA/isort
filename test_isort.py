@@ -515,7 +515,7 @@ def test_forced_separate():
                   'from django.contrib.admin.exceptions import DisallowedModelAdminLookup\n'
                   'from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n')
     assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
-                       known_third_party=['django']).output == test_input
+                       known_third_party=['django'], line_length=120).output == test_input
 
 
 def test_default_section():
