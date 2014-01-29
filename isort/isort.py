@@ -75,9 +75,7 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if "/" in file_name:
-                file_name = file_name[file_name.rfind('/') + 1:]
-            if file_name in self.config['skip']:
+            if self._should_skip(file_path):
                 print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path), file=stderr)
                 file_contents = None
             else:
@@ -133,8 +131,19 @@ class SortImports(object):
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
 
+    def _should_skip(self, filename):
+        """Returns True if the file should be skipped based on the loaded settings."""
+        if filename in self.config['skip']:
+            return True
+
+        position = os.path.split(filename)
+        while position[1]:
+            if position[1] in self.config['skip']:
+                return True
+            position = os.path.split(position[0])
+
     def place_module(self, moduleName):
-        """ Tries to determine if a module is a python std import, third party import, or project code:
+        """Tries to determine if a module is a python std import, third party import, or project code:
 
         if it can't determine - it assumes it is project code
 
