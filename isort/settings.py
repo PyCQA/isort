@@ -147,4 +147,3 @@ def _read_config_file(file_path, sections):
             else:
                 computed_settings[key.lower()] = existing_value_type(value)
     return computed_settings
-
