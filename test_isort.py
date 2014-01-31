@@ -602,3 +602,9 @@ def test_balanced_wrapping():
     test_output = SortImports(file_contents=test_input, line_length=70, balanced_wrapping=True).output
     assert test_output == ("from __future__ import (absolute_import, division,\n"
                            "                        print_function, unicode_literals)\n")
+
+
+def test_relative_import_with_space():
+    """Tests balanced wrapping mode, where the length of individual lines maintain width."""
+    test_input = ("from ... fields.sproqet import SproqetCollection")
+    assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
