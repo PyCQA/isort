@@ -616,3 +616,14 @@ def test_multiline_import():
                   "    import stuff, other_suff \\"
                   "               more_stuff")
     assert SortImports(file_contents=test_input).output == ("from pkg import more_stuff, other_suff, stuff\n")
+
+    # test again with a custom configuration
+    custom_configuration = {'force_single_line': True,
+                            'line_length': 120,
+                            'known_first_party': ['asdf', 'qwer'],
+                            'default_section': 'THIRDPARTY',
+                            'forced_separate': 'asdf'}
+    expected_output = ("from pkg import more_stuff\n"
+                       "from pkg import other_suff\n"
+                       "from pkg import stuff\n")
+    assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
