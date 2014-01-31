@@ -605,6 +605,6 @@ def test_balanced_wrapping():
 
 
 def test_relative_import_with_space():
-    """Tests balanced wrapping mode, where the length of individual lines maintain width."""
+    """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
