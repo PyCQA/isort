@@ -380,6 +380,12 @@ Any files that contain incorrectly sorted imports will be outputted to stderr.
 
     SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
     ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
+    
+One great place this can be used is with a pre-commit git hook, such as this one by @acdha:
+
+https://gist.github.com/acdha/8717683
+
+Which can help to ensure a certain level of code quality throughout a project.
 
 Why isort?
 ======================
