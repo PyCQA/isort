@@ -608,3 +608,11 @@ def test_relative_import_with_space():
     """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
+
+
+def test_multiline_import():
+    """Test the case where import spawns multiple lines with inconsistent indentation."""
+    test_input = ("from pkg \\"
+                  "    import stuff, other_suff \\"
+                  "               more_stuff")
+    assert SortImports(file_contents=test_input).output == ("from pkg import more_stuff, other_suff, stuff\n")
