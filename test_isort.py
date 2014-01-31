@@ -604,7 +604,6 @@ def test_balanced_wrapping():
                            "                        print_function, unicode_literals)\n")
 
 
-
 def test_relative_import_with_space():
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
