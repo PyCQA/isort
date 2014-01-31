@@ -447,6 +447,11 @@ class SortImports(object):
                     line = self._strip_comments(self._get_line())
                     import_string += "\n" + line
 
+            if import_type == "from":
+                parts = import_string.split(" import ")
+                from_import = parts[0].split(" ")
+                import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
+
             import_string = import_string.replace("_import", "[[i]]")
             for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
                 import_string = import_string.replace(remove_syntax, " ")
