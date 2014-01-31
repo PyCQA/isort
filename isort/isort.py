@@ -198,7 +198,7 @@ class SortImports(object):
             return
         elif line.startswith('import '):
             return "straight"
-        elif line.startswith('from ') and "import" in line:
+        elif line.startswith('from '):
             return "from"
 
     def _at_end(self):
