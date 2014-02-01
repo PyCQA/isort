@@ -627,3 +627,15 @@ def test_multiline_import():
                        "from pkg import other_suff\n"
                        "from pkg import stuff\n")
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
+
+
+def test_automic_mode():
+    # without syntax error, everything works OK
+    test_input = ("from b import d, c\n"
+                  "from a import f, e\n")
+    assert SortImports(file_contents=test_input, automic=True).output == ("from a import e, f\n"
+                                                                          "from b import c, d\n")
+
+    # with syntax error content is not changed
+    test_input += "from = 'yo' # blatant syntax error"
+    assert SortImports(file_contents=test_input, automic=True).output == test_input
