@@ -633,9 +633,9 @@ def test_automic_mode():
     # without syntax error, everything works OK
     test_input = ("from b import d, c\n"
                   "from a import f, e\n")
-    assert SortImports(file_contents=test_input, automic=True).output == ("from a import e, f\n"
+    assert SortImports(file_contents=test_input, atomic=True).output == ("from a import e, f\n"
                                                                           "from b import c, d\n")
 
     # with syntax error content is not changed
     test_input += "from = 'yo' # blatant syntax error"
-    assert SortImports(file_contents=test_input, automic=True).output == test_input
+    assert SortImports(file_contents=test_input, atomic=True).output == test_input
