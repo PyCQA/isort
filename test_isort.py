@@ -605,6 +605,37 @@ def test_balanced_wrapping():
 
 
 def test_relative_import_with_space():
-    """Tests balanced wrapping mode, where the length of individual lines maintain width."""
+    """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
+
+
+def test_multiline_import():
+    """Test the case where import spawns multiple lines with inconsistent indentation."""
+    test_input = ("from pkg \\\n"
+                  "    import stuff, other_suff \\\n"
+                  "               more_stuff")
+    assert SortImports(file_contents=test_input).output == ("from pkg import more_stuff, other_suff, stuff\n")
+
+    # test again with a custom configuration
+    custom_configuration = {'force_single_line': True,
+                            'line_length': 120,
+                            'known_first_party': ['asdf', 'qwer'],
+                            'default_section': 'THIRDPARTY',
+                            'forced_separate': 'asdf'}
+    expected_output = ("from pkg import more_stuff\n"
+                       "from pkg import other_suff\n"
+                       "from pkg import stuff\n")
+    assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
+
+
+def test_automic_mode():
+    # without syntax error, everything works OK
+    test_input = ("from b import d, c\n"
+                  "from a import f, e\n")
+    assert SortImports(file_contents=test_input, atomic=True).output == ("from a import e, f\n"
+                                                                          "from b import c, d\n")
+
+    # with syntax error content is not changed
+    test_input += "from = 'yo' # blatant syntax error"
+    assert SortImports(file_contents=test_input, atomic=True).output == test_input
