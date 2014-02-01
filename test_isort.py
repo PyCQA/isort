@@ -629,7 +629,7 @@ def test_multiline_import():
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
 
 
-def test_automic_mode():
+def test_atomic_mode():
     # without syntax error, everything works OK
     test_input = ("from b import d, c\n"
                   "from a import f, e\n")
@@ -637,5 +637,5 @@ def test_automic_mode():
                                                                           "from b import c, d\n")
 
     # with syntax error content is not changed
-    test_input += "from = 'yo' # blatant syntax error"
+    test_input += "while True print 'Hello world'" # blatant syntax error
     assert SortImports(file_contents=test_input, atomic=True).output == test_input
