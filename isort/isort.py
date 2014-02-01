@@ -113,6 +113,20 @@ class SortImports(object):
         self.out_lines.append("")
 
         self.output = "\n".join(self.out_lines)
+        if self.config.get('atomic', False):
+            try:
+                compile(self.output, self.file_path, 'exec', 0, 1)
+            except SyntaxError:
+                self.output = file_contents
+                self.incorrectly_sorted = True
+                try:
+                    compile(file_contents, self.file_path, 'exec', 0, 1)
+                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
+                          format(self.file_path), file=stderr)
+                except SyntaxError:
+                    print("ERROR: {0} File contains syntax errors.".format(self.file_path), file=stderr)
+
+                return
         if check:
             if self.output == file_contents:
                 print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
