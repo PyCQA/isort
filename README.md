@@ -82,6 +82,12 @@ or to see the proposed changes without applying them
 
     isort mypythonfile.py --diff
 
+finally, to atomically run isort against a project, only applying changes if they don't introduce syntax errors do:
+
+    isort -rc --atomic .
+
+(Note: this is disabled by default as it keeps isort from being able to run against code written using a different version of Python)
+
 **from within Python**:
 
     from isort import SortImports
@@ -380,7 +386,7 @@ Any files that contain incorrectly sorted imports will be outputted to stderr.
 
     SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
     ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
-    
+
 One great place this can be used is with a pre-commit git hook, such as this one by @acdha:
 
 https://gist.github.com/acdha/8717683
