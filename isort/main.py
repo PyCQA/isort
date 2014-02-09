@@ -85,6 +85,8 @@ def main():
                         help='Balances wrapping to produce the most consistent line length possible')
     parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
                         help='Recursively look for Python files of which to sort imports')
+    parser.add_argument('-ot', '--order-by-type', dest='order_by_type',
+                        action='store_true', help='Order imports by type in addition to alphabetically')
     parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
