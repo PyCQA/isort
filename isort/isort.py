@@ -221,9 +221,12 @@ class SortImports(object):
 
     @staticmethod
     def _module_key(module_name, config):
-        module_name = str(module_name).lower()
-        return "{0}{1}".format(module_name in config['force_to_top'] and "A" or "B",
-                               config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
+        prefix = ""
+        module_name = str(module_name)
+        if not config['order_by_type']:
+            module_name = module_name.lower()
+        return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
+                                  config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
