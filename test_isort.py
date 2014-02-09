@@ -645,3 +645,8 @@ def test_order_by_type():
     test_input = "from module import Class, CONSTANT, function"
     assert SortImports(file_contents=test_input,
                        order_by_type=True).output == ("from module import CONSTANT, Class, function\n")
+
+    # More complex sample data
+    test_input = "from module import Class, CONSTANT, function, BASIC, Apple"
+    assert SortImports(file_contents=test_input,
+                       order_by_type=True).output == ("from module import BASIC, CONSTANT, Apple, Class, function\n")
