@@ -223,8 +223,14 @@ class SortImports(object):
     def _module_key(module_name, config):
         prefix = ""
         module_name = str(module_name)
-        if not config['order_by_type']:
-            module_name = module_name.lower()
+        if config['order_by_type']:
+            if module_name.isupper():
+                prefix = "A"
+            elif module_name[0:1].isupper():
+                prefix = "B"
+            else:
+                prefix = "C"
+        module_name = module_name.lower()
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
                                   config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
