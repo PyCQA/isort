@@ -639,3 +639,9 @@ def test_atomic_mode():
     # with syntax error content is not changed
     test_input += "while True print 'Hello world'" # blatant syntax error
     assert SortImports(file_contents=test_input, atomic=True).output == test_input
+
+
+def test_order_by_type():
+    test_input = "from module import Class, CONSTANT, function"
+    assert SortImports(file_contents=test_input,
+                       order_by_type=True).output == ("from module import CONSTANT, Class, function")
