@@ -175,7 +175,7 @@ To configure isort for a single user create a ~/.isort.cfg file:
     line_length=120
     force_to_top=file1.py,file2.py
     skip=file3.py,file4.py
-    known_standard_libary=std,std2
+    known_standard_library=std,std2
     known_third_party=randomthirdparty
     known_first_party=mylib1,mylib2
     indent='    '
