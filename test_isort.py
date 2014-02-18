@@ -694,3 +694,11 @@ def test_settings_combine_instead_of_overwrite():
 
     assert set(SortImports(not_known_standard_library=['thread']).config['known_standard_library']) == \
            set(item for item in SortImports().config['known_standard_library'] if item != 'thread')
+
+
+def test_combined_from_and_as_imports():
+    """Test to ensure it's possible to combine from and as imports."""
+    test_input = ("from translate.misc.multistring import multistring\n"
+                  "from translate.storage import base, factory\n"
+                  "from translate.storage.placeables import general, parse as rich_parse\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
