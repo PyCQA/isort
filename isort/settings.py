@@ -145,8 +145,9 @@ def _read_config_file(file_path, sections):
 
         for key, value in settings.items():
             existing_value_type = type(default.get(key, ''))
+            key = key.lower()
             if existing_value_type in (list, tuple):
-                computed_settings[key.lower()] = value.split(",")
+                computed_settings[key] = list(set(computed_settings.get(key, default.get(key))).union(value.split(",")))
             else:
-                computed_settings[key.lower()] = existing_value_type(value)
+                computed_settings[key] = existing_value_type(value)
     return computed_settings
