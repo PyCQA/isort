@@ -80,7 +80,8 @@ default = {'force_to_top': [],
            'import_heading_localfolder': '',
            'balanced_wrapping': False,
            'order_by_type': False,
-           'atomic': False}
+           'atomic': False,
+           'lines_after_imports': -1}
 
 
 @lru_cache()

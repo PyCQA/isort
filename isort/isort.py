@@ -330,7 +330,9 @@ class SortImports(object):
 
         if len(self.out_lines) > imports_tail:
             next_construct = self.out_lines[imports_tail]
-            if next_construct.startswith("def") or next_construct.startswith("class") or \
+            if self.config['lines_after_imports'] != -1:
+                self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
+            elif next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
