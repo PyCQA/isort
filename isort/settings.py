@@ -81,7 +81,8 @@ default = {'force_to_top': [],
            'balanced_wrapping': False,
            'order_by_type': False,
            'atomic': False,
-           'lines_after_imports': -1}
+           'lines_after_imports': -1,
+           'combine_as_imports': False}
 
 
 @lru_cache()
