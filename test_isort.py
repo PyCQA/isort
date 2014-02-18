@@ -663,7 +663,7 @@ def test_custom_lines_after_import_section():
                                                             "foo = 'bar'\n")
 
     # test again with a custom number of lines after the import section
-    assert SortImports(file_contents=test_input, line_after_import=2).output == ("from a import b\n"
-                                                                                 "\n"
-                                                                                 "\n"
-                                                                                 "foo = 'bar'\n")
+    assert SortImports(file_contents=test_input, lines_after_imports=2).output == ("from a import b\n"
+                                                                                   "\n"
+                                                                                   "\n"
+                                                                                   "foo = 'bar'\n")
