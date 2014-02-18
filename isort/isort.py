@@ -55,7 +55,15 @@ class SortImports(object):
         settings_path = settings_path or os.getcwd()
 
         self.config = settings.from_path(settings_path).copy()
-        self.config.update(setting_overrides)
+        for key, value in itemsview(setting_overrides):
+            access_key = key.replace('not_', '').lower()
+            if type(self.config.get(access_key)) in (list, tuple):
+                if key.startswith('not_'):
+                    self.config[access_key] = list(set(self.config[access_key]).difference(value))
+                else:
+                    self.config[access_key] = list(set(self.config[access_key]).union(value))
+            else:
+                self.config[key] = value
 
         indent = str(self.config['indent'])
         if indent.isdigit():

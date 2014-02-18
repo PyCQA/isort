@@ -62,7 +62,7 @@ default = {'force_to_top': [],
                                       "sysconfig", "tabnanny", "tarfile", "tempfile", "textwrap", "threading", "time",
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
-                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__'],
+                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__', 'thread'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -144,9 +144,14 @@ def _read_config_file(file_path, sections):
                 computed_settings['line_length'] = int(max_line_length)
 
         for key, value in settings.items():
-            existing_value_type = type(default.get(key, ''))
+            access_key = key.replace('not_', '').lower()
+            existing_value_type = type(default.get(access_key, ''))
             if existing_value_type in (list, tuple):
-                computed_settings[key.lower()] = value.split(",")
+                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
+                if key.startswith('not_'):
+                    computed_settings[access_key] = list(existing_data.difference(value.split(",")))
+                else:
+                    computed_settings[access_key] = list(existing_data.union(value.split(",")))
             else:
-                computed_settings[key.lower()] = existing_value_type(value)
+                computed_settings[access_key] = existing_value_type(value)
     return computed_settings
