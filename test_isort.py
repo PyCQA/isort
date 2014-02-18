@@ -612,8 +612,8 @@ def test_relative_import_with_space():
 
 def test_multiline_import():
     """Test the case where import spawns multiple lines with inconsistent indentation."""
-    test_input = ("from pkg \\"
-                  "    import stuff, other_suff \\"
+    test_input = ("from pkg \\\n"
+                  "    import stuff, other_suff \\\n"
                   "               more_stuff")
     assert SortImports(file_contents=test_input).output == ("from pkg import more_stuff, other_suff, stuff\n")
 
@@ -627,6 +627,29 @@ def test_multiline_import():
                        "from pkg import other_suff\n"
                        "from pkg import stuff\n")
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
+
+
+def test_atomic_mode():
+    # without syntax error, everything works OK
+    test_input = ("from b import d, c\n"
+                  "from a import f, e\n")
+    assert SortImports(file_contents=test_input, atomic=True).output == ("from a import e, f\n"
+                                                                          "from b import c, d\n")
+
+    # with syntax error content is not changed
+    test_input += "while True print 'Hello world'" # blatant syntax error
+    assert SortImports(file_contents=test_input, atomic=True).output == test_input
+
+
+def test_order_by_type():
+    test_input = "from module import Class, CONSTANT, function"
+    assert SortImports(file_contents=test_input,
+                       order_by_type=True).output == ("from module import CONSTANT, Class, function\n")
+
+    # More complex sample data
+    test_input = "from module import Class, CONSTANT, function, BASIC, Apple"
+    assert SortImports(file_contents=test_input,
+                       order_by_type=True).output == ("from module import BASIC, CONSTANT, Apple, Class, function\n")
 
 
 def test_custom_lines_after_import_section():
@@ -644,5 +667,3 @@ def test_custom_lines_after_import_section():
                                                                                  "\n"
                                                                                  "\n"
                                                                                  "foo = 'bar'\n")
-
-

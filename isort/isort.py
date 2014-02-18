@@ -113,6 +113,20 @@ class SortImports(object):
         self.out_lines.append("")
 
         self.output = "\n".join(self.out_lines)
+        if self.config.get('atomic', False):
+            try:
+                compile(self.output, self.file_path, 'exec', 0, 1)
+            except SyntaxError:
+                self.output = file_contents
+                self.incorrectly_sorted = True
+                try:
+                    compile(file_contents, self.file_path, 'exec', 0, 1)
+                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
+                          format(self.file_path), file=stderr)
+                except SyntaxError:
+                    print("ERROR: {0} File contains syntax errors.".format(self.file_path), file=stderr)
+
+                return
         if check:
             if self.output == file_contents:
                 print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
@@ -198,7 +212,7 @@ class SortImports(object):
             return
         elif line.startswith('import '):
             return "straight"
-        elif line.startswith('from ') and "import" in line:
+        elif line.startswith('from '):
             return "from"
 
     def _at_end(self):
@@ -207,9 +221,18 @@ class SortImports(object):
 
     @staticmethod
     def _module_key(module_name, config):
-        module_name = str(module_name).lower()
-        return "{0}{1}".format(module_name in config['force_to_top'] and "A" or "B",
-                               config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
+        prefix = ""
+        module_name = str(module_name)
+        if config['order_by_type']:
+            if module_name.isupper():
+                prefix = "A"
+            elif module_name[0:1].isupper():
+                prefix = "B"
+            else:
+                prefix = "C"
+        module_name = module_name.lower()
+        return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
+                                  config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
