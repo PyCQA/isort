@@ -78,7 +78,9 @@ default = {'force_to_top': [],
            'import_heading_thirdparty': '',
            'import_heading_firstparty': '',
            'import_heading_localfolder': '',
-           'balanced_wrapping': False}
+           'balanced_wrapping': False,
+           'order_by_type': False,
+           'atomic': False}
 
 
 @lru_cache()

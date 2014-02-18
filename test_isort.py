@@ -627,3 +627,22 @@ def test_multiline_import():
                        "from pkg import other_suff\n"
                        "from pkg import stuff\n")
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
+
+
+def test_custom_lines_after_import_section():
+    """Test the case where the number of lines to output after imports has been explicitly set."""
+    test_input = ("from a import b\n"
+                  "foo = 'bar'\n")
+
+    # default case is one space if not method or class after imports
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "foo = 'bar'\n")
+
+    # test again with a custom number of lines after the import section
+    assert SortImports(file_contents=test_input, line_after_import=2).output == ("from a import b\n"
+                                                                                 "\n"
+                                                                                 "\n"
+                                                                                 "foo = 'bar'\n")
+
+
