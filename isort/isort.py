@@ -279,8 +279,12 @@ class SortImports(object):
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
-                        section_output.append(import_start + "{0} as {1}".format(from_import, import_as))
-                        from_imports.remove(from_import)
+                        import_definition = "{0} as {1}".format(from_import, import_as)
+                        if self.config['combine_as_imports'] and not "*" in from_imports:
+                            from_imports[from_imports.index(from_import)] = import_definition
+                        else:
+                            section_output.append(import_start + import_definition)
+                            from_imports.remove(from_import)
 
                 if from_imports:
                     if "*" in from_imports:
