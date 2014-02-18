@@ -669,6 +669,7 @@ def test_order_by_type():
                  "import time\n"
                  "from subprocess import PIPE, STDOUT, Popen\n")
 
+
 def test_custom_lines_after_import_section():
     """Test the case where the number of lines to output after imports has been explicitly set."""
     test_input = ("from a import b\n"
