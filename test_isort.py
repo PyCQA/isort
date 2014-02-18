@@ -651,6 +651,23 @@ def test_order_by_type():
     assert SortImports(file_contents=test_input,
                        order_by_type=True).output == ("from module import BASIC, CONSTANT, Apple, Class, function\n")
 
+    # Really complex sample data, to verify we don't mess with top level imports, only nested ones
+    test_input = ("import StringIO\n"
+                  "import glob\n"
+                  "import os\n"
+                  "import shutil\n"
+                  "import tempfile\n"
+                  "import time\n"
+                  "from subprocess import PIPE, Popen, STDOUT\n")
+
+    assert SortImports(file_contents=test_input, order_by_type=True).output == \
+                ("import glob\n"
+                 "import os\n"
+                 "import shutil\n"
+                 "import StringIO\n"
+                 "import tempfile\n"
+                 "import time\n"
+                 "from subprocess import PIPE, STDOUT, Popen\n")
 
 def test_custom_lines_after_import_section():
     """Test the case where the number of lines to output after imports has been explicitly set."""
