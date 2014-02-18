@@ -55,7 +55,11 @@ class SortImports(object):
         settings_path = settings_path or os.getcwd()
 
         self.config = settings.from_path(settings_path).copy()
-        self.config.update(setting_overrides)
+        for key, value in itemsview(setting_overrides):
+            if type(self.config.get(key)) in (list, tuple):
+                self.config[key] = list(set(self.config[key]).union(value))
+            else:
+                self.config[key] = value
 
         indent = str(self.config['indent'])
         if indent.isdigit():
