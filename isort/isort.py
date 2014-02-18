@@ -228,10 +228,10 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config):
+    def _module_key(module_name, config, sub_imports=False):
         prefix = ""
         module_name = str(module_name)
-        if config['order_by_type']:
+        if sub_imports and config['order_by_type']:
             if module_name.isupper():
                 prefix = "A"
             elif module_name[0:1].isupper():
@@ -271,7 +271,7 @@ class SortImports(object):
 
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
-                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
+                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
                 if self.remove_imports:
                     from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                     self.remove_imports]
