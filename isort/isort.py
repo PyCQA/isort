@@ -56,8 +56,12 @@ class SortImports(object):
 
         self.config = settings.from_path(settings_path).copy()
         for key, value in itemsview(setting_overrides):
-            if type(self.config.get(key)) in (list, tuple):
-                self.config[key] = list(set(self.config[key]).union(value))
+            access_key = key.replace('not_', '').lower()
+            if type(self.config.get(access_key)) in (list, tuple):
+                if key.startswith('not_'):
+                    self.config[access_key] = list(set(self.config[access_key]).difference(value))
+                else:
+                    self.config[access_key] = list(set(self.config[access_key]).union(value))
             else:
                 self.config[key] = value
 
