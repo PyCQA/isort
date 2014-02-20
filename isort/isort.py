@@ -55,7 +55,15 @@ class SortImports(object):
         settings_path = settings_path or os.getcwd()
 
         self.config = settings.from_path(settings_path).copy()
-        self.config.update(setting_overrides)
+        for key, value in itemsview(setting_overrides):
+            access_key = key.replace('not_', '').lower()
+            if type(self.config.get(access_key)) in (list, tuple):
+                if key.startswith('not_'):
+                    self.config[access_key] = list(set(self.config[access_key]).difference(value))
+                else:
+                    self.config[access_key] = list(set(self.config[access_key]).union(value))
+            else:
+                self.config[key] = value
 
         indent = str(self.config['indent'])
         if indent.isdigit():
@@ -220,10 +228,10 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config):
+    def _module_key(module_name, config, sub_imports=False):
         prefix = ""
         module_name = str(module_name)
-        if config['order_by_type']:
+        if sub_imports and config['order_by_type']:
             if module_name.isupper():
                 prefix = "A"
             elif module_name[0:1].isupper():
@@ -263,7 +271,7 @@ class SortImports(object):
 
                 import_start = "from {0} import ".format(module)
                 from_imports = list(self.imports[section]['from'][module])
-                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config))
+                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
                 if self.remove_imports:
                     from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                     self.remove_imports]
@@ -271,8 +279,12 @@ class SortImports(object):
                 for from_import in copy.copy(from_imports):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
-                        section_output.append(import_start + "{0} as {1}".format(from_import, import_as))
-                        from_imports.remove(from_import)
+                        import_definition = "{0} as {1}".format(from_import, import_as)
+                        if self.config['combine_as_imports'] and not "*" in from_imports:
+                            from_imports[from_imports.index(from_import)] = import_definition
+                        else:
+                            section_output.append(import_start + import_definition)
+                            from_imports.remove(from_import)
 
                 if from_imports:
                     if "*" in from_imports:
@@ -330,7 +342,9 @@ class SortImports(object):
 
         if len(self.out_lines) > imports_tail:
             next_construct = self.out_lines[imports_tail]
-            if next_construct.startswith("def") or next_construct.startswith("class") or \
+            if self.config['lines_after_imports'] != -1:
+                self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
+            elif next_construct.startswith("def") or next_construct.startswith("class") or \
                next_construct.startswith("@"):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:

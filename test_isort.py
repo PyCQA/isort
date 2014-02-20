@@ -515,7 +515,7 @@ def test_forced_separate():
                   'from django.contrib.admin.exceptions import DisallowedModelAdminLookup\n'
                   'from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n')
     assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
-                       known_third_party=['django'], line_length=120).output == test_input
+                       known_third_party=['django'], line_length=120, order_by_type=False).output == test_input
 
 
 def test_default_section():
@@ -650,3 +650,55 @@ def test_order_by_type():
     test_input = "from module import Class, CONSTANT, function, BASIC, Apple"
     assert SortImports(file_contents=test_input,
                        order_by_type=True).output == ("from module import BASIC, CONSTANT, Apple, Class, function\n")
+
+    # Really complex sample data, to verify we don't mess with top level imports, only nested ones
+    test_input = ("import StringIO\n"
+                  "import glob\n"
+                  "import os\n"
+                  "import shutil\n"
+                  "import tempfile\n"
+                  "import time\n"
+                  "from subprocess import PIPE, Popen, STDOUT\n")
+
+    assert SortImports(file_contents=test_input, order_by_type=True).output == \
+                ("import glob\n"
+                 "import os\n"
+                 "import shutil\n"
+                 "import StringIO\n"
+                 "import tempfile\n"
+                 "import time\n"
+                 "from subprocess import PIPE, STDOUT, Popen\n")
+
+
+def test_custom_lines_after_import_section():
+    """Test the case where the number of lines to output after imports has been explicitly set."""
+    test_input = ("from a import b\n"
+                  "foo = 'bar'\n")
+
+    # default case is one space if not method or class after imports
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "foo = 'bar'\n")
+
+    # test again with a custom number of lines after the import section
+    assert SortImports(file_contents=test_input, lines_after_imports=2).output == ("from a import b\n"
+                                                                                   "\n"
+                                                                                   "\n"
+                                                                                   "foo = 'bar'\n")
+
+
+def test_settings_combine_instead_of_overwrite():
+    """Test to ensure settings combine logically, instead of fully overwriting."""
+    assert set(SortImports(known_standard_library=['not_std_library']).config['known_standard_library']) == \
+           set(SortImports().config['known_standard_library'] + ['not_std_library'])
+
+    assert set(SortImports(not_known_standard_library=['thread']).config['known_standard_library']) == \
+           set(item for item in SortImports().config['known_standard_library'] if item != 'thread')
+
+
+def test_combined_from_and_as_imports():
+    """Test to ensure it's possible to combine from and as imports."""
+    test_input = ("from translate.misc.multistring import multistring\n"
+                  "from translate.storage import base, factory\n"
+                  "from translate.storage.placeables import general, parse as rich_parse\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
