@@ -702,3 +702,15 @@ def test_combined_from_and_as_imports():
                   "from translate.storage import base, factory\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+
+def test_keep_comments():
+    """Test to ensure isort properly keeps comments in tact after sorting."""
+    test_input = ("from foo import bar # My Comment\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+    # More complicated case
+    test_input_wll_merge = ("from a import b # My Comment1\n"
+                            "from a import c # My Comment2\n")
+    assert SortImports(file_contents=test_input_wll_merge, combine_as_imports=True).output == \
+                      ("from a import b, c # My Comment1, My Comment2\n")
