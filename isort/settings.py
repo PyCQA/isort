@@ -153,6 +153,8 @@ def _read_config_file(file_path, sections):
                     computed_settings[access_key] = list(existing_data.difference(value.split(",")))
                 else:
                     computed_settings[access_key] = list(existing_data.union(value.split(",")))
+            elif existing_value_type == bool and value.lower().strip() == "false":
+                computed_settings[access_key] = False
             else:
                 computed_settings[access_key] = existing_value_type(value)
     return computed_settings
