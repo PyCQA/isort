@@ -260,9 +260,15 @@ class SortImports(object):
                     continue
 
                 if module in self.as_map:
-                    section_output.append("import {0} as {1}".format(module, self.as_map[module]))
+                    import_definition = "import {0} as {1}".format(module, self.as_map[module])
                 else:
-                    section_output.append("import {0}".format(module))
+                    import_definition = "import {0}".format(module)
+
+                comments = self.comments['straight'].get(module)
+                print(self.comments)
+                if comments:
+                    import_definition += "# {0}".format(", ".join(comments))
+                section_output.append(import_definition)
 
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
@@ -408,7 +414,7 @@ class SortImports(object):
 
         comment_start = line.find("#")
         if comment_start != -1:
-            comments.append(line[comment_start:])
+            comments.append(line[comment_start + 1:])
             line = line[:comment_start]
 
         return line, comments
@@ -519,6 +525,7 @@ class SortImports(object):
             else:
                 for module in imports:
                     if comments:
+                        print(comments)
                         self.comments['straight'][module] = comments
                         comments = None
                     self.imports[self.place_module(module)][import_type].add(module)
