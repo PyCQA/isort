@@ -243,6 +243,12 @@ class SortImports(object):
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
                                   config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
+    def _add_comments(self, comments, original_string=""):
+        """
+            Returns a string with comments added
+        """
+        return comments and "{0} # {1}".format(original_string, ", ".join(comments)) or original_string
+
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
 
@@ -264,10 +270,7 @@ class SortImports(object):
                 else:
                     import_definition = "import {0}".format(module)
 
-                comments = self.comments['straight'].get(module)
-                if comments:
-                    import_definition += " # {0}".format(", ".join(comments))
-                section_output.append(import_definition)
+                section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
             from_modules = list(self.imports[section]['from'].keys())
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
@@ -294,7 +297,8 @@ class SortImports(object):
 
                 if from_imports:
                     if "*" in from_imports:
-                        import_statement = "{0}*".format(import_start)
+                        import_statement = self._add_comments(self.comments['from'].get(module),
+                                                              "{0}*".format(import_start))
                     elif self.config['force_single_line']:
                         import_statement = import_start + from_imports.pop(0)
                         for from_import in from_imports:
