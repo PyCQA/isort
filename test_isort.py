@@ -706,6 +706,11 @@ def test_combined_from_and_as_imports():
 
 def test_keep_comments():
     """Test to ensure isort properly keeps comments in tact after sorting."""
+    # Straight Import
+    test_input = ("import foo # bar\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+    # From import
     test_input = ("from foo import bar # My Comment\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
 

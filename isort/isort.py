@@ -265,9 +265,8 @@ class SortImports(object):
                     import_definition = "import {0}".format(module)
 
                 comments = self.comments['straight'].get(module)
-                print(self.comments)
                 if comments:
-                    import_definition += "# {0}".format(", ".join(comments))
+                    import_definition += " # {0}".format(", ".join(comments))
                 section_output.append(import_definition)
 
             from_modules = list(self.imports[section]['from'].keys())
@@ -414,7 +413,7 @@ class SortImports(object):
 
         comment_start = line.find("#")
         if comment_start != -1:
-            comments.append(line[comment_start + 1:])
+            comments.append(line[comment_start + 1:].strip())
             line = line[:comment_start]
 
         return line, comments
