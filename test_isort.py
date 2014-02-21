@@ -715,7 +715,7 @@ def test_keep_comments():
     assert SortImports(file_contents=test_input_star, combine_as_imports=True).output == test_input_star
 
     # Force Single Line From Import
-    test_input = ("from foo import * # bar\n")
+    test_input = ("from foo import bar # comment\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True, force_single_line=True).output == test_input
 
     # From import
