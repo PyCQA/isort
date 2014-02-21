@@ -102,6 +102,7 @@ class SortImports(object):
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
+        self.comments = {'from': {}, 'straight': {}}
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
@@ -400,14 +401,17 @@ class SortImports(object):
         return cls._output_vertical_grid_common(statement, imports, white_space, indent, line_length) + "\n)"
 
     @staticmethod
-    def _strip_comments(line):
+    def _strip_comments(line, comments=None):
         """Removes comments from import line."""
+        if comments is None:
+            comments = []
+
         comment_start = line.find("#")
         if comment_start != -1:
-            print("Removing comment(%s) so imports can be sorted correctly" % line[comment_start:], file=stderr)
+            comments.append(line[comment_start:])
             line = line[:comment_start]
 
-        return line
+        return line, comments
 
     @staticmethod
     def _format_simplified(import_line):
@@ -474,14 +478,14 @@ class SortImports(object):
             if self.import_index == -1:
                 self.import_index = self.index - 1
 
-            import_string = self._strip_comments(line)
+            import_string, comments = self._strip_comments(line)
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
-                    line = self._strip_comments(self._get_line())
+                    line, comments = self._strip_comments(self._get_line(), comments)
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
-                    line = self._strip_comments(self._get_line())
+                    line, comments = self._strip_comments(self._get_line(), comments)
                     import_string += "\n" + line
 
             if import_type == "from":
@@ -506,10 +510,16 @@ class SortImports(object):
             if import_type == "from":
                 import_from = imports.pop(0)
                 root = self.imports[self.place_module(import_from)][import_type]
+                if comments:
+                    self.comments['from'].setdefault(import_from, set()).update(comments)
                 if root.get(import_from, False):
                     root[import_from].update(imports)
                 else:
                     root[import_from] = set(imports)
             else:
                 for module in imports:
+                    if comments:
+                        self.comments['straight'][module] = comments
+                        comments = None
                     self.imports[self.place_module(module)][import_type].add(module)
+
