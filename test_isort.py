@@ -249,6 +249,33 @@ def test_output_modes():
                                            "    lib22\n"
                                            ")\n")
 
+    comment_output_vertical_indent = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                                 multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                                                 line_length=40, indent="    ").output
+    assert comment_output_vertical_indent == ("from third_party import ( # comment\n"
+                                              "    lib1,\n"
+                                              "    lib2,\n"
+                                              "    lib3,\n"
+                                              "    lib4,\n"
+                                              "    lib5,\n"
+                                              "    lib6,\n"
+                                              "    lib7,\n"
+                                              "    lib8,\n"
+                                              "    lib9,\n"
+                                              "    lib10,\n"
+                                              "    lib11,\n"
+                                              "    lib12,\n"
+                                              "    lib13,\n"
+                                              "    lib14,\n"
+                                              "    lib15,\n"
+                                              "    lib16,\n"
+                                              "    lib17,\n"
+                                              "    lib18,\n"
+                                              "    lib20,\n"
+                                              "    lib21,\n"
+                                              "    lib22\n"
+                                              ")\n")
+
     test_output_vertical_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
                                             multi_line_output=WrapModes.VERTICAL_GRID,
                                             line_length=40, indent="    ").output
