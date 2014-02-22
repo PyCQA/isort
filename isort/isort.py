@@ -532,4 +532,3 @@ class SortImports(object):
                         self.comments['straight'][module] = comments
                         comments = None
                     self.imports[self.place_module(module)][import_type].add(module)
-

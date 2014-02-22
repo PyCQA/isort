@@ -825,7 +825,3 @@ def test_keep_comments():
     assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
                       ("from a import (b, # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
-
-    # Test output vertical
-
-
