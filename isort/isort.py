@@ -305,7 +305,7 @@ class SortImports(object):
                             import_statement += "\n{0}{1}".format(import_start, from_import)
                             comments = None
                     else:
-                        import_statement = import_start + (", ").join(from_imports)
+                        import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
                         if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
                             output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
                             formatter = getattr(self, "_output_" + output_mode, self._output_grid)
