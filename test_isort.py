@@ -727,3 +727,12 @@ def test_keep_comments():
                             "from a import c # My Comment2\n")
     assert SortImports(file_contents=test_input_wll_merge, combine_as_imports=True).output == \
                       ("from a import b, c # My Comment1; My Comment2\n")
+
+    # Test case where imports comments make imports extend pass the line length
+    # More complicated case
+    test_input_wll_merge = ("from a import b # My Comment1\n"
+                            "from a import c # My Comment2\n"
+                            "from a import d\n")
+    assert SortImports(file_contents=test_input_wll_merge, combine_as_imports=True, line_length=45).output == \
+                      ("from a import (b, # My Comment1; My Comment2\n",
+                       "               c, d)\n")
