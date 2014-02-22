@@ -382,9 +382,11 @@ class SortImports(object):
         statement += imports.pop(0)
         while imports:
             next_import = imports.pop(0)
-            next_statement = statement + ", " + next_import
+            next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 3 > line_length:
-                next_statement = "{0}, \\\n{1}{2}".format(statement, indent, next_import)
+                next_statement = (self._add_comments(comments, "{0}, \\".format(statement)) +
+                                  "\n{0}{1}".format(indent, next_import))
+                comments = None
             statement = next_statement
         return statement
 
