@@ -296,13 +296,14 @@ class SortImports(object):
                             from_imports.remove(from_import)
 
                 if from_imports:
+                    comments = self.comments['from'].get(module)
                     if "*" in from_imports:
-                        import_statement = self._add_comments(self.comments['from'].get(module),
-                                                              "{0}*".format(import_start))
+                        import_statement = self._add_comments(comments, "{0}*".format(import_start))
                     elif self.config['force_single_line']:
-                        import_statement = import_start + from_imports.pop(0)
+                        import_statement = self._add_comments(comments, import_start + from_imports.pop(0))
                         for from_import in from_imports:
                             import_statement += "\n{0}{1}".format(import_start, from_import)
+                            comments = None
                     else:
                         import_statement = import_start + (", ").join(from_imports)
                         if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
