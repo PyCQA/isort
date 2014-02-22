@@ -27,6 +27,9 @@ from isort.settings import WrapModes
 
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
+REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
+                                   "lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22"
+                                   " # comment")
 
 
 def test_happy_path():
@@ -177,6 +180,30 @@ def test_output_modes():
                                     "                         lib21,\n"
                                     "                         lib22)\n")
 
+    comment_output_vertical = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                          multi_line_output=WrapModes.VERTICAL, line_length=40).output
+    assert comment_output_vertical == ("from third_party import (lib1, # comment\n"
+                                       "                         lib2,\n"
+                                       "                         lib3,\n"
+                                       "                         lib4,\n"
+                                       "                         lib5,\n"
+                                       "                         lib6,\n"
+                                       "                         lib7,\n"
+                                       "                         lib8,\n"
+                                       "                         lib9,\n"
+                                       "                         lib10,\n"
+                                       "                         lib11,\n"
+                                       "                         lib12,\n"
+                                       "                         lib13,\n"
+                                       "                         lib14,\n"
+                                       "                         lib15,\n"
+                                       "                         lib16,\n"
+                                       "                         lib17,\n"
+                                       "                         lib18,\n"
+                                       "                         lib20,\n"
+                                       "                         lib21,\n"
+                                       "                         lib22)\n")
+
     test_output_hanging_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
                                              multi_line_output=WrapModes.HANGING_INDENT,
                                              line_length=40, indent="    ").output
@@ -185,6 +212,15 @@ def test_output_modes():
                                           "    lib8, lib9, lib10, lib11, lib12, \\\n"
                                           "    lib13, lib14, lib15, lib16, lib17, \\\n"
                                           "    lib18, lib20, lib21, lib22\n")
+
+    comment_output_hanging_indent = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                                multi_line_output=WrapModes.HANGING_INDENT,
+                                                line_length=40, indent="    ").output
+    assert comment_output_hanging_indent == ("from third_party import lib1, \\ # comment\n"
+                                             "    lib2, lib3, lib4, lib5, lib6, \\\n"
+                                             "    lib7, lib8, lib9, lib10, lib11, \\\n"
+                                             "    lib12, lib13, lib14, lib15, lib16, \\\n"
+                                             "    lib17, lib18, lib20, lib21, lib22\n")
 
     test_output_vertical_indent = SortImports(file_contents=REALLY_LONG_IMPORT,
                                               multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -213,6 +249,33 @@ def test_output_modes():
                                            "    lib22\n"
                                            ")\n")
 
+    comment_output_vertical_indent = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                                 multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                                                 line_length=40, indent="    ").output
+    assert comment_output_vertical_indent == ("from third_party import ( # comment\n"
+                                              "    lib1,\n"
+                                              "    lib2,\n"
+                                              "    lib3,\n"
+                                              "    lib4,\n"
+                                              "    lib5,\n"
+                                              "    lib6,\n"
+                                              "    lib7,\n"
+                                              "    lib8,\n"
+                                              "    lib9,\n"
+                                              "    lib10,\n"
+                                              "    lib11,\n"
+                                              "    lib12,\n"
+                                              "    lib13,\n"
+                                              "    lib14,\n"
+                                              "    lib15,\n"
+                                              "    lib16,\n"
+                                              "    lib17,\n"
+                                              "    lib18,\n"
+                                              "    lib20,\n"
+                                              "    lib21,\n"
+                                              "    lib22\n"
+                                              ")\n")
+
     test_output_vertical_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
                                             multi_line_output=WrapModes.VERTICAL_GRID,
                                             line_length=40, indent="    ").output
@@ -221,6 +284,15 @@ def test_output_modes():
                                          "    lib7, lib8, lib9, lib10, lib11,\n"
                                          "    lib12, lib13, lib14, lib15, lib16,\n"
                                          "    lib17, lib18, lib20, lib21, lib22)\n")
+
+    comment_output_vertical_grid = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                               multi_line_output=WrapModes.VERTICAL_GRID,
+                                               line_length=40, indent="    ").output
+    assert comment_output_vertical_grid == ("from third_party import ( # comment\n"
+                                            "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                            "    lib7, lib8, lib9, lib10, lib11,\n"
+                                            "    lib12, lib13, lib14, lib15, lib16,\n"
+                                            "    lib17, lib18, lib20, lib21, lib22)\n")
 
     test_output_vertical_grid_grouped = SortImports(file_contents=REALLY_LONG_IMPORT,
                                                     multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -231,6 +303,16 @@ def test_output_modes():
                                                  "    lib12, lib13, lib14, lib15, lib16,\n"
                                                  "    lib17, lib18, lib20, lib21, lib22\n"
                                                  ")\n")
+
+    comment_output_vertical_grid_grouped = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                                       multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+                                                       line_length=40, indent="    ").output
+    assert comment_output_vertical_grid_grouped == ("from third_party import ( # comment\n"
+                                                    "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                                    "    lib7, lib8, lib9, lib10, lib11,\n"
+                                                    "    lib12, lib13, lib14, lib15, lib16,\n"
+                                                    "    lib17, lib18, lib20, lib21, lib22\n"
+                                                    ")\n")
 
 
 def test_length_sort():
@@ -702,3 +784,48 @@ def test_combined_from_and_as_imports():
                   "from translate.storage import base, factory\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+
+def test_keep_comments():
+    """Test to ensure isort properly keeps comments in tact after sorting."""
+    # Straight Import
+    test_input = ("import foo # bar\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+    # Star import
+    test_input_star = ("from foo import * # bar\n")
+    assert SortImports(file_contents=test_input_star, combine_as_imports=True).output == test_input_star
+
+    # Force Single Line From Import
+    test_input = ("from foo import bar # comment\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True, force_single_line=True).output == test_input
+
+    # From import
+    test_input = ("from foo import bar # My Comment\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+    # More complicated case
+    test_input = ("from a import b # My Comment1\n"
+                            "from a import c # My Comment2\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == \
+                      ("from a import b, c # My Comment1; My Comment2\n")
+
+    # Test case where imports comments make imports extend pass the line length
+    test_input = ("from a import b # My Comment1\n"
+                            "from a import c # My Comment2\n"
+                            "from a import d\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+                      ("from a import (b, # My Comment1; My Comment2\n"
+                       "               c, d)\n")
+
+    # Test case where imports with comments will be beyond line length limit
+    test_input = ("from a import b # My Comment1\n"
+                            "from a import c # My Comment2 is really really really really long\n"
+                            "from a import d\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+                      ("from a import (b, # My Comment1; My Comment2 is really really really really long\n"
+                       "               c, d)\n")
+
+    # Test output vertical
+
+
