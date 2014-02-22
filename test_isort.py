@@ -285,6 +285,15 @@ def test_output_modes():
                                          "    lib12, lib13, lib14, lib15, lib16,\n"
                                          "    lib17, lib18, lib20, lib21, lib22)\n")
 
+    comment_output_vertical_grid = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                               multi_line_output=WrapModes.VERTICAL_GRID,
+                                               line_length=40, indent="    ").output
+    assert comment_output_vertical_grid == ("from third_party import ( # comment\n"
+                                            "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                            "    lib7, lib8, lib9, lib10, lib11,\n"
+                                            "    lib12, lib13, lib14, lib15, lib16,\n"
+                                            "    lib17, lib18, lib20, lib21, lib22)\n")
+
     test_output_vertical_grid_grouped = SortImports(file_contents=REALLY_LONG_IMPORT,
                                                     multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
                                                     line_length=40, indent="    ").output
@@ -294,6 +303,16 @@ def test_output_modes():
                                                  "    lib12, lib13, lib14, lib15, lib16,\n"
                                                  "    lib17, lib18, lib20, lib21, lib22\n"
                                                  ")\n")
+
+    comment_output_vertical_grid_grouped = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                                                       multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+                                                       line_length=40, indent="    ").output
+    assert comment_output_vertical_grid_grouped == ("from third_party import ( # comment\n"
+                                                    "    lib1, lib2, lib3, lib4, lib5, lib6,\n"
+                                                    "    lib7, lib8, lib9, lib10, lib11,\n"
+                                                    "    lib12, lib13, lib14, lib15, lib16,\n"
+                                                    "    lib17, lib18, lib20, lib21, lib22\n"
+                                                    ")\n")
 
 
 def test_length_sort():
