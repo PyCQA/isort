@@ -247,7 +247,7 @@ class SortImports(object):
         """
             Returns a string with comments added
         """
-        return comments and "{0} # {1}".format(original_string, ", ".join(comments)) or original_string
+        return comments and "{0} # {1}".format(original_string, "; ".join(comments)) or original_string
 
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
