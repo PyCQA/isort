@@ -26,7 +26,7 @@ import sys
 
 from pies.overrides import *
 
-from isort import __version__, SECTION_NAMES, SortImports
+from isort import SECTION_NAMES, SortImports, __version__
 
 
 def iter_source_code(paths):
