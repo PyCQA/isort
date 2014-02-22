@@ -391,7 +391,8 @@ class SortImports(object):
         return statement
 
     def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
-        return "{0}(\n{1}{2}\n)".format(statement, indent, (",\n" + indent).join(imports))
+        return "{0}({1}\n{2}{3}\n)".format(statement, self._add_comments(comments), indent,
+                                           (",\n" + indent).join(imports))
 
     def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(\n" + indent + imports.pop(0)
