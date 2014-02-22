@@ -247,7 +247,8 @@ class SortImports(object):
         """
             Returns a string with comments added
         """
-        return comments and "{0} # {1}".format(original_string, "; ".join(comments)) or original_string
+        return comments and "{0} # {1}".format(self._strip_comments(original_string)[0],
+                                               "; ".join(comments)) or original_string
 
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
@@ -313,7 +314,7 @@ class SortImports(object):
                             indent = self.config['indent']
                             line_length = self.config['line_length']
                             import_statement = formatter(import_start, copy.copy(from_imports),
-                                                         dynamic_indent, indent, line_length)
+                                                         dynamic_indent, indent, line_length, comments)
                             if self.config['balanced_wrapping']:
                                 lines = import_statement.split("\n")
                                 line_count = len(lines)
@@ -323,7 +324,7 @@ class SortImports(object):
                                     import_statement = new_import_statement
                                     line_length -= 1
                                     new_import_statement = formatter(import_start, copy.copy(from_imports),
-                                                                     dynamic_indent, indent, line_length)
+                                                                     dynamic_indent, indent, line_length, comments)
                                     lines = new_import_statement.split("\n")
 
                     section_output.append(import_statement)
@@ -361,23 +362,22 @@ class SortImports(object):
             else:
                 self.out_lines[imports_tail:0] = [""]
 
-    @staticmethod
-    def _output_grid(statement, imports, white_space, indent, line_length):
+    def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
-            next_statement = statement + ", " + next_import
+            next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
-                next_statement = "{0},\n{1}{2}".format(statement, white_space, next_import)
+                next_statement = (self._add_comments(comments, "{0},".format(statement)) +
+                                  "\n{0}{1}".format(white_space, next_import))
+                comments = None
             statement = next_statement
         return statement + ")"
 
-    @staticmethod
-    def _output_vertical(statement, imports, white_space, indent, line_length):
+    def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
         return "{0}({1})".format(statement, (",\n" + white_space).join(imports))
 
-    @staticmethod
-    def _output_hanging_indent(statement, imports, white_space, indent, line_length):
+    def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
         statement += imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -387,12 +387,10 @@ class SortImports(object):
             statement = next_statement
         return statement
 
-    @staticmethod
-    def _output_vertical_hanging_indent(statement, imports, white_space, indent, line_length):
+    def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
         return "{0}(\n{1}{2}\n)".format(statement, indent, (",\n" + indent).join(imports))
 
-    @staticmethod
-    def _output_vertical_grid_common(statement, imports, white_space, indent, line_length):
+    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(\n" + indent + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -402,13 +400,11 @@ class SortImports(object):
             statement = next_statement
         return statement
 
-    @classmethod
-    def _output_vertical_grid(cls, statement, imports, white_space, indent, line_length):
-        return cls._output_vertical_grid_common(statement, imports, white_space, indent, line_length) + ")"
+    def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + ")"
 
-    @classmethod
-    def _output_vertical_grid_grouped(cls, statement, imports, white_space, indent, line_length):
-        return cls._output_vertical_grid_common(statement, imports, white_space, indent, line_length) + "\n)"
+    def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + "\n)"
 
     @staticmethod
     def _strip_comments(line, comments=None):
@@ -521,7 +517,7 @@ class SortImports(object):
                 import_from = imports.pop(0)
                 root = self.imports[self.place_module(import_from)][import_type]
                 if comments:
-                    self.comments['from'].setdefault(import_from, set()).update(comments)
+                    self.comments['from'].setdefault(import_from, []).extend(comments)
                 if root.get(import_from, False):
                     root[import_from].update(imports)
                 else:
