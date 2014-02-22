@@ -726,4 +726,4 @@ def test_keep_comments():
     test_input_wll_merge = ("from a import b # My Comment1\n"
                             "from a import c # My Comment2\n")
     assert SortImports(file_contents=test_input_wll_merge, combine_as_imports=True).output == \
-                      ("from a import b, c # My Comment1, My Comment2\n")
+                      ("from a import b, c # My Comment1; My Comment2\n")
