@@ -375,7 +375,8 @@ class SortImports(object):
         return statement + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
-        return "{0}({1})".format(statement, (",\n" + white_space).join(imports))
+        first_import = self._add_comments(comments, imports.pop(0) + ",") + "\n" + white_space
+        return "{0}({1}{2})".format(statement, first_import, (",\n" + white_space).join(imports))
 
     def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
         statement += imports.pop(0)
