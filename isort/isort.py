@@ -395,7 +395,7 @@ class SortImports(object):
                                            (",\n" + indent).join(imports))
 
     def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
-        statement += "(\n" + indent + imports.pop(0)
+        statement += self._add_comments(comments, "(") + "\n" + indent + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
             next_statement = "{0}, {1}".format(statement, next_import)
