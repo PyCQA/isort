@@ -123,10 +123,16 @@ Installing isort's Vim plugin
 The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
 here: https://github.com/fisadev/vim-isort#installation
 
+Installing isort's Emacs plugin
+===================
+
+The Emacs plugin for isort is maintained by @paetzke with installation directions located on the dedicated py-isort.el repository
+here: https://github.com/paetzke/py-isort.el
+
 Installing isort's Sublime plugin
 ===================
 
-The sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
+The Sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
 repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
 
 Plugins for other text editors
