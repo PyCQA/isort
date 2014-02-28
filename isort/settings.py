@@ -3,7 +3,7 @@
 Defines how the default settings for isort should be loaded
 
 (First from the default setting dictionary at the top of the file, then overridden by any settings
- in ~/.isort.conf if there are any)
+ in ~/.isort.cfg if there are any)
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
