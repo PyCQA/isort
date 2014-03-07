@@ -519,7 +519,6 @@ class SortImports(object):
                         import_string += "\n" + line
                     else:
                         import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
-                        print(import_string)
 
             if import_type == "from":
                 parts = import_string.split(" import ")
