@@ -496,7 +496,10 @@ class SortImports(object):
             else:
                 while line.strip().endswith("\\"):
                     line, comments = self._strip_comments(self._get_line(), comments)
-                    import_string += "\n" + line
+                    if import_string.strip().endswith(" import") or line.strip().startswith("import "):
+                        import_string += "\n" + line
+                    else:
+                        import_string += line.strip()
 
             if import_type == "from":
                 parts = import_string.split(" import ")
