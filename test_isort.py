@@ -833,4 +833,4 @@ def test_multiline_split_on_dot():
                   "    my_module import my_function")
     assert SortImports(file_contents=test_input, line_length=70).output == \
             ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
-             "    my_module import my_function")
+             "    my_module import my_function\n")
