@@ -825,3 +825,12 @@ def test_keep_comments():
     assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
                       ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
+
+
+def test_multiline_split_on_dot():
+    """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
+    test_input = ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
+                  "    my_module import my_function")
+    assert SortImports(file_contents=test_input, line_length=70).output == \
+            ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
+             "    my_module import my_function\n")
