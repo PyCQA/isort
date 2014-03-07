@@ -250,6 +250,20 @@ class SortImports(object):
         return comments and "{0}  # {1}".format(self._strip_comments(original_string)[0],
                                                "; ".join(comments)) or original_string
 
+    def _wrap(self, line):
+        """
+            Returns an import wrapped to the specified line-length, if possible.
+        """
+        if len(line) > self.config['line_length'] and "." in line:
+            line_parts = line.split(".")
+            next_line = []
+            while (len(line) + 2) > self.config['line_length'] and line_parts:
+                next_line.append(line_parts.pop())
+                line = ".".join(line_parts)
+            return "{0}. \\\n{1}".format(line, self._wrap(self.config['indent'] + ".".join(next_line)))
+
+        return line
+
     def _add_formatted_imports(self):
         """Adds the imports back to the file.
 
@@ -299,33 +313,38 @@ class SortImports(object):
                 if from_imports:
                     comments = self.comments['from'].get(module)
                     if "*" in from_imports:
-                        import_statement = self._add_comments(comments, "{0}*".format(import_start))
+                        import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                     elif self.config['force_single_line']:
-                        import_statement = self._add_comments(comments, import_start + from_imports.pop(0))
+                        import_statement = self._wrap(self._add_comments(comments, import_start + from_imports.pop(0)))
                         for from_import in from_imports:
                             import_statement += "\n{0}{1}".format(import_start, from_import)
                             comments = None
                     else:
                         import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
-                        if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
-                            output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
-                            formatter = getattr(self, "_output_" + output_mode, self._output_grid)
-                            dynamic_indent = " " * (len(import_start) + 1)
-                            indent = self.config['indent']
-                            line_length = self.config['line_length']
-                            import_statement = formatter(import_start, copy.copy(from_imports),
-                                                         dynamic_indent, indent, line_length, comments)
-                            if self.config['balanced_wrapping']:
-                                lines = import_statement.split("\n")
-                                line_count = len(lines)
-                                minimum_length = min([len(line) for line in lines[:-1]])
-                                new_import_statement = import_statement
-                                while len(lines[-1]) < minimum_length and len(lines) == line_count and line_length > 10:
-                                    import_statement = new_import_statement
-                                    line_length -= 1
-                                    new_import_statement = formatter(import_start, copy.copy(from_imports),
-                                                                     dynamic_indent, indent, line_length, comments)
-                                    lines = new_import_statement.split("\n")
+                        if len(import_statement) > self.config['line_length']:
+                            if len(from_imports) > 1:
+                                output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
+                                                                                         0)].lower()
+                                formatter = getattr(self, "_output_" + output_mode, self._output_grid)
+                                dynamic_indent = " " * (len(import_start) + 1)
+                                indent = self.config['indent']
+                                line_length = self.config['line_length']
+                                import_statement = formatter(import_start, copy.copy(from_imports),
+                                                            dynamic_indent, indent, line_length, comments)
+                                if self.config['balanced_wrapping']:
+                                    lines = import_statement.split("\n")
+                                    line_count = len(lines)
+                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                    new_import_statement = import_statement
+                                    while (len(lines[-1]) < minimum_length and
+                                           len(lines) == line_count and line_length > 10):
+                                        import_statement = new_import_statement
+                                        line_length -= 1
+                                        new_import_statement = formatter(import_start, copy.copy(from_imports),
+                                                                        dynamic_indent, indent, line_length, comments)
+                                        lines = new_import_statement.split("\n")
+                            else:
+                                import_statement = self._wrap(import_statement)
 
                     section_output.append(import_statement)
 
@@ -496,7 +515,10 @@ class SortImports(object):
             else:
                 while line.strip().endswith("\\"):
                     line, comments = self._strip_comments(self._get_line(), comments)
-                    import_string += "\n" + line
+                    if import_string.strip().endswith(" import") or line.strip().startswith("import "):
+                        import_string += "\n" + line
+                    else:
+                        import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
 
             if import_type == "from":
                 parts = import_string.split(" import ")
