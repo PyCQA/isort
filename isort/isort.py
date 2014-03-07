@@ -320,27 +320,31 @@ class SortImports(object):
                             import_statement += "\n{0}{1}".format(import_start, from_import)
                             comments = None
                     else:
-                        import_statement = self._wrap(self._add_comments(comments,
-                                                                        import_start + (", ").join(from_imports)))
-                        if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
-                            output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
-                            formatter = getattr(self, "_output_" + output_mode, self._output_grid)
-                            dynamic_indent = " " * (len(import_start) + 1)
-                            indent = self.config['indent']
-                            line_length = self.config['line_length']
-                            import_statement = formatter(import_start, copy.copy(from_imports),
-                                                         dynamic_indent, indent, line_length, comments)
-                            if self.config['balanced_wrapping']:
-                                lines = import_statement.split("\n")
-                                line_count = len(lines)
-                                minimum_length = min([len(line) for line in lines[:-1]])
-                                new_import_statement = import_statement
-                                while len(lines[-1]) < minimum_length and len(lines) == line_count and line_length > 10:
-                                    import_statement = new_import_statement
-                                    line_length -= 1
-                                    new_import_statement = formatter(import_start, copy.copy(from_imports),
-                                                                     dynamic_indent, indent, line_length, comments)
-                                    lines = new_import_statement.split("\n")
+                        import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                        if len(import_statement) > self.config['line_length']:
+                            if len(from_imports) > 1:
+                                output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
+                                                                                         0)].lower()
+                                formatter = getattr(self, "_output_" + output_mode, self._output_grid)
+                                dynamic_indent = " " * (len(import_start) + 1)
+                                indent = self.config['indent']
+                                line_length = self.config['line_length']
+                                import_statement = formatter(import_start, copy.copy(from_imports),
+                                                            dynamic_indent, indent, line_length, comments)
+                                if self.config['balanced_wrapping']:
+                                    lines = import_statement.split("\n")
+                                    line_count = len(lines)
+                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                    new_import_statement = import_statement
+                                    while (len(lines[-1]) < minimum_length and
+                                           len(lines) == line_count and line_length > 10):
+                                        import_statement = new_import_statement
+                                        line_length -= 1
+                                        new_import_statement = formatter(import_start, copy.copy(from_imports),
+                                                                        dynamic_indent, indent, line_length, comments)
+                                        lines = new_import_statement.split("\n")
+                            else:
+                                import_statement = self._wrap(import_statement)
 
                     section_output.append(import_statement)
 
