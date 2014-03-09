@@ -117,29 +117,12 @@ To install the kate plugin you must either have pate installed or the very lates
 
 You will then need to restart kate and enable Python Plugins as well as the isort plugin itself.
 
-Installing isort's Vim plugin
+Installing isort's for your preferred text editor
 ===================
 
-The Vim plugin for isort is maintained by @fisadev with installation directions located on the dedicated vim-isort repository
-here: https://github.com/fisadev/vim-isort#installation
-
-Installing isort's Emacs plugin
-===================
-
-The Emacs plugin for isort is maintained by @paetzke with installation directions located on the dedicated py-isort.el repository
-here: https://github.com/paetzke/py-isort.el
-
-Installing isort's Sublime plugin
-===================
-
-The Sublime plugin for isort is maintained by @thijsdezoete with installation directions located on the dedicated sublime-text-isort-plugin
-repository here: https://github.com/thijsdezoete/sublime-text-isort-plugin#install
-
-Plugins for other text editors
-===================
-
-I use Kate, and Kate provides a very nice Python plugin API so I wrote a Kate plugin.
-That said I will enthusiastically accept pull requests that include plugins for other text editors
+Several plugins have been written that enable to use isort from within a variety of text-editors.
+You can find a full list of them (on the isort wiki)[https://github.com/timothycrosley/isort/wiki/isort-Plugins].
+Additionally, I will enthusiastically accept pull requests that include plugins for other text editors
 and add documentation for them as I am notified.
 
 How does isort work?
@@ -203,6 +186,8 @@ http://editorconfig.org/
 
 Meaning you place any standard isort configuration parameters within a .editorconfig file under the *.py section
 and they will be honored.
+
+For a full list of isort settings and their meanings (take a look at the isort wiki)[https://github.com/timothycrosley/isort/wiki/isort-Settings].
 
 Multi line output modes
 ======================
