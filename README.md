@@ -121,7 +121,7 @@ Installing isort's for your preferred text editor
 ===================
 
 Several plugins have been written that enable to use isort from within a variety of text-editors.
-You can find a full list of them (on the isort wiki)[https://github.com/timothycrosley/isort/wiki/isort-Plugins].
+You can find a full list of them [on the isort wiki](https://github.com/timothycrosley/isort/wiki/isort-Plugins).
 Additionally, I will enthusiastically accept pull requests that include plugins for other text editors
 and add documentation for them as I am notified.
 
@@ -187,7 +187,7 @@ http://editorconfig.org/
 Meaning you place any standard isort configuration parameters within a .editorconfig file under the *.py section
 and they will be honored.
 
-For a full list of isort settings and their meanings (take a look at the isort wiki)[https://github.com/timothycrosley/isort/wiki/isort-Settings].
+For a full list of isort settings and their meanings [take a look at the isort wiki](https://github.com/timothycrosley/isort/wiki/isort-Settings).
 
 Multi line output modes
 ======================
