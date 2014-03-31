@@ -786,6 +786,16 @@ def test_combined_from_and_as_imports():
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
 
 
+def test_as_imports_with_line_length():
+    """Test to ensure it's possible to combine from and as imports."""
+    test_input = ("from translate.storage import base as storage_base\n"
+                  "from translate.storage.placeables import general, parse as rich_parse\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40).output == \
+                  ("from translate. \\\n    storage import base as storage_base\n"
+                  "from translate.storage. \\\n    placeables import parse as rich_parse\n"
+                  "from translate.storage. \\\n    placeables import general\n")
+
+
 def test_keep_comments():
     """Test to ensure isort properly keeps comments in tact after sorting."""
     # Straight Import

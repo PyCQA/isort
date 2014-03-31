@@ -307,7 +307,8 @@ class SortImports(object):
                         if self.config['combine_as_imports'] and not "*" in from_imports:
                             from_imports[from_imports.index(from_import)] = import_definition
                         else:
-                            section_output.append(import_start + import_definition)
+                            import_statement = self._wrap(import_start + import_definition)
+                            section_output.append(import_statement)
                             from_imports.remove(from_import)
 
                 if from_imports:
