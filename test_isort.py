@@ -769,6 +769,38 @@ def test_custom_lines_after_import_section():
                                                                                    "foo = 'bar'\n")
 
 
+def test_smart_lines_after_import_section():
+    """Tests the default 'smart' behavior for dealing with lines after the import section"""
+    # one space if not method or class after imports
+    test_input = ("from a import b\n"
+                  "foo = 'bar'\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "foo = 'bar'\n")
+
+    # two spaces if a method or class after imports
+    test_input = ("from a import b\n"
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
+    # two spaces if a method or class after imports - even if comment before function
+    test_input = ("from a import b\n"
+                  "# comment should be ignored\n"
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            "# comment should be ignored\n"
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
+
 def test_settings_combine_instead_of_overwrite():
     """Test to ensure settings combine logically, instead of fully overwriting."""
     assert set(SortImports(known_standard_library=['not_std_library']).config['known_standard_library']) == \
