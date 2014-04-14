@@ -373,7 +373,13 @@ class SortImports(object):
             self.out_lines.pop(imports_tail)
 
         if len(self.out_lines) > imports_tail:
-            next_construct = self.out_lines[imports_tail]
+            next_construct = ""
+            self._in_quote = False
+            for line in self.out_lines[imports_tail:]:
+                if not self._skip_line(line) and not line.strip().startswith("#"):
+                    next_construct = line
+                    break
+
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
             elif next_construct.startswith("def") or next_construct.startswith("class") or \
@@ -466,34 +472,40 @@ class SortImports(object):
 
         return import_line
 
+    def _skip_line(self, line):
+        skip_line = self._in_quote
+        if '"' in line or "'" in line:
+            index = 0
+            if self._first_comment_index_start == -1:
+                self._first_comment_index_start = self.index
+            while index < len(line):
+                if line[index] == "\\":
+                    index += 1
+                elif self._in_quote:
+                    if line[index:index + len(self._in_quote)] == self._in_quote:
+                        self._in_quote = False
+                        if self._first_comment_index_end == -1:
+                            self._first_comment_index_end = self.index
+                elif line[index] in ("'", '"'):
+                    long_quote = line[index:index + 3]
+                    if long_quote in ('"""', "'''"):
+                        self._in_quote = long_quote
+                        index += 2
+                    else:
+                        self._in_quote = line[index]
+                elif line[index] == "#":
+                    break
+                index += 1
+
+        return skip_line
+
+
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
-        in_quote = False
+        self._in_quote = False
         while not self._at_end():
             line = self._get_line()
-            skip_line = in_quote
-            if '"' in line or "'" in line:
-                index = 0
-                if self._first_comment_index_start == -1:
-                    self._first_comment_index_start = self.index
-                while index < len(line):
-                    if line[index] == "\\":
-                        index += 1
-                    elif in_quote:
-                        if line[index:index + len(in_quote)] == in_quote:
-                            in_quote = False
-                            if self._first_comment_index_end == -1:
-                                self._first_comment_index_end = self.index
-                    elif line[index] in ("'", '"'):
-                        long_quote = line[index:index + 3]
-                        if long_quote in ('"""', "'''"):
-                            in_quote = long_quote
-                            index += 2
-                        else:
-                            in_quote = line[index]
-                    elif line[index] == "#":
-                        break
-                    index += 1
+            skip_line = self._skip_line(line)
 
             if line in self._section_comments and not skip_line:
                 if self.import_index == -1:
