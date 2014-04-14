@@ -800,6 +800,22 @@ def test_smart_lines_after_import_section():
                                                             "def my_function():\n"
                                                             "    pass\n")
 
+    # ensure logic works with both style comments
+    test_input = ("from a import b\n"
+                  '"""\n'
+                  "comment should be ignored\n"
+                  '"""\n'
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            '"""\n'
+                                                            "   comment should be ignored\n"
+                                                            '"""\n'
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
 
 def test_settings_combine_instead_of_overwrite():
     """Test to ensure settings combine logically, instead of fully overwriting."""
