@@ -376,8 +376,9 @@ class SortImports(object):
             next_construct = ""
             self._in_quote = False
             for line in self.out_lines[imports_tail:]:
-                if not self._skip_line(line) and not line.strip().startswith("#"):
+                if not self._skip_line(line) and not line.strip().startswith("#") and line.strip():
                     next_construct = line
+                    print(next_construct)
                     break
 
             if self.config['lines_after_imports'] != -1:
@@ -497,7 +498,7 @@ class SortImports(object):
                     break
                 index += 1
 
-        return skip_line
+        return skip_line or self._in_quote
 
 
     def _parse(self):
