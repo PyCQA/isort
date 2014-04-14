@@ -803,7 +803,7 @@ def test_smart_lines_after_import_section():
     # ensure logic works with both style comments
     test_input = ("from a import b\n"
                   '"""\n'
-                  "comment should be ignored\n"
+                  "    comment should be ignored\n"
                   '"""\n'
                   "def my_function():\n"
                   "    pass\n")
@@ -811,7 +811,7 @@ def test_smart_lines_after_import_section():
                                                             "\n"
                                                             "\n"
                                                             '"""\n'
-                                                            "   comment should be ignored\n"
+                                                            "    comment should be ignored\n"
                                                             '"""\n'
                                                             "def my_function():\n"
                                                             "    pass\n")
