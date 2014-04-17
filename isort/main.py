@@ -64,6 +64,8 @@ def main():
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
                              'automatically determining correct placement.')
+    parser.add_argument('-af', '--force_adds', dest='force_adds', action='append',
+                        help='Forces import adds even if the original file is empty.')
     parser.add_argument('-r', '--remove_import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-ls', '--length_sort', help='Sort imports by their string length.',
