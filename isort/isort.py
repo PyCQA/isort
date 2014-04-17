@@ -313,7 +313,8 @@ class SortImports(object):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
                         import_definition = "{0} as {1}".format(from_import, import_as)
-                        if self.config['combine_as_imports'] and not "*" in from_imports:
+                        if self.config['combine_as_imports'] and not ("*" in from_imports and
+                                                                      self.config['combine_star']):
                             from_imports[from_imports.index(from_import)] = import_definition
                         else:
                             import_statement = self._wrap(import_start + import_definition)
@@ -322,7 +323,7 @@ class SortImports(object):
 
                 if from_imports:
                     comments = self.comments['from'].get(module)
-                    if "*" in from_imports:
+                    if "*" in from_imports and self.config['combine_star']:
                         import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                     elif self.config['force_single_line']:
                         import_statement = self._wrap(self._add_comments(comments, import_start + from_imports.pop(0)))
@@ -330,7 +331,14 @@ class SortImports(object):
                             import_statement += "\n{0}{1}".format(import_start, from_import)
                             comments = None
                     else:
-                        import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                        if "*" in from_imports:
+                            section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
+                            from_imports.remove('*')
+                            import_statement = import_start + (", ").join(from_imports)
+                        else:
+                            import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                        if not from_imports:
+                            import_statement = ""
                         if len(import_statement) > self.config['line_length']:
                             if len(from_imports) > 1:
                                 output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
@@ -356,7 +364,8 @@ class SortImports(object):
                             else:
                                 import_statement = self._wrap(import_statement)
 
-                    section_output.append(import_statement)
+                    if import_statement:
+                        section_output.append(import_statement)
 
             if section_output:
                 section_name = section

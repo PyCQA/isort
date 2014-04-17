@@ -902,3 +902,13 @@ def test_multiline_split_on_dot():
     assert SortImports(file_contents=test_input, line_length=70).output == \
             ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
              "    my_module import my_function\n")
+
+
+def test_import_star():
+    """Test to ensure isort handles star imports correctly"""
+    test_input = ("from blah import *\n"
+                  "from blah import _potato\n")
+    assert SortImports(file_contents=test_input).output == ("from blah import *\n"
+                                                            "from blah import _potato\n")
+    assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
+
