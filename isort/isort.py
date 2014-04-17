@@ -97,8 +97,9 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        for add_import in self.add_imports:
-            self.in_lines.append(add_import)
+        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config.get('force_adds', False):
+            for add_import in self.add_imports:
+                self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
@@ -378,7 +379,6 @@ class SortImports(object):
             for line in self.out_lines[imports_tail:]:
                 if not self._skip_line(line) and not line.strip().startswith("#") and line.strip():
                     next_construct = line
-                    print(next_construct)
                     break
 
             if self.config['lines_after_imports'] != -1:

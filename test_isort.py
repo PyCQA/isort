@@ -466,6 +466,16 @@ def test_add_imports():
                            'class MyClass(object):\n'
                            '    pass\n')
 
+    # On a file with no content what so ever
+    test_input = ("")
+    test_output = SortImports(file_contents=test_input, add_imports=['lib4']).output
+    assert test_output == ("")
+
+    # On a file with no content what so ever, after force_adds is set to True
+    test_input = ("")
+    test_output = SortImports(file_contents=test_input, add_imports=['lib4'], force_adds=True).output
+    assert test_output == ("import lib4\n")
+
 
 def test_remove_imports():
     """Ensures removing imports works as expected."""
