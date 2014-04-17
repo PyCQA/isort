@@ -82,7 +82,8 @@ default = {'force_to_top': [],
            'order_by_type': False,
            'atomic': False,
            'lines_after_imports': -1,
-           'combine_as_imports': False}
+           'combine_as_imports': False,
+           'combine_star': False}
 
 
 @lru_cache()
@@ -108,12 +109,43 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
         tries += 1
 
     if editor_config_file and os.path.exists(editor_config_file):
-        computed_settings.update(_read_config_file(editor_config_file, sections).copy())
+        _update_with_config_file(editor_config_file, sections, computed_settings)
+
+
+def _update_with_config_file(file_path, sections, computed_settings):
+    settings = _get_config_data(file_path, sections)
+    if not settings:
+        return
+
+    if file_path.endswith(".editorconfig"):
+        indent_style = settings.pop('indent_style', "").strip()
+        indent_size = settings.pop('indent_size', "").strip()
+        if indent_style == "space":
+            computed_settings['indent'] = " " * (indent_size and int(indent_size) or 4)
+        elif indent_style == "tab":
+            computed_settings['indent'] = "\t" * (indent_size and int(indent_size) or 1)
+
+        max_line_length = settings.pop('max_line_length', "").strip()
+        if max_line_length:
+            computed_settings['line_length'] = int(max_line_length)
+
+    for key, value in settings.items():
+        access_key = key.replace('not_', '').lower()
+        existing_value_type = type(default.get(access_key, ''))
+        if existing_value_type in (list, tuple):
+            existing_data = set(computed_settings.get(access_key, default.get(access_key)))
+            if key.startswith('not_'):
+                computed_settings[access_key] = list(existing_data.difference(value.split(",")))
+            else:
+                computed_settings[access_key] = list(existing_data.union(value.split(",")))
+        elif existing_value_type == bool and value.lower().strip() == "false":
+            computed_settings[access_key] = False
+        else:
+            computed_settings[access_key] = existing_value_type(value)
 
 
 @lru_cache()
-def _read_config_file(file_path, sections):
-    computed_settings = {}
+def _get_config_data(file_path, sections):
     with open(file_path) as config_file:
         if file_path.endswith(".editorconfig"):
             line = "\n"
@@ -132,29 +164,6 @@ def _read_config_file(file_path, sections):
             if config.has_section(section):
                 settings.update(dict(config.items(section)))
 
-        if file_path.endswith(".editorconfig"):
-            indent_style = settings.pop('indent_style', "").strip()
-            indent_size = settings.pop('indent_size', "").strip()
-            if indent_style == "space":
-                computed_settings['indent'] = " " * (indent_size and int(indent_size) or 4)
-            elif indent_style == "tab":
-                computed_settings['indent'] = "\t" * (indent_size and int(indent_size) or 1)
+        return settings
 
-            max_line_length = settings.pop('max_line_length', "").strip()
-            if max_line_length:
-                computed_settings['line_length'] = int(max_line_length)
-
-        for key, value in settings.items():
-            access_key = key.replace('not_', '').lower()
-            existing_value_type = type(default.get(access_key, ''))
-            if existing_value_type in (list, tuple):
-                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
-                if key.startswith('not_'):
-                    computed_settings[access_key] = list(existing_data.difference(value.split(",")))
-                else:
-                    computed_settings[access_key] = list(existing_data.union(value.split(",")))
-            elif existing_value_type == bool and value.lower().strip() == "false":
-                computed_settings[access_key] = False
-            else:
-                computed_settings[access_key] = existing_value_type(value)
-    return computed_settings
+    return None

@@ -466,6 +466,16 @@ def test_add_imports():
                            'class MyClass(object):\n'
                            '    pass\n')
 
+    # On a file with no content what so ever
+    test_input = ("")
+    test_output = SortImports(file_contents=test_input, add_imports=['lib4']).output
+    assert test_output == ("")
+
+    # On a file with no content what so ever, after force_adds is set to True
+    test_input = ("")
+    test_output = SortImports(file_contents=test_input, add_imports=['lib4'], force_adds=True).output
+    assert test_output == ("import lib4\n")
+
 
 def test_remove_imports():
     """Ensures removing imports works as expected."""
@@ -769,6 +779,54 @@ def test_custom_lines_after_import_section():
                                                                                    "foo = 'bar'\n")
 
 
+def test_smart_lines_after_import_section():
+    """Tests the default 'smart' behavior for dealing with lines after the import section"""
+    # one space if not method or class after imports
+    test_input = ("from a import b\n"
+                  "foo = 'bar'\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "foo = 'bar'\n")
+
+    # two spaces if a method or class after imports
+    test_input = ("from a import b\n"
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
+    # two spaces if a method or class after imports - even if comment before function
+    test_input = ("from a import b\n"
+                  "# comment should be ignored\n"
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            "# comment should be ignored\n"
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
+    # ensure logic works with both style comments
+    test_input = ("from a import b\n"
+                  '"""\n'
+                  "    comment should be ignored\n"
+                  '"""\n'
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            "\n"
+                                                            '"""\n'
+                                                            "    comment should be ignored\n"
+                                                            '"""\n'
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
+
 def test_settings_combine_instead_of_overwrite():
     """Test to ensure settings combine logically, instead of fully overwriting."""
     assert set(SortImports(known_standard_library=['not_std_library']).config['known_standard_library']) == \
@@ -784,6 +842,16 @@ def test_combined_from_and_as_imports():
                   "from translate.storage import base, factory\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+
+
+def test_as_imports_with_line_length():
+    """Test to ensure it's possible to combine from and as imports."""
+    test_input = ("from translate.storage import base as storage_base\n"
+                  "from translate.storage.placeables import general, parse as rich_parse\n")
+    assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40).output == \
+                  ("from translate. \\\n    storage import base as storage_base\n"
+                  "from translate.storage. \\\n    placeables import parse as rich_parse\n"
+                  "from translate.storage. \\\n    placeables import general\n")
 
 
 def test_keep_comments():
@@ -834,3 +902,12 @@ def test_multiline_split_on_dot():
     assert SortImports(file_contents=test_input, line_length=70).output == \
             ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
              "    my_module import my_function\n")
+
+
+def test_import_star():
+    """Test to ensure isort handles star imports correctly"""
+    test_input = ("from blah import *\n"
+                  "from blah import _potato\n")
+    assert SortImports(file_contents=test_input).output == ("from blah import *\n"
+                                                            "from blah import _potato\n")
+    assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")

@@ -97,8 +97,9 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        for add_import in self.add_imports:
-            self.in_lines.append(add_import)
+        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config.get('force_adds', False):
+            for add_import in self.add_imports:
+                self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
@@ -124,12 +125,12 @@ class SortImports(object):
         self.output = "\n".join(self.out_lines)
         if self.config.get('atomic', False):
             try:
-                compile(self.output, self.file_path, 'exec', 0, 1)
+                compile(self._strip_top_comments(self.out_lines), self.file_path, 'exec', 0, 1)
             except SyntaxError:
                 self.output = file_contents
                 self.incorrectly_sorted = True
                 try:
-                    compile(file_contents, self.file_path, 'exec', 0, 1)
+                    compile(self._strip_top_comments(self.in_lines), self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
                           format(self.file_path), file=stderr)
                 except SyntaxError:
@@ -153,6 +154,14 @@ class SortImports(object):
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
+
+    @staticmethod
+    def _strip_top_comments(lines):
+        """Strips # comments that exist at the top of the given lines"""
+        lines = copy.copy(lines)
+        while lines and lines[0].startswith("#"):
+            lines = lines[1:]
+        return "\n".join(lines)
 
     def _should_skip(self, filename):
         """Returns True if the file should be skipped based on the loaded settings."""
@@ -304,15 +313,17 @@ class SortImports(object):
                     import_as = self.as_map.get(module + "." + from_import, False)
                     if import_as:
                         import_definition = "{0} as {1}".format(from_import, import_as)
-                        if self.config['combine_as_imports'] and not "*" in from_imports:
+                        if self.config['combine_as_imports'] and not ("*" in from_imports and
+                                                                      self.config['combine_star']):
                             from_imports[from_imports.index(from_import)] = import_definition
                         else:
-                            section_output.append(import_start + import_definition)
+                            import_statement = self._wrap(import_start + import_definition)
+                            section_output.append(import_statement)
                             from_imports.remove(from_import)
 
                 if from_imports:
                     comments = self.comments['from'].get(module)
-                    if "*" in from_imports:
+                    if "*" in from_imports and self.config['combine_star']:
                         import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                     elif self.config['force_single_line']:
                         import_statement = self._wrap(self._add_comments(comments, import_start + from_imports.pop(0)))
@@ -320,7 +331,14 @@ class SortImports(object):
                             import_statement += "\n{0}{1}".format(import_start, from_import)
                             comments = None
                     else:
-                        import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                        if "*" in from_imports:
+                            section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
+                            from_imports.remove('*')
+                            import_statement = import_start + (", ").join(from_imports)
+                        else:
+                            import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                        if not from_imports:
+                            import_statement = ""
                         if len(import_statement) > self.config['line_length']:
                             if len(from_imports) > 1:
                                 output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
@@ -346,7 +364,8 @@ class SortImports(object):
                             else:
                                 import_statement = self._wrap(import_statement)
 
-                    section_output.append(import_statement)
+                    if import_statement:
+                        section_output.append(import_statement)
 
             if section_output:
                 section_name = section
@@ -372,7 +391,13 @@ class SortImports(object):
             self.out_lines.pop(imports_tail)
 
         if len(self.out_lines) > imports_tail:
-            next_construct = self.out_lines[imports_tail]
+            next_construct = ""
+            self._in_quote = False
+            for line in self.out_lines[imports_tail:]:
+                if not self._skip_line(line) and not line.strip().startswith("#") and line.strip():
+                    next_construct = line
+                    break
+
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
             elif next_construct.startswith("def") or next_construct.startswith("class") or \
@@ -465,34 +490,40 @@ class SortImports(object):
 
         return import_line
 
+    def _skip_line(self, line):
+        skip_line = self._in_quote
+        if '"' in line or "'" in line:
+            index = 0
+            if self._first_comment_index_start == -1:
+                self._first_comment_index_start = self.index
+            while index < len(line):
+                if line[index] == "\\":
+                    index += 1
+                elif self._in_quote:
+                    if line[index:index + len(self._in_quote)] == self._in_quote:
+                        self._in_quote = False
+                        if self._first_comment_index_end == -1:
+                            self._first_comment_index_end = self.index
+                elif line[index] in ("'", '"'):
+                    long_quote = line[index:index + 3]
+                    if long_quote in ('"""', "'''"):
+                        self._in_quote = long_quote
+                        index += 2
+                    else:
+                        self._in_quote = line[index]
+                elif line[index] == "#":
+                    break
+                index += 1
+
+        return skip_line or self._in_quote
+
+
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
-        in_quote = False
+        self._in_quote = False
         while not self._at_end():
             line = self._get_line()
-            skip_line = in_quote
-            if '"' in line or "'" in line:
-                index = 0
-                if self._first_comment_index_start == -1:
-                    self._first_comment_index_start = self.index
-                while index < len(line):
-                    if line[index] == "\\":
-                        index += 1
-                    elif in_quote:
-                        if line[index:index + len(in_quote)] == in_quote:
-                            in_quote = False
-                            if self._first_comment_index_end == -1:
-                                self._first_comment_index_end = self.index
-                    elif line[index] in ("'", '"'):
-                        long_quote = line[index:index + 3]
-                        if long_quote in ('"""', "'''"):
-                            in_quote = long_quote
-                            index += 2
-                        else:
-                            in_quote = line[index]
-                    elif line[index] == "#":
-                        break
-                    index += 1
+            skip_line = self._skip_line(line)
 
             if line in self._section_comments and not skip_line:
                 if self.import_index == -1:

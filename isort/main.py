@@ -48,6 +48,8 @@ def main():
     parser.add_argument('-l', '--lines', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
+    parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
+                        dest='not_skip', action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
     parser.add_argument('-b', '--builtin', dest='known_standard_library', action='append',
@@ -64,6 +66,8 @@ def main():
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
                              'automatically determining correct placement.')
+    parser.add_argument('-af', '--force_adds', dest='force_adds', action='store_true',
+                        help='Forces import adds even if the original file is empty.')
     parser.add_argument('-r', '--remove_import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-ls', '--length_sort', help='Sort imports by their string length.',
@@ -89,6 +93,8 @@ def main():
                         action='store_true', help='Order imports by type in addition to alphabetically')
     parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
+    parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
+                        help="Ensures that if a star import is present, nothing else is imported from that namespace.")
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
