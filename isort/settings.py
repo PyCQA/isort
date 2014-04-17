@@ -82,7 +82,8 @@ default = {'force_to_top': [],
            'order_by_type': False,
            'atomic': False,
            'lines_after_imports': -1,
-           'combine_as_imports': False}
+           'combine_as_imports': False,
+           'combine_star': False}
 
 
 @lru_cache()
