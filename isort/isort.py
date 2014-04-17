@@ -125,12 +125,12 @@ class SortImports(object):
         self.output = "\n".join(self.out_lines)
         if self.config.get('atomic', False):
             try:
-                compile(self.output, self.file_path, 'exec', 0, 1)
+                compile(self._strip_top_comments(self.out_lines), self.file_path, 'exec', 0, 1)
             except SyntaxError:
                 self.output = file_contents
                 self.incorrectly_sorted = True
                 try:
-                    compile(file_contents, self.file_path, 'exec', 0, 1)
+                    compile(self._strip_top_comments(self.in_lines), self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
                           format(self.file_path), file=stderr)
                 except SyntaxError:
@@ -154,6 +154,14 @@ class SortImports(object):
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
+
+    @staticmethod
+    def _strip_top_comments(lines):
+        """Strips # comments that exist at the top of the given lines"""
+        lines = copy.copy(lines)
+        while lines and lines[0].startswith("#"):
+            lines = lines[1:]
+        return "\n".join(lines)
 
     def _should_skip(self, filename):
         """Returns True if the file should be skipped based on the loaded settings."""
