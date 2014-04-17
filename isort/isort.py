@@ -97,8 +97,9 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        for add_import in self.add_imports:
-            self.in_lines.append(add_import)
+        if self.in_lines:
+            for add_import in self.add_imports:
+                self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
