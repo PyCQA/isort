@@ -92,7 +92,7 @@ def main():
     parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
-                        help="Ensures the if a star import is imported, nothing else is imported from that namespace.")
+                        help="Ensures that if a star import is present, nothing else is imported from that namespace.")
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
