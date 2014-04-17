@@ -911,4 +911,3 @@ def test_import_star():
     assert SortImports(file_contents=test_input).output == ("from blah import *\n"
                                                             "from blah import _potato\n")
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
-

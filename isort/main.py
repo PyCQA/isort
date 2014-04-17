@@ -48,6 +48,8 @@ def main():
     parser.add_argument('-l', '--lines', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
+    parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
+                        dest='not_skip', action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
     parser.add_argument('-b', '--builtin', dest='known_standard_library', action='append',
