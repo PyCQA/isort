@@ -378,7 +378,6 @@ class SortImports(object):
             for line in self.out_lines[imports_tail:]:
                 if not self._skip_line(line) and not line.strip().startswith("#") and line.strip():
                     next_construct = line
-                    print(next_construct)
                     break
 
             if self.config['lines_after_imports'] != -1:
