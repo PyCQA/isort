@@ -911,3 +911,12 @@ def test_import_star():
     assert SortImports(file_contents=test_input).output == ("from blah import *\n"
                                                             "from blah import _potato\n")
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
+
+
+def test_simular_to_std_library():
+    """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
+    test_input = ("import datetime\n"
+                  "\n"
+                  "import requests\n"
+                  "import times\n")
+    assert SortImports(file_contents=test_input, known_third_party=["requests", "times"]).output == test_input
