@@ -183,10 +183,9 @@ class SortImports(object):
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
 
-        index = moduleName.find('.')
-        if index:
-            firstPart = moduleName[:index]
-        else:
+        try:
+            firstPart = moduleName.split('.')[0]
+        except IndexError:
             firstPart = None
 
         for forced_separate in self.config['forced_separate']:
