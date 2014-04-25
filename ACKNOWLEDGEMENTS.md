@@ -30,6 +30,7 @@ Code Contributors
 - Ionel Cristian Mărieș (@ionelmc)
 - Chris Adams (@acdha)
 - GuoJing (@GuoJing)
+- George Hickman (@ghickman)
 
 --------------------------------------------
 
