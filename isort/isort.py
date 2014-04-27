@@ -38,11 +38,11 @@ from sys import stderr, stdout
 from natsort import natsorted
 from pies.overrides import *
 
-from . import settings
+from . import _importmagic, settings
 
 SECTION_NAMES = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 SECTIONS = namedtuple('Sections', SECTION_NAMES)(*range(len(SECTION_NAMES)))
-
+_IMPORT_MAGIC_INDEX = None
 
 class SortImports(object):
     incorrectly_sorted = False
@@ -64,6 +64,13 @@ class SortImports(object):
                     self.config[access_key] = list(set(self.config[access_key]).union(value))
             else:
                 self.config[key] = value
+
+
+        if _importmagic.installed and self.config['magic_add'] or self.config['magic_remove']:
+            global _IMPORT_MAGIC_INDEX
+            if not _IMPORT_MAGIC_INDEX:
+                _IMPORT_MAGIC_INDEX = _importmagic.index.SymbolIndex()
+                _IMPORT_MAGIC_INDEX.build_index(PYTHONPATH)
 
         indent = str(self.config['indent'])
         if indent.isdigit():
