@@ -26,7 +26,7 @@ import sys
 
 from pies.overrides import *
 
-from isort import SECTION_NAMES, SortImports, __version__
+from isort import SECTION_NAMES, SortImports, __version__, _importmagic
 
 
 def iter_source_code(paths):
@@ -95,6 +95,11 @@ def main():
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
                         help="Ensures that if a star import is present, nothing else is imported from that namespace.")
+    if _importmagic.installed:
+        parser.add_argument('-ma', '--magic-add', dest='magic_add', action='store_true',
+                            help='Use importmagic to "magically" add imports that are used but not imported.')
+        parser.add_argument('-mr', '--magic-remove', dest='magic_remove', action='store_true',
+                            help='Use importmagic to "magically" remove imports that are imported but not used.')
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
