@@ -22,6 +22,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 try:
     from importmagic import *
+    from importmagic import index
     installed = True
 except ImportError:
     installed = False
