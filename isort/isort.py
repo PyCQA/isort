@@ -103,7 +103,7 @@ class SortImports(object):
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
-        self.comments = {'from': {}, 'straight': {}}
+        self.comments = {'from': {}, 'straight': {}, 'nested': {}}
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
