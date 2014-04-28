@@ -920,3 +920,11 @@ def test_similar_to_std_library():
                   "import requests\n"
                   "import times\n")
     assert SortImports(file_contents=test_input, known_third_party=["requests", "times"]).output == test_input
+
+
+def test_correctly_placed_imports():
+    """Test to ensure comments stay on correct placement after being sorted"""
+    test_input = ("from a import b # comment for b\n",
+                  "from a import c # comment for c\n")
+    assert SortImports(file_contents=test_input).output == ("from a import (b, # comment for b\n"
+                                                            "               c) # comment for c\n")
