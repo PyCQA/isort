@@ -516,6 +516,12 @@ class SortImports(object):
 
         return skip_line or self._in_quote
 
+    def _strip_syntax(self, import_string):
+        import_string = import_string.replace("_import", "[[i]]")
+        for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
+            import_string = import_string.replace(remove_syntax, " ")
+        import_string = import_string.replace("[[i]]", "_import")
+        return import_string
 
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
@@ -541,6 +547,7 @@ class SortImports(object):
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
                     line, comments = self._strip_comments(self._get_line(), comments)
+                    if line.replace("import ", "").line.replace("from")
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
@@ -555,12 +562,7 @@ class SortImports(object):
                 from_import = parts[0].split(" ")
                 import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
-            import_string = import_string.replace("_import", "[[i]]")
-            for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
-                import_string = import_string.replace(remove_syntax, " ")
-            import_string = import_string.replace("[[i]]", "_import")
-
-            imports = import_string.split()
+            imports = self._strip_syntax(import_string).split()
             if "as" in imports and (imports.index('as') + 1) < len(imports):
                 while "as" in imports:
                     index = imports.index('as')
