@@ -547,7 +547,6 @@ class SortImports(object):
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
                     line, comments = self._strip_comments(self._get_line(), comments)
-                    if line.replace("import ", "").line.replace("from")
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
