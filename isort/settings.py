@@ -113,7 +113,7 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
 
 
 def _update_with_config_file(file_path, sections, computed_settings):
-    settings = _get_config_data(file_path, sections)
+    settings = _get_config_data(file_path, sections).copy()
     if not settings:
         return
 
@@ -166,4 +166,4 @@ def _get_config_data(file_path, sections):
 
         return settings
 
-    return None
+    return {}

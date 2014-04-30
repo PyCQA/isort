@@ -103,7 +103,7 @@ class SortImports(object):
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
-        self.comments = {'from': {}, 'straight': {}}
+        self.comments = {'from': {}, 'straight': {}, 'nested': {}}
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
@@ -325,14 +325,33 @@ class SortImports(object):
                     if "*" in from_imports and self.config['combine_star']:
                         import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                     elif self.config['force_single_line']:
-                        import_statement = self._wrap(self._add_comments(comments, import_start + from_imports.pop(0)))
+                        import_statements = []
                         for from_import in from_imports:
-                            import_statement += "\n{0}{1}".format(import_start, from_import)
+                            single_import_line = self._add_comments(comments, import_start + from_import)
+                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                            if comment:
+                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                            import_statements.append(self._wrap(single_import_line))
                             comments = None
+                        import_statement = "\n".join(import_statements)
                     else:
+                        star_import = False
                         if "*" in from_imports:
                             section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
                             from_imports.remove('*')
+                            star_import = True
+                            comments = None
+
+                        for from_import in copy.copy(from_imports):
+                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                            if comment:
+                                single_import_line = self._add_comments(comments, import_start + from_import)
+                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                                section_output.append(self._wrap(single_import_line))
+                                from_imports.remove(from_import)
+                                comments = None
+
+                        if star_import:
                             import_statement = import_start + (", ").join(from_imports)
                         else:
                             import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
@@ -459,12 +478,14 @@ class SortImports(object):
         if comments is None:
             comments = []
 
+        new_comments = False
         comment_start = line.find("#")
         if comment_start != -1:
             comments.append(line[comment_start + 1:].strip())
+            new_comments = True
             line = line[:comment_start]
 
-        return line, comments
+        return line, comments, new_comments
 
     @staticmethod
     def _format_simplified(import_line):
@@ -516,6 +537,12 @@ class SortImports(object):
 
         return skip_line or self._in_quote
 
+    def _strip_syntax(self, import_string):
+        import_string = import_string.replace("_import", "[[i]]")
+        for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
+            import_string = import_string.replace(remove_syntax, " ")
+        import_string = import_string.replace("[[i]]", "_import")
+        return import_string
 
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
@@ -537,14 +564,26 @@ class SortImports(object):
             if self.import_index == -1:
                 self.import_index = self.index - 1
 
-            import_string, comments = self._strip_comments(line)
+            nested_comments = {}
+            import_string, comments, new_comments = self._strip_comments(line)
+            stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
+
+            if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
+                nested_comments[stripped_line[-1]] = comments[0]
+
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
-                    line, comments = self._strip_comments(self._get_line(), comments)
+                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                    stripped_line = self._strip_syntax(line).strip()
+                    if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                        nested_comments[stripped_line] = comments[-1]
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
-                    line, comments = self._strip_comments(self._get_line(), comments)
+                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                    stripped_line = self._strip_syntax(line).strip()
+                    if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                        nested_comments[stripped_line] = comments[-1]
                     if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                         import_string += "\n" + line
                     else:
@@ -555,12 +594,7 @@ class SortImports(object):
                 from_import = parts[0].split(" ")
                 import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
-            import_string = import_string.replace("_import", "[[i]]")
-            for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
-                import_string = import_string.replace(remove_syntax, " ")
-            import_string = import_string.replace("[[i]]", "_import")
-
-            imports = import_string.split()
+            imports = self._strip_syntax(import_string).split()
             if "as" in imports and (imports.index('as') + 1) < len(imports):
                 while "as" in imports:
                     index = imports.index('as')
@@ -572,6 +606,11 @@ class SortImports(object):
             if import_type == "from":
                 import_from = imports.pop(0)
                 root = self.imports[self.place_module(import_from)][import_type]
+                for import_name in imports:
+                    associated_commment = nested_comments.get(import_name)
+                    if associated_commment:
+                        self.comments['nested'].setdefault(import_from, {})[import_name] = associated_commment
+                        comments.pop(comments.index(associated_commment))
                 if comments:
                     self.comments['from'].setdefault(import_from, []).extend(comments)
                 if root.get(import_from, False):
