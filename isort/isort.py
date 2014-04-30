@@ -330,14 +330,28 @@ class SortImports(object):
                             single_import_line = self._add_comments(comments, import_start + from_import)
                             comment = self.comments['nested'].get(module, {}).get(from_import, None)
                             if comment:
-                                single_import_line += "{0} {1}".format(comments and "," or "  #", comment)
+                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
                             import_statements.append(self._wrap(single_import_line))
                             comments = None
                         import_statement = "\n".join(import_statements)
                     else:
+                        star_import = False
                         if "*" in from_imports:
                             section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
                             from_imports.remove('*')
+                            star_import = True
+                            comments = None
+
+                        for from_import in copy.copy(from_imports):
+                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                            if comment:
+                                single_import_line = self._add_comments(comments, import_start + from_import)
+                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                                section_output.append(self._wrap(single_import_line))
+                                from_imports.remove(from_import)
+                                comments = None
+
+                        if star_import:
                             import_statement = import_start + (", ").join(from_imports)
                         else:
                             import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))

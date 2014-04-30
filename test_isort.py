@@ -929,5 +929,5 @@ def test_correctly_placed_imports():
     assert SortImports(file_contents=test_input, force_single_line=True).output == \
                       ("from a import b  # comment for b\n"
                        "from a import c  # comment for c\n")
-    assert SortImports(file_contents=test_input).output == ("from a import (b, # comment for b\n"
-                                                            "               c) # comment for c\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b  # comment for b\n"
+                                                            "from a import c  # comment for c\n")
