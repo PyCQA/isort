@@ -546,7 +546,7 @@ class SortImports(object):
             nested_comments = {}
             import_string, comments = self._strip_comments(line)
             stripped_line = [line for line in self._strip_syntax(import_string).strip().split(" ") if line]
-            print(import_type, stripped_line)
+
             if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and comments:
                 nested_comments[stripped_line[-1]] = comments[0]
 
@@ -587,7 +587,6 @@ class SortImports(object):
             if import_type == "from":
                 import_from = imports.pop(0)
                 root = self.imports[self.place_module(import_from)][import_type]
-                print(nested_comments)
                 for import_name in imports:
                     associated_commment = nested_comments.get(import_name)
                     if associated_commment:
