@@ -874,22 +874,23 @@ def test_keep_comments():
 
     # More complicated case
     test_input = ("from a import b  # My Comment1\n"
-                            "from a import c  # My Comment2\n")
+                  "from a import c  # My Comment2\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == \
-                      ("from a import b, c  # My Comment1; My Comment2\n")
+                      ("from a import b  # My Comment1\n"
+                       "from a import c  # My Comment2\n")
 
     # Test case where imports comments make imports extend pass the line length
     test_input = ("from a import b # My Comment1\n"
-                            "from a import c # My Comment2\n"
-                            "from a import d\n")
+                  "from a import c # My Comment2\n"
+                  "from a import d\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
-                      ("from a import (b,  # My Comment1; My Comment2\n"
-                       "               c, d)\n")
+                      ("from a import b  # My Comment1\n"
+                       "from a import c  # My Comment2\n"
+                       "from a import d\n")
 
     # Test case where imports with comments will be beyond line length limit
-    test_input = ("from a import b  # My Comment1\n"
-                            "from a import c # My Comment2 is really really really really long\n"
-                            "from a import d\n")
+    test_input = ("from a import b, c  # My Comment1\n"
+                  "from a import c, d # My Comment2 is really really really really long\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
                       ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
@@ -920,3 +921,60 @@ def test_similar_to_std_library():
                   "import requests\n"
                   "import times\n")
     assert SortImports(file_contents=test_input, known_third_party=["requests", "times"]).output == test_input
+
+
+def test_correctly_placed_imports():
+    """Test to ensure comments stay on correct placement after being sorted"""
+    test_input = ("from a import b # comment for b\n"
+                  "from a import c # comment for c\n")
+    assert SortImports(file_contents=test_input, force_single_line=True).output == \
+                      ("from a import b  # comment for b\n"
+                       "from a import c  # comment for c\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b  # comment for b\n"
+                                                            "from a import c  # comment for c\n")
+
+    # Full example test from issue #143
+    test_input = ("from itertools import chain\n"
+                  "\n"
+                  "from django.test import TestCase\n"
+                  "from model_mommy import mommy\n"
+                  "\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_d"
+                  "efinition\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_d"
+                  "efinition_platform\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_p"
+                  "latform\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_territory_reta"
+                  "il_model\n"
+                  "from apps.clientman.commands.download_usage_rights import associate_right_for_territory_reta"
+                  "il_model_definition_platform_provider  # noqa\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_defini"
+                  "tion\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_defini"
+                  "tion_platform\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_platfo"
+                  "rm\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_territory_retail_mo"
+                  "del\n"
+                  "from apps.clientman.commands.download_usage_rights import clear_right_for_territory_retail_mo"
+                  "del_definition_platform_provider  # noqa\n"
+                  "from apps.clientman.commands.download_usage_rights import create_download_usage_right\n"
+                  "from apps.clientman.commands.download_usage_rights import delete_download_usage_right\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_d"
+                  "efinition\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_d"
+                  "efinition_platform\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_p"
+                  "latform\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_territory_reta"
+                  "il_model\n"
+                  "from apps.clientman.commands.download_usage_rights import disable_download_for_territory_reta"
+                  "il_model_definition_platform_provider  # noqa\n"
+                  "from apps.clientman.commands.download_usage_rights import get_download_rights_for_item\n"
+                  "from apps.clientman.commands.download_usage_rights import get_right\n")
+    assert SortImports(file_contents=test_input, force_single_line=True, line_length=140,
+                       known_third_party=["django", "model_mommy"]).output == test_input
