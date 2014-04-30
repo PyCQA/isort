@@ -478,12 +478,14 @@ class SortImports(object):
         if comments is None:
             comments = []
 
+        new_comments = False
         comment_start = line.find("#")
         if comment_start != -1:
             comments.append(line[comment_start + 1:].strip())
+            new_comments = True
             line = line[:comment_start]
 
-        return line, comments
+        return line, comments, new_comments
 
     @staticmethod
     def _format_simplified(import_line):
@@ -563,27 +565,25 @@ class SortImports(object):
                 self.import_index = self.index - 1
 
             nested_comments = {}
-            import_string, comments = self._strip_comments(line)
+            import_string, comments, new_comments = self._strip_comments(line)
             stripped_line = [line for line in self._strip_syntax(import_string).strip().split(" ") if line]
 
-            if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and comments:
+            if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
                 nested_comments[stripped_line[-1]] = comments[0]
 
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
-                    line, new_comments = self._strip_comments(self._get_line())
+                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
                     stripped_line = self._strip_syntax(line).strip()
                     if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
-                        nested_comments[stripped_line] = new_comments[0]
-                    comments.extend(new_comments)
+                        nested_comments[stripped_line] = comments[-1]
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
-                    line, new_comments = self._strip_comments(self._get_line())
-                    comments.extend(new_comments)
+                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
                     stripped_line = self._strip_syntax(line).strip()
                     if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
-                        nested_comments[stripped_line] = new_comments[0]
+                        nested_comments[stripped_line] = comments[-1]
                     if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                         import_string += "\n" + line
                     else:
