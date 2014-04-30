@@ -54,13 +54,15 @@ def sort_kate_imports(add_imports=(), remove_imports=()):
     view.setCursorPosition(position)
 
 
-@kate.action(text="Sort Imports", shortcut="Ctrl+[", menu="Python")
+@kate.action
 def sort_imports():
+    """Sort Imports"""
     sort_kate_imports()
 
 
-@kate.action(text="Add Import", shortcut="Ctrl+]", menu="Python")
+@kate.action
 def add_imports():
+    """Add Imports"""
     text, ok = QtGui.QInputDialog.getText(None,
                                           'Add Import',
                                           'Enter an import line to add (example: from os import path or os.path):')
@@ -68,8 +70,9 @@ def add_imports():
         sort_kate_imports(add_imports=text.split(";"))
 
 
-@kate.action(text="Remove Import", shortcut="Ctrl+Shift+]", menu="Python")
+@kate.action
 def remove_imports():
+    """Remove Imports"""
     text, ok = QtGui.QInputDialog.getText(None,
                                           'Remove Import',
                                           'Enter an import line to remove (example: os.path or from os import path):')
