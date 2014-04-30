@@ -325,10 +325,15 @@ class SortImports(object):
                     if "*" in from_imports and self.config['combine_star']:
                         import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                     elif self.config['force_single_line']:
-                        import_statement = self._wrap(self._add_comments(comments, import_start + from_imports.pop(0)))
+                        import_statements = []
                         for from_import in from_imports:
-                            import_statement += "\n{0}{1}".format(import_start, from_import)
+                            single_import_line = self._add_comments(comments, import_start + from_import)
+                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                            if comment:
+                                single_import_line += "{0} {1}".format(comments and "," or "  #", comment)
+                            import_statements.append(self._wrap(single_import_line))
                             comments = None
+                        import_statement = "\n".join(import_statements)
                     else:
                         if "*" in from_imports:
                             section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
