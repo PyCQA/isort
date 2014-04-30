@@ -255,7 +255,7 @@ class SortImports(object):
         """
             Returns a string with comments added
         """
-        return comments and "{0}  # {1}".format(self._strip_comments(original_string)[0],
+        return comments and "{0}  # {1}".format(self._strip_comment(original_string)[0],
                                                "; ".join(comments)) or original_string
 
     def _wrap(self, line):
@@ -454,17 +454,15 @@ class SortImports(object):
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + "\n)"
 
     @staticmethod
-    def _strip_comments(line, comments=None):
-        """Removes comments from import line."""
-        if comments is None:
-            comments = []
-
+    def _strip_comment(line):
+        """Removes comment from import line."""
+        comment = None
         comment_start = line.find("#")
         if comment_start != -1:
-            comments.append(line[comment_start + 1:].strip())
+            comment = line[comment_start + 1:].strip()
             line = line[:comment_start]
 
-        return line, comments
+        return line, comment
 
     @staticmethod
     def _format_simplified(import_line):
@@ -543,14 +541,18 @@ class SortImports(object):
             if self.import_index == -1:
                 self.import_index = self.index - 1
 
-            import_string, comments = self._strip_comments(line)
+            comments = []
+            import_string, comment = self._strip_comment(line)
+            comments.append(comment)
             if "(" in line and not self._at_end():
                 while not line.strip().endswith(")") and not self._at_end():
-                    line, comments = self._strip_comments(self._get_line(), comments)
+                    line, comment = self._strip_comment(self._get_line(), comments)
+                    comments.append(comment)
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
-                    line, comments = self._strip_comments(self._get_line(), comments)
+                    line, comment = self._strip_comment(self._get_line(), comments)
+                    comments.append(comment)
                     if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                         import_string += "\n" + line
                     else:
