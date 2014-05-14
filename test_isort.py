@@ -990,3 +990,6 @@ def test_auto_detection():
                   "import cv2\n"
                   "import requests\n")
     assert SortImports(file_contents=test_input, known_third_party=["cv2", "requests"]).output == test_input
+
+    # alternative solution
+    assert SortImports(file_contents=test_input, default_section="THIRDPARTY").output == test_input
