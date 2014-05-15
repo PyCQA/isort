@@ -97,9 +97,7 @@ def main():
                         help="Ensures that if a star import is present, nothing else is imported from that namespace.")
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
-                        help='Shows verbose output, including when files are skipped.')
-    parser.add_argument('-eo', '--errors-only', action='store_true', dest="errors_only",
-                        help='Only produce output for errors.')
+                        help='Shows verbose output, such as when files are skipped or when a check is successful.')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     file_names = arguments.pop('files', [])
