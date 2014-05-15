@@ -139,8 +139,9 @@ class SortImports(object):
 
                 return
         if check:
-            if self.output == file_contents and not self.config['errors_only']:
-                print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
+            if self.output == file_contents:
+                if not self.config['errors_only']:
+                    print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
                 print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
                 self.incorrectly_sorted = True
