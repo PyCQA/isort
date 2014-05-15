@@ -581,7 +581,7 @@ def test_check_newline_in_imports(capsys):
                   '    sub3\n)\n')
 
     SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20,
-                check=True)
+                check=True, verbose=True)
     out, err = capsys.readouterr()
     assert 'SUCCESS' in out
 
