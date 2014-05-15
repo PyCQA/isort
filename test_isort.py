@@ -978,3 +978,18 @@ def test_correctly_placed_imports():
                   "from apps.clientman.commands.download_usage_rights import get_right\n")
     assert SortImports(file_contents=test_input, force_single_line=True, line_length=140,
                        known_third_party=["django", "model_mommy"]).output == test_input
+
+
+def test_auto_detection():
+    """Initial test to ensure isort auto-detection works correctly - will grow over time as new issues are raised."""
+
+    # Issue 157
+    test_input = ("import binascii\n"
+                  "import os\n"
+                  "\n"
+                  "import cv2\n"
+                  "import requests\n")
+    assert SortImports(file_contents=test_input, known_third_party=["cv2", "requests"]).output == test_input
+
+    # alternative solution
+    assert SortImports(file_contents=test_input, default_section="THIRDPARTY").output == test_input
