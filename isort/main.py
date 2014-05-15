@@ -98,6 +98,8 @@ def main():
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, including when files are skipped.')
+    parser.add_argument('-eo', '--errors-only', action='store_true', dest="errors_only",
+                        help='Only produce output for errors.')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     file_names = arguments.pop('files', [])
