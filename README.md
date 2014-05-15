@@ -199,7 +199,7 @@ Multi line output modes
 ======================
 
 You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
-past the line_length limit and has 4 possible settings:
+past the line_length limit and has 6 possible settings:
 
 0 - Grid
 
