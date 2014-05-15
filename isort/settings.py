@@ -62,7 +62,8 @@ default = {'force_to_top': [],
                                       "sysconfig", "tabnanny", "tarfile", "tempfile", "textwrap", "threading", "time",
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
-                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__', 'thread'],
+                                      "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__', 'thread',
+                                      "binascii"],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -83,7 +84,8 @@ default = {'force_to_top': [],
            'atomic': False,
            'lines_after_imports': -1,
            'combine_as_imports': False,
-           'combine_star': False}
+           'combine_star': False,
+           'verbose': False}
 
 
 @lru_cache()

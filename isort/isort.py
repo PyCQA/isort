@@ -84,7 +84,8 @@ class SortImports(object):
         if file_path:
             file_path = os.path.abspath(file_path)
             if self._should_skip(file_path):
-                print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path), file=stderr)
+                if self.config['verbose']:
+                    print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path))
                 file_contents = None
             else:
                 self.file_path = file_path
@@ -132,16 +133,17 @@ class SortImports(object):
                 try:
                     compile(self._strip_top_comments(self.in_lines), self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
-                          format(self.file_path), file=stderr)
+                          format(self.file_path))
                 except SyntaxError:
-                    print("ERROR: {0} File contains syntax errors.".format(self.file_path), file=stderr)
+                    print("ERROR: {0} File contains syntax errors.".format(self.file_path))
 
                 return
         if check:
             if self.output == file_contents:
-                print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
+                if self.config['verbose']:
+                    print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
-                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
+                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
                 self.incorrectly_sorted = True
             return
 
