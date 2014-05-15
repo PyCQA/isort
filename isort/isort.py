@@ -133,16 +133,16 @@ class SortImports(object):
                 try:
                     compile(self._strip_top_comments(self.in_lines), self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
-                          format(self.file_path), file=stderr)
+                          format(self.file_path))
                 except SyntaxError:
-                    print("ERROR: {0} File contains syntax errors.".format(self.file_path), file=stderr)
+                    print("ERROR: {0} File contains syntax errors.".format(self.file_path))
 
                 return
         if check:
             if self.output == file_contents and not self.config['errors_only']:
                 print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
-                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path), file=stderr)
+                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
                 self.incorrectly_sorted = True
             return
 
