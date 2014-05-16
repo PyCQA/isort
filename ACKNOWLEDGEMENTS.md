@@ -24,7 +24,7 @@ Code Contributors
 - Antoni Segura Puimedon (@celebdor)
 - Pablo (@oubiga)
 - Oskar Hahn (@ostcar)
-- Wim Glenn @wimglenn
+- Wim Glenn (@wimglenn)
 - Matt Caldwell (@mattcaldwell)
 - Dwayne Bailey (@dwaynebailey)
 - Ionel Cristian Mărieș (@ionelmc)
