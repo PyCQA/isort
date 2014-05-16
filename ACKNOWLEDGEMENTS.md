@@ -12,6 +12,8 @@ Notable Bug Reporters
 ===================
 - Bengt Lüers (@Bengt)
 - Chris Adams (@acdha)
+- @OddBloke
+- Martin Geisler (@mgeisler)
 
 Code Contributors
 ===================
