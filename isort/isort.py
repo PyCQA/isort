@@ -229,6 +229,10 @@ class SortImports(object):
         """If the current line is an import line it will return its type (from or straight)"""
         if "isort:skip" in line:
             return
+        if ";" in line:
+            for part in (part.strip() for part in line.split(";")):
+                if part and not part.startswith("from ") and not part.startswith("import "):
+                    return
         elif line.startswith('import '):
             return "straight"
         elif line.startswith('from '):
