@@ -229,10 +229,6 @@ class SortImports(object):
         """If the current line is an import line it will return its type (from or straight)"""
         if "isort:skip" in line:
             return
-        if ";" in line:
-            for part in (part.strip() for part in line.split(";")):
-                if part and not part.startswith("from ") and not part.startswith("import "):
-                    return
         elif line.startswith('import '):
             return "straight"
         elif line.startswith('from '):
@@ -562,70 +558,80 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
+            if ";" in line:
+                for part in (part.strip() for part in line.split(";")):
+                    if part and not part.startswith("from ") and not part.startswith("import "):
+                        skip_line = True
+
             import_type = self._import_type(line)
             if not import_type or skip_line:
                 self.out_lines.append(line)
                 continue
 
-            if self.import_index == -1:
-                self.import_index = self.index - 1
+            for line in (line.strip() for line in line.split(";")):
+                import_type = self._import_type(line)
+                if not import_type:
+                    self.out_lines.append(line)
+                    continue
+                if self.import_index == -1:
+                    self.import_index = self.index - 1
 
-            nested_comments = {}
-            import_string, comments, new_comments = self._strip_comments(line)
-            stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
+                nested_comments = {}
+                import_string, comments, new_comments = self._strip_comments(line)
+                stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
 
-            if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
-                nested_comments[stripped_line[-1]] = comments[0]
+                if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
+                    nested_comments[stripped_line[-1]] = comments[0]
 
-            if "(" in line and not self._at_end():
-                while not line.strip().endswith(")") and not self._at_end():
-                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
-                    stripped_line = self._strip_syntax(line).strip()
-                    if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
-                        nested_comments[stripped_line] = comments[-1]
-                    import_string += "\n" + line
-            else:
-                while line.strip().endswith("\\"):
-                    line, comments, new_comments = self._strip_comments(self._get_line(), comments)
-                    stripped_line = self._strip_syntax(line).strip()
-                    if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
-                        nested_comments[stripped_line] = comments[-1]
-                    if import_string.strip().endswith(" import") or line.strip().startswith("import "):
+                if "(" in line and not self._at_end():
+                    while not line.strip().endswith(")") and not self._at_end():
+                        line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                        stripped_line = self._strip_syntax(line).strip()
+                        if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                            nested_comments[stripped_line] = comments[-1]
                         import_string += "\n" + line
-                    else:
-                        import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
-
-            if import_type == "from":
-                parts = import_string.split(" import ")
-                from_import = parts[0].split(" ")
-                import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
-
-            imports = self._strip_syntax(import_string).split()
-            if "as" in imports and (imports.index('as') + 1) < len(imports):
-                while "as" in imports:
-                    index = imports.index('as')
-                    if import_type == "from":
-                        self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
-                    else:
-                        self.as_map[imports[index - 1]] = imports[index + 1]
-                    del imports[index:index + 2]
-            if import_type == "from":
-                import_from = imports.pop(0)
-                root = self.imports[self.place_module(import_from)][import_type]
-                for import_name in imports:
-                    associated_commment = nested_comments.get(import_name)
-                    if associated_commment:
-                        self.comments['nested'].setdefault(import_from, {})[import_name] = associated_commment
-                        comments.pop(comments.index(associated_commment))
-                if comments:
-                    self.comments['from'].setdefault(import_from, []).extend(comments)
-                if root.get(import_from, False):
-                    root[import_from].update(imports)
                 else:
-                    root[import_from] = set(imports)
-            else:
-                for module in imports:
+                    while line.strip().endswith("\\"):
+                        line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                        stripped_line = self._strip_syntax(line).strip()
+                        if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                            nested_comments[stripped_line] = comments[-1]
+                        if import_string.strip().endswith(" import") or line.strip().startswith("import "):
+                            import_string += "\n" + line
+                        else:
+                            import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
+
+                if import_type == "from":
+                    parts = import_string.split(" import ")
+                    from_import = parts[0].split(" ")
+                    import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
+
+                imports = self._strip_syntax(import_string).split()
+                if "as" in imports and (imports.index('as') + 1) < len(imports):
+                    while "as" in imports:
+                        index = imports.index('as')
+                        if import_type == "from":
+                            self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
+                        else:
+                            self.as_map[imports[index - 1]] = imports[index + 1]
+                        del imports[index:index + 2]
+                if import_type == "from":
+                    import_from = imports.pop(0)
+                    root = self.imports[self.place_module(import_from)][import_type]
+                    for import_name in imports:
+                        associated_commment = nested_comments.get(import_name)
+                        if associated_commment:
+                            self.comments['nested'].setdefault(import_from, {})[import_name] = associated_commment
+                            comments.pop(comments.index(associated_commment))
                     if comments:
-                        self.comments['straight'][module] = comments
-                        comments = None
-                    self.imports[self.place_module(module)][import_type].add(module)
+                        self.comments['from'].setdefault(import_from, []).extend(comments)
+                    if root.get(import_from, False):
+                        root[import_from].update(imports)
+                    else:
+                        root[import_from] = set(imports)
+                else:
+                    for module in imports:
+                        if comments:
+                            self.comments['straight'][module] = comments
+                            comments = None
+                        self.imports[self.place_module(module)][import_type].add(module)
