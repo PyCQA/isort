@@ -993,3 +993,15 @@ def test_auto_detection():
 
     # alternative solution
     assert SortImports(file_contents=test_input, default_section="THIRDPARTY").output == test_input
+
+
+def test_same_line_statements():
+    """Ensure isort correctly handles the case where a single line contains multiple statements including an import"""
+    test_input = ("import pdb; import nose\n")
+    assert SortImports(file_contents=test_input).output == ("import pdb\n"
+                                                            "\n"
+                                                            "import nose\n")
+
+    test_input = ("import pdb; pdb.set_trace()\n"
+                  "import nose; nose.run()\n")
+    assert SortImports(file_contents=test_input).output == test_input

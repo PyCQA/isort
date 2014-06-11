@@ -199,7 +199,7 @@ Multi line output modes
 ======================
 
 You will notice above the "multi_line_output" setting. This setting defines how from imports wrap when they extend
-past the line_length limit and has 4 possible settings:
+past the line_length limit and has 6 possible settings:
 
 0 - Grid
 
@@ -379,10 +379,10 @@ Using isort to verify code
 isort can also be used to used to verify that code is correctly formatted by running it with -c.
 Any files that contain incorrectly sorted imports will be outputted to stderr.
 
-    isort **/*.py -c
+    isort **/*.py -c -vb
 
-    SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good! (stdout)
-    ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted. (stderr)
+    SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good!
+    ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted.
 
 One great place this can be used is with a pre-commit git hook, such as this one by @acdha:
 
