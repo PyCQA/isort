@@ -107,7 +107,10 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
             editor_config_file = potential_path
             break
 
-        current_directory = os.path.split(current_directory)[0]
+        new_directory = os.path.split(current_directory)[0]
+        if current_directory == new_directory:
+            break
+        current_directory = new_directory
         tries += 1
 
     if editor_config_file and os.path.exists(editor_config_file):
