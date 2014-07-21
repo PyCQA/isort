@@ -10,7 +10,7 @@
 isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
-It provides a command line utility, Python library, Vim plugin, Sublime plugin, and Kate plugin to quickly sort all your imports.
+It provides a command line utility, Python library and [plugins for various editors](#installing-isorts-for-your-preferred-text-editor) to quickly sort all your imports.
 It currently cleanly supports Python 2.6 - 3.4 using pies (https://github.com/timothycrosley/pies) to achieve this without ugly hacks and/or py2to3.
 
 Before isort:
@@ -180,7 +180,7 @@ To configure isort for a single user create a ~/.isort.cfg file:
     default_section=FIRSTPARTY
 
 Additionally, you can specify project level configuration simply by placing a .isort.cfg file at the root of your
-project. isort will look up to 25 directories up, from the one it is ran, to find a project specific configuration.
+project. isort will look up to 25 directories up, from the the file it is ran against, to find a project specific configuration.
 
 Or, if you prefer, you can add an isort section to your project's setup.cfg with any desired settings.
 
