@@ -98,6 +98,8 @@ def main():
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
+    parser.add_argument('-sp', '--settings-path',  dest="settings_path",
+                        help='Explicitly set the settings path instead of auto determining based on file location.')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     file_names = arguments.pop('files', [])
