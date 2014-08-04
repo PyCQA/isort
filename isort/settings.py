@@ -43,7 +43,7 @@ WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
            'skip': ['__init__.py', ],
-           'line_length': 80,
+           'line_length': 79,
            'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncore", "atexit", "base64",
                                       "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb", "cmd", "codecs",
                                       "collections", "commands", "compileall", "ConfigParser", "contextlib", "Cookie",
