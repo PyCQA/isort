@@ -895,6 +895,19 @@ def test_keep_comments():
                       ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
 
+    # Test that comments are not stripped from 'import ... as ...' by default
+    test_input = ("from a import b as bb  # b comment\n"
+                  "from a import c as cc  # c comment\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    # Test that 'import ... as ...' comments are not collected inappropriately
+    test_input = ("from a import b as bb  # b comment\n"
+                  "from a import c as cc  # c comment\n"
+                  "from a import d\n")
+    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == (
+        "from a import b as bb, c as cc, d  # b comment; c comment\n"
+    )
 
 def test_multiline_split_on_dot():
     """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
