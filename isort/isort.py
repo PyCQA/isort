@@ -311,7 +311,8 @@ class SortImports(object):
                                     self.remove_imports]
 
                 for from_import in copy.copy(from_imports):
-                    import_as = self.as_map.get(module + "." + from_import, False)
+                    submodule = module + "." + from_import
+                    import_as = self.as_map.get(submodule, False)
                     if import_as:
                         import_definition = "{0} as {1}".format(from_import, import_as)
                         if self.config['combine_as_imports'] and not ("*" in from_imports and
@@ -319,6 +320,8 @@ class SortImports(object):
                             from_imports[from_imports.index(from_import)] = import_definition
                         else:
                             import_statement = self._wrap(import_start + import_definition)
+                            comments = self.comments['straight'].get(submodule)
+                            import_statement = self._add_comments(comments, import_statement)
                             section_output.append(import_statement)
                             from_imports.remove(from_import)
 
@@ -611,9 +614,14 @@ class SortImports(object):
                     while "as" in imports:
                         index = imports.index('as')
                         if import_type == "from":
-                            self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
+                            module = imports[0] + "." + imports[index - 1]
+                            self.as_map[module] = imports[index + 1]
                         else:
-                            self.as_map[imports[index - 1]] = imports[index + 1]
+                            module = imports[index - 1]
+                            self.as_map[module] = imports[index + 1]
+                        if not self.config['combine_as_imports']:
+                            self.comments['straight'][module] = comments
+                            comments = []
                         del imports[index:index + 2]
                 if import_type == "from":
                     import_from = imports.pop(0)
