@@ -858,24 +858,24 @@ def test_keep_comments():
     """Test to ensure isort properly keeps comments in tact after sorting."""
     # Straight Import
     test_input = ("import foo  # bar\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+    assert SortImports(file_contents=test_input).output == test_input
 
     # Star import
     test_input_star = ("from foo import *  # bar\n")
-    assert SortImports(file_contents=test_input_star, combine_as_imports=True).output == test_input_star
+    assert SortImports(file_contents=test_input_star).output == test_input_star
 
     # Force Single Line From Import
     test_input = ("from foo import bar  # comment\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, force_single_line=True).output == test_input
+    assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
     # From import
     test_input = ("from foo import bar  # My Comment\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+    assert SortImports(file_contents=test_input).output == test_input
 
     # More complicated case
     test_input = ("from a import b  # My Comment1\n"
                   "from a import c  # My Comment2\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == \
+    assert SortImports(file_contents=test_input).output == \
                       ("from a import b  # My Comment1\n"
                        "from a import c  # My Comment2\n")
 
@@ -883,7 +883,7 @@ def test_keep_comments():
     test_input = ("from a import b # My Comment1\n"
                   "from a import c # My Comment2\n"
                   "from a import d\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+    assert SortImports(file_contents=test_input, line_length=45).output == \
                       ("from a import b  # My Comment1\n"
                        "from a import c  # My Comment2\n"
                        "from a import d\n")
@@ -891,7 +891,7 @@ def test_keep_comments():
     # Test case where imports with comments will be beyond line length limit
     test_input = ("from a import b, c  # My Comment1\n"
                   "from a import c, d # My Comment2 is really really really really long\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+    assert SortImports(file_contents=test_input, line_length=45).output == \
                       ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
 
