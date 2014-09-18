@@ -33,6 +33,7 @@ Code Contributors
 - Chris Adams (@acdha)
 - GuoJing (@GuoJing)
 - George Hickman (@ghickman)
+- Dan Davison (@dandavison)
 
 --------------------------------------------
 
