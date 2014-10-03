@@ -147,7 +147,7 @@ class SortImports(object):
                 self.incorrectly_sorted = True
             return
 
-        if show_diff:
+        if show_diff or self.config.get('show_diff', False) is True:
             for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
                                      fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
                 stdout.write(line)
