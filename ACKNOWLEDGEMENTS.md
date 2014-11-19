@@ -34,6 +34,9 @@ Code Contributors
 - GuoJing (@GuoJing)
 - George Hickman (@ghickman)
 - Dan Davison (@dandavison)
+- Maciej Wolff (@maciejwo)
+- Elliott Sales de Andrade (@qulogic)
+- Kasper Jacobsen (@dinoshauer)
 
 --------------------------------------------
 
