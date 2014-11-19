@@ -194,7 +194,8 @@ class SortImports(object):
             if moduleName.startswith(forced_separate):
                 return forced_separate
 
-        if moduleName == "__future__" or (firstPart == "__future__"):
+        if (moduleName in self.config['known_future_library'] or
+                firstPart in self.config['known_future_library']):
             return SECTIONS.FUTURE
         elif moduleName in self.config['known_standard_library'] or \
                 (firstPart in self.config['known_standard_library']):
