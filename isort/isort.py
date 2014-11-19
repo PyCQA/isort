@@ -145,17 +145,22 @@ class SortImports(object):
             else:
                 print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
                 self.incorrectly_sorted = True
+                if show_diff or self.config.get('show_diff', False) is True:
+                    self._show_diff(file_contents)
             return
 
         if show_diff or self.config.get('show_diff', False) is True:
-            for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
-                                     fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
-                stdout.write(line)
+            self._show_diff(file_contents)
         elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
+
+    def _show_diff(self, file_contents):
+        for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
+                                 fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
+            stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines):
