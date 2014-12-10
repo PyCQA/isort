@@ -677,8 +677,8 @@ def test_titled_imports():
                               import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
     assert test_output == ("# Standard Library\n"
                            "import os\n"
-                           "import sys\n"
                            "import statistics\n"
+                           "import sys\n"
                            "\n"
                            "import django.settings\n"
                            "\n"
