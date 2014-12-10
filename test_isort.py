@@ -1027,7 +1027,7 @@ def test_long_line_comments():
                   "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
                   "update_stage_app, update_stage_cron  # noqa\n")
     assert SortImports(file_contents=test_input).output == \
-                ("from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live, # noqa"
-                 "                                         sync_live_envdir, update_live_app, update_live_cron)"
-                 "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage, # noqa"
-                 "                                          sync_stage_envdir, update_stage_app, update_stage_cron)")
+                ("from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
+                 "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
+                 "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
+                 "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")
