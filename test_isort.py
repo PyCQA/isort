@@ -669,6 +669,7 @@ def test_force_single_line_imports():
 def test_titled_imports():
     """Tests setting custom titled/commented import sections."""
     test_input = ("import sys\n"
+                  "import statistics\n"
                   "import os\n"
                   "import myproject.test\n"
                   "import django.settings")
@@ -677,6 +678,7 @@ def test_titled_imports():
     assert test_output == ("# Standard Library\n"
                            "import os\n"
                            "import sys\n"
+                           "import statistics\n"
                            "\n"
                            "import django.settings\n"
                            "\n"
