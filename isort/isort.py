@@ -381,7 +381,10 @@ class SortImports(object):
                                 if self.config['balanced_wrapping']:
                                     lines = import_statement.split("\n")
                                     line_count = len(lines)
-                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                    if len(lines) > 1:
+                                        minimum_length = min([len(line) for line in lines[:-1]])
+                                    else:
+                                        minimum_length = 0
                                     new_import_statement = import_statement
                                     while (len(lines[-1]) < minimum_length and
                                            len(lines) == line_count and line_length > 10):
