@@ -1018,3 +1018,16 @@ def test_same_line_statements():
     test_input = ("import pdb; pdb.set_trace()\n"
                   "import nose; nose.run()\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_long_line_comments():
+    """Ensure isort correctly handles comments at the end of extreamly long lines"""
+    test_input = ("from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
+                  "update_live_app, update_live_cron  # noqa\n"
+                  "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
+                  "update_stage_app, update_stage_cron  # noqa\n")
+    assert SortImports(file_contents=test_input).output == \
+                ("from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
+                 "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
+                 "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
+                 "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")

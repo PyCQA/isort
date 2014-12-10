@@ -381,7 +381,10 @@ class SortImports(object):
                                 if self.config['balanced_wrapping']:
                                     lines = import_statement.split("\n")
                                     line_count = len(lines)
-                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                    if len(lines) > 1:
+                                        minimum_length = min([len(line) for line in lines[:-1]])
+                                    else:
+                                        minimum_length = 0
                                     new_import_statement = import_statement
                                     while (len(lines[-1]) < minimum_length and
                                            len(lines) == line_count and line_length > 10):
@@ -441,10 +444,11 @@ class SortImports(object):
             next_import = imports.pop(0)
             next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
-                next_statement = (self._add_comments(comments, "{0},".format(statement)) +
-                                  "\n{0}{1}".format(white_space, next_import))
+                statement = (self._add_comments(comments, "{0},".format(statement)) +
+                             "\n{0}{1}".format(white_space, next_import))
                 comments = None
-            statement = next_statement
+            else:
+                statement += ", " + next_import
         return statement + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
