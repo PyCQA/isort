@@ -444,10 +444,11 @@ class SortImports(object):
             next_import = imports.pop(0)
             next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
-                next_statement = (self._add_comments(comments, "{0},".format(statement)) +
-                                  "\n{0}{1}".format(white_space, next_import))
+                statement = (self._add_comments(comments, "{0},".format(statement)) +
+                             "\n{0}{1}".format(white_space, next_import))
                 comments = None
-            statement = next_statement
+            else:
+                statement += ", " + next_import
         return statement + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
