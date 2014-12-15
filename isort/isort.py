@@ -276,6 +276,8 @@ class SortImports(object):
             while (len(line) + 2) > self.config['line_length'] and line_parts:
                 next_line.append(line_parts.pop())
                 line = ".".join(line_parts)
+            if not line:
+                line = next_line.pop()
             return "{0}. \\\n{1}".format(line, self._wrap(self.config['indent'] + ".".join(next_line)))
 
         return line
