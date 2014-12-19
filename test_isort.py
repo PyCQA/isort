@@ -609,6 +609,11 @@ def test_forced_separate():
     assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
                        known_third_party=['django'], line_length=120, order_by_type=False).output == test_input
 
+    test_input = ('from .foo import bar\n'
+                  '\n'
+                  'from .y import ca\n')
+    assert SortImports(file_contents=test_input, forced_separate=['.y'],
+                       line_length=120, order_by_type=False).output == test_input
 
 def test_default_section():
     """Test to ensure changing the default section works as expected."""
