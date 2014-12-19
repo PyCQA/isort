@@ -609,6 +609,11 @@ def test_forced_separate():
     assert SortImports(file_contents=test_input, forced_separate=['django.contrib'],
                        known_third_party=['django'], line_length=120, order_by_type=False).output == test_input
 
+    test_input = ('from .foo import bar\n'
+                  '\n'
+                  'from .y import ca\n')
+    assert SortImports(file_contents=test_input, forced_separate=['.y'],
+                       line_length=120, order_by_type=False).output == test_input
 
 def test_default_section():
     """Test to ensure changing the default section works as expected."""
@@ -669,6 +674,8 @@ def test_force_single_line_imports():
 def test_titled_imports():
     """Tests setting custom titled/commented import sections."""
     test_input = ("import sys\n"
+                  "import unicodedata\n"
+                  "import statistics\n"
                   "import os\n"
                   "import myproject.test\n"
                   "import django.settings")
@@ -676,7 +683,9 @@ def test_titled_imports():
                               import_heading_stdlib="Standard Library", import_heading_firstparty="My Stuff").output
     assert test_output == ("# Standard Library\n"
                            "import os\n"
+                           "import statistics\n"
                            "import sys\n"
+                           "import unicodedata\n"
                            "\n"
                            "import django.settings\n"
                            "\n"
@@ -858,24 +867,24 @@ def test_keep_comments():
     """Test to ensure isort properly keeps comments in tact after sorting."""
     # Straight Import
     test_input = ("import foo  # bar\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+    assert SortImports(file_contents=test_input).output == test_input
 
     # Star import
     test_input_star = ("from foo import *  # bar\n")
-    assert SortImports(file_contents=test_input_star, combine_as_imports=True).output == test_input_star
+    assert SortImports(file_contents=test_input_star).output == test_input_star
 
     # Force Single Line From Import
     test_input = ("from foo import bar  # comment\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, force_single_line=True).output == test_input
+    assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
     # From import
     test_input = ("from foo import bar  # My Comment\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
+    assert SortImports(file_contents=test_input).output == test_input
 
     # More complicated case
     test_input = ("from a import b  # My Comment1\n"
                   "from a import c  # My Comment2\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True).output == \
+    assert SortImports(file_contents=test_input).output == \
                       ("from a import b  # My Comment1\n"
                        "from a import c  # My Comment2\n")
 
@@ -883,7 +892,7 @@ def test_keep_comments():
     test_input = ("from a import b # My Comment1\n"
                   "from a import c # My Comment2\n"
                   "from a import d\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+    assert SortImports(file_contents=test_input, line_length=45).output == \
                       ("from a import b  # My Comment1\n"
                        "from a import c  # My Comment2\n"
                        "from a import d\n")
@@ -891,10 +900,23 @@ def test_keep_comments():
     # Test case where imports with comments will be beyond line length limit
     test_input = ("from a import b, c  # My Comment1\n"
                   "from a import c, d # My Comment2 is really really really really long\n")
-    assert SortImports(file_contents=test_input, combine_as_imports=True, line_length=45).output == \
+    assert SortImports(file_contents=test_input, line_length=45).output == \
                       ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
                        "               c, d)\n")
 
+    # Test that comments are not stripped from 'import ... as ...' by default
+    test_input = ("from a import b as bb  # b comment\n"
+                  "from a import c as cc  # c comment\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    # Test that 'import ... as ...' comments are not collected inappropriately
+    test_input = ("from a import b as bb  # b comment\n"
+                  "from a import c as cc  # c comment\n"
+                  "from a import d\n")
+    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, combine_as_imports=True).output == (
+        "from a import b as bb, c as cc, d  # b comment; c comment\n"
+    )
 
 def test_multiline_split_on_dot():
     """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
@@ -1005,3 +1027,16 @@ def test_same_line_statements():
     test_input = ("import pdb; pdb.set_trace()\n"
                   "import nose; nose.run()\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_long_line_comments():
+    """Ensure isort correctly handles comments at the end of extreamly long lines"""
+    test_input = ("from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
+                  "update_live_app, update_live_cron  # noqa\n"
+                  "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
+                  "update_stage_app, update_stage_cron  # noqa\n")
+    assert SortImports(file_contents=test_input).output == \
+                ("from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
+                 "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
+                 "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
+                 "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")

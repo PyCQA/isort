@@ -145,17 +145,22 @@ class SortImports(object):
             else:
                 print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
                 self.incorrectly_sorted = True
+                if show_diff or self.config.get('show_diff', False) is True:
+                    self._show_diff(file_contents)
             return
 
-        if show_diff:
-            for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
-                                     fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
-                stdout.write(line)
+        if show_diff or self.config.get('show_diff', False) is True:
+            self._show_diff(file_contents)
         elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
             with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
                 output_file.write(self.output)
+
+    def _show_diff(self, file_contents):
+        for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
+                                 fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
+            stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines):
@@ -182,6 +187,10 @@ class SortImports(object):
         if it can't determine - it assumes it is project code
 
         """
+        for forced_separate in self.config['forced_separate']:
+            if moduleName.startswith(forced_separate) or moduleName.startswith("." + forced_separate):
+                return forced_separate
+
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
 
@@ -190,11 +199,8 @@ class SortImports(object):
         except IndexError:
             firstPart = None
 
-        for forced_separate in self.config['forced_separate']:
-            if moduleName.startswith(forced_separate):
-                return forced_separate
-
-        if moduleName == "__future__" or (firstPart == "__future__"):
+        if (moduleName in self.config['known_future_library'] or
+                firstPart in self.config['known_future_library']):
             return SECTIONS.FUTURE
         elif moduleName in self.config['known_standard_library'] or \
                 (firstPart in self.config['known_standard_library']):
@@ -270,6 +276,8 @@ class SortImports(object):
             while (len(line) + 2) > self.config['line_length'] and line_parts:
                 next_line.append(line_parts.pop())
                 line = ".".join(line_parts)
+            if not line:
+                line = next_line.pop()
             return "{0}. \\\n{1}".format(line, self._wrap(self.config['indent'] + ".".join(next_line)))
 
         return line
@@ -311,7 +319,8 @@ class SortImports(object):
                                     self.remove_imports]
 
                 for from_import in copy.copy(from_imports):
-                    import_as = self.as_map.get(module + "." + from_import, False)
+                    submodule = module + "." + from_import
+                    import_as = self.as_map.get(submodule, False)
                     if import_as:
                         import_definition = "{0} as {1}".format(from_import, import_as)
                         if self.config['combine_as_imports'] and not ("*" in from_imports and
@@ -319,6 +328,8 @@ class SortImports(object):
                             from_imports[from_imports.index(from_import)] = import_definition
                         else:
                             import_statement = self._wrap(import_start + import_definition)
+                            comments = self.comments['straight'].get(submodule)
+                            import_statement = self._add_comments(comments, import_statement)
                             section_output.append(import_statement)
                             from_imports.remove(from_import)
 
@@ -372,7 +383,10 @@ class SortImports(object):
                                 if self.config['balanced_wrapping']:
                                     lines = import_statement.split("\n")
                                     line_count = len(lines)
-                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                    if len(lines) > 1:
+                                        minimum_length = min([len(line) for line in lines[:-1]])
+                                    else:
+                                        minimum_length = 0
                                     new_import_statement = import_statement
                                     while (len(lines[-1]) < minimum_length and
                                            len(lines) == line_count and line_length > 10):
@@ -432,10 +446,11 @@ class SortImports(object):
             next_import = imports.pop(0)
             next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
-                next_statement = (self._add_comments(comments, "{0},".format(statement)) +
-                                  "\n{0}{1}".format(white_space, next_import))
+                statement = (self._add_comments(comments, "{0},".format(statement)) +
+                             "\n{0}{1}".format(white_space, next_import))
                 comments = None
-            statement = next_statement
+            else:
+                statement += ", " + next_import
         return statement + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
@@ -611,9 +626,14 @@ class SortImports(object):
                     while "as" in imports:
                         index = imports.index('as')
                         if import_type == "from":
-                            self.as_map[imports[0] + "." + imports[index - 1]] = imports[index + 1]
+                            module = imports[0] + "." + imports[index - 1]
+                            self.as_map[module] = imports[index + 1]
                         else:
-                            self.as_map[imports[index - 1]] = imports[index + 1]
+                            module = imports[index - 1]
+                            self.as_map[module] = imports[index + 1]
+                        if not self.config['combine_as_imports']:
+                            self.comments['straight'][module] = comments
+                            comments = []
                         del imports[index:index + 2]
                 if import_type == "from":
                     import_from = imports.pop(0)

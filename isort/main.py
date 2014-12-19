@@ -52,6 +52,8 @@ def main():
                         dest='not_skip', action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
+    parser.add_argument('-f', '--future', dest='known_future_library', action='append',
+                        help='Force sortImports to recognize a module as part of the future compatibility libraries.')
     parser.add_argument('-b', '--builtin', dest='known_standard_library', action='append',
                         help='Force sortImports to recognize a module as part of the python standard library.')
     parser.add_argument('-o', '--thirdparty', dest='known_third_party', action='append',
