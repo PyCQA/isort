@@ -187,6 +187,10 @@ class SortImports(object):
         if it can't determine - it assumes it is project code
 
         """
+        for forced_separate in self.config['forced_separate']:
+            if moduleName.startswith(forced_separate) or moduleName.startswith("." + forced_separate):
+                return forced_separate
+
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
 
@@ -194,10 +198,6 @@ class SortImports(object):
             firstPart = moduleName.split('.')[0]
         except IndexError:
             firstPart = None
-
-        for forced_separate in self.config['forced_separate']:
-            if moduleName.startswith(forced_separate):
-                return forced_separate
 
         if (moduleName in self.config['known_future_library'] or
                 firstPart in self.config['known_future_library']):
