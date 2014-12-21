@@ -270,15 +270,18 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        if len(line) > self.config['line_length'] and "." in line:
-            line_parts = line.split(".")
-            next_line = []
-            while (len(line) + 2) > self.config['line_length'] and line_parts:
-                next_line.append(line_parts.pop())
-                line = ".".join(line_parts)
-            if not line:
-                line = next_line.pop()
-            return "{0}. \\\n{1}".format(line, self._wrap(self.config['indent'] + ".".join(next_line)))
+        if len(line) > self.config['line_length']:
+            for splitter in ("import", "."):
+                if splitter in line and not line.strip().startswith(splitter):
+                    line_parts = line.split(splitter)
+                    next_line = []
+                    while (len(line) + 2) > self.config['line_length'] and line_parts:
+                        next_line.append(line_parts.pop())
+                        line = splitter.join(line_parts)
+                    if not line:
+                        line = next_line.pop()
+                    return "{0}{1} \\\n{2}".format(line, splitter,
+                                                  self._wrap(self.config['indent'] + splitter.join(next_line).lstrip()))
 
         return line
 
@@ -588,7 +591,7 @@ class SortImports(object):
                 if not import_type:
                     self.out_lines.append(line)
                     continue
-                
+
                 line = line.replace("\t", " ")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
