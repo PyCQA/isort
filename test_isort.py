@@ -1040,3 +1040,10 @@ def test_long_line_comments():
                  "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
                  "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
                  "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")
+
+
+def test_tab_character_in_import():
+    """Ensure isort correctly handles import statements that contain a tab character"""
+    test_input = ("from __future__ import print_function\n"
+                  "from __future__ import\tprint_function\n")
+    assert SortImports(file_contents=test_input).output == "from __future__ import print_function\n"
