@@ -1047,3 +1047,10 @@ def test_tab_character_in_import():
     test_input = ("from __future__ import print_function\n"
                   "from __future__ import\tprint_function\n")
     assert SortImports(file_contents=test_input).output == "from __future__ import print_function\n"
+
+
+def test_split_position():
+    test_input = ("from p24.shared.exceptions.master.host_state_flag_unchanged import HostStateUnchangedException\n")
+    assert SortImports(file_contents=test_input, line_length=80).output == \
+                                            ("from p24.shared.exceptions.master.host_state_flag_unchanged import \\\n"
+                                            "   HostStateUnchangedException\n")
