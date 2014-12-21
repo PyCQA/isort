@@ -1070,15 +1070,14 @@ def test_place_comments():
                   "\n"
                   "# isort:imports-stdlib\n")
     test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
-    assert test_output == ("# isort:imports-thirdparty\n"
+    assert test_output == ("\n# isort:imports-thirdparty\n"
                            "import django.settings\n"
                            "\n"
                            "# isort:imports-firstparty\n"
                            "import myproject.test\n"
                            "\n"
-                           "print('code')"
+                           "print('code')\n"
                            "\n"
                            "# isort:imports-stdlib\n"
                            "import os\n"
-                           "import sys\n"
-                           "\n")
+                           "import sys\n")
