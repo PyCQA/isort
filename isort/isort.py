@@ -588,6 +588,8 @@ class SortImports(object):
                 if not import_type:
                     self.out_lines.append(line)
                     continue
+                
+                line = line.replace("\t", " ")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
 
