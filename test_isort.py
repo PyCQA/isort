@@ -858,9 +858,9 @@ def test_as_imports_with_line_length():
     test_input = ("from translate.storage import base as storage_base\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40).output == \
-                  ("from translate. \\\n    storage import base as storage_base\n"
-                  "from translate.storage. \\\n    placeables import parse as rich_parse\n"
-                  "from translate.storage. \\\n    placeables import general\n")
+                  ("from translate.storage import \\\n    base as storage_base\n"
+                   "from translate.storage.placeables import \\\n    parse as rich_parse\n"
+                   "from translate.storage.placeables import \\\n    general\n")
 
 
 def test_keep_comments():
@@ -923,8 +923,8 @@ def test_multiline_split_on_dot():
     test_input = ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
                   "    my_module import my_function")
     assert SortImports(file_contents=test_input, line_length=70).output == \
-            ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
-             "    my_module import my_function\n")
+            ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.my_module import \\\n"
+             "    my_function\n")
 
 
 def test_import_star():
