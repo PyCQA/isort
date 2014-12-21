@@ -74,6 +74,8 @@ class SortImports(object):
                 indent = "\t"
         self.config['indent'] = indent
 
+        self.place_imports = {}
+        self.import_placements = {}
         self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
         self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
         self._section_comments = ["# " + value for key, value in itemsview(self.config) if
@@ -408,6 +410,10 @@ class SortImports(object):
                 section_name = section
                 if section in SECTIONS:
                     section_name = SECTION_NAMES[section]
+                if section_name in self.place_imports:
+                    self.place_imports[section_name] = section_output
+                    continue
+
                 section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
                 if section_title:
                     section_output.insert(0, "# " + section_title)
@@ -442,6 +448,17 @@ class SortImports(object):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
                 self.out_lines[imports_tail:0] = [""]
+
+        if self.place_imports:
+            new_out_lines = []
+            for index, line in enumerate(self.out_lines):
+                new_out_lines.append(line)
+                if line in self.import_placements:
+                    new_out_lines.extend(self.place_imports[self.import_placements[line]])
+                    if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
+                        new_out_lines.append("")
+            self.out_lines = new_out_lines
+
 
     def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
@@ -575,6 +592,11 @@ class SortImports(object):
                 if self.import_index == -1:
                     self.import_index = self.index - 1
                 continue
+
+            if "isort:imports-" in line:
+                section = line.split("isort:imports-")[-1].split()[0]
+                self.place_imports[section.upper()] = []
+                self.import_placements[line] = section.upper()
 
             if ";" in line:
                 for part in (part.strip() for part in line.split(";")):

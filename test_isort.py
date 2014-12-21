@@ -1050,7 +1050,34 @@ def test_tab_character_in_import():
 
 
 def test_split_position():
+    """Ensure isort splits on import instead of . when possible"""
     test_input = ("from p24.shared.exceptions.master.host_state_flag_unchanged import HostStateUnchangedException\n")
     assert SortImports(file_contents=test_input, line_length=80).output == \
                                             ("from p24.shared.exceptions.master.host_state_flag_unchanged import \\\n"
                                              "    HostStateUnchangedException\n")
+
+
+def test_place_comments():
+    """Ensure manually placing imports works as expected"""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import myproject.test\n"
+                  "import django.settings\n"
+                  "\n"
+                  "# isort:imports-thirdparty\n"
+                  "# isort:imports-firstparty\n"
+                  "print('code')\n"
+                  "\n"
+                  "# isort:imports-stdlib\n")
+    test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
+    assert test_output == ("\n# isort:imports-thirdparty\n"
+                           "import django.settings\n"
+                           "\n"
+                           "# isort:imports-firstparty\n"
+                           "import myproject.test\n"
+                           "\n"
+                           "print('code')\n"
+                           "\n"
+                           "# isort:imports-stdlib\n"
+                           "import os\n"
+                           "import sys\n")
