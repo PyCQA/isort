@@ -74,6 +74,8 @@ class SortImports(object):
                 indent = "\t"
         self.config['indent'] = indent
 
+        self.place_imports = {}
+        self.import_placements = {}
         self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
         self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
         self._section_comments = ["# " + value for key, value in itemsview(self.config) if
@@ -270,15 +272,18 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        if len(line) > self.config['line_length'] and "." in line:
-            line_parts = line.split(".")
-            next_line = []
-            while (len(line) + 2) > self.config['line_length'] and line_parts:
-                next_line.append(line_parts.pop())
-                line = ".".join(line_parts)
-            if not line:
-                line = next_line.pop()
-            return "{0}. \\\n{1}".format(line, self._wrap(self.config['indent'] + ".".join(next_line)))
+        if len(line) > self.config['line_length']:
+            for splitter in ("import", "."):
+                if splitter in line and not line.strip().startswith(splitter):
+                    line_parts = line.split(splitter)
+                    next_line = []
+                    while (len(line) + 2) > self.config['line_length'] and line_parts:
+                        next_line.append(line_parts.pop())
+                        line = splitter.join(line_parts)
+                    if not line:
+                        line = next_line.pop()
+                    return "{0}{1} \\\n{2}".format(line, splitter,
+                                                  self._wrap(self.config['indent'] + splitter.join(next_line).lstrip()))
 
         return line
 
@@ -405,6 +410,10 @@ class SortImports(object):
                 section_name = section
                 if section in SECTIONS:
                     section_name = SECTION_NAMES[section]
+                if section_name in self.place_imports:
+                    self.place_imports[section_name] = section_output
+                    continue
+
                 section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
                 if section_title:
                     section_output.insert(0, "# " + section_title)
@@ -439,6 +448,17 @@ class SortImports(object):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
                 self.out_lines[imports_tail:0] = [""]
+
+        if self.place_imports:
+            new_out_lines = []
+            for index, line in enumerate(self.out_lines):
+                new_out_lines.append(line)
+                if line in self.import_placements:
+                    new_out_lines.extend(self.place_imports[self.import_placements[line]])
+                    if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
+                        new_out_lines.append("")
+            self.out_lines = new_out_lines
+
 
     def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
@@ -573,6 +593,11 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
+            if "isort:imports-" in line:
+                section = line.split("isort:imports-")[-1].split()[0]
+                self.place_imports[section.upper()] = []
+                self.import_placements[line] = section.upper()
+
             if ";" in line:
                 for part in (part.strip() for part in line.split(";")):
                     if part and not part.startswith("from ") and not part.startswith("import "):
@@ -588,6 +613,8 @@ class SortImports(object):
                 if not import_type:
                     self.out_lines.append(line)
                     continue
+
+                line = line.replace("\t", " ")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
 

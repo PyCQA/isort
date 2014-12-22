@@ -858,9 +858,9 @@ def test_as_imports_with_line_length():
     test_input = ("from translate.storage import base as storage_base\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40).output == \
-                  ("from translate. \\\n    storage import base as storage_base\n"
-                  "from translate.storage. \\\n    placeables import parse as rich_parse\n"
-                  "from translate.storage. \\\n    placeables import general\n")
+                  ("from translate.storage import \\\n    base as storage_base\n"
+                   "from translate.storage.placeables import \\\n    parse as rich_parse\n"
+                   "from translate.storage.placeables import \\\n    general\n")
 
 
 def test_keep_comments():
@@ -923,8 +923,8 @@ def test_multiline_split_on_dot():
     test_input = ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
                   "    my_module import my_function")
     assert SortImports(file_contents=test_input, line_length=70).output == \
-            ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5. \\\n"
-             "    my_module import my_function\n")
+            ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.my_module import \\\n"
+             "    my_function\n")
 
 
 def test_import_star():
@@ -1040,3 +1040,44 @@ def test_long_line_comments():
                  "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
                  "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
                  "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")
+
+
+def test_tab_character_in_import():
+    """Ensure isort correctly handles import statements that contain a tab character"""
+    test_input = ("from __future__ import print_function\n"
+                  "from __future__ import\tprint_function\n")
+    assert SortImports(file_contents=test_input).output == "from __future__ import print_function\n"
+
+
+def test_split_position():
+    """Ensure isort splits on import instead of . when possible"""
+    test_input = ("from p24.shared.exceptions.master.host_state_flag_unchanged import HostStateUnchangedException\n")
+    assert SortImports(file_contents=test_input, line_length=80).output == \
+                                            ("from p24.shared.exceptions.master.host_state_flag_unchanged import \\\n"
+                                             "    HostStateUnchangedException\n")
+
+
+def test_place_comments():
+    """Ensure manually placing imports works as expected"""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import myproject.test\n"
+                  "import django.settings\n"
+                  "\n"
+                  "# isort:imports-thirdparty\n"
+                  "# isort:imports-firstparty\n"
+                  "print('code')\n"
+                  "\n"
+                  "# isort:imports-stdlib\n")
+    test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
+    assert test_output == ("\n# isort:imports-thirdparty\n"
+                           "import django.settings\n"
+                           "\n"
+                           "# isort:imports-firstparty\n"
+                           "import myproject.test\n"
+                           "\n"
+                           "print('code')\n"
+                           "\n"
+                           "# isort:imports-stdlib\n"
+                           "import os\n"
+                           "import sys\n")
