@@ -1081,3 +1081,27 @@ def test_place_comments():
                            "# isort:imports-stdlib\n"
                            "import os\n"
                            "import sys\n")
+
+
+def test_placement_control():
+    """Ensure that most specific placement control match wins"""
+    test_input = ("import os\n"
+                  "import sys\n"
+                  "from bottle import Bottle, redirect, response, run\n"
+                  "import p24.imports._argparse as argparse\n"
+                  "import p24.imports._subprocess as subprocess\n"
+                  "import p24.imports._VERSION as VERSION\n"
+                  "import p24.shared.media_wiki_syntax as syntax\n")
+    test_output = SortImports(file_contents=test_input,
+                known_first_party=['p24', 'p24.imports._VERSION'],
+                known_standard_library=['p24.imports'],
+                default_section="THIRDPARTY").output
+    assert test_output == ("import os\n"
+                           "import p24.imports._argparse as argparse\n"
+                           "import p24.imports._subprocess as subprocess\n"
+                           "import sys\n"
+                           "\n"
+                           "from bottle import Bottle, redirect, response, run\n"
+                           "\n"
+                           "import p24.imports._VERSION as VERSION\n"
+                           "import p24.shared.media_wiki_syntax as syntax\n")
