@@ -1105,3 +1105,11 @@ def test_placement_control():
                            "\n"
                            "import p24.imports._VERSION as VERSION\n"
                            "import p24.shared.media_wiki_syntax as syntax\n")
+
+def test_sticky_comments():
+    """Test to ensure it is possible to make comments 'stick' above imports"""
+    test_input = ("import os\n"
+                  "\n"
+                  "# Used for type-hinting (ref: https://github.com/davidhalter/jedi/issues/414). isort:comment-above\n"
+                  "from selenium.webdriver.remote.webdriver import WebDriver  # noqa\n")
+    assert SortImports(file_contents=test_input).output == test_input
