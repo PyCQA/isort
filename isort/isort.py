@@ -196,21 +196,18 @@ class SortImports(object):
         if moduleName.startswith("."):
             return SECTIONS.LOCALFOLDER
 
-        try:
-            firstPart = moduleName.split('.')[0]
-        except IndexError:
-            firstPart = None
-
-        if (moduleName in self.config['known_future_library'] or
-                firstPart in self.config['known_future_library']):
-            return SECTIONS.FUTURE
-        elif moduleName in self.config['known_standard_library'] or \
-                (firstPart in self.config['known_standard_library']):
-            return SECTIONS.STDLIB
-        elif moduleName in self.config['known_third_party'] or (firstPart in self.config['known_third_party']):
-            return SECTIONS.THIRDPARTY
-        elif moduleName in self.config['known_first_party'] or (firstPart in self.config['known_first_party']):
-            return SECTIONS.FIRSTPARTY
+        # Try to find most specific placement instruction match (if any)
+        parts = moduleName.split('.')
+        module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
+        for module_name_to_check in module_names_to_check:
+            for placement, config_key in (
+                    (SECTIONS.FUTURE, 'known_future_library'),
+                    (SECTIONS.STDLIB, 'known_standard_library'),
+                    (SECTIONS.THIRDPARTY, 'known_third_party'),
+                    (SECTIONS.FIRSTPARTY, 'known_first_party'),
+                    ):
+                if module_name_to_check in self.config[config_key]:
+                    return placement
 
         for prefix in PYTHONPATH:
             module_path = "/".join((prefix, moduleName.replace(".", "/")))

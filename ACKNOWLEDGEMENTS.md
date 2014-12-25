@@ -37,6 +37,7 @@ Code Contributors
 - Maciej Wolff (@maciejwo)
 - Elliott Sales de Andrade (@qulogic)
 - Kasper Jacobsen (@dinoshauer)
+- Sebastian Pipping (@hartwork)
 
 --------------------------------------------
 
