@@ -45,7 +45,9 @@ def main():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
-    parser.add_argument('-l', '--lines', help='The max length of an import line (used for wrapping long imports).',
+    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping long imports).',
+                        dest='line_length', type=int)
+    parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
     parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
