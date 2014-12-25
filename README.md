@@ -404,7 +404,6 @@ hours automating it. I was given permission to open source sortImports and here 
 
 --------------------------------------------
 
-
 Thanks and I hope you find isort useful!
 
 ~Timothy Crosley
