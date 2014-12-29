@@ -106,7 +106,7 @@ class SortImports(object):
         self.number_of_lines = len(self.in_lines)
 
         self.out_lines = []
-        self.comments = {'from': {}, 'straight': {}, 'nested': {}}
+        self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
@@ -305,6 +305,9 @@ class SortImports(object):
                 else:
                     import_definition = "import {0}".format(module)
 
+                comments_above = self.comments['above']['straight'].get(module, None)
+                if comments_above:
+                    section_output.append(comments_above)
                 section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
             from_modules = list(self.imports[section]['from'].keys())
@@ -362,6 +365,9 @@ class SortImports(object):
                             if comment:
                                 single_import_line = self._add_comments(comments, import_start + from_import)
                                 single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                                above_comments = self.comments['above']['from'].get(module, None)
+                                if above_comments:
+                                    section_output.extend(above_comments)
                                 section_output.append(self._wrap(single_import_line))
                                 from_imports.remove(from_import)
                                 comments = None
@@ -400,9 +406,12 @@ class SortImports(object):
                             else:
                                 import_statement = self._wrap(import_statement)
 
-                    if import_statement:
-                        section_output.append(import_statement)
 
+                    if import_statement:
+                        above_comments = self.comments['above']['from'].get(module, None)
+                        if above_comments:
+                            section_output.extend(above_comments)
+                        section_output.append(import_statement)
             if section_output:
                 section_name = section
                 if section in SECTIONS:
@@ -669,6 +678,9 @@ class SortImports(object):
                             comments.pop(comments.index(associated_commment))
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
+                    last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                    if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                        self.comments['above']['from'].setdefault(import_from, []).append(self.out_lines.pop(-1))
                     if root.get(import_from, False):
                         root[import_from].update(imports)
                     else:
@@ -678,4 +690,7 @@ class SortImports(object):
                         if comments:
                             self.comments['straight'][module] = comments
                             comments = None
+                        last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                        if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                            self.comments['above']['from'][module] = self.out_lines.pop(-1)
                         self.imports[self.place_module(module)][import_type].add(module)
