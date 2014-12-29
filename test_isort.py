@@ -1095,6 +1095,7 @@ def test_placement_control():
     test_output = SortImports(file_contents=test_input,
                 known_first_party=['p24', 'p24.imports._VERSION'],
                 known_standard_library=['p24.imports'],
+                known_third_party=['bottle'],
                 default_section="THIRDPARTY").output
     assert test_output == ("import os\n"
                            "import p24.imports._argparse as argparse\n"
@@ -1105,3 +1106,12 @@ def test_placement_control():
                            "\n"
                            "import p24.imports._VERSION as VERSION\n"
                            "import p24.shared.media_wiki_syntax as syntax\n")
+
+
+def test_sticky_comments():
+    """Test to ensure it is possible to make comments 'stick' above imports"""
+    test_input = ("import os\n"
+                  "\n"
+                  "# Used for type-hinting (ref: https://github.com/davidhalter/jedi/issues/414).\n"
+                  "from selenium.webdriver.remote.webdriver import WebDriver  # noqa\n")
+    assert SortImports(file_contents=test_input).output == test_input
