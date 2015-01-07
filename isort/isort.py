@@ -191,7 +191,8 @@ class SortImports(object):
             self.output.splitlines(1),
             fromfile=self.file_path + ':before',
             tofile=self.file_path + ':after',
-            fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))),
+            fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))
+                             if self.file_path else datetime.now()),
             tofiledate=str(datetime.now())
         ):
             stdout.write(line)
