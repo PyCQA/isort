@@ -582,8 +582,14 @@ class SortImports(object):
 
     def _strip_syntax(self, import_string):
         import_string = import_string.replace("_import", "[[i]]")
-        for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
+        for remove_syntax in ['\\', '(', ')', ","]: 
             import_string = import_string.replace(remove_syntax, " ")
+        
+        import_list = import_string.split()
+        import_list.remove('from')
+        import_list.remove('import')
+        import_string = ' '.join(import_list)
+
         import_string = import_string.replace("[[i]]", "_import")
         return import_string
 
