@@ -1,5 +1,5 @@
-"""isort.py.
 
+"""isort.py.
 Exposes a simple library to sort through imports within Python code
 
 usage:
@@ -484,7 +484,7 @@ class SortImports(object):
         return "{0}({1}{2})".format(statement, first_import, (",\n" + white_space).join(imports))
 
     def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
-        statement += imports.pop(0)
+        statement += imports.pop(-1)
         while imports:
             next_import = imports.pop(0)
             next_statement = self._add_comments(comments, statement + ", " + next_import)
@@ -657,7 +657,7 @@ class SortImports(object):
                             import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
 
                 if import_type == "from":
-                    parts = import_string.split(" import ")
+                    parts = import_string.split(" import")
                     from_import = parts[0].split(" ")
                     import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
