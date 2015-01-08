@@ -591,6 +591,7 @@ class SortImports(object):
             if k in import_list:
                 import_list.remove(k)
         import_string = ' '.join(import_list)
+        return import_string
 
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
