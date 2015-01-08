@@ -591,6 +591,7 @@ class SortImports(object):
             if k in import_list:
                 import_list.remove(k)
         import_string = ' '.join(import_list)
+        import_string = import_string.replace("[[i]]", "_import")
         return import_string
 
     def _parse(self):
