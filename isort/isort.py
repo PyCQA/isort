@@ -83,7 +83,7 @@ class SortImports(object):
 
         file_name = file_path
         self.file_path = file_path or ""
-        if file_path:
+        if file_path and not file_contents:
             file_path = os.path.abspath(file_path)
             if self._should_skip(file_path):
                 if self.config['verbose']:

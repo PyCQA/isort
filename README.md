@@ -391,6 +391,25 @@ https://gist.github.com/acdha/8717683
 
 Which can help to ensure a certain level of code quality throughout a project.
 
+
+Git hook
+========
+
+isort provides a hook function that can be integrated into your Git pre-commit script to check
+Python code before committing.
+
+To cause the commit to fail if there are isort errors (strict mode), include the following in
+`.git/hooks/pre-commit`:
+
+    from isort.hooks import git_hook
+
+    if __name__ == '__main__':
+        sys.exit(git_hook(strict=True))
+
+If you just want to display warnings, but allow the commit to happen anyway, call git_hook without
+the `strict` parameter.
+
+
 Why isort?
 ======================
 

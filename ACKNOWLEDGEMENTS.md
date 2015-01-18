@@ -38,6 +38,7 @@ Code Contributors
 - Elliott Sales de Andrade (@qulogic)
 - Kasper Jacobsen (@dinoshauer)
 - Sebastian Pipping (@hartwork)
+- Helen Sherwood-Taylor (@helenst)
 
 --------------------------------------------
 
