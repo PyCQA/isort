@@ -379,32 +379,34 @@ class SortImports(object):
                         if not from_imports:
                             import_statement = ""
                         if len(import_statement) > self.config['line_length']:
-                            if len(from_imports) > 1:
-                                output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
-                                                                                         0)].lower()
-                                formatter = getattr(self, "_output_" + output_mode, self._output_grid)
-                                dynamic_indent = " " * (len(import_start) + 1)
-                                indent = self.config['indent']
-                                line_length = self.config['line_length']
-                                import_statement = formatter(import_start, copy.copy(from_imports),
-                                                            dynamic_indent, indent, line_length, comments)
-                                if self.config['balanced_wrapping']:
-                                    lines = import_statement.split("\n")
-                                    line_count = len(lines)
-                                    if len(lines) > 1:
-                                        minimum_length = min([len(line) for line in lines[:-1]])
-                                    else:
-                                        minimum_length = 0
-                                    new_import_statement = import_statement
-                                    while (len(lines[-1]) < minimum_length and
-                                           len(lines) == line_count and line_length > 10):
-                                        import_statement = new_import_statement
-                                        line_length -= 1
-                                        new_import_statement = formatter(import_start, copy.copy(from_imports),
-                                                                        dynamic_indent, indent, line_length, comments)
-                                        lines = new_import_statement.split("\n")
-                            else:
-                                import_statement = self._wrap(import_statement)
+                            import_statement = self._wrap(import_statement)
+                        if len(from_imports) > 1 and (
+                            len(import_statement) > self.config['line_length']
+                            or self.config.get('force_from_wrap')
+                        ):
+                            output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
+                                                                                     0)].lower()
+                            formatter = getattr(self, "_output_" + output_mode, self._output_grid)
+                            dynamic_indent = " " * (len(import_start) + 1)
+                            indent = self.config['indent']
+                            line_length = self.config['line_length']
+                            import_statement = formatter(import_start, copy.copy(from_imports),
+                                                        dynamic_indent, indent, line_length, comments)
+                            if self.config['balanced_wrapping']:
+                                lines = import_statement.split("\n")
+                                line_count = len(lines)
+                                if len(lines) > 1:
+                                    minimum_length = min([len(line) for line in lines[:-1]])
+                                else:
+                                    minimum_length = 0
+                                new_import_statement = import_statement
+                                while (len(lines[-1]) < minimum_length and
+                                       len(lines) == line_count and line_length > 10):
+                                    import_statement = new_import_statement
+                                    line_length -= 1
+                                    new_import_statement = formatter(import_start, copy.copy(from_imports),
+                                                                    dynamic_indent, indent, line_length, comments)
+                                    lines = new_import_statement.split("\n")
 
 
                     if import_statement:
