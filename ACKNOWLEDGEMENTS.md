@@ -39,6 +39,8 @@ Code Contributors
 - Kasper Jacobsen (@dinoshauer)
 - Sebastian Pipping (@hartwork)
 - Helen Sherwood-Taylor (@helenst)
+- Mocker (@Zuckonit)
+- Tim Graham (@timgraham)
 
 Documenters
 ===================
