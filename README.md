@@ -255,7 +255,7 @@ own line
 Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:
 *   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
 *   Tab
-*   A verbatim string with quotes around it. For example: "    " is equivalent to 4
+*   A verbatim string with quotes around it. For example: `"    "` is equivalent to 4
 
 Intelligently Balanced Multi-line Imports
 ======================
