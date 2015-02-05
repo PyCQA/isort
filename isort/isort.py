@@ -274,7 +274,7 @@ class SortImports(object):
                 if splitter in line and not line.strip().startswith(splitter):
                     line_parts = line.split(splitter)
                     next_line = []
-                    while (len(line) + 2) > self.config['line_length'] and line_parts:
+                    while (len(line) + 2) > (self.config['wrap_length'] or self.config['line_length']) and line_parts:
                         next_line.append(line_parts.pop())
                         line = splitter.join(line_parts)
                     if not line:
@@ -373,7 +373,7 @@ class SortImports(object):
                             formatter = getattr(self, "_output_" + output_mode, self._output_grid)
                             dynamic_indent = " " * (len(import_start) + 1)
                             indent = self.config['indent']
-                            line_length = self.config['line_length']
+                            line_length = self.config['wrap_length'] or self.config['line_length']
                             import_statement = formatter(import_start, copy.copy(from_imports),
                                                         dynamic_indent, indent, line_length, comments)
                             if self.config['balanced_wrapping']:
