@@ -1209,3 +1209,8 @@ def test_top_comments():
                   "#\n"
                   "from __future__ import unicode_literals\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n"
+                  "from django.utils.encoding import python_2_unicode_compatible\n")
+    assert SortImports(file_contents=test_input).output == test_input
