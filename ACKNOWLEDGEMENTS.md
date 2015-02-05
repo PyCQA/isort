@@ -39,6 +39,7 @@ Code Contributors
 - Kasper Jacobsen (@dinoshauer)
 - Sebastian Pipping (@hartwork)
 - Helen Sherwood-Taylor (@helenst)
+- Tim Graham (@timgraham)
 
 Documenters
 ===================
@@ -46,6 +47,7 @@ Documenters
 - Helen Sherwood-Taylor (@helenst)
 - Elliott Sales de Andrade (@QuLogic)
 - Brian Peiris (@brianpeiris)
+- Tim Graham (@timgraham)
 
 --------------------------------------------
 
