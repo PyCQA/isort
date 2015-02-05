@@ -44,6 +44,7 @@ WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 default = {'force_to_top': [],
            'skip': ['__init__.py', ],
            'line_length': 79,
+           'wrap_length': 0,
            'known_future_library': ['__future__'],
            'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncore", "atexit", "base64",
                                       "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb", "cmd", "codecs",
@@ -86,6 +87,8 @@ default = {'force_to_top': [],
            'lines_after_imports': -1,
            'combine_as_imports': False,
            'combine_star': False,
+           'include_trailing_comma': False,
+           'from_first': False,
            'verbose': False}
 
 

@@ -84,7 +84,7 @@ class SortImports(object):
 
         file_name = file_path
         self.file_path = file_path or ""
-        if file_path:
+        if file_path and not file_contents:
             file_path = os.path.abspath(file_path)
             if self._should_skip(file_path):
                 if self.config['verbose']:
@@ -216,7 +216,14 @@ class SortImports(object):
                 if module_name_to_check in self.config[config_key]:
                     return placement
 
-        for prefix in PYTHONPATH:
+        paths = PYTHONPATH
+        virtual_env = os.environ.get('VIRTUAL_ENV', None)
+        if virtual_env:
+            paths = list(paths)
+            for version in ((2, 6), (2, 7), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4)):
+                paths.append("{0}/lib/python{1}.{2}/site-packages".format(virtual_env, version[0], version[1]))
+
+        for prefix in paths:
             module_path = "/".join((prefix, moduleName.replace(".", "/")))
             package_path = "/".join((prefix, moduleName.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
@@ -281,7 +288,7 @@ class SortImports(object):
                 if splitter in line and not line.strip().startswith(splitter):
                     line_parts = line.split(splitter)
                     next_line = []
-                    while (len(line) + 2) > self.config['line_length'] and line_parts:
+                    while (len(line) + 2) > (self.config['wrap_length'] or self.config['line_length']) and line_parts:
                         next_line.append(line_parts.pop())
                         line = splitter.join(line_parts)
                     if not line:
@@ -291,112 +298,96 @@ class SortImports(object):
 
         return line
 
-    def _add_formatted_imports(self):
-        """Adds the imports back to the file.
+    def _add_straight_imports(self, straight_modules, section, section_output):
+        for module in straight_modules:
+            if module in self.remove_imports:
+                continue
 
-        (at the index of the first import) sorted alphabetically and split between groups
+            if module in self.as_map:
+                import_definition = "import {0} as {1}".format(module, self.as_map[module])
+            else:
+                import_definition = "import {0}".format(module)
 
-        """
-        output = []
-        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
-            straight_modules = list(self.imports[section]['straight'])
-            straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            section_output = []
+            comments_above = self.comments['above']['straight'].get(module, None)
+            if comments_above:
+                section_output.append(comments_above)
+            section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
-            for module in straight_modules:
-                if module in self.remove_imports:
-                    continue
+    def _add_from_imports(self, from_modules, section, section_output):
+        for module in from_modules:
+            if module in self.remove_imports:
+                continue
 
-                if module in self.as_map:
-                    import_definition = "import {0} as {1}".format(module, self.as_map[module])
-                else:
-                    import_definition = "import {0}".format(module)
+            import_start = "from {0} import ".format(module)
+            from_imports = list(self.imports[section]['from'][module])
+            from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
+            if self.remove_imports:
+                from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
+                                self.remove_imports]
 
-                comments_above = self.comments['above']['straight'].get(module, None)
-                if comments_above:
-                    section_output.append(comments_above)
-                section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
-
-            from_modules = list(self.imports[section]['from'].keys())
-            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
-            for module in from_modules:
-                if module in self.remove_imports:
-                    continue
-
-                import_start = "from {0} import ".format(module)
-                from_imports = list(self.imports[section]['from'][module])
-                from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
-                if self.remove_imports:
-                    from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
-                                    self.remove_imports]
-
-                for from_import in copy.copy(from_imports):
-                    submodule = module + "." + from_import
-                    import_as = self.as_map.get(submodule, False)
-                    if import_as:
-                        import_definition = "{0} as {1}".format(from_import, import_as)
-                        if self.config['combine_as_imports'] and not ("*" in from_imports and
-                                                                      self.config['combine_star']):
-                            from_imports[from_imports.index(from_import)] = import_definition
-                        else:
-                            import_statement = self._wrap(import_start + import_definition)
-                            comments = self.comments['straight'].get(submodule)
-                            import_statement = self._add_comments(comments, import_statement)
-                            section_output.append(import_statement)
-                            from_imports.remove(from_import)
-
-                if from_imports:
-                    comments = self.comments['from'].get(module)
-                    if "*" in from_imports and self.config['combine_star']:
-                        import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
-                    elif self.config['force_single_line']:
-                        import_statements = []
-                        for from_import in from_imports:
-                            single_import_line = self._add_comments(comments, import_start + from_import)
-                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
-                            if comment:
-                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
-                            import_statements.append(self._wrap(single_import_line))
-                            comments = None
-                        import_statement = "\n".join(import_statements)
+            for from_import in copy.copy(from_imports):
+                submodule = module + "." + from_import
+                import_as = self.as_map.get(submodule, False)
+                if import_as:
+                    import_definition = "{0} as {1}".format(from_import, import_as)
+                    if self.config['combine_as_imports'] and not ("*" in from_imports and
+                                                                    self.config['combine_star']):
+                        from_imports[from_imports.index(from_import)] = import_definition
                     else:
-                        star_import = False
-                        if "*" in from_imports:
-                            section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
-                            from_imports.remove('*')
-                            star_import = True
+                        import_statement = self._wrap(import_start + import_definition)
+                        comments = self.comments['straight'].get(submodule)
+                        import_statement = self._add_comments(comments, import_statement)
+                        section_output.append(import_statement)
+                        from_imports.remove(from_import)
+
+            if from_imports:
+                comments = self.comments['from'].get(module)
+                if "*" in from_imports and self.config['combine_star']:
+                    import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
+                elif self.config['force_single_line']:
+                    import_statements = []
+                    for from_import in from_imports:
+                        single_import_line = self._add_comments(comments, import_start + from_import)
+                        comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                        if comment:
+                            single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                        import_statements.append(self._wrap(single_import_line))
+                        comments = None
+                    import_statement = "\n".join(import_statements)
+                else:
+                    star_import = False
+                    if "*" in from_imports:
+                        section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
+                        from_imports.remove('*')
+                        star_import = True
+                        comments = None
+
+                    for from_import in copy.copy(from_imports):
+                        comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                        if comment:
+                            single_import_line = self._add_comments(comments, import_start + from_import)
+                            single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                            above_comments = self.comments['above']['from'].get(module, None)
+                            if above_comments:
+                                section_output.extend(above_comments)
+                            section_output.append(self._wrap(single_import_line))
+                            from_imports.remove(from_import)
                             comments = None
 
-                        for from_import in copy.copy(from_imports):
-                            comment = self.comments['nested'].get(module, {}).get(from_import, None)
-                            if comment:
-                                single_import_line = self._add_comments(comments, import_start + from_import)
-                                single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
-                                above_comments = self.comments['above']['from'].get(module, None)
-                                if above_comments:
-                                    section_output.extend(above_comments)
-                                section_output.append(self._wrap(single_import_line))
-                                from_imports.remove(from_import)
-                                comments = None
-
-                        if star_import:
-                            import_statement = import_start + (", ").join(from_imports)
-                        else:
-                            import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
-                        if not from_imports:
-                            import_statement = ""
-                        if len(import_statement) > self.config['line_length']:
-                            import_statement = self._wrap(import_statement)
-                        if len(from_imports) > 1 and (
-                            len(import_statement) > self.config['line_length']
-                            or self.config.get('force_from_wrap')
-                        ):
+                    if star_import:
+                        import_statement = import_start + (", ").join(from_imports)
+                    else:
+                        import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
+                    if not from_imports:
+                        import_statement = ""
+                    if len(import_statement) > self.config['line_length']:
+                        if len(from_imports) > 1:
                             output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
-                                                                                     0)].lower()
+                                                                                        0)].lower()
                             formatter = getattr(self, "_output_" + output_mode, self._output_grid)
                             dynamic_indent = " " * (len(import_start) + 1)
                             indent = self.config['indent']
-                            line_length = self.config['line_length']
+                            line_length = self.config['wrap_length'] or self.config['line_length']
                             import_statement = formatter(import_start, copy.copy(from_imports),
                                                         dynamic_indent, indent, line_length, comments)
                             if self.config['balanced_wrapping']:
@@ -408,19 +399,43 @@ class SortImports(object):
                                     minimum_length = 0
                                 new_import_statement = import_statement
                                 while (len(lines[-1]) < minimum_length and
-                                       len(lines) == line_count and line_length > 10):
+                                        len(lines) == line_count and line_length > 10):
                                     import_statement = new_import_statement
                                     line_length -= 1
                                     new_import_statement = formatter(import_start, copy.copy(from_imports),
                                                                     dynamic_indent, indent, line_length, comments)
                                     lines = new_import_statement.split("\n")
+                        else:
+                            import_statement = self._wrap(import_statement)
 
 
-                    if import_statement:
-                        above_comments = self.comments['above']['from'].get(module, None)
-                        if above_comments:
-                            section_output.extend(above_comments)
-                        section_output.append(import_statement)
+                if import_statement:
+                    above_comments = self.comments['above']['from'].get(module, None)
+                    if above_comments:
+                        section_output.extend(above_comments)
+                    section_output.append(import_statement)
+
+    def _add_formatted_imports(self):
+        """Adds the imports back to the file.
+
+        (at the index of the first import) sorted alphabetically and split between groups
+
+        """
+        output = []
+        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
+            straight_modules = list(self.imports[section]['straight'])
+            straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            from_modules = list(self.imports[section]['from'].keys())
+            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
+
+            section_output = []
+            if self.config.get('from_first', False):
+                self._add_from_imports(from_modules, section, section_output)
+                self._add_straight_imports(straight_modules, section, section_output)
+            else:
+                self._add_straight_imports(straight_modules, section, section_output)
+                self._add_from_imports(from_modules, section, section_output)
+
             if section_output:
                 section_name = section
                 if section in SECTIONS:
@@ -486,11 +501,16 @@ class SortImports(object):
                 comments = None
             else:
                 statement += ", " + next_import
-        return statement + ")"
+        return statement + ("," if self.config['include_trailing_comma'] else "") + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
         first_import = self._add_comments(comments, imports.pop(0) + ",") + "\n" + white_space
-        return "{0}({1}{2})".format(statement, first_import, (",\n" + white_space).join(imports))
+        return "{0}({1}{2}{3})".format(
+            statement,
+            first_import,
+            (",\n" + white_space).join(imports),
+            "," if self.config['include_trailing_comma'] else "",
+        )
 
     def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
         statement += imports.pop(0)
@@ -505,8 +525,13 @@ class SortImports(object):
         return statement
 
     def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
-        return "{0}({1}\n{2}{3}\n)".format(statement, self._add_comments(comments), indent,
-                                           (",\n" + indent).join(imports))
+        return "{0}({1}\n{2}{3}{4}\n)".format(
+            statement,
+            self._add_comments(comments),
+            indent,
+            (",\n" + indent).join(imports),
+            "," if self.config['include_trailing_comma'] else "",
+         )
 
     def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
         statement += self._add_comments(comments, "(") + "\n" + indent + imports.pop(0)
@@ -516,6 +541,8 @@ class SortImports(object):
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
                 next_statement = "{0},\n{1}{2}".format(statement, indent, next_import)
             statement = next_statement
+        if self.config['include_trailing_comma']:
+            statement += ','
         return statement
 
     def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
@@ -591,8 +618,13 @@ class SortImports(object):
 
     def _strip_syntax(self, import_string):
         import_string = import_string.replace("_import", "[[i]]")
-        for remove_syntax in ['\\', '(', ')', ",", 'from ', 'import ']:
+        for remove_syntax in ['\\', '(', ')', ',']:
             import_string = import_string.replace(remove_syntax, " ")
+        import_list = import_string.split()
+        for key in ('from', 'import'):
+            if key in import_list:
+                import_list.remove(key)
+        import_string = ' '.join(import_list)
         import_string = import_string.replace("[[i]]", "_import")
         return import_string
 
@@ -608,8 +640,8 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
-            if "isort:imports-" in line:
-                section = line.split("isort:imports-")[-1].split()[0]
+            if "isort:" + "imports-" in line:
+                section = line.split("isort:" + "imports-")[-1].split()[0]
                 self.place_imports[section.upper()] = []
                 self.import_placements[line] = section.upper()
 
@@ -688,7 +720,8 @@ class SortImports(object):
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
                     last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                    if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                    if (len(self.out_lines) > self.import_index and last.startswith("#") and not last.endswith('"""') and not
+                        last.endswith("'''")):
                         self.comments['above']['from'].setdefault(import_from, []).append(self.out_lines.pop(-1))
                     if root.get(import_from, False):
                         root[import_from].update(imports)
@@ -700,6 +733,7 @@ class SortImports(object):
                             self.comments['straight'][module] = comments
                             comments = None
                         last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                        if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                        if (len(self.out_lines) > self.import_index and last.startswith("#") and not
+                            last.endswith('"""') and not last.endswith("'''")):
                             self.comments['above']['from'][module] = self.out_lines.pop(-1)
                         self.imports[self.place_module(module)][import_type].add(module)

@@ -3,6 +3,8 @@
 Tests all major functionality of the isort library
 Should be ran using py.test by simply running by.test in the isort project directory
 
+Copyright (C) 2013  Timothy Edmund Crosley
+
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
 the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
@@ -25,6 +27,7 @@ from pies.overrides import *
 from isort.isort import SortImports
 from isort.settings import WrapModes
 
+SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
@@ -138,6 +141,30 @@ def test_line_length():
                            "                         lib16, lib17,\n"
                            "                         lib18, lib20,\n"
                            "                         lib21, lib22)\n")
+
+
+    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32).output
+    assert test_output == ("from third_party import (lib1,\n"
+                           "                         lib2,\n"
+                           "                         lib3,\n"
+                           "                         lib4,\n"
+                           "                         lib5,\n"
+                           "                         lib6,\n"
+                           "                         lib7,\n"
+                           "                         lib8,\n"
+                           "                         lib9,\n"
+                           "                         lib10,\n"
+                           "                         lib11,\n"
+                           "                         lib12,\n"
+                           "                         lib13,\n"
+                           "                         lib14,\n"
+                           "                         lib15,\n"
+                           "                         lib16,\n"
+                           "                         lib17,\n"
+                           "                         lib18,\n"
+                           "                         lib20,\n"
+                           "                         lib21,\n"
+                           "                         lib22)\n")
 
 
 def test_output_modes():
@@ -935,6 +962,69 @@ def test_import_star():
                                                             "from blah import _potato\n")
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
 
+def test_include_trailing_comma():
+    """Test for the include_trailing_comma option"""
+    test_output_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.GRID,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_grid == (
+        "from third_party import (lib1, lib2,\n"
+        "                         lib3, lib4,)\n"
+    )
+
+    test_output_vertical = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical == (
+        "from third_party import (lib1,\n"
+        "                         lib2,\n"
+        "                         lib3,\n"
+        "                         lib4,)\n"
+    )
+
+    test_output_vertical_indent = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_indent == (
+        "from third_party import (\n"
+        "    lib1,\n"
+        "    lib2,\n"
+        "    lib3,\n"
+        "    lib4,\n"
+        ")\n"
+    )
+
+    test_output_vertical_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_grid == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4,)\n"
+    )
+
+    test_output_vertical_grid_grouped = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_grid_grouped == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4,\n"
+        ")\n"
+    )
 
 def test_similar_to_std_library():
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
@@ -1117,19 +1207,48 @@ def test_sticky_comments():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_force_grid_wrap():
-    """Ensures removing imports works as expected."""
-    test_input = ("from foo import lib6, lib7\n"
-                  "from bar import lib2\n")
-    test_output = SortImports(
-      file_contents=test_input,
-      force_from_wrap=True,
-      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
-      ).output
-    print(test_output)
-    assert test_output == """from bar import lib2
-from foo import (
-    lib6,
-    lib7
-)
-"""
+def test_zipimport():
+    """Imports ending in "import" shouldn't be clobbered"""
+    test_input = "from zipimport import zipimport\n"
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_from_ending():
+    """Imports ending in "from" shouldn't be clobbered."""
+    test_input = "from foo import get_foo_from, get_foo\n"
+    expected_output = "from foo import get_foo, get_foo_from\n"
+    assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_from_first():
+    """Tests the setting from_first works correctly"""
+    test_input = "from os import path\nimport os\n"
+    assert SortImports(file_contents=test_input, from_first=True).output == test_input
+
+
+def test_top_comments():
+    """Ensure correct behavior with top comments"""
+    test_input = ("# -*- encoding: utf-8 -*-\n"
+                  "# Test comment\n"
+                  "#\n"
+                  "from __future__ import unicode_literals\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n"
+                  "from django.utils.encoding import python_2_unicode_compatible\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# Comment\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_consistency():
+    """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
+    test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
+    assert SortImports(file_contents=test_input, order_by_type=False).output == test_input

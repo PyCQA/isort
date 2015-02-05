@@ -99,13 +99,17 @@ def main():
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
                         help="Ensures that if a star import is present, nothing else is imported from that namespace.")
+    parser.add_argument('-tc', '--trailing-comma', dest='trailing_comma', action='store_true',
+                        help='Includes a trailing comma on multi line imports that include parentheses.')
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('-sp', '--settings-path',  dest="settings_path",
                         help='Explicitly set the settings path instead of auto determining based on file location.')
-    parser.add_argument('-wf', '--force-from-wrap', action='store_true', dest='force_from_wrap', default='false',
-                        help='Force multiple from imports to be grid wrapped regardless of line length')
+    parser.add_argument('-ff', '--from-first', dest='from_first',
+                        help="Switches the typical ordering preference, showing from imports first then straight ones.")
+    parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
+                        help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     file_names = arguments.pop('files', [])

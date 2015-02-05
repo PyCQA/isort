@@ -255,7 +255,17 @@ own line
 Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:
 *   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
 *   Tab
-*   A verbatim string with quotes around it. For example: "    " is equivalent to 4
+*   A verbatim string with quotes around it.
+
+For example:
+
+    "    "
+
+is equivalent to 4
+
+For the import styles that use parentheses, you can control whether or not to
+include a trailing comma after the last import with the include_trailing_comma
+option (defaults to false).
 
 Intelligently Balanced Multi-line Imports
 ======================
@@ -390,6 +400,25 @@ One great place this can be used is with a pre-commit git hook, such as this one
 https://gist.github.com/acdha/8717683
 
 Which can help to ensure a certain level of code quality throughout a project.
+
+
+Git hook
+========
+
+isort provides a hook function that can be integrated into your Git pre-commit script to check
+Python code before committing.
+
+To cause the commit to fail if there are isort errors (strict mode), include the following in
+`.git/hooks/pre-commit`:
+
+    from isort.hooks import git_hook
+
+    if __name__ == '__main__':
+        sys.exit(git_hook(strict=True))
+
+If you just want to display warnings, but allow the commit to happen anyway, call git_hook without
+the `strict` parameter.
+
 
 Why isort?
 ======================

@@ -38,6 +38,18 @@ Code Contributors
 - Elliott Sales de Andrade (@qulogic)
 - Kasper Jacobsen (@dinoshauer)
 - Sebastian Pipping (@hartwork)
+- Helen Sherwood-Taylor (@helenst)
+- Mocker (@Zuckonit)
+- Tim Graham (@timgraham)
+- Adam (@NorthIsUp)
+
+Documenters
+===================
+- Reinout van Rees (@reinout)
+- Helen Sherwood-Taylor (@helenst)
+- Elliott Sales de Andrade (@QuLogic)
+- Brian Peiris (@brianpeiris)
+- Tim Graham (@timgraham)
 
 --------------------------------------------
 
