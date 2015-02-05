@@ -1181,3 +1181,16 @@ def test_sticky_comments():
                   "# Used for type-hinting (ref: https://github.com/davidhalter/jedi/issues/414).\n"
                   "from selenium.webdriver.remote.webdriver import WebDriver  # noqa\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_zipimport():
+    """Imports ending in "import" shouldn't be clobbered"""
+    test_input = "from zipimport import zipimport\n"
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_from_ending():
+    """Imports ending in "from" shouldn't be clobbered."""
+    test_input = "from foo import get_foo_from, get_foo\n"
+    expected_output = "from foo import get_foo, get_foo_from\n"
+    assert SortImports(file_contents=test_input).output == expected_output
