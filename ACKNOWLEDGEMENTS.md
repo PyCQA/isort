@@ -40,6 +40,7 @@ Code Contributors
 - Sebastian Pipping (@hartwork)
 - Helen Sherwood-Taylor (@helenst)
 - Tim Graham (@timgraham)
+- Adam (@NorthIsUp)
 
 Documenters
 ===================
