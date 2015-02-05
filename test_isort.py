@@ -1238,3 +1238,11 @@ def test_top_comments():
                   "from django.db import models\n"
                   "from django.utils.encoding import python_2_unicode_compatible\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# Comment\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
