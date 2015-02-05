@@ -1251,4 +1251,4 @@ def test_top_comments():
 def test_consistency():
     """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
     test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
-    assert SortImports(file_contents=test_input, order_by_type=True).output == test_input
+    assert SortImports(file_contents=test_input, order_by_type=False).output == test_input

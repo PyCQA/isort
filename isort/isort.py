@@ -258,7 +258,7 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config, sub_imports=False):
+    def _module_key(module_name, config, sub_imports=False, already_sorted=None):
         prefix = ""
         module_name = str(module_name)
         if sub_imports and config['order_by_type']:
@@ -269,6 +269,11 @@ class SortImports(object):
             else:
                 prefix = "C"
         module_name = module_name.lower()
+        if already_sorted:
+            if module_name in already_sorted:
+                module_name = moudle_name + "a"
+            already_sorted.append(module_name)
+
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
                                   config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
 
@@ -426,7 +431,8 @@ class SortImports(object):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = list(self.imports[section]['from'].keys())
-            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
+            already_sorted = []
+            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config, already_sorted))
 
             section_output = []
             if self.config.get('from_first', False):
