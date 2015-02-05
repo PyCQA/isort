@@ -209,7 +209,14 @@ class SortImports(object):
                 if module_name_to_check in self.config[config_key]:
                     return placement
 
-        for prefix in PYTHONPATH:
+        paths = PYTHONPATH
+        virtual_env = os.environ.get('VIRTUAL_ENV', None)
+        if virtual_env:
+            paths = list(paths)
+            for version in ((2, 6), (2, 7), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4)):
+                paths.append("{0}/lib/python{1}.{2}/site-packages".format(virtual_env, version[0], version[1]))
+
+        for prefix in paths:
             module_path = "/".join((prefix, moduleName.replace(".", "/")))
             package_path = "/".join((prefix, moduleName.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
