@@ -620,6 +620,7 @@ class SortImports(object):
         while not self._at_end():
             line = self._get_line()
             skip_line = self._skip_line(line)
+            on_first_import = False
 
             if line in self._section_comments and not skip_line:
                 if self.import_index == -1:
@@ -650,6 +651,7 @@ class SortImports(object):
                 line = line.replace("\t", " ")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
+                    on_first_import = True
 
                 nested_comments = {}
                 import_string, comments, new_comments = self._strip_comments(line)
@@ -706,7 +708,8 @@ class SortImports(object):
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
                     last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                    if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                    if (not on_first_import and last.startswith("#") and not last.endswith('"""') and not
+                        last.endswith("'''")):
                         self.comments['above']['from'].setdefault(import_from, []).append(self.out_lines.pop(-1))
                     if root.get(import_from, False):
                         root[import_from].update(imports)
@@ -718,6 +721,7 @@ class SortImports(object):
                             self.comments['straight'][module] = comments
                             comments = None
                         last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                        if last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                        if (not on_first_import and last.startswith("#") and not
+                            last.endswith('"""') and not last.endswith("'''")):
                             self.comments['above']['from'][module] = self.out_lines.pop(-1)
                         self.imports[self.place_module(module)][import_type].add(module)
