@@ -143,6 +143,30 @@ def test_line_length():
                            "                         lib21, lib22)\n")
 
 
+    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32).output
+    assert test_output == ("from third_party import (lib1,\n"
+                           "                         lib2,\n"
+                           "                         lib3,\n"
+                           "                         lib4,\n"
+                           "                         lib5,\n"
+                           "                         lib6,\n"
+                           "                         lib7,\n"
+                           "                         lib8,\n"
+                           "                         lib9,\n"
+                           "                         lib10,\n"
+                           "                         lib11,\n"
+                           "                         lib12,\n"
+                           "                         lib13,\n"
+                           "                         lib14,\n"
+                           "                         lib15,\n"
+                           "                         lib16,\n"
+                           "                         lib17,\n"
+                           "                         lib18,\n"
+                           "                         lib20,\n"
+                           "                         lib21,\n"
+                           "                         lib22)\n")
+
+
 def test_output_modes():
     """Test setting isort to use various output modes works as expected"""
     test_output_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
