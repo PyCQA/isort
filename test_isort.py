@@ -1199,5 +1199,5 @@ def test_from_ending():
 def test_from_first():
     """Tests the setting from_first works correctly"""
     test_input = "from os import path\nimport os\n"
-    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, from_first=True).output == test_input
 
