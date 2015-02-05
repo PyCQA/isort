@@ -99,6 +99,8 @@ def main():
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
                         help="Ensures that if a star import is present, nothing else is imported from that namespace.")
+    parser.add_argument('-tc', '--trailing-comma', dest='trailing_comma', action='store_true',
+                        help='Includes a trailing comma on multi line imports that include parentheses.')
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')

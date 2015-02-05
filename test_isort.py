@@ -27,6 +27,7 @@ from pies.overrides import *
 from isort.isort import SortImports
 from isort.settings import WrapModes
 
+SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
@@ -937,6 +938,69 @@ def test_import_star():
                                                             "from blah import _potato\n")
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
 
+def test_include_trailing_comma():
+    """Test for the include_trailing_comma option"""
+    test_output_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.GRID,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_grid == (
+        "from third_party import (lib1, lib2,\n"
+        "                         lib3, lib4,)\n"
+    )
+
+    test_output_vertical = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical == (
+        "from third_party import (lib1,\n"
+        "                         lib2,\n"
+        "                         lib3,\n"
+        "                         lib4,)\n"
+    )
+
+    test_output_vertical_indent = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_indent == (
+        "from third_party import (\n"
+        "    lib1,\n"
+        "    lib2,\n"
+        "    lib3,\n"
+        "    lib4,\n"
+        ")\n"
+    )
+
+    test_output_vertical_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_grid == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4,)\n"
+    )
+
+    test_output_vertical_grid_grouped = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+        line_length=40,
+        include_trailing_comma=True,
+    ).output
+    assert test_output_vertical_grid_grouped == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4,\n"
+        ")\n"
+    )
 
 def test_similar_to_std_library():
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""

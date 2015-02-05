@@ -263,6 +263,10 @@ For example:
 
 is equivalent to 4
 
+For the import styles that use parentheses, you can control whether or not to
+include a trailing comma after the last import with the include_trailing_comma
+option (defaults to false).
+
 Intelligently Balanced Multi-line Imports
 ======================
 

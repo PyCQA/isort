@@ -477,11 +477,16 @@ class SortImports(object):
                 comments = None
             else:
                 statement += ", " + next_import
-        return statement + ")"
+        return statement + ("," if self.config['include_trailing_comma'] else "") + ")"
 
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
         first_import = self._add_comments(comments, imports.pop(0) + ",") + "\n" + white_space
-        return "{0}({1}{2})".format(statement, first_import, (",\n" + white_space).join(imports))
+        return "{0}({1}{2}{3})".format(
+            statement,
+            first_import,
+            (",\n" + white_space).join(imports),
+            "," if self.config['include_trailing_comma'] else "",
+        )
 
     def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
         statement += imports.pop(0)
@@ -496,8 +501,13 @@ class SortImports(object):
         return statement
 
     def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
-        return "{0}({1}\n{2}{3}\n)".format(statement, self._add_comments(comments), indent,
-                                           (",\n" + indent).join(imports))
+        return "{0}({1}\n{2}{3}{4}\n)".format(
+            statement,
+            self._add_comments(comments),
+            indent,
+            (",\n" + indent).join(imports),
+            "," if self.config['include_trailing_comma'] else "",
+         )
 
     def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
         statement += self._add_comments(comments, "(") + "\n" + indent + imports.pop(0)
@@ -507,6 +517,8 @@ class SortImports(object):
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
                 next_statement = "{0},\n{1}{2}".format(statement, indent, next_import)
             statement = next_statement
+        if self.config['include_trailing_comma']:
+            statement += ','
         return statement
 
     def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
