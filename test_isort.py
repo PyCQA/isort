@@ -1201,3 +1201,16 @@ def test_from_first():
     test_input = "from os import path\nimport os\n"
     assert SortImports(file_contents=test_input, from_first=True).output == test_input
 
+
+def test_top_comments():
+    """Ensure correct behavior with top comments"""
+    test_input = ("# -*- encoding: utf-8 -*-\n"
+                  "# Test comment\n"
+                  "#\n"
+                  "from __future__ import unicode_literals\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n"
+                  "from django.utils.encoding import python_2_unicode_compatible\n")
+    assert SortImports(file_contents=test_input).output == test_input
