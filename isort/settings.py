@@ -87,6 +87,7 @@ default = {'force_to_top': [],
            'combine_as_imports': False,
            'combine_star': False,
            'include_trailing_comma': False,
+           'from_first': False,
            'verbose': False}
 
 

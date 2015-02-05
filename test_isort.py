@@ -1194,3 +1194,10 @@ def test_from_ending():
     test_input = "from foo import get_foo_from, get_foo\n"
     expected_output = "from foo import get_foo, get_foo_from\n"
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_from_first():
+    """Tests the setting from_first works correctly"""
+    test_input = "from os import path\nimport os\n"
+    assert SortImports(file_contents=test_input, from_first=True).output == test_input
+
