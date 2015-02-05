@@ -31,6 +31,7 @@ import copy
 import itertools
 import os
 from collections import namedtuple
+from datetime import datetime
 from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
@@ -160,8 +161,14 @@ class SortImports(object):
                 output_file.write(self.output)
 
     def _show_diff(self, file_contents):
-        for line in unified_diff(file_contents.splitlines(1), self.output.splitlines(1),
-                                 fromfile=self.file_path + ':before', tofile=self.file_path + ':after'):
+        for line in unified_diff(
+            file_contents.splitlines(1),
+            self.output.splitlines(1),
+            fromfile=self.file_path + ':before',
+            tofile=self.file_path + ':after',
+            fromfiledate=datetime.fromtimestamp(os.path.getmtime(self.file_path)),
+            tofiledate=datetime.now()
+        ):
             stdout.write(line)
 
     @staticmethod
