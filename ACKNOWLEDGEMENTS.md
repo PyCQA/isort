@@ -40,6 +40,13 @@ Code Contributors
 - Sebastian Pipping (@hartwork)
 - Helen Sherwood-Taylor (@helenst)
 
+Documenters
+===================
+- Reinout van Rees (@reinout)
+- Helen Sherwood-Taylor (@helenst)
+- Elliott Sales de Andrade (@QuLogic)
+- Brian Peiris (@brianpeiris)
+
 --------------------------------------------
 
 A sincere thanks to everyone who has helped isort be the great utility it is today!
