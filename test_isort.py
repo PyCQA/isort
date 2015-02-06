@@ -1206,6 +1206,14 @@ def test_sticky_comments():
                   "from selenium.webdriver.remote.webdriver import WebDriver  # noqa\n")
     assert SortImports(file_contents=test_input).output == test_input
 
+    test_input = ("from django import forms\n"
+                  "# While this couples the geographic forms to the GEOS library,\n"
+                  "# it decouples from database (by not importing SpatialBackend).\n"
+                  "from django.contrib.gis.geos import GEOSException, GEOSGeometry\n"
+                  "from django.utils.translation import ugettext_lazy as _\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
 
 def test_zipimport():
     """Imports ending in "import" shouldn't be clobbered"""

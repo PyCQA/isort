@@ -37,6 +37,7 @@ from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
 from natsort import natsorted
+from pies.collections import OrderedDict
 from pies.overrides import *
 
 from . import settings
@@ -111,7 +112,7 @@ class SortImports(object):
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
-            self.imports[section] = {'straight': set(), 'from': {}}
+            self.imports[section] = {'straight': set(), 'from': OrderedDict()}
 
         self.index = 0
         self.import_index = -1
@@ -426,7 +427,7 @@ class SortImports(object):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = list(self.imports[section]['from'].keys())
-            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config))
+            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
 
             section_output = []
             if self.config.get('from_first', False):
@@ -640,7 +641,7 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
-            if "isort:" + "imports-" in line:
+            if "isort:" + "imports-" in line and line.startswith("#"):
                 section = line.split("isort:" + "imports-")[-1].split()[0]
                 self.place_imports[section.upper()] = []
                 self.import_placements[line] = section.upper()
@@ -719,10 +720,13 @@ class SortImports(object):
                             comments.pop(comments.index(associated_commment))
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
-                    last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                    if (len(self.out_lines) > self.import_index and last.startswith("#") and not last.endswith('"""') and not
-                        last.endswith("'''")):
-                        self.comments['above']['from'].setdefault(import_from, []).append(self.out_lines.pop(-1))
+
+                    if len(self.out_lines) > self.import_index:
+                        last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                        while last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                            self.comments['above']['from'].setdefault(import_from, []).insert(0, self.out_lines.pop(-1))
+                            last = self.out_lines and self.out_lines[-1].rstrip() or ""
+
                     if root.get(import_from, False):
                         root[import_from].update(imports)
                     else:
@@ -732,8 +736,10 @@ class SortImports(object):
                         if comments:
                             self.comments['straight'][module] = comments
                             comments = None
-                        last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                        if (len(self.out_lines) > self.import_index and last.startswith("#") and not
-                            last.endswith('"""') and not last.endswith("'''")):
-                            self.comments['above']['from'][module] = self.out_lines.pop(-1)
+
+                        if len(self.out_lines) > self.import_index:
+                            last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                            while last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
+                                self.comments['above']['from'].setdefault(module, []).insert(0, self.out_lines.pop(-1))
+                                last = self.out_lines and self.out_lines[-1].rstrip() or ""
                         self.imports[self.place_module(module)][import_type].add(module)
