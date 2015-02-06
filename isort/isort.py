@@ -37,7 +37,6 @@ from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
 from natsort import natsorted
-from pies.collections import OrderedDict
 from pies.overrides import *
 
 from . import settings
@@ -112,7 +111,7 @@ class SortImports(object):
         self.imports = {}
         self.as_map = {}
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
-            self.imports[section] = {'straight': set(), 'from': OrderedDict()}
+            self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
         self.import_index = -1
@@ -426,7 +425,7 @@ class SortImports(object):
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            from_modules = list(self.imports[section]['from'].keys())
+            from_modules = sorted(list(self.imports[section]['from'].keys()))
             from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
 
             section_output = []
