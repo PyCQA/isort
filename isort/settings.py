@@ -96,7 +96,7 @@ default = {'force_to_top': [],
 def from_path(path):
     computed_settings = default.copy()
     _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
-    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', ), computed_settings)
+    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', 'isort'), computed_settings)
     _update_settings_with_config(path, 'setup.cfg', None, ('isort', ), computed_settings)
     return computed_settings
 
