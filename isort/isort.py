@@ -641,7 +641,7 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
-            if "isort:" + "imports-" in line:
+            if "isort:" + "imports-" in line and line.startswith("#"):
                 section = line.split("isort:" + "imports-")[-1].split()[0]
                 self.place_imports[section.upper()] = []
                 self.import_placements[line] = section.upper()
