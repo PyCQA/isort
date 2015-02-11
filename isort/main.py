@@ -112,6 +112,8 @@ def main():
                         help="Switches the typical ordering preference, showing from imports first then straight ones.")
     parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
+    parser.add_argument('-fgw', '--force-grid-wrap',  action='store_true', dest="force_grid_wrap",
+                        help='Force from imports to be grid wrapped regardless of line length')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     file_names = arguments.pop('files', [])

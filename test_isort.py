@@ -1260,3 +1260,21 @@ def test_consistency():
     """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
     test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
     assert SortImports(file_contents=test_input, order_by_type=True).output == test_input
+
+
+def test_force_grid_wrap():
+    """Ensures removing imports works as expected."""
+    test_input = ("from foo import lib6, lib7\n"
+                  "from bar import lib2\n")
+    test_output = SortImports(
+      file_contents=test_input,
+      force_from_wrap=True,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+      ).output
+    print(test_output)
+    assert test_output == """from bar import lib2
+from foo import (
+    lib6,
+    lib7
+)
+"""
