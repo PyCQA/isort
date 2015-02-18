@@ -1264,15 +1264,38 @@ def test_consistency():
 
 def test_force_grid_wrap():
     """Ensures removing imports works as expected."""
-    test_input = ("from foo import lib6, lib7\n"
-                  "from bar import lib2\n")
+    test_input = (
+      "from foo import lib6, lib7\n"
+      "from bar import lib2\n"
+    )
     test_output = SortImports(
       file_contents=test_input,
-      force_from_wrap=True,
+      force_grid_wrap=True,
       multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
       ).output
-    print(test_output)
     assert test_output == """from bar import lib2
+from foo import (
+    lib6,
+    lib7
+)
+"""
+
+def test_force_grid_wrap_long():
+    """Ensure that force grid wrap still happens with long line length"""
+    test_input = (
+      "from foo import lib6, lib7\n"
+      "from bar import lib2\n"
+      "from babar import something_that_is_kind_of_long"
+    )
+    test_output = SortImports(
+      file_contents=test_input,
+      force_grid_wrap=True,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+      line_length=9999,
+      ).output
+    print(test_output)
+    assert test_output == """from babar import something_that_is_kind_of_long
+from bar import lib2
 from foo import (
     lib6,
     lib7

@@ -380,11 +380,9 @@ class SortImports(object):
                         import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
                     if not from_imports:
                         import_statement = ""
-                    if len(import_statement) > self.config['line_length']:
-                        import_statement = self._wrap(import_statement)
                     if len(from_imports) > 1 and (
                         len(import_statement) > self.config['line_length']
-                        or self.config.get('force_from_wrap')
+                        or self.config.get('force_grid_wrap')
                     ):
                         output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
                                                                                     0)].lower()
@@ -409,6 +407,8 @@ class SortImports(object):
                                 new_import_statement = formatter(import_start, copy.copy(from_imports),
                                                                 dynamic_indent, indent, line_length, comments)
                                 lines = new_import_statement.split("\n")
+                    elif len(import_statement) > self.config['line_length']:
+                        import_statement = self._wrap(import_statement)
 
                 if import_statement:
                     above_comments = self.comments['above']['from'].get(module, None)
