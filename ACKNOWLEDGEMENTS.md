@@ -42,6 +42,7 @@ Code Contributors
 - Mocker (@Zuckonit)
 - Tim Graham (@timgraham)
 - Adam (@NorthIsUp)
+- Norman Jäckel (@normanjaeckel)
 
 Documenters
 ===================
