@@ -1308,7 +1308,8 @@ def test_uses_jinja_variables():
                   "import os\n"
                   "import myproject.{ test }\n"
                   "import django.{ settings }")
-    test_output = SortImports(file_contents=test_input, known_third_party=['{ django']).output
+    test_output = SortImports(file_contents=test_input, known_third_party=['django'],
+                              known_first_party=['myproject']).output
     assert test_output == ("import os\n"
                            "import sys\n"
                            "\n"
