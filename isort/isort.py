@@ -627,7 +627,7 @@ class SortImports(object):
                 import_list.remove(key)
         import_string = ' '.join(import_list)
         import_string = import_string.replace("[[i]]", "_import")
-        return import_string
+        return import_string.replace("{ ", "{|").replace(" }", "|}")
 
     def _parse(self):
         """Parses a python file taking out and categorizing imports."""
@@ -696,7 +696,8 @@ class SortImports(object):
                     from_import = parts[0].split(" ")
                     import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
-                imports = self._strip_syntax(import_string).split()
+                imports = [item.replace("{|", "{ ").replace("|}", " }") for item in
+                           self._strip_syntax(import_string).split()]
                 if "as" in imports and (imports.index('as') + 1) < len(imports):
                     while "as" in imports:
                         index = imports.index('as')
