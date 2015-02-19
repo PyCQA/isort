@@ -1293,7 +1293,6 @@ def test_force_grid_wrap_long():
       multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
       line_length=9999,
       ).output
-    print(test_output)
     assert test_output == """from babar import something_that_is_kind_of_long
 from bar import lib2
 from foo import (
