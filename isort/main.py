@@ -21,12 +21,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
+import glob
 import os
 import sys
 
+import setuptools
 from pies.overrides import *
 
 from isort import SECTION_NAMES, SortImports, __version__
+from isort.settings import default, from_path
 
 
 def iter_source_code(paths):
@@ -41,7 +44,62 @@ def iter_source_code(paths):
             yield path
 
 
-def main():
+class ISortCommand(setuptools.Command):
+    """The :class:`ISortCommand` class is used by setuptools to perform
+    imports checks on registered modules.
+    """
+
+    description = "Run isort on modules registered in setuptools"
+    user_options = []
+
+    def initialize_options(self):
+        default_settings = default.copy()
+        for (key, value) in itemsview(default_settings):
+            setattr(self, key, value)
+
+    def finalize_options(self):
+        "Get options from config files."
+        self.arguments = {}
+        computed_settings = from_path(os.getcwd())
+        for (key, value) in itemsview(computed_settings):
+            self.arguments[key] = value
+
+    def distribution_files(self):
+        """Find distribution packages."""
+        # This is verbatim from flake8
+        if self.distribution.packages:
+            package_dirs = self.distribution.package_dir or {}
+            for package in self.distribution.packages:
+                pkg_dir = package
+                if package in package_dirs:
+                    pkg_dir = package_dirs[package]
+                elif '' in package_dirs:
+                    pkg_dir = package_dirs[''] + os.path.sep + pkg_dir
+                yield pkg_dir.replace('.', os.path.sep)
+
+        if self.distribution.py_modules:
+            for filename in self.distribution.py_modules:
+                yield "%s.py" % filename
+        # Don't miss the setup.py file itself
+        yield "setup.py"
+
+    def run(self):
+        arguments = self.arguments
+        wrong_sorted_files = False
+        arguments['check'] = True
+        for path in self.distribution_files():
+            for python_file in glob.iglob(os.path.join(path, '*.py')):
+                try:
+                    incorrectly_sorted = SortImports(python_file, **arguments).incorrectly_sorted
+                    if incorrectly_sorted:
+                        wrong_sorted_files = True
+                except IOError as e:
+                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+        if wrong_sorted_files:
+            exit(1)
+
+
+def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
@@ -64,7 +122,7 @@ def main():
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
-                            '5-vert-grid-grouped).')
+                        '5-vert-grid-grouped).')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
@@ -116,6 +174,10 @@ def main():
                         help='Force from imports to be grid wrapped regardless of line length')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
+    return arguments
+
+def main():
+    arguments = create_parser()
     file_names = arguments.pop('files', [])
 
     if file_names == ['-']:

@@ -53,7 +53,8 @@ setup(name='isort',
       entry_points={
         'console_scripts': [
             'isort = isort.main:main',
-        ]
+        ],
+        'distutils.commands': ['isort = isort.main:ISortCommand'],
       },
       packages=['isort'],
       requires=['pies', 'natsort'],

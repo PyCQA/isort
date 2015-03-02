@@ -1,9 +1,13 @@
 language: python
-python:
-  - "pypy"
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-script: python setup.py test
+env:
+  - TOXENV=isort-check
+  - TOXENV=py26
+  - TOXENV=py27
+  - TOXENV=py32
+  - TOXENV=py33
+  - TOXENV=py34
+  - TOXENV=pypy
+install:
+  - pip install tox
+script:
+  - tox -e $TOXENV

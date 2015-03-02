@@ -385,7 +385,10 @@ or:
     menu > Python > Remove Import
 
 Using isort to verify code
-======================
+==========================
+
+The ```--check-only``` option
+-----------------------------
 
 isort can also be used to used to verify that code is correctly formatted by running it with -c.
 Any files that contain incorrectly sorted imports will be outputted to stderr.
@@ -403,7 +406,7 @@ Which can help to ensure a certain level of code quality throughout a project.
 
 
 Git hook
-========
+--------
 
 isort provides a hook function that can be integrated into your Git pre-commit script to check
 Python code before committing.
@@ -418,6 +421,31 @@ To cause the commit to fail if there are isort errors (strict mode), include the
 
 If you just want to display warnings, but allow the commit to happen anyway, call git_hook without
 the `strict` parameter.
+
+Setuptools integration
+----------------------
+
+Upon installation, isort enables a setuptools command that checks Python files
+declared by your project.
+
+Running ``python setup.py isort`` on the command line will check the files
+listed in your ``py_modules`` and ``packages``.  If any warning is found,
+the command will exit with an error code::
+
+    $ python setup.py isort
+
+Also, to allow users to be able to use the command without having to install
+isort themselves, add isort to the setup_requires of your setup() like so::
+
+    setup(
+        name="project",
+        packages=["project"],
+
+        setup_requires=[
+            "isort"
+        ]
+    )
+
 
 
 Why isort?
