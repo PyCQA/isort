@@ -413,6 +413,18 @@ def test_custom_indent():
                            "  lib20, lib21, lib22\n")
 
 
+def test_use_parentheses():
+    test_input = (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import \\"
+        "    my_custom_function as my_special_function"
+    )
+    test_output = SortImports(
+        file_contents=test_input, known_third_party=['django'],
+        line_length=79, use_parentheses=True,
+    ).output
+    assert '(' in test_output
+
+
 def test_skip():
     """Ensure skipping a single import will work as expected."""
     test_input = ("import myproject\n"
