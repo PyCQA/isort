@@ -1320,3 +1320,12 @@ def test_uses_jinja_variables():
     test_input = ("import {{ cookiecutter.repo_name }}\n"
                   "from foo import {{ cookiecutter.bar }}\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_fcntl():
+    """Test to ensure fcntl gets correctly recognized as stdlib import"""
+    test_input = ("import fcntl\n"
+                  "import os\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
