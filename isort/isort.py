@@ -47,6 +47,7 @@ SECTIONS = namedtuple('Sections', SECTION_NAMES)(*range(len(SECTION_NAMES)))
 
 class SortImports(object):
     incorrectly_sorted = False
+    skipped = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
                  show_diff=False, settings_path=None, **setting_overrides):
@@ -87,6 +88,7 @@ class SortImports(object):
         if file_path and not file_contents:
             file_path = os.path.abspath(file_path)
             if self._should_skip(file_path):
+                self.skipped = True
                 if self.config['verbose']:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path))
                 file_contents = None
