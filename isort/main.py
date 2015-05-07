@@ -186,16 +186,22 @@ def main():
         wrong_sorted_files = False
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
+        num_skipped = 0
         for file_name in file_names:
             try:
-                incorrectly_sorted = SortImports(file_name, **arguments).incorrectly_sorted
+                sort_attempt = SortImports(file_name, **arguments)
+                incorrectly_sorted = sort_attempt.incorrectly_sorted
                 if arguments.get('check', False) and incorrectly_sorted:
                     wrong_sorted_files = True
+                if sort_attempt.skipped:
+                    num_skipped += 1
             except IOError as e:
                 print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
         if wrong_sorted_files:
             exit(1)
 
+        if num_skipped:
+            print("Skipped {0} files".format(num_skipped))
 
 if __name__ == "__main__":
     main()
