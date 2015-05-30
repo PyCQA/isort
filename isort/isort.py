@@ -211,9 +211,9 @@ class SortImports(object):
         for module_name_to_check in module_names_to_check:
             for placement, config_key in (
                     (SECTIONS.FUTURE, 'known_future_library'),
-                    (SECTIONS.STDLIB, 'known_standard_library'),
                     (SECTIONS.THIRDPARTY, 'known_third_party'),
                     (SECTIONS.FIRSTPARTY, 'known_first_party'),
+                    (SECTIONS.STDLIB, 'known_standard_library'),
                     ):
                 if module_name_to_check in self.config[config_key]:
                     return placement
