@@ -143,6 +143,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Current Python Project
 - Explicitly Local (. before import, as in: from . import x)
 - Custom Separate Sections (Defined by forced_separate list in configuration file)
+- Custom Sections (Defined by sections list in configuration file)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).
@@ -286,6 +287,26 @@ Will be produced instead of:
 
 To enable this set 'balanced_wrapping' to True in your config or pass the -e option into the command line utility.
 
+Custom Sections and Ordering
+============================
+
+You can change the section order with `sections` option from the default of:
+
+    FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+
+to your preference:
+
+    sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER
+
+You also can define your own sections and thier order.
+
+Example:
+
+    known_django=django
+    known_pandas=pandas,numpy
+    sections=FUTURE,STDLIB,DJANGO,THIRDPARTY,PANDAS,FIRSTPARTY,LOCALFOLDER
+
+would create two new sections with the specified known modules.
 
 Auto-comment import sections
 ======================
