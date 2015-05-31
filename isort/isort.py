@@ -217,7 +217,7 @@ class SortImports(object):
         parts = moduleName.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
-            for placement in self.sections:
+            for placement in reversed(self.sections):
                 known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
                 config_key = 'known_{0}'.format(known_placement.lower())
                 if module_name_to_check in self.config.get(config_key, []):

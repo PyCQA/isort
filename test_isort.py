@@ -665,6 +665,27 @@ def test_default_section():
                                   "\n"
                                   "import django.settings\n")
 
+def test_first_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_first_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
+
+def test_thirdy_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_third_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
 
 def test_force_single_line_imports():
     """Test to ensure forcing imports to each have their own line works as expected."""
