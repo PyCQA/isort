@@ -756,6 +756,7 @@ def coding_check(fname, default='utf-8'):
     # see https://www.python.org/dev/peps/pep-0263/
     pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
 
+    coding = default
     with io.open(fname, 'rb') as f:
         for line_number, line in enumerate(f, 1):
             groups = re.findall(pattern, line)
@@ -763,7 +764,6 @@ def coding_check(fname, default='utf-8'):
                 coding = groups[0].decode('ascii')
                 break
             if line_number > 2:
-                coding = default
                 break
 
     return coding
