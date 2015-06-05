@@ -22,6 +22,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import codecs
+import os
+import shutil
+import tempfile
+
 from pies.overrides import *
 
 from isort.isort import SortImports
@@ -1329,3 +1334,15 @@ def test_fcntl():
                   "import sys\n")
     assert SortImports(file_contents=test_input).output == test_input
 
+
+def test_other_file_encodings():
+    try:
+        tmp_dir = tempfile.mkdtemp()
+        for encoding in ('latin1', 'utf8'):
+            tmp_fname = os.path.join(tmp_dir, 'test_{}.py'.format(encoding))
+            with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
+                file_contents = "# coding: {}'\ns = u'\u00E3'".format(encoding)
+                f.write(file_contents)
+            assert SortImports(file_path=tmp_fname).output == file_contents
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
