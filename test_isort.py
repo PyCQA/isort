@@ -1341,8 +1341,8 @@ def test_other_file_encodings():
         for encoding in ('latin1', 'utf8'):
             tmp_fname = os.path.join(tmp_dir, 'test_{}.py'.format(encoding))
             with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
-                file_contents = "# coding: {}'\ns = u'\u00E3'".format(encoding)
+                file_contents = "# coding: {}\ns = u'\u00E3'\n".format(encoding)
                 f.write(file_contents)
-            assert SortImports(file_path=tmp_fname).output == file_contents
+        assert SortImports(file_path=tmp_fname).output == file_contents
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
