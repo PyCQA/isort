@@ -1,7 +1,7 @@
 """test_isort.py.
 
 Tests all major functionality of the isort library
-Should be ran using py.test by simply running by.test in the isort project directory
+Should be ran using py.test by simply running py.test in the isort project directory
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
