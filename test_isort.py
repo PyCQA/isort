@@ -1329,3 +1329,14 @@ def test_fcntl():
                   "import sys\n")
     assert SortImports(file_contents=test_input).output == test_input
 
+def test_import_split_is_word_boundary_aware():
+
+    test_input = ("from mycompany.model.size_value_array_import_func import ("
+                "    get_size_value_array_import_func_jobs,"
+                ")")
+    test_output = SortImports(file_contents=test_input,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+      line_length=79).output
+
+    assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
+                           "    get_size_value_array_import_func_jobs\n")
