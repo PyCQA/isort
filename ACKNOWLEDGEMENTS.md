@@ -42,6 +42,14 @@ Code Contributors
 - Mocker (@Zuckonit)
 - Tim Graham (@timgraham)
 - Adam (@NorthIsUp)
+- Norman Jäckel (@normanjaeckel)
+- Derrick Petzold (@dpetzold)
+- Michael van Tellingen (@mvantellingen)
+- Patrick Yevsukov (@patrickyevsukov)
+- Christer van der Meeren (@cmeeren)
+- Timon Wong/NHNCN (@timonwong)
+- Jeremy Dunck (@jdunck)
+- Benjamin ABEL (@benjaminabel)
 
 Documenters
 ===================

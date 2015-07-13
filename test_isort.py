@@ -1,7 +1,8 @@
+# coding: utf-8
 """test_isort.py.
 
 Tests all major functionality of the isort library
-Should be ran using py.test by simply running by.test in the isort project directory
+Should be ran using py.test by simply running py.test in the isort project directory
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
@@ -22,7 +23,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from pies.overrides import *
+from isort.pie_slice import *
+import codecs
+import os
+import shutil
+import tempfile
 
 from isort.isort import SortImports
 from isort.settings import WrapModes
@@ -413,6 +418,18 @@ def test_custom_indent():
                            "  lib20, lib21, lib22\n")
 
 
+def test_use_parentheses():
+    test_input = (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import \\"
+        "    my_custom_function as my_special_function"
+    )
+    test_output = SortImports(
+        file_contents=test_input, known_third_party=['django'],
+        line_length=79, use_parentheses=True,
+    ).output
+    assert '(' in test_output
+
+
 def test_skip():
     """Ensure skipping a single import will work as expected."""
     test_input = ("import myproject\n"
@@ -665,6 +682,27 @@ def test_default_section():
                                   "\n"
                                   "import django.settings\n")
 
+def test_first_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_first_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
+
+def test_thirdy_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_third_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
 
 def test_force_single_line_imports():
     """Test to ensure forcing imports to each have their own line works as expected."""
@@ -1172,7 +1210,6 @@ def test_place_comments():
                            "import os\n"
                            "import sys\n")
 
-
 def test_placement_control():
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
@@ -1187,6 +1224,7 @@ def test_placement_control():
                 known_standard_library=['p24.imports'],
                 known_third_party=['bottle'],
                 default_section="THIRDPARTY").output
+
     assert test_output == ("import os\n"
                            "import p24.imports._argparse as argparse\n"
                            "import p24.imports._subprocess as subprocess\n"
@@ -1194,6 +1232,54 @@ def test_placement_control():
                            "\n"
                            "from bottle import Bottle, redirect, response, run\n"
                            "\n"
+                           "import p24.imports._VERSION as VERSION\n"
+                           "import p24.shared.media_wiki_syntax as syntax\n")
+
+
+def test_custom_sections():
+    """Ensure that most specific placement control match wins"""
+    test_input = ("import os\n"
+                  "import sys\n"
+                  "from django.conf import settings\n"
+                  "from bottle import Bottle, redirect, response, run\n"
+                  "import p24.imports._argparse as argparse\n"
+                  "from django.db import models\n"
+                  "import p24.imports._subprocess as subprocess\n"
+                  "import pandas as pd\n"
+                  "import p24.imports._VERSION as VERSION\n"
+                  "import numpy as np\n"
+                  "import p24.shared.media_wiki_syntax as syntax\n")
+    test_output = SortImports(file_contents=test_input,
+                known_first_party=['p24', 'p24.imports._VERSION'],
+                import_heading_stdlib='Standard Library',
+                import_heading_thirdparty='Third Party',
+                import_heading_firstparty='First Party',
+                import_heading_django='Django',
+                import_heading_pandas='Pandas',
+                known_standard_library=['p24.imports'],
+                known_third_party=['bottle'],
+                known_django=['django'],
+                known_pandas=['pandas', 'numpy'],
+                default_section="THIRDPARTY",
+                sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "PANDAS", "FIRSTPARTY", "LOCALFOLDER"]).output
+    assert test_output == ("# Standard Library\n"
+                           "import os\n"
+                           "import p24.imports._argparse as argparse\n"
+                           "import p24.imports._subprocess as subprocess\n"
+                           "import sys\n"
+                           "\n"
+                           "# Django\n"
+                           "from django.conf import settings\n"
+                           "from django.db import models\n"
+                           "\n"
+                           "# Third Party\n"
+                           "from bottle import Bottle, redirect, response, run\n"
+                           "\n"
+                           "# Pandas\n"
+                           "import numpy as np\n"
+                           "import pandas as pd\n"
+                           "\n"
+                           "# First Party\n"
                            "import p24.imports._VERSION as VERSION\n"
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
@@ -1259,4 +1345,99 @@ def test_top_comments():
 def test_consistency():
     """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
     test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
-    assert SortImports(file_contents=test_input, order_by_type=False).output == test_input
+    assert SortImports(file_contents=test_input, order_by_type=True).output == test_input
+
+
+def test_force_grid_wrap():
+    """Ensures removing imports works as expected."""
+    test_input = (
+      "from foo import lib6, lib7\n"
+      "from bar import lib2\n"
+    )
+    test_output = SortImports(
+      file_contents=test_input,
+      force_grid_wrap=True,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+      ).output
+    assert test_output == """from bar import lib2
+from foo import (
+    lib6,
+    lib7
+)
+"""
+
+def test_force_grid_wrap_long():
+    """Ensure that force grid wrap still happens with long line length"""
+    test_input = (
+      "from foo import lib6, lib7\n"
+      "from bar import lib2\n"
+      "from babar import something_that_is_kind_of_long"
+    )
+    test_output = SortImports(
+      file_contents=test_input,
+      force_grid_wrap=True,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+      line_length=9999,
+      ).output
+    assert test_output == """from babar import something_that_is_kind_of_long
+from bar import lib2
+from foo import (
+    lib6,
+    lib7
+)
+"""
+
+
+def test_uses_jinja_variables():
+    """Test a basic set of imports that use jinja variables"""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import myproject.{ test }\n"
+                  "import django.{ settings }")
+    test_output = SortImports(file_contents=test_input, known_third_party=['django'],
+                              known_first_party=['myproject']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import django.{ settings }\n"
+                           "\n"
+                           "import myproject.{ test }\n")
+
+    test_input = ("import {{ cookiecutter.repo_name }}\n"
+                  "from foo import {{ cookiecutter.bar }}\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_fcntl():
+    """Test to ensure fcntl gets correctly recognized as stdlib import"""
+    test_input = ("import fcntl\n"
+                  "import os\n"
+                  "import sys\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_import_split_is_word_boundary_aware():
+    """Test to ensure that isort splits words in a boundry aware mannor"""
+    test_input = ("from mycompany.model.size_value_array_import_func import ("
+                "    get_size_value_array_import_func_jobs,"
+                ")")
+    test_output = SortImports(file_contents=test_input,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+      line_length=79).output
+
+    assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
+                           "    get_size_value_array_import_func_jobs\n")
+
+
+def test_other_file_encodings():
+    """Test to ensure file encoding is respected"""
+    try:
+        tmp_dir = tempfile.mkdtemp()
+        for encoding in ('latin1', 'utf8'):
+            tmp_fname = os.path.join(tmp_dir, 'test_{0}.py'.format(encoding))
+            with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
+                file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
+                f.write(file_contents)
+        assert SortImports(file_path=tmp_fname).output == file_contents
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)

@@ -11,7 +11,7 @@ isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library and [plugins for various editors](https://github.com/timothycrosley/isort/wiki/isort-Plugins) to quickly sort all your imports.
-It currently cleanly supports Python 2.6 - 3.4 using pies (https://github.com/timothycrosley/pies) to achieve this without ugly hacks and/or py2to3.
+It currently cleanly supports Python 2.6 - 3.5 using pies (https://github.com/timothycrosley/pies) to achieve this without ugly hacks and/or py2to3.
 
 Before isort:
 
@@ -143,6 +143,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Current Python Project
 - Explicitly Local (. before import, as in: from . import x)
 - Custom Separate Sections (Defined by forced_separate list in configuration file)
+- Custom Sections (Defined by sections list in configuration file)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
 and wraps long from imports to the specified line length (defaults to 80).
@@ -286,6 +287,26 @@ Will be produced instead of:
 
 To enable this set 'balanced_wrapping' to True in your config or pass the -e option into the command line utility.
 
+Custom Sections and Ordering
+============================
+
+You can change the section order with `sections` option from the default of:
+
+    FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+
+to your preference:
+
+    sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER
+
+You also can define your own sections and thier order.
+
+Example:
+
+    known_django=django
+    known_pandas=pandas,numpy
+    sections=FUTURE,STDLIB,DJANGO,THIRDPARTY,PANDAS,FIRSTPARTY,LOCALFOLDER
+
+would create two new sections with the specified known modules.
 
 Auto-comment import sections
 ======================
@@ -385,7 +406,10 @@ or:
     menu > Python > Remove Import
 
 Using isort to verify code
-======================
+==========================
+
+The ```--check-only``` option
+-----------------------------
 
 isort can also be used to used to verify that code is correctly formatted by running it with -c.
 Any files that contain incorrectly sorted imports will be outputted to stderr.
@@ -403,7 +427,7 @@ Which can help to ensure a certain level of code quality throughout a project.
 
 
 Git hook
-========
+--------
 
 isort provides a hook function that can be integrated into your Git pre-commit script to check
 Python code before committing.
@@ -418,6 +442,31 @@ To cause the commit to fail if there are isort errors (strict mode), include the
 
 If you just want to display warnings, but allow the commit to happen anyway, call git_hook without
 the `strict` parameter.
+
+Setuptools integration
+----------------------
+
+Upon installation, isort enables a setuptools command that checks Python files
+declared by your project.
+
+Running ``python setup.py isort`` on the command line will check the files
+listed in your ``py_modules`` and ``packages``.  If any warning is found,
+the command will exit with an error code::
+
+    $ python setup.py isort
+
+Also, to allow users to be able to use the command without having to install
+isort themselves, add isort to the setup_requires of your setup() like so::
+
+    setup(
+        name="project",
+        packages=["project"],
+
+        setup_requires=[
+            "isort"
+        ]
+    )
+
 
 
 Why isort?

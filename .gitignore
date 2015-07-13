@@ -6,6 +6,7 @@
 # Packages
 *.egg
 *.egg-info
+.eggs
 build
 eggs
 parts
@@ -16,6 +17,7 @@ develop-eggs
 lib
 lib64
 MANIFEST
+.eggs
 
 # Installer logs
 pip-log.txt

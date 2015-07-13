@@ -42,22 +42,21 @@ except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
 setup(name='isort',
-      version='3.9.6',
+      version='4.0.0',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/3.9.6.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/4.0.0.tar.gz',
       license="MIT",
       entry_points={
         'console_scripts': [
             'isort = isort.main:main',
-        ]
+        ],
+        'distutils.commands': ['isort = isort.main:ISortCommand'],
       },
       packages=['isort'],
-      requires=['pies', 'natsort'],
-      install_requires=['pies>=2.6.2', 'natsort>=3.0.0'],
       cmdclass={'test': PyTest},
       keywords='Refactor, Python, Python2, Python3, Refactoring, Imports, Sort, Clean',
       classifiers=['Development Status :: 6 - Mature',
@@ -75,6 +74,7 @@ setup(name='isort',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.5',
                    'Topic :: Software Development :: Libraries',
                    'Topic :: Utilities'],
       **PyTest.extra_kwargs)

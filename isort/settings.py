@@ -27,8 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 from collections import namedtuple
 
-from pies.functools import lru_cache
-from pies.overrides import *
+from .pie_slice import *
 
 try:
     import configparser
@@ -36,6 +35,7 @@ except ImportError:
     import ConfigParser as configparser
 
 MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
+DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
@@ -45,6 +45,7 @@ default = {'force_to_top': [],
            'skip': ['__init__.py', ],
            'line_length': 79,
            'wrap_length': 0,
+           'sections': DEFAULT_SECTIONS,
            'known_future_library': ['__future__'],
            'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncore", "atexit", "base64",
                                       "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb", "cmd", "codecs",
@@ -53,7 +54,7 @@ default = {'force_to_top': [],
                                       "decimal", "difflib", "dircache", "dis", "doctest", "dumbdbm", "EasyDialogs",
                                       "errno", "exceptions", "filecmp", "fileinput", "fnmatch", "fractions",
                                       "functools", "gc", "gdbm", "getopt", "getpass", "gettext", "glob", "grp", "gzip",
-                                      "hashlib", "heapq", "hmac", "imaplib", "imp", "inspect", "itertools", "json",
+                                      "hashlib", "heapq", "hmac", "imaplib", "imp", "inspect", "io", "itertools", "json",
                                       "linecache", "locale", "logging", "mailbox", "math", "mhlib", "mmap",
                                       "multiprocessing", "operator", "optparse", "os", "pdb", "pickle", "pipes",
                                       "pkgutil", "platform", "plistlib", "pprint", "profile", "pstats", "pwd", "pyclbr",
@@ -65,7 +66,7 @@ default = {'force_to_top': [],
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
                                       "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__', 'thread',
-                                      "binascii", "statistics", "unicodedata"],
+                                      "binascii", "statistics", "unicodedata", "fcntl"],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -82,6 +83,7 @@ default = {'force_to_top': [],
            'import_heading_firstparty': '',
            'import_heading_localfolder': '',
            'balanced_wrapping': False,
+           'use_parentheses': False,
            'order_by_type': True,
            'atomic': False,
            'lines_after_imports': -1,
@@ -96,7 +98,7 @@ default = {'force_to_top': [],
 def from_path(path):
     computed_settings = default.copy()
     _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
-    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', ), computed_settings)
+    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', 'isort'), computed_settings)
     _update_settings_with_config(path, 'setup.cfg', None, ('isort', ), computed_settings)
     return computed_settings
 
@@ -144,18 +146,22 @@ def _update_with_config_file(file_path, sections, computed_settings):
         if existing_value_type in (list, tuple):
             existing_data = set(computed_settings.get(access_key, default.get(access_key)))
             if key.startswith('not_'):
-                computed_settings[access_key] = list(existing_data.difference(value.split(",")))
+                computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
             else:
-                computed_settings[access_key] = list(existing_data.union(value.split(",")))
+                computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == "false":
             computed_settings[access_key] = False
         else:
             computed_settings[access_key] = existing_value_type(value)
 
 
+def _as_list(value):
+    return filter(bool, [item.strip() for item in value.split(",")])
+
+
 @lru_cache()
 def _get_config_data(file_path, sections):
-    with open(file_path) as config_file:
+    with open(file_path, 'rU') as config_file:
         if file_path.endswith(".editorconfig"):
             line = "\n"
             last_position = config_file.tell()
