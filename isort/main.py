@@ -26,7 +26,7 @@ import os
 import sys
 
 import setuptools
-from pies.overrides import *
+from .pie_slice import *
 
 from isort import SECTION_NAMES, SortImports, __version__
 from isort.settings import default, from_path

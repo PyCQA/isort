@@ -37,7 +37,7 @@ from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
 from .natural import nsorted
-from pies.overrides import *
+from .pie_slice import *
 
 from . import settings
 
