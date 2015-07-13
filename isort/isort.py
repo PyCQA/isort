@@ -28,6 +28,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import codecs
 import copy
+import io
 import itertools
 import os
 import re
@@ -89,6 +90,7 @@ class SortImports(object):
         self._section_comments = ["# " + value for key, value in itemsview(self.config) if
                                   key.startswith('import_heading') and value]
 
+        self.file_encoding = 'utf-8'
         file_name = file_path
         self.file_path = file_path or ""
         if file_path and not file_contents:
@@ -100,9 +102,9 @@ class SortImports(object):
                 file_contents = None
             else:
                 self.file_path = file_path
-                with open(file_path) as file_to_import_sort:
+                self.file_encoding = coding_check(file_path)
+                with codecs.open(file_path, encoding=self.file_encoding) as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
-                    file_contents = PY2 and file_contents.decode('utf8') or file_contents
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             return
@@ -168,7 +170,7 @@ class SortImports(object):
         elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
-            with codecs.open(self.file_path, encoding='utf-8', mode='w') as output_file:
+            with codecs.open(self.file_path, encoding=self.file_encoding, mode='w') as output_file:
                 output_file.write(self.output)
 
     def _show_diff(self, file_contents):
@@ -754,3 +756,21 @@ class SortImports(object):
                                 self.comments['above']['from'].setdefault(module, []).insert(0, self.out_lines.pop(-1))
                                 last = self.out_lines and self.out_lines[-1].rstrip() or ""
                         self.imports[self.place_module(module)][import_type].add(module)
+
+
+def coding_check(fname, default='utf-8'):
+
+    # see https://www.python.org/dev/peps/pep-0263/
+    pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
+
+    coding = default
+    with io.open(fname, 'rb') as f:
+        for line_number, line in enumerate(f, 1):
+            groups = re.findall(pattern, line)
+            if groups:
+                coding = groups[0].decode('ascii')
+                break
+            if line_number > 2:
+                break
+
+    return coding

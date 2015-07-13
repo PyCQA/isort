@@ -1,7 +1,8 @@
+# coding: utf-8
 """test_isort.py.
 
 Tests all major functionality of the isort library
-Should be ran using py.test by simply running by.test in the isort project directory
+Should be ran using py.test by simply running py.test in the isort project directory
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
@@ -23,6 +24,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from isort.pie_slice import *
+import codecs
+import os
+import shutil
+import tempfile
 
 from isort.isort import SortImports
 from isort.settings import WrapModes
@@ -1422,3 +1427,17 @@ def test_import_split_is_word_boundary_aware():
 
     assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
                            "    get_size_value_array_import_func_jobs\n")
+
+
+def test_other_file_encodings():
+    """Test to ensure file encoding is respected"""
+    try:
+        tmp_dir = tempfile.mkdtemp()
+        for encoding in ('latin1', 'utf8'):
+            tmp_fname = os.path.join(tmp_dir, 'test_{}.py'.format(encoding))
+            with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
+                file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
+                f.write(file_contents)
+        assert SortImports(file_path=tmp_fname).output == file_contents
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
