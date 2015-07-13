@@ -30,6 +30,7 @@ import codecs
 import copy
 import itertools
 import os
+import re
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
@@ -287,8 +288,9 @@ class SortImports(object):
         """
         if len(line) > self.config['line_length']:
             for splitter in ("import", "."):
-                if splitter in line and not line.strip().startswith(splitter):
-                    line_parts = line.split(splitter)
+                exp = r"\b" + re.escape(splitter) + r"\b"
+                if re.search(exp, line) and not line.strip().startswith(splitter):
+                    line_parts = re.split(exp, line)
                     next_line = []
                     while (len(line) + 2) > (self.config['wrap_length'] or self.config['line_length']) and line_parts:
                         next_line.append(line_parts.pop())
