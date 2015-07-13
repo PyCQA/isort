@@ -38,10 +38,9 @@ from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
+from . import settings
 from .natural import nsorted
 from .pie_slice import *
-
-from . import settings
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',

@@ -23,13 +23,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from isort.pie_slice import *
 import codecs
 import os
 import shutil
 import tempfile
 
 from isort.isort import SortImports
+from isort.pie_slice import *
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"

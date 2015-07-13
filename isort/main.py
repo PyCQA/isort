@@ -26,10 +26,11 @@ import os
 import sys
 
 import setuptools
-from .pie_slice import *
 
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path
+
+from .pie_slice import *
 
 
 def iter_source_code(paths):
