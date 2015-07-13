@@ -16,6 +16,7 @@ develop-eggs
 lib
 lib64
 MANIFEST
+.eggs
 
 # Installer logs
 pip-log.txt

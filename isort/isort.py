@@ -42,8 +42,12 @@ from .pie_slice import *
 
 from . import settings
 
-SECTION_NAMES = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
-SECTIONS = namedtuple('Sections', SECTION_NAMES)(*range(len(SECTION_NAMES)))
+KNOWN_SECTION_MAPPING = {
+    'STDLIB': 'STANDARD_LIBRARY',
+    'FUTURE': 'FUTURE_LIBRARY',
+    'FIRSTPARTY': 'FIRST_PARTY',
+    'THIRDPARTY': 'THIRD_PARTY',
+}
 
 
 class SortImports(object):
@@ -60,7 +64,8 @@ class SortImports(object):
         self.config = settings.from_path(settings_path).copy()
         for key, value in itemsview(setting_overrides):
             access_key = key.replace('not_', '').lower()
-            if type(self.config.get(access_key)) in (list, tuple):
+            # The sections config needs to retain order and can't be converted to a set.
+            if access_key != 'sections' and type(self.config.get(access_key)) in (list, tuple):
                 if key.startswith('not_'):
                     self.config[access_key] = list(set(self.config[access_key]).difference(value))
                 else:
@@ -113,7 +118,10 @@ class SortImports(object):
         self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}
         self.imports = {}
         self.as_map = {}
-        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
+
+        section_names = self.config.get('sections')
+        self.sections = namedtuple('Sections', section_names)(*[n for n in section_names])
+        for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
         self.index = 0
@@ -204,19 +212,16 @@ class SortImports(object):
                 return forced_separate
 
         if moduleName.startswith("."):
-            return SECTIONS.LOCALFOLDER
+            return self.sections.LOCALFOLDER
 
         # Try to find most specific placement instruction match (if any)
         parts = moduleName.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
-            for placement, config_key in (
-                    (SECTIONS.FUTURE, 'known_future_library'),
-                    (SECTIONS.STDLIB, 'known_standard_library'),
-                    (SECTIONS.THIRDPARTY, 'known_third_party'),
-                    (SECTIONS.FIRSTPARTY, 'known_first_party'),
-                    ):
-                if module_name_to_check in self.config[config_key]:
+            for placement in reversed(self.sections):
+                known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
+                config_key = 'known_{0}'.format(known_placement.lower())
+                if module_name_to_check in self.config.get(config_key, []):
                     return placement
 
         paths = PYTHONPATH
@@ -232,13 +237,13 @@ class SortImports(object):
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
-                    return SECTIONS.THIRDPARTY
+                    return self.sections.THIRDPARTY
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
-                    return SECTIONS.STDLIB
+                    return self.sections.STDLIB
                 else:
-                    return SECTIONS.FIRSTPARTY
+                    return self.sections.FIRSTPARTY
 
-        return SECTION_NAMES.index(self.config['default_section'])
+        return self.config['default_section']
 
     def _get_line(self):
         """Returns the current line from the file while incrementing the index."""
@@ -430,7 +435,7 @@ class SortImports(object):
 
         """
         output = []
-        for section in itertools.chain(SECTIONS, self.config['forced_separate']):
+        for section in itertools.chain(self.sections, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = sorted(list(self.imports[section]['from'].keys()))
@@ -446,8 +451,6 @@ class SortImports(object):
 
             if section_output:
                 section_name = section
-                if section in SECTIONS:
-                    section_name = SECTION_NAMES[section]
                 if section_name in self.place_imports:
                     self.place_imports[section_name] = section_output
                     continue

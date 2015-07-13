@@ -23,6 +23,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from . import settings
-from .isort import SECTION_NAMES, SECTIONS, SortImports
+from .isort import SortImports
 
 __version__ = "3.9.6"

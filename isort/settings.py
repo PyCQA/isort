@@ -35,6 +35,7 @@ except ImportError:
     import ConfigParser as configparser
 
 MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
+DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
@@ -44,6 +45,7 @@ default = {'force_to_top': [],
            'skip': ['__init__.py', ],
            'line_length': 79,
            'wrap_length': 0,
+           'sections': DEFAULT_SECTIONS,
            'known_future_library': ['__future__'],
            'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncore", "atexit", "base64",
                                       "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb", "cmd", "codecs",

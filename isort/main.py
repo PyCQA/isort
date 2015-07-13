@@ -28,8 +28,8 @@ import sys
 import setuptools
 from .pie_slice import *
 
-from isort import SECTION_NAMES, SortImports, __version__
-from isort.settings import default, from_path
+from isort import SortImports, __version__
+from isort.settings import DEFAULT_SECTIONS, default, from_path
 
 
 def iter_source_code(paths):
@@ -143,7 +143,7 @@ def create_parser():
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
-                        str(SECTION_NAMES))
+                        str(DEFAULT_SECTIONS))
     parser.add_argument('-df', '--diff', dest='show_diff', default=False, action='store_true',
                         help="Prints a diff of all the changes isort would make to a file, instead of "
                              "changing it in place")

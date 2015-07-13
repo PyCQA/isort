@@ -677,6 +677,27 @@ def test_default_section():
                                   "\n"
                                   "import django.settings\n")
 
+def test_first_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_first_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
+
+def test_thirdy_party_overrides_standard_section():
+    """Test to ensure changing the default section works as expected."""
+    test_input = ("import sys\n"
+                  "import os\n"
+                  "import profile.test\n")
+    test_output = SortImports(file_contents=test_input, known_third_party=['profile']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import profile.test\n")
 
 def test_force_single_line_imports():
     """Test to ensure forcing imports to each have their own line works as expected."""
@@ -1184,7 +1205,6 @@ def test_place_comments():
                            "import os\n"
                            "import sys\n")
 
-
 def test_placement_control():
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
@@ -1199,6 +1219,7 @@ def test_placement_control():
                 known_standard_library=['p24.imports'],
                 known_third_party=['bottle'],
                 default_section="THIRDPARTY").output
+
     assert test_output == ("import os\n"
                            "import p24.imports._argparse as argparse\n"
                            "import p24.imports._subprocess as subprocess\n"
@@ -1206,6 +1227,54 @@ def test_placement_control():
                            "\n"
                            "from bottle import Bottle, redirect, response, run\n"
                            "\n"
+                           "import p24.imports._VERSION as VERSION\n"
+                           "import p24.shared.media_wiki_syntax as syntax\n")
+
+
+def test_custom_sections():
+    """Ensure that most specific placement control match wins"""
+    test_input = ("import os\n"
+                  "import sys\n"
+                  "from django.conf import settings\n"
+                  "from bottle import Bottle, redirect, response, run\n"
+                  "import p24.imports._argparse as argparse\n"
+                  "from django.db import models\n"
+                  "import p24.imports._subprocess as subprocess\n"
+                  "import pandas as pd\n"
+                  "import p24.imports._VERSION as VERSION\n"
+                  "import numpy as np\n"
+                  "import p24.shared.media_wiki_syntax as syntax\n")
+    test_output = SortImports(file_contents=test_input,
+                known_first_party=['p24', 'p24.imports._VERSION'],
+                import_heading_stdlib='Standard Library',
+                import_heading_thirdparty='Third Party',
+                import_heading_firstparty='First Party',
+                import_heading_django='Django',
+                import_heading_pandas='Pandas',
+                known_standard_library=['p24.imports'],
+                known_third_party=['bottle'],
+                known_django=['django'],
+                known_pandas=['pandas', 'numpy'],
+                default_section="THIRDPARTY",
+                sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "PANDAS", "FIRSTPARTY", "LOCALFOLDER"]).output
+    assert test_output == ("# Standard Library\n"
+                           "import os\n"
+                           "import p24.imports._argparse as argparse\n"
+                           "import p24.imports._subprocess as subprocess\n"
+                           "import sys\n"
+                           "\n"
+                           "# Django\n"
+                           "from django.conf import settings\n"
+                           "from django.db import models\n"
+                           "\n"
+                           "# Third Party\n"
+                           "from bottle import Bottle, redirect, response, run\n"
+                           "\n"
+                           "# Pandas\n"
+                           "import numpy as np\n"
+                           "import pandas as pd\n"
+                           "\n"
+                           "# First Party\n"
                            "import p24.imports._VERSION as VERSION\n"
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
@@ -1341,8 +1410,9 @@ def test_fcntl():
                   "import sys\n")
     assert SortImports(file_contents=test_input).output == test_input
 
-def test_import_split_is_word_boundary_aware():
 
+def test_import_split_is_word_boundary_aware():
+    """Test to ensure that isort splits words in a boundry aware mannor"""
     test_input = ("from mycompany.model.size_value_array_import_func import ("
                 "    get_size_value_array_import_func_jobs,"
                 ")")
