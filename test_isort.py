@@ -22,7 +22,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from pies.overrides import *
+from isort.pie_slice import *
 
 from isort.isort import SortImports
 from isort.settings import WrapModes
@@ -411,6 +411,18 @@ def test_custom_indent():
                            "  lib9, lib10, lib11, lib12, lib13, \\\n"
                            "  lib14, lib15, lib16, lib17, lib18, \\\n"
                            "  lib20, lib21, lib22\n")
+
+
+def test_use_parentheses():
+    test_input = (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import \\"
+        "    my_custom_function as my_special_function"
+    )
+    test_output = SortImports(
+        file_contents=test_input, known_third_party=['django'],
+        line_length=79, use_parentheses=True,
+    ).output
+    assert '(' in test_output
 
 
 def test_skip():
@@ -1397,3 +1409,16 @@ def test_fcntl():
                   "import os\n"
                   "import sys\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_import_split_is_word_boundary_aware():
+    """Test to ensure that isort splits words in a boundry aware mannor"""
+    test_input = ("from mycompany.model.size_value_array_import_func import ("
+                "    get_size_value_array_import_func_jobs,"
+                ")")
+    test_output = SortImports(file_contents=test_input,
+      multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+      line_length=79).output
+
+    assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
+                           "    get_size_value_array_import_func_jobs\n")

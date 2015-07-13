@@ -30,14 +30,15 @@ import codecs
 import copy
 import itertools
 import os
+import re
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
-from natsort import natsorted
-from pies.overrides import *
+from .natural import nsorted
+from .pie_slice import *
 
 from . import settings
 
@@ -292,16 +293,20 @@ class SortImports(object):
         """
         if len(line) > self.config['line_length']:
             for splitter in ("import", "."):
-                if splitter in line and not line.strip().startswith(splitter):
-                    line_parts = line.split(splitter)
+                exp = r"\b" + re.escape(splitter) + r"\b"
+                if re.search(exp, line) and not line.strip().startswith(splitter):
+                    line_parts = re.split(exp, line)
                     next_line = []
                     while (len(line) + 2) > (self.config['wrap_length'] or self.config['line_length']) and line_parts:
                         next_line.append(line_parts.pop())
                         line = splitter.join(line_parts)
                     if not line:
                         line = next_line.pop()
-                    return "{0}{1} \\\n{2}".format(line, splitter,
-                                                  self._wrap(self.config['indent'] + splitter.join(next_line).lstrip()))
+
+                    cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
+                    if self.config['use_parentheses']:
+                        return "{0}{1} (\n{2})".format(line, splitter, cont_line)
+                    return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
 
         return line
 
@@ -327,7 +332,7 @@ class SortImports(object):
 
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
-            from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
+            from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -432,9 +437,9 @@ class SortImports(object):
         output = []
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
-            straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
 
             section_output = []
             if self.config.get('from_first', False):

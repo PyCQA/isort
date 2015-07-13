@@ -27,8 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 from collections import namedtuple
 
-from pies.functools import lru_cache
-from pies.overrides import *
+from .pie_slice import *
 
 try:
     import configparser
@@ -55,7 +54,7 @@ default = {'force_to_top': [],
                                       "decimal", "difflib", "dircache", "dis", "doctest", "dumbdbm", "EasyDialogs",
                                       "errno", "exceptions", "filecmp", "fileinput", "fnmatch", "fractions",
                                       "functools", "gc", "gdbm", "getopt", "getpass", "gettext", "glob", "grp", "gzip",
-                                      "hashlib", "heapq", "hmac", "imaplib", "imp", "inspect", "itertools", "json",
+                                      "hashlib", "heapq", "hmac", "imaplib", "imp", "inspect", "io", "itertools", "json",
                                       "linecache", "locale", "logging", "mailbox", "math", "mhlib", "mmap",
                                       "multiprocessing", "operator", "optparse", "os", "pdb", "pickle", "pipes",
                                       "pkgutil", "platform", "plistlib", "pprint", "profile", "pstats", "pwd", "pyclbr",
@@ -84,6 +83,7 @@ default = {'force_to_top': [],
            'import_heading_firstparty': '',
            'import_heading_localfolder': '',
            'balanced_wrapping': False,
+           'use_parentheses': False,
            'order_by_type': True,
            'atomic': False,
            'lines_after_imports': -1,
