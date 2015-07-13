@@ -27,8 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 from collections import namedtuple
 
-from pies.functools import lru_cache
-from pies.overrides import *
+from .pie_slice import *
 
 try:
     import configparser

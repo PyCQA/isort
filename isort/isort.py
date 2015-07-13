@@ -36,8 +36,8 @@ from difflib import unified_diff
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
-from natsort import natsorted
-from pies.overrides import *
+from .natural import nsorted
+from .pie_slice import *
 
 from . import settings
 
@@ -322,7 +322,7 @@ class SortImports(object):
 
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
-            from_imports = natsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
+            from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -427,9 +427,9 @@ class SortImports(object):
         output = []
         for section in itertools.chain(SECTIONS, self.config['forced_separate']):
             straight_modules = list(self.imports[section]['straight'])
-            straight_modules = natsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = natsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
 
             section_output = []
             if self.config.get('from_first', False):
