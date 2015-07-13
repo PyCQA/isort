@@ -1434,7 +1434,7 @@ def test_other_file_encodings():
     try:
         tmp_dir = tempfile.mkdtemp()
         for encoding in ('latin1', 'utf8'):
-            tmp_fname = os.path.join(tmp_dir, 'test_{}.py'.format(encoding))
+            tmp_fname = os.path.join(tmp_dir, 'test_{0}.py'.format(encoding))
             with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
                 file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
                 f.write(file_contents)
