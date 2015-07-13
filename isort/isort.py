@@ -297,8 +297,11 @@ class SortImports(object):
                         line = splitter.join(line_parts)
                     if not line:
                         line = next_line.pop()
-                    return "{0}{1} \\\n{2}".format(line, splitter,
-                                                  self._wrap(self.config['indent'] + splitter.join(next_line).lstrip()))
+
+                    cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
+                    if self.config['use_parentheses']:
+                        return "{0}{1} (\n{2})".format(line, splitter, cont_line)
+                    return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
 
         return line
 
