@@ -1444,6 +1444,7 @@ def test_other_file_encodings():
 
 
 def test_comment_at_top_of_file():
+    """Test to ensure isort correctly handles top of file comments"""
     test_input = ("# Comment one\n"
                   "from django import forms\n"
                   "# Comment two\n"
