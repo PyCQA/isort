@@ -1450,3 +1450,7 @@ def test_comment_at_top_of_file():
                   "# Comment two\n"
                   "from django.contrib.gis.geos import GEOSException\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n")
+    assert SortImports(file_contents=test_input).output == test_input
