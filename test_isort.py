@@ -1441,3 +1441,12 @@ def test_other_file_encodings():
         assert SortImports(file_path=tmp_fname).output == file_contents
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def test_comment_at_top_of_file():
+    """Test to ensure isort correctly handles top of file comments"""
+    test_input = ("# Comment one\n"
+                  "from django import forms\n"
+                  "# Comment two\n"
+                  "from django.contrib.gis.geos import GEOSException\n")
+    assert SortImports(file_contents=test_input).output == test_input
