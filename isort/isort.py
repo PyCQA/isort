@@ -28,6 +28,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import codecs
 import copy
+import fnmatch
 import io
 import itertools
 import os
@@ -94,10 +95,11 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path and not file_contents:
             file_path = os.path.abspath(file_path)
-            if self._should_skip(file_path):
+            if self._should_skip(file_path) or self._should_skip_glob(file_path):
                 self.skipped = True
                 if self.config['verbose']:
-                    print("WARNING: {0} was skipped as it's listed in 'skip' setting".format(file_path))
+                    print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                          " or matches a glob in 'skip_glob' setting".format(file_path))
                 file_contents = None
             else:
                 self.file_path = file_path
@@ -201,6 +203,12 @@ class SortImports(object):
             if position[1] in self.config['skip']:
                 return True
             position = os.path.split(position[0])
+
+    def _should_skip_glob(self, filename):
+        for glob in self.config['skip_glob']:
+            if fnmatch.fnmatch(filename, glob):
+                return True
+        return False
 
     def place_module(self, moduleName):
         """Tries to determine if a module is a python std import, third party import, or project code:
