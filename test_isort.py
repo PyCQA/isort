@@ -1454,3 +1454,23 @@ def test_comment_at_top_of_file():
     test_input = ("# -*- coding: utf-8 -*-\n"
                   "from django.db import models\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_alphabetic_sorting():
+    """Test to ensure isort correctly handles top of file comments"""
+    test_input = ("from django.contrib.gis.geos import GEOSException\n"
+                  "from plone.app.testing import getRoles\n"
+                  "from plone.app.testing import ManageRoles\n"
+                  "from plone.app.testing import setRoles\n"
+                  "from Products.CMFPlone import utils\n"
+                  "\n"
+                  "import ABC\n"
+                  "import unittest\n"
+                  "import Zope\n")
+    options = {'force_single_line': True,
+               'force_alphabetical_sort': True, }
+    assert SortImports(file_contents=test_input, **options).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n")
+    assert SortImports(file_contents=test_input).output == test_input

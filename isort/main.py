@@ -173,6 +173,8 @@ def create_parser():
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
     parser.add_argument('-fgw', '--force-grid-wrap',  action='store_true', dest="force_grid_wrap",
                         help='Force from imports to be grid wrapped regardless of line length')
+    parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
+                        help='Force all imports to be sorted as a single section')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     return arguments
