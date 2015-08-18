@@ -28,6 +28,8 @@ import os
 import shutil
 import tempfile
 
+import pytest
+
 from isort.isort import SortImports
 from isort.pie_slice import *
 from isort.settings import WrapModes
@@ -1454,3 +1456,13 @@ def test_comment_at_top_of_file():
     test_input = ("# -*- coding: utf-8 -*-\n"
                   "from django.db import models\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+@pytest.mark.xfail(reason="See issue #304")
+def test_comment_duplication():
+    """Bug test: output repeats comment twice"""
+    test_input = ('from flask import url_for\n'
+                  "# Whole line comment\n"
+                  'from service import demo  # inline comment\n'
+                  'from service import settings\n')
+    output = SortImports(file_contents=test_input).output
+    assert output.count("# Whole line comment\n") == 1
