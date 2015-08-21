@@ -35,11 +35,8 @@ except ImportError:
         def run(self):
             raise SystemExit(subprocess.call([sys.executable, 'runtests.py']))
 
-try:
-   import pypandoc
-   readme = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError, OSError, RuntimeError):
-   readme = ''
+with open('README.rst', 'r') as f:
+   readme = f.read()
 
 setup(name='isort',
       version='4.0.0',
