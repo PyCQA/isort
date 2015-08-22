@@ -50,6 +50,7 @@ Code Contributors
 - Timon Wong/NHNCN (@timonwong)
 - Jeremy Dunck (@jdunck)
 - Benjamin ABEL (@benjaminabel)
+- Dan Baragan (@danbaragan)
 
 Documenters
 ===================
