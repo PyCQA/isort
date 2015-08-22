@@ -591,3 +591,8 @@ hours automating it. I was given permission to open source sortImports and here 
 Thanks and I hope you find isort useful!
 
 ~Timothy Crosley
+
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/timothycrosley/isort
+   :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
