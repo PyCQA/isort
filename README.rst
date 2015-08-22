@@ -3,9 +3,9 @@
 
 ########
 
-.. image:: https://pypip.in/d/isort/badge.png
-    :target: https://crate.io/packages/isort/
-    :alt: PyPi downloads
+.. image:: https://badge.fury.io/py/isort.png
+    :target: http://badge.fury.io/py/isort
+    :alt: PyPI version
 
 .. image:: https://travis-ci.org/timothycrosley/isort.png?branch=master
     :target: https://travis-ci.org/timothycrosley/isort
