@@ -27,14 +27,13 @@ import sys
 
 import setuptools
 
-import isort
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path
 
 from .pie_slice import *
 
 
-LOGO = """
+INTRO = """
 /#######################################################################\\
 
      `sMMy`
@@ -55,7 +54,7 @@ LOGO = """
                             VERSION {0}
 
 \########################################################################/
-""".format(isort.__version__)
+""".format(__version__)
 
 
 def iter_source_code(paths):
@@ -214,7 +213,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
         num_skipped = 0
-        print(LOGO)
+        print(INTRO)
         for file_name in file_names:
             try:
                 sort_attempt = SortImports(file_name, **arguments)
