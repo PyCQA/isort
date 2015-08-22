@@ -135,6 +135,7 @@ def create_parser():
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
     parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
                         dest='not_skip', action='append')
+    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob', action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
     parser.add_argument('-f', '--future', dest='known_future_library', action='append',
