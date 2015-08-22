@@ -3,10 +3,6 @@
 
 ########
 
-.. image:: https://badge.fury.io/py/isort.png
-    :target: http://badge.fury.io/py/isort
-    :alt: PyPI version
-
 .. image:: https://pypip.in/d/isort/badge.png
     :target: https://crate.io/packages/isort/
     :alt: PyPi downloads
@@ -15,13 +11,13 @@
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
-.. image:: https://pypip.in/license/isort/badge.png
-    :target: https://pypi.python.org/pypi/isort/
-    :alt: License
+.. image:: https://img.shields.io/github/license/mashape/apistatus.svg
+    :target: https://pypi.python.org/pypi/hug/
+    :alt: MIT License
 
-.. image:: https://d2weczhvl823v0.cloudfront.net/timothycrosley/isort/trend.png
-    :target: https://bitdeli.com/free "Bitdeli Badge"
-    :alt: Bitdeli Badge
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/timothycrosley/isort
+   :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
 isort your python imports for you so you don't have to.
@@ -591,8 +587,3 @@ hours automating it. I was given permission to open source sortImports and here 
 Thanks and I hope you find isort useful!
 
 ~Timothy Crosley
-
-
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/timothycrosley/isort
-   :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
