@@ -27,10 +27,35 @@ import sys
 
 import setuptools
 
+import isort
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path
 
 from .pie_slice import *
+
+
+LOGO = """
+/#######################################################################\\
+
+     `sMMy`
+     .yyyy-                                                      `
+    ##soos##                                                    ./o.
+          `     ``..-..`         ``...`.``         `   ```` ``-ssso```
+     .s:-y-   .+osssssso/.     ./ossss+:so+:`    :+o-`/osso:+sssssssso/
+     .s::y-   osss+.``.``     -ssss+-.`-ossso`   ssssso/::..::+ssss:::.
+     .s::y-   /ssss+//:-.`   `ssss+     `ssss+   sssso`       :ssss`
+     .s::y-   `-/+oossssso/  `ssss/      sssso   ssss/        :ssss`
+     .y-/y-       ````:ssss`  ossso.    :ssss:   ssss/        :ssss.
+     `/so:`    `-//::/osss+   `+ssss+-/ossso:    /sso-        `osssso/.
+       \/      `-/oooo++/-      .:/++:/++/-`      ..           `://++/.
+
+
+         isort your Python imports for you so you don't have to
+
+                            VERSION {0}
+
+\########################################################################/
+""".format(isort.__version__)
 
 
 def iter_source_code(paths):
@@ -177,6 +202,7 @@ def create_parser():
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     return arguments
 
+
 def main():
     arguments = create_parser()
     file_names = arguments.pop('files', [])
@@ -188,6 +214,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
         num_skipped = 0
+        print(LOGO)
         for file_name in file_names:
             try:
                 sort_attempt = SortImports(file_name, **arguments)
