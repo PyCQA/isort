@@ -3,13 +3,17 @@
 
 ########
 
+.. image:: https://pypip.in/d/isort/badge.png
+    :target: https://crate.io/packages/isort/
+    :alt: PyPi downloads
+
 .. image:: https://travis-ci.org/timothycrosley/isort.png?branch=master
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://pypi.python.org/pypi/hug/
-    :alt: MIT License
+    :alt: License
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/timothycrosley/isort
