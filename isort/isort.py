@@ -131,7 +131,10 @@ class SortImports(object):
         self._first_comment_index_end = -1
         self._parse()
         if self.import_index != -1:
-            self._add_formatted_imports()
+            if self.config.get('force_alphabetical_sort', False):
+                self._sort_alphabetically()
+            else:
+                self._add_formatted_imports()
 
         self.length_change = len(self.out_lines) - self.original_length
         while self.out_lines and self.out_lines[-1].strip() == "":
@@ -503,6 +506,40 @@ class SortImports(object):
                         new_out_lines.append("")
             self.out_lines = new_out_lines
 
+    def _sort_alphabetically(self):
+        """Adds the imports back to the file sorted alphabetically."""
+        from_output = []
+        straight_output = []
+        for section in itertools.chain(self.sections, self.config['forced_separate']):
+            straight_modules = list(self.imports[section]['straight'])
+            from_modules = list(self.imports[section]['from'].keys())
+
+            self._add_from_imports(from_modules, section, from_output)
+            self._add_straight_imports(straight_modules, section, straight_output)
+
+        new_from_output = []
+        new_straight_output = []
+        for line in from_output:
+            for element in line.split('\n'):
+                new_from_output.append(element)
+        for line in straight_output:
+            for element in line.split('\n'):
+                new_straight_output.append(element)
+
+
+        sorted_from = sorted(new_from_output, key=lambda s: s.lower())
+        sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
+        output = sorted_from + ['', ] + sorted_straight
+
+        while [character.strip() for character in output[-1:]] == [""]:
+            output.pop()
+
+        output_at = 0
+        if self.import_index < self.original_length:
+            output_at = self.import_index
+        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
+            output_at = self._first_comment_index_end
+        self.out_lines[output_at:0] = output
 
     def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
