@@ -144,11 +144,15 @@ def _update_with_config_file(file_path, sections, computed_settings):
         access_key = key.replace('not_', '').lower()
         existing_value_type = type(default.get(access_key, ''))
         if existing_value_type in (list, tuple):
-            existing_data = set(computed_settings.get(access_key, default.get(access_key)))
-            if key.startswith('not_'):
-                computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+            # sections has fixed order values; no adding or substraction from any set
+            if access_key == 'sections':
+                computed_settings[access_key] = tuple(_as_list(value))
             else:
-                computed_settings[access_key] = list(existing_data.union(_as_list(value)))
+                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
+                if key.startswith('not_'):
+                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                else:
+                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == "false":
             computed_settings[access_key] = False
         else:
