@@ -332,7 +332,7 @@ class SortImports(object):
             else:
                 import_definition = "import {0}".format(module)
 
-            comments_above = self.comments['above']['straight'].get(module, None)
+            comments_above = self.comments['above']['straight'].pop(module, None)
             if comments_above:
                 section_output.append(comments_above)
             section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
@@ -365,14 +365,14 @@ class SortImports(object):
                         from_imports.remove(from_import)
 
             if from_imports:
-                comments = self.comments['from'].get(module)
+                comments = self.comments['from'].pop(module, ())
                 if "*" in from_imports and self.config['combine_star']:
                     import_statement = self._wrap(self._add_comments(comments, "{0}*".format(import_start)))
                 elif self.config['force_single_line']:
                     import_statements = []
                     for from_import in from_imports:
                         single_import_line = self._add_comments(comments, import_start + from_import)
-                        comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                        comment = self.comments['nested'].get(module, {}).pop(from_import, None)
                         if comment:
                             single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
                         import_statements.append(self._wrap(single_import_line))
@@ -387,11 +387,11 @@ class SortImports(object):
                         comments = None
 
                     for from_import in copy.copy(from_imports):
-                        comment = self.comments['nested'].get(module, {}).get(from_import, None)
+                        comment = self.comments['nested'].get(module, {}).pop(from_import, None)
                         if comment:
                             single_import_line = self._add_comments(comments, import_start + from_import)
                             single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
-                            above_comments = self.comments['above']['from'].get(module, None)
+                            above_comments = self.comments['above']['from'].pop(module, None)
                             if above_comments:
                                 section_output.extend(above_comments)
                             section_output.append(self._wrap(single_import_line))
@@ -435,7 +435,7 @@ class SortImports(object):
                         import_statement = self._wrap(import_statement)
 
                 if import_statement:
-                    above_comments = self.comments['above']['from'].get(module, None)
+                    above_comments = self.comments['above']['from'].pop(module, None)
                     if above_comments:
                         section_output.extend(above_comments)
                     section_output.append(import_statement)
