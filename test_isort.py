@@ -1474,3 +1474,14 @@ def test_alphabetic_sorting():
     test_input = ("# -*- coding: utf-8 -*-\n"
                   "from django.db import models\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_comments_not_duplicated():
+    """Test to ensure comments aren't duplicated: issue 303"""
+    test_input = ('from flask import url_for\n'
+                  "# Whole line comment\n"
+                  'from service import demo  # inline comment\n'
+                  'from service import settings\n')
+    output = SortImports(file_contents=test_input).output
+    assert output.count("# Whole line comment\n") == 1
+    assert output.count("# inline comment\n") == 1
