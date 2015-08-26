@@ -1485,3 +1485,17 @@ def test_comments_not_duplicated():
     output = SortImports(file_contents=test_input).output
     assert output.count("# Whole line comment\n") == 1
     assert output.count("# inline comment\n") == 1
+
+
+def test_top_of_line_comments():
+    """Test to ensure top of line comments stay where they should: issue 260"""
+    test_input = ('# -*- coding: utf-8 -*-\n'
+                  'from django.db import models\n'
+                  '#import json as simplejson\n'
+                  'from myproject.models import Servidor\n'
+                  '\n'
+                  'import reversion\n'
+                   '\n'
+                   'import logging\n')
+    output = SortImports(file_contents=test_input).output
+    assert output.startswith('# -*- coding: utf-8 -*-\n')
