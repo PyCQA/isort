@@ -512,7 +512,7 @@ The ``--check-only`` option
 ---------------------------
 
 isort can also be used to used to verify that code is correctly formatted by running it with ``-c``.
-Any files that contain incorrectly sorted imports will be outputted to ``stderr``.
+Any files that contain incorrectly sorted and/or formatted imports will be outputted to ``stderr``.
 
 .. code-block:: bash
 
