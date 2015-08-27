@@ -163,7 +163,7 @@ def create_parser():
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
-                        help='Checks the file for unsorted imports and prints them to the '
+                        help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
     parser.add_argument('-sl', '--force_single_line_imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
