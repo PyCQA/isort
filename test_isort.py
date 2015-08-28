@@ -1499,3 +1499,11 @@ def test_top_of_line_comments():
                    'import logging\n')
     output = SortImports(file_contents=test_input).output
     assert output.startswith('# -*- coding: utf-8 -*-\n')
+
+
+def test_basic_comment():
+    """Test to ensure a basic comment wont crash isort"""
+    test_input = ('import logging\n'
+                  '# Foo\n'
+                  'import os\n')
+    assert SortImports(file_contents=test_input).output == test_input
