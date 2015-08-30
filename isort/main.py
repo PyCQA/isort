@@ -128,14 +128,17 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
-    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping long imports).',
+    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
+                        'long imports).',
                         dest='line_length', type=int)
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
-    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
+    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
+                        'files you should specify twice: --skip file1 --skip file2.', dest='skip', action='append')
     parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
                         dest='not_skip', action='append')
-    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob', action='append')
+    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob',
+                        action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
     parser.add_argument('-f', '--future', dest='known_future_library', action='append',
