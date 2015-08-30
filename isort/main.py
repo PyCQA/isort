@@ -26,10 +26,35 @@ import os
 import sys
 
 import setuptools
-from .pie_slice import *
 
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path
+
+from .pie_slice import *
+
+
+INTRO = """
+/#######################################################################\\
+
+     `sMMy`
+     .yyyy-                                                      `
+    ##soos##                                                    ./o.
+          `     ``..-..`         ``...`.``         `   ```` ``-ssso```
+     .s:-y-   .+osssssso/.     ./ossss+:so+:`    :+o-`/osso:+sssssssso/
+     .s::y-   osss+.``.``     -ssss+-.`-ossso`   ssssso/::..::+ssss:::.
+     .s::y-   /ssss+//:-.`   `ssss+     `ssss+   sssso`       :ssss`
+     .s::y-   `-/+oossssso/  `ssss/      sssso   ssss/        :ssss`
+     .y-/y-       ````:ssss`  ossso.    :ssss:   ssss/        :ssss.
+     `/so:`    `-//::/osss+   `+ssss+-/ossso:    /sso-        `osssso/.
+       \/      `-/oooo++/-      .:/++:/++/-`      ..           `://++/.
+
+
+         isort your Python imports for you so you don't have to
+
+                            VERSION {0}
+
+\########################################################################/
+""".format(__version__)
 
 
 def iter_source_code(paths):
@@ -103,13 +128,17 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
-    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping long imports).',
+    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
+                        'long imports).',
                         dest='line_length', type=int)
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
-    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over.', dest='skip', action='append')
+    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
+                        'files you should specify twice: --skip file1 --skip file2.', dest='skip', action='append')
     parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
                         dest='not_skip', action='append')
+    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob',
+                        action='append')
     parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
                         dest='force_to_top', action='append')
     parser.add_argument('-f', '--future', dest='known_future_library', action='append',
@@ -137,7 +166,7 @@ def create_parser():
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
-                        help='Checks the file for unsorted imports and prints them to the '
+                        help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
     parser.add_argument('-sl', '--force_single_line_imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
@@ -172,9 +201,12 @@ def create_parser():
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
     parser.add_argument('-fgw', '--force-grid-wrap',  action='store_true', dest="force_grid_wrap",
                         help='Force from imports to be grid wrapped regardless of line length')
+    parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
+                        help='Force all imports to be sorted as a single section')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     return arguments
+
 
 def main():
     arguments = create_parser()
@@ -187,6 +219,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
         num_skipped = 0
+        print(INTRO)
         for file_name in file_names:
             try:
                 sort_attempt = SortImports(file_name, **arguments)

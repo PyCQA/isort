@@ -43,6 +43,7 @@ WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
            'skip': ['__init__.py', ],
+           'skip_glob': [],
            'line_length': 79,
            'wrap_length': 0,
            'sections': DEFAULT_SECTIONS,
@@ -84,7 +85,7 @@ default = {'force_to_top': [],
            'import_heading_localfolder': '',
            'balanced_wrapping': False,
            'use_parentheses': False,
-           'order_by_type': True,
+           'order_by_type': False,
            'atomic': False,
            'lines_after_imports': -1,
            'combine_as_imports': False,
@@ -144,11 +145,15 @@ def _update_with_config_file(file_path, sections, computed_settings):
         access_key = key.replace('not_', '').lower()
         existing_value_type = type(default.get(access_key, ''))
         if existing_value_type in (list, tuple):
-            existing_data = set(computed_settings.get(access_key, default.get(access_key)))
-            if key.startswith('not_'):
-                computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+            # sections has fixed order values; no adding or substraction from any set
+            if access_key == 'sections':
+                computed_settings[access_key] = tuple(_as_list(value))
             else:
-                computed_settings[access_key] = list(existing_data.union(_as_list(value)))
+                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
+                if key.startswith('not_'):
+                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                else:
+                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == "false":
             computed_settings[access_key] = False
         else:

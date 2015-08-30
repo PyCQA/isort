@@ -23,13 +23,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from isort.pie_slice import *
 import codecs
 import os
 import shutil
 import tempfile
 
 from isort.isort import SortImports
+from isort.pie_slice import *
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
@@ -1441,3 +1441,69 @@ def test_other_file_encodings():
         assert SortImports(file_path=tmp_fname).output == file_contents
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def test_comment_at_top_of_file():
+    """Test to ensure isort correctly handles top of file comments"""
+    test_input = ("# Comment one\n"
+                  "from django import forms\n"
+                  "# Comment two\n"
+                  "from django.contrib.gis.geos import GEOSException\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_alphabetic_sorting():
+    """Test to ensure isort correctly handles top of file comments"""
+    test_input = ("from django.contrib.gis.geos import GEOSException\n"
+                  "from plone.app.testing import getRoles\n"
+                  "from plone.app.testing import ManageRoles\n"
+                  "from plone.app.testing import setRoles\n"
+                  "from Products.CMFPlone import utils\n"
+                  "\n"
+                  "import ABC\n"
+                  "import unittest\n"
+                  "import Zope\n")
+    options = {'force_single_line': True,
+               'force_alphabetical_sort': True, }
+    assert SortImports(file_contents=test_input, **options).output == test_input
+
+    test_input = ("# -*- coding: utf-8 -*-\n"
+                  "from django.db import models\n")
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_comments_not_duplicated():
+    """Test to ensure comments aren't duplicated: issue 303"""
+    test_input = ('from flask import url_for\n'
+                  "# Whole line comment\n"
+                  'from service import demo  # inline comment\n'
+                  'from service import settings\n')
+    output = SortImports(file_contents=test_input).output
+    assert output.count("# Whole line comment\n") == 1
+    assert output.count("# inline comment\n") == 1
+
+
+def test_top_of_line_comments():
+    """Test to ensure top of line comments stay where they should: issue 260"""
+    test_input = ('# -*- coding: utf-8 -*-\n'
+                  'from django.db import models\n'
+                  '#import json as simplejson\n'
+                  'from myproject.models import Servidor\n'
+                  '\n'
+                  'import reversion\n'
+                   '\n'
+                   'import logging\n')
+    output = SortImports(file_contents=test_input).output
+    assert output.startswith('# -*- coding: utf-8 -*-\n')
+
+
+def test_basic_comment():
+    """Test to ensure a basic comment wont crash isort"""
+    test_input = ('import logging\n'
+                  '# Foo\n'
+                  'import os\n')
+    assert SortImports(file_contents=test_input).output == test_input
