@@ -51,6 +51,7 @@ Code Contributors
 - Jeremy Dunck (@jdunck)
 - Benjamin ABEL (@benjaminabel)
 - Dan Baragan (@danbaragan)
+- Rob Cowie (@robcowie)
 
 Documenters
 ===================
