@@ -334,7 +334,7 @@ class SortImports(object):
 
             comments_above = self.comments['above']['straight'].pop(module, None)
             if comments_above:
-                section_output.append(comments_above)
+                section_output.extend(comments_above)
             section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
     def _add_from_imports(self, from_modules, section, section_output):
@@ -809,11 +809,13 @@ class SortImports(object):
                         if len(self.out_lines) > max(self.import_index, self._first_comment_index_end, 1) - 1:
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
                             while last.startswith("#") and not last.endswith('"""') and not last.endswith("'''"):
-                                self.comments['above']['from'].setdefault(module, []).insert(0, self.out_lines.pop(-1))
-                            if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end, 1) - 1:
-                                last = self.out_lines[-1].rstrip()
-                            else:
-                                last = ""
+                                self.comments['above']['straight'].setdefault(module, []).insert(0,
+                                                                                                 self.out_lines.pop(-1))
+                                if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end,
+                                                             1) - 1:
+                                    last = self.out_lines[-1].rstrip()
+                                else:
+                                    last = ""
                         self.imports[self.place_module(module)][import_type].add(module)
 
 
