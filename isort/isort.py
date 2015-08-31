@@ -198,8 +198,9 @@ class SortImports(object):
 
     def _should_skip(self, filename):
         """Returns True if the file should be skipped based on the loaded settings."""
-        if filename in self.config['skip']:
-            return True
+        for skip_path in self.config['skip']:
+            if skip_path.endswith(filename):
+                return True
 
         position = os.path.split(filename)
         while position[1]:
