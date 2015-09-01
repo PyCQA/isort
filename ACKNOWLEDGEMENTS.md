@@ -52,7 +52,7 @@ Code Contributors
 - Benjamin ABEL (@benjaminabel)
 - Dan Baragan (@danbaragan)
 - Rob Cowie (@robcowie)
-
+- Amit Shah (@Amwam)
 Documenters
 ===================
 - Reinout van Rees (@reinout)

@@ -19,4 +19,5 @@ Changelog
 - Fixed issue #296: Made it more clear how to set arguments more then once
 
 ### 4.1.1
+- Added support for partial file match skips (thanks to @Amwam)
 - Fixed issue #316: isort added new lines incorrectly when a top-of line comment is present
