@@ -17,3 +17,6 @@ Changelog
 - Fixed issue #310: Ensure comments don't get duplicated when reformatting imports
 - Fixed issue #289: Sections order not being respected
 - Fixed issue #296: Made it more clear how to set arguments more then once
+
+### 4.1.1
+- Fixed issue #316: isort added new lines incorrectly when a top-of line comment is present
