@@ -58,7 +58,7 @@ class SortImports(object):
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
                  show_diff=False, settings_path=None, **setting_overrides):
 
-        if not settings_path and file_path:
+        if not settings_path and not file_contents and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
 
