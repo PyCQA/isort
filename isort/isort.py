@@ -795,6 +795,8 @@ class SortImports(object):
                                 last = self.out_lines[-1].rstrip()
                             else:
                                 last = ""
+                        if self.index - 1 == self.import_index:
+                            self.import_index -= len(self.comments['above']['from'].get(import_from, []))
 
                     if root.get(import_from, False):
                         root[import_from].update(imports)
@@ -816,6 +818,8 @@ class SortImports(object):
                                     last = self.out_lines[-1].rstrip()
                                 else:
                                     last = ""
+                            if self.index - 1 == self.import_index:
+                                self.import_index -= len(self.comments['above']['straight'].get(module, []))
                         self.imports[self.place_module(module)][import_type].add(module)
 
 
