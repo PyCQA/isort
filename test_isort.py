@@ -1507,3 +1507,12 @@ def test_basic_comment():
                   '# Foo\n'
                   'import os\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_shouldnt_add_lines():
+    """Ensure that isort doesn't add a blank line when a top of import comment is present, issue #316"""
+    test_input = ('"""Text"""\n'
+                  '# This is a comment\n'
+                 'import pkg_resources\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
