@@ -53,6 +53,7 @@ Code Contributors
 - Dan Baragan (@danbaragan)
 - Rob Cowie (@robcowie)
 - Amit Shah (@Amwam)
+
 Documenters
 ===================
 - Reinout van Rees (@reinout)

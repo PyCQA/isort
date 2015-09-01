@@ -1515,4 +1515,3 @@ def test_shouldnt_add_lines():
                   '# This is a comment\n'
                  'import pkg_resources\n')
     assert SortImports(file_contents=test_input).output == test_input
-
