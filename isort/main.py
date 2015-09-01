@@ -193,6 +193,8 @@ def create_parser():
     parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
+    parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
+                        help='Shows extra quiet output, only errors are outputted.')
     parser.add_argument('-sp', '--settings-path',  dest="settings_path",
                         help='Explicitly set the settings path instead of auto determining based on file location.')
     parser.add_argument('-ff', '--from-first', dest='from_first',
@@ -219,7 +221,8 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
         num_skipped = 0
-        print(INTRO)
+        if not arguments.get('quiet', False):
+            print(INTRO)
         for file_name in file_names:
             try:
                 sort_attempt = SortImports(file_name, **arguments)
@@ -233,7 +236,7 @@ def main():
         if wrong_sorted_files:
             exit(1)
 
-        if num_skipped:
+        if num_skipped and not arguments.get('quiet', False):
             print("Skipped {0} files".format(num_skipped))
 
 if __name__ == "__main__":

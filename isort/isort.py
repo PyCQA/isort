@@ -198,8 +198,9 @@ class SortImports(object):
 
     def _should_skip(self, filename):
         """Returns True if the file should be skipped based on the loaded settings."""
-        if filename in self.config['skip']:
-            return True
+        for skip_path in self.config['skip']:
+            if skip_path.endswith(filename):
+                return True
 
         position = os.path.split(filename)
         while position[1]:
@@ -795,6 +796,8 @@ class SortImports(object):
                                 last = self.out_lines[-1].rstrip()
                             else:
                                 last = ""
+                        if self.index - 1 == self.import_index:
+                            self.import_index -= len(self.comments['above']['from'].get(import_from, []))
 
                     if root.get(import_from, False):
                         root[import_from].update(imports)
@@ -816,6 +819,8 @@ class SortImports(object):
                                     last = self.out_lines[-1].rstrip()
                                 else:
                                     last = ""
+                            if self.index - 1 == self.import_index:
+                                self.import_index -= len(self.comments['above']['straight'].get(module, []))
                         self.imports[self.place_module(module)][import_type].add(module)
 
 

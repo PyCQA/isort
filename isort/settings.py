@@ -92,7 +92,8 @@ default = {'force_to_top': [],
            'combine_star': False,
            'include_trailing_comma': False,
            'from_first': False,
-           'verbose': False}
+           'verbose': False,
+           'quiet': False}
 
 
 @lru_cache()
