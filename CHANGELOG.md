@@ -22,3 +22,6 @@ Changelog
 - Added support for partial file match skips (thanks to @Amwam)
 - Added support for --quiet option to only show errors when running isort
 - Fixed issue #316: isort added new lines incorrectly when a top-of line comment is present
+
+### 4.1.2
+- Fixed issue #323: Accidental default configuration change introduced
