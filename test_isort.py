@@ -1515,3 +1515,24 @@ def test_shouldnt_add_lines():
                   '# This is a comment\n'
                  'import pkg_resources\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_weird_error():
+    test_input = """# -*- coding: utf-8 -*-
+fromlone.recipe.codeanalysis.testing import CodeAnalysisTestCase
+fromlone.recipe.codeanalysis.zptlint import console_script
+fromlone.recipe.codeanalysis.zptlint import ZPTLint
+from shutil import rmtree
+from tempfile import mkdtemp
+from testfixtures import OutputCapture
+
+import os
+import unittest
+
+
+print(1)
+"""
+    test_output = SortImports(file_contents=test_input).output == test_input
+    assert test_output == test_output
+
+
