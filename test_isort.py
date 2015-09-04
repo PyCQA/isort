@@ -1515,3 +1515,23 @@ def test_shouldnt_add_lines():
                   '# This is a comment\n'
                  'import pkg_resources\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_weird_error1():
+    test_input = "import os\n"
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
+
+def test_weird_error():
+    test_input = """from a import b
+
+import os
+import unittest
+
+
+print(1)
+"""
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
+
+
