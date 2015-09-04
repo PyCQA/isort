@@ -304,8 +304,8 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        wrap_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)]
-        if len(line) > self.config['line_length'] and wrap_mode != 'NOQA':
+        wrap_mode = self.config.get('multi_line_output', 0)
+        if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
             for splitter in ("import", "."):
                 exp = r"\b" + re.escape(splitter) + r"\b"
                 if re.search(exp, line) and not line.strip().startswith(splitter):
@@ -321,8 +321,9 @@ class SortImports(object):
                     if self.config['use_parentheses']:
                         return "{0}{1} (\n{2})".format(line, splitter, cont_line)
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
-        elif len(line) > self.config['line_length'] and wrap_mode == 'NOQA':
-            return "{0}  # NOQA".format(line)
+        elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
+            if "# NOQA" not in line:
+                return "{0}  # NOQA".format(line)
 
         return line
 
@@ -624,7 +625,10 @@ class SortImports(object):
             if len(retval) <= line_length:
                 return retval
         if comments:
-            return '{0}  # NOQA {1}'.format(retval, comment_str)
+            if "# NOQA" in comments:
+                return '{0}  # {1}'.format(retval, comment_str)
+            else:
+                return '{0}  # NOQA {1}'.format(retval, comment_str)
         else:
             return '{0}  # NOQA'.format(retval)
 
