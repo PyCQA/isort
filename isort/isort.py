@@ -625,7 +625,7 @@ class SortImports(object):
             if len(retval) <= line_length:
                 return retval
         if comments:
-            if "# NOQA" in comments:
+            if "NOQA" in comments:
                 return '{0}  # {1}'.format(retval, comment_str)
             else:
                 return '{0}  # NOQA {1}'.format(retval, comment_str)

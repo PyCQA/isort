@@ -356,6 +356,9 @@ def test_qa_comment_case():
     test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
     assert test_output == "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA\n"
 
+    test_input = "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA"
+    test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
+    assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
 
 def test_length_sort():
     """Test setting isort to sort on length instead of alphabetically."""
