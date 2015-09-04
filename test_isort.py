@@ -1517,14 +1517,13 @@ def test_shouldnt_add_lines():
     assert SortImports(file_contents=test_input).output == test_input
 
 
+def test_weird_error1():
+    test_input = "import os\n"
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
+
 def test_weird_error():
-    test_input = """# -*- coding: utf-8 -*-
-fromlone.recipe.codeanalysis.testing import CodeAnalysisTestCase
-fromlone.recipe.codeanalysis.zptlint import console_script
-fromlone.recipe.codeanalysis.zptlint import ZPTLint
-from shutil import rmtree
-from tempfile import mkdtemp
-from testfixtures import OutputCapture
+    test_input = """from a import b
 
 import os
 import unittest
