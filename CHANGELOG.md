@@ -25,3 +25,6 @@ Changelog
 
 ### 4.1.2
 - Fixed issue #323: Accidental default configuration change introduced
+
+### 4.2.0
+- Added option "NOQA" Do not wrap lines, but add a noqa statement at the end

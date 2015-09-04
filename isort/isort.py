@@ -304,7 +304,8 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        if len(line) > self.config['line_length']:
+        wrap_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)]
+        if len(line) > self.config['line_length'] and wrap_mode != 'NOQA':
             for splitter in ("import", "."):
                 exp = r"\b" + re.escape(splitter) + r"\b"
                 if re.search(exp, line) and not line.strip().startswith(splitter):
@@ -320,6 +321,8 @@ class SortImports(object):
                     if self.config['use_parentheses']:
                         return "{0}{1} (\n{2})".format(line, splitter, cont_line)
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
+        elif len(line) > self.config['line_length'] and wrap_mode == 'NOQA':
+            return "{0}  # NOQA".format(line)
 
         return line
 
@@ -610,6 +613,20 @@ class SortImports(object):
 
     def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + "\n)"
+
+    def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
+        retval = '{0}{1}'.format(statement, ' '.join(imports))
+        comment_str = ' '.join(comments)
+        if comments:
+            if len(retval) + 4 + len(comment_str) <= line_length:
+                return '{0}  # {1}'.format(retval, comment_str)
+        else:
+            if len(retval) <= line_length:
+                return retval
+        if comments:
+            return '{0}  # NOQA {1}'.format(retval, comment_str)
+        else:
+            return '{0}  # NOQA'.format(retval)
 
     @staticmethod
     def _strip_comments(line, comments=None):
