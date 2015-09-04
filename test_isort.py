@@ -1532,7 +1532,7 @@ import unittest
 
 print(1)
 """
-    test_output = SortImports(file_contents=test_input).output == test_input
-    assert test_output == test_output
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
 
 
