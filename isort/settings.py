@@ -157,6 +157,8 @@ def _update_with_config_file(file_path, sections, computed_settings):
                     computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == "false":
             computed_settings[access_key] = False
+        elif key.startswith('known_'):
+            computed_settings[access_key] = list(_as_list(value))
         else:
             computed_settings[access_key] = existing_value_type(value)
 
