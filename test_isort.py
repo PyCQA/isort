@@ -1526,26 +1526,28 @@ def test_shouldnt_add_lines():
 def test_sections_parsed_correct():
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
     tmp_conf_dir = None
-    conf_file_data = u"""[settings]
-sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON
-known_common=nose
-import_heading_common=Common Library
-import_heading_stdlib=Standard Library
-"""
+    conf_file_data = (
+        '[settings]\n'
+        'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
+        'known_common=nose\n'
+        'import_heading_common=Common Library\n'
+        'import_heading_stdlib=Standard Library\n'
+    )
     test_input = (
         'import os\n'
         'from nose import *\n'
         'import nose\n'
-        'from os import path\n'
+        'from os import path'
     )
-    correct_output = u"""# Standard Library
-import os
-from os import path
-
-# Common Library
-import nose
-from nose import *
-"""
+    correct_output = (
+        '# Standard Library\n'
+        'import os\n'
+        'from os import path\n'
+        '\n'
+        '# Common Library\n'
+        'import nose\n'
+        'from nose import *\n'
+    )
 
     try:
         tmp_conf_dir = tempfile.mkdtemp()
