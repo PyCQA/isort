@@ -446,6 +446,16 @@ def test_skip():
                            "import sys  # isort:skip this import needs to be placed here\n")
 
 
+def test_skip_with_file_name():
+    """Ensure skipping a file works even when file_contents is provided."""
+    test_input = ("import django\n"
+                  "import myproject\n")
+
+    skipped = SortImports(file_path='/baz.py', file_contents=test_input, known_third_party=['django'],
+                          skip=['baz.py']).skipped
+    assert skipped
+
+
 def test_force_to_top():
     """Ensure forcing a single import to the top of its category works as expected."""
     test_input = ("import lib6\n"
