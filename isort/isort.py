@@ -93,7 +93,7 @@ class SortImports(object):
         self.file_encoding = 'utf-8'
         file_name = file_path
         self.file_path = file_path or ""
-        if file_path and not file_contents:
+        if file_path:
             file_path = os.path.abspath(file_path)
             if self._should_skip(file_path) or self._should_skip_glob(file_path):
                 self.skipped = True
@@ -101,7 +101,7 @@ class SortImports(object):
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
                           " or matches a glob in 'skip_glob' setting".format(file_path))
                 file_contents = None
-            else:
+            elif not file_contents:
                 self.file_path = file_path
                 self.file_encoding = coding_check(file_path)
                 with codecs.open(file_path, encoding=self.file_encoding) as file_to_import_sort:
