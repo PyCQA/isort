@@ -147,7 +147,6 @@ def test_line_length():
                            "                         lib18, lib20,\n"
                            "                         lib21, lib22)\n")
 
-
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32).output
     assert test_output == ("from third_party import (lib1,\n"
                            "                         lib2,\n"
@@ -556,7 +555,6 @@ def test_remove_imports():
                            "import lib5\n")
 
 
-
 def test_explicitly_local_import():
     """Ensure that explicitly local imports are separated."""
     test_input = ("import lib1\n"
@@ -672,6 +670,7 @@ def test_forced_separate():
     assert SortImports(file_contents=test_input, forced_separate=['.y'],
                        line_length=120, order_by_type=False).output == test_input
 
+
 def test_default_section():
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
@@ -695,6 +694,7 @@ def test_default_section():
                                   "\n"
                                   "import django.settings\n")
 
+
 def test_first_party_overrides_standard_section():
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
@@ -706,6 +706,7 @@ def test_first_party_overrides_standard_section():
                            "\n"
                            "import profile.test\n")
 
+
 def test_thirdy_party_overrides_standard_section():
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
@@ -716,6 +717,7 @@ def test_thirdy_party_overrides_standard_section():
                            "import sys\n"
                            "\n"
                            "import profile.test\n")
+
 
 def test_force_single_line_imports():
     """Test to ensure forcing imports to each have their own line works as expected."""
@@ -1003,6 +1005,7 @@ def test_keep_comments():
         "from a import b as bb, c as cc, d  # b comment; c comment\n"
     )
 
+
 def test_multiline_split_on_dot():
     """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
     test_input = ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
@@ -1019,6 +1022,7 @@ def test_import_star():
     assert SortImports(file_contents=test_input).output == ("from blah import *\n"
                                                             "from blah import _potato\n")
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
+
 
 def test_include_trailing_comma():
     """Test for the include_trailing_comma option"""
@@ -1083,6 +1087,7 @@ def test_include_trailing_comma():
         "    lib1, lib2, lib3, lib4,\n"
         ")\n"
     )
+
 
 def test_similar_to_std_library():
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
@@ -1230,6 +1235,7 @@ def test_place_comments():
                            "import os\n"
                            "import sys\n")
 
+
 def test_placement_control():
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
@@ -1320,7 +1326,6 @@ def test_sticky_comments():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-
 def test_zipimport():
     """Imports ending in "import" shouldn't be clobbered"""
     test_input = "from zipimport import zipimport\n"
@@ -1385,6 +1390,7 @@ from foo import (
     lib7
 )
 """
+
 
 def test_force_grid_wrap_long():
     """Ensure that force grid wrap still happens with long line length"""
@@ -1535,3 +1541,40 @@ def test_shouldnt_add_lines():
                   '# This is a comment\n'
                  'import pkg_resources\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_sections_parsed_correct():
+    """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
+    tmp_conf_dir = None
+    conf_file_data = (
+        '[settings]\n'
+        'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
+        'known_common=nose\n'
+        'import_heading_common=Common Library\n'
+        'import_heading_stdlib=Standard Library\n'
+    )
+    test_input = (
+        'import os\n'
+        'from nose import *\n'
+        'import nose\n'
+        'from os import path'
+    )
+    correct_output = (
+        '# Standard Library\n'
+        'import os\n'
+        'from os import path\n'
+        '\n'
+        '# Common Library\n'
+        'import nose\n'
+        'from nose import *\n'
+    )
+
+    try:
+        tmp_conf_dir = tempfile.mkdtemp()
+        tmp_conf_name = os.path.join(tmp_conf_dir, '.isort.cfg')
+        with codecs.open(tmp_conf_name, 'w') as test_config:
+            test_config.writelines(conf_file_data)
+
+        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
+    finally:
+        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
