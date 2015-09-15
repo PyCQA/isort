@@ -346,6 +346,19 @@ def test_output_modes():
                                                     "    lib17, lib18, lib20, lib21, lib22\n"
                                                     ")\n")
 
+    output_noqa = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+                              multi_line_output=WrapModes.NOQA).output
+    assert output_noqa == "from third_party import lib1 lib2 lib3 lib4 lib5 lib6 lib7 lib8 lib9 lib10 lib11 lib12 lib13 lib14 lib15 lib16 lib17 lib18 lib20 lib21 lib22  # NOQA comment\n"  # NOQA
+
+
+def test_qa_comment_case():
+    test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
+    test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
+    assert test_output == "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA\n"
+
+    test_input = "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA"
+    test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
+    assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
 
 def test_length_sort():
     """Test setting isort to sort on length instead of alphabetically."""
@@ -735,6 +748,13 @@ def test_force_single_line_imports():
                            "from third_party import lib21\n"
                            "from third_party import lib22\n")
 
+
+def test_force_single_line_long_imports():
+    test_input = ("from veryveryveryveryveryvery import small, big\n")
+    test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.NOQA,
+                              line_length=40, force_single_line=True).output
+    assert test_output == ("from veryveryveryveryveryvery import big\n"
+                           "from veryveryveryveryveryvery import small  # NOQA\n")
 
 def test_titled_imports():
     """Tests setting custom titled/commented import sections."""
