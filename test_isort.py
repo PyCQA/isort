@@ -1588,3 +1588,20 @@ def test_sections_parsed_correct():
         assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
     finally:
         shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+
+
+def test_alphabetic_sorting_no_newlines():
+    '''Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)'''
+    test_input = "import os\n"
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
+
+    test_input = ('from a import b\n'
+                  '\n'
+                  'import os\n'
+                  'import unittest\n'
+                  '\n'
+                  '\n'
+                  'print(1)\n')
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True, lines_after_imports=2).output
+    assert test_input == test_output

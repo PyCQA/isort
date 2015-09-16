@@ -133,10 +133,7 @@ class SortImports(object):
         self._first_comment_index_end = -1
         self._parse()
         if self.import_index != -1:
-            if self.config.get('force_alphabetical_sort', False):
-                self._sort_alphabetically()
-            else:
-                self._add_formatted_imports()
+            self._add_formatted_imports()
 
         self.length_change = len(self.out_lines) - self.original_length
         while self.out_lines and self.out_lines[-1].strip() == "":
@@ -451,33 +448,58 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        output = []
-        for section in itertools.chain(self.sections, self.config['forced_separate']):
-            straight_modules = list(self.imports[section]['straight'])
-            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+        if self.config.get('force_alphabetical_sort', False):
+            from_output = []
+            straight_output = []
+            for section in itertools.chain(self.sections, self.config['forced_separate']):
+                straight_modules = list(self.imports[section]['straight'])
+                from_modules = list(self.imports[section]['from'].keys())
 
-            section_output = []
-            if self.config.get('from_first', False):
-                self._add_from_imports(from_modules, section, section_output)
-                self._add_straight_imports(straight_modules, section, section_output)
-            else:
-                self._add_straight_imports(straight_modules, section, section_output)
-                self._add_from_imports(from_modules, section, section_output)
+                self._add_from_imports(from_modules, section, from_output)
+                self._add_straight_imports(straight_modules, section, straight_output)
 
-            if section_output:
-                section_name = section
-                if section_name in self.place_imports:
-                    self.place_imports[section_name] = section_output
-                    continue
+            new_from_output = []
+            new_straight_output = []
+            for line in from_output:
+                for element in line.split('\n'):
+                    new_from_output.append(element)
+            for line in straight_output:
+                for element in line.split('\n'):
+                    new_straight_output.append(element)
 
-                section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
-                if section_title:
-                    section_comment = "# {0}".format(section_title)
-                    if not section_comment in self.out_lines[0:1]:
-                        section_output.insert(0, section_comment)
-                output += section_output + ['']
+
+            sorted_from = sorted(new_from_output, key=lambda s: s.lower())
+            sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
+            output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
+                     (sorted_from or sorted_straight)
+        else:
+            output = []
+            for section in itertools.chain(self.sections, self.config['forced_separate']):
+                straight_modules = list(self.imports[section]['straight'])
+                straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+                from_modules = sorted(list(self.imports[section]['from'].keys()))
+                from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+
+                section_output = []
+                if self.config.get('from_first', False):
+                    self._add_from_imports(from_modules, section, section_output)
+                    self._add_straight_imports(straight_modules, section, section_output)
+                else:
+                    self._add_straight_imports(straight_modules, section, section_output)
+                    self._add_from_imports(from_modules, section, section_output)
+
+                if section_output:
+                    section_name = section
+                    if section_name in self.place_imports:
+                        self.place_imports[section_name] = section_output
+                        continue
+
+                    section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
+                    if section_title:
+                        section_comment = "# {0}".format(section_title)
+                        if not section_comment in self.out_lines[0:1]:
+                            section_output.insert(0, section_comment)
+                    output += section_output + ['']
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()
@@ -518,41 +540,6 @@ class SortImports(object):
                     if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
                         new_out_lines.append("")
             self.out_lines = new_out_lines
-
-    def _sort_alphabetically(self):
-        """Adds the imports back to the file sorted alphabetically."""
-        from_output = []
-        straight_output = []
-        for section in itertools.chain(self.sections, self.config['forced_separate']):
-            straight_modules = list(self.imports[section]['straight'])
-            from_modules = list(self.imports[section]['from'].keys())
-
-            self._add_from_imports(from_modules, section, from_output)
-            self._add_straight_imports(straight_modules, section, straight_output)
-
-        new_from_output = []
-        new_straight_output = []
-        for line in from_output:
-            for element in line.split('\n'):
-                new_from_output.append(element)
-        for line in straight_output:
-            for element in line.split('\n'):
-                new_straight_output.append(element)
-
-
-        sorted_from = sorted(new_from_output, key=lambda s: s.lower())
-        sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
-        output = sorted_from + ['', ] + sorted_straight
-
-        while [character.strip() for character in output[-1:]] == [""]:
-            output.pop()
-
-        output_at = 0
-        if self.import_index < self.original_length:
-            output_at = self.import_index
-        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
-            output_at = self._first_comment_index_end
-        self.out_lines[output_at:0] = output
 
     def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
