@@ -1590,13 +1590,12 @@ def test_sections_parsed_correct():
         shutil.rmtree(tmp_conf_dir, ignore_errors=True)
 
 
-def test_weird_error1():
+def test_alphabetic_sorting_no_newlines():
+    '''Test to ensure that alphabetical sort does not erroneously introduce new lines'''
     test_input = "import os\n"
     test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
     assert test_input == test_output
 
-
-def test_weird_error():
     test_input = ('from a import b\n'
                   '\n'
                   'import os\n'
