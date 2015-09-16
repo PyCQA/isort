@@ -54,6 +54,7 @@ Code Contributors
 - Rob Cowie (@robcowie)
 - Amit Shah (@Amwam)
 - Patrick Gerken (@do3cc)
+- @dein0s
 
 Documenters
 ===================
