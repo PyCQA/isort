@@ -1588,3 +1588,21 @@ def test_sections_parsed_correct():
         assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
     finally:
         shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+
+
+def test_weird_error1():
+    test_input = "import os\n"
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
+
+
+def test_weird_error():
+    test_input = ('from a import b\n'
+                  '\n'
+                  'import os\n'
+                  'import unittest\n'
+                  '\n'
+                  '\n'
+                  'print(1)\n')
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    assert test_input == test_output
