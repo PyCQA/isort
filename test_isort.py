@@ -1603,5 +1603,5 @@ def test_alphabetic_sorting_no_newlines():
                   '\n'
                   '\n'
                   'print(1)\n')
-    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True, lines_after_imports=2).output
     assert test_input == test_output
