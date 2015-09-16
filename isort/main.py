@@ -127,7 +127,7 @@ class ISortCommand(setuptools.Command):
 def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
-    parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
+    parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
     parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
                         'long imports).',
                         dest='line_length', type=int)
@@ -190,7 +190,7 @@ def create_parser():
                         help="Combines as imports on the same line.")
     parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
                         help='Includes a trailing comma on multi line imports that include parentheses.')
-    parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
+    parser.add_argument('-v', '--version', action='store_true', dest='show_version')
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
@@ -212,7 +212,14 @@ def create_parser():
 
 def main():
     arguments = create_parser()
+    if arguments.get('show_version'):
+        print(INTRO)
+        return
+
     file_names = arguments.pop('files', [])
+    if not file_names:
+        sys.stderr.write('isort: error: the following arguments are required: files\n')
+        sys.exit(1)
 
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
@@ -221,7 +228,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names)
         num_skipped = 0
-        if not arguments.get('quiet', False):
+        if arguments.get('verbose', False):
             print(INTRO)
         for file_name in file_names:
             try:
@@ -238,6 +245,7 @@ def main():
 
         if num_skipped and not arguments.get('quiet', False):
             print("Skipped {0} files".format(num_skipped))
+
 
 if __name__ == "__main__":
     main()
