@@ -56,6 +56,7 @@ Code Contributors
 - Patrick Gerken (@do3cc)
 - @dein0s
 - David Stensland (@terite)
+- Ankur Dedania (@AbsoluteMSTR)
 
 Documenters
 ===================
