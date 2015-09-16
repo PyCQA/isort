@@ -55,6 +55,7 @@ Code Contributors
 - Amit Shah (@Amwam)
 - Patrick Gerken (@do3cc)
 - @dein0s
+- David Stensland (@terite)
 
 Documenters
 ===================
