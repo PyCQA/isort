@@ -27,8 +27,8 @@ import sys
 
 import setuptools
 
-from isort import SortImports, __version__, settings
-from isort.settings import DEFAULT_SECTIONS, default, from_path
+from isort import SortImports, __version__
+from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
 from .pie_slice import *
 
@@ -61,7 +61,7 @@ def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
-            if settings.should_skip(path, config):
+            if should_skip(path, config):
                 skipped.append(path)
                 continue
 
@@ -236,7 +236,7 @@ def main():
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
-        config = settings.from_path(os.path.dirname(os.path.abspath(file_names[0])) or os.getcwd()).copy()
+        config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
         skipped = []
@@ -258,13 +258,12 @@ def main():
         if wrong_sorted_files:
             exit(1)
 
+        num_skipped += len(skipped)
         if num_skipped and not arguments.get('quiet', False):
-            if skipped:
-                num_skipped += len(skipped)
-                if config['verbose']:
-                    for was_skipped in skipped:
-                        print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                            " or matches a glob in 'skip_glob' setting".format(was_skipped))
+            if config['verbose']:
+                for was_skipped in skipped:
+                    print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                        " or matches a glob in 'skip_glob' setting".format(was_skipped))
             print("Skipped {0} files".format(num_skipped))
 
 
