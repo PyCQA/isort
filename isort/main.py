@@ -66,11 +66,10 @@ def iter_source_code(paths, config, skipped):
                 continue
 
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
-                for dirname in dirnames:
+                for dirname in list(dirnames):
                     if should_skip(dirname, config):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
-                dirnames[:] = [directory for directory in dirnames if not should_skip(directory, config)]
                 for filename in filenames:
                     if filename.endswith('.py'):
                         if should_skip(filename, config):
