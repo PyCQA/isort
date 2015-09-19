@@ -310,6 +310,12 @@ past the line_length limit and has 6 possible settings:
         lib5, ...
     )
 
+**6 - NOQA**
+
+.. code-block:: python
+
+    from third_party import lib1, lib2, lib3, ...  # NOQA
+
 Alternatively, you can set ``force_single_line`` to ``True`` (``-sl`` on the command line) and every import will appear on its
 own line:
 

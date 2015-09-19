@@ -33,6 +33,7 @@ import io
 import itertools
 import os
 import re
+import sys
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
@@ -56,8 +57,7 @@ class SortImports(object):
     skipped = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, settings_path=None, **setting_overrides):
-
+                 show_diff=False, settings_path=None, ask_to_apply=False,  **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -93,15 +93,15 @@ class SortImports(object):
         self.file_encoding = 'utf-8'
         file_name = file_path
         self.file_path = file_path or ""
-        if file_path and not file_contents:
+        if file_path:
             file_path = os.path.abspath(file_path)
-            if self._should_skip(file_path) or self._should_skip_glob(file_path):
+            if settings.should_skip(file_path, self.config):
                 self.skipped = True
                 if self.config['verbose']:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
                           " or matches a glob in 'skip_glob' setting".format(file_path))
                 file_contents = None
-            else:
+            elif not file_contents:
                 self.file_path = file_path
                 self.file_encoding = coding_check(file_path)
                 with codecs.open(file_path, encoding=self.file_encoding) as file_to_import_sort:
@@ -133,10 +133,7 @@ class SortImports(object):
         self._first_comment_index_end = -1
         self._parse()
         if self.import_index != -1:
-            if self.config.get('force_alphabetical_sort', False):
-                self._sort_alphabetically()
-            else:
-                self._add_formatted_imports()
+            self._add_formatted_imports()
 
         self.length_change = len(self.out_lines) - self.original_length
         while self.out_lines and self.out_lines[-1].strip() == "":
@@ -174,6 +171,17 @@ class SortImports(object):
         elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
+            if ask_to_apply:
+                if self.output == file_contents:
+                    return
+                self._show_diff(file_contents)
+                answer = None
+                while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
+                    answer = input("Apply suggested changes to '{0}' [Y/n/q]?".format(self.file_path)).lower()
+                    if answer in ('no', 'n'):
+                        return
+                    if answer in ('quit', 'q'):
+                        sys.exit(1)
             with codecs.open(self.file_path, encoding=self.file_encoding, mode='w') as output_file:
                 output_file.write(self.output)
 
@@ -183,8 +191,8 @@ class SortImports(object):
             self.output.splitlines(1),
             fromfile=self.file_path + ':before',
             tofile=self.file_path + ':after',
-            fromfiledate=datetime.fromtimestamp(os.path.getmtime(self.file_path)),
-            tofiledate=datetime.now()
+            fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))),
+            tofiledate=str(datetime.now())
         ):
             stdout.write(line)
 
@@ -195,24 +203,6 @@ class SortImports(object):
         while lines and lines[0].startswith("#"):
             lines = lines[1:]
         return "\n".join(lines)
-
-    def _should_skip(self, filename):
-        """Returns True if the file should be skipped based on the loaded settings."""
-        for skip_path in self.config['skip']:
-            if skip_path.endswith(filename):
-                return True
-
-        position = os.path.split(filename)
-        while position[1]:
-            if position[1] in self.config['skip']:
-                return True
-            position = os.path.split(position[0])
-
-    def _should_skip_glob(self, filename):
-        for glob in self.config['skip_glob']:
-            if fnmatch.fnmatch(filename, glob):
-                return True
-        return False
 
     def place_module(self, moduleName):
         """Tries to determine if a module is a python std import, third party import, or project code:
@@ -304,7 +294,8 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        if len(line) > self.config['line_length']:
+        wrap_mode = self.config.get('multi_line_output', 0)
+        if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
             for splitter in ("import", "."):
                 exp = r"\b" + re.escape(splitter) + r"\b"
                 if re.search(exp, line) and not line.strip().startswith(splitter):
@@ -320,6 +311,9 @@ class SortImports(object):
                     if self.config['use_parentheses']:
                         return "{0}{1} (\n{2})".format(line, splitter, cont_line)
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
+        elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
+            if "# NOQA" not in line:
+                return "{0}  # NOQA".format(line)
 
         return line
 
@@ -447,33 +441,58 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        output = []
-        for section in itertools.chain(self.sections, self.config['forced_separate']):
-            straight_modules = list(self.imports[section]['straight'])
-            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+        if self.config.get('force_alphabetical_sort', False):
+            from_output = []
+            straight_output = []
+            for section in itertools.chain(self.sections, self.config['forced_separate']):
+                straight_modules = list(self.imports[section]['straight'])
+                from_modules = list(self.imports[section]['from'].keys())
 
-            section_output = []
-            if self.config.get('from_first', False):
-                self._add_from_imports(from_modules, section, section_output)
-                self._add_straight_imports(straight_modules, section, section_output)
-            else:
-                self._add_straight_imports(straight_modules, section, section_output)
-                self._add_from_imports(from_modules, section, section_output)
+                self._add_from_imports(from_modules, section, from_output)
+                self._add_straight_imports(straight_modules, section, straight_output)
 
-            if section_output:
-                section_name = section
-                if section_name in self.place_imports:
-                    self.place_imports[section_name] = section_output
-                    continue
+            new_from_output = []
+            new_straight_output = []
+            for line in from_output:
+                for element in line.split('\n'):
+                    new_from_output.append(element)
+            for line in straight_output:
+                for element in line.split('\n'):
+                    new_straight_output.append(element)
 
-                section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
-                if section_title:
-                    section_comment = "# {0}".format(section_title)
-                    if not section_comment in self.out_lines[0:1]:
-                        section_output.insert(0, section_comment)
-                output += section_output + ['']
+
+            sorted_from = sorted(new_from_output, key=lambda s: s.lower())
+            sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
+            output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
+                     (sorted_from or sorted_straight)
+        else:
+            output = []
+            for section in itertools.chain(self.sections, self.config['forced_separate']):
+                straight_modules = list(self.imports[section]['straight'])
+                straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+                from_modules = sorted(list(self.imports[section]['from'].keys()))
+                from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+
+                section_output = []
+                if self.config.get('from_first', False):
+                    self._add_from_imports(from_modules, section, section_output)
+                    self._add_straight_imports(straight_modules, section, section_output)
+                else:
+                    self._add_straight_imports(straight_modules, section, section_output)
+                    self._add_from_imports(from_modules, section, section_output)
+
+                if section_output:
+                    section_name = section
+                    if section_name in self.place_imports:
+                        self.place_imports[section_name] = section_output
+                        continue
+
+                    section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
+                    if section_title:
+                        section_comment = "# {0}".format(section_title)
+                        if not section_comment in self.out_lines[0:1]:
+                            section_output.insert(0, section_comment)
+                    output += section_output + ['']
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()
@@ -514,41 +533,6 @@ class SortImports(object):
                     if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
                         new_out_lines.append("")
             self.out_lines = new_out_lines
-
-    def _sort_alphabetically(self):
-        """Adds the imports back to the file sorted alphabetically."""
-        from_output = []
-        straight_output = []
-        for section in itertools.chain(self.sections, self.config['forced_separate']):
-            straight_modules = list(self.imports[section]['straight'])
-            from_modules = list(self.imports[section]['from'].keys())
-
-            self._add_from_imports(from_modules, section, from_output)
-            self._add_straight_imports(straight_modules, section, straight_output)
-
-        new_from_output = []
-        new_straight_output = []
-        for line in from_output:
-            for element in line.split('\n'):
-                new_from_output.append(element)
-        for line in straight_output:
-            for element in line.split('\n'):
-                new_straight_output.append(element)
-
-
-        sorted_from = sorted(new_from_output, key=lambda s: s.lower())
-        sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
-        output = sorted_from + ['', ] + sorted_straight
-
-        while [character.strip() for character in output[-1:]] == [""]:
-            output.pop()
-
-        output_at = 0
-        if self.import_index < self.original_length:
-            output_at = self.import_index
-        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
-            output_at = self._first_comment_index_end
-        self.out_lines[output_at:0] = output
 
     def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
         statement += "(" + imports.pop(0)
@@ -610,6 +594,23 @@ class SortImports(object):
 
     def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + "\n)"
+
+    def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
+        retval = '{0}{1}'.format(statement, ' '.join(imports))
+        comment_str = ' '.join(comments)
+        if comments:
+            if len(retval) + 4 + len(comment_str) <= line_length:
+                return '{0}  # {1}'.format(retval, comment_str)
+        else:
+            if len(retval) <= line_length:
+                return retval
+        if comments:
+            if "NOQA" in comments:
+                return '{0}  # {1}'.format(retval, comment_str)
+            else:
+                return '{0}  # NOQA {1}'.format(retval, comment_str)
+        else:
+            return '{0}  # NOQA'.format(retval)
 
     @staticmethod
     def _strip_comments(line, comments=None):

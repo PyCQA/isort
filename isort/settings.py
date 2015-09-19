@@ -37,7 +37,7 @@ except ImportError:
 MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 
-WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED')
+WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED', 'NOQA')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
@@ -157,6 +157,8 @@ def _update_with_config_file(file_path, sections, computed_settings):
                     computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == "false":
             computed_settings[access_key] = False
+        elif key.startswith('known_'):
+            computed_settings[access_key] = list(_as_list(value))
         else:
             computed_settings[access_key] = existing_value_type(value)
 
@@ -188,3 +190,22 @@ def _get_config_data(file_path, sections):
         return settings
 
     return {}
+
+
+def should_skip(filename, config):
+    """Returns True if the file should be skipped based on the passed in settings."""
+    for skip_path in config['skip']:
+        if skip_path.endswith(filename):
+            return True
+
+    position = os.path.split(filename)
+    while position[1]:
+        if position[1] in config['skip']:
+            return True
+        position = os.path.split(position[0])
+
+    for glob in config['skip_glob']:
+        if fnmatch.fnmatch(filename, glob):
+            return True
+
+    return False

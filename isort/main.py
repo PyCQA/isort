@@ -28,7 +28,7 @@ import sys
 import setuptools
 
 from isort import SortImports, __version__
-from isort.settings import DEFAULT_SECTIONS, default, from_path
+from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
 from .pie_slice import *
 
@@ -57,14 +57,25 @@ INTRO = """
 """.format(__version__)
 
 
-def iter_source_code(paths):
+def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path):
+            if should_skip(path, config):
+                skipped.append(path)
+                continue
+
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                for dirname in list(dirnames):
+                    if should_skip(dirname, config):
+                        skipped.append(dirname)
+                        dirnames.remove(dirname)
                 for filename in filenames:
                     if filename.endswith('.py'):
-                        yield os.path.join(dirpath, filename)
+                        if should_skip(filename, config):
+                            skipped.append(filename)
+                        else:
+                            yield os.path.join(dirpath, filename)
         else:
             yield path
 
@@ -127,7 +138,9 @@ class ISortCommand(setuptools.Command):
 def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
-    parser.add_argument('files', nargs='+', help='One or more Python source files that need their imports sorted.')
+    parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
+    parser.add_argument('-y', '--apply', dest='apply', action='store_true',
+                        help='Tells isort to apply changes recursively without asking')
     parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
                         'long imports).',
                         dest='line_length', type=int)
@@ -190,7 +203,7 @@ def create_parser():
                         help="Combines as imports on the same line.")
     parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
                         help='Includes a trailing comma on multi line imports that include parentheses.')
-    parser.add_argument('-v', '--version', action='version', version='isort {0}'.format(__version__))
+    parser.add_argument('-v', '--version', action='store_true', dest='show_version')
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
@@ -212,16 +225,27 @@ def create_parser():
 
 def main():
     arguments = create_parser()
-    file_names = arguments.pop('files', [])
+    if arguments.get('show_version'):
+        print(INTRO)
+        return
 
+    file_names = arguments.pop('files', [])
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
+        if not file_names:
+            file_names = ['.']
+            arguments['recursive'] = True
+            if not arguments.get('apply', False):
+                arguments['ask_to_apply'] = True
+        config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
+        config.update(arguments)
         wrong_sorted_files = False
+        skipped = []
         if arguments.get('recursive', False):
-            file_names = iter_source_code(file_names)
+            file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
-        if not arguments.get('quiet', False):
+        if config.get('verbose', False) or config.get('show_logo', False):
             print(INTRO)
         for file_name in file_names:
             try:
@@ -236,8 +260,14 @@ def main():
         if wrong_sorted_files:
             exit(1)
 
+        num_skipped += len(skipped)
         if num_skipped and not arguments.get('quiet', False):
+            if config['verbose']:
+                for was_skipped in skipped:
+                    print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                        " or matches a glob in 'skip_glob' setting".format(was_skipped))
             print("Skipped {0} files".format(num_skipped))
+
 
 if __name__ == "__main__":
     main()

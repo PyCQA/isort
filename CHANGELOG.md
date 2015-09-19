@@ -25,3 +25,16 @@ Changelog
 
 ### 4.1.2
 - Fixed issue #323: Accidental default configuration change introduced
+
+### 4.2.0
+- Added option "NOQA" Do not wrap lines, but add a noqa statement at the end
+- Added support for runnning isort recursively, simply with a standalone `isort` command
+- Added support to run isort library as a module
+- Added compatibility for Python 3.5
+- Fixed performance issue (#338) when running on project with lots of skipped directories
+- Fixed issue #328: extra new can occasionally occur when using alphabetical-only sort
+- Fixed custom sections parsing from config file (unicode string -> list)
+- Updated pylama extension to the correct entry point
+- Skip files even when file_contents is provided if they are explicitly in skip list
+- Removed always showing isort banner, keeping it for when the version is requested, verbose is used, or show_logo setting is set.
+

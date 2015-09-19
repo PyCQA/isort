@@ -39,20 +39,20 @@ with open('README.rst', 'r') as f:
    readme = f.read()
 
 setup(name='isort',
-      version='4.1.2',
+      version='4.2.0',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/4.1.2.tar.gz',
+      download_url='https://github.com/timothycrosley/isort/archive/4.2.0.tar.gz',
       license="MIT",
       entry_points={
         'console_scripts': [
             'isort = isort.main:main',
         ],
         'distutils.commands': ['isort = isort.main:ISortCommand'],
-        'pylama.linter': ['isort = isort.pylama_extension:Linter'],
+        'pylama.linter': ['isort = isort.pylama_isort:Linter'],
       },
       packages=['isort'],
       cmdclass={'test': PyTest},
