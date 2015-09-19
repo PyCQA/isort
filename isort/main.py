@@ -27,7 +27,7 @@ import sys
 
 import setuptools
 
-from isort import SortImports, __version__
+from isort import SortImports, __version__, settings
 from isort.settings import DEFAULT_SECTIONS, default, from_path
 
 from .pie_slice import *
@@ -57,13 +57,14 @@ INTRO = """
 """.format(__version__)
 
 
-def iter_source_code(paths):
+def iter_source_code(paths, config):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
-        if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path):
+        if os.path.isdir(path) and not settings.should_skip(path, config):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                dirnames[:] = [directory for directory in dirnames if not should_skip(directory, config)]
                 for filename in filenames:
-                    if filename.endswith('.py'):
+                    if filename.endswith('.py') if not should_skip(file_name, config):
                         yield os.path.join(dirpath, filename)
         else:
             yield path
@@ -224,11 +225,13 @@ def main():
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
+        config = settings.from_path(os.path.dirname(os.path.abspath(file_names[0])) or os.getcwd()).copy()
+        config.update(arguments)
         wrong_sorted_files = False
         if arguments.get('recursive', False):
-            file_names = iter_source_code(file_names)
+            file_names = iter_source_code(file_names, config)
         num_skipped = 0
-        if arguments.get('verbose', False):
+        if config.get('verbose', False) or config.get('show_logo', False):
             print(INTRO)
         for file_name in file_names:
             try:
