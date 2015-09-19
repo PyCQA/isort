@@ -33,6 +33,7 @@ import io
 import itertools
 import os
 import re
+import sys
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
@@ -56,8 +57,7 @@ class SortImports(object):
     skipped = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, settings_path=None, **setting_overrides):
-
+                 show_diff=False, settings_path=None, ask_to_apply=False,  **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -171,6 +171,17 @@ class SortImports(object):
         elif write_to_stdout:
             stdout.write(self.output)
         elif file_name:
+            if ask_to_apply:
+                if self.output == file_contents:
+                    return
+                self._show_diff(file_contents)
+                answer = None
+                while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
+                    answer = input("Apply suggested changes to '{0}' [Y/n/q]?".format(self.file_path)).lower()
+                    if answer in ('no', 'n'):
+                        return
+                    if answer in ('quit', 'q'):
+                        sys.exit(1)
             with codecs.open(self.file_path, encoding=self.file_encoding, mode='w') as output_file:
                 output_file.write(self.output)
 
