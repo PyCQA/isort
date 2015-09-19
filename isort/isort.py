@@ -95,7 +95,7 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if self._should_skip(file_path) or self._should_skip_glob(file_path):
+            if settings.should_skip(file_path, self.config):
                 self.skipped = True
                 if self.config['verbose']:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
@@ -192,24 +192,6 @@ class SortImports(object):
         while lines and lines[0].startswith("#"):
             lines = lines[1:]
         return "\n".join(lines)
-
-    def _should_skip(self, filename):
-        """Returns True if the file should be skipped based on the loaded settings."""
-        for skip_path in self.config['skip']:
-            if skip_path.endswith(filename):
-                return True
-
-        position = os.path.split(filename)
-        while position[1]:
-            if position[1] in self.config['skip']:
-                return True
-            position = os.path.split(position[0])
-
-    def _should_skip_glob(self, filename):
-        for glob in self.config['skip_glob']:
-            if fnmatch.fnmatch(filename, glob):
-                return True
-        return False
 
     def place_module(self, moduleName):
         """Tries to determine if a module is a python std import, third party import, or project code:
