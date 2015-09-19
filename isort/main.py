@@ -139,6 +139,8 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
+    parser.add_argument('-y', '--apply', dest='apply', action='store_true',
+                        help='Tells isort to apply changes recursively without asking')
     parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
                         'long imports).',
                         dest='line_length', type=int)
@@ -228,13 +230,14 @@ def main():
         return
 
     file_names = arguments.pop('files', [])
-    if not file_names:
-        sys.stderr.write('isort: error: the following arguments are required: files\n')
-        sys.exit(1)
-
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
+        if not file_names:
+            file_names = ['.']
+            arguments['recursive'] = True
+            if not arguments.get('apply', False):
+                arguments['ask_to_apply'] = True
         config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
