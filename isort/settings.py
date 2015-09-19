@@ -190,3 +190,22 @@ def _get_config_data(file_path, sections):
         return settings
 
     return {}
+
+
+def should_skip(filename, config):
+    """Returns True if the file should be skipped based on the passed in settings."""
+    for skip_path in config['skip']:
+        if skip_path.endswith(filename):
+            return True
+
+    position = os.path.split(filename)
+    while position[1]:
+        if position[1] in config['skip']:
+            return True
+        position = os.path.split(position[0])
+
+    for glob in config['skip_glob']:
+        if fnmatch.fnmatch(filename, glob):
+            return True
+
+    return False
