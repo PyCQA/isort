@@ -57,15 +57,26 @@ INTRO = """
 """.format(__version__)
 
 
-def iter_source_code(paths, config):
+def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
-        if os.path.isdir(path) and not settings.should_skip(path, config):
+        if os.path.isdir(path):
+            if settings.should_skip(path, config):
+                skipped.append(path)
+                continue
+
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                for dirname in dirnames:
+                    if should_skip(dirname, config):
+                        skipped.append(dirname)
+                        dirnames.remove(dirname)
                 dirnames[:] = [directory for directory in dirnames if not should_skip(directory, config)]
                 for filename in filenames:
-                    if filename.endswith('.py') if not should_skip(file_name, config):
-                        yield os.path.join(dirpath, filename)
+                    if filename.endswith('.py'):
+                        if should_skip(filename, config):
+                            skipped.append(filename)
+                        else:
+                            yield os.path.join(dirpath, filename)
         else:
             yield path
 
@@ -228,8 +239,9 @@ def main():
         config = settings.from_path(os.path.dirname(os.path.abspath(file_names[0])) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
+        skipped = []
         if arguments.get('recursive', False):
-            file_names = iter_source_code(file_names, config)
+            file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
         if config.get('verbose', False) or config.get('show_logo', False):
             print(INTRO)
@@ -247,6 +259,12 @@ def main():
             exit(1)
 
         if num_skipped and not arguments.get('quiet', False):
+            if skipped:
+                num_skipped += len(skipped)
+                if config['verbose']:
+                    for was_skipped in skipped:
+                        print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                            " or matches a glob in 'skip_glob' setting".format(was_skipped))
             print("Skipped {0} files".format(num_skipped))
 
 
