@@ -38,3 +38,5 @@ Changelog
 - Skip files even when file_contents is provided if they are explicitly in skip list
 - Removed always showing isort banner, keeping it for when the version is requested, verbose is used, or show_logo setting is set.
 
+### 4.2.1
+- Hot fix release to fix code error when skipping globs
