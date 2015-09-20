@@ -24,6 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import fnmatch
 import os
 from collections import namedtuple
 

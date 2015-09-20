@@ -28,7 +28,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import codecs
 import copy
-import fnmatch
 import io
 import itertools
 import os
