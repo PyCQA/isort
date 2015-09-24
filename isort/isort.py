@@ -460,8 +460,8 @@ class SortImports(object):
                     new_straight_output.append(element)
 
 
-            sorted_from = sorted(new_from_output, key=lambda s: s.lower())
-            sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
+            sorted_from = sorted(new_from_output, key=lambda import_string: import_string.lower())
+            sorted_straight = sorted(new_straight_output, key=lambda import_string: import_string.lower())
             output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
                      (sorted_from or sorted_straight)
         else:
@@ -479,6 +479,15 @@ class SortImports(object):
                 else:
                     self._add_straight_imports(straight_modules, section, section_output)
                     self._add_from_imports(from_modules, section, section_output)
+
+                if self.config.get('force_sort_within_sections', False):
+                    def by_module(line):
+                        line = re.sub('^from ', '', line)
+                        line = re.sub('^import ', '', line)
+                        if not self.config['order_by_type']:
+                            line = line.lower()
+                        return line
+                    section_output = nsorted(section_output, key=by_module)
 
                 if section_output:
                     section_name = section
@@ -653,11 +662,13 @@ class SortImports(object):
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
             self._in_top_comment = True
+            return True
         elif self._in_top_comment:
             if not line.startswith("#"):
-               self._in_top_comment = False
-               self._first_comment_index_end = self.index
-        elif '"' in line or "'" in line:
+                self._in_top_comment = False
+                self._first_comment_index_end = self.index
+
+        if '"' in line or "'" in line:
             index = 0
             if self._first_comment_index_start == -1:
                 self._first_comment_index_start = self.index
@@ -779,7 +790,13 @@ class SortImports(object):
                         del imports[index:index + 2]
                 if import_type == "from":
                     import_from = imports.pop(0)
-                    root = self.imports[self.place_module(import_from)][import_type]
+                    placed_module = self.place_module(import_from)
+                    if placed_module == '':
+                        print(
+                            "WARNING: could not place module {0} of line {1} --"
+                            " Do you need to define a default section?".format(import_from, line)
+                        )
+                    root = self.imports[placed_module][import_type]
                     for import_name in imports:
                         associated_commment = nested_comments.get(import_name)
                         if associated_commment:
@@ -821,7 +838,13 @@ class SortImports(object):
                                     last = ""
                             if self.index - 1 == self.import_index:
                                 self.import_index -= len(self.comments['above']['straight'].get(module, []))
-                        self.imports[self.place_module(module)][import_type].add(module)
+                        placed_module = self.place_module(module)
+                        if placed_module == '':
+                            print(
+                                "WARNING: could not place module {0} of line {1} --"
+                                " Do you need to define a default section?".format(import_from, line)
+                            )
+                        self.imports[placed_module][import_type].add(module)
 
 
 def coding_check(fname, default='utf-8'):

@@ -1605,3 +1605,36 @@ def test_alphabetic_sorting_no_newlines():
                   'print(1)\n')
     test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True, lines_after_imports=2).output
     assert test_input == test_output
+
+
+def test_sort_within_section():
+    '''Test to ensure its possible to force isort to sort within sections'''
+    test_input = ('from Foob import ar\n'
+                  'import foo\n'
+                  'from foo import bar\n'
+                  'from foo.bar import Quux, baz\n')
+    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True).output
+    assert test_output == test_input
+
+    test_input = ('import foo\n'
+                  'from foo import bar\n'
+                  'from foo.bar import baz\n'
+                  'from foo.bar import Quux\n'
+                  'from Foob import ar\n')
+    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True, order_by_type=False,
+                              force_single_line=True).output
+    assert test_output == test_input
+
+
+def test_sorting_with_two_top_comments():
+    '''Test to ensure isort will sort files that contain 2 top comments'''
+    test_input = ('#! comment1\n'
+                  "''' comment2\n"
+                  "'''\n"
+                  'import b\n'
+                  'import a\n')
+    assert SortImports(file_contents=test_input).output == ('#! comment1\n'
+                                                            "''' comment2\n"
+                                                            "'''\n"
+                                                            'import a\n'
+                                                            'import b\n')

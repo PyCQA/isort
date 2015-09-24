@@ -57,3 +57,14 @@ atlassian-ide-plugin.xml
 *.swp
 *.kate-swp
 .ropeproject/
+
+# pip
+pip-selfcheck.json
+
+# Python3 Venv Files
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg
+share/
