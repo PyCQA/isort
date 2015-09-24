@@ -460,8 +460,8 @@ class SortImports(object):
                     new_straight_output.append(element)
 
 
-            sorted_from = sorted(new_from_output, key=lambda s: s.lower())
-            sorted_straight = sorted(new_straight_output, key=lambda s: s.lower())
+            sorted_from = sorted(new_from_output, key=lambda import_string: import_string.lower())
+            sorted_straight = sorted(new_straight_output, key=lambda import_string: import_string.lower())
             output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
                      (sorted_from or sorted_straight)
         else:
@@ -484,8 +484,10 @@ class SortImports(object):
                     def by_module(line):
                         line = re.sub('^from ', '', line)
                         line = re.sub('^import ', '', line)
+                        if not self.config['order_by_type']:
+                            line = line.lower()
                         return line
-                    section_output.sort(key=by_module)
+                    section_output = nsorted(section_output, key=by_module)
 
                 if section_output:
                     section_name = section

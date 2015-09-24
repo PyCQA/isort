@@ -1616,3 +1616,11 @@ def test_sort_within_section():
     test_output = SortImports(file_contents=test_input,force_sort_within_sections=True).output
     assert test_output == test_input
 
+    test_input = ('import foo\n'
+                  'from foo import bar\n'
+                  'from foo.bar import baz\n'
+                  'from foo.bar import Quux\n'
+                  'from Foob import ar\n')
+    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True, order_by_type=False,
+                              force_single_line=True).output
+    assert test_output == test_input
