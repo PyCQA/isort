@@ -480,6 +480,13 @@ class SortImports(object):
                     self._add_straight_imports(straight_modules, section, section_output)
                     self._add_from_imports(from_modules, section, section_output)
 
+                if self.config.get('force_sort_within_sections', False):
+                    def by_module(line):
+                        line = re.sub('^from ', '', line)
+                        line = re.sub('^import ', '', line)
+                        return line
+                    section_output.sort(key=by_module)
+
                 if section_output:
                     section_name = section
                     if section_name in self.place_imports:
