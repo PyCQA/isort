@@ -662,11 +662,13 @@ class SortImports(object):
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
             self._in_top_comment = True
+            return True
         elif self._in_top_comment:
             if not line.startswith("#"):
-               self._in_top_comment = False
-               self._first_comment_index_end = self.index
-        elif '"' in line or "'" in line:
+                self._in_top_comment = False
+                self._first_comment_index_end = self.index
+
+        if '"' in line or "'" in line:
             index = 0
             if self._first_comment_index_start == -1:
                 self._first_comment_index_start = self.index
