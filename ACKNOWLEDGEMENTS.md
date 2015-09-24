@@ -58,6 +58,7 @@ Code Contributors
 - David Stensland (@terite)
 - Ankur Dedania (@AbsoluteMSTR)
 - Lee Packham (@leepa)
+- Jesse Mullan (@jmullan)
 
 Documenters
 ===================
