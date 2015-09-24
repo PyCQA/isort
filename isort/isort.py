@@ -786,7 +786,13 @@ class SortImports(object):
                         del imports[index:index + 2]
                 if import_type == "from":
                     import_from = imports.pop(0)
-                    root = self.imports[self.place_module(import_from)][import_type]
+                    placed_module = self.place_module(import_from)
+                    if placed_module == '':
+                        print(
+                            "WARNING: could not place module {0} of line {1} --"
+                            " Do you need to define a default section?".format(import_from, line)
+                        )
+                    root = self.imports[placed_module][import_type]
                     for import_name in imports:
                         associated_commment = nested_comments.get(import_name)
                         if associated_commment:
@@ -828,7 +834,13 @@ class SortImports(object):
                                     last = ""
                             if self.index - 1 == self.import_index:
                                 self.import_index -= len(self.comments['above']['straight'].get(module, []))
-                        self.imports[self.place_module(module)][import_type].add(module)
+                        placed_module = self.place_module(module)
+                        if placed_module == '':
+                            print(
+                                "WARNING: could not place module {0} of line {1} --"
+                                " Do you need to define a default section?".format(import_from, line)
+                            )
+                        self.imports[placed_module][import_type].add(module)
 
 
 def coding_check(fname, default='utf-8'):
