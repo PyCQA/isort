@@ -1605,3 +1605,14 @@ def test_alphabetic_sorting_no_newlines():
                   'print(1)\n')
     test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True, lines_after_imports=2).output
     assert test_input == test_output
+
+
+def test_sort_within_section():
+    '''Test to ensure its possible to force isort to sort within sections'''
+    test_input = ('from Foob import ar\n'
+                  'import foo\n'
+                  'from foo import bar\n'
+                  'from foo.bar import Quux, baz\n')
+    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True).output
+    assert test_output == test_input
+
