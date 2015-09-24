@@ -40,3 +40,7 @@ Changelog
 
 ### 4.2.1
 - Hot fix release to fix code error when skipping globs
+
+### 4.2.2
+- Give an error message when isort is unable to determine where to place a module
+- Allow imports to be sorted by module, independant of import_type, when `force_sort_within_sections` option is set
