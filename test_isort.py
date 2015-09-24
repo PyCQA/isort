@@ -1629,12 +1629,12 @@ def test_sort_within_section():
 def test_sorting_with_two_top_comments():
     '''Test to ensure isort will sort files that contain 2 top comments'''
     test_input = ('#! comment1\n'
-                  "''' comment 2\n"
+                  "''' comment2\n"
                   "'''\n"
                   'import b\n'
                   'import a\n')
-    assert SortImports(file_contents=test_input) == ('#! comment1\n'
-                                                     "''' comment2\n"
-                                                     "'''\n"
-                                                     'import a\n'
-                                                     'import b\n')
+    assert SortImports(file_contents=test_input).output == ('#! comment1\n'
+                                                            "''' comment2\n"
+                                                            "'''\n"
+                                                            'import a\n'
+                                                            'import b\n')
