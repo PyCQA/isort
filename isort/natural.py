@@ -38,9 +38,10 @@ def _natural_keys(text):
 
 def nsorted(to_sort, key=None):
     """Returns a naturally sorted list"""
-    if not key:
+    if key is None:
         key_callback = _natural_keys
     else:
-        key_callback = lambda item: _natural_keys(key(item))
+        def key_callback(item):
+            return _natural_keys(key(item))
 
     return sorted(to_sort, key=key_callback)
