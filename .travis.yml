@@ -7,6 +7,11 @@ env:
   - TOXENV=py33
   - TOXENV=py34
   - TOXENV=pypy
+matrix:
+  include:
+    - python: 3.5
+      env:
+      - TOXENV=py35
 install:
   - pip install tox
 script:
