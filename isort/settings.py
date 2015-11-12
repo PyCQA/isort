@@ -94,7 +94,12 @@ default = {'force_to_top': [],
            'include_trailing_comma': False,
            'from_first': False,
            'verbose': False,
-           'quiet': False}
+           'quiet': False,
+           'force_adds': False,
+           'force_alphabetical_sort': False,
+           'force_grid_wrap': False,
+           'force_sort_within_sections': False,
+           'show_diff': False}
 
 
 @lru_cache()
