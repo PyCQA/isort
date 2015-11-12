@@ -25,3 +25,5 @@ class Linter(BaseLinter):
                     'text': 'Incorrectly sorted imports.',
                     'type': 'ISORT'
                 }]
+            else:
+                return []
