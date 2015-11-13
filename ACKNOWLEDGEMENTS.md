@@ -59,6 +59,7 @@ Code Contributors
 - Ankur Dedania (@AbsoluteMSTR)
 - Lee Packham (@leepa)
 - Jesse Mullan (@jmullan)
+- Kwok-kuen Cheung (@cheungpat)
 
 Documenters
 ===================
