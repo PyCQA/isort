@@ -60,6 +60,7 @@ Code Contributors
 - Lee Packham (@leepa)
 - Jesse Mullan (@jmullan)
 - Kwok-kuen Cheung (@cheungpat)
+- Johan Bloemberg (@aequitas)
 
 Documenters
 ===================
