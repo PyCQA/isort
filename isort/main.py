@@ -181,8 +181,10 @@ def create_parser():
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
-    parser.add_argument('-sl', '--force_single_line_imports', dest='force_single_line', action='store_true',
+    parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
+    parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
+                        help=argparse.SUPPRESS)
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
                         str(DEFAULT_SECTIONS))
