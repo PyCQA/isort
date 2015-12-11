@@ -243,7 +243,7 @@ class SortImports(object):
                 elif "python2" in prefix.lower() or "python3" in prefix.lower():
                     return self.sections.STDLIB
                 else:
-                    return self.sections.FIRSTPARTY
+                    return self.config['default_section']
 
         return self.config['default_section']
 
