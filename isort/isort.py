@@ -37,7 +37,7 @@ from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
 from sys import path as PYTHONPATH
-from sys import stderr, stdout
+from sys import stdout
 
 from . import settings
 from .natural import nsorted
