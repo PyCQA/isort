@@ -36,6 +36,7 @@ import sys
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
+from glob import glob
 from sys import path as PYTHONPATH
 from sys import stderr, stdout
 
@@ -229,9 +230,8 @@ class SortImports(object):
         paths = PYTHONPATH
         virtual_env = os.environ.get('VIRTUAL_ENV', None)
         if virtual_env:
-            paths = list(paths)
-            for version in ((2, 6), (2, 7), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4)):
-                paths.append("{0}/lib/python{1}.{2}/site-packages".format(virtual_env, version[0], version[1]))
+            paths += [p for p in glob("{0}/lib/python*/site-packages".format(virtual_env))
+                      if p not in paths]
 
         for prefix in paths:
             module_path = "/".join((prefix, moduleName.replace(".", "/")))
