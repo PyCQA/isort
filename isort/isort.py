@@ -155,7 +155,7 @@ class SortImports(object):
 
                 return
         if check:
-            if self.output == file_contents:
+            if self.output.replace("\n", "") == file_contents.replace("\n", ""):
                 if self.config['verbose']:
                     print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
             else:
