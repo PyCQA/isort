@@ -227,7 +227,7 @@ class SortImports(object):
                     return placement
 
         paths = PYTHONPATH
-        virtual_env = os.environ.get('VIRTUAL_ENV', None)
+        virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         if virtual_env:
             paths = list(paths)
             for version in ((2, 6), (2, 7), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4)):
