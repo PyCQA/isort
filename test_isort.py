@@ -1638,3 +1638,13 @@ def test_sorting_with_two_top_comments():
                                                             "'''\n"
                                                             'import a\n'
                                                             'import b\n')
+
+
+def test_lines_between_sections():
+    """Test to ensure lines_between_sections works"""
+    test_input = ('from bar import baz\n'
+                  'import os\n')
+    assert SortImports(file_contents=test_input, lines_between_sections=0).output == ('import os\n'
+                                                                                      'from bar import baz\n')
+    assert SortImports(file_contents=test_input, lines_between_sections=2).output == ('import os\n\n\n'
+                                                                                      'from bar import baz\n')
