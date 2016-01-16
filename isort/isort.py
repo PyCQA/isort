@@ -500,7 +500,7 @@ class SortImports(object):
                         section_comment = "# {0}".format(section_title)
                         if not section_comment in self.out_lines[0:1]:
                             section_output.insert(0, section_comment)
-                    output += section_output + ['']
+                    output += section_output + ([''] * self.config['lines_between_sections'])
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()

@@ -61,6 +61,7 @@ Code Contributors
 - Jesse Mullan (@jmullan)
 - Kwok-kuen Cheung (@cheungpat)
 - Johan Bloemberg (@aequitas)
+- Dan Watson (@dcwatson)
 
 Documenters
 ===================
