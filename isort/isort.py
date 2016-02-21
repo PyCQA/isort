@@ -269,9 +269,13 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config, sub_imports=False):
+    def _module_key(module_name, config, sub_imports=False, ignore_case=False):
         prefix = ""
-        module_name = str(module_name)
+        if ignore_case:
+            module_name = str(module_name).lower()
+        else:
+            module_name = str(module_name)
+
         if sub_imports and config['order_by_type']:
             if module_name.isupper() and len(module_name) > 1:
                 prefix = "A"
@@ -332,14 +336,14 @@ class SortImports(object):
                 section_output.extend(comments_above)
             section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
-    def _add_from_imports(self, from_modules, section, section_output):
+    def _add_from_imports(self, from_modules, section, section_output, ignore_case):
         for module in from_modules:
             if module in self.remove_imports:
                 continue
 
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
-            from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True))
+            from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -441,67 +445,44 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        if self.config.get('force_alphabetical_sort', False):
-            from_output = []
-            straight_output = []
-            for section in itertools.chain(self.sections, self.config['forced_separate']):
-                straight_modules = list(self.imports[section]['straight'])
-                from_modules = list(self.imports[section]['from'].keys())
+        sort_ignore_case = self.config.get('force_alphabetical_sort', False)
 
-                self._add_from_imports(from_modules, section, from_output)
-                self._add_straight_imports(straight_modules, section, straight_output)
+        output = []
+        for section in itertools.chain(self.sections, self.config['forced_separate']):
+            straight_modules = list(self.imports[section]['straight'])
+            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            from_modules = sorted(list(self.imports[section]['from'].keys()))
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
 
-            new_from_output = []
-            new_straight_output = []
-            for line in from_output:
-                for element in line.split('\n'):
-                    new_from_output.append(element)
-            for line in straight_output:
-                for element in line.split('\n'):
-                    new_straight_output.append(element)
+            section_output = []
+            if self.config.get('from_first', False):
+                self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
+                self._add_straight_imports(straight_modules, section, section_output)
+            else:
+                self._add_straight_imports(straight_modules, section, section_output)
+                self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
 
+            if self.config.get('force_sort_within_sections', False):
+                def by_module(line):
+                    line = re.sub('^from ', '', line)
+                    line = re.sub('^import ', '', line)
+                    if not self.config['order_by_type']:
+                        line = line.lower()
+                    return line
+                section_output = nsorted(section_output, key=by_module)
 
-            sorted_from = sorted(new_from_output, key=lambda import_string: import_string.lower())
-            sorted_straight = sorted(new_straight_output, key=lambda import_string: import_string.lower())
-            output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
-                     (sorted_from or sorted_straight)
-        else:
-            output = []
-            for section in itertools.chain(self.sections, self.config['forced_separate']):
-                straight_modules = list(self.imports[section]['straight'])
-                straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-                from_modules = sorted(list(self.imports[section]['from'].keys()))
-                from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+            if section_output:
+                section_name = section
+                if section_name in self.place_imports:
+                    self.place_imports[section_name] = section_output
+                    continue
 
-                section_output = []
-                if self.config.get('from_first', False):
-                    self._add_from_imports(from_modules, section, section_output)
-                    self._add_straight_imports(straight_modules, section, section_output)
-                else:
-                    self._add_straight_imports(straight_modules, section, section_output)
-                    self._add_from_imports(from_modules, section, section_output)
-
-                if self.config.get('force_sort_within_sections', False):
-                    def by_module(line):
-                        line = re.sub('^from ', '', line)
-                        line = re.sub('^import ', '', line)
-                        if not self.config['order_by_type']:
-                            line = line.lower()
-                        return line
-                    section_output = nsorted(section_output, key=by_module)
-
-                if section_output:
-                    section_name = section
-                    if section_name in self.place_imports:
-                        self.place_imports[section_name] = section_output
-                        continue
-
-                    section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
-                    if section_title:
-                        section_comment = "# {0}".format(section_title)
-                        if not section_comment in self.out_lines[0:1]:
-                            section_output.insert(0, section_comment)
-                    output += section_output + ([''] * self.config['lines_between_sections'])
+                section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
+                if section_title:
+                    section_comment = "# {0}".format(section_title)
+                    if not section_comment in self.out_lines[0:1]:
+                        section_output.insert(0, section_comment)
+                output += section_output + ([''] * self.config['lines_between_sections'])
 
         while [character.strip() for character in output[-1:]] == [""]:
             output.pop()
