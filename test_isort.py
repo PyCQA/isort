@@ -1193,7 +1193,7 @@ def test_same_line_statements():
 
 
 def test_long_line_comments():
-    """Ensure isort correctly handles comments at the end of extreamly long lines"""
+    """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = ("from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
                   "update_live_app, update_live_cron  # noqa\n"
                   "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
