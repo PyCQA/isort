@@ -381,7 +381,7 @@ to your preference:
 
     sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER
 
-You also can define your own sections and thier order.
+You also can define your own sections and their order.
 
 Example:
 
