@@ -799,10 +799,10 @@ class SortImports(object):
                         )
                     root = self.imports[placed_module][import_type]
                     for import_name in imports:
-                        associated_commment = nested_comments.get(import_name)
-                        if associated_commment:
-                            self.comments['nested'].setdefault(import_from, {})[import_name] = associated_commment
-                            comments.pop(comments.index(associated_commment))
+                        associated_comment = nested_comments.get(import_name)
+                        if associated_comment:
+                            self.comments['nested'].setdefault(import_from, {})[import_name] = associated_comment
+                            comments.pop(comments.index(associated_comment))
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
 
