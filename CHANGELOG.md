@@ -28,7 +28,7 @@ Changelog
 
 ### 4.2.0
 - Added option "NOQA" Do not wrap lines, but add a noqa statement at the end
-- Added support for runnning isort recursively, simply with a standalone `isort` command
+- Added support for running isort recursively, simply with a standalone `isort` command
 - Added support to run isort library as a module
 - Added compatibility for Python 3.5
 - Fixed performance issue (#338) when running on project with lots of skipped directories
