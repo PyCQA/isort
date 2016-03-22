@@ -1648,3 +1648,25 @@ def test_lines_between_sections():
                                                                                       'from bar import baz\n')
     assert SortImports(file_contents=test_input, lines_between_sections=2).output == ('import os\n\n\n'
                                                                                       'from bar import baz\n')
+
+def test_forced_sepatate_globs():
+    """Test to ensure that forced_separate glob matches lines"""
+    test_input = ('import os\n'
+                  '\n'
+                  'from myproject.foo.models import Foo\n'
+                  '\n'
+                  'from myproject.utils import util_method\n'
+                  '\n'
+                  'from myproject.bar.models import Bar\n'
+                  '\n'
+                  'import sys\n')
+    test_output = SortImports(file_contents=test_input, forced_separate=['*.models'],
+                              line_length=120).output
+
+    assert test_output == ('import os\n'
+                          'import sys\n'
+                          '\n'
+                          'from myproject.utils import util_method\n'
+                          '\n'
+                          'from myproject.bar.models import Bar\n'
+                          'from myproject.foo.models import Foo\n')
