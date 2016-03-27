@@ -62,6 +62,8 @@ Code Contributors
 - Kwok-kuen Cheung (@cheungpat)
 - Johan Bloemberg (@aequitas)
 - Dan Watson (@dcwatson)
+- Éric Araujo (@merwok)
+- Dan Palmer (@danpalmer)
 
 Documenters
 ===================
