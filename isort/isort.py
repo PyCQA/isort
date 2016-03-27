@@ -36,6 +36,7 @@ import sys
 from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
+from fnmatch import fnmatch
 from glob import glob
 from sys import path as PYTHONPATH
 from sys import stdout
@@ -212,7 +213,12 @@ class SortImports(object):
 
         """
         for forced_separate in self.config['forced_separate']:
-            if moduleName.startswith(forced_separate) or moduleName.startswith("." + forced_separate):
+            # Ensure all forced_separate patterns will match to end of string
+            pathGlob = forced_separate
+            if not forced_separate.endswith('*'):
+                pathGlob = '%s*' % forced_separate
+
+            if fnmatch(moduleName, pathGlob) or fnmatch(moduleName, '.' + pathGlob):
                 return forced_separate
 
         if moduleName.startswith("."):
