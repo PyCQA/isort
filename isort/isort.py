@@ -592,7 +592,7 @@ class SortImports(object):
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + "\n)"
 
     def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
-        retval = '{0}{1}'.format(statement, ' '.join(imports))
+        retval = '{0}{1}'.format(statement, ', '.join(imports))
         comment_str = ' '.join(comments)
         if comments:
             if len(retval) + 4 + len(comment_str) <= line_length:
