@@ -72,6 +72,7 @@ Documenters
 - Elliott Sales de Andrade (@QuLogic)
 - Brian Peiris (@brianpeiris)
 - Tim Graham (@timgraham)
+- Josh Soref (@jsoref)
 
 --------------------------------------------
 
