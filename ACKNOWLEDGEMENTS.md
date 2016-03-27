@@ -64,6 +64,8 @@ Code Contributors
 - Dan Watson (@dcwatson)
 - Éric Araujo (@merwok)
 - Dan Palmer (@danpalmer)
+- Andy Boot (@bootandy)
+- @m7v8
 
 Documenters
 ===================
