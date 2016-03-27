@@ -221,7 +221,7 @@ def create_parser():
     parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
                         help='Force all imports to be sorted as a single section')
     parser.add_argument('-fss', '--force-sort-within-sections',  action='store_true', dest="force_sort_within_sections",
-                        help='Force imports to be sorted by module, independant of import_type')
+                        help='Force imports to be sorted by module, independent of import_type')
 
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
