@@ -61,18 +61,18 @@ def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
-            if should_skip(path, config):
+            if should_skip(path, config, os.getcwd()):
                 skipped.append(path)
                 continue
 
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
                 for dirname in list(dirnames):
-                    if should_skip(dirname, config):
+                    if should_skip(dirname, config, dirpath):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     if filename.endswith('.py'):
-                        if should_skip(filename, config):
+                        if should_skip(filename, config, dirpath):
                             skipped.append(filename)
                         else:
                             yield os.path.join(dirpath, filename)
