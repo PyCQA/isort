@@ -171,7 +171,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
 
 
 def _as_list(value):
-    return filter(bool, [item.strip() for item in value.split(",")])
+    return filter(bool, [item.strip() for item in value.replace('\n', ',').split(",")])
 
 
 @lru_cache()
