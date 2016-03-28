@@ -45,3 +45,6 @@ Changelog
 - Give an error message when isort is unable to determine where to place a module
 - Allow imports to be sorted by module, independent of import_type, when `force_sort_within_sections` option is set
 - Fixed an issue that caused Python files with 2 top comments not to be sorted
+
+### 4.2.3
+- Fixed a large number of priority bugs - bug fix only release
