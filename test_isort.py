@@ -1742,3 +1742,12 @@ def test_no_additional_lines_issue_358():
     for attempt in range(5):
         test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
         assert test_output == expected_output
+
+
+def test_import_by_paren_issue_375():
+    """Test to ensure isort can correctly handle sorting imports where the paren is directly by the import body"""
+    test_input = ('from .models import(\n'
+                  '   Foo,\n'
+                  '   Bar,\n'
+                  ')\n')
+    assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
