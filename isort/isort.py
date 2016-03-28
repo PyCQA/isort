@@ -26,7 +26,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import codecs
 import copy
 import io
 import itertools
@@ -105,7 +104,7 @@ class SortImports(object):
             elif not file_contents:
                 self.file_path = file_path
                 self.file_encoding = coding_check(file_path)
-                with codecs.open(file_path, encoding=self.file_encoding) as file_to_import_sort:
+                with io.open(file_path, encoding=self.file_encoding) as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
@@ -183,7 +182,7 @@ class SortImports(object):
                         return
                     if answer in ('quit', 'q'):
                         sys.exit(1)
-            with codecs.open(self.file_path, encoding=self.file_encoding, mode='w') as output_file:
+            with io.open(self.file_path, encoding=self.file_encoding, mode='w') as output_file:
                 output_file.write(self.output)
 
     def _show_diff(self, file_contents):
