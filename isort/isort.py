@@ -124,7 +124,7 @@ class SortImports(object):
         self.as_map = {}
 
         section_names = self.config.get('sections')
-        self.sections = namedtuple('Sections', section_names)(*[n for n in section_names])
+        self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
@@ -206,7 +206,7 @@ class SortImports(object):
             lines = lines[1:]
         return "\n".join(lines)
 
-    def place_module(self, moduleName):
+    def place_module(self, module_name):
         """Tries to determine if a module is a python std import, third party import, or project code:
 
         if it can't determine - it assumes it is project code
@@ -214,18 +214,18 @@ class SortImports(object):
         """
         for forced_separate in self.config['forced_separate']:
             # Ensure all forced_separate patterns will match to end of string
-            pathGlob = forced_separate
+            path_glob = forced_separate
             if not forced_separate.endswith('*'):
-                pathGlob = '%s*' % forced_separate
+                path_glob = '%s*' % forced_separate
 
-            if fnmatch(moduleName, pathGlob) or fnmatch(moduleName, '.' + pathGlob):
+            if fnmatch(module_name, path_glob) or fnmatch(module_name, '.' + path_glob):
                 return forced_separate
 
-        if moduleName.startswith("."):
+        if module_name.startswith("."):
             return self.sections.LOCALFOLDER
 
         # Try to find most specific placement instruction match (if any)
-        parts = moduleName.split('.')
+        parts = module_name.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
             for placement in reversed(self.sections):
@@ -237,17 +237,18 @@ class SortImports(object):
         paths = PYTHONPATH
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         if virtual_env:
-            paths += [p for p in glob("{0}/lib/python*/site-packages".format(virtual_env))
-                      if p not in paths]
+            paths += [path for path in glob('{0}/lib/python*/site-packages'.format(virtual_env))
+                      if path not in paths]
+            paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
 
         for prefix in paths:
-            module_path = "/".join((prefix, moduleName.replace(".", "/")))
-            package_path = "/".join((prefix, moduleName.split(".")[0]))
+            module_path = "/".join((prefix, module_name.replace(".", "/")))
+            package_path = "/".join((prefix, module_name.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
-                if "site-packages" in prefix or "dist-packages" in prefix:
+                if 'site-packages' in prefix or 'dist-packages' in prefix or 'src' in prefix:
                     return self.sections.THIRDPARTY
-                elif "python2" in prefix.lower() or "python3" in prefix.lower():
+                elif 'python2' in prefix.lower() or 'python3' in prefix.lower():
                     return self.sections.STDLIB
                 else:
                     return self.config['default_section']

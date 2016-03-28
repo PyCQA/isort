@@ -62,9 +62,5 @@ atlassian-ide-plugin.xml
 pip-selfcheck.json
 
 # Python3 Venv Files
-bin/
-include/
-lib/
-lib64
+venv/
 pyvenv.cfg
-share/
