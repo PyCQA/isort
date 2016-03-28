@@ -124,7 +124,7 @@ class SortImports(object):
         self.as_map = {}
 
         section_names = self.config.get('sections')
-        self.sections = namedtuple('Sections', section_names)(*[n for n in section_names])
+        self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
