@@ -206,7 +206,7 @@ class SortImports(object):
             lines = lines[1:]
         return "\n".join(lines)
 
-    def place_module(self, moduleName):
+    def place_module(self, module_name):
         """Tries to determine if a module is a python std import, third party import, or project code:
 
         if it can't determine - it assumes it is project code
@@ -218,14 +218,14 @@ class SortImports(object):
             if not forced_separate.endswith('*'):
                 pathGlob = '%s*' % forced_separate
 
-            if fnmatch(moduleName, pathGlob) or fnmatch(moduleName, '.' + pathGlob):
+            if fnmatch(module_name, pathGlob) or fnmatch(module_name, '.' + pathGlob):
                 return forced_separate
 
-        if moduleName.startswith("."):
+        if module_name.startswith("."):
             return self.sections.LOCALFOLDER
 
         # Try to find most specific placement instruction match (if any)
-        parts = moduleName.split('.')
+        parts = module_name.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
             for placement in reversed(self.sections):
@@ -237,12 +237,12 @@ class SortImports(object):
         paths = PYTHONPATH
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         if virtual_env:
-            paths += [p for p in glob("{0}/lib/python*/site-packages".format(virtual_env))
-                      if p not in paths]
+            paths += [path for path in glob("{0}/lib/python*/site-packages".format(virtual_env))
+                      if path not in paths]
 
         for prefix in paths:
-            module_path = "/".join((prefix, moduleName.replace(".", "/")))
-            package_path = "/".join((prefix, moduleName.split(".")[0]))
+            module_path = "/".join((prefix, module_name.replace(".", "/")))
+            package_path = "/".join((prefix, module_name.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
                 if "site-packages" in prefix or "dist-packages" in prefix:
