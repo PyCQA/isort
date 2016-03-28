@@ -1694,6 +1694,33 @@ def test_no_additional_lines_issue_358():
                   '    unicode_literals\n'
                   ')\n')
     expected_output = ('"""This is a docstring"""\n'
+                       '# This is a comment\n'
+                       'from __future__ import (\n'
+                       '    absolute_import,\n'
+                       '    division,\n'
+                       '    print_function,\n'
+                       '    unicode_literals\n'
+                       ')\n')
+    test_output = SortImports(file_contents=test_input, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    for attempt in range(5):
+        test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+        assert test_output == expected_output
+
+    test_input = ('"""This is a docstring"""\n'
+                  '\n'
+                  '# This is a comment\n'
+                  'from __future__ import (\n'
+                  '    absolute_import,\n'
+                  '    division,\n'
+                  '    print_function,\n'
+                  '    unicode_literals\n'
+                  ')\n')
+    expected_output = ('"""This is a docstring"""\n'
                        '\n'
                        '# This is a comment\n'
                        'from __future__ import (\n'
