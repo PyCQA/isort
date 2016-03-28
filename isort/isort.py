@@ -214,11 +214,11 @@ class SortImports(object):
         """
         for forced_separate in self.config['forced_separate']:
             # Ensure all forced_separate patterns will match to end of string
-            pathGlob = forced_separate
+            path_glob = forced_separate
             if not forced_separate.endswith('*'):
-                pathGlob = '%s*' % forced_separate
+                path_glob = '%s*' % forced_separate
 
-            if fnmatch(module_name, pathGlob) or fnmatch(module_name, '.' + pathGlob):
+            if fnmatch(module_name, path_glob) or fnmatch(module_name, '.' + path_glob):
                 return forced_separate
 
         if module_name.startswith("."):
@@ -237,17 +237,18 @@ class SortImports(object):
         paths = PYTHONPATH
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         if virtual_env:
-            paths += [path for path in glob("{0}/lib/python*/site-packages".format(virtual_env))
+            paths += [path for path in glob('{0}/lib/python*/site-packages'.format(virtual_env))
                       if path not in paths]
+            paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
 
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
             package_path = "/".join((prefix, module_name.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
-                if "site-packages" in prefix or "dist-packages" in prefix:
+                if 'site-packages' in prefix or 'dist-packages' in prefix or 'src' in prefix:
                     return self.sections.THIRDPARTY
-                elif "python2" in prefix.lower() or "python3" in prefix.lower():
+                elif 'python2' in prefix.lower() or 'python3' in prefix.lower():
                     return self.sections.STDLIB
                 else:
                     return self.config['default_section']
