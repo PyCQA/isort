@@ -699,6 +699,7 @@ class SortImports(object):
         self._in_top_comment = False
         while not self._at_end():
             line = self._get_line()
+            statement_index = self.index
             skip_line = self._skip_line(line)
 
             if line in self._section_comments and not skip_line:
@@ -801,7 +802,7 @@ class SortImports(object):
                                 last = self.out_lines[-1].rstrip()
                             else:
                                 last = ""
-                        if self.index - 1 == self.import_index:
+                        if statement_index - 1 == self.import_index:
                             self.import_index -= len(self.comments['above']['from'].get(import_from, []))
 
                     if root.get(import_from, False):
