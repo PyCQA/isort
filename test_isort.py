@@ -1232,18 +1232,22 @@ def test_place_comments():
                   "print('code')\n"
                   "\n"
                   "# isort:imports-stdlib\n")
+    expected_output = ("\n# isort:imports-thirdparty\n"
+                       "import django.settings\n"
+                       "\n"
+                       "# isort:imports-firstparty\n"
+                       "import myproject.test\n"
+                       "\n"
+                       "print('code')\n"
+                       "\n"
+                       "# isort:imports-stdlib\n"
+                       "import os\n"
+                       "import sys\n")
     test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
-    assert test_output == ("\n# isort:imports-thirdparty\n"
-                           "import django.settings\n"
-                           "\n"
-                           "# isort:imports-firstparty\n"
-                           "import myproject.test\n"
-                           "\n"
-                           "print('code')\n"
-                           "\n"
-                           "# isort:imports-stdlib\n"
-                           "import os\n"
-                           "import sys\n")
+    assert test_output == expected_output
+    test_output = SortImports(file_contents=test_output, known_third_party=['django']).output
+    assert test_output == expected_output
+
 
 
 def test_placement_control():
