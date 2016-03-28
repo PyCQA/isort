@@ -197,6 +197,8 @@ def create_parser():
                         help='Recursively look for Python files of which to sort imports')
     parser.add_argument('-ot', '--order-by-type', dest='order_by_type',
                         action='store_true', help='Order imports by type in addition to alphabetically')
+    parser.add_argument('-dt', '--dont-order-by-type', dest='dont_order_by_type',
+                        action='store_true', help='Only order imports alphabetically, do not attempt type ordering')
     parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
@@ -225,6 +227,8 @@ def create_parser():
 
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
+    if 'dont_order_by_type' in arguments:
+        arguments['order_by_type'] = False
     return arguments
 
 
