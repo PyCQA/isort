@@ -59,6 +59,13 @@ Code Contributors
 - Ankur Dedania (@AbsoluteMSTR)
 - Lee Packham (@leepa)
 - Jesse Mullan (@jmullan)
+- Kwok-kuen Cheung (@cheungpat)
+- Johan Bloemberg (@aequitas)
+- Dan Watson (@dcwatson)
+- Éric Araujo (@merwok)
+- Dan Palmer (@danpalmer)
+- Andy Boot (@bootandy)
+- @m7v8
 
 Documenters
 ===================
@@ -67,6 +74,7 @@ Documenters
 - Elliott Sales de Andrade (@QuLogic)
 - Brian Peiris (@brianpeiris)
 - Tim Graham (@timgraham)
+- Josh Soref (@jsoref)
 
 --------------------------------------------
 

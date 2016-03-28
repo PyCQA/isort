@@ -381,7 +381,7 @@ to your preference:
 
     sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER
 
-You also can define your own sections and thier order.
+You also can define your own sections and their order.
 
 Example:
 
@@ -548,10 +548,11 @@ To cause the commit to fail if there are isort errors (strict mode), include the
 
 .. code-block:: python
 
+    #!/usr/bin/env python
+    import sys
     from isort.hooks import git_hook
 
-    if __name__ == '__main__':
-        sys.exit(git_hook(strict=True))
+    sys.exit(git_hook(strict=True))
 
 If you just want to display warnings, but allow the commit to happen anyway, call ``git_hook`` without
 the `strict` parameter.

@@ -68,7 +68,7 @@ default = {'force_to_top': [],
                                       "timeit", "trace", "traceback", "unittest", "urllib", "urllib2", "urlparse",
                                       "usercustomize", "uuid", "warnings", "weakref", "webbrowser", "whichdb", "xml",
                                       "xmlrpclib", "zipfile", "zipimport", "zlib", 'builtins', '__builtin__', 'thread',
-                                      "binascii", "statistics", "unicodedata", "fcntl"],
+                                      "binascii", "statistics", "unicodedata", "fcntl", 'pathlib'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -89,12 +89,18 @@ default = {'force_to_top': [],
            'order_by_type': True,
            'atomic': False,
            'lines_after_imports': -1,
+           'lines_between_sections': 1,
            'combine_as_imports': False,
            'combine_star': False,
            'include_trailing_comma': False,
            'from_first': False,
            'verbose': False,
-           'quiet': False}
+           'quiet': False,
+           'force_adds': False,
+           'force_alphabetical_sort': False,
+           'force_grid_wrap': False,
+           'force_sort_within_sections': False,
+           'show_diff': False}
 
 
 @lru_cache()
@@ -165,7 +171,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
 
 
 def _as_list(value):
-    return filter(bool, [item.strip() for item in value.split(",")])
+    return filter(bool, [item.strip() for item in value.replace('\n', ',').split(",")])
 
 
 @lru_cache()
@@ -193,10 +199,11 @@ def _get_config_data(file_path, sections):
     return {}
 
 
-def should_skip(filename, config):
+def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
     for skip_path in config['skip']:
-        if skip_path.endswith(filename):
+        if os.path.join(path, filename).endswith('/' + skip_path.lstrip('/')):
+            print(skip_path)
             return True
 
     position = os.path.split(filename)

@@ -347,7 +347,7 @@ def test_output_modes():
 
     output_noqa = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
                               multi_line_output=WrapModes.NOQA).output
-    assert output_noqa == "from third_party import lib1 lib2 lib3 lib4 lib5 lib6 lib7 lib8 lib9 lib10 lib11 lib12 lib13 lib14 lib15 lib16 lib17 lib18 lib20 lib21 lib22  # NOQA comment\n"  # NOQA
+    assert output_noqa == "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  # NOQA comment\n"  # NOQA
 
 
 def test_qa_comment_case():
@@ -1193,7 +1193,7 @@ def test_same_line_statements():
 
 
 def test_long_line_comments():
-    """Ensure isort correctly handles comments at the end of extreamly long lines"""
+    """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = ("from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
                   "update_live_app, update_live_cron  # noqa\n"
                   "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
@@ -1232,18 +1232,22 @@ def test_place_comments():
                   "print('code')\n"
                   "\n"
                   "# isort:imports-stdlib\n")
+    expected_output = ("\n# isort:imports-thirdparty\n"
+                       "import django.settings\n"
+                       "\n"
+                       "# isort:imports-firstparty\n"
+                       "import myproject.test\n"
+                       "\n"
+                       "print('code')\n"
+                       "\n"
+                       "# isort:imports-stdlib\n"
+                       "import os\n"
+                       "import sys\n")
     test_output = SortImports(file_contents=test_input, known_third_party=['django']).output
-    assert test_output == ("\n# isort:imports-thirdparty\n"
-                           "import django.settings\n"
-                           "\n"
-                           "# isort:imports-firstparty\n"
-                           "import myproject.test\n"
-                           "\n"
-                           "print('code')\n"
-                           "\n"
-                           "# isort:imports-stdlib\n"
-                           "import os\n"
-                           "import sys\n")
+    assert test_output == expected_output
+    test_output = SortImports(file_contents=test_output, known_third_party=['django']).output
+    assert test_output == expected_output
+
 
 
 def test_placement_control():
@@ -1494,22 +1498,33 @@ def test_comment_at_top_of_file():
 
 def test_alphabetic_sorting():
     """Test to ensure isort correctly handles top of file comments"""
-    test_input = ("from django.contrib.gis.geos import GEOSException\n"
+    test_input = ("import unittest\n"
+                  "\n"
+                  "import ABC\n"
+                  "import Zope\n"
+                  "from django.contrib.gis.geos import GEOSException\n"
                   "from plone.app.testing import getRoles\n"
                   "from plone.app.testing import ManageRoles\n"
                   "from plone.app.testing import setRoles\n"
                   "from Products.CMFPlone import utils\n"
-                  "\n"
-                  "import ABC\n"
-                  "import unittest\n"
-                  "import Zope\n")
+                  )
     options = {'force_single_line': True,
                'force_alphabetical_sort': True, }
-    assert SortImports(file_contents=test_input, **options).output == test_input
+
+    output = SortImports(file_contents=test_input, **options).output
+    assert output == test_input
 
     test_input = ("# -*- coding: utf-8 -*-\n"
                   "from django.db import models\n")
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_alphabetic_sorting_multi_line():
+    """Test to ensure isort correctly handles multiline import see: issue 364"""
+    test_input = ("from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
+                  "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n")
+    options = {'force_alphabetical_sort': True, }
+    assert SortImports(file_contents=test_input, **options).output == test_input
 
 
 def test_comments_not_duplicated():
@@ -1596,10 +1611,10 @@ def test_alphabetic_sorting_no_newlines():
     test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
     assert test_input == test_output
 
-    test_input = ('from a import b\n'
-                  '\n'
-                  'import os\n'
+    test_input = ('import os\n'
                   'import unittest\n'
+                  '\n'
+                  'from a import b\n'
                   '\n'
                   '\n'
                   'print(1)\n')
@@ -1638,3 +1653,101 @@ def test_sorting_with_two_top_comments():
                                                             "'''\n"
                                                             'import a\n'
                                                             'import b\n')
+
+
+def test_lines_between_sections():
+    """Test to ensure lines_between_sections works"""
+    test_input = ('from bar import baz\n'
+                  'import os\n')
+    assert SortImports(file_contents=test_input, lines_between_sections=0).output == ('import os\n'
+                                                                                      'from bar import baz\n')
+    assert SortImports(file_contents=test_input, lines_between_sections=2).output == ('import os\n\n\n'
+                                                                                      'from bar import baz\n')
+
+def test_forced_sepatate_globs():
+    """Test to ensure that forced_separate glob matches lines"""
+    test_input = ('import os\n'
+                  '\n'
+                  'from myproject.foo.models import Foo\n'
+                  '\n'
+                  'from myproject.utils import util_method\n'
+                  '\n'
+                  'from myproject.bar.models import Bar\n'
+                  '\n'
+                  'import sys\n')
+    test_output = SortImports(file_contents=test_input, forced_separate=['*.models'],
+                              line_length=120).output
+
+    assert test_output == ('import os\n'
+                          'import sys\n'
+                          '\n'
+                          'from myproject.utils import util_method\n'
+                          '\n'
+                          'from myproject.bar.models import Bar\n'
+                          'from myproject.foo.models import Foo\n')
+
+
+def test_no_additional_lines_issue_358():
+    """Test to ensure issue 358 is resovled and running isort multiple times does not add extra newlines"""
+    test_input = ('"""This is a docstring"""\n'
+                  '# This is a comment\n'
+                  'from __future__ import (\n'
+                  '    absolute_import,\n'
+                  '    division,\n'
+                  '    print_function,\n'
+                  '    unicode_literals\n'
+                  ')\n')
+    expected_output = ('"""This is a docstring"""\n'
+                       '# This is a comment\n'
+                       'from __future__ import (\n'
+                       '    absolute_import,\n'
+                       '    division,\n'
+                       '    print_function,\n'
+                       '    unicode_literals\n'
+                       ')\n')
+    test_output = SortImports(file_contents=test_input, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    for attempt in range(5):
+        test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+        assert test_output == expected_output
+
+    test_input = ('"""This is a docstring"""\n'
+                  '\n'
+                  '# This is a comment\n'
+                  'from __future__ import (\n'
+                  '    absolute_import,\n'
+                  '    division,\n'
+                  '    print_function,\n'
+                  '    unicode_literals\n'
+                  ')\n')
+    expected_output = ('"""This is a docstring"""\n'
+                       '\n'
+                       '# This is a comment\n'
+                       'from __future__ import (\n'
+                       '    absolute_import,\n'
+                       '    division,\n'
+                       '    print_function,\n'
+                       '    unicode_literals\n'
+                       ')\n')
+    test_output = SortImports(file_contents=test_input, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+    assert test_output == expected_output
+
+    for attempt in range(5):
+        test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+        assert test_output == expected_output
+
+
+def test_import_by_paren_issue_375():
+    """Test to ensure isort can correctly handle sorting imports where the paren is directly by the import body"""
+    test_input = ('from .models import(\n'
+                  '   Foo,\n'
+                  '   Bar,\n'
+                  ')\n')
+    assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'

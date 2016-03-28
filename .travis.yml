@@ -3,11 +3,16 @@ env:
   - TOXENV=isort-check
   - TOXENV=py26
   - TOXENV=py27
-  - TOXENV=py32
   - TOXENV=py33
   - TOXENV=py34
   - TOXENV=pypy
+matrix:
+  include:
+    - python: 3.5
+      env:
+      - TOXENV=py35
 install:
   - pip install tox
 script:
   - tox -e $TOXENV
+sudo: false

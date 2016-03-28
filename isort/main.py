@@ -61,18 +61,18 @@ def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
-            if should_skip(path, config):
+            if should_skip(path, config, os.getcwd()):
                 skipped.append(path)
                 continue
 
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
                 for dirname in list(dirnames):
-                    if should_skip(dirname, config):
+                    if should_skip(dirname, config, dirpath):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     if filename.endswith('.py'):
-                        if should_skip(filename, config):
+                        if should_skip(filename, config, dirpath):
                             skipped.append(filename)
                         else:
                             yield os.path.join(dirpath, filename)
@@ -181,8 +181,10 @@ def create_parser():
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
-    parser.add_argument('-sl', '--force_single_line_imports', dest='force_single_line', action='store_true',
+    parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
+    parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
+                        help=argparse.SUPPRESS)
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
                         str(DEFAULT_SECTIONS))
@@ -195,6 +197,8 @@ def create_parser():
                         help='Recursively look for Python files of which to sort imports')
     parser.add_argument('-ot', '--order-by-type', dest='order_by_type',
                         action='store_true', help='Order imports by type in addition to alphabetically')
+    parser.add_argument('-dt', '--dont-order-by-type', dest='dont_order_by_type',
+                        action='store_true', help='Only order imports alphabetically, do not attempt type ordering')
     parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
                         help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
@@ -219,10 +223,12 @@ def create_parser():
     parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
                         help='Force all imports to be sorted as a single section')
     parser.add_argument('-fss', '--force-sort-within-sections',  action='store_true', dest="force_sort_within_sections",
-                        help='Force imports to be sorted by module, independant of import_type')
+                        help='Force imports to be sorted by module, independent of import_type')
 
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
+    if 'dont_order_by_type' in arguments:
+        arguments['order_by_type'] = False
     return arguments
 
 
