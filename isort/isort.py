@@ -415,10 +415,21 @@ class SortImports(object):
                         import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
                     if not from_imports:
                         import_statement = ""
-                    if len(from_imports) > 1 and (
-                        len(import_statement) > self.config['line_length']
-                        or self.config.get('force_grid_wrap')
-                    ):
+
+                    do_multiline_reformat = False
+
+                    if self.config.get('force_grid_wrap') and len(from_imports) > 1:
+                        do_multiline_reformat = True
+
+                    if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
+                        do_multiline_reformat = True
+
+                    # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
+                    if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0
+                        and self.config.get('multi_line_output', 0) not in (1, 0)):
+                        do_multiline_reformat = True
+
+                    if do_multiline_reformat:
                         output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
                                                                                     0)].lower()
                         formatter = getattr(self, "_output_" + output_mode, self._output_grid)
@@ -442,7 +453,8 @@ class SortImports(object):
                                 new_import_statement = formatter(import_start, copy.copy(from_imports),
                                                                 dynamic_indent, indent, line_length, comments)
                                 lines = new_import_statement.split("\n")
-                    elif len(import_statement) > self.config['line_length']:
+
+                    if not do_multiline_reformat and len(import_statement) > self.config['line_length']:
                         import_statement = self._wrap(import_statement)
 
                 if import_statement:
