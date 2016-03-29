@@ -48,3 +48,7 @@ Changelog
 
 ### 4.2.3
 - Fixed a large number of priority bugs - bug fix only release
+
+### 4.2.4
+- Fixed an issue that caused module that contained functions before doc strings, to incorrectly place imports
+
