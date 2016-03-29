@@ -1754,11 +1754,13 @@ def test_import_by_paren_issue_375():
 
 
 def test_function_with_docstring():
+    """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
     add_imports = ['from __future__ import unicode_literals']
     test_input = ('def foo():\n'
                   '    """ Single line triple quoted doctring """\n'
                   '    pass\n')
     expected_output = ('from __future__ import unicode_literals\n'
+                       '\n'
                        '\n'
                        'def foo():\n'
                        '    """ Single line triple quoted doctring """\n'
