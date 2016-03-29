@@ -99,6 +99,7 @@ default = {'force_to_top': [],
            'verbose': False,
            'quiet': False,
            'force_adds': False,
+           'force_alphabetical_sort_within_sections': False,
            'force_alphabetical_sort': False,
            'force_grid_wrap': False,
            'force_sort_within_sections': False,
@@ -205,7 +206,6 @@ def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
     for skip_path in config['skip']:
         if os.path.join(path, filename).endswith('/' + skip_path.lstrip('/')):
-            print(skip_path)
             return True
 
     position = os.path.split(filename)

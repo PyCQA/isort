@@ -74,6 +74,12 @@ class SortImports(object):
             else:
                 self.config[key] = value
 
+        if self.config.get('force_alphabetical_sort', False):
+            self.config.update({'force_alphabetical_sort_within_sections': True,
+                                'no_sections': True,
+                                'lines_between_types': 1,
+                                'from_first': True})
+
         indent = str(self.config['indent'])
         if indent.isdigit():
             indent = " " * int(indent)
@@ -451,7 +457,7 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        sort_ignore_case = self.config.get('force_alphabetical_sort', False)
+        sort_ignore_case = self.config.get('force_alphabetical_sort_within_sections', False)
         sections = itertools.chain(self.sections, self.config['forced_separate'])
 
         sections = itertools.chain(self.sections, self.config['forced_separate'])
