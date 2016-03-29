@@ -460,7 +460,6 @@ class SortImports(object):
         sort_ignore_case = self.config.get('force_alphabetical_sort_within_sections', False)
         sections = itertools.chain(self.sections, self.config['forced_separate'])
 
-        sections = itertools.chain(self.sections, self.config['forced_separate'])
         if self.config.get('no_sections', False):
             self.imports['no_sections'] = {'straight': [], 'from': {}}
             for section in sections:
