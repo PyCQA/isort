@@ -1509,7 +1509,7 @@ def test_alphabetic_sorting():
                   "from Products.CMFPlone import utils\n"
                   )
     options = {'force_single_line': True,
-               'force_alphabetical_sort': True, }
+               'force_alphabetical_sort_within_sections': True, }
 
     output = SortImports(file_contents=test_input, **options).output
     assert output == test_input
@@ -1523,7 +1523,7 @@ def test_alphabetic_sorting_multi_line():
     """Test to ensure isort correctly handles multiline import see: issue 364"""
     test_input = ("from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
                   "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n")
-    options = {'force_alphabetical_sort': True, }
+    options = {'force_alphabetical_sort_within_sections': True, }
     assert SortImports(file_contents=test_input, **options).output == test_input
 
 
@@ -1608,7 +1608,7 @@ def test_sections_parsed_correct():
 def test_alphabetic_sorting_no_newlines():
     '''Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)'''
     test_input = "import os\n"
-    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True).output
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort_within_sections=True).output
     assert test_input == test_output
 
     test_input = ('import os\n'
@@ -1618,7 +1618,7 @@ def test_alphabetic_sorting_no_newlines():
                   '\n'
                   '\n'
                   'print(1)\n')
-    test_output = SortImports(file_contents=test_input,force_alphabetical_sort=True, lines_after_imports=2).output
+    test_output = SortImports(file_contents=test_input,force_alphabetical_sort_within_sections=True, lines_after_imports=2).output
     assert test_input == test_output
 
 
@@ -1751,3 +1751,34 @@ def test_import_by_paren_issue_375():
                   '   Bar,\n'
                   ')\n')
     assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
+
+
+def test_function_with_docstring():
+    """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
+    add_imports = ['from __future__ import unicode_literals']
+    test_input = ('def foo():\n'
+                  '    """ Single line triple quoted doctring """\n'
+                  '    pass\n')
+    expected_output = ('from __future__ import unicode_literals\n'
+                       '\n'
+                       '\n'
+                       'def foo():\n'
+                       '    """ Single line triple quoted doctring """\n'
+                       '    pass\n')
+    assert SortImports(file_contents=test_input, add_imports=add_imports).output == expected_output
+
+
+def test_plone_style():
+    """Test to ensure isort correctly plone style imports"""
+    test_input = ("from django.contrib.gis.geos import GEOSException\n"
+                  "from plone.app.testing import getRoles\n"
+                  "from plone.app.testing import ManageRoles\n"
+                  "from plone.app.testing import setRoles\n"
+                  "from Products.CMFPlone import utils\n"
+                  "\n"
+                  "import ABC\n"
+                  "import unittest\n"
+                  "import Zope\n")
+    options = {'force_single_line': True,
+               'force_alphabetical_sort': True}
+    assert SortImports(file_contents=test_input, **options).output == test_input

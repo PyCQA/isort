@@ -14,6 +14,7 @@ Notable Bug Reporters
 - Chris Adams (@acdha)
 - @OddBloke
 - Martin Geisler (@mgeisler)
+- Tim Heap (@timheap)
 
 Code Contributors
 ===================

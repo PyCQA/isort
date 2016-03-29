@@ -74,6 +74,12 @@ class SortImports(object):
             else:
                 self.config[key] = value
 
+        if self.config.get('force_alphabetical_sort', False):
+            self.config.update({'force_alphabetical_sort_within_sections': True,
+                                'no_sections': True,
+                                'lines_between_types': 1,
+                                'from_first': True})
+
         indent = str(self.config['indent'])
         if indent.isdigit():
             indent = " " * int(indent)
@@ -451,10 +457,19 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        sort_ignore_case = self.config.get('force_alphabetical_sort', False)
+        sort_ignore_case = self.config.get('force_alphabetical_sort_within_sections', False)
+        sections = itertools.chain(self.sections, self.config['forced_separate'])
+
+        sections = itertools.chain(self.sections, self.config['forced_separate'])
+        if self.config.get('no_sections', False):
+            self.imports['no_sections'] = {'straight': [], 'from': {}}
+            for section in sections:
+                self.imports['no_sections']['straight'].extend(self.imports[section].get('straight', []))
+                self.imports['no_sections']['from'].update(self.imports[section].get('from', {}))
+            sections = ('no_sections', )
 
         output = []
-        for section in itertools.chain(self.sections, self.config['forced_separate']):
+        for section in sections:
             straight_modules = list(self.imports[section]['straight'])
             straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
             from_modules = sorted(list(self.imports[section]['from'].keys()))
@@ -463,9 +478,13 @@ class SortImports(object):
             section_output = []
             if self.config.get('from_first', False):
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
+                if self.config.get('lines_between_types', 0) and from_modules and straight_modules:
+                    section_output.extend([''] * self.config['lines_between_types'])
                 self._add_straight_imports(straight_modules, section, section_output)
             else:
                 self._add_straight_imports(straight_modules, section, section_output)
+                if self.config.get('lines_between_types', 0) and from_modules and straight_modules:
+                    section_output.extend([''] * self.config['lines_between_types'])
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
 
             if self.config.get('force_sort_within_sections', False):
@@ -658,7 +677,7 @@ class SortImports(object):
 
         if '"' in line or "'" in line:
             index = 0
-            if self._first_comment_index_start == -1:
+            if self._first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
                 self._first_comment_index_start = self.index
             while index < len(line):
                 if line[index] == "\\":

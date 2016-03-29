@@ -185,6 +185,8 @@ def create_parser():
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
                         help=argparse.SUPPRESS)
+    parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
+                        action='store_true')
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
                         str(DEFAULT_SECTIONS))
@@ -220,11 +222,14 @@ def create_parser():
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
     parser.add_argument('-fgw', '--force-grid-wrap',  action='store_true', dest="force_grid_wrap",
                         help='Force from imports to be grid wrapped regardless of line length')
+    parser.add_argument('-fass', '--force-alphabetical-sort-within-sections',  action='store_true',
+                        dest="force_alphabetical_sort", help='Force all imports to be sorted alphabetically within a '
+                                                             'section')
     parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
                         help='Force all imports to be sorted as a single section')
     parser.add_argument('-fss', '--force-sort-within-sections',  action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
-
+    parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     if 'dont_order_by_type' in arguments:

@@ -48,6 +48,7 @@ default = {'force_to_top': [],
            'line_length': 79,
            'wrap_length': 0,
            'sections': DEFAULT_SECTIONS,
+           'no_sections': False,
            'known_future_library': ['__future__'],
            'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncore", "atexit", "base64",
                                       "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb", "cmd", "codecs",
@@ -90,6 +91,7 @@ default = {'force_to_top': [],
            'atomic': False,
            'lines_after_imports': -1,
            'lines_between_sections': 1,
+           'lines_between_types': 0,
            'combine_as_imports': False,
            'combine_star': False,
            'include_trailing_comma': False,
@@ -97,6 +99,7 @@ default = {'force_to_top': [],
            'verbose': False,
            'quiet': False,
            'force_adds': False,
+           'force_alphabetical_sort_within_sections': False,
            'force_alphabetical_sort': False,
            'force_grid_wrap': False,
            'force_sort_within_sections': False,
@@ -203,7 +206,6 @@ def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
     for skip_path in config['skip']:
         if os.path.join(path, filename).endswith('/' + skip_path.lstrip('/')):
-            print(skip_path)
             return True
 
     position = os.path.split(filename)
