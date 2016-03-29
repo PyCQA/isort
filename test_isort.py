@@ -1751,3 +1751,16 @@ def test_import_by_paren_issue_375():
                   '   Bar,\n'
                   ')\n')
     assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
+
+
+def test_function_with_docstring():
+    add_imports = ['from __future__ import unicode_literals']
+    test_input = ('def foo():\n'
+                  '    """ Single line triple quoted doctring """\n'
+                  '    pass\n')
+    expected_output = ('from __future__ import unicode_literals\n'
+                       '\n'
+                       'def foo():\n'
+                       '    """ Single line triple quoted doctring """\n'
+                       '    pass\n')
+    assert SortImports(file_contents=test_input, add_imports=add_imports).output == expected_output
