@@ -658,7 +658,7 @@ class SortImports(object):
 
         if '"' in line or "'" in line:
             index = 0
-            if self._first_comment_index_start == -1:
+            if self._first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
                 self._first_comment_index_start = self.index
             while index < len(line):
                 if line[index] == "\\":
