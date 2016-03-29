@@ -1768,8 +1768,8 @@ def test_function_with_docstring():
     assert SortImports(file_contents=test_input, add_imports=add_imports).output == expected_output
 
 
-def test_alphabetic_sorting():
-    """Test to ensure isort correctly handles top of file comments"""
+def test_plone_style():
+    """Test to ensure isort correctly plone style imports"""
     test_input = ("from django.contrib.gis.geos import GEOSException\n"
                   "from plone.app.testing import getRoles\n"
                   "from plone.app.testing import ManageRoles\n"
