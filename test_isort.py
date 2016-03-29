@@ -1766,3 +1766,22 @@ def test_function_with_docstring():
                        '    """ Single line triple quoted doctring """\n'
                        '    pass\n')
     assert SortImports(file_contents=test_input, add_imports=add_imports).output == expected_output
+
+
+def test_alphabetic_sorting():
+    """Test to ensure isort correctly handles top of file comments"""
+    test_input = ("from django.contrib.gis.geos import GEOSException\n"
+                  "from plone.app.testing import getRoles\n"
+                  "from plone.app.testing import ManageRoles\n"
+                  "from plone.app.testing import setRoles\n"
+                  "from Products.CMFPlone import utils\n"
+                  "\n"
+                  "import ABC\n"
+                  "import unittest\n"
+                  "import Zope\n")
+    options = {'force_single_line': True,
+               'force_alphabetical_sort': True,
+               'no_sections': True,
+               'lines_between_types': 1,
+               'from_first': True}
+    assert SortImports(file_contents=test_input, **options).output == test_input
