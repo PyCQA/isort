@@ -241,17 +241,20 @@ class SortImports(object):
 
         paths = PYTHONPATH
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
+        virtual_env_src = False
         if virtual_env:
             paths += [path for path in glob('{0}/lib/python*/site-packages'.format(virtual_env))
                       if path not in paths]
             paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
+            virtual_env_src = '{0}/src/'.format(virtual_env)
 
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
             package_path = "/".join((prefix, module_name.split(".")[0]))
             if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
                (os.path.exists(package_path) and os.path.isdir(package_path))):
-                if 'site-packages' in prefix or 'dist-packages' in prefix or 'src' in prefix:
+                if ('site-packages' in prefix or 'dist-packages' in prefix or
+                    (virtual_env and virtual_env_src in prefix)):
                     return self.sections.THIRDPARTY
                 elif 'python2' in prefix.lower() or 'python3' in prefix.lower():
                     return self.sections.STDLIB
