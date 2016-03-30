@@ -55,3 +55,6 @@ Changelog
 - Fixed stray print statement printing skipped files (issue #411)
 - Added option for forcing imports into a single bucket: `no_sections`
 - Added option for new lines between import types (from, straight): `lines_between_sections`
+
+### 4.2.5
+- Fixed an issue that caused modules to inccorectly be matched as thirdparty when they simply had `src` in the leading path, even if they weren't withing $VIRTUALENV/src #414

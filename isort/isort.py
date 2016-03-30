@@ -246,7 +246,7 @@ class SortImports(object):
             paths += [path for path in glob('{0}/lib/python*/site-packages'.format(virtual_env))
                       if path not in paths]
             paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
-            virtual_env_src = '/{0}/src/'.format(virtual_env)
+            virtual_env_src = '{0}/src/'.format(virtual_env)
 
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
