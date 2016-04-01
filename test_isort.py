@@ -768,6 +768,7 @@ def test_force_single_line_long_imports():
     assert test_output == ("from veryveryveryveryveryvery import big\n"
                            "from veryveryveryveryveryvery import small  # NOQA\n")
 
+
 def test_titled_imports():
     """Tests setting custom titled/commented import sections."""
     test_input = ("import sys\n"
@@ -1458,15 +1459,14 @@ def test_fcntl():
 
 def test_import_split_is_word_boundary_aware():
     """Test to ensure that isort splits words in a boundry aware mannor"""
-    test_input = ("from mycompany.model.size_value_array_import_func import ("
-                "    get_size_value_array_import_func_jobs,"
-                ")")
+    test_input = ("from mycompany.model.size_value_array_import_func import \\\n"
+                "    get_size_value_array_import_func_jobs")
     test_output = SortImports(file_contents=test_input,
       multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
       line_length=79).output
-
-    assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
-                           "    get_size_value_array_import_func_jobs\n")
+    assert test_output == ("from mycompany.model.size_value_array_import_func import (\n"
+                           "    get_size_value_array_import_func_jobs\n"
+                           ")\n")
 
 
 def test_other_file_encodings():
