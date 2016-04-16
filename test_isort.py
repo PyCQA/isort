@@ -828,6 +828,20 @@ def test_multiline_import():
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
 
 
+def test_single_multiline():
+    """Test the case where a single import spawns multiple lines."""
+    test_input = ("from os import\\\n"
+                  "        getuid\n"
+                  "\n"
+                  "print getuid()\n")
+    output = SortImports(file_contents=test_input).output
+    assert output == (
+        "from os import getuid\n"
+        "\n"
+        "print getuid()\n"
+    )
+
+
 def test_atomic_mode():
     # without syntax error, everything works OK
     test_input = ("from b import d, c\n"
