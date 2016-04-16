@@ -776,7 +776,7 @@ class SortImports(object):
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                             import_string += "\n" + line
                         else:
-                            import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
+                            import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
                 if import_type == "from":
                     import_string = import_string.replace("import(", "import (")
