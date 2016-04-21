@@ -58,3 +58,6 @@ Changelog
 
 ### 4.2.5
 - Fixed an issue that caused modules to inccorectly be matched as thirdparty when they simply had `src` in the leading path, even if they weren't withing $VIRTUALENV/src #414
+
+### 4.2.6
+- Fixed imports with a tailing '\' and no space in-between getting removed (issue #425)
