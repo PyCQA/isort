@@ -103,7 +103,8 @@ default = {'force_to_top': [],
            'force_alphabetical_sort': False,
            'force_grid_wrap': False,
            'force_sort_within_sections': False,
-           'show_diff': False}
+           'show_diff': False,
+           'enforce_white_space': False}
 
 
 @lru_cache()
