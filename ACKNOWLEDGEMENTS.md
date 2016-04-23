@@ -68,6 +68,7 @@ Code Contributors
 - Andy Boot (@bootandy)
 - @m7v8
 - John Vandenberg (@jayvdb)
+- Adam Chainz (@adamchainz)
 
 Documenters
 ===================
