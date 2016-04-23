@@ -162,15 +162,21 @@ class SortImports(object):
 
                 return
         if check:
-            if self.output.replace("\n", "").replace(" ", "") == file_contents.replace("\n", "").replace(" ", ""):
+            check_output = self.output
+            check_against = file_contents
+            if not self.config.get('enforce_white_space', False):
+                check_output = check_output.replace("\n", "").replace(" ", "")
+                check_against = check_against.replace("\n", "").replace(" ", "")
+
+            if check_output == check_against:
                 if self.config['verbose']:
                     print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
-            else:
-                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
-                self.incorrectly_sorted = True
-                if show_diff or self.config.get('show_diff', False) is True:
-                    self._show_diff(file_contents)
-            return
+                return
+
+            print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
+            self.incorrectly_sorted = True
+            if show_diff or self.config.get('show_diff', False) is True:
+                self._show_diff(file_contents)
 
         if show_diff or self.config.get('show_diff', False) is True:
             self._show_diff(file_contents)
