@@ -245,6 +245,10 @@ def main():
         print(INTRO)
         return
 
+    if 'settings_path' in arguments:
+        sp = arguments['settings_path']
+        arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
+
     file_names = arguments.pop('files', [])
     if file_names == ['-']:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
