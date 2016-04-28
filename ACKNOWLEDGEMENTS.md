@@ -69,6 +69,7 @@ Code Contributors
 - @m7v8
 - John Vandenberg (@jayvdb)
 - Adam Chainz (@adamchainz)
+- @Brightcells
 
 Documenters
 ===================
