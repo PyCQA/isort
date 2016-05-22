@@ -162,6 +162,8 @@ def create_parser():
                         help='Force sortImports to recognize a module as being part of a third party library.')
     parser.add_argument('-p', '--project', dest='known_first_party', action='append',
                         help='Force sortImports to recognize a module as being part of the current python project.')
+    parser.add_argument('--virtual-env', dest='virtual_env',
+                        help='Virtual environment to use for determining whether a package is third-party')
     parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped).')
