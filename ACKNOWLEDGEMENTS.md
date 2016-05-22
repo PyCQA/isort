@@ -70,6 +70,7 @@ Code Contributors
 - John Vandenberg (@jayvdb)
 - Adam Chainz (@adamchainz)
 - @Brightcells
+- Jonas Trappenberg (@teeberg)
 
 Documenters
 ===================
