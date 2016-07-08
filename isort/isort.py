@@ -175,8 +175,6 @@ class SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
-            if show_diff or self.config.get('show_diff', False) is True:
-                self._show_diff(file_contents)
 
         if show_diff or self.config.get('show_diff', False) is True:
             self._show_diff(file_contents)
