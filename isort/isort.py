@@ -334,7 +334,14 @@ class SortImports(object):
 
                     cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
                     if self.config['use_parentheses']:
-                        return "{0}{1} (\n{2})".format(line, splitter, cont_line)
+                        return "{0}{1} (\n{2}{3}{4})".format(
+                            line, splitter, cont_line,
+                            "," if self.config['include_trailing_comma'] else "",
+                            "\n" if wrap_mode in (
+                                settings.WrapModes.VERTICAL_HANGING_INDENT,
+                                settings.WrapModes.VERTICAL_GRID_GROUPED,
+                            ) else ""
+                        )
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
             if "# NOQA" not in line:
