@@ -38,7 +38,6 @@ from difflib import unified_diff
 from fnmatch import fnmatch
 from glob import glob
 from sys import path as PYTHONPATH
-from sys import stdout
 
 from . import settings
 from .natural import nsorted
@@ -181,7 +180,7 @@ class SortImports(object):
         if show_diff or self.config.get('show_diff', False) is True:
             self._show_diff(file_contents)
         elif write_to_stdout:
-            stdout.write(self.output)
+            sys.stdout.write(self.output)
         elif file_name:
             if ask_to_apply:
                 if self.output == file_contents:
@@ -207,7 +206,7 @@ class SortImports(object):
                              if self.file_path else datetime.now()),
             tofiledate=str(datetime.now())
         ):
-            stdout.write(line)
+            sys.stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines):
