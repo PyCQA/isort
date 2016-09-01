@@ -254,15 +254,20 @@ class SortImports(object):
             paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
             virtual_env_src = '{0}/src/'.format(virtual_env)
 
+        # handle case-insensitive paths on windows
+        stdlib_lib_prefix = os.path.normcase(get_stdlib_path())
+
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
             package_path = "/".join((prefix, module_name.split(".")[0]))
-            if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
-               (os.path.exists(package_path) and os.path.isdir(package_path))):
+            is_module = (exists_case_sensitive(module_path + ".py") or
+                         exists_case_sensitive(module_path + ".so"))
+            is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
+            if is_module or is_package:
                 if ('site-packages' in prefix or 'dist-packages' in prefix or
                     (virtual_env and virtual_env_src in prefix)):
                     return self.sections.THIRDPARTY
-                elif 'python2' in prefix.lower() or 'python3' in prefix.lower():
+                elif os.path.normcase(prefix).startswith(stdlib_lib_prefix):
                     return self.sections.STDLIB
                 else:
                     return self.config['default_section']
@@ -894,3 +899,30 @@ def coding_check(fname, default='utf-8'):
                 break
 
     return coding
+
+
+def get_stdlib_path():
+    """Returns the path to the standard lib for the current path installation.
+
+    This function can be dropped and "sysconfig.get_paths()" used directly once Python 2.6 support is dropped.
+    """
+    if sys.version_info >= (2, 7):
+        import sysconfig
+        return sysconfig.get_paths()['stdlib']
+    else:
+        return os.path.join(sys.prefix, 'lib')
+
+
+def exists_case_sensitive(path):
+    """
+    Returns if the given path exists and also matches the case on Windows.
+
+    When finding files that can be imported, it is important for the cases to match because while
+    file os.path.exists("module.py") and os.path.exists("MODULE.py") both return True on Windows, Python
+    can only import using the case of the real file.
+    """
+    result = os.path.exists(path)
+    if sys.platform.startswith('win') and result:
+        directory, basename = os.path.split(path)
+        result = basename in os.listdir(directory)
+    return result
