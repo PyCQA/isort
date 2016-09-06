@@ -1767,6 +1767,18 @@ def test_import_by_paren_issue_375():
     assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
 
 
+def test_import_by_paren_issue_460():
+    """Test to ensure isort can doesnt move comments around """
+    test_input = """
+# First comment
+# Second comment
+# third comment
+import io
+import os
+"""
+    assert SortImports(file_contents=(test_input)).output == test_input
+
+
 def test_function_with_docstring():
     """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
     add_imports = ['from __future__ import unicode_literals']
