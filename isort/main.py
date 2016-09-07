@@ -167,6 +167,8 @@ def create_parser():
     parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped).')
+    parser.add_argument('-ma', '--always_wrap_multiple_from', dest='always_wrap_multiple_from', action='store_true',
+                        default=False, help='Always use multi-line mode if there are multiple from imports')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',

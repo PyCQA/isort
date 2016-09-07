@@ -1114,6 +1114,76 @@ def test_include_trailing_comma():
     )
 
 
+def test_always_wrap_multiple_from():
+    """Test for the always_wrap_multiple_from option"""
+    test_output_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.GRID,
+        line_length=80,
+        wrap_length=40,
+        always_wrap_multiple_from=True,
+    ).output
+    assert test_output_grid == (
+        "from third_party import (lib1, lib2,\n"
+        "                         lib3, lib4)\n"
+    )
+
+    test_output_vertical = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL,
+        line_length=80,
+        wrap_length=40,
+        always_wrap_multiple_from=True,
+    ).output
+    assert test_output_vertical == (
+        "from third_party import (lib1,\n"
+        "                         lib2,\n"
+        "                         lib3,\n"
+        "                         lib4)\n"
+    )
+
+    test_output_vertical_indent = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=80,
+        wrap_length=40,
+        always_wrap_multiple_from=True,
+    ).output
+    assert test_output_vertical_indent == (
+        "from third_party import (\n"
+        "    lib1,\n"
+        "    lib2,\n"
+        "    lib3,\n"
+        "    lib4\n"
+        ")\n"
+    )
+
+    test_output_vertical_grid = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID,
+        line_length=80,
+        wrap_length=40,
+        always_wrap_multiple_from=True,
+    ).output
+    assert test_output_vertical_grid == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4)\n"
+    )
+
+    test_output_vertical_grid_grouped = SortImports(
+        file_contents=SHORT_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+        line_length=80,
+        wrap_length=40,
+        always_wrap_multiple_from=True,
+    ).output
+    assert test_output_vertical_grid_grouped == (
+        "from third_party import (\n"
+        "    lib1, lib2, lib3, lib4\n"
+        ")\n"
+    )
+
+
 def test_similar_to_std_library():
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
     test_input = ("import datetime\n"
