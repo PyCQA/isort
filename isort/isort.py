@@ -328,6 +328,10 @@ class SortImports(object):
 
                     cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
                     if self.config['use_parentheses']:
+                        if self.config.get('include_trailing_comma', 0):
+                            cont_line += ","
+                        if wrap_mode in (settings.WrapModes.VERTICAL_HANGING_INDENT, settings.WrapModes.VERTICAL_GRID_GROUPED,):
+                            cont_line += "\n"
                         return "{0}{1} (\n{2})".format(line, splitter, cont_line)
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
