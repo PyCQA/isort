@@ -101,7 +101,7 @@ default = {'force_to_top': [],
            'force_adds': False,
            'force_alphabetical_sort_within_sections': False,
            'force_alphabetical_sort': False,
-           'force_grid_wrap': False,
+           'force_grid_wrap': 0,
            'force_sort_within_sections': False,
            'show_diff': False,
            'enforce_white_space': False}
@@ -170,6 +170,13 @@ def _update_with_config_file(file_path, sections, computed_settings):
             computed_settings[access_key] = False
         elif key.startswith('known_'):
             computed_settings[access_key] = list(_as_list(value))
+        elif key == 'force_grid_wrap':
+            try:
+                result = existing_value_type(value)
+            except ValueError:
+                # backwards compat
+                result = default.get(access_key) if value.lower().strip() == "false" else 2
+            computed_settings[access_key] = result
         else:
             computed_settings[access_key] = existing_value_type(value)
 
