@@ -3,11 +3,11 @@
 
 ########
 
-.. image:: https://badge.fury.io/py/isort.png
+.. image:: https://badge.fury.io/py/isort.svg
     :target: http://badge.fury.io/py/isort
     :alt: PyPI version
 
-.. image:: https://travis-ci.org/timothycrosley/isort.png?branch=master
+.. image:: https://travis-ci.org/timothycrosley/isort.svg?branch=master
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
