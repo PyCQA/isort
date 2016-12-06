@@ -36,7 +36,7 @@ except ImportError:
             raise SystemExit(subprocess.call([sys.executable, 'runtests.py']))
 
 with open('README.rst', 'r') as f:
-   readme = f.read()
+    readme = f.read()
 
 setup(name='isort',
       version='4.2.5',
