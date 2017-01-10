@@ -582,6 +582,14 @@ class SortImports(object):
                 statement += ", " + next_import
         return statement + ("," if self.config['include_trailing_comma'] else "") + ")"
 
+    def _output_single(self, statement, imports, white_space, indent, line_length, comments):
+        """output single import in one line."""
+        prefix = statement
+        statement += imports.pop(0)
+        while imports:
+            statement += "\n" + prefix + imports.pop(0)
+        return statement 
+
     def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
         first_import = self._add_comments(comments, imports.pop(0) + ",") + "\n" + white_space
         return "{0}({1}{2}{3})".format(

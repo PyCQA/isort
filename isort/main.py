@@ -164,9 +164,9 @@ def create_parser():
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('--virtual-env', dest='virtual_env',
                         help='Virtual environment to use for determining whether a package is third-party')
-    parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
+    parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5, 6],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
-                        '5-vert-grid-grouped).')
+                        '5-vert-grid-grouped, 6-single-in-line).')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
     parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
