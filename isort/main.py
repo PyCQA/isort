@@ -33,8 +33,8 @@ from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 from .pie_slice import *
 
 
-INTRO = """
-/#######################################################################\\
+INTRO = r"""
+/#######################################################################\
 
      `sMMy`
      .yyyy-                                                      `
