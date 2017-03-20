@@ -554,7 +554,7 @@ class SortImports(object):
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
             elif next_construct.startswith("def") or next_construct.startswith("class") or \
-               next_construct.startswith("@"):
+               next_construct.startswith("@") or next_construct.startswith("async def"):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
                 self.out_lines[imports_tail:0] = [""]
