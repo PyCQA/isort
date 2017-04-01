@@ -28,7 +28,7 @@ import os
 import shutil
 import tempfile
 
-from isort.isort import SortImports
+from isort.isort import exists_case_sensitive, SortImports
 from isort.pie_slice import *
 from isort.settings import WrapModes
 
@@ -1830,3 +1830,30 @@ def test_plone_style():
     options = {'force_single_line': True,
                'force_alphabetical_sort': True}
     assert SortImports(file_contents=test_input, **options).output == test_input
+
+
+def test_third_party_case_sensitive():
+    """Modules which match builtins by name but not on case should not be picked up on Windows."""
+    test_input = ("import thirdparty\n"
+                  "import os\n"
+                  "import ABC\n")
+
+    expected_output = ('import os\n'
+                       '\n'
+                       'import ABC\n'
+                       'import thirdparty\n')
+    assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_exists_case_sensitive_file(tmpdir):
+    """Test exists_case_sensitive function for a file."""
+    tmpdir.join('module.py').ensure(file=1)
+    assert exists_case_sensitive(str(tmpdir.join('module.py')))
+    assert not exists_case_sensitive(str(tmpdir.join('MODULE.py')))
+
+
+def test_exists_case_sensitive_directory(tmpdir):
+    """Test exists_case_sensitive function for a directory."""
+    tmpdir.join('pkg').ensure(dir=1)
+    assert exists_case_sensitive(str(tmpdir.join('pkg')))
+    assert not exists_case_sensitive(str(tmpdir.join('PKG')))
