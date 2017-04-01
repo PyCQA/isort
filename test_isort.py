@@ -33,6 +33,9 @@ from isort.pie_slice import *
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
+
+SINGLE_FROM_IMPORT = "from third_party import lib1"
+
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
@@ -1144,6 +1147,30 @@ def test_include_trailing_comma():
     assert test_output_vertical_grid_grouped == (
         "from third_party import (\n"
         "    lib1, lib2, lib3, lib4,\n"
+        ")\n"
+    )
+
+    test_output_wrap_single_import_with_use_parentheses = SortImports(
+        file_contents=SINGLE_FROM_IMPORT,
+        line_length=25,
+        include_trailing_comma=True,
+        use_parentheses=True
+    ).output
+    assert test_output_wrap_single_import_with_use_parentheses == (
+        "from third_party import (\n"
+        "    lib1,)\n"
+    )
+
+    test_output_wrap_single_import_vertical_indent = SortImports(
+        file_contents=SINGLE_FROM_IMPORT,
+        line_length=25,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        include_trailing_comma=True,
+        use_parentheses=True
+    ).output
+    assert test_output_wrap_single_import_vertical_indent == (
+        "from third_party import (\n"
+        "    lib1,\n"
         ")\n"
     )
 
