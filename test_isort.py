@@ -1830,3 +1830,18 @@ def test_plone_style():
     options = {'force_single_line': True,
                'force_alphabetical_sort': True}
     assert SortImports(file_contents=test_input, **options).output == test_input
+
+
+def test_import_inside_class_issue_432():
+    """Test to ensure issue 432 is resolved and isort doesn't insert imports in the middle of classes"""
+    test_input = ("# coding=utf-8\n"
+                  "class Foo:\n"
+                  "    def bar(self):\n"
+                  "        pass\n")
+    expected_output = ("# coding=utf-8\n"
+                       "import baz\n"
+                       "\n"
+                       "class Foo:\n"
+                       "    def bar(self):\n"
+                       "        pass\n")
+    assert SortImports(file_contents=test_input, add_imports=['import baz']).output == expected_output
