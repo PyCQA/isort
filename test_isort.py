@@ -432,14 +432,48 @@ def test_custom_indent():
 
 def test_use_parentheses():
     test_input = (
-        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import \\"
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import "
         "    my_custom_function as my_special_function"
     )
     test_output = SortImports(
-        file_contents=test_input, known_third_party=['django'],
-        line_length=79, use_parentheses=True,
+        file_contents=test_input, line_length=79, use_parentheses=True
     ).output
-    assert '(' in test_output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        include_trailing_comma=True,
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function,)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function\n)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+        include_trailing_comma=True
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function,\n)\n"
+    )
 
 
 def test_skip():
