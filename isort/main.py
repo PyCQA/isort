@@ -162,6 +162,8 @@ def create_parser():
                         help='Force sortImports to recognize a module as being part of a third party library.')
     parser.add_argument('-p', '--project', dest='known_first_party', action='append',
                         help='Force sortImports to recognize a module as being part of the current python project.')
+    parser.add_argument('--virtual-env', dest='virtual_env',
+                        help='Virtual environment to use for determining whether a package is third-party')
     parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped).')
@@ -181,6 +183,8 @@ def create_parser():
     parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
+    parser.add_argument('-ws', '--enforce-white-space', action='store_true', default=False, dest="enforce_white_space",
+                        help='Tells isort to enforce white space difference when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
@@ -242,6 +246,10 @@ def main():
     if arguments.get('show_version'):
         print(INTRO)
         return
+
+    if 'settings_path' in arguments:
+        sp = arguments['settings_path']
+        arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
 
     file_names = arguments.pop('files', [])
     if file_names == ['-']:

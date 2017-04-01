@@ -28,7 +28,7 @@ import os
 import shutil
 import tempfile
 
-from isort.isort import SortImports
+from isort.isort import exists_case_sensitive, SortImports
 from isort.pie_slice import *
 from isort.settings import WrapModes
 
@@ -435,14 +435,48 @@ def test_custom_indent():
 
 def test_use_parentheses():
     test_input = (
-        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import \\"
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import "
         "    my_custom_function as my_special_function"
     )
     test_output = SortImports(
-        file_contents=test_input, known_third_party=['django'],
-        line_length=79, use_parentheses=True,
+        file_contents=test_input, line_length=79, use_parentheses=True
     ).output
-    assert '(' in test_output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        include_trailing_comma=True,
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function,)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function\n)\n"
+    )
+
+    test_output = SortImports(
+        file_contents=test_input, line_length=79, use_parentheses=True,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+        include_trailing_comma=True
+    ).output
+
+    assert test_output == (
+        "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
+        "    my_custom_function as my_special_function,\n)\n"
+    )
 
 
 def test_skip():
@@ -771,6 +805,7 @@ def test_force_single_line_long_imports():
     assert test_output == ("from veryveryveryveryveryvery import big\n"
                            "from veryveryveryveryveryvery import small  # NOQA\n")
 
+
 def test_titled_imports():
     """Tests setting custom titled/commented import sections."""
     test_input = ("import sys\n"
@@ -828,6 +863,20 @@ def test_multiline_import():
                        "from pkg import other_suff\n"
                        "from pkg import stuff\n")
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
+
+
+def test_single_multiline():
+    """Test the case where a single import spawns multiple lines."""
+    test_input = ("from os import\\\n"
+                  "        getuid\n"
+                  "\n"
+                  "print getuid()\n")
+    output = SortImports(file_contents=test_input).output
+    assert output == (
+        "from os import getuid\n"
+        "\n"
+        "print getuid()\n"
+    )
 
 
 def test_atomic_mode():
@@ -1485,15 +1534,14 @@ def test_fcntl():
 
 def test_import_split_is_word_boundary_aware():
     """Test to ensure that isort splits words in a boundry aware mannor"""
-    test_input = ("from mycompany.model.size_value_array_import_func import ("
-                "    get_size_value_array_import_func_jobs,"
-                ")")
+    test_input = ("from mycompany.model.size_value_array_import_func import \\\n"
+                "    get_size_value_array_import_func_jobs")
     test_output = SortImports(file_contents=test_input,
       multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
       line_length=79).output
-
-    assert test_output == ("from mycompany.model.size_value_array_import_func import \\\n"
-                           "    get_size_value_array_import_func_jobs\n")
+    assert test_output == ("from mycompany.model.size_value_array_import_func import (\n"
+                           "    get_size_value_array_import_func_jobs\n"
+                           ")\n")
 
 
 def test_other_file_encodings():
@@ -1780,6 +1828,18 @@ def test_import_by_paren_issue_375():
     assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
 
 
+def test_import_by_paren_issue_460():
+    """Test to ensure isort can doesnt move comments around """
+    test_input = """
+# First comment
+# Second comment
+# third comment
+import io
+import os
+"""
+    assert SortImports(file_contents=(test_input)).output == test_input
+
+
 def test_function_with_docstring():
     """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
     add_imports = ['from __future__ import unicode_literals']
@@ -1809,3 +1869,30 @@ def test_plone_style():
     options = {'force_single_line': True,
                'force_alphabetical_sort': True}
     assert SortImports(file_contents=test_input, **options).output == test_input
+
+
+def test_third_party_case_sensitive():
+    """Modules which match builtins by name but not on case should not be picked up on Windows."""
+    test_input = ("import thirdparty\n"
+                  "import os\n"
+                  "import ABC\n")
+
+    expected_output = ('import os\n'
+                       '\n'
+                       'import ABC\n'
+                       'import thirdparty\n')
+    assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_exists_case_sensitive_file(tmpdir):
+    """Test exists_case_sensitive function for a file."""
+    tmpdir.join('module.py').ensure(file=1)
+    assert exists_case_sensitive(str(tmpdir.join('module.py')))
+    assert not exists_case_sensitive(str(tmpdir.join('MODULE.py')))
+
+
+def test_exists_case_sensitive_directory(tmpdir):
+    """Test exists_case_sensitive function for a directory."""
+    tmpdir.join('pkg').ensure(dir=1)
+    assert exists_case_sensitive(str(tmpdir.join('pkg')))
+    assert not exists_case_sensitive(str(tmpdir.join('PKG')))

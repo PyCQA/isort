@@ -38,7 +38,6 @@ from difflib import unified_diff
 from fnmatch import fnmatch
 from glob import glob
 from sys import path as PYTHONPATH
-from sys import stdout
 
 from . import settings
 from .natural import nsorted
@@ -162,20 +161,24 @@ class SortImports(object):
 
                 return
         if check:
-            if self.output.replace("\n", "").replace(" ", "") == file_contents.replace("\n", "").replace(" ", ""):
+            check_output = self.output
+            check_against = file_contents
+            if not self.config.get('enforce_white_space', False):
+                check_output = check_output.replace("\n", "").replace(" ", "")
+                check_against = check_against.replace("\n", "").replace(" ", "")
+
+            if check_output == check_against:
                 if self.config['verbose']:
                     print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
-            else:
-                print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
-                self.incorrectly_sorted = True
-                if show_diff or self.config.get('show_diff', False) is True:
-                    self._show_diff(file_contents)
-            return
+                return
+
+            print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
+            self.incorrectly_sorted = True
 
         if show_diff or self.config.get('show_diff', False) is True:
             self._show_diff(file_contents)
         elif write_to_stdout:
-            stdout.write(self.output)
+            sys.stdout.write(self.output)
         elif file_name:
             if ask_to_apply:
                 if self.output == file_contents:
@@ -201,7 +204,7 @@ class SortImports(object):
                              if self.file_path else datetime.now()),
             tofiledate=str(datetime.now())
         ):
-            stdout.write(line)
+            sys.stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines):
@@ -248,15 +251,20 @@ class SortImports(object):
             paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
             virtual_env_src = '{0}/src/'.format(virtual_env)
 
+        # handle case-insensitive paths on windows
+        stdlib_lib_prefix = os.path.normcase(get_stdlib_path())
+
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
             package_path = "/".join((prefix, module_name.split(".")[0]))
-            if (os.path.exists(module_path + ".py") or os.path.exists(module_path + ".so") or
-               (os.path.exists(package_path) and os.path.isdir(package_path))):
+            is_module = (exists_case_sensitive(module_path + ".py") or
+                         exists_case_sensitive(module_path + ".so"))
+            is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
+            if is_module or is_package:
                 if ('site-packages' in prefix or 'dist-packages' in prefix or
                     (virtual_env and virtual_env_src in prefix)):
                     return self.sections.THIRDPARTY
-                elif 'python2' in prefix.lower() or 'python3' in prefix.lower():
+                elif os.path.normcase(prefix).startswith(stdlib_lib_prefix):
                     return self.sections.STDLIB
                 else:
                     return self.config['default_section']
@@ -328,11 +336,14 @@ class SortImports(object):
 
                     cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
                     if self.config['use_parentheses']:
-                        if self.config.get('include_trailing_comma', 0):
-                            cont_line += ","
-                        if wrap_mode in (settings.WrapModes.VERTICAL_HANGING_INDENT, settings.WrapModes.VERTICAL_GRID_GROUPED,):
-                            cont_line += "\n"
-                        return "{0}{1} (\n{2})".format(line, splitter, cont_line)
+                        return "{0}{1} (\n{2}{3}{4})".format(
+                            line, splitter, cont_line,
+                            "," if self.config['include_trailing_comma'] else "",
+                            "\n" if wrap_mode in (
+                                settings.WrapModes.VERTICAL_HANGING_INDENT,
+                                settings.WrapModes.VERTICAL_GRID_GROUPED,
+                            ) else ""
+                        )
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
             if "# NOQA" not in line:
@@ -422,10 +433,21 @@ class SortImports(object):
                         import_statement = self._add_comments(comments, import_start + (", ").join(from_imports))
                     if not from_imports:
                         import_statement = ""
-                    if len(from_imports) > 1 and (
-                        len(import_statement) > self.config['line_length']
-                        or self.config.get('force_grid_wrap')
-                    ):
+
+                    do_multiline_reformat = False
+
+                    if self.config.get('force_grid_wrap') and len(from_imports) > 1:
+                        do_multiline_reformat = True
+
+                    if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
+                        do_multiline_reformat = True
+
+                    # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
+                    if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0
+                        and self.config.get('multi_line_output', 0) not in (1, 0)):
+                        do_multiline_reformat = True
+
+                    if do_multiline_reformat:
                         output_mode = settings.WrapModes._fields[self.config.get('multi_line_output',
                                                                                     0)].lower()
                         formatter = getattr(self, "_output_" + output_mode, self._output_grid)
@@ -449,7 +471,8 @@ class SortImports(object):
                                 new_import_statement = formatter(import_start, copy.copy(from_imports),
                                                                 dynamic_indent, indent, line_length, comments)
                                 lines = new_import_statement.split("\n")
-                    elif len(import_statement) > self.config['line_length']:
+
+                    if not do_multiline_reformat and len(import_statement) > self.config['line_length']:
                         import_statement = self._wrap(import_statement)
 
                 if import_statement:
@@ -780,7 +803,7 @@ class SortImports(object):
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                             import_string += "\n" + line
                         else:
-                            import_string = import_string.rstrip().rstrip("\\") + line.lstrip()
+                            import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
                 if import_type == "from":
                     import_string = import_string.replace("import(", "import (")
@@ -848,8 +871,7 @@ class SortImports(object):
                                    and not 'isort:imports-' in last):
                                 self.comments['above']['straight'].setdefault(module, []).insert(0,
                                                                                                  self.out_lines.pop(-1))
-                                if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end,
-                                                             1) - 1:
+                                if len(self.out_lines) > 0:
                                     last = self.out_lines[-1].rstrip()
                                 else:
                                     last = ""
@@ -880,3 +902,30 @@ def coding_check(fname, default='utf-8'):
                 break
 
     return coding
+
+
+def get_stdlib_path():
+    """Returns the path to the standard lib for the current path installation.
+
+    This function can be dropped and "sysconfig.get_paths()" used directly once Python 2.6 support is dropped.
+    """
+    if sys.version_info >= (2, 7):
+        import sysconfig
+        return sysconfig.get_paths()['stdlib']
+    else:
+        return os.path.join(sys.prefix, 'lib')
+
+
+def exists_case_sensitive(path):
+    """
+    Returns if the given path exists and also matches the case on Windows.
+
+    When finding files that can be imported, it is important for the cases to match because while
+    file os.path.exists("module.py") and os.path.exists("MODULE.py") both return True on Windows, Python
+    can only import using the case of the real file.
+    """
+    result = os.path.exists(path)
+    if sys.platform.startswith('win') and result:
+        directory, basename = os.path.split(path)
+        result = basename in os.listdir(directory)
+    return result

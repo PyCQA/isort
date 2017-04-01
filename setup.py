@@ -45,7 +45,6 @@ setup(name='isort',
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/4.2.5.tar.gz',
       license="MIT",
       entry_points={
         'console_scripts': [
