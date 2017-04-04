@@ -436,7 +436,8 @@ class SortImports(object):
 
                     do_multiline_reformat = False
 
-                    if self.config.get('force_grid_wrap') and len(from_imports) > 1:
+                    force_grid_wrap = self.config.get('force_grid_wrap')
+                    if force_grid_wrap and len(from_imports) >= force_grid_wrap:
                         do_multiline_reformat = True
 
                     if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
