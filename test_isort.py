@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import codecs
 import os
 import shutil
+import sys
 import tempfile
 
 from isort.isort import exists_case_sensitive, SortImports
@@ -1912,3 +1913,17 @@ def test_exists_case_sensitive_directory(tmpdir):
     tmpdir.join('pkg').ensure(dir=1)
     assert exists_case_sensitive(str(tmpdir.join('pkg')))
     assert not exists_case_sensitive(str(tmpdir.join('PKG')))
+
+
+def test_sys_path_mutation():
+    """Test to ensure sys.path is not modified"""
+    try:
+        tmp_dir = tempfile.mkdtemp()
+        os.makedirs(os.path.join(tmp_dir, 'src', 'a'))
+        test_input = "from myproject import test"
+        options = {'virtual_env': tmp_dir}
+        expected_length = len(sys.path)
+        SortImports(file_contents=test_input, **options).output
+        assert len(sys.path) == expected_length
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)

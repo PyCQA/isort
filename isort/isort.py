@@ -37,7 +37,6 @@ from datetime import datetime
 from difflib import unified_diff
 from fnmatch import fnmatch
 from glob import glob
-from sys import path as PYTHONPATH
 
 from . import settings
 from .natural import nsorted
@@ -242,7 +241,11 @@ class SortImports(object):
                 if module_name_to_check in self.config.get(config_key, []):
                     return placement
 
-        paths = PYTHONPATH
+        # Use a copy of sys.path to avoid any unintended modifications
+        # to it - e.g. `+=` used below will change paths in place and
+        # if not copied, consequently sys.path, which will grow unbounded
+        # with duplicates on every call to this method.
+        paths = list(sys.path)
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         virtual_env_src = False
         if virtual_env:
