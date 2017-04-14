@@ -443,11 +443,14 @@ class SortImports(object):
                     if force_grid_wrap and len(from_imports) >= force_grid_wrap:
                         do_multiline_reformat = True
 
-                    if len(import_statement) > self.config['line_length'] and len(from_imports) > 1:
+                    long_line = len(import_statement) > self.config['line_length']
+                    always_wrap_multiple_from = self.config.get('always_wrap_multiple_from', False)
+
+                    if (long_line or always_wrap_multiple_from) and len(from_imports) > 1:
                         do_multiline_reformat = True
 
                     # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
-                    if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0
+                    if (long_line and len(from_imports) > 0
                         and self.config.get('multi_line_output', 0) not in (1, 0)):
                         do_multiline_reformat = True
 
