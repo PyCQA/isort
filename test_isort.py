@@ -29,7 +29,7 @@ import shutil
 import sys
 import tempfile
 
-from isort.isort import exists_case_sensitive, SortImports
+from isort.isort import SortImports, exists_case_sensitive
 from isort.pie_slice import *
 from isort.settings import WrapModes
 
@@ -1700,7 +1700,7 @@ def test_sections_parsed_correct():
 def test_alphabetic_sorting_no_newlines():
     '''Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)'''
     test_input = "import os\n"
-    test_output = SortImports(file_contents=test_input,force_alphabetical_sort_within_sections=True).output
+    test_output = SortImports(file_contents=test_input, force_alphabetical_sort_within_sections=True).output
     assert test_input == test_output
 
     test_input = ('import os\n'
@@ -1710,7 +1710,7 @@ def test_alphabetic_sorting_no_newlines():
                   '\n'
                   '\n'
                   'print(1)\n')
-    test_output = SortImports(file_contents=test_input,force_alphabetical_sort_within_sections=True, lines_after_imports=2).output
+    test_output = SortImports(file_contents=test_input, force_alphabetical_sort_within_sections=True, lines_after_imports=2).output
     assert test_input == test_output
 
 
@@ -1720,7 +1720,7 @@ def test_sort_within_section():
                   'import foo\n'
                   'from foo import bar\n'
                   'from foo.bar import Quux, baz\n')
-    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True).output
+    test_output = SortImports(file_contents=test_input, force_sort_within_sections=True).output
     assert test_output == test_input
 
     test_input = ('import foo\n'
@@ -1728,7 +1728,7 @@ def test_sort_within_section():
                   'from foo.bar import baz\n'
                   'from foo.bar import Quux\n'
                   'from Foob import ar\n')
-    test_output = SortImports(file_contents=test_input,force_sort_within_sections=True, order_by_type=False,
+    test_output = SortImports(file_contents=test_input, force_sort_within_sections=True, order_by_type=False,
                               force_single_line=True).output
     assert test_output == test_input
 
