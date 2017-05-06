@@ -40,7 +40,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import *
+from .pie_slice import itemsview
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -55,7 +55,7 @@ class SortImports(object):
     skipped = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, settings_path=None, ask_to_apply=False,  **setting_overrides):
+                 show_diff=False, settings_path=None, ask_to_apply=False, **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -265,7 +265,7 @@ class SortImports(object):
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if ('site-packages' in prefix or 'dist-packages' in prefix or
-                    (virtual_env and virtual_env_src in prefix)):
+                        (virtual_env and virtual_env_src in prefix)):
                     return self.sections.THIRDPARTY
                 elif os.path.normcase(prefix).startswith(stdlib_lib_prefix):
                     return self.sections.STDLIB
@@ -447,8 +447,8 @@ class SortImports(object):
                         do_multiline_reformat = True
 
                     # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
-                    if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0
-                        and self.config.get('multi_line_output', 0) not in (1, 0)):
+                    if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0 and
+                            self.config.get('multi_line_output', 0) not in (1, 0)):
                         do_multiline_reformat = True
 
                     if do_multiline_reformat:
@@ -871,8 +871,8 @@ class SortImports(object):
 
                         if len(self.out_lines) > max(self.import_index, self._first_comment_index_end, 1) - 1:
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                            while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''")
-                                   and not 'isort:imports-' in last):
+                            while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
+                                   not 'isort:imports-' in last):
                                 self.comments['above']['straight'].setdefault(module, []).insert(0,
                                                                                                  self.out_lines.pop(-1))
                                 if len(self.out_lines) > 0:

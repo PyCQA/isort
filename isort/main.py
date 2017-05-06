@@ -30,7 +30,7 @@ import setuptools
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
-from .pie_slice import *
+from .pie_slice import itemsview
 
 
 INTRO = r"""
@@ -218,7 +218,7 @@ def create_parser():
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
                         help='Shows extra quiet output, only errors are outputted.')
-    parser.add_argument('-sp', '--settings-path',  dest="settings_path",
+    parser.add_argument('-sp', '--settings-path', dest="settings_path",
                         help='Explicitly set the settings path instead of auto determining based on file location.')
     parser.add_argument('-ff', '--from-first', dest='from_first',
                         help="Switches the typical ordering preference, showing from imports first then straight ones.")
@@ -227,12 +227,12 @@ def create_parser():
     parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
                         help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
                              'length')
-    parser.add_argument('-fass', '--force-alphabetical-sort-within-sections',  action='store_true',
+    parser.add_argument('-fass', '--force-alphabetical-sort-within-sections', action='store_true',
                         dest="force_alphabetical_sort", help='Force all imports to be sorted alphabetically within a '
                                                              'section')
-    parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
+    parser.add_argument('-fas', '--force-alphabetical-sort', action='store_true', dest="force_alphabetical_sort",
                         help='Force all imports to be sorted as a single section')
-    parser.add_argument('-fss', '--force-sort-within-sections',  action='store_true', dest="force_sort_within_sections",
+    parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
 

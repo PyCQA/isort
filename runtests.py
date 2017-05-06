@@ -2678,6 +2678,7 @@ class DictImporter(object):
             res = self.sources.get(name + '.__init__')
         return res
 
+
 if __name__ == "__main__":
     if sys.version_info >= (3, 0):
         exec("def do_exec(co, loc): exec(co, loc)\n")

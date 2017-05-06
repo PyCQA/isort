@@ -28,7 +28,7 @@ import fnmatch
 import os
 from collections import namedtuple
 
-from .pie_slice import *
+from .pie_slice import itemsview, lru_cache, native_str
 
 try:
     import configparser

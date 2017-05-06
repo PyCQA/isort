@@ -67,6 +67,7 @@ def with_metaclass(meta, *bases):
     class metaclass(meta):
         __call__ = type.__call__
         __init__ = type.__init__
+
         def __new__(cls, name, this_bases, d):
             if this_bases is None:
                 return type.__new__(cls, name, (), d)
@@ -428,7 +429,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 7:
             if isinstance(other, OrderedDict):
                 if len(self) != len(other):
                     return False
-                for p, q in  zip(self.items(), other.items()):
+                for p, q in zip(self.items(), other.items()):
                     if p != q:
                         return False
                 return True
