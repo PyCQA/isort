@@ -35,19 +35,12 @@ from .pie_slice import itemsview
 
 INTRO = r"""
 /#######################################################################\
-
-     `sMMy`
-     .yyyy-                                                      `
-    ##soos##                                                    ./o.
-          `     ``..-..`         ``...`.``         `   ```` ``-ssso```
-     .s:-y-   .+osssssso/.     ./ossss+:so+:`    :+o-`/osso:+sssssssso/
-     .s::y-   osss+.``.``     -ssss+-.`-ossso`   ssssso/::..::+ssss:::.
-     .s::y-   /ssss+//:-.`   `ssss+     `ssss+   sssso`       :ssss`
-     .s::y-   `-/+oossssso/  `ssss/      sssso   ssss/        :ssss`
-     .y-/y-       ````:ssss`  ossso.    :ssss:   ssss/        :ssss.
-     `/so:`    `-//::/osss+   `+ssss+-/ossso:    /sso-        `osssso/.
-       \/      `-/oooo++/-      .:/++:/++/-`      ..           `://++/.
-
+                         ___ ____   ___  ____ _____ 
+                        |_ _/ ___| / _ \|  _ \_   _|
+                         | |\___ \| | | | |_) || |  
+                         | | ___) | |_| |  _ < | |  
+                        |___|____/ \___/|_| \_\|_|  
+                                                    
 
          isort your Python imports for you so you don't have to
 
