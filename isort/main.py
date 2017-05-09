@@ -130,7 +130,7 @@ class ISortCommand(setuptools.Command):
                     if incorrectly_sorted:
                         wrong_sorted_files = True
                 except IOError as e:
-                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+                    print("WARNING: Unable to parse file {0} due to {1}".format(python_file, e))
         if wrong_sorted_files:
             exit(1)
 
