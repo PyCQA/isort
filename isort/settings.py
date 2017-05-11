@@ -36,7 +36,7 @@ except ImportError:
     import ConfigParser as configparser
 
 MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
-DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
+DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED', 'NOQA')
 WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
@@ -50,28 +50,28 @@ default = {'force_to_top': [],
            'sections': DEFAULT_SECTIONS,
            'no_sections': False,
            'known_future_library': ['__future__'],
-           'known_standard_library': ["abc", "anydbm", "argparse", "array", "asynchat", "asyncio", "asyncore",
-                                      "atexit", "base64", "BaseHTTPServer", "bisect", "bz2", "calendar", "cgitb",
-                                      "cmd", "codecs", "collections", "commands", "compileall", "concurrent",
-                                      "ConfigParser", "contextlib", "Cookie", "copy", "cPickle", "cProfile",
-                                      "cStringIO", "csv", "datetime", "dbhash", "dbm", "decimal", "difflib",
-                                      "dircache", "dis", "doctest", "dumbdbm", "EasyDialogs", "errno", "exceptions",
-                                      "filecmp", "fileinput", "fnmatch", "fractions", "functools", "ftplib", "gc",
-                                      "gdbm", "getopt", "getpass", "gettext", "glob", "grp", "gzip", "hashlib",
-                                      "heapq", "hmac", "html", "http", "imaplib", "imp", "inspect", "io", "itertools",
-                                      "json", "linecache", "locale", "logging", "mailbox", "math", "mhlib", "mmap",
-                                      "multiprocessing", "numbers", "operator", "optparse", "os", "pdb", "pickle",
-                                      "pipes", "pkgutil", "platform", "plistlib", "pprint", "profile", "pstats", "pwd",
-                                      "pyclbr", "pydoc", "Queue", "random", "re", "readline", "resource",
-                                      "rlcompleter", "robotparser", "sched", "select", "shelve", "shlex", "shutil",
-                                      "signal", "SimpleXMLRPCServer", "site", "sitecustomize", "smtpd", "smtplib",
-                                      "socket", "SocketServer", "sqlite3", "string", "StringIO", "struct",
-                                      "subprocess", "sys", "sysconfig", "tabnanny", "tarfile", "tempfile", "textwrap",
-                                      "threading", "time", "timeit", "trace", "traceback", "typing", "unittest",
-                                      "urllib", "urllib2", "urlparse", "usercustomize", "uuid", "warnings", "weakref",
-                                      "webbrowser", "whichdb", "xml", "xmlrpc", "xmlrpclib", "zipfile", "zipimport",
-                                      "zlib", 'builtins', '__builtin__', 'thread', "binascii", "statistics",
-                                      "unicodedata", "fcntl", 'pathlib', 'wsgiref'],
+           'known_standard_library': ['abc', 'anydbm', 'argparse', 'array', 'asynchat', 'asyncio', 'asyncore',
+                                      'atexit', 'base64', 'BaseHTTPServer', 'bisect', 'bz2', 'calendar', 'cgitb',
+                                      'cmd', 'codecs', 'collections', 'commands', 'compileall', 'concurrent',
+                                      'ConfigParser', 'contextlib', 'Cookie', 'copy', 'cPickle', 'cProfile',
+                                      'cStringIO', 'csv', 'datetime', 'dbhash', 'dbm', 'decimal', 'difflib',
+                                      'dircache', 'dis', 'doctest', 'dumbdbm', 'EasyDialogs', 'errno', 'exceptions',
+                                      'filecmp', 'fileinput', 'fnmatch', 'fractions', 'functools', 'ftplib', 'gc',
+                                      'gdbm', 'getopt', 'getpass', 'gettext', 'glob', 'grp', 'gzip', 'hashlib',
+                                      'heapq', 'hmac', 'html', 'http', 'imaplib', 'imp', 'inspect', 'io', 'itertools',
+                                      'json', 'linecache', 'locale', 'logging', 'mailbox', 'math', 'mhlib', 'mmap',
+                                      'multiprocessing', 'numbers', 'operator', 'optparse', 'os', 'pdb', 'pickle',
+                                      'pipes', 'pkgutil', 'platform', 'plistlib', 'pprint', 'profile', 'pstats', 'pwd',
+                                      'pyclbr', 'pydoc', 'Queue', 'random', 're', 'readline', 'resource',
+                                      'rlcompleter', 'robotparser', 'sched', 'select', 'shelve', 'shlex', 'shutil',
+                                      'signal', 'SimpleXMLRPCServer', 'site', 'sitecustomize', 'smtpd', 'smtplib',
+                                      'socket', 'SocketServer', 'sqlite3', 'string', 'StringIO', 'struct',
+                                      'subprocess', 'sys', 'sysconfig', 'tabnanny', 'tarfile', 'tempfile', 'textwrap',
+                                      'threading', 'time', 'timeit', 'trace', 'traceback', 'typing', 'unittest',
+                                      'urllib', 'urllib2', 'urlparse', 'usercustomize', 'uuid', 'warnings', 'weakref',
+                                      'webbrowser', 'whichdb', 'xml', 'xmlrpc', 'xmlrpclib', 'zipfile', 'zipimport',
+                                      'zlib', 'builtins', '__builtin__', 'thread', 'binascii', 'statistics',
+                                      'unicodedata', 'fcntl', 'pathlib', 'wsgiref', 'syslog'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -144,15 +144,15 @@ def _update_with_config_file(file_path, sections, computed_settings):
     if not settings:
         return
 
-    if file_path.endswith(".editorconfig"):
-        indent_style = settings.pop('indent_style', "").strip()
-        indent_size = settings.pop('indent_size', "").strip()
-        if indent_style == "space":
-            computed_settings['indent'] = " " * (indent_size and int(indent_size) or 4)
-        elif indent_style == "tab":
-            computed_settings['indent'] = "\t" * (indent_size and int(indent_size) or 1)
+    if file_path.endswith('.editorconfig'):
+        indent_style = settings.pop('indent_style', '').strip()
+        indent_size = settings.pop('indent_size', '').strip()
+        if indent_style == 'space':
+            computed_settings['indent'] = ' ' * (indent_size and int(indent_size) or 4)
+        elif indent_style == 'tab':
+            computed_settings['indent'] = '\t' * (indent_size and int(indent_size) or 1)
 
-        max_line_length = settings.pop('max_line_length', "").strip()
+        max_line_length = settings.pop('max_line_length', '').strip()
         if max_line_length:
             computed_settings['line_length'] = int(max_line_length)
 
@@ -169,7 +169,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
                     computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
                 else:
                     computed_settings[access_key] = list(existing_data.union(_as_list(value)))
-        elif existing_value_type == bool and value.lower().strip() == "false":
+        elif existing_value_type == bool and value.lower().strip() == 'false':
             computed_settings[access_key] = False
         elif key.startswith('known_'):
             computed_settings[access_key] = list(_as_list(value))
@@ -178,25 +178,25 @@ def _update_with_config_file(file_path, sections, computed_settings):
                 result = existing_value_type(value)
             except ValueError:
                 # backwards compat
-                result = default.get(access_key) if value.lower().strip() == "false" else 2
+                result = default.get(access_key) if value.lower().strip() == 'false' else 2
             computed_settings[access_key] = result
         else:
             computed_settings[access_key] = existing_value_type(value)
 
 
 def _as_list(value):
-    return filter(bool, [item.strip() for item in value.replace('\n', ',').split(",")])
+    return filter(bool, [item.strip() for item in value.replace('\n', ',').split(',')])
 
 
 @lru_cache()
 def _get_config_data(file_path, sections):
     with open(file_path, 'rU') as config_file:
-        if file_path.endswith(".editorconfig"):
-            line = "\n"
+        if file_path.endswith('.editorconfig'):
+            line = '\n'
             last_position = config_file.tell()
             while line:
                 line = config_file.readline()
-                if "[" in line:
+                if '[' in line:
                     config_file.seek(last_position)
                     break
                 last_position = config_file.tell()
