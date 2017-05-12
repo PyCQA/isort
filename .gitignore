@@ -64,3 +64,4 @@ pip-selfcheck.json
 # Python3 Venv Files
 venv/
 pyvenv.cfg
+tags
