@@ -1934,7 +1934,16 @@ def test_long_single_line():
     output = SortImports(file_contents="from ..views import ("
                                        " _a,"
                                        "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
-                         line_lenght=79).output
+                         line_length=79).output
     for line in output.split('\n'):
         assert len(line) <= 79
+
+
+    output = SortImports(file_contents="from ..views import ("
+                                       " _a,"
+                                       "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
+                         line_length=79, combine_as_imports=True).output
+    for line in output.split('\n'):
+        assert len(line) <= 79
+
 
