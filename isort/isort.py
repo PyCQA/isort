@@ -326,7 +326,7 @@ class SortImports(object):
         """
         wrap_mode = self.config.get('multi_line_output', 0)
         if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
-            for splitter in ("import", "."):
+            for splitter in ("import", ".", "as"):
                 exp = r"\b" + re.escape(splitter) + r"\b"
                 if re.search(exp, line) and not line.strip().startswith(splitter):
                     line_parts = re.split(exp, line)
@@ -459,7 +459,7 @@ class SortImports(object):
                         indent = self.config['indent']
                         line_length = self.config['wrap_length'] or self.config['line_length']
                         import_statement = formatter(import_start, copy.copy(from_imports),
-                                                    dynamic_indent, indent, line_length, comments)
+                                                     dynamic_indent, indent, line_length, comments)
                         if self.config['balanced_wrapping']:
                             lines = import_statement.split("\n")
                             line_count = len(lines)
@@ -588,8 +588,16 @@ class SortImports(object):
             next_import = imports.pop(0)
             next_statement = self._add_comments(comments, statement + ", " + next_import)
             if len(next_statement.split("\n")[-1]) + 1 > line_length:
+                lines = ['{0}{1}'.format(white_space, next_import.split(" ")[0])]
+                for part in next_import.split(" ")[1:]:
+                    new_line = '{0} {1}'.format(lines[-1], part)
+                    if len(new_line) + 1 > line_length:
+                        lines.append('{0}{1}'.format(white_space, part))
+                    else:
+                        lines[-1] = new_line
+                next_import = '\n'.join(lines)
                 statement = (self._add_comments(comments, "{0},".format(statement)) +
-                             "\n{0}{1}".format(white_space, next_import))
+                             "\n{0}".format(next_import))
                 comments = None
             else:
                 statement += ", " + next_import
