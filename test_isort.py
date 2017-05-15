@@ -1927,3 +1927,22 @@ def test_sys_path_mutation():
         assert len(sys.path) == expected_length
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def test_long_single_line():
+    """Test to ensure long single lines get handled correctly"""
+    output = SortImports(file_contents="from ..views import ("
+                                       " _a,"
+                                       "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
+                         line_length=79).output
+    for line in output.split('\n'):
+        assert len(line) <= 79
+
+    output = SortImports(file_contents="from ..views import ("
+                                       " _a,"
+                                       "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
+                         line_length=76, combine_as_imports=True).output
+    for line in output.split('\n'):
+        assert len(line) <= 79
+
+

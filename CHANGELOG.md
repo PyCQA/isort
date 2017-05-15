@@ -65,3 +65,6 @@ Changelog
 
 ### 4.2.7
 - Added `--virtual-env` switch command line option
+
+### 4.2.8 - In progress
+- Fixed issue #299, long lines occasionally not wrapped
