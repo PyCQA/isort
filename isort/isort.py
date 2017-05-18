@@ -714,7 +714,7 @@ class SortImports(object):
         elif self._in_top_comment:
             if not line.startswith("#"):
                 self._in_top_comment = False
-                self._first_comment_index_end = self.index
+                self._first_comment_index_end = self.index - 1
 
         if '"' in line or "'" in line:
             index = 0
@@ -855,12 +855,12 @@ class SortImports(object):
                     if comments:
                         self.comments['from'].setdefault(import_from, []).extend(comments)
 
-                    if len(self.out_lines) > max(self.import_index, self._first_comment_index_end, 1) - 1:
+                    if len(self.out_lines) > max(self.import_index, self._first_comment_index_end + 1, 1) - 1:
                         last = self.out_lines and self.out_lines[-1].rstrip() or ""
                         while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and not
                                'isort:imports-' in last):
                             self.comments['above']['from'].setdefault(import_from, []).insert(0, self.out_lines.pop(-1))
-                            if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end, 1) - 1:
+                            if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end + 1, 1) - 1:
                                 last = self.out_lines[-1].rstrip()
                             else:
                                 last = ""

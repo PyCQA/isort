@@ -1641,6 +1641,7 @@ def test_top_of_line_comments():
                    '\n'
                    'import logging\n')
     output = SortImports(file_contents=test_input).output
+    print(output)
     assert output.startswith('# -*- coding: utf-8 -*-\n')
 
 
