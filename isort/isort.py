@@ -538,7 +538,7 @@ class SortImports(object):
                 section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
                 if section_title:
                     section_comment = "# {0}".format(section_title)
-                    if not section_comment in self.out_lines[0:1]:
+                    if not section_comment in self.out_lines[0:1] and not section_comment in self.in_lines[0:1]:
                         section_output.insert(0, section_comment)
                 output += section_output + ([''] * self.config['lines_between_sections'])
 
