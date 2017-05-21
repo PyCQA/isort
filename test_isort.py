@@ -1641,6 +1641,7 @@ def test_top_of_line_comments():
                    '\n'
                    'import logging\n')
     output = SortImports(file_contents=test_input).output
+    print(output)
     assert output.startswith('# -*- coding: utf-8 -*-\n')
 
 
@@ -1946,3 +1947,17 @@ def test_long_single_line():
         assert len(line) <= 79
 
 
+def test_import_inside_class_issue_432():
+    """Test to ensure issue 432 is resolved and isort doesn't insert imports in the middle of classes"""
+    test_input = ("# coding=utf-8\n"
+                  "class Foo:\n"
+                  "    def bar(self):\n"
+                  "        pass\n")
+    expected_output = ("# coding=utf-8\n"
+                       "import baz\n"
+                       "\n"
+                       "\n"
+                       "class Foo:\n"
+                       "    def bar(self):\n"
+                       "        pass\n")
+    assert SortImports(file_contents=test_input, add_imports=['import baz']).output == expected_output

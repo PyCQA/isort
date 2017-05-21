@@ -67,4 +67,5 @@ Changelog
 - Added `--virtual-env` switch command line option
 
 ### 4.2.8 - In progress
-- Fixed issue #299, long lines occasionally not wrapped
+- Fixed issue #299: long lines occasionally not wrapped
+- Fixed issue #432: No longer add import inside class when class starts at top of file after encoding comment
