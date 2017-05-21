@@ -1956,6 +1956,7 @@ def test_import_inside_class_issue_432():
     expected_output = ("# coding=utf-8\n"
                        "import baz\n"
                        "\n"
+                       "\n"
                        "class Foo:\n"
                        "    def bar(self):\n"
                        "        pass\n")
