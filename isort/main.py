@@ -187,8 +187,6 @@ def create_parser():
                         help='Tells isort to enforce white space difference when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
-    parser.add_argument('--force-single-line-imports', dest='force_single_line', action='store_true',
-                        help=argparse.SUPPRESS)
     parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
                         action='store_true')
     parser.add_argument('-sd', '--section-default', dest='default_section',
