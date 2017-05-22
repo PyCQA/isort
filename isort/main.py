@@ -164,19 +164,19 @@ def create_parser():
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('--virtual-env', dest='virtual_env',
                         help='Virtual environment to use for determining whether a package is third-party')
-    parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped).')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
-    parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
+    parser.add_argument('-a', '--add-import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
                              'automatically determining correct placement.')
-    parser.add_argument('-af', '--force_adds', dest='force_adds', action='store_true',
+    parser.add_argument('-af', '--force-adds', dest='force_adds', action='store_true',
                         help='Forces import adds even if the original file is empty.')
-    parser.add_argument('-r', '--remove_import', dest='remove_imports', action='append',
+    parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
-    parser.add_argument('-ls', '--length_sort', help='Sort imports by their string length.',
+    parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
                         dest='length_sort', action='store_true', default=False)
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
@@ -187,7 +187,7 @@ def create_parser():
                         help='Tells isort to enforce white space difference when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
-    parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
+    parser.add_argument('--force-single-line-imports', dest='force_single_line', action='store_true',
                         help=argparse.SUPPRESS)
     parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
                         action='store_true')
