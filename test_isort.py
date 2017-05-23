@@ -1976,3 +1976,13 @@ def test_import_line_mangles_issues_491():
                   '\n'
                   'print("hi")\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_import_line_mangles_issues_505():
+    """Test to ensure comment on import with parens doesn't cause issues"""
+    test_input = ('from sys import *  # (\n'
+                  '\n'
+                  '\n'
+                  'def test():\n'
+                  '    print("Test print")\n')
+    assert SortImports(file_contents=test_input).output == test_input
