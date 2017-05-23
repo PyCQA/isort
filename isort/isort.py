@@ -799,7 +799,7 @@ class SortImports(object):
                 if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
                     nested_comments[stripped_line[-1]] = comments[0]
 
-                if "(" in line and not self._at_end():
+                if "(" in line.split("#")[0] and not self._at_end():
                     while not line.strip().endswith(")") and not self._at_end():
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
                         stripped_line = self._strip_syntax(line).strip()
