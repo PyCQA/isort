@@ -1968,3 +1968,11 @@ def test_wildcard_import_without_space_issue_496():
     test_input = 'from findorserver.coupon.models import*'
     expected_output = 'from findorserver.coupon.models import *\n'
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_import_line_mangles_issues_491():
+    """Test to ensure comment on import with parens doesn't cause issues"""
+    test_input = ('import os  # ([\n'
+                  '\n'
+                  'print("hi")\n')
+    assert SortImports(file_contents=test_input).output == test_input
