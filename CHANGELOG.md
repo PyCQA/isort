@@ -70,5 +70,6 @@ Changelog
 - Fixed issue #299: long lines occasionally not wrapped
 - Fixed issue #432: No longer add import inside class when class starts at top of file after encoding comment
 - Fixed issue #440: Added missing `--use-parentheses` option to command line tool and documentation
+- Fixed issue #496: import* imports now get succesfully identified and reformmated instead of deleted
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
