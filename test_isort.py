@@ -1966,5 +1966,5 @@ def test_import_inside_class_issue_432():
 def test_wildcard_import_without_space_issue_496():
     """Test to ensure issue #496: wildcard without space, is resolved"""
     test_input = 'from findorserver.coupon.models import*'
-    expected_output = 'from findorserver.coupon.models import *'
+    expected_output = 'from findorserver.coupon.models import *\n'
     assert SortImports(file_contents=test_input).output == expected_output
