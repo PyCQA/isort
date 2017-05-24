@@ -1970,6 +1970,30 @@ def test_wildcard_import_without_space_issue_496():
     assert SortImports(file_contents=test_input).output == expected_output
 
 
+def test_import_line_mangles_issues_491():
+    """Test to ensure comment on import with parens doesn't cause issues"""
+    test_input = ('import os  # ([\n'
+                  '\n'
+                  'print("hi")\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_import_line_mangles_issues_505():
+    """Test to ensure comment on import with parens doesn't cause issues"""
+    test_input = ('from sys import *  # (\n'
+                  '\n'
+                  '\n'
+                  'def test():\n'
+                  '    print("Test print")\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_import_line_mangles_issues_439():
+    """Test to ensure comment on import with parens doesn't cause issues"""
+    test_input = ('import a  # () import\n'
+                  'from b import b\n')
+
+
 def test_alias_using_paren_issue_466():
     """Test to ensure issue #466: Alias causes slash incorrectly is resolved"""
     test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
