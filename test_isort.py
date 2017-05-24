@@ -1992,3 +1992,11 @@ def test_import_line_mangles_issues_439():
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = ('import a  # () import\n'
                   'from b import b\n')
+
+
+def test_alias_using_paren_issue_466():
+    """Test to ensure issue #466: Alias causes slash incorrectly is resolved"""
+    test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
+    expected_output = ('from django.db.backends.mysql.base import (\n'
+                       '    DatabaseWrapper as MySQLDatabaseWrapper)\n')
+    assert  SortImports(file_contents=test_input, line_length=50, use_parentheses=True).output == expected_output
