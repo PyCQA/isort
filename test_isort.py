@@ -1968,3 +1968,11 @@ def test_wildcard_import_without_space_issue_496():
     test_input = 'from findorserver.coupon.models import*'
     expected_output = 'from findorserver.coupon.models import *\n'
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_alias_using_paren_issue_466():
+    """Test to ensure issue #466: Alias causes slash incorrectly is resolved"""
+    test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
+    expected_output = ('from django.db.backends.mysql.base import (\n'
+                       '    DatabaseWrapper as MySQLDatabaseWrapper)\n')
+    assert  SortImports(file_contents=test_input, line_length=50, use_parentheses=True).output == expected_output
