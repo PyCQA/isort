@@ -393,13 +393,8 @@ class SortImports(object):
                         import_statement = import_start + import_definition
                         force_grid_wrap = self.config.get('force_grid_wrap')
                         comments = self.comments['straight'].get(submodule)
-                        if len(import_statement) > self.config['line_length']:
-                            from_imports[from_imports.index(from_import)] = import_definition
-                            import_statement = self._multi_line_reformat(import_start, from_imports, comments)
-                            from_imports.remove(import_definition)
-                        else:
-                            import_statement = self._add_comments(comments, self._wrap(import_statement))
-                            from_imports.remove(from_import)
+                        import_statement = self._add_comments(comments, self._wrap(import_statement))
+                        from_imports.remove(from_import)
                         section_output.append(import_statement)
 
 
@@ -476,7 +471,7 @@ class SortImports(object):
         indent = self.config['indent']
         line_length = self.config['wrap_length'] or self.config['line_length']
         import_statement = formatter(import_start, copy.copy(from_imports),
-                                        dynamic_indent, indent, line_length, comments)
+                                     dynamic_indent, indent, line_length, comments)
         if self.config['balanced_wrapping']:
             lines = import_statement.split("\n")
             line_count = len(lines)
