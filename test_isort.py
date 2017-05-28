@@ -1411,6 +1411,38 @@ def test_custom_sections():
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
 
+def test_glob_known():
+    """Ensure that most specific placement control match wins"""
+    test_input = ("import os\n"
+                  "from django_whatever import whatever\n"
+                  "import sys\n"
+                  "from django.conf import settings\n"
+                  "from . import another\n")
+    test_output = SortImports(file_contents=test_input,
+                import_heading_stdlib='Standard Library',
+                import_heading_thirdparty='Third Party',
+                import_heading_firstparty='First Party',
+                import_heading_django='Django',
+                import_heading_djangoplugins='Django Plugins',
+                import_heading_localfolder='Local',
+                known_django=['django'],
+                known_djangoplugins=['django_*'],
+                default_section="THIRDPARTY",
+                sections=["FUTURE", "STDLIB", "DJANGO", "DJANGOPLUGINS", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]).output
+    assert test_output == ("# Standard Library\n"
+                           "import os\n"
+                           "import sys\n"
+                           "\n"
+                           "# Django\n"
+                           "from django.conf import settings\n"
+                           "\n"
+                           "# Django Plugins\n"
+                           "from django_whatever import whatever\n"
+                           "\n"
+                           "# Local\n"
+                           "from . import another\n")
+
+
 def test_sticky_comments():
     """Test to ensure it is possible to make comments 'stick' above imports"""
     test_input = ("import os\n"
@@ -2010,6 +2042,22 @@ def test_alias_using_paren_issue_466():
                         use_parentheses=True).output == expected_output
 
 
+def test_strict_whitespace_by_default(capsys):
+    test_input = ('import os\n'
+                  'from django.conf import settings\n')
+    SortImports(file_contents=test_input, check=True)
+    out, err = capsys.readouterr()
+    assert out == 'ERROR:  Imports are incorrectly sorted.\n'
+
+
+def test_ignore_whitespace(capsys):
+    test_input = ('import os\n'
+                  'from django.conf import settings\n')
+    SortImports(file_contents=test_input, check=True, ignore_whitespace=True)
+    out, err = capsys.readouterr()
+    assert out == ''
+
+
 def test_import_wraps_with_comment_issue_471():
     """Test to insure issue #471 is resolved"""
     test_input = ('from very_long_module_name import SuperLongClassName  #@UnusedImport'
@@ -2018,5 +2066,4 @@ def test_import_wraps_with_comment_issue_471():
                        '    SuperLongClassName)  # @UnusedImport -- long string of comments which wrap over\n')
     assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
                         use_parentheses=True).output == expected_output
-
 

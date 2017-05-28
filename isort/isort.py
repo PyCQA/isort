@@ -72,7 +72,7 @@ class SortImports(object):
             else:
                 self.config[key] = value
 
-        if self.config.get('force_alphabetical_sort', False):
+        if self.config['force_alphabetical_sort']:
             self.config.update({'force_alphabetical_sort_within_sections': True,
                                 'no_sections': True,
                                 'lines_between_types': 1,
@@ -89,8 +89,8 @@ class SortImports(object):
 
         self.place_imports = {}
         self.import_placements = {}
-        self.remove_imports = [self._format_simplified(removal) for removal in self.config.get('remove_imports', [])]
-        self.add_imports = [self._format_natural(addition) for addition in self.config.get('add_imports', [])]
+        self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
+        self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
         self._section_comments = ["# " + value for key, value in itemsview(self.config) if
                                   key.startswith('import_heading') and value]
 
@@ -116,7 +116,7 @@ class SortImports(object):
 
         self.in_lines = file_contents.split("\n")
         self.original_length = len(self.in_lines)
-        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config.get('force_adds', False):
+        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config['force_adds']:
             for add_import in self.add_imports:
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
@@ -126,10 +126,18 @@ class SortImports(object):
         self.imports = {}
         self.as_map = {}
 
-        section_names = self.config.get('sections')
+        section_names = self.config['sections']
         self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
+
+        self.known_patterns = []
+        for placement in reversed(self.sections):
+            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
+            config_key = 'known_{0}'.format(known_placement.lower())
+            known_patterns = self.config.get(config_key, [])
+            for known_pattern in known_patterns:
+                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'), placement))
 
         self.index = 0
         self.import_index = -1
@@ -145,7 +153,7 @@ class SortImports(object):
         self.out_lines.append("")
 
         self.output = "\n".join(self.out_lines)
-        if self.config.get('atomic', False):
+        if self.config['atomic']:
             try:
                 compile(self._strip_top_comments(self.out_lines), self.file_path, 'exec', 0, 1)
             except SyntaxError:
@@ -162,7 +170,7 @@ class SortImports(object):
         if check:
             check_output = self.output
             check_against = file_contents
-            if not self.config.get('enforce_white_space', False):
+            if self.config['ignore_whitespace']:
                 check_output = check_output.replace("\n", "").replace(" ", "")
                 check_against = check_against.replace("\n", "").replace(" ", "")
 
@@ -174,7 +182,7 @@ class SortImports(object):
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
 
-        if show_diff or self.config.get('show_diff', False) is True:
+        if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
         elif write_to_stdout:
             sys.stdout.write(self.output)
@@ -235,10 +243,8 @@ class SortImports(object):
         parts = module_name.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
-            for placement in reversed(self.sections):
-                known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-                config_key = 'known_{0}'.format(known_placement.lower())
-                if module_name_to_check in self.config.get(config_key, []):
+            for pattern, placement in self.known_patterns:
+                if pattern.match(module_name_to_check):
                     return placement
 
         # Use a copy of sys.path to avoid any unintended modifications
@@ -324,7 +330,7 @@ class SortImports(object):
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
-        wrap_mode = self.config.get('multi_line_output', 0)
+        wrap_mode = self.config['multi_line_output']
         if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
             for splitter in ("import", ".", "as"):
                 exp = r"\b" + re.escape(splitter) + r"\b"
@@ -375,7 +381,7 @@ class SortImports(object):
                 continue
 
             import_start = "from {0} import ".format(module)
-            from_imports = list(self.imports[section]['from'][module])
+            from_imports = self.imports[section]['from'][module]
             from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
@@ -391,7 +397,7 @@ class SortImports(object):
                         from_imports[from_imports.index(from_import)] = import_definition
                     else:
                         import_statement = import_start + import_definition
-                        force_grid_wrap = self.config.get('force_grid_wrap')
+                        force_grid_wrap = self.config['force_grid_wrap']
                         comments = self.comments['straight'].get(submodule)
                         import_statement = self._add_comments(comments, self._wrap(import_statement))
                         from_imports.remove(from_import)
@@ -441,7 +447,7 @@ class SortImports(object):
 
                     do_multiline_reformat = False
 
-                    force_grid_wrap = self.config.get('force_grid_wrap')
+                    force_grid_wrap = self.config['force_grid_wrap']
                     if force_grid_wrap and len(from_imports) >= force_grid_wrap:
                         do_multiline_reformat = True
 
@@ -450,7 +456,7 @@ class SortImports(object):
 
                     # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
                     if (len(import_statement) > self.config['line_length'] and len(from_imports) > 0 and
-                            self.config.get('multi_line_output', 0) not in (1, 0)):
+                            self.config['multi_line_output'] not in (1, 0)):
                         do_multiline_reformat = True
 
                     if do_multiline_reformat:
@@ -465,7 +471,7 @@ class SortImports(object):
                     section_output.append(import_statement)
 
     def _multi_line_reformat(self, import_start, from_imports, comments):
-        output_mode = settings.WrapModes._fields[self.config.get('multi_line_output', 0)].lower()
+        output_mode = settings.WrapModes._fields[self.config['multi_line_output']].lower()
         formatter = getattr(self, "_output_" + output_mode, self._output_grid)
         dynamic_indent = " " * (len(import_start) + 1)
         indent = self.config['indent']
@@ -495,10 +501,10 @@ class SortImports(object):
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
-        sort_ignore_case = self.config.get('force_alphabetical_sort_within_sections', False)
+        sort_ignore_case = self.config['force_alphabetical_sort_within_sections']
         sections = itertools.chain(self.sections, self.config['forced_separate'])
 
-        if self.config.get('no_sections', False):
+        if self.config['no_sections']:
             self.imports['no_sections'] = {'straight': [], 'from': {}}
             for section in sections:
                 self.imports['no_sections']['straight'].extend(self.imports[section].get('straight', []))
@@ -507,24 +513,24 @@ class SortImports(object):
 
         output = []
         for section in sections:
-            straight_modules = list(self.imports[section]['straight'])
+            straight_modules = self.imports[section]['straight']
             straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+            from_modules = self.imports[section]['from']
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config))
 
             section_output = []
-            if self.config.get('from_first', False):
+            if self.config['from_first']:
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
-                if self.config.get('lines_between_types', 0) and from_modules and straight_modules:
+                if self.config['lines_between_types'] and from_modules and straight_modules:
                     section_output.extend([''] * self.config['lines_between_types'])
                 self._add_straight_imports(straight_modules, section, section_output)
             else:
                 self._add_straight_imports(straight_modules, section, section_output)
-                if self.config.get('lines_between_types', 0) and from_modules and straight_modules:
+                if self.config['lines_between_types'] and from_modules and straight_modules:
                     section_output.extend([''] * self.config['lines_between_types'])
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
 
-            if self.config.get('force_sort_within_sections', False):
+            if self.config['force_sort_within_sections']:
                 def by_module(line):
                     line = re.sub('^from ', '', line)
                     line = re.sub('^import ', '', line)
