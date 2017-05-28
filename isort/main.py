@@ -268,7 +268,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
-        if config.get('verbose', False) or config.get('show_logo', False):
+        if config['verbose'] or config.get('show_logo', False):
             print(INTRO)
         for file_name in file_names:
             try:
