@@ -154,7 +154,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
 
         max_line_length = settings.pop('max_line_length', '').strip()
         if max_line_length:
-            computed_settings['line_length'] = int(max_line_length)
+            computed_settings['line_length'] = float('inf') if max_line_length == 'off' else int(max_line_length)
 
     for key, value in itemsview(settings):
         access_key = key.replace('not_', '').lower()
