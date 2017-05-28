@@ -1411,6 +1411,38 @@ def test_custom_sections():
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
 
+def test_glob_known():
+    """Ensure that most specific placement control match wins"""
+    test_input = ("import os\n"
+                  "from django_whatever import whatever\n"
+                  "import sys\n"
+                  "from django.conf import settings\n"
+                  "from . import another\n")
+    test_output = SortImports(file_contents=test_input,
+                import_heading_stdlib='Standard Library',
+                import_heading_thirdparty='Third Party',
+                import_heading_firstparty='First Party',
+                import_heading_django='Django',
+                import_heading_djangoplugins='Django Plugins',
+                import_heading_localfolder='Local',
+                known_django=['django'],
+                known_djangoplugins=['django_*'],
+                default_section="THIRDPARTY",
+                sections=["FUTURE", "STDLIB", "DJANGO", "DJANGOPLUGINS", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]).output
+    assert test_output == ("# Standard Library\n"
+                           "import os\n"
+                           "import sys\n"
+                           "\n"
+                           "# Django\n"
+                           "from django.conf import settings\n"
+                           "\n"
+                           "# Django Plugins\n"
+                           "from django_whatever import whatever\n"
+                           "\n"
+                           "# Local\n"
+                           "from . import another\n")
+
+
 def test_sticky_comments():
     """Test to ensure it is possible to make comments 'stick' above imports"""
     test_input = ("import os\n"
