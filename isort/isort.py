@@ -375,7 +375,7 @@ class SortImports(object):
                 continue
 
             import_start = "from {0} import ".format(module)
-            from_imports = list(self.imports[section]['from'][module])
+            from_imports = self.imports[section]['from'][module]
             from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
@@ -507,10 +507,10 @@ class SortImports(object):
 
         output = []
         for section in sections:
-            straight_modules = list(self.imports[section]['straight'])
+            straight_modules = self.imports[section]['straight']
             straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
-            from_modules = sorted(list(self.imports[section]['from'].keys()))
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, ))
+            from_modules = self.imports[section]['from']
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config))
 
             section_output = []
             if self.config.get('from_first', False):
