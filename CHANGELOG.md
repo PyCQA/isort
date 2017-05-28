@@ -9,6 +9,7 @@ Changelog
 - Fixed issue #491: Non ending parentheses withing single line comments no longer cause formatting issues
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
+    - Replaced the `--enforce-whitespace` option with `--ignore-whitespace` to restore original behavior of strict whitespace by default
 
 ### 4.2.7
 - Added `--virtual-env` switch command line option

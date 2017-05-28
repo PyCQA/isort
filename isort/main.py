@@ -183,8 +183,8 @@ def create_parser():
     parser.add_argument('-c', '--check-only', action='store_true', dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
-    parser.add_argument('-ws', '--enforce-white-space', action='store_true', dest="enforce_white_space",
-                        help='Tells isort to enforce white space difference when --check-only is being used.')
+    parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
+                        help='Tells isort to ignore whitespace differences when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
