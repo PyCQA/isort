@@ -177,13 +177,13 @@ def create_parser():
     parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
-                        dest='length_sort', action='store_true', default=False)
+                        dest='length_sort', action='store_true')
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
-    parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
+    parser.add_argument('-c', '--check-only', action='store_true', dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
-    parser.add_argument('-ws', '--enforce-white-space', action='store_true', default=False, dest="enforce_white_space",
+    parser.add_argument('-ws', '--enforce-white-space', action='store_true', dest="enforce_white_space",
                         help='Tells isort to enforce white space difference when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
@@ -192,7 +192,7 @@ def create_parser():
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
                         str(DEFAULT_SECTIONS))
-    parser.add_argument('-df', '--diff', dest='show_diff', default=False, action='store_true',
+    parser.add_argument('-df', '--diff', dest='show_diff', action='store_true',
                         help="Prints a diff of all the changes isort would make to a file, instead of "
                              "changing it in place")
     parser.add_argument('-e', '--balanced', dest='balanced_wrapping', action='store_true',
