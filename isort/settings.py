@@ -106,7 +106,7 @@ default = {'force_to_top': [],
            'force_grid_wrap': 0,
            'force_sort_within_sections': False,
            'show_diff': False,
-           'enforce_white_space': False}
+           'ignore_whitespace': False}
 
 
 @lru_cache()

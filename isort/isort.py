@@ -170,7 +170,7 @@ class SortImports(object):
         if check:
             check_output = self.output
             check_against = file_contents
-            if not self.config['enforce_white_space']:
+            if self.config['ignore_whitespace']:
                 check_output = check_output.replace("\n", "").replace(" ", "")
                 check_against = check_against.replace("\n", "").replace(" ", "")
 

@@ -2041,3 +2041,18 @@ def test_alias_using_paren_issue_466():
     assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=5,
                         use_parentheses=True).output == expected_output
 
+
+def test_strict_whitespace_by_default(capsys):
+    test_input = ('import os\n'
+                  'from django.conf import settings\n')
+    SortImports(file_contents=test_input, check=True)
+    out, err = capsys.readouterr()
+    assert out == 'ERROR:  Imports are incorrectly sorted.\n'
+
+
+def test_ignore_whitespace(capsys):
+    test_input = ('import os\n'
+                  'from django.conf import settings\n')
+    SortImports(file_contents=test_input, check=True, ignore_whitespace=True)
+    out, err = capsys.readouterr()
+    assert out == ''
