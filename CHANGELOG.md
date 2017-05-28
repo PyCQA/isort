@@ -2,6 +2,7 @@ Changelog
 =========
 
 ### 4.2.8 - In progress
+IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
 - Fixed issue #299: long lines occasionally not wrapped
 - Fixed issue #432: No longer add import inside class when class starts at top of file after encoding comment
 - Fixed issue #440: Added missing `--use-parentheses` option to command line tool and documentation
