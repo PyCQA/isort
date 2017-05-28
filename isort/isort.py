@@ -131,6 +131,14 @@ class SortImports(object):
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': set(), 'from': {}}
 
+        self.known_patterns = []
+        for placement in reversed(self.sections):
+            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
+            config_key = 'known_{0}'.format(known_placement.lower())
+            known_patterns = self.config.get(config_key, [])
+            for known_pattern in known_patterns:
+                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'), placement))
+
         self.index = 0
         self.import_index = -1
         self._first_comment_index_start = -1
@@ -235,10 +243,8 @@ class SortImports(object):
         parts = module_name.split('.')
         module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
         for module_name_to_check in module_names_to_check:
-            for placement in reversed(self.sections):
-                known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-                config_key = 'known_{0}'.format(known_placement.lower())
-                if module_name_to_check in self.config.get(config_key, []):
+            for pattern, placement in self.known_patterns:
+                if pattern.match(module_name_to_check):
                     return placement
 
         # Use a copy of sys.path to avoid any unintended modifications
