@@ -72,6 +72,6 @@ Changelog
 - Fixed issue #440: Added missing `--use-parentheses` option to command line tool and documentation
 - Fixed issue #496: import* imports now get successfully identified and reformatted instead of deleted
 - Fixed issue #491: Non ending parentheses withing single line comments no longer cause formatting issues
-- Fixed issue #471: Imports that wrap the maximum line length and contain comments are no longer rendered incorrectly
+- Fixed issue #471: Imports that wrap the maximum line length and contain comments on the last line are no longer rendered incorrectly
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
