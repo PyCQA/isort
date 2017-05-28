@@ -2056,3 +2056,14 @@ def test_ignore_whitespace(capsys):
     SortImports(file_contents=test_input, check=True, ignore_whitespace=True)
     out, err = capsys.readouterr()
     assert out == ''
+
+
+def test_import_wraps_with_comment_issue_471():
+    """Test to insure issue #471 is resolved"""
+    test_input = ('from very_long_module_name import SuperLongClassName  #@UnusedImport'
+                  ' -- long string of comments which wrap over')
+    expected_output = ('from very_long_module_name import (\n'
+                       '    SuperLongClassName)  # @UnusedImport -- long string of comments which wrap over\n')
+    assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
+                        use_parentheses=True).output == expected_output
+

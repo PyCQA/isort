@@ -2,11 +2,13 @@ Changelog
 =========
 
 ### 4.2.8 - In progress
+IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
 - Fixed issue #299: long lines occasionally not wrapped
 - Fixed issue #432: No longer add import inside class when class starts at top of file after encoding comment
 - Fixed issue #440: Added missing `--use-parentheses` option to command line tool and documentation
 - Fixed issue #496: import* imports now get successfully identified and reformatted instead of deleted
 - Fixed issue #491: Non ending parentheses withing single line comments no longer cause formatting issues
+- Fixed issue #471: Imports that wrap the maximum line length and contain comments on the last line are no longer rendered incorrectly
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
     - Replaced the `--enforce-whitespace` option with `--ignore-whitespace` to restore original behavior of strict whitespace by default
