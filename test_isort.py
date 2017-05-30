@@ -2067,3 +2067,9 @@ def test_import_wraps_with_comment_issue_471():
     assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
                         use_parentheses=True).output == expected_output
 
+
+def test_import_case_produces_inconsistent_results_issue_472():
+    """Test to ensure sorting imports with same name but different case produces the same result across platforms"""
+    test_input = ('from sqlalchemy.dialects.postgresql import ARRAY\n'
+                  'from sqlalchemy.dialects.postgresql import array\n')
+    assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
