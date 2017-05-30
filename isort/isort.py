@@ -40,7 +40,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import itemsview, OrderedDict, OrderedSet
+from .pie_slice import OrderedDict, OrderedSet, itemsview
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
