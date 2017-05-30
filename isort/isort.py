@@ -40,7 +40,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import itemsview, OrderedDict
+from .pie_slice import OrderedDict, OrderedSet, itemsview
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -129,7 +129,7 @@ class SortImports(object):
         section_names = self.config['sections']
         self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
-            self.imports[section] = {'straight': set(), 'from': OrderedDict()}
+            self.imports[section] = {'straight': OrderedSet(), 'from': OrderedDict()}
 
         self.known_patterns = []
         for placement in reversed(self.sections):
@@ -884,7 +884,7 @@ class SortImports(object):
                     if root.get(import_from, False):
                         root[import_from].update(imports)
                     else:
-                        root[import_from] = set(imports)
+                        root[import_from] = OrderedSet(imports)
                 else:
                     for module in imports:
                         if comments:
