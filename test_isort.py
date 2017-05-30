@@ -2067,3 +2067,14 @@ def test_import_wraps_with_comment_issue_471():
     assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
                         use_parentheses=True).output == expected_output
 
+
+def test_future_plus_skip_issue_488():
+    """Test to ensure it's possible to mix future imports and skip imports"""
+    test_input = ('from __future__ import absolute_import\n'
+                  '\n'
+                  'import foo # isort:skip\n'
+                  '\n'
+                  'import os\n'
+                  '\n'
+                  'import isort\n')
+    assert SortImports(file_contents=test_input).output == test_input
