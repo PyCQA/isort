@@ -2077,3 +2077,9 @@ def test_import_case_produces_inconsistent_results_issue_472():
     test_input = 'from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n'
     assert SortImports(file_contents=test_input).output == test_input
 
+
+def test_inconsistent_behavior_in_python_2_and_3_issue_479():
+    """Test to ensure Python 2 and 3 have the same behavior"""
+    test_input = ('from future.standard_library import hooks\n'
+                  'from workalendar.europe import UnitedKingdom\n')
+    assert SortImports(file_contents=test_input).output == test_input
