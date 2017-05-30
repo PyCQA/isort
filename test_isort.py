@@ -2073,3 +2073,7 @@ def test_import_case_produces_inconsistent_results_issue_472():
     test_input = ('from sqlalchemy.dialects.postgresql import ARRAY\n'
                   'from sqlalchemy.dialects.postgresql import array\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
+
+    test_input = 'from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n'
+    assert SortImports(file_contents=test_input).output == test_input
+
