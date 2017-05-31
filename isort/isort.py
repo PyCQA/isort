@@ -536,14 +536,17 @@ class SortImports(object):
 
             if self.config['force_sort_within_sections']:
                 def by_module(line):
+                    section = 'B'
                     if line.startswith('#'):
-                        return '#'
+                        return 'AA'
 
                     line = re.sub('^from ', '', line)
                     line = re.sub('^import ', '', line)
+                    if line.split(' ')[0] in self.config['force_to_top']:
+                        section = 'A'
                     if not self.config['order_by_type']:
                         line = line.lower()
-                    return line
+                    return '{}{}'.format(section, line)
                 section_output = nsorted(section_output, key=by_module)
 
             if section_output:
