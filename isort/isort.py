@@ -546,7 +546,7 @@ class SortImports(object):
                         section = 'A'
                     if not self.config['order_by_type']:
                         line = line.lower()
-                    return '{}{}'.format(section, line)
+                    return '{0}{1}'.format(section, line)
                 section_output = nsorted(section_output, key=by_module)
 
             if section_output:
