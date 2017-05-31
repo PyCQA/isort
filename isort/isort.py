@@ -536,6 +536,9 @@ class SortImports(object):
 
             if self.config['force_sort_within_sections']:
                 def by_module(line):
+                    if line.startswith('#'):
+                        return '#'
+
                     line = re.sub('^from ', '', line)
                     line = re.sub('^import ', '', line)
                     if not self.config['order_by_type']:

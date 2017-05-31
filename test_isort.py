@@ -2083,3 +2083,14 @@ def test_inconsistent_behavior_in_python_2_and_3_issue_479():
     test_input = ('from future.standard_library import hooks\n'
                   'from workalendar.europe import UnitedKingdom\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+def test_sort_within_section_comments_issue_436():
+    """Test to ensure sort within sections leaves comments untouched"""
+    test_input = ('import os.path\n'
+                  'import re\n'
+                  '\n'
+                  '# report.py exists in ... comment line 1\n'
+                  '# this file needs to ...  comment line 2\n'
+                  '# it must not be ...      comment line 3\n'
+                  'import report\n')
+    assert SortImports(file_contents=test_input, force_sort_within_sections=True).output == test_input
