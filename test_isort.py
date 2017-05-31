@@ -2084,6 +2084,7 @@ def test_inconsistent_behavior_in_python_2_and_3_issue_479():
                   'from workalendar.europe import UnitedKingdom\n')
     assert SortImports(file_contents=test_input).output == test_input
 
+
 def test_sort_within_section_comments_issue_436():
     """Test to ensure sort within sections leaves comments untouched"""
     test_input = ('import os.path\n'
@@ -2094,3 +2095,12 @@ def test_sort_within_section_comments_issue_436():
                   '# it must not be ...      comment line 3\n'
                   'import report\n')
     assert SortImports(file_contents=test_input, force_sort_within_sections=True).output == test_input
+
+
+def test_sort_within_sections_with_force_to_top_issue_473():
+    """Test to ensure it's possible to sort within sections with items forced to top"""
+    test_input = ('import z\n'
+                  'import foo\n'
+                  'from foo import bar\n')
+    assert SortImports(file_contents=test_input, force_sort_within_sections=True,
+                       force_to_top=['z']).output == test_input
