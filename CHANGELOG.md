@@ -10,6 +10,7 @@ IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequen
 - Fixed issue #491: Non ending parentheses withing single line comments no longer cause formatting issues
 - Fixed issue #471: Imports that wrap the maximum line length and contain comments on the last line are no longer rendered incorrectly
 - Fixed issue #436: Force sort within section no longer rearranges comments
+- Fixed issue #473: Force_to_top and force_sort_within_sections now work together
 - Fixed issue #484 & #472: Consistent output with imports of same spelling but different case
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
