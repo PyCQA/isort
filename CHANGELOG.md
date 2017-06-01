@@ -1,8 +1,11 @@
 Changelog
 =========
+### 4.2.9 - June 1, 2017 - hotfix release
+IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
+- Fixed #428: Check only modifies sorting
+- Fixed #540: Not correctly identifying stdlib modules
 
 ### 4.2.8 - May 31, 2017
-IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
 - Added `--virtual-env` switch command line option
 - Added --enforce-whitespace option to go along with --check-only for more exact checks (issue #423)
 - Fixed imports with a tailing '\' and no space in-between getting removed (issue #425)
