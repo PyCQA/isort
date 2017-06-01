@@ -120,6 +120,7 @@ if PY3:
     import builtins
     from urllib import parse
 
+    input = input
     integer_types = (int, )
 
     def u(string):
