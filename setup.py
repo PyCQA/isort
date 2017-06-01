@@ -39,7 +39,7 @@ with open('README.rst', 'r') as f:
     readme = f.read()
 
 setup(name='isort',
-      version='4.2.9',
+      version='4.2.12',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
@@ -63,6 +63,7 @@ setup(name='isort',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python',
                    'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 2.6',
                    'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.3',

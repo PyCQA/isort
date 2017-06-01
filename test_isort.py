@@ -1002,7 +1002,7 @@ def test_settings_combine_instead_of_overwrite():
            set(SortImports().config['known_standard_library'] + ['not_std_library'])
 
     assert set(SortImports(not_known_standard_library=['thread']).config['known_standard_library']) == \
-           {item for item in SortImports().config['known_standard_library'] if item != 'thread'}
+           set(item for item in SortImports().config['known_standard_library'] if item != 'thread')
 
 
 def test_combined_from_and_as_imports():
@@ -2116,3 +2116,19 @@ def test_correct_number_of_new_lines_with_comment_issue_435():
                   'def baz():\n'
                   '    pass\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_future_below_encoding_issue_545():
+    """Test to ensure future is always below comment"""
+    test_input = ('#!/usr/bin/env python\n'
+                  'from __future__ import print_function\n'
+                  'import logging\n'
+                  '\n'
+                  'print("hello")\n')
+    expected_output = ('#!/usr/bin/env python\n'
+                       'from __future__ import print_function\n'
+                       '\n'
+                       'import logging\n'
+                       '\n'
+                       'print("hello")\n')
+    assert SortImports(file_contents=test_input).output == expected_output
