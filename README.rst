@@ -3,11 +3,11 @@
 
 ########
 
-.. image:: https://badge.fury.io/py/isort.png
+.. image:: https://badge.fury.io/py/isort.svg
     :target: http://badge.fury.io/py/isort
     :alt: PyPI version
 
-.. image:: https://travis-ci.org/timothycrosley/isort.png?branch=master
+.. image:: https://travis-ci.org/timothycrosley/isort.svg?branch=master
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
@@ -29,7 +29,7 @@ isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library and `plugins for various editors <https://github.com/timothycrosley/isort/wiki/isort-Plugins>`_ to quickly sort all your imports.
-It currently cleanly supports Python 2.6 - 3.5 using `pies <https://github.com/timothycrosley/pies>`_ to achieve this without ugly hacks and/or py2to3.
+It currently cleanly supports Python 2.6 - 3.5 without any dependencies.
 
 .. image:: https://raw.github.com/timothycrosley/isort/develop/example.gif
    :alt: Example Usage
@@ -235,9 +235,9 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
     default_section=FIRSTPARTY
 
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
-project. isort will look up to 25 directories up, from the the file it is ran against, to find a project specific configuration.
+project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
 
-Or, if you prefer, you can add an isort section to your project's ``setup.cfg`` with any desired settings.
+Or, if you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.

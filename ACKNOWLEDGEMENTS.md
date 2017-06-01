@@ -67,7 +67,10 @@ Code Contributors
 - Dan Palmer (@danpalmer)
 - Andy Boot (@bootandy)
 - @m7v8
+- John Vandenberg (@jayvdb)
 - Adam Chainz (@adamchainz)
+- @Brightcells
+- Jonas Trappenberg (@teeberg)
 
 Documenters
 ===================

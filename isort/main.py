@@ -30,11 +30,11 @@ import setuptools
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
-from .pie_slice import *
+from .pie_slice import itemsview
 
 
-INTRO = """
-/#######################################################################\\
+INTRO = r"""
+/#######################################################################\
 
      `sMMy`
      .yyyy-                                                      `
@@ -130,7 +130,7 @@ class ISortCommand(setuptools.Command):
                     if incorrectly_sorted:
                         wrong_sorted_files = True
                 except IOError as e:
-                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+                    print("WARNING: Unable to parse file {0} due to {1}".format(python_file, e))
         if wrong_sorted_files:
             exit(1)
 
@@ -162,35 +162,37 @@ def create_parser():
                         help='Force sortImports to recognize a module as being part of a third party library.')
     parser.add_argument('-p', '--project', dest='known_first_party', action='append',
                         help='Force sortImports to recognize a module as being part of the current python project.')
-    parser.add_argument('-m', '--multi_line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
+    parser.add_argument('--virtual-env', dest='virtual_env',
+                        help='Virtual environment to use for determining whether a package is third-party')
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped).')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
-    parser.add_argument('-a', '--add_import', dest='add_imports', action='append',
+    parser.add_argument('-a', '--add-import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
                              'automatically determining correct placement.')
-    parser.add_argument('-af', '--force_adds', dest='force_adds', action='store_true',
+    parser.add_argument('-af', '--force-adds', dest='force_adds', action='store_true',
                         help='Forces import adds even if the original file is empty.')
-    parser.add_argument('-r', '--remove_import', dest='remove_imports', action='append',
+    parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
-    parser.add_argument('-ls', '--length_sort', help='Sort imports by their string length.',
-                        dest='length_sort', action='store_true', default=False)
+    parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
+                        dest='length_sort', action='store_true')
     parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
                         dest='write_to_stdout', action='store_true')
-    parser.add_argument('-c', '--check-only', action='store_true', default=False, dest="check",
+    parser.add_argument('-c', '--check-only', action='store_true', dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
+    parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
+                        help='Tells isort to ignore whitespace differences when --check-only is being used.')
     parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
-    parser.add_argument('--force_single_line_imports', dest='force_single_line', action='store_true',
-                        help=argparse.SUPPRESS)
     parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
                         action='store_true')
     parser.add_argument('-sd', '--section-default', dest='default_section',
                         help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
                         str(DEFAULT_SECTIONS))
-    parser.add_argument('-df', '--diff', dest='show_diff', default=False, action='store_true',
+    parser.add_argument('-df', '--diff', dest='show_diff', action='store_true',
                         help="Prints a diff of all the changes isort would make to a file, instead of "
                              "changing it in place")
     parser.add_argument('-e', '--balanced', dest='balanced_wrapping', action='store_true',
@@ -214,22 +216,25 @@ def create_parser():
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
                         help='Shows extra quiet output, only errors are outputted.')
-    parser.add_argument('-sp', '--settings-path',  dest="settings_path",
+    parser.add_argument('-sp', '--settings-path', dest="settings_path",
                         help='Explicitly set the settings path instead of auto determining based on file location.')
     parser.add_argument('-ff', '--from-first', dest='from_first',
                         help="Switches the typical ordering preference, showing from imports first then straight ones.")
     parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
-    parser.add_argument('-fgw', '--force-grid-wrap',  action='store_true', dest="force_grid_wrap",
-                        help='Force from imports to be grid wrapped regardless of line length')
-    parser.add_argument('-fass', '--force-alphabetical-sort-within-sections',  action='store_true',
+    parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
+                        help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
+                             'length')
+    parser.add_argument('-fass', '--force-alphabetical-sort-within-sections', action='store_true',
                         dest="force_alphabetical_sort", help='Force all imports to be sorted alphabetically within a '
                                                              'section')
-    parser.add_argument('-fas', '--force-alphabetical-sort',  action='store_true', dest="force_alphabetical_sort",
+    parser.add_argument('-fas', '--force-alphabetical-sort', action='store_true', dest="force_alphabetical_sort",
                         help='Force all imports to be sorted as a single section')
-    parser.add_argument('-fss', '--force-sort-within-sections',  action='store_true', dest="force_sort_within_sections",
+    parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
+    parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
+                        help='Use parenthesis for line continuation on lenght limit instead of slashes.')
 
     arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
     if 'dont_order_by_type' in arguments:
@@ -242,6 +247,10 @@ def main():
     if arguments.get('show_version'):
         print(INTRO)
         return
+
+    if 'settings_path' in arguments:
+        sp = arguments['settings_path']
+        arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
 
     file_names = arguments.pop('files', [])
     if file_names == ['-']:
@@ -259,7 +268,7 @@ def main():
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
-        if config.get('verbose', False) or config.get('show_logo', False):
+        if config['verbose'] or config.get('show_logo', False):
             print(INTRO)
         for file_name in file_names:
             try:

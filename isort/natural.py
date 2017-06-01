@@ -33,7 +33,7 @@ def _atoi(text):
 
 
 def _natural_keys(text):
-    return [_atoi(c) for c in re.split('(\d+)', text)]
+    return [_atoi(c) for c in re.split(r'(\d+)', text)]
 
 
 def nsorted(to_sort, key=None):

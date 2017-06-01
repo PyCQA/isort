@@ -36,16 +36,15 @@ except ImportError:
             raise SystemExit(subprocess.call([sys.executable, 'runtests.py']))
 
 with open('README.rst', 'r') as f:
-   readme = f.read()
+    readme = f.read()
 
 setup(name='isort',
-      version='4.2.5',
+      version='4.2.8',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/isort',
-      download_url='https://github.com/timothycrosley/isort/archive/4.2.5.tar.gz',
       license="MIT",
       entry_points={
         'console_scripts': [
@@ -67,12 +66,12 @@ setup(name='isort',
                    'Programming Language :: Python :: 2.6',
                    'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.0',
-                   'Programming Language :: Python :: 3.1',
-                   'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
+                   'Programming Language :: Python :: 3.6',
+                   'Programming Language :: Python :: Implementation :: CPython',
+                   'Programming Language :: Python :: Implementation :: PyPy',
                    'Topic :: Software Development :: Libraries',
                    'Topic :: Utilities'],
       **PyTest.extra_kwargs)
