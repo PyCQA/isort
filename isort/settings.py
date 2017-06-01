@@ -83,7 +83,7 @@ default = {'force_to_top': [],
                                       'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'urllib2', 'urlparse',
                                       'usercustomize', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref',
                                       'webbrowser', 'whichdb', 'winreg', 'winsound', 'wsgiref', 'xdrlib',
-                                      'xml', 'xmlrpc', 'xmlrpclib', 'zipapp', 'zipfile', 'zipimport', 'zlib']
+                                      'xml', 'xmlrpc', 'xmlrpclib', 'zipapp', 'zipfile', 'zipimport', 'zlib'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
