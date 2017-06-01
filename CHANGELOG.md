@@ -3,6 +3,9 @@ Changelog
 
 ### 4.2.8 - In progress
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
+- Added `--virtual-env` switch command line option
+- Added --enforce-whitespace option to go along with --check-only for more exact checks (issue #423)
+- Fixed imports with a tailing '\' and no space in-between getting removed (issue #425)
 - Fixed issue #299: long lines occasionally not wrapped
 - Fixed issue #432: No longer add import inside class when class starts at top of file after encoding comment
 - Fixed issue #440: Added missing `--use-parentheses` option to command line tool and documentation
@@ -17,13 +20,6 @@ IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequen
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
     - Replaced the `--enforce-whitespace` option with `--ignore-whitespace` to restore original behavior of strict whitespace by default
-
-### 4.2.7
-- Added `--virtual-env` switch command line option
-
-### 4.2.6
-- Added --enforce-whitespace option to go along with --check-only for more exact checks (issue #423)
-- Fixed imports with a tailing '\' and no space in-between getting removed (issue #425)
 
 ### 4.2.5
 - Fixed an issue that caused modules to inccorectly be matched as thirdparty when they simply had `src` in the leading path, even if they weren't withing $VIRTUALENV/src #414
