@@ -25,7 +25,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import fnmatch
-import io
 import os
 import posixpath
 from collections import namedtuple
@@ -203,7 +202,7 @@ def _as_list(value):
 
 @lru_cache()
 def _get_config_data(file_path, sections):
-    with io.open(file_path, 'r') as config_file:
+    with open(file_path, 'rU') as config_file:
         if file_path.endswith('.editorconfig'):
             line = '\n'
             last_position = config_file.tell()

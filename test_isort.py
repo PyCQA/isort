@@ -1002,7 +1002,7 @@ def test_settings_combine_instead_of_overwrite():
            set(SortImports().config['known_standard_library'] + ['not_std_library'])
 
     assert set(SortImports(not_known_standard_library=['thread']).config['known_standard_library']) == \
-           {item for item in SortImports().config['known_standard_library'] if item != 'thread'}
+           set(item for item in SortImports().config['known_standard_library'] if item != 'thread')
 
 
 def test_combined_from_and_as_imports():

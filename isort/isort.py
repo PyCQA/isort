@@ -32,8 +32,7 @@ import itertools
 import os
 import re
 import sys
-import sysconfig
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
 from fnmatch import fnmatch
@@ -41,7 +40,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import OrderedSet, itemsview
+from .pie_slice import OrderedDict, OrderedSet, itemsview
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -264,7 +263,7 @@ class SortImports(object):
             virtual_env_src = '{0}/src/'.format(virtual_env)
 
         # handle case-insensitive paths on windows
-        stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
+        stdlib_lib_prefix = os.path.normcase(get_stdlib_path())
 
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
@@ -489,7 +488,7 @@ class SortImports(object):
             lines = import_statement.split("\n")
             line_count = len(lines)
             if len(lines) > 1:
-                minimum_length = min(len(line) for line in lines[:-1])
+                minimum_length = min([len(line) for line in lines[:-1]])
             else:
                 minimum_length = 0
             new_import_statement = import_statement
@@ -940,6 +939,18 @@ def coding_check(fname, default='utf-8'):
                 break
 
     return coding
+
+
+def get_stdlib_path():
+    """Returns the path to the standard lib for the current path installation.
+
+    This function can be dropped and "sysconfig.get_paths()" used directly once Python 2.6 support is dropped.
+    """
+    if sys.version_info >= (2, 7):
+        import sysconfig
+        return sysconfig.get_paths()['stdlib']
+    else:
+        return os.path.join(sys.prefix, 'lib')
 
 
 def exists_case_sensitive(path):
