@@ -1,7 +1,10 @@
 Changelog
 =========
-### 4.2.11 - June 1, 2017 - hotfix release
+### 4.2.12 - June 1, 2017 - hotfix release
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
+- Fixed wheel distribution bug
+
+### 4.2.11 - June 1, 2017 - hotfix release
 - Fixed #546: Can't select y/n/c after latest update
 - Fixed #545: Incorrectly moves __future__ imports above encoding comments
 
