@@ -3,6 +3,8 @@ language: python
 matrix:
   include:
   - env: TOXENV=isort-check
+  - python: 3.6
+    env: TOXENV=lint
   - python: 2.6
     env: TOXENV=py26
   - python: 2.7
