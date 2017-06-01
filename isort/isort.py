@@ -137,7 +137,8 @@ class SortImports(object):
             config_key = 'known_{0}'.format(known_placement.lower())
             known_patterns = self.config.get(config_key, [])
             for known_pattern in known_patterns:
-                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'), placement))
+                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'),
+                                            placement))
 
         self.index = 0
         self.import_index = -1
@@ -837,7 +838,7 @@ class SortImports(object):
                         if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
-                            import_string += "\n" + lineg
+                            import_string += "\n" + line
                         else:
                             import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
