@@ -451,6 +451,8 @@ if sys.version_info < (3, 2):
 
     from functools import wraps
 
+    _CacheInfo = collections.namedtuple("CacheInfo", "hits misses maxsize currsize")
+
     def lru_cache(maxsize=100):
         """Least-recently-used cache decorator.
         Taking from: https://github.com/MiCHiLU/python-functools32/blob/master/functools32/functools32.py
