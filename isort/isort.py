@@ -579,8 +579,11 @@ class SortImports(object):
         if len(self.out_lines) > imports_tail:
             next_construct = ""
             self._in_quote = False
-            for line in self.out_lines[imports_tail:]:
-                if not self._skip_line(line) and not line.strip().startswith("#") and line.strip():
+            tail = self.out_lines[imports_tail:]
+            for index, line in enumerate(tail):
+                if not self._skip_line(line) and line.strip():
+                    if line.strip().startswith("#") and len(tail) > (index + 1) and tail[index + 1].strip():
+                        continue
                     next_construct = line
                     break
 
