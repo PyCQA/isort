@@ -2031,15 +2031,15 @@ def test_alias_using_paren_issue_466():
     test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
     expected_output = ('from django.db.backends.mysql.base import (\n'
                        '    DatabaseWrapper as MySQLDatabaseWrapper)\n')
-    assert  SortImports(file_contents=test_input, line_length=50, use_parentheses=True).output == expected_output
+    assert SortImports(file_contents=test_input, line_length=50, use_parentheses=True).output == expected_output
 
 
     test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
     expected_output = ('from django.db.backends.mysql.base import (\n'
                        '    DatabaseWrapper as MySQLDatabaseWrapper\n'
                        ')\n')
-    assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=5,
-                        use_parentheses=True).output == expected_output
+    assert SortImports(file_contents=test_input, line_length=50, multi_line_output=5,
+                       use_parentheses=True).output == expected_output
 
 
 def test_strict_whitespace_by_default(capsys):
@@ -2064,8 +2064,8 @@ def test_import_wraps_with_comment_issue_471():
                   ' -- long string of comments which wrap over')
     expected_output = ('from very_long_module_name import (\n'
                        '    SuperLongClassName)  # @UnusedImport -- long string of comments which wrap over\n')
-    assert  SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
-                        use_parentheses=True).output == expected_output
+    assert SortImports(file_contents=test_input, line_length=50, multi_line_output=1,
+                       use_parentheses=True).output == expected_output
 
 
 def test_import_case_produces_inconsistent_results_issue_472():
