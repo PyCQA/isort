@@ -181,6 +181,7 @@ class SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
+            return
 
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
@@ -836,7 +837,7 @@ class SortImports(object):
                         if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
-                            import_string += "\n" + line
+                            import_string += "\n" + lineg
                         else:
                             import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
