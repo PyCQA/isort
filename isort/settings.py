@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import fnmatch
 import os
+import posixpath
 from collections import namedtuple
 
 from .pie_slice import itemsview, lru_cache, native_str
@@ -216,7 +217,7 @@ def _get_config_data(file_path, sections):
 def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
     for skip_path in config['skip']:
-        if os.path.join(path, filename).endswith('/' + skip_path.lstrip('/')):
+        if posixpath.abspath(posixpath.join(path, filename)) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 
     position = os.path.split(filename)
