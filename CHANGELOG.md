@@ -12,6 +12,7 @@ IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequen
 - Fixed issue #436: Force sort within section no longer rearranges comments
 - Fixed issue #473: Force_to_top and force_sort_within_sections now work together
 - Fixed issue #484 & #472: Consistent output with imports of same spelling but different case
+- Fixed issue #433: No longer incorrectly add an extra new-line when comment between imports and function definition
 Breaking Changes:
     - Fixed issue #511: All command line options with an underscore, have had the underscore replaced with a dash for consistency. This effects: multi-line, add-import, remove-import, force-adds, --force-single-line-imports, and length-sort.
     - Replaced the `--enforce-whitespace` option with `--ignore-whitespace` to restore original behavior of strict whitespace by default

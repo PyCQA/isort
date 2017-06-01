@@ -22,9 +22,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import
 
 import abc
+import collections
 import functools
 import sys
-import collections
 from numbers import Integral
 
 __version__ = "1.1.0"
