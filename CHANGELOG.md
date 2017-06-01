@@ -1,7 +1,7 @@
 Changelog
 =========
 
-### 4.2.8 - In progress
+### 4.2.8 - May 31, 2017
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
 - Added `--virtual-env` switch command line option
 - Added --enforce-whitespace option to go along with --check-only for more exact checks (issue #423)
