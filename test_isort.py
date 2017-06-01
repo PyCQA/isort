@@ -2024,7 +2024,7 @@ def test_import_line_mangles_issues_439():
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = ('import a  # () import\n'
                   'from b import b\n')
-    assert SortImports(file_contents=test_input) == test_input
+    assert SortImports(file_contents=test_input).output == test_input
 
 
 def test_alias_using_paren_issue_466():
