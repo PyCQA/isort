@@ -236,7 +236,7 @@ def create_parser():
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on lenght limit instead of slashes.')
 
-    arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
+    arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
     return arguments
