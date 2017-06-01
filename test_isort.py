@@ -2116,3 +2116,19 @@ def test_correct_number_of_new_lines_with_comment_issue_435():
                   'def baz():\n'
                   '    pass\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_future_below_encoding_issue_545():
+    """Test to ensure future is always below comment"""
+    test_input = ('#!/usr/bin/env python\n'
+                  'from __future__ import print_function\n'
+                  'import logging\n'
+                  '\n'
+                  'print("hello")\n')
+    expected_output = ('#!/usr/bin/env python\n'
+                       'from __future__ import print_function\n'
+                       '\n'
+                       'import logging\n'
+                       '\n'
+                       'print("hello")\n')
+    assert SortImports(file_contents=test_input).output == expected_output
