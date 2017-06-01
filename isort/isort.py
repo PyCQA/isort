@@ -902,7 +902,8 @@ class SortImports(object):
                             self.comments['straight'][module] = comments
                             comments = None
 
-                        if len(self.out_lines) > max(self.import_index, self._first_comment_index_end, 1) - 1:
+                        if len(self.out_lines) > max(self.import_index, self._first_comment_index_end + 1, 1) - 1:
+
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
                             while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
                                    not 'isort:imports-' in last):
