@@ -2104,3 +2104,15 @@ def test_sort_within_sections_with_force_to_top_issue_473():
                   'from foo import bar\n')
     assert SortImports(file_contents=test_input, force_sort_within_sections=True,
                        force_to_top=['z']).output == test_input
+
+
+def test_correct_number_of_new_lines_with_comment_issue_435():
+    """Test to ensure that injecting a comment in-between imports doesn't mess up the new line spacing"""
+    test_input = ('import foo\n'
+                  '\n'
+                  '# comment\n'
+                  '\n'
+                  '\n'
+                  'def baz():\n'
+                  '    pass\n')
+    assert SortImports(file_contents=test_input).output == test_input
