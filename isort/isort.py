@@ -138,7 +138,8 @@ class SortImports(object):
             config_key = 'known_{0}'.format(known_placement.lower())
             known_patterns = self.config.get(config_key, [])
             for known_pattern in known_patterns:
-                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'), placement))
+                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'),
+                                            placement))
 
         self.index = 0
         self.import_index = -1
@@ -182,6 +183,7 @@ class SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
+            return
 
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
