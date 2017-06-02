@@ -1,7 +1,17 @@
 Changelog
 =========
-### 4.2.9 - June 1, 2017 - hotfix release
+### 4.2.13 - June 2, 2017 - hotfix release
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
+- Fixed #553: Check only and --diff now work together again
+
+### 4.2.12 - June 1, 2017 - hotfix release
+- Fixed wheel distribution bug
+
+### 4.2.11 - June 1, 2017 - hotfix release
+- Fixed #546: Can't select y/n/c after latest update
+- Fixed #545: Incorrectly moves __future__ imports above encoding comments
+
+### 4.2.9 - June 1, 2017 - hotfix release
 - Fixed #428: Check only modifies sorting
 - Fixed #540: Not correctly identifying stdlib modules
 

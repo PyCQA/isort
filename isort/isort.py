@@ -32,8 +32,7 @@ import itertools
 import os
 import re
 import sys
-import sysconfig
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 from datetime import datetime
 from difflib import unified_diff
 from fnmatch import fnmatch
@@ -41,7 +40,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import OrderedSet, itemsview
+from .pie_slice import OrderedDict, OrderedSet, input, itemsview
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -183,13 +182,11 @@ class SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
-            return
-
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
         elif write_to_stdout:
             sys.stdout.write(self.output)
-        elif file_name:
+        elif file_name and not check:
             if ask_to_apply:
                 if self.output == file_contents:
                     return
@@ -264,7 +261,7 @@ class SortImports(object):
             virtual_env_src = '{0}/src/'.format(virtual_env)
 
         # handle case-insensitive paths on windows
-        stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
+        stdlib_lib_prefix = os.path.normcase(get_stdlib_path())
 
         for prefix in paths:
             module_path = "/".join((prefix, module_name.replace(".", "/")))
@@ -489,7 +486,7 @@ class SortImports(object):
             lines = import_statement.split("\n")
             line_count = len(lines)
             if len(lines) > 1:
-                minimum_length = min(len(line) for line in lines[:-1])
+                minimum_length = min([len(line) for line in lines[:-1]])
             else:
                 minimum_length = 0
             new_import_statement = import_statement
@@ -903,7 +900,8 @@ class SortImports(object):
                             self.comments['straight'][module] = comments
                             comments = None
 
-                        if len(self.out_lines) > max(self.import_index, self._first_comment_index_end, 1) - 1:
+                        if len(self.out_lines) > max(self.import_index, self._first_comment_index_end + 1, 1) - 1:
+
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
                             while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
                                    not 'isort:imports-' in last):
@@ -940,6 +938,18 @@ def coding_check(fname, default='utf-8'):
                 break
 
     return coding
+
+
+def get_stdlib_path():
+    """Returns the path to the standard lib for the current path installation.
+
+    This function can be dropped and "sysconfig.get_paths()" used directly once Python 2.6 support is dropped.
+    """
+    if sys.version_info >= (2, 7):
+        import sysconfig
+        return sysconfig.get_paths()['stdlib']
+    else:
+        return os.path.join(sys.prefix, 'lib')
 
 
 def exists_case_sensitive(path):
