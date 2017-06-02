@@ -182,13 +182,11 @@ class SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
-            return
-
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
         elif write_to_stdout:
             sys.stdout.write(self.output)
-        elif file_name:
+        elif file_name and not check:
             if ask_to_apply:
                 if self.output == file_contents:
                     return
