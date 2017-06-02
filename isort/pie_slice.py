@@ -23,9 +23,7 @@ from __future__ import absolute_import
 
 import abc
 import collections
-import functools
 import sys
-from numbers import Integral
 
 __version__ = "1.1.0"
 
@@ -153,7 +151,6 @@ else:
     from itertools import izip as zip
     from decimal import Decimal, ROUND_HALF_EVEN
 
-    import codecs
     str = unicode
     chr = unichr
     input = raw_input

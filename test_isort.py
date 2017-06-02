@@ -30,7 +30,6 @@ import sys
 import tempfile
 
 from isort.isort import SortImports, exists_case_sensitive
-from isort.pie_slice import *
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
@@ -362,6 +361,7 @@ def test_qa_comment_case():
     test_input = "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA"
     test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
     assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
+
 
 def test_length_sort():
     """Test setting isort to sort on length instead of alphabetically."""
@@ -888,7 +888,7 @@ def test_atomic_mode():
                                                                           "from b import c, d\n")
 
     # with syntax error content is not changed
-    test_input += "while True print 'Hello world'" # blatant syntax error
+    test_input += "while True print 'Hello world'"  # blatant syntax error
     assert SortImports(file_contents=test_input, atomic=True).output == test_input
 
 
@@ -1334,7 +1334,6 @@ def test_place_comments():
     assert test_output == expected_output
     test_output = SortImports(file_contents=test_output, known_third_party=['django']).output
     assert test_output == expected_output
-
 
 
 def test_placement_control():
@@ -1789,6 +1788,7 @@ def test_lines_between_sections():
     assert SortImports(file_contents=test_input, lines_between_sections=2).output == ('import os\n\n\n'
                                                                                       'from bar import baz\n')
 
+
 def test_forced_sepatate_globs():
     """Test to ensure that forced_separate glob matches lines"""
     test_input = ('import os\n'
@@ -2033,7 +2033,6 @@ def test_alias_using_paren_issue_466():
     expected_output = ('from django.db.backends.mysql.base import (\n'
                        '    DatabaseWrapper as MySQLDatabaseWrapper)\n')
     assert SortImports(file_contents=test_input, line_length=50, use_parentheses=True).output == expected_output
-
 
     test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
     expected_output = ('from django.db.backends.mysql.base import (\n'

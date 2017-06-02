@@ -36,7 +36,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
+MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED', 'NOQA')
