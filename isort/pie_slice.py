@@ -146,8 +146,8 @@ if PY3:
 
     __all__ = common + ['urllib']
 else:
-    from itertools import ifilter as filter
-    from itertools import imap as map
+    from itertools import ifilter as filter  # noqa: F401
+    from itertools import imap as map  # noqa: F401
     from itertools import izip as zip
     from decimal import Decimal, ROUND_HALF_EVEN
 
@@ -527,7 +527,7 @@ if sys.version_info < (3, 2):
         return decorating_function
 
 else:
-    from functools import lru_cache
+    from functools import lru_cache  # noqa: F401
 
 
 class OrderedSet(collections.MutableSet):
