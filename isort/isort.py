@@ -162,7 +162,7 @@ class SortImports(object):
                 self.incorrectly_sorted = True
                 try:
                     compile(self._strip_top_comments(self.in_lines), self.file_path, 'exec', 0, 1)
-                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!". \
+                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
                           format(self.file_path))
                 except SyntaxError:
                     print("ERROR: {0} File contains syntax errors.".format(self.file_path))
@@ -407,7 +407,6 @@ class SortImports(object):
                         from_imports.remove(from_import)
                         section_output.append(import_statement)
 
-
             if from_imports:
                 comments = self.comments['from'].pop(module, ())
                 if "*" in from_imports and self.config['combine_star']:
@@ -558,7 +557,7 @@ class SortImports(object):
                 section_title = self.config.get('import_heading_' + str(section_name).lower(), '')
                 if section_title:
                     section_comment = "# {0}".format(section_title)
-                    if not section_comment in self.out_lines[0:1] and not section_comment in self.in_lines[0:1]:
+                    if section_comment not in self.out_lines[0:1] and section_comment not in self.in_lines[0:1]:
                         section_output.insert(0, section_comment)
                 output += section_output + ([''] * self.config['lines_between_sections'])
 
@@ -721,7 +720,7 @@ class SortImports(object):
     def _format_natural(import_line):
         import_line = import_line.strip()
         if not import_line.startswith("from ") and not import_line.startswith("import "):
-            if not "." in import_line:
+            if "." not in import_line:
                 return "import {0}".format(import_line)
             parts = import_line.split(".")
             end = parts.pop(-1)
@@ -826,14 +825,14 @@ class SortImports(object):
                     while not line.strip().endswith(")") and not self._at_end():
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
                         stripped_line = self._strip_syntax(line).strip()
-                        if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                        if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         import_string += "\n" + line
                 else:
                     while line.strip().endswith("\\"):
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
                         stripped_line = self._strip_syntax(line).strip()
-                        if import_type == "from" and stripped_line and not " " in stripped_line and new_comments:
+                        if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
                             import_string += "\n" + line
@@ -880,8 +879,8 @@ class SortImports(object):
 
                     if len(self.out_lines) > max(self.import_index, self._first_comment_index_end + 1, 1) - 1:
                         last = self.out_lines and self.out_lines[-1].rstrip() or ""
-                        while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and not
-                               'isort:imports-' in last):
+                        while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
+                               'isort:imports-' not in last):
                             self.comments['above']['from'].setdefault(import_from, []).insert(0, self.out_lines.pop(-1))
                             if len(self.out_lines) > max(self.import_index - 1, self._first_comment_index_end + 1, 1) - 1:
                                 last = self.out_lines[-1].rstrip()
@@ -904,7 +903,7 @@ class SortImports(object):
 
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
                             while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
-                                   not 'isort:imports-' in last):
+                                   'isort:imports-' not in last):
                                 self.comments['above']['straight'].setdefault(module, []).insert(0,
                                                                                                  self.out_lines.pop(-1))
                                 if len(self.out_lines) > 0:

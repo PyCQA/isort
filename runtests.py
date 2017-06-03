@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# Skip linting this file until it's cleaned up:
+# https://github.com/timothycrosley/isort/issues/554
+# flake8: noqa
+
 sources = """
 eNrcvWmXG1l2INYzY1tjeGYk2ePtg32iQVGIKCKDSXZpyylUqVRFqqmuYvFwUVPOSoGRQGRmNJER
 YESAiVSrz/Ev8Dn+Bf4p/mu+29tfAMjqKo3PlNTMTOC9+7b77rv7/T//9e8+/Cx980fr23y+ai7z

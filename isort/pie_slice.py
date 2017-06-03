@@ -23,9 +23,7 @@ from __future__ import absolute_import
 
 import abc
 import collections
-import functools
 import sys
-from numbers import Integral
 
 __version__ = "1.1.0"
 
@@ -148,12 +146,11 @@ if PY3:
 
     __all__ = common + ['urllib']
 else:
-    from itertools import ifilter as filter
-    from itertools import imap as map
+    from itertools import ifilter as filter  # noqa: F401
+    from itertools import imap as map  # noqa: F401
     from itertools import izip as zip
     from decimal import Decimal, ROUND_HALF_EVEN
 
-    import codecs
     str = unicode
     chr = unichr
     input = raw_input
@@ -530,7 +527,7 @@ if sys.version_info < (3, 2):
         return decorating_function
 
 else:
-    from functools import lru_cache
+    from functools import lru_cache  # noqa: F401
 
 
 class OrderedSet(collections.MutableSet):
