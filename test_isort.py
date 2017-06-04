@@ -759,10 +759,12 @@ def test_thirdy_party_overrides_standard_section():
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
                   "import os\n"
+                  "import this\n"
                   "import profile.test\n")
     test_output = SortImports(file_contents=test_input, known_third_party=['profile']).output
     assert test_output == ("import os\n"
                            "import sys\n"
+                           "import this\n"
                            "\n"
                            "import profile.test\n")
 
