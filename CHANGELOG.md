@@ -1,5 +1,10 @@
 Changelog
 =========
+### 4.3.0 - In progress
+- Fixed #559: Added `this` to known standard library
+- Breaking changes
+    - Python 2.7+ only (dropped 2.6) allowing various code simplifications and improvements.
+
 ### 4.2.13 - June 2, 2017 - hotfix release
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
 - Fixed #553: Check only and --diff now work together again
