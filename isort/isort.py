@@ -547,7 +547,6 @@ class SortImports(object):
                         line = line.lower()
                     return '{0}{1}'.format(section, line)
                 section_output = nsorted(section_output, key=by_module)
-
             if section_output:
                 section_name = section
                 if section_name in self.place_imports:
@@ -561,8 +560,10 @@ class SortImports(object):
                         section_output.insert(0, section_comment)
                 output += section_output + ([''] * self.config['lines_between_sections'])
 
-        while [character.strip() for character in output[-1:]] == [""]:
+        while output and output[-1].strip() == '':
             output.pop()
+        while output and output[0].strip() == '':
+            output.pop(0)
 
         output_at = 0
         if self.import_index < self.original_length:
