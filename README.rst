@@ -4,7 +4,7 @@
 ########
 
 .. image:: https://badge.fury.io/py/isort.svg
-    :target: http://badge.fury.io/py/isort
+    :target: https://badge.fury.io/py/isort
     :alt: PyPI version
 
 .. image:: https://travis-ci.org/timothycrosley/isort.svg?branch=master
