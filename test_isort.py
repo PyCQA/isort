@@ -2136,6 +2136,8 @@ def test_future_below_encoding_issue_545():
 
 def test_no_extra_lines_issue_557():
     """Test to ensure no extra lines are prepended"""
-    test_input = 'import os\n'
+    test_input = ('import os\n'
+                  '\n'
+                  'from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n')
     assert SortImports(file_contents=test_input, force_alphabetical_sort=True,
                        force_sort_within_sections=True).output == test_input
