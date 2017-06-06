@@ -1,13 +1,15 @@
 Changelog
 =========
 ### 4.3.0 - In progress
-- Fixed #559: Added `this` to known standard library
 - Fixed #557: `force_alphabetical_sort` and `force_sort_within_sections` can now be utilized together without extra new lines
 - Breaking changes
     - Python 2.7+ only (dropped 2.6) allowing various code simplifications and improvements.
 
-### 4.2.13 - June 2, 2017 - hotfix release
+### 4.2.14 - June 2, 2017 - hotfix release
 IMPORTANT NOTE: This will be the last release with Python 2.6 support, subsequent releases will be 2.7+ only
+- Fixed #559 & #565: Added missing standard library imports
+
+### 4.2.13 - June 2, 2017 - hotfix release
 - Fixed #553: Check only and --diff now work together again
 
 ### 4.2.12 - June 1, 2017 - hotfix release
