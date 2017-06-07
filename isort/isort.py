@@ -497,6 +497,8 @@ class SortImports(object):
                 new_import_statement = formatter(import_start, copy.copy(from_imports),
                                                 dynamic_indent, indent, line_length, comments)
                 lines = new_import_statement.split("\n")
+        if import_statement.count('\n') == 0:
+            return self._wrap(import_statement)
         return import_statement
 
     def _add_formatted_imports(self):
