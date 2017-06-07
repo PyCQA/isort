@@ -2136,3 +2136,21 @@ def test_future_below_encoding_issue_545():
                        '\n'
                        'print("hello")\n')
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_no_extra_lines_issue_557():
+    """Test to ensure no extra lines are prepended"""
+    test_input = ('import os\n'
+                  '\n'
+                  'from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n')
+    expected_output = ('import os\n'
+                       'from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n')
+    assert SortImports(file_contents=test_input, force_alphabetical_sort=True,
+                       force_sort_within_sections=True).output == expected_output
+
+
+def test_long_import_wrap_support_with_mode_2():
+    """Test to ensure mode 2 still allows wrapped imports with slash"""
+    test_input = ('from foobar.foobar.foobar.foobar import \\\n'
+                  '    an_even_longer_function_name_over_80_characters\n')
+    assert SortImports(file_contents=test_input, multi_line_output=2, line_length=80).output == test_input
