@@ -2157,3 +2157,4 @@ def test_long_import_wrap_support_with_mode_2():
                   '    an_even_longer_function_name_over_80_characters\n')
     assert SortImports(file_contents=test_input, multi_line_output=2, line_length=80).output == test_input
 
+
