@@ -211,6 +211,8 @@ def create_parser():
                         help="Combines as imports on the same line.")
     parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
                         help='Includes a trailing comma on multi line imports that include parentheses.')
+    parser.add_argument('-vn', '--version-number', action='version', version=__version__,
+                        help='Returns just the current version number without the logo')
     parser.add_argument('-v', '--version', action='store_true', dest='show_version')
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
