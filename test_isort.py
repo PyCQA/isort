@@ -2156,3 +2156,10 @@ def test_long_import_wrap_support_with_mode_2():
     test_input = ('from foobar.foobar.foobar.foobar import \\\n'
                   '    an_even_longer_function_name_over_80_characters\n')
     assert SortImports(file_contents=test_input, multi_line_output=2, line_length=80).output == test_input
+
+
+def test_pylint_comments_incorrectly_wrapped_issue_571():
+    """Test to ensure pylint comments don't get wrapped"""
+    test_input = ('from PyQt5.QtCore import QRegExp  # @UnresolvedImport pylint: disable=import-error,'
+                  'useless-suppression\n')
+    assert SortImports(file_contents=test_input, line_length=60).output == test_input
