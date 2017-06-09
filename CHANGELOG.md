@@ -2,6 +2,7 @@ Changelog
 =========
 ### 4.3.0 - In progress
 - Fixed #557: `force_alphabetical_sort` and `force_sort_within_sections` can now be utilized together without extra new lines
+- Fixed #571: Pylint comments get mangled
 - Implemented `--version-number` to retrieve just the version number without the isort logo
 - Breaking changes
     - Python 2.7+ only (dropped 2.6) allowing various code simplifications and improvements.
