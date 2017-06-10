@@ -333,6 +333,8 @@ class SortImports(object):
         """
         wrap_mode = self.config['multi_line_output']
         if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
+            if '  #' in line:
+                line, comment = line.split(' #')[:2]
             for splitter in ("import", ".", "as"):
                 exp = r"\b" + re.escape(splitter) + r"\b"
                 if re.search(exp, line) and not line.strip().startswith(splitter):
@@ -357,6 +359,7 @@ class SortImports(object):
                         if '  #' in lines[-1] and lines[-1].endswith(')'):
                             line, comment = lines[-1].split('  #', 1)
                             lines[-1] = line + ')  #' + comment[:-1]
+                        lines[-1] += '  #' + comment
                         return '\n'.join(lines)
                     return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
