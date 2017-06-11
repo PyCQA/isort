@@ -236,7 +236,7 @@ def create_parser():
                         help='Force imports to be sorted by module, independent of import_type')
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
-                        help='Use parenthesis for line continuation on lenght limit instead of slashes.')
+                        help='Use parenthesis for line continuation on length limit instead of slashes.')
 
     arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
