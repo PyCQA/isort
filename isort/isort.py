@@ -333,10 +333,16 @@ class SortImports(object):
         """
         wrap_mode = self.config['multi_line_output']
         if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
-            for splitter in ("import", ".", "as"):
+            line_without_comment = line
+            comment = None
+            if '#' in line:
+                line_without_comment, comment = line.split('#', 1)
+            for splitter in ("import ", ".", "as "):
                 exp = r"\b" + re.escape(splitter) + r"\b"
-                if re.search(exp, line) and not line.strip().startswith(splitter):
-                    line_parts = re.split(exp, line)
+                if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(splitter):
+                    line_parts = re.split(exp, line_without_comment)
+                    if comment:
+                        line_parts[-1] = '{0}#{1}'.format(line_parts[-1], comment)
                     next_line = []
                     while (len(line) + 2) > (self.config['wrap_length'] or self.config['line_length']) and line_parts:
                         next_line.append(line_parts.pop())
@@ -346,7 +352,7 @@ class SortImports(object):
 
                     cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
                     if self.config['use_parentheses']:
-                        output = "{0}{1} (\n{2}{3}{4})".format(
+                        output = "{0}{1}(\n{2}{3}{4})".format(
                             line, splitter, cont_line,
                             "," if self.config['include_trailing_comma'] else "",
                             "\n" if wrap_mode in (
@@ -357,9 +363,8 @@ class SortImports(object):
                         if '  #' in lines[-1] and lines[-1].endswith(')'):
                             line, comment = lines[-1].split('  #', 1)
                             lines[-1] = line + ')  #' + comment[:-1]
-                        lines[-1] += '  exit#' + comment
                         return '\n'.join(lines)
-                    return "{0}{1} \\\n{2}".format(line, splitter, cont_line)
+                    return "{0}{1}\\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
             if "# NOQA" not in line:
                 return "{0}  # NOQA".format(line)

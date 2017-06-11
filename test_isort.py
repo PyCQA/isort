@@ -2162,6 +2162,6 @@ def test_pylint_comments_incorrectly_wrapped_issue_571():
     """Test to ensure pylint comments don't get wrapped"""
     test_input = ('from PyQt5.QtCore import QRegExp  # @UnresolvedImport pylint: disable=import-error,'
                   'useless-suppression\n')
-    output = SortImports(file_contents=test_input, line_length=60).output
-    import pdb; pdb.set_trace()
-    assert SortImports(file_contents=test_input, line_length=60).output == test_input
+    expected_output = ('from PyQt5.QtCore import \\\n'
+                       '    QRegExp  # @UnresolvedImport pylint: disable=import-error,useless-suppression\n')
+    assert SortImports(file_contents=test_input, line_length=60).output == expected_output
