@@ -2165,3 +2165,13 @@ def test_pylint_comments_incorrectly_wrapped_issue_571():
     expected_output = ('from PyQt5.QtCore import \\\n'
                        '    QRegExp  # @UnresolvedImport pylint: disable=import-error,useless-suppression\n')
     assert SortImports(file_contents=test_input, line_length=60).output == expected_output
+
+
+def ensure_async_methods_work_issue_537():
+    """Test to ensure async methods are correctly identified"""
+    test_input = ('from myapp import myfunction\n'
+                  '\n'
+                  '\n'
+                  'async def test_myfunction(test_client, app):\n'
+                  '    a = await myfunction(test_client, app)\n')
+    assert SortImports(file_contents=test_input).output == test_input
