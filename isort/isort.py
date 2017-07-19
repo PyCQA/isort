@@ -866,8 +866,8 @@ class SortImports(object):
                 if import_type == "from":
                     import_from = imports.pop(0)
                     placed_module = self.place_module(import_from)
-		    if self.config['verbose']:
-			print("from-type place_module for %s returned %s" % (import_from, placed_module))
+                    if self.config['verbose']:
+                        print("from-type place_module for %s returned %s" % (import_from, placed_module))
                     if placed_module == '':
                         print(
                             "WARNING: could not place module {0} of line {1} --"
@@ -918,8 +918,8 @@ class SortImports(object):
                             if self.index - 1 == self.import_index:
                                 self.import_index -= len(self.comments['above']['straight'].get(module, []))
                         placed_module = self.place_module(module)
-		        if self.config['verbose']:
-		            print("else-type place_module for %s returned %s" % (module, placed_module))
+                        if self.config['verbose']:
+                            print("else-type place_module for %s returned %s" % (module, placed_module))
                         if placed_module == '':
                             print(
                                 "WARNING: could not place module {0} of line {1} --"
