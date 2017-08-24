@@ -88,6 +88,8 @@ class SortImports(object):
                 indent = "\t"
         self.config['indent'] = indent
 
+        self.config['comment_prefix'] = self.config['comment_prefix'].strip("'").strip('"')
+
         self.place_imports = {}
         self.import_placements = {}
         self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
@@ -325,7 +327,8 @@ class SortImports(object):
         """
             Returns a string with comments added
         """
-        return comments and "{0}  # {1}".format(self._strip_comments(original_string)[0],
+        return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
+                                                self.config['comment_prefix'],
                                                 "; ".join(comments)) or original_string
 
     def _wrap(self, line):
@@ -361,14 +364,14 @@ class SortImports(object):
                                 settings.WrapModes.VERTICAL_GRID_GROUPED,
                             ) else "")
                         lines = output.split('\n')
-                        if '  #' in lines[-1] and lines[-1].endswith(')'):
-                            line, comment = lines[-1].split('  #', 1)
-                            lines[-1] = line + ')  #' + comment[:-1]
+                        if self.config['comment_prefix'] in lines[-1] and lines[-1].endswith(')'):
+                            line, comment = lines[-1].split(self.config['comment_prefix'], 1)
+                            lines[-1] = line + ')' + self.config['comment_prefix'] + comment[:-1]
                         return '\n'.join(lines)
                     return "{0}{1}\\\n{2}".format(line, splitter, cont_line)
         elif len(line) > self.config['line_length'] and wrap_mode == settings.WrapModes.NOQA:
             if "# NOQA" not in line:
-                return "{0}  # NOQA".format(line)
+                return "{0}{1} NOQA".format(line, self.config['comment_prefix'])
 
         return line
 
@@ -425,7 +428,7 @@ class SortImports(object):
                         single_import_line = self._add_comments(comments, import_start + from_import)
                         comment = self.comments['nested'].get(module, {}).pop(from_import, None)
                         if comment:
-                            single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                            single_import_line += "{0} {1}".format(comments and ";" or self.config['comment_prefix'], comment)
                         import_statements.append(self._wrap(single_import_line))
                         comments = None
                     import_statement = "\n".join(import_statements)
@@ -441,7 +444,7 @@ class SortImports(object):
                         comment = self.comments['nested'].get(module, {}).pop(from_import, None)
                         if comment:
                             single_import_line = self._add_comments(comments, import_start + from_import)
-                            single_import_line += "{0} {1}".format(comments and ";" or "  #", comment)
+                            single_import_line += "{0} {1}".format(comments and ";" or self.config['comment_prefix'], comment)
                             above_comments = self.comments['above']['from'].pop(module, None)
                             if above_comments:
                                 section_output.extend(above_comments)
@@ -688,18 +691,18 @@ class SortImports(object):
         retval = '{0}{1}'.format(statement, ', '.join(imports))
         comment_str = ' '.join(comments)
         if comments:
-            if len(retval) + 4 + len(comment_str) <= line_length:
-                return '{0}  # {1}'.format(retval, comment_str)
+            if len(retval) + len(self.config['comment_prefix']) + 1 + len(comment_str) <= line_length:
+                return '{0}{1} {2}'.format(retval, self.config['comment_prefix'], comment_str)
         else:
             if len(retval) <= line_length:
                 return retval
         if comments:
             if "NOQA" in comments:
-                return '{0}  # {1}'.format(retval, comment_str)
+                return '{0}{1} {2}'.format(retval, self.config['comment_prefix'], comment_str)
             else:
-                return '{0}  # NOQA {1}'.format(retval, comment_str)
+                return '{0}{1} NOQA {2}'.format(retval, self.config['comment_prefix'], comment_str)
         else:
-            return '{0}  # NOQA'.format(retval)
+            return '{0}{1} NOQA'.format(retval, self.config['comment_prefix'])
 
     @staticmethod
     def _strip_comments(line, comments=None):
