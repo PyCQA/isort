@@ -87,7 +87,7 @@ class SortImports(object):
             if indent.lower() == "tab":
                 indent = "\t"
         self.config['indent'] = indent
-        
+
         self.config['comment_prefix'] = self.config['comment_prefix'].strip("'").strip('"')
 
         self.place_imports = {}
