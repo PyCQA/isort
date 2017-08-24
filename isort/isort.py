@@ -194,7 +194,7 @@ class SortImports(object):
                 self._show_diff(file_contents)
                 answer = None
                 while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
-                    answer = input("Apply suggested changes to '{0}' [y/n/q]?".format(self.file_path)).lower()
+                    answer = input("Apply suggested changes to '{0}' [y/n/q]? ".format(self.file_path)).lower()
                     if answer in ('no', 'n'):
                         return
                     if answer in ('quit', 'q'):
