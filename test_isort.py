@@ -506,6 +506,15 @@ def test_skip_with_file_name():
     assert skipped
 
 
+def test_skip_within_file():
+    """Ensure skipping a whole file works."""
+    test_input = ("# isort:skip_file\n"
+                  "import django\n"
+                  "import myproject\n")
+
+    assert SortImports(file_contents=test_input, known_third_party=['django']).skipped
+
+
 def test_force_to_top():
     """Ensure forcing a single import to the top of its category works as expected."""
     test_input = ("import lib6\n"

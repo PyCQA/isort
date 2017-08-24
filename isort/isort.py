@@ -113,6 +113,7 @@ class SortImports(object):
                     file_contents = file_to_import_sort.read()
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
+            self.skipped = True
             return
 
         self.in_lines = file_contents.split("\n")
