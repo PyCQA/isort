@@ -2184,3 +2184,10 @@ def ensure_async_methods_work_issue_537():
                   'async def test_myfunction(test_client, app):\n'
                   '    a = await myfunction(test_client, app)\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def ensure_as_imports_sort_correctly_within_from_imports_issue_590():
+    """Test to ensure combination from and as import statements are sorted correct"""
+    test_input = ('from os import defpath\n',
+                  'from os import pathsep as separator\n')
+    assert SortImports(file_contents=test_input).output == test_input
