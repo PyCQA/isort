@@ -2190,4 +2190,8 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
     """Test to ensure combination from and as import statements are sorted correct"""
     test_input = ('from os import defpath\n'
                   'from os import pathsep as separator\n')
+    assert SortImports(file_contents=test_input, force_sort_within_sections=True).output == test_input
+
+    test_input = ('from os import defpath\n'
+                  'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input).output == test_input
