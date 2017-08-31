@@ -438,7 +438,7 @@ class SortImports(object):
                         from_comments = self.comments['straight'].get('{}.{}'.format(module, from_import))
                         section_output.append(self._add_comments(from_comments,
                                                                  self._wrap(import_start + as_imports[from_import])))
-                    
+
                     star_import = False
                     if "*" in from_imports:
                         section_output.append(self._add_comments(comments, "{0}*".format(import_start)))
