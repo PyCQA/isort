@@ -398,15 +398,16 @@ class SortImports(object):
             import_start = "from {0} import ".format(module)
             from_imports = self.imports[section]['from'][module]
             from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
-            as_imports = {from_module: self.as_map['{0}.{1}'.format(module, from_import)] for from_module in
-                          from_modules if '{0}.{1}'.format(module, from_import) in self.as_map}
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
 
+            sub_modules = ['{0}.{1}'.format(module, from_import) for from_module in from_modules]
+            as_imports = dict((from_import, "{0} as {1}".format(from_import, self.as_map[sub_module])) for
+                              from_import, sub_module in zip(from_imports, sub_modules) if sub_module in as_map)
             if self.config['combine_as_imports'] and not ("*" in from_imports and self.config['combine_star']):
                 for from_import in copy.copy(from_imports):
-                    from_imports[from_imports.index(from_import)] =  "{0} as {1}".format(from_import, import_as)
+                    from_imports[from_imports.index(from_import)] =  "{0} as {1}".format(as_imports[from_import])
 
                 submodule = module + "." + from_import
                 import_as = self.as_map.get(submodule, False)
