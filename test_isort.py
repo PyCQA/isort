@@ -1034,8 +1034,8 @@ def test_as_imports_with_line_length():
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40).output == \
                   ("from translate.storage import \\\n    base as storage_base\n"
-                   "from translate.storage.placeables import \\\n    parse as rich_parse\n"
-                   "from translate.storage.placeables import \\\n    general\n")
+                   "from translate.storage.placeables import \\\n    general\n"
+                   "from translate.storage.placeables import \\\n    parse as rich_parse\n")
 
 
 def test_keep_comments():
@@ -2195,3 +2195,7 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
     test_input = ('from os import defpath\n'
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input).output == test_input
+    
+    test_input = ('from os import defpath\n'
+                  'from os import pathsep as separator\n')
+    assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
