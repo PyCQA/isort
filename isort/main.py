@@ -235,6 +235,7 @@ def create_parser():
     parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
+    parser.add_argument('-lai', '--lines-after-imports', dest='lines_after_imports', type=int)
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on length limit instead of slashes.')
 
