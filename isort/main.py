@@ -139,104 +139,105 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
-    parser.add_argument('-y', '--apply', dest='apply', action='store_true',
-                        help='Tells isort to apply changes recursively without asking')
-    parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
-                        'long imports).',
-                        dest='line_length', type=int)
-    parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
-                        dest='line_length', type=int)
-    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
-                        'files you should specify twice: --skip file1 --skip file2.', dest='skip', action='append')
-    parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
-                        dest='not_skip', action='append')
-    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob',
-                        action='append')
-    parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
-                        dest='force_to_top', action='append')
-    parser.add_argument('-f', '--future', dest='known_future_library', action='append',
-                        help='Force sortImports to recognize a module as part of the future compatibility libraries.')
-    parser.add_argument('-b', '--builtin', dest='known_standard_library', action='append',
-                        help='Force sortImports to recognize a module as part of the python standard library.')
-    parser.add_argument('-o', '--thirdparty', dest='known_third_party', action='append',
-                        help='Force sortImports to recognize a module as being part of a third party library.')
-    parser.add_argument('-p', '--project', dest='known_first_party', action='append',
-                        help='Force sortImports to recognize a module as being part of the current python project.')
-    parser.add_argument('--virtual-env', dest='virtual_env',
-                        help='Virtual environment to use for determining whether a package is third-party')
-    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
-                        help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
-                        '5-vert-grid-grouped).')
-    parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
-                        dest='indent', type=str)
     parser.add_argument('-a', '--add-import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
                              'automatically determining correct placement.')
+    parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
+                        help="Ensures the output doesn't save if the resulting file contains syntax errors.")
     parser.add_argument('-af', '--force-adds', dest='force_adds', action='store_true',
                         help='Forces import adds even if the original file is empty.')
-    parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
-                        help='Removes the specified import from all files.')
-    parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
-                        dest='length_sort', action='store_true')
-    parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
-                        dest='write_to_stdout', action='store_true')
+    parser.add_argument('-b', '--builtin', dest='known_standard_library', action='append',
+                        help='Force sortImports to recognize a module as part of the python standard library.')
     parser.add_argument('-c', '--check-only', action='store_true', dest="check",
                         help='Checks the file for unsorted / unformatted imports and prints them to the '
                              'command line without modifying the file.')
-    parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
-                        help='Tells isort to ignore whitespace differences when --check-only is being used.')
-    parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
-                        help='Forces all from imports to appear on their own line')
-    parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
-                        action='store_true')
-    parser.add_argument('-sd', '--section-default', dest='default_section',
-                        help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
-                        str(DEFAULT_SECTIONS))
+    parser.add_argument('-ca', '--combine-as', dest='combine_as_imports', action='store_true',
+                        help="Combines as imports on the same line.")
+    parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
+                        help="Ensures that if a star import is present, nothing else is imported from that namespace.")
+    parser.add_argument('-d', '--stdout', help='Force resulting output to stdout, instead of in-place.',
+                        dest='write_to_stdout', action='store_true')
     parser.add_argument('-df', '--diff', dest='show_diff', action='store_true',
                         help="Prints a diff of all the changes isort would make to a file, instead of "
                              "changing it in place")
-    parser.add_argument('-e', '--balanced', dest='balanced_wrapping', action='store_true',
-                        help='Balances wrapping to produce the most consistent line length possible')
-    parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
-                        help='Recursively look for Python files of which to sort imports')
-    parser.add_argument('-ot', '--order-by-type', dest='order_by_type',
-                        action='store_true', help='Order imports by type in addition to alphabetically')
+    parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
+                        action='store_true')
     parser.add_argument('-dt', '--dont-order-by-type', dest='dont_order_by_type',
                         action='store_true', help='Only order imports alphabetically, do not attempt type ordering')
-    parser.add_argument('-ac', '--atomic', dest='atomic', action='store_true',
-                        help="Ensures the output doesn't save if the resulting file contains syntax errors.")
-    parser.add_argument('-cs', '--combine-star', dest='combine_star', action='store_true',
-                        help="Ensures that if a star import is present, nothing else is imported from that namespace.")
-    parser.add_argument('-ca', '--combine-as', dest='combine_as_imports', action='store_true',
-                        help="Combines as imports on the same line.")
-    parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
-                        help='Includes a trailing comma on multi line imports that include parentheses.')
-    parser.add_argument('-vn', '--version-number', action='version', version=__version__,
-                        help='Returns just the current version number without the logo')
-    parser.add_argument('-v', '--version', action='store_true', dest='show_version')
-    parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
-                        help='Shows verbose output, such as when files are skipped or when a check is successful.')
-    parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
-                        help='Shows extra quiet output, only errors are outputted.')
-    parser.add_argument('-sp', '--settings-path', dest="settings_path",
-                        help='Explicitly set the settings path instead of auto determining based on file location.')
-    parser.add_argument('-ff', '--from-first', dest='from_first',
-                        help="Switches the typical ordering preference, showing from imports first then straight ones.")
-    parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
-                        help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
-    parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
-                        help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
-                             'length')
+    parser.add_argument('-e', '--balanced', dest='balanced_wrapping', action='store_true',
+                        help='Balances wrapping to produce the most consistent line length possible')
+    parser.add_argument('-f', '--future', dest='known_future_library', action='append',
+                        help='Force sortImports to recognize a module as part of the future compatibility libraries.')
+    parser.add_argument('-fas', '--force-alphabetical-sort', action='store_true', dest="force_alphabetical_sort",
+                        help='Force all imports to be sorted as a single section')
     parser.add_argument('-fass', '--force-alphabetical-sort-within-sections', action='store_true',
                         dest="force_alphabetical_sort", help='Force all imports to be sorted alphabetically within a '
                                                              'section')
-    parser.add_argument('-fas', '--force-alphabetical-sort', action='store_true', dest="force_alphabetical_sort",
-                        help='Force all imports to be sorted as a single section')
+    parser.add_argument('-ff', '--from-first', dest='from_first',
+                        help="Switches the typical ordering preference, showing from imports first then straight ones.")
+    parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
+                        help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
+                             'length')
     parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
+    parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
+                        dest='indent', type=str)
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
+    parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
+                        dest='length_sort', action='store_true')
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
+                        help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
+                        '5-vert-grid-grouped).')
+    parser.add_argument('-ns', '--dont-skip', help='Files that sort imports should never skip over.',
+                        dest='not_skip', action='append')
+    parser.add_argument('-o', '--thirdparty', dest='known_third_party', action='append',
+                        help='Force sortImports to recognize a module as being part of a third party library.')
+    parser.add_argument('-ot', '--order-by-type', dest='order_by_type',
+                        action='store_true', help='Order imports by type in addition to alphabetically')
+    parser.add_argument('-p', '--project', dest='known_first_party', action='append',
+                        help='Force sortImports to recognize a module as being part of the current python project.')
+    parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
+                        help='Shows extra quiet output, only errors are outputted.')
+    parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
+                        help='Removes the specified import from all files.')
+    parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
+                        help='Recursively look for Python files of which to sort imports')
+    parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
+                        'files you should specify twice: --skip file1 --skip file2.', dest='skip', action='append')
+    parser.add_argument('-sd', '--section-default', dest='default_section',
+                        help='Sets the default section for imports (by default FIRSTPARTY) options: ' +
+                        str(DEFAULT_SECTIONS))
+    parser.add_argument('-sg', '--skip-glob', help='Files that sort imports should skip over.', dest='skip_glob',
+                        action='append')
+    parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
+                        help='Forces all from imports to appear on their own line')
+    parser.add_argument('-sp', '--settings-path', dest="settings_path",
+                        help='Explicitly set the settings path instead of auto determining based on file location.')
+    parser.add_argument('-t', '--top', help='Force specific imports to the top of their appropriate section.',
+                        dest='force_to_top', action='append')
+    parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
+                        help='Includes a trailing comma on multi line imports that include parentheses.')
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on length limit instead of slashes.')
+    parser.add_argument('-v', '--version', action='store_true', dest='show_version')
+    parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
+                        help='Shows verbose output, such as when files are skipped or when a check is successful.')
+    parser.add_argument('-vn', '--version-number', action='version', version=__version__,
+                        help='Returns just the current version number without the logo')
+    parser.add_argument('--virtual-env', dest='virtual_env',
+                        help='Virtual environment to use for determining whether a package is third-party')
+    parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
+                        dest='line_length', type=int)
+    parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
+                        help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
+    parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
+                        help='Tells isort to ignore whitespace differences when --check-only is being used.')
+    parser.add_argument('-y', '--apply', dest='apply', action='store_true',
+                        help='Tells isort to apply changes recursively without asking')
+    parser.add_argument('-l', '--lines',
+                        help='[DEPRECATED] The max length of an import line (used for wrapping '
+                             'long imports).',
+                        dest='line_length', type=int)
 
     arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
@@ -290,7 +291,7 @@ def main():
             if config['verbose']:
                 for was_skipped in skipped:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                        " or matches a glob in 'skip_glob' setting".format(was_skipped))
+                          " or matches a glob in 'skip_glob' setting".format(was_skipped))
             print("Skipped {0} files".format(num_skipped))
 
 
