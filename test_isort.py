@@ -2199,3 +2199,29 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
     test_input = ('from os import defpath\n'
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
+
+
+def test_not_splitted_sections():
+    whiteline = '\n'
+    stdlib_section = 'import unittest\n'
+    firstparty_section = 'from app.pkg1 import mdl1\n'
+    local_section = 'from .pkg2 import mdl2\n'
+    statement = 'foo = bar\n'
+    test_input = (
+        stdlib_section + whiteline + firstparty_section + whiteline +
+        local_section + whiteline + statement
+    )
+
+    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, no_lines_before=['LOCALFOLDER']).output == \
+           (
+               stdlib_section + whiteline + firstparty_section + local_section +
+               whiteline + statement
+           )
+    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY']).output == \
+           (
+               stdlib_section + firstparty_section + whiteline + local_section +
+               whiteline + statement
+           )
+    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY', 'LOCALFOLDER']).output == \
+           (stdlib_section + firstparty_section + local_section + whiteline + statement)
