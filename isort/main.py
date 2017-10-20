@@ -23,6 +23,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import argparse
 import glob
 import os
+import re
 import sys
 
 import setuptools
@@ -31,7 +32,6 @@ from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
 from .pie_slice import itemsview
-
 
 INTRO = r"""
 /#######################################################################\
@@ -56,6 +56,17 @@ INTRO = r"""
 \########################################################################/
 """.format(__version__)
 
+shebang_re = re.compile(br'^#!.*\bpython[23w]?\b')
+
+
+def is_python_file(path):
+    if path.endswith('.py'):
+        return True
+
+    with open(path, 'rb') as fp:
+        line = fp.readline(100)
+    return bool(shebang_re.match(line))
+
 
 def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
@@ -71,11 +82,12 @@ def iter_source_code(paths, config, skipped):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
-                    if filename.endswith('.py'):
+                    filepath = os.path.join(dirpath, filename)
+                    if is_python_file(filepath):
                         if should_skip(filename, config, dirpath):
                             skipped.append(filename)
                         else:
-                            yield os.path.join(dirpath, filename)
+                            yield filepath
         else:
             yield path
 
