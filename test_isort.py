@@ -2200,7 +2200,20 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
+    
+def test_ensure_line_endings_are_preserved_issue_493():
+    """Test to ensure line endings are not converted"""
+    test_input = ('from os import defpath\r\n'
+                  'from os import pathsep as separator\r\n')
+    assert SortImports(file_contents=test_input).output == test_input
+    test_input = ('from os import defpath\r'
+                  'from os import pathsep as separator\r')
+    assert SortImports(file_contents=test_input).output == test_input
+    test_input = ('from os import defpath\n'
+                  'from os import pathsep as separator\n')
+    assert SortImports(file_contents=test_input).output == test_input
 
+    
 def test_not_splitted_sections():
     whiteline = '\n'
     stdlib_section = 'import unittest\n'
@@ -2225,3 +2238,4 @@ def test_not_splitted_sections():
            )
     assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY', 'LOCALFOLDER']).output == \
            (stdlib_section + firstparty_section + local_section + whiteline + statement)
+

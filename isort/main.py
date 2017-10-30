@@ -224,6 +224,8 @@ def create_parser():
                         help="Switches the typical ordering preference, showing from imports first then straight ones.")
     parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
+    parser.add_argument('-le', '--line-ending', dest='line_ending',
+                        help="Forces line endings to the specified value. If not set, values will be guessed per-file.")
     parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
                         help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
                              'length')
