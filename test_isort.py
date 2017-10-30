@@ -1635,7 +1635,7 @@ def test_comment_at_top_of_file():
 
 
 def test_alphabetic_sorting():
-    """Test to ensure isort correctly handles top of file comments"""
+    """Test to ensure isort correctly handles single line imports"""
     test_input = ("import unittest\n"
                   "\n"
                   "import ABC\n"
