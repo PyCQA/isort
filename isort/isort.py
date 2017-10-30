@@ -590,6 +590,9 @@ class SortImports(object):
                     section_comment = "# {0}".format(section_title)
                     if section_comment not in self.out_lines[0:1] and section_comment not in self.in_lines[0:1]:
                         section_output.insert(0, section_comment)
+                if section_name in self.config['no_lines_before']:
+                    while output and output[-1].strip() == '':
+                        output.pop()
                 output += section_output + ([''] * self.config['lines_between_sections'])
         while output and output[-1].strip() == '':
             output.pop()
@@ -985,7 +988,7 @@ def exists_case_sensitive(path):
     can only import using the case of the real file.
     """
     result = os.path.exists(path)
-    if sys.platform.startswith('win') and result:
+    if (sys.platform.startswith('win') or sys.platform == 'darwin') and result:
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result

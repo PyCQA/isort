@@ -133,7 +133,8 @@ default = {'force_to_top': [],
            'force_grid_wrap': 0,
            'force_sort_within_sections': False,
            'show_diff': False,
-           'ignore_whitespace': False}
+           'ignore_whitespace': False,
+           'no_lines_before': []}
 
 
 @lru_cache()

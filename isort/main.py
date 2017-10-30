@@ -240,6 +240,8 @@ def create_parser():
     parser.add_argument('-lai', '--lines-after-imports', dest='lines_after_imports', type=int)
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on length limit instead of slashes.')
+    parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
+                        dest='no_lines_before', action='append')
 
     arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
