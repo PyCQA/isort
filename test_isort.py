@@ -2200,6 +2200,13 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
+
+def test_identical_imports_with_different_names_are_preserved_issue_606():
+    """Test to ensure duplicate imports with different aliases are not lost."""
+    test_input = ('import os\n'
+                  'import os as _os\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
     
 def test_ensure_line_endings_are_preserved_issue_493():
     """Test to ensure line endings are not converted"""
