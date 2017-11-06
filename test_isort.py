@@ -2200,7 +2200,7 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
-    
+
 def test_ensure_line_endings_are_preserved_issue_493():
     """Test to ensure line endings are not converted"""
     test_input = ('from os import defpath\r\n'
@@ -2213,7 +2213,7 @@ def test_ensure_line_endings_are_preserved_issue_493():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input).output == test_input
 
-    
+
 def test_not_splitted_sections():
     whiteline = '\n'
     stdlib_section = 'import unittest\n'
@@ -2231,11 +2231,17 @@ def test_not_splitted_sections():
                stdlib_section + whiteline + firstparty_section + local_section +
                whiteline + statement
            )
-    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY']).output == \
-           (
-               stdlib_section + firstparty_section + whiteline + local_section +
-               whiteline + statement
-           )
-    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY', 'LOCALFOLDER']).output == \
-           (stdlib_section + firstparty_section + local_section + whiteline + statement)
-
+    # by default STDLIB and FIRSTPARTY sections are split by THIRDPARTY section,
+    # so don't merge them if THIRDPARTY imports aren't exist
+    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY']).output == test_input
+    # in case when THIRDPARTY section is excluded from sections list, it's ok to merge STDLIB and FIRSTPARTY
+    assert SortImports(
+        file_contents=test_input,
+        sections=['STDLIB', 'FIRSTPARTY', 'LOCALFOLDER'],
+        no_lines_before=['FIRSTPARTY'],
+    ).output == (
+        stdlib_section + firstparty_section + whiteline + local_section +
+        whiteline + statement
+    )
+    # it doesn't change output, because stdlib packages don't have any whitelines before them
+    assert SortImports(file_contents=test_input, no_lines_before=['STDLIB']).output == test_input
