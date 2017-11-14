@@ -404,7 +404,8 @@ class SortImports(object):
 
             import_start = "from {0} import ".format(module)
             from_imports = self.imports[section]['from'][module]
-            from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
+            if not self.config['no_inline_sort'] or self.config['force_single_line']:
+                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]

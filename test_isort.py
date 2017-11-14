@@ -2074,7 +2074,7 @@ def test_ignore_whitespace(capsys):
 
 
 def test_import_wraps_with_comment_issue_471():
-    """Test to insure issue #471 is resolved"""
+    """Test to ensure issue #471 is resolved"""
     test_input = ('from very_long_module_name import SuperLongClassName  #@UnusedImport'
                   ' -- long string of comments which wrap over')
     expected_output = ('from very_long_module_name import (\n'
@@ -2200,7 +2200,7 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
-    
+
 def test_ensure_line_endings_are_preserved_issue_493():
     """Test to ensure line endings are not converted"""
     test_input = ('from os import defpath\r\n'
@@ -2213,7 +2213,7 @@ def test_ensure_line_endings_are_preserved_issue_493():
                   'from os import pathsep as separator\n')
     assert SortImports(file_contents=test_input).output == test_input
 
-    
+
 def test_not_splitted_sections():
     whiteline = '\n'
     stdlib_section = 'import unittest\n'
@@ -2238,4 +2238,19 @@ def test_not_splitted_sections():
            )
     assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY', 'LOCALFOLDER']).output == \
            (stdlib_section + firstparty_section + local_section + whiteline + statement)
+
+
+def test_no_inline_sort():
+    """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
+    is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is omitted."""
+    test_input = 'from foo import a, c, b\n'
+    assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=False).output == test_input
+    assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=False).output == 'from foo import a, b, c\n'
+    expected = (
+        'from foo import a\n'
+        'from foo import b\n'
+        'from foo import c\n'
+    )
+    assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=True).output == expected
+    assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=True).output == expected
 

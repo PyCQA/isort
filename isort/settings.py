@@ -135,6 +135,7 @@ default = {'force_to_top': [],
            'show_diff': False,
            'ignore_whitespace': False,
            'no_lines_before': []}
+           'no_inline_sort': False}
 
 
 @lru_cache()
