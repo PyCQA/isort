@@ -253,8 +253,8 @@ def create_parser():
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on lenght limit instead of slashes.')
     parser.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
-                        help="""Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c ,b`).
-                        If `--force-single-line-imports` flag is enabled, then this flag is omitted.""")
+                        help='Leaves `from` imports with multiple imports \'as-is\' (e.g. `from foo import a, c ,b`).'
+                             'If `--force-single-line-imports` flag is enabled, then this flag is ignored.')
 
     arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:

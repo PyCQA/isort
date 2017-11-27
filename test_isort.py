@@ -2242,7 +2242,7 @@ def test_not_splitted_sections():
 
 def test_no_inline_sort():
     """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
-    is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is omitted."""
+    is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored."""
     test_input = 'from foo import a, c, b\n'
     assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=False).output == test_input
     assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=False).output == 'from foo import a, b, c\n'
