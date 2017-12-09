@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 '''  Tool for sorting imports alphabetically, and automatically separated into sections.
 
 Copyright (C) 2013  Timothy Edmund Crosley
@@ -23,6 +23,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import argparse
 import glob
 import os
+import re
 import sys
 from concurrent.futures import ProcessPoolExecutor
 import functools
@@ -33,7 +34,6 @@ from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
 from .pie_slice import itemsview
-
 
 INTRO = r"""
 /#######################################################################\
@@ -57,6 +57,17 @@ INTRO = r"""
 
 \########################################################################/
 """.format(__version__)
+
+shebang_re = re.compile(br'^#!.*\bpython[23w]?\b')
+
+
+def is_python_file(path):
+    if path.endswith('.py'):
+        return True
+
+    with open(path, 'rb') as fp:
+        line = fp.readline(100)
+    return bool(shebang_re.match(line))
 
 
 class SortAttempt(object):
@@ -88,11 +99,12 @@ def iter_source_code(paths, config, skipped):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
-                    if filename.endswith('.py'):
+                    filepath = os.path.join(dirpath, filename)
+                    if is_python_file(filepath):
                         if should_skip(filename, config, dirpath):
                             skipped.append(filename)
                         else:
-                            yield os.path.join(dirpath, filename)
+                            yield filepath
         else:
             yield path
 
@@ -228,6 +240,8 @@ def create_parser():
                         help="Combines as imports on the same line.")
     parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
                         help='Includes a trailing comma on multi line imports that include parentheses.')
+    parser.add_argument('-vn', '--version-number', action='version', version=__version__,
+                        help='Returns just the current version number without the logo')
     parser.add_argument('-v', '--version', action='store_true', dest='show_version')
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
@@ -239,6 +253,8 @@ def create_parser():
                         help="Switches the typical ordering preference, showing from imports first then straight ones.")
     parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
+    parser.add_argument('-le', '--line-ending', dest='line_ending',
+                        help="Forces line endings to the specified value. If not set, values will be guessed per-file.")
     parser.add_argument('-fgw', '--force-grid-wrap', nargs='?', const=2, type=int, dest="force_grid_wrap",
                         help='Force number of from imports (defaults to 2) to be grid wrapped regardless of line '
                              'length')
@@ -250,12 +266,15 @@ def create_parser():
     parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
+    parser.add_argument('-lai', '--lines-after-imports', dest='lines_after_imports', type=int)
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
-                        help='Use parenthesis for line continuation on lenght limit instead of slashes.')
+                        help='Use parenthesis for line continuation on length limit instead of slashes.')
+    parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
+                        dest='no_lines_before', action='append')
     parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',
                         dest='jobs', type=int)
 
-    arguments = dict((key, value) for (key, value) in itemsview(vars(parser.parse_args())) if value)
+    arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
     return arguments

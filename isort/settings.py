@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import fnmatch
+import io
 import os
 import posixpath
 from collections import namedtuple
@@ -36,7 +37,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-MAX_CONFIG_SEARCH_DEPTH = 25 # The number of parent directories isort will look for a config file within
+MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED', 'NOQA')
@@ -48,6 +49,7 @@ default = {'force_to_top': [],
            'skip_glob': [],
            'line_length': 79,
            'wrap_length': 0,
+           'line_ending': None,
            'sections': DEFAULT_SECTIONS,
            'no_sections': False,
            'known_future_library': ['__future__'],
@@ -101,6 +103,7 @@ default = {'force_to_top': [],
            'multi_line_output': WrapModes.GRID,
            'forced_separate': [],
            'indent': ' ' * 4,
+           'comment_prefix': '  #',
            'length_sort': False,
            'add_imports': [],
            'remove_imports': [],
@@ -130,7 +133,8 @@ default = {'force_to_top': [],
            'force_grid_wrap': 0,
            'force_sort_within_sections': False,
            'show_diff': False,
-           'ignore_whitespace': False}
+           'ignore_whitespace': False,
+           'no_lines_before': []}
 
 
 @lru_cache()
@@ -214,7 +218,7 @@ def _as_list(value):
 
 @lru_cache()
 def _get_config_data(file_path, sections):
-    with open(file_path, 'rU') as config_file:
+    with io.open(file_path, 'r') as config_file:
         if file_path.endswith('.editorconfig'):
             line = '\n'
             last_position = config_file.tell()
@@ -227,7 +231,7 @@ def _get_config_data(file_path, sections):
 
         config = configparser.SafeConfigParser()
         config.readfp(config_file)
-        settings = dict()
+        settings = {}
         for section in sections:
             if config.has_section(section):
                 settings.update(dict(config.items(section)))
