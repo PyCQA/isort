@@ -134,7 +134,7 @@ default = {'force_to_top': [],
            'force_sort_within_sections': False,
            'show_diff': False,
            'ignore_whitespace': False,
-           'no_lines_before': []}
+           'no_lines_before': [],
            'no_inline_sort': False}
 
 
