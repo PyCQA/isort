@@ -25,6 +25,8 @@ import glob
 import os
 import re
 import sys
+from concurrent.futures import ProcessPoolExecutor
+import functools
 
 import setuptools
 
@@ -66,6 +68,21 @@ def is_python_file(path):
     with open(path, 'rb') as fp:
         line = fp.readline(100)
     return bool(shebang_re.match(line))
+
+
+class SortAttempt(object):
+    def __init__(self, incorrectly_sorted, skipped):
+        self.incorrectly_sorted = incorrectly_sorted
+        self.skipped = skipped
+
+
+def sort_imports(file_name, **arguments):
+    try:
+        result = SortImports(file_name, **arguments)
+        return SortAttempt(result.incorrectly_sorted, result.skipped)
+    except IOError as e:
+        print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+        return None
 
 
 def iter_source_code(paths, config, skipped):
@@ -254,6 +271,8 @@ def create_parser():
                         help='Use parenthesis for line continuation on length limit instead of slashes.')
     parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
                         dest='no_lines_before', action='append')
+    parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',
+                        dest='jobs', type=int)
 
     arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
     if 'dont_order_by_type' in arguments:
@@ -289,16 +308,29 @@ def main():
         num_skipped = 0
         if config['verbose'] or config.get('show_logo', False):
             print(INTRO)
-        for file_name in file_names:
-            try:
-                sort_attempt = SortImports(file_name, **arguments)
+        jobs = arguments.get('jobs')
+        if jobs:
+            executor = ProcessPoolExecutor(max_workers=jobs)
+
+            for sort_attempt in executor.map(functools.partial(sort_imports, **arguments), file_names):
+                if not sort_attempt:
+                    continue
                 incorrectly_sorted = sort_attempt.incorrectly_sorted
                 if arguments.get('check', False) and incorrectly_sorted:
                     wrong_sorted_files = True
                 if sort_attempt.skipped:
                     num_skipped += 1
-            except IOError as e:
-                print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+        else:
+            for file_name in file_names:
+                try:
+                    sort_attempt = SortImports(file_name, **arguments)
+                    incorrectly_sorted = sort_attempt.incorrectly_sorted
+                    if arguments.get('check', False) and incorrectly_sorted:
+                        wrong_sorted_files = True
+                    if sort_attempt.skipped:
+                        num_skipped += 1
+                except IOError as e:
+                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
         if wrong_sorted_files:
             exit(1)
 
