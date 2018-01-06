@@ -2231,17 +2231,10 @@ def test_not_splitted_sections():
                stdlib_section + whiteline + firstparty_section + local_section +
                whiteline + statement
            )
-    # by default STDLIB and FIRSTPARTY sections are split by THIRDPARTY section,
-    # so don't merge them if THIRDPARTY imports aren't exist
-    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY']).output == test_input
-    # in case when THIRDPARTY section is excluded from sections list, it's ok to merge STDLIB and FIRSTPARTY
-    assert SortImports(
-        file_contents=test_input,
-        sections=['STDLIB', 'FIRSTPARTY', 'LOCALFOLDER'],
-        no_lines_before=['FIRSTPARTY'],
-    ).output == (
-        stdlib_section + firstparty_section + whiteline + local_section +
-        whiteline + statement
-    )
-    # it doesn't change output, because stdlib packages don't have any whitelines before them
-    assert SortImports(file_contents=test_input, no_lines_before=['STDLIB']).output == test_input
+    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY']).output == \
+           (
+               stdlib_section + firstparty_section + whiteline + local_section +
+               whiteline + statement
+           )
+    assert SortImports(file_contents=test_input, no_lines_before=['FIRSTPARTY', 'LOCALFOLDER']).output == \
+           (stdlib_section + firstparty_section + local_section + whiteline + statement)
