@@ -292,6 +292,14 @@ def main():
     if 'settings_path' in arguments:
         sp = arguments['settings_path']
         arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
+        if not os.path.isdir(arguments['settings_path']):
+            print("WARNING: settings_path dir does not exist: {0}".format(arguments['settings_path']))
+
+    if 'virtual_env' in arguments:
+        venv = arguments['virtual_env']
+        arguments['virtual_env'] = os.path.abspath(venv)
+        if not os.path.isdir(arguments['virtual_env']):
+            print("WARNING: virtual_env dir does not exist: {0}".format(arguments['virtual_env']))
 
     file_names = arguments.pop('files', [])
     if file_names == ['-']:
