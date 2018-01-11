@@ -28,6 +28,7 @@ import fnmatch
 import io
 import os
 import posixpath
+import sys
 from collections import namedtuple
 
 from .pie_slice import itemsview, lru_cache, native_str
@@ -230,8 +231,13 @@ def _get_config_data(file_path, sections):
                     break
                 last_position = config_file.tell()
 
-        config = configparser.SafeConfigParser()
-        config.readfp(config_file)
+        if sys.version_info >= (3, 2):
+            config = configparser.ConfigParser()
+            config.read_file(config_file)
+        else:
+            config = configparser.SafeConfigParser()
+            config.readfp(config_file)
+
         settings = {}
         for section in sections:
             if config.has_section(section):

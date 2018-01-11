@@ -548,6 +548,7 @@ class SortImports(object):
             sections = ('no_sections', )
 
         output = []
+        prev_section_has_imports = False
         for section in sections:
             straight_modules = self.imports[section]['straight']
             straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
@@ -591,10 +592,11 @@ class SortImports(object):
                     section_comment = "# {0}".format(section_title)
                     if section_comment not in self.out_lines[0:1] and section_comment not in self.in_lines[0:1]:
                         section_output.insert(0, section_comment)
-                if section_name in self.config['no_lines_before']:
+                if prev_section_has_imports and section_name in self.config['no_lines_before']:
                     while output and output[-1].strip() == '':
                         output.pop()
                 output += section_output + ([''] * self.config['lines_between_sections'])
+            prev_section_has_imports = bool(section_output)
         while output and output[-1].strip() == '':
             output.pop()
         while output and output[0].strip() == '':
