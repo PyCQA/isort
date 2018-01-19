@@ -762,6 +762,8 @@ class SortImports(object):
                         self._in_quote = line[index]
                 elif line[index] == "#":
                     break
+                elif line[index] not in (' ', '\t'):
+                    break
                 index += 1
 
         return skip_line or self._in_quote or self._in_top_comment
