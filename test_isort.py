@@ -36,6 +36,8 @@ SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 
 SINGLE_FROM_IMPORT = "from third_party import lib1"
 
+SINGLE_LINE_LONG_IMPORT = "from third_party import lib1, lib2, lib3, lib4, lib5, lib5ab"
+
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
@@ -351,6 +353,14 @@ def test_output_modes():
     output_noqa = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
                               multi_line_output=WrapModes.NOQA).output
     assert output_noqa == "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  # NOQA comment\n"  # NOQA
+
+    test_output_vertical_grid_grouped_doesnt_wrap_early = SortImports(file_contents=SINGLE_LINE_LONG_IMPORT,
+                                                                      multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
+                                                                      line_length=40, indent='    ').output
+    assert test_output_vertical_grid_grouped_doesnt_wrap_early == ("from third_party import (\n"
+                                                                   "    lib1, lib2, lib3, lib4, lib5, lib5ab\n"
+                                                                   ")\n")
+
 
 
 def test_qa_comment_case():

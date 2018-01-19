@@ -693,12 +693,17 @@ class SortImports(object):
             "," if self.config['include_trailing_comma'] else "",
          )
 
-    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments, need_trailing_char):
         statement += self._add_comments(comments, "(") + self.line_separator + indent + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
             next_statement = "{0}, {1}".format(statement, next_import)
-            if len(next_statement.split(self.line_separator)[-1]) + 1 > line_length:
+            current_line_length = len(next_statement.split(self.line_separator)[-1])
+            if imports or need_trailing_char:
+                # If we have more imports we need to account for a comma after this import
+                # We might also need to account for a closing ) we're going to add.
+                current_line_length += 1
+            if current_line_length > line_length:
                 next_statement = "{0},{1}{2}{3}".format(statement, self.line_separator, indent, next_import)
             statement = next_statement
         if self.config['include_trailing_comma']:
@@ -706,10 +711,10 @@ class SortImports(object):
         return statement
 
     def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
-        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) + ")"
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments, True) + ")"
 
     def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
-        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments) \
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments, False) \
                + self.line_separator + ")"
 
     def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
