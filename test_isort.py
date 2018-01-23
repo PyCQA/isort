@@ -362,7 +362,6 @@ def test_output_modes():
                                                                    ")\n")
 
 
-
 def test_qa_comment_case():
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
     test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
