@@ -271,7 +271,7 @@ def create_parser():
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
                         help='Use parenthesis for line continuation on lenght limit instead of slashes.')
     inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
-                        help='Leaves `from` imports with multiple imports \'as-is\' (e.g. `from foo import a, c ,b`).')                 
+                        help='Leaves `from` imports with multiple imports \'as-is\' (e.g. `from foo import a, c ,b`).')
     parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
                         dest='no_lines_before', action='append')
     parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',
