@@ -2246,6 +2246,7 @@ def test_not_splitted_sections():
     # it doesn't change output, because stdlib packages don't have any whitelines before them
     assert SortImports(file_contents=test_input, no_lines_before=['STDLIB']).output == test_input
 
+
 def test_no_inline_sort():
     """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
     is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored."""
