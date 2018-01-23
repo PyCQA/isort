@@ -501,9 +501,10 @@ def test_skip_with_file_name():
     test_input = ("import django\n"
                   "import myproject\n")
 
-    skipped = SortImports(file_path='/baz.py', file_contents=test_input, known_third_party=['django'],
-                          skip=['baz.py']).skipped
-    assert skipped
+    sort_imports = SortImports(file_path='/baz.py', file_contents=test_input, known_third_party=['django'],
+                               skip=['baz.py'])
+    assert sort_imports.skipped
+    assert sort_imports.output is None
 
 
 def test_skip_within_file():
@@ -511,8 +512,9 @@ def test_skip_within_file():
     test_input = ("# isort:skip_file\n"
                   "import django\n"
                   "import myproject\n")
-
-    assert SortImports(file_contents=test_input, known_third_party=['django']).skipped
+    sort_imports = SortImports(file_contents=test_input, known_third_party=['django'])
+    assert sort_imports.skipped
+    assert sort_imports.output is None
 
 
 def test_force_to_top():
