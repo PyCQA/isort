@@ -233,6 +233,7 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
     length_sort=1
     forced_separate=django.contrib,django.utils
     default_section=FIRSTPARTY
+    no_lines_before=LOCALFOLDER
 
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
 project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
@@ -392,6 +393,17 @@ Example:
     sections=FUTURE,STDLIB,DJANGO,THIRDPARTY,PANDAS,FIRSTPARTY,LOCALFOLDER
 
 would create two new sections with the specified known modules.
+
+The ``no_lines_before`` option will prevent the listed sections from being split from the previous section by an empty line.
+
+Example:
+
+.. code-block:: ini
+
+   sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+   no_lines_before=LOCALFOLDER
+
+would produce a section with both FIRSTPARTY and LOCALFOLDER modules combined.
 
 Auto-comment import sections
 ============================
