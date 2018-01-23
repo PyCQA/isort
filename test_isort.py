@@ -2253,3 +2253,4 @@ def test_no_inline_sort():
     )
     assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=True).output == expected
     assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=True).output == expected
+    
