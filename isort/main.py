@@ -167,6 +167,7 @@ class ISortCommand(setuptools.Command):
 def create_parser():
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
+    inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
     parser.add_argument('-y', '--apply', dest='apply', action='store_true',
                         help='Tells isort to apply changes recursively without asking')
@@ -214,7 +215,7 @@ def create_parser():
                              'command line without modifying the file.')
     parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
                         help='Tells isort to ignore whitespace differences when --check-only is being used.')
-    parser.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
+    inline_args_group.add_argument('-sl', '--force-single-line-imports', dest='force_single_line', action='store_true',
                         help='Forces all from imports to appear on their own line')
     parser.add_argument('-ds', '--no-sections', help='Put all imports into the same section bucket', dest='no_sections',
                         action='store_true')
@@ -268,7 +269,9 @@ def create_parser():
     parser.add_argument('-lbt', '--lines-between-types', dest='lines_between_types', type=int)
     parser.add_argument('-lai', '--lines-after-imports', dest='lines_after_imports', type=int)
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
-                        help='Use parenthesis for line continuation on length limit instead of slashes.')
+                        help='Use parenthesis for line continuation on lenght limit instead of slashes.')
+    inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
+                        help='Leaves `from` imports with multiple imports \'as-is\' (e.g. `from foo import a, c ,b`).')
     parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
                         dest='no_lines_before', action='append')
     parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',
