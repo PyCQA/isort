@@ -1012,6 +1012,19 @@ def test_smart_lines_after_import_section():
                                                             "def my_function():\n"
                                                             "    pass\n")
 
+    # Ensure logic doesn't incorrectly skip over assignments to multi-line strings
+    test_input = ("from a import b\n"
+                  'X = """test\n'
+                  '"""\n'
+                  "def my_function():\n"
+                  "    pass\n")
+    assert SortImports(file_contents=test_input).output == ("from a import b\n"
+                                                            "\n"
+                                                            'X = """test\n'
+                                                            '"""\n'
+                                                            "def my_function():\n"
+                                                            "    pass\n")
+
 
 def test_settings_combine_instead_of_overwrite():
     """Test to ensure settings combine logically, instead of fully overwriting."""
