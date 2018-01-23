@@ -199,9 +199,10 @@ class SortImports(object):
         elif write_to_stdout:
             sys.stdout.write(self.output)
         elif file_name and not check:
+            if self.output == file_contents:
+                return
+
             if ask_to_apply:
-                if self.output == file_contents:
-                    return
                 self._show_diff(file_contents)
                 answer = None
                 while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
@@ -211,6 +212,7 @@ class SortImports(object):
                     if answer in ('quit', 'q'):
                         sys.exit(1)
             with io.open(self.file_path, encoding=self.file_encoding, mode='w', newline=self.line_separator) as output_file:
+                print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
     def _show_diff(self, file_contents):
