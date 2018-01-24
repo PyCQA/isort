@@ -872,10 +872,10 @@ def test_relative_import_with_space():
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
     test_input = ("from .import foo")
-    test_output = ("from . import foo")
+    test_output = ("from . import foo\n")
     assert SortImports(file_contents=test_input).output == test_output
     test_input = ("from.import foo")
-    test_output = ("from . import foo")
+    test_output = ("from . import foo\n")
     assert SortImports(file_contents=test_input).output == test_output
 
 
