@@ -278,10 +278,9 @@ class SortImports(object):
         stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
 
         for prefix in paths:
-            module_path = "/".join((prefix, module_name.replace(".", "/")))
             package_path = "/".join((prefix, module_name.split(".")[0]))
-            is_module = (exists_case_sensitive(module_path + ".py") or
-                         exists_case_sensitive(module_path + ".so"))
+            is_module = (exists_case_sensitive(package_path + ".py") or
+                         exists_case_sensitive(package_path + ".so"))
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if ('site-packages' in prefix or 'dist-packages' in prefix or
