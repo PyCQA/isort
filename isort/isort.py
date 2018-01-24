@@ -861,6 +861,7 @@ class SortImports(object):
                     continue
 
                 line = line.replace("\t", " ").replace('import*', 'import *')
+                line = line.replace(" .import", " . import")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
 
