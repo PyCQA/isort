@@ -2284,3 +2284,27 @@ def test_no_inline_sort():
     )
     assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=True).output == expected
     assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=True).output == expected
+
+
+def test_relative_import_of_a_module():
+    """Imports can be dynamically created (PEP302) and is used by modules such as six.  This test ensures that
+    these types of imports are still sorted to the correct type instead of being categorized as local."""
+    test_input = ('from __future__ import absolute_import\n'
+                  '\n'
+                  'import itertools\n'
+                  '\n'
+                  'from six import add_metaclass\n'
+                  '\n'
+                  'from six.moves import asd\n'
+                  )
+
+    expected_results = ('from __future__ import absolute_import\n'
+                        '\n'
+                        'import itertools\n'
+                        '\n'
+                        'from six import add_metaclass\n'
+                        'from six.moves import asd\n'
+                        )
+
+    sorted_result = SortImports(file_contents=test_input, force_single_line=True).output
+    assert sorted_result == expected_results
