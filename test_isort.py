@@ -1673,7 +1673,7 @@ def test_alphabetic_sorting():
     options = {'force_single_line': True,
                'force_alphabetical_sort_within_sections': True, }
 
-    output = SortImports(file_contents=test_input, **options).output
+    output = SortImports(file_contents=test_input, known_first_party=['django'], **options).output
     assert output == test_input
 
     test_input = ("# -*- coding: utf-8 -*-\n"
