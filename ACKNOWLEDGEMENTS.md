@@ -71,6 +71,8 @@ Code Contributors
 - Adam Chainz (@adamchainz)
 - @Brightcells
 - Jonas Trappenberg (@teeberg)
+- Andrew Konstantaras (@akonsta)
+- Jason Brackman (@jasonbrackman) 
 
 Documenters
 ===================
