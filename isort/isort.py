@@ -884,6 +884,21 @@ class SortImports(object):
                 else:
                     while line.strip().endswith("\\"):
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+
+                        # Still need to check for parentheses after an escaped line
+                        if "(" in line.split("#")[0] and not self._at_end():
+                            stripped_line = self._strip_syntax(line).strip()
+                            if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
+                                nested_comments[stripped_line] = comments[-1]
+                            import_string += self.line_separator + line
+
+                            while not line.strip().endswith(")") and not self._at_end():
+                                line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                                stripped_line = self._strip_syntax(line).strip()
+                                if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
+                                    nested_comments[stripped_line] = comments[-1]
+                                import_string += self.line_separator + line
+
                         stripped_line = self._strip_syntax(line).strip()
                         if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
