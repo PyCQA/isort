@@ -855,6 +855,7 @@ class SortImports(object):
                 continue
 
             for line in (line.strip() for line in line.split(";")):
+                line = line.replace("from.import", "from . import")
                 import_type = self._import_type(line)
                 if not import_type:
                     self.out_lines.append(line)
