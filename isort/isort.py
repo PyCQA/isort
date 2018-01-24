@@ -831,6 +831,9 @@ class SortImports(object):
         self._in_top_comment = False
         while not self._at_end():
             line = self._get_line()
+            line = line.replace("from.import", "from . import")
+            line = line.replace("\t", " ").replace('import*', 'import *')
+            line = line.replace(" .import", " . import")
             statement_index = self.index
             skip_line = self._skip_line(line)
 
@@ -855,14 +858,11 @@ class SortImports(object):
                 continue
 
             for line in (line.strip() for line in line.split(";")):
-                line = line.replace("from.import", "from . import")
                 import_type = self._import_type(line)
                 if not import_type:
                     self.out_lines.append(line)
                     continue
 
-                line = line.replace("\t", " ").replace('import*', 'import *')
-                line = line.replace(" .import", " . import")
                 if self.import_index == -1:
                     self.import_index = self.index - 1
 
