@@ -1056,10 +1056,8 @@ def test_combined_from_and_as_imports():
                   "from translate.storage import base, factory\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
     assert SortImports(file_contents=test_input, combine_as_imports=True).output == test_input
-    test_input = ("import os \n"
-                  "import os as _os")
-    test_output = ("import os\n"
-                  "import os as _os\n")
+    test_input = ("import os \nimport os as _os")
+    test_output = ("import os\nimport os as _os\n")
     assert SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == test_output
 
 
