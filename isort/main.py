@@ -213,6 +213,8 @@ def create_parser():
                         dest='indent', type=str)
     parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',
                         dest='jobs', type=int)
+    parser.add_argument('-k', '--keep-direct-and-as', dest='keep_direct_and_as_imports', action='store_true',
+                        help="Turns off default behavior that removes direct imports when as imports exist.")
     parser.add_argument('-l', '--lines', help='[Deprecated] The max length of an import line (used for wrapping '
                         'long imports).',
                         dest='line_length', type=int)

@@ -390,7 +390,10 @@ class SortImports(object):
                 continue
 
             if module in self.as_map:
-                import_definition = "import {0} as {1}".format(module, self.as_map[module])
+                import_definition = ''
+                if self.config['keep_direct_and_as_imports']:
+                    import_definition = "import {0}\n".format(module)
+                import_definition += "import {0} as {1}".format(module, self.as_map[module])
             else:
                 import_definition = "import {0}".format(module)
 
