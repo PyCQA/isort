@@ -879,7 +879,6 @@ def test_relative_import_with_space():
     assert SortImports(file_contents=test_input).output == test_output
 
 
-
 def test_multiline_import():
     """Test the case where import spawns multiple lines with inconsistent indentation."""
     test_input = ("from pkg \\\n"
