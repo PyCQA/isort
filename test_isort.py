@@ -871,8 +871,8 @@ def test_relative_import_with_space():
     """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
-    test_input = ("from .input foo")
-    test_output = ("from . input foo")
+    test_input = ("from .import foo")
+    test_output = ("from . import foo")
     assert SortImports(file_contents=test_input).output == test_output
     test_input = ("from.import foo")
     test_output = ("from . import foo")
