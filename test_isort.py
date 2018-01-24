@@ -871,6 +871,12 @@ def test_relative_import_with_space():
     """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
+    test_input = ("from .import foo")
+    test_output = ("from . import foo\n")
+    assert SortImports(file_contents=test_input).output == test_output
+    test_input = ("from.import foo")
+    test_output = ("from . import foo\n")
+    assert SortImports(file_contents=test_input).output == test_output
 
 
 def test_multiline_import():
@@ -1620,7 +1626,7 @@ def test_fcntl():
 
 
 def test_import_split_is_word_boundary_aware():
-    """Test to ensure that isort splits words in a boundry aware mannor"""
+    """Test to ensure that isort splits words in a boundary aware manner"""
     test_input = ("from mycompany.model.size_value_array_import_func import \\\n"
                 "    get_size_value_array_import_func_jobs")
     test_output = SortImports(file_contents=test_input,
