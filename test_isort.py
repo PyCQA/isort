@@ -2317,3 +2317,12 @@ def test_relative_import_of_a_module():
 
     sorted_result = SortImports(file_contents=test_input, force_single_line=True).output
     assert sorted_result == expected_results
+
+
+def test_escaped_parens_sort():
+    test_input = ('from foo import \\ \n'
+                  '(a,\n'
+                  'b,\n'
+                  'c)\n')
+    expected = ('from foo import a, b, c\n')
+    assert SortImports(file_contents=test_input).output == expected
