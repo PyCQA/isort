@@ -261,7 +261,7 @@ def create_parser():
     parser.add_argument('-tc', '--trailing-comma', dest='include_trailing_comma', action='store_true',
                         help='Includes a trailing comma on multi line imports that include parentheses.')
     parser.add_argument('-up', '--use-parentheses', dest='use_parentheses', action='store_true',
-                        help='Use parenthesis for line continuation on lenght limit instead of slashes.')
+                        help='Use parenthesis for line continuation on length limit instead of slashes.')
     parser.add_argument('-v', '--version', action='store_true', dest='show_version')
     parser.add_argument('-vb', '--verbose', action='store_true', dest="verbose",
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
