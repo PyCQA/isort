@@ -74,6 +74,7 @@ Code Contributors
 - Andrew Konstantaras (@akonsta)
 - Jason Brackman (@jasonbrackman) 
 - Kathryn Lingel (@katlings)
+- Andrew Gaul (@gaul)
 
 Documenters
 ===================
