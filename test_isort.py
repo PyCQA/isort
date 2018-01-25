@@ -2294,6 +2294,7 @@ def test_no_inline_sort():
     assert SortImports(file_contents=test_input, no_inline_sort=False, force_single_line=True).output == expected
     assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=True).output == expected
 
+
 def test_relative_import_of_a_module():
     """Imports can be dynamically created (PEP302) and is used by modules such as six.  This test ensures that
     these types of imports are still sorted to the correct type instead of being categorized as local."""
@@ -2316,6 +2317,7 @@ def test_relative_import_of_a_module():
 
     sorted_result = SortImports(file_contents=test_input, force_single_line=True).output
     assert sorted_result == expected_results
+
 
 def test_escaped_parens_sort():
     test_input = ('from foo import \\ \n'
