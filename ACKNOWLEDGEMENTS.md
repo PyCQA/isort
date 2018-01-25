@@ -73,6 +73,7 @@ Code Contributors
 - Jonas Trappenberg (@teeberg)
 - Andrew Konstantaras (@akonsta)
 - Jason Brackman (@jasonbrackman) 
+- Kathryn Lingel (@katlings)
 
 Documenters
 ===================
