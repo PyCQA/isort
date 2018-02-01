@@ -30,6 +30,7 @@ import sys
 import tempfile
 
 from isort.isort import SortImports, exists_case_sensitive
+from isort.main import is_python_file
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
@@ -2326,3 +2327,8 @@ def test_escaped_parens_sort():
                   'c)\n')
     expected = ('from foo import a, b, c\n')
     assert SortImports(file_contents=test_input).output == expected
+
+
+def test_is_python_file_ioerror(tmpdir):
+    does_not_exist = tmpdir.join('fake.txt')
+    assert is_python_file(str(does_not_exist)) is False
