@@ -65,9 +65,13 @@ def is_python_file(path):
     if path.endswith('.py'):
         return True
 
-    with open(path, 'rb') as fp:
-        line = fp.readline(100)
-    return bool(shebang_re.match(line))
+    try:
+        with open(path, 'rb') as fp:
+            line = fp.readline(100)
+    except IOError:
+        return False
+    else:
+        return bool(shebang_re.match(line))
 
 
 class SortAttempt(object):
