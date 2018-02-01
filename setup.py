@@ -38,7 +38,7 @@ except ImportError:
 with open('README.rst', 'r') as f:
     readme = f.read()
 
-install_requires == []
+install_requires = []
 if sys.version_info.major == 2:
     install_requires = ['futures']
 
