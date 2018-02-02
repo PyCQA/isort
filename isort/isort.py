@@ -622,12 +622,18 @@ class SortImports(object):
             next_construct = ""
             self._in_quote = False
             tail = self.out_lines[imports_tail:]
+
             for index, line in enumerate(tail):
+                in_quote = self._in_quote
                 if not self._skip_line(line) and line.strip():
                     if line.strip().startswith("#") and len(tail) > (index + 1) and tail[index + 1].strip():
                         continue
                     next_construct = line
                     break
+                elif not in_quote:
+                    parts = line.split()
+                    if len(parts) >= 3 and parts[1] == '=' and "'" not in parts[0] and '"' not in parts[0]:
+                        next_construct = line
 
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
