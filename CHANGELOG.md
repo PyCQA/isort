@@ -1,10 +1,16 @@
 Changelog
 =========
-### 4.3.0 - In progress
+### 4.3.1 - Feburary 2, 2018 - hotfix release
+- Fixed setup.py errors
+- Fixed issue #654: Trailing comma count error
+- Fixed issue #651: Add imports option is broken
+- Fixed issue #650: Wrong error message displayed
+
+### 4.3.0 - January 31, 2018
 - Fixed #557: `force_alphabetical_sort` and `force_sort_within_sections` can now be utilized together without extra new lines
 - Fix case-sensitive path existence check in Mac OS X
 - Added `--no-lines-before` for more granular control over section output
-- Fixed #493: Unwanted conversion to Windows line endings 
+- Fixed #493: Unwanted conversion to Windows line endings
 - Implemented `--version-number` to retrieve just the version number without the isort logo
 - Breaking changes
     - Python 2.7+ only (dropped 2.6) allowing various code simplifications and improvements.
