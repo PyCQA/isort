@@ -699,7 +699,8 @@ class SortImports(object):
             "," if self.config['include_trailing_comma'] else "",
          )
 
-    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments, need_trailing_char):
+    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments,
+                                     need_trailing_char):
         statement += self._add_comments(comments, "(") + self.line_separator + indent + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -717,11 +718,16 @@ class SortImports(object):
         return statement
 
     def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
-        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments, True) + ")"
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
+                                                 True) + ")"
 
     def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
-        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments, False) \
-               + self.line_separator + ")"
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
+                                                 True) + self.line_separator + ")"
+
+    def _output_vertical_grid_grouped_no_comma(self, statement, imports, white_space, indent, line_length, comments):
+        return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
+                                                 False) + self.line_separator + ")"
 
     def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
         retval = '{0}{1}'.format(statement, ', '.join(imports))
