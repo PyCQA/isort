@@ -2342,3 +2342,18 @@ def test_escaped_parens_sort():
 def test_is_python_file_ioerror(tmpdir):
     does_not_exist = tmpdir.join('fake.txt')
     assert is_python_file(str(does_not_exist)) is False
+
+
+def test_to_ensure_no_uneeded_splits_issue_653():
+    known_settings = {'line_length': 120, 'multi_line_output': 0, 'lines_after_imports': 2,
+                      'sections': ['FUTURE', 'STDLIB', 'THIRDPARTY', 'INDICO', 'FIRSTPARTY', 'LOCALFOLDER'],
+                      'known_third_party': ['flask_multipass', 'flask_pluginengine'], 'force_single_line': False}
+    test_input = ('from collections import OrderedDict\n'
+                  'from datetime import time as dt_time\n'
+                  'from datetime import datetime, timedelta\n'
+                  '\n'
+                  'import pytz\n'
+                  'from babel.dates import format_date as _format_date\n')
+    output = SortImports(file_contents=test_input, **known_settings).output
+    import pdb; pdb.set_trace()
+    assert SortImports(file_contents=test_input, **known_settings).output == test_input
