@@ -43,7 +43,7 @@ if sys.version_info.major == 2:
     install_requires = ['futures']
 
 setup(name='isort',
-      version='4.3.0',
+      version='4.3.1',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
