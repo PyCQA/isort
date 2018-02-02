@@ -153,6 +153,13 @@ def test_line_length():
                            "                         lib18, lib20,\n"
                            "                         lib21, lib22)\n")
 
+    TEST_INPUT = ('from django.contrib.gis.gdal.field import (\n'
+                  '    OFTDate, OFTDateTime, OFTInteger, OFTInteger64, OFTReal, OFTString,\n'
+                  '    OFTTime,\n'
+                  ')\n')  # Test case described in issue #654
+    assert SortImports(file_contents=TEST_INPUT, include_trailing_comma=True, line_length=79,
+                       multi_line_output=WrapModes.VERTICAL_GRID_GROUPED, balanced_wrapping=False).output == TEST_INPUT
+
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32).output
     assert test_output == ("from third_party import (lib1,\n"
                            "                         lib2,\n"
@@ -353,11 +360,14 @@ def test_output_modes():
 
     output_noqa = SortImports(file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
                               multi_line_output=WrapModes.NOQA).output
-    assert output_noqa == "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  # NOQA comment\n"  # NOQA
+    assert output_noqa == ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
+                           " lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  "
+                           "# NOQA comment\n")
 
-    test_output_vertical_grid_grouped_doesnt_wrap_early = SortImports(file_contents=SINGLE_LINE_LONG_IMPORT,
-                                                                      multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-                                                                      line_length=40, indent='    ').output
+    test_case = SortImports(file_contents=SINGLE_LINE_LONG_IMPORT,
+                            multi_line_output=WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
+                            line_length=40, indent='    ').output
+    test_output_vertical_grid_grouped_doesnt_wrap_early = test_case
     assert test_output_vertical_grid_grouped_doesnt_wrap_early == ("from third_party import (\n"
                                                                    "    lib1, lib2, lib3, lib4, lib5, lib5ab\n"
                                                                    ")\n")

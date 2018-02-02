@@ -230,7 +230,7 @@ def create_parser():
                         dest='length_sort', action='store_true')
     parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
-                        '5-vert-grid-grouped).')
+                        '5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).')
     inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
                         help='Leaves `from` imports with multiple imports \'as-is\' (e.g. `from foo import a, c ,b`).')
     parser.add_argument('-nlb', '--no-lines-before', help='Sections which should not be split with previous by empty lines',
