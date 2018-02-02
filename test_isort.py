@@ -153,6 +153,13 @@ def test_line_length():
                            "                         lib18, lib20,\n"
                            "                         lib21, lib22)\n")
 
+    TEST_INPUT = ('from django.contrib.gis.gdal.field import (\n'
+                  '    OFTDate, OFTDateTime, OFTInteger, OFTInteger64, OFTReal, OFTString,\n'
+                  '    OFTTime,\n'
+                  ')\n')  # Test case described in issue #654
+    assert SortImports(file_contents=TEST_INPUT, include_trailing_comma=True, line_length=79,
+                       multi_line_output=WrapModes.VERTICAL_GRID_GROUPED).output == TEST_INPUT
+
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32).output
     assert test_output == ("from third_party import (lib1,\n"
                            "                         lib2,\n"
