@@ -364,10 +364,10 @@ def test_output_modes():
                            " lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  "
                            "# NOQA comment\n")
 
-    test_output_vertical_grid_grouped_doesnt_wrap_early = SortImports(file_contents=SINGLE_LINE_LONG_IMPORT,
-                                                                      multi_line_output= \
-                                                                          WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
-                                                                      line_length=40, indent='    ').output
+    test_case = SortImports(file_contents=SINGLE_LINE_LONG_IMPORT,
+                            multi_line_output=WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
+                            line_length=40, indent='    ').output
+    test_output_vertical_grid_grouped_doesnt_wrap_early = test_case
     assert test_output_vertical_grid_grouped_doesnt_wrap_early == ("from third_party import (\n"
                                                                    "    lib1, lib2, lib3, lib4, lib5, lib5ab\n"
                                                                    ")\n")
