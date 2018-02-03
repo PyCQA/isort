@@ -2342,3 +2342,20 @@ def test_escaped_parens_sort():
 def test_is_python_file_ioerror(tmpdir):
     does_not_exist = tmpdir.join('fake.txt')
     assert is_python_file(str(does_not_exist)) is False
+
+
+def test_to_ensure_imports_are_brought_to_top_issue_651():
+    test_input = ('from __future__ import absolute_import, unicode_literals\n'
+                  '\n'
+                  'VAR = """\n'
+                  'multiline text\n'
+                  '"""\n'
+                  '\n'
+                  'from __future__ import unicode_literals\n'
+                  'from __future__ import absolute_import\n')
+    expected_output = ('from __future__ import absolute_import, unicode_literals\n'
+                       '\n'
+                       'VAR = """\n'
+                       'multiline text\n'
+                       '"""\n')
+    assert SortImports(file_contents=test_input).output == expected_output

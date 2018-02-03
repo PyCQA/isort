@@ -634,6 +634,7 @@ class SortImports(object):
                     parts = line.split()
                     if len(parts) >= 3 and parts[1] == '=' and "'" not in parts[0] and '"' not in parts[0]:
                         next_construct = line
+                        break
 
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
@@ -820,8 +821,6 @@ class SortImports(object):
                     else:
                         self._in_quote = line[index]
                 elif line[index] == "#":
-                    break
-                elif line[index] not in (' ', '\t'):
                     break
                 index += 1
 
