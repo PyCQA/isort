@@ -2359,3 +2359,11 @@ def test_to_ensure_imports_are_brought_to_top_issue_651():
                        'multiline text\n'
                        '"""\n')
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_to_ensure_importing_from_imports_module_works_issue_662():
+    test_input = ('@wraps(fun)\n'
+                  'def __inner(*args, **kwargs):\n'
+                  '    from .imports import qualname\n'
+                  '    warn(description=description or qualname(fun), deprecation=deprecation, removal=removal)\n')
+    assert SortImports(file_contents=test_input).output == test_input
