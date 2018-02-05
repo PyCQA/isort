@@ -2367,3 +2367,20 @@ def test_to_ensure_importing_from_imports_module_works_issue_662():
                   '    from .imports import qualname\n'
                   '    warn(description=description or qualname(fun), deprecation=deprecation, removal=removal)\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_to_ensure_no_unexpected_changes_issue_666():
+    test_input = ('from django.conf import settings\n'
+                  'from django.core.management import call_command\n'
+                  'from django.core.management.base import BaseCommand\n'
+                  'from django.utils.translation import ugettext_lazy as _\n'
+                  '\n'
+                  'TEMPLATE = """\n'
+                  '# This file is generated automatically with the management command\n'
+                  '#\n'
+                  '#    manage.py bis_compile_i18n\n'
+                  '#\n'
+                  '# please dont change it manually.\n'
+                  'from django.utils.translation import ugettext_lazy as _\n'
+                  '"""\n')
+    assert SortImports(file_contents=test_input).output == test_input
