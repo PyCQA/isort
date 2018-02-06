@@ -2384,3 +2384,12 @@ def test_to_ensure_no_unexpected_changes_issue_666():
                   'from django.utils.translation import ugettext_lazy as _\n'
                   '"""\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_to_ensure_tabs_dont_become_space_issue_665():
+    test_input = ('import os\n'
+                  '\n'
+                  '\n'
+                  'def my_method():\n'
+                  '\tpass\n')
+    assert SortImports(file_contents=test_input).output == test_input
