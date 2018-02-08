@@ -14,6 +14,7 @@ Changelog
 - Fix case-sensitive path existence check in Mac OS X
 - Added `--no-lines-before` for more granular control over section output
 - Fixed #493: Unwanted conversion to Windows line endings
+- Fixed #590: Import `as` mucks with alphabetical sorting
 - Implemented `--version-number` to retrieve just the version number without the isort logo
 - Breaking changes
     - Python 2.7+ only (dropped 2.6) allowing various code simplifications and improvements.
