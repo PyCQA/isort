@@ -23,8 +23,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from tempfile import NamedTemporaryFile
 import codecs
 import os
+import io
 import shutil
 import sys
 import tempfile
@@ -2393,3 +2395,35 @@ def test_to_ensure_tabs_dont_become_space_issue_665():
                   'def my_method():\n'
                   '\tpass\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_new_lines_are_preserved():
+    with NamedTemporaryFile('w', suffix='py') as rn_newline:
+        with io.open(rn_newline.name, mode='w', newline='') as rn_newline_input:
+            rn_newline_input.write('import sys\r\nimport os\r\n')
+            rn_newline_input.flush()
+            
+            SortImports(rn_newline.name)
+            with io.open(rn_newline.name, newline='') as rn_newline_file:
+                rn_newline_contents = rn_newline_file.read()
+    assert rn_newline_contents == 'import os\r\nimport sys\r\n'
+    
+    with NamedTemporaryFile('w', suffix='py') as r_newline:
+        with io.open(r_newline.name, mode='w', newline='') as r_newline_input:
+            r_newline_input.write('import sys\rimport os\r')
+            r_newline_input.flush()
+            
+            SortImports(r_newline.name)
+            with io.open(r_newline.name, newline='') as r_newline_file:
+                r_newline_contents = r_newline_file.read()
+    assert r_newline_contents == 'import os\rimport sys\r'
+    
+    with NamedTemporaryFile('w', suffix='py') as n_newline:
+        with io.open(n_newline.name, mode='w', newline='') as n_newline_input:
+            n_newline_input.write('import sys\nimport os\n')
+            n_newline_input.flush()
+            
+            SortImports(n_newline.name)
+            with io.open(n_newline.name, newline='') as n_newline_file:
+                n_newline_contents = n_newline_file.read()
+    assert n_newline_contents == 'import os\nimport sys\n'
