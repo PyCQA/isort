@@ -75,6 +75,7 @@ Code Contributors
 - Jason Brackman (@jasonbrackman) 
 - Kathryn Lingel (@katlings)
 - Andrew Gaul (@gaul)
+- John Chadwick (@jchv)
 
 Documenters
 ===================
