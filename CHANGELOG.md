@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.4 - Feburary 11, 2018 - hotfix release
+- Fixed issue #671: isort is corrupting CRLF files
+
 ### 4.3.3 - Feburary 5, 2018 - hotfix release
 - Fixed issue #665: Tabs turned into single spaces
 
