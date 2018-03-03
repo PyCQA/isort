@@ -416,8 +416,11 @@ class SortImports(object):
                                 self.remove_imports]
 
             sub_modules = ['{0}.{1}'.format(module, from_import) for from_import in from_imports]
-            as_imports = dict((from_import, "{0} as {1}".format(from_import, self.as_map[sub_module])) for
-                              from_import, sub_module in zip(from_imports, sub_modules) if sub_module in self.as_map)
+            as_imports = {
+                from_import: "{0} as {1}".format(from_import, self.as_map[sub_module])
+                for from_import, sub_module in zip(from_imports, sub_modules)
+                if sub_module in self.as_map
+            }
             if self.config['combine_as_imports'] and not ("*" in from_imports and self.config['combine_star']):
                 for from_import in copy.copy(from_imports):
                     if from_import in as_imports:
