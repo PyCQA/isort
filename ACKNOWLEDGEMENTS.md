@@ -72,10 +72,11 @@ Code Contributors
 - @Brightcells
 - Jonas Trappenberg (@teeberg)
 - Andrew Konstantaras (@akonsta)
-- Jason Brackman (@jasonbrackman) 
+- Jason Brackman (@jasonbrackman)
 - Kathryn Lingel (@katlings)
 - Andrew Gaul (@gaul)
 - John Chadwick (@jchv)
+- Jon Dufresne (@jdufresne)
 
 Documenters
 ===================
