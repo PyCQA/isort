@@ -38,10 +38,6 @@ except ImportError:
 with open('README.rst', 'r') as f:
     readme = f.read()
 
-install_requires = []
-if sys.version_info.major == 2:
-    install_requires = ['futures']
-
 setup(name='isort',
       version='4.3.4',
       description='A Python utility / library to sort Python imports.',
@@ -58,9 +54,8 @@ setup(name='isort',
         'pylama.linter': ['isort = isort.pylama_isort:Linter'],
       },
       packages=['isort'],
-      install_requires=install_requires,
+      install_requires=['futures; python_version < "3.2"'],
       python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
-      extras_require={':python_version=="2.7"': ['futures']},
       cmdclass={'test': PyTest},
       keywords='Refactor, Python, Python2, Python3, Refactoring, Imports, Sort, Clean',
       classifiers=['Development Status :: 6 - Mature',
