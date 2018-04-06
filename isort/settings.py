@@ -179,6 +179,9 @@ def _update_with_config_file(file_path, sections, computed_settings):
     if file_path.endswith('.editorconfig'):
         indent_style = settings.pop('indent_style', '').strip()
         indent_size = settings.pop('indent_size', '').strip()
+        if indent_size == "tab":
+            indent_size = settings.pop('tab_width', '').strip()
+
         if indent_style == 'space':
             computed_settings['indent'] = ' ' * (indent_size and int(indent_size) or 4)
         elif indent_style == 'tab':
