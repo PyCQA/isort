@@ -507,9 +507,9 @@ class SortImports(object):
                             self.config['multi_line_output'] = 4
                             try:
                                 other_import_statement = self._multi_line_reformat(import_start, from_import_section, comments)
-                                if (other_import_statement.count('\n') < import_statement.count('\n')
-                                        or max(len(x)
-                                               for x in import_statement.split('\n')) > self.config['line_length']):
+                                if (other_import_statement.count('\n') < import_statement.count('\n') or
+                                        max(len(x)
+                                            for x in import_statement.split('\n')) > self.config['line_length']):
                                     import_statement = other_import_statement
                             finally:
                                 self.config['multi_line_output'] = 0
