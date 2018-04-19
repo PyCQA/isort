@@ -17,7 +17,7 @@
   :alt: Coverage
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
-    :target: https://pypi.python.org/pypi/hug/
+    :target: https://pypi.org/project/hug/
     :alt: License
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
