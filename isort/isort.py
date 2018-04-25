@@ -266,6 +266,8 @@ class SortImports(object):
         # if not copied, consequently sys.path, which will grow unbounded
         # with duplicates on every call to this method.
         paths = list(sys.path)
+        # restore the original import path (i.e. not the path to bin/isort)
+        paths[0] = os.getcwd()
         virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         virtual_env_src = False
         if virtual_env:
