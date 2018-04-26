@@ -187,7 +187,7 @@ class SortImports(object):
                 check_output = check_output.replace(self.line_separator, "").replace(" ", "")
                 check_against = check_against.replace(self.line_separator, "").replace(" ", "")
 
-            if check_output == check_against:
+            if check_output.strip() == check_against.strip():
                 if self.config['verbose']:
                     print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
                 return
