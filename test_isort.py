@@ -1122,8 +1122,8 @@ def test_keep_comments():
     test_input = ("from a import b, c  # My Comment1\n"
                   "from a import c, d # My Comment2 is really really really really long\n")
     assert SortImports(file_contents=test_input, line_length=45).output == \
-                      ("from a import (b,  # My Comment1; My Comment2 is really really really really long\n"
-                       "               c, d)\n")
+                      ("from a import (  # My Comment1; My Comment2 is really really really really long\n"
+                       "    b, c, d)\n")
 
     # Test that comments are not stripped from 'import ... as ...' by default
     test_input = ("from a import b as bb  # b comment\n"
