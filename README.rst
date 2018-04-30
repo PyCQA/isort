@@ -197,7 +197,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Custom Sections (Defined by sections list in configuration file)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
-and wraps long from imports to the specified line length (defaults to 80).
+and wraps long from imports to the specified line length (defaults to 79).
 
 When will isort not work?
 =========================
