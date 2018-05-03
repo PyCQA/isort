@@ -77,6 +77,8 @@ Code Contributors
 - Andrew Gaul (@gaul)
 - John Chadwick (@jchv)
 - Jon Dufresne (@jdufresne)
+- Brian F. Baron (@briabar)
+
 
 Documenters
 ===================
