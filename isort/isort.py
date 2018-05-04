@@ -150,6 +150,11 @@ class SortImports(object):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
             config_key = 'known_{0}'.format(known_placement.lower())
             known_patterns = self.config.get(config_key, [])
+            known_patterns = [
+                pattern
+                for known_pattern in known_patterns
+                for pattern in self._parse_known_pattern(known_pattern)
+            ]
             for known_pattern in known_patterns:
                 self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'),
                                             placement))
@@ -214,6 +219,21 @@ class SortImports(object):
             with io.open(self.file_path, encoding=self.file_encoding, mode='w', newline='') as output_file:
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
+
+    @staticmethod
+    def _parse_known_pattern(pattern):
+        patterns = [pattern]
+
+        # Expand pattern if identified as a directory and find sub packages
+        if pattern.endswith(os.path.sep):
+            for path, dirs, files in os.walk(pattern):
+                path = path[len(pattern):]
+                if os.path.sep in path:
+                    continue
+                if '__init__.py' in files:
+                    patterns.append(path)
+
+        return patterns
 
     def _show_diff(self, file_contents):
         for line in unified_diff(

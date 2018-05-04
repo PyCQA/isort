@@ -806,6 +806,21 @@ def test_thirdy_party_overrides_standard_section():
                            "import profile.test\n")
 
 
+def test_known_pattern_path_expansion():
+    """Test to ensure patterns ending with path sep gets expanded and nested packages treated as known patterns"""
+    test_input = ("import sys\n"
+                  "import isort.settings\n"
+                  "import this\n"
+                  "import os\n")
+    test_output = SortImports(file_contents=test_input,
+    known_first_party=['./', 'this']).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import isort.settings\n"
+                           "import this\n")
+
+
 def test_force_single_line_imports():
     """Test to ensure forcing imports to each have their own line works as expected."""
     test_input = ("from third_party import lib1, lib2, \\\n"
