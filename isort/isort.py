@@ -222,16 +222,17 @@ class SortImports(object):
 
     @staticmethod
     def _parse_known_pattern(pattern):
-        patterns = [pattern]
-
-        # Expand pattern if identified as a directory and find sub packages
+        """
+        Expand pattern if identified as a directory and return sub packages
+        """
         if pattern.endswith(os.path.sep):
-            for path, dirs, files in os.walk(pattern):
-                path = path[len(pattern):]
-                if os.path.sep in path:
-                    continue
-                if '__init__.py' in files:
-                    patterns.append(path)
+            patterns = [
+                package
+                for package in os.listdir(pattern)
+                if os.path.exists(os.path.join(pattern, package, '__init__.py'))
+            ]
+        else:
+            patterns = [pattern]
 
         return patterns
 

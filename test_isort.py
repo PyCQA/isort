@@ -812,8 +812,7 @@ def test_known_pattern_path_expansion():
                   "import isort.settings\n"
                   "import this\n"
                   "import os\n")
-    test_output = SortImports(file_contents=test_input,
-    known_first_party=['./', 'this']).output
+    test_output = SortImports(file_contents=test_input, known_first_party=['./', 'this']).output
     assert test_output == ("import os\n"
                            "import sys\n"
                            "\n"
