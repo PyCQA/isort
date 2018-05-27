@@ -123,7 +123,10 @@ if PY3:
             return hasattr(entity, '__call__')
         common.append('callable')
 
-    __all__ = common + ['urllib']
+    def apply_changes_to_python_environment():
+        pass
+
+    __all__ = common + ['urllib', 'apply_changes_to_python_environment']
 else:
     from itertools import ifilter as filter  # noqa: F401
     from itertools import imap as map  # noqa: F401
@@ -139,10 +142,6 @@ else:
     import sys
     stdout = sys.stdout
     stderr = sys.stderr
-    reload(sys)
-    sys.stdout = stdout
-    sys.stderr = stderr
-    sys.setdefaultencoding('utf-8')
 
     def _create_not_allowed(name):
         def _not_allow(*args, **kwargs):
@@ -150,8 +149,22 @@ else:
         _not_allow.__name__ = name
         return _not_allow
 
-    for removed in ('apply', 'cmp', 'coerce', 'execfile', 'raw_input', 'unpacks'):
-        globals()[removed] = _create_not_allowed(removed)
+    python_environment_changes_applied = False
+
+    def apply_changes_to_python_environment():
+        global python_environment_changes_applied
+        if python_environment_changes_applied:
+            return
+
+        reload(sys)
+        sys.stdout = stdout
+        sys.stderr = stderr
+        sys.setdefaultencoding('utf-8')
+
+        for removed in ('apply', 'cmp', 'coerce', 'execfile', 'raw_input', 'unpacks'):
+            globals()[removed] = _create_not_allowed(removed)
+
+        python_environment_changes_applied = True
 
     def u(s):
         if isinstance(s, unicode):
