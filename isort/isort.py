@@ -41,7 +41,7 @@ from glob import glob
 
 from . import settings
 from .natural import nsorted
-from .pie_slice import OrderedSet, input, itemsview
+from .pie_slice import OrderedSet, input, itemsview, PY2
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -152,6 +152,11 @@ class SortImports(object):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
             config_key = 'known_{0}'.format(known_placement.lower())
             known_patterns = self.config.get(config_key, [])
+            known_patterns = [
+                pattern
+                for known_pattern in known_patterns
+                for pattern in self._parse_known_pattern(known_pattern)
+            ]
             for known_pattern in known_patterns:
                 self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'),
                                             placement))
@@ -216,6 +221,30 @@ class SortImports(object):
             with io.open(self.file_path, encoding=self.file_encoding, mode='w', newline='') as output_file:
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
+
+    def _is_package(self, path):
+        """
+        Evaluates if path is a python package
+        """
+        if PY2:
+            return os.path.exists(os.path.join(path, '__init__.py'))
+        else:
+            return os.path.isdir(path)
+
+    def _parse_known_pattern(self, pattern):
+        """
+        Expand pattern if identified as a directory and return found sub packages
+        """
+        if pattern.endswith(os.path.sep):
+            patterns = [
+                filename
+                for filename in os.listdir(pattern)
+                if self._is_package(os.path.join(pattern, filename))
+            ]
+        else:
+            patterns = [pattern]
+
+        return patterns
 
     def _show_diff(self, file_contents):
         for line in unified_diff(

@@ -33,6 +33,7 @@ import tempfile
 
 from isort.isort import SortImports, exists_case_sensitive
 from isort.main import is_python_file
+from isort.pie_slice import PY2
 from isort.settings import WrapModes
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
@@ -804,6 +805,35 @@ def test_thirdy_party_overrides_standard_section():
                            "import this\n"
                            "\n"
                            "import profile.test\n")
+
+
+def test_known_pattern_path_expansion():
+    """Test to ensure patterns ending with path sep gets expanded and nested packages treated as known patterns"""
+    test_input = ("from kate_plugin import isort_plugin\n"
+                  "import sys\n"
+                  "import isort.settings\n"
+                  "import this\n"
+                  "import os\n")
+    test_output = SortImports(
+        file_contents=test_input,
+        default_section='THIRDPARTY',
+        known_first_party=['./', 'this']
+    ).output
+    if PY2:
+        assert test_output == ("import os\n"
+                               "import sys\n"
+                               "\n"
+                               "from kate_plugin import isort_plugin\n"
+                               "\n"
+                               "import isort.settings\n"
+                               "import this\n")
+    else:
+        assert test_output == ("import os\n"
+                               "import sys\n"
+                               "\n"
+                               "import isort.settings\n"
+                               "import this\n"
+                               "from kate_plugin import isort_plugin\n")
 
 
 def test_force_single_line_imports():
