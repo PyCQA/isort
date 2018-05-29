@@ -117,6 +117,8 @@ class SortImports(object):
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             self.skipped = True
             self.output = None
+            if write_to_stdout and file_contents:
+                sys.stdout.write(file_contents)
             return
 
         if self.config['line_ending']:
