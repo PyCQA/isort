@@ -2497,3 +2497,44 @@ def test_requirements_finder(tmpdir):
     assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
 
     req_file.remove()
+
+
+PIPFILE = """
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.5"
+
+[packages]
+Django = "~=1.11"
+deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
+
+[dev-packages]
+"""
+
+
+def test_pipfile_finder(tmpdir):
+    pipfile = tmpdir.join('Pipfile')
+    pipfile.write(PIPFILE)
+    si = SortImports(file_contents="")
+    finder = finders.PipfileFinder(
+        config=si.config,
+        sections=si.sections,
+        path=str(tmpdir)
+    )
+
+    assert list(finder._get_names()) == ['Django', 'deal']  # file parsing
+
+    assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+    assert finder.find("flask") is None  # package not in reqs
+    assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+
+    assert len(finder.mapping) > 100
+    assert finder._normalize_name('deal') == 'deal'
+    assert finder._normalize_name('Django') == 'django'  # lowercase
+    assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+
+    pipfile.remove()

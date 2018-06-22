@@ -30,6 +30,11 @@ except ImportError:
     except ImportError:
         parse_requirements = None
 
+try:
+    from requirementslib import Pipfile
+except ImportError:
+    Pipfile = None
+
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -161,16 +166,6 @@ class PathFinder(BaseFinder):
                 return self.config['default_section']
 
 
-class SetupFinder(BaseFinder):
-    def find(self, module_name):
-        pass
-
-
-class PipfileFinder(BaseFinder):
-    def find(self, module_name):
-        pass
-
-
 class RequirementsFinder(BaseFinder):
     exts = ('.txt', '.in')
 
@@ -227,6 +222,33 @@ class RequirementsFinder(BaseFinder):
                     return self.sections.THIRDPARTY
 
 
+class PipfileFinder(RequirementsFinder):
+    def _get_names(self):
+        project = Pipfile.load(self.path)
+        sections = project.get_sections()
+        if 'packages' not in sections:
+            return
+        for name, version in sections['packages'].items():
+            yield name
+
+    def find(self, module_name):
+        # requirementslib is not installed yet
+        if Pipfile is None:
+            return
+        # Pipfile does not exists
+        if not os.path.exists(os.path.join(self.path, 'Pipfile')):
+            return
+
+        module_name, _sep, _submodules = module_name.partition('.')
+        module_name = module_name.lower()
+        if not module_name:
+            return
+
+        for name in self._get_names():
+            if module_name == self._normalize_name(name):
+                return self.sections.THIRDPARTY
+
+
 class DefaultFinder(BaseFinder):
     def find(self, module_name):
         return self.config['default_section']
@@ -238,8 +260,7 @@ class FindersManager(object):
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
-        SetupFinder,
-        PipfileFinder,
+        # PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
     )
