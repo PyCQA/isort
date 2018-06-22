@@ -31,6 +31,7 @@ import shutil
 import sys
 import tempfile
 
+from isort import finders
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
@@ -2466,3 +2467,23 @@ def test_new_lines_are_preserved():
             with io.open(n_newline.name, newline='') as n_newline_file:
                 n_newline_contents = n_newline_file.read()
     assert n_newline_contents == 'import os\nimport sys\n'
+
+
+def test_requirements_finder(tmpdir):
+    req_file = tmpdir.join('requirements.txt')
+    req_file.write(
+        "Django==1.11\n"
+        "-e git+https://github.com/orsinium/deal.git#egg=deal\n"
+    )
+    si = SortImports(file_contents="")
+    finder = finders.RequirementsFinder(
+        config=si.config,
+        sections=si.sections,
+        path=str(tmpdir)
+    )
+    files = list(finder._get_files())
+    assert len(files) == 1
+    assert files[0].endswith('requirements.txt')
+    assert list(finder._get_names(str(req_file))) == ['Django', 'deal']
+    assert finder.find("django") == si.sections.THIRDPARTY
+    req_file.remove()

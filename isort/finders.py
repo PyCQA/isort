@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import os.path
 import re
 import sys
 import sysconfig
@@ -11,6 +12,15 @@ from glob import glob
 
 from .pie_slice import PY2
 from .utils import exists_case_sensitive
+
+
+try:
+    # pip>=10
+    from pip._internal.download import PipSession
+    from pip._internal.req import parse_requirements
+except ImportError:
+    from pip.download import PipSession
+    from pip.req import parse_requirements
 
 
 KNOWN_SECTION_MAPPING = {
@@ -143,6 +153,50 @@ class PathFinder(BaseFinder):
                 return self.config['default_section']
 
 
+class SetupFinder(BaseFinder):
+    def find(self, module_name):
+        pass
+
+
+class PipfileFinder(BaseFinder):
+    def find(self, module_name):
+        pass
+
+
+class RequirementsFinder(BaseFinder):
+    exts = ('.txt', '.in')
+
+    def __init__(self, config, sections, path='.'):
+        super(RequirementsFinder, self).__init__(config, sections)
+        self.path = path
+
+    def _get_files(self):
+        for fname in os.listdir(self.path):
+            if not os.path.isfile(fname):
+                continue
+            if 'requirements' not in fname:
+                continue
+            for ext in self.exts:
+                if fname.endswith(ext):
+                    yield os.path.join(self.path, fname)
+                    break
+
+    def _get_names(self, path):
+        requirements = parse_requirements(path, session=PipSession())
+        for req in requirements:
+            yield req.name
+
+    def find(self, module_name):
+        module_name, _sep, _submodules = module_name.partition('.')
+        module_name = module_name.lower()
+
+        for path in self._get_files():
+            for name in self._get_names(path):
+                print(repr(name))
+                if module_name == name.lower():
+                    return self.sections.THIRDPARTY
+
+
 class DefaultFinder(BaseFinder):
     def find(self, module_name):
         return self.config['default_section']
@@ -154,6 +208,9 @@ class FindersManager(object):
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
+        SetupFinder,
+        PipfileFinder,
+        # RequirementsFinder,
         DefaultFinder,
     )
 
