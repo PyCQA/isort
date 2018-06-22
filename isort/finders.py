@@ -184,15 +184,17 @@ class RequirementsFinder(BaseFinder):
     def _get_names(self, path):
         requirements = parse_requirements(path, session=PipSession())
         for req in requirements:
-            yield req.name
+            if req.name:
+                yield req.name
 
     def find(self, module_name):
         module_name, _sep, _submodules = module_name.partition('.')
         module_name = module_name.lower()
+        if not module_name:
+            return
 
         for path in self._get_files():
             for name in self._get_names(path):
-                print(repr(name))
                 if module_name == name.lower():
                     return self.sections.THIRDPARTY
 
@@ -210,7 +212,7 @@ class FindersManager(object):
         PathFinder,
         SetupFinder,
         PipfileFinder,
-        # RequirementsFinder,
+        RequirementsFinder,
         DefaultFinder,
     )
 

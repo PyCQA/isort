@@ -2486,4 +2486,4 @@ def test_requirements_finder(tmpdir):
     assert files[0].endswith('requirements.txt')
     assert list(finder._get_names(str(req_file))) == ['Django', 'deal']
     assert finder.find("django") == si.sections.THIRDPARTY
-    req_file.remove()
+    os.unlink(str(req_file))
