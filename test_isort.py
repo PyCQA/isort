@@ -2526,7 +2526,7 @@ def test_pipfile_finder(tmpdir):
         path=str(tmpdir)
     )
 
-    assert list(finder._get_names()) == ['Django', 'deal']  # file parsing
+    assert set(finder._get_names()) == {'Django', 'deal'}  # file parsing
 
     assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
     assert finder.find("flask") is None  # package not in reqs

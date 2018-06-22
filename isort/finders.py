@@ -260,7 +260,7 @@ class FindersManager(object):
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
-        # PipfileFinder,
+        PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
     )
