@@ -19,8 +19,11 @@ try:
     from pip._internal.download import PipSession
     from pip._internal.req import parse_requirements
 except ImportError:
-    from pip.download import PipSession
-    from pip.req import parse_requirements
+    try:
+        from pip.download import PipSession
+        from pip.req import parse_requirements
+    except ImportError:
+        parse_requirements = None
 
 
 KNOWN_SECTION_MAPPING = {
@@ -188,6 +191,10 @@ class RequirementsFinder(BaseFinder):
                 yield req.name
 
     def find(self, module_name):
+        # pip not installed yet
+        if not parse_requirements:
+            return
+
         module_name, _sep, _submodules = module_name.partition('.')
         module_name = module_name.lower()
         if not module_name:
