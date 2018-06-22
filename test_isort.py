@@ -2485,10 +2485,15 @@ def test_requirements_finder(tmpdir):
     files = list(finder._get_files())
     assert len(files) == 1  # file finding
     assert files[0].endswith('requirements.txt')  # file finding
-    assert list(finder._get_names(str(req_file))) == ['Django', 'deal'] # file parsing
+    assert list(finder._get_names(str(req_file))) == ['Django', 'deal']  # file parsing
 
     assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
     assert finder.find("flask") is None  # package not in reqs
     assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+
+    assert len(finder.mapping) > 100
+    assert finder._normalize_name('deal') == 'deal'
+    assert finder._normalize_name('Django') == 'django'  # lowercase
+    assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
 
     req_file.remove()

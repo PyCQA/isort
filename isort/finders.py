@@ -2,6 +2,7 @@
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import inspect
 import os
 import os.path
 import re
@@ -13,6 +14,10 @@ from glob import glob
 from .pie_slice import PY2
 from .utils import exists_case_sensitive
 
+try:
+    from pipreqs import pipreqs
+except ImportError:
+    pipreqs = None
 
 try:
     # pip>=10
@@ -172,6 +177,17 @@ class RequirementsFinder(BaseFinder):
     def __init__(self, config, sections, path='.'):
         super(RequirementsFinder, self).__init__(config, sections)
         self.path = path
+        self.mapping = self._load_mapping()
+
+    @staticmethod
+    def _load_mapping():
+        if not pipreqs:
+            return
+        path = os.path.dirname(inspect.getfile(pipreqs))
+        path = os.path.join(path, 'mapping')
+        with open(path, "r") as f:
+            # pypi_name: import_name
+            return dict(line.strip().split(":")[::-1] for line in f)
 
     def _get_files(self):
         for fname in os.listdir(self.path):
@@ -190,6 +206,11 @@ class RequirementsFinder(BaseFinder):
             if req.name:
                 yield req.name
 
+    def _normalize_name(self, name):
+        if not self.mapping:
+            return name.lower()
+        return self.mapping.get(name, name).lower()
+
     def find(self, module_name):
         # pip not installed yet
         if not parse_requirements:
@@ -202,7 +223,7 @@ class RequirementsFinder(BaseFinder):
 
         for path in self._get_files():
             for name in self._get_names(path):
-                if module_name == name.lower():
+                if module_name == self._normalize_name(name):
                     return self.sections.THIRDPARTY
 
 

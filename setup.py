@@ -57,7 +57,7 @@ setup(name='isort',
       extra_requires={
           'requirements': ['pip', 'pipreqs'],
           'pipfile': ['pip', 'requirementslib'],
-      }
+      },
       install_requires=['futures; python_version < "3.2"'],
       python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
       cmdclass={'test': PyTest},
