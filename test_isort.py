@@ -31,7 +31,8 @@ import shutil
 import sys
 import tempfile
 
-from isort.isort import SortImports, exists_case_sensitive
+from isort.isort import SortImports
+from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.pie_slice import PY2
 from isort.settings import WrapModes
