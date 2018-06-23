@@ -54,7 +54,7 @@ setup(name='isort',
         'pylama.linter': ['isort = isort.pylama_isort:Linter'],
       },
       packages=['isort'],
-      extra_requires={
+      extras_require={
           'requirements': ['pip', 'pipreqs'],
           'pipfile': ['pipreqs', 'requirementslib'],
       },

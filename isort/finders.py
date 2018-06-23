@@ -202,9 +202,9 @@ class RequirementsFinder(BaseFinder):
                 yield req.name
 
     def _normalize_name(self, name):
-        if not self.mapping:
-            return name.lower()
-        return self.mapping.get(name, name).lower()
+        if self.mapping:
+            name = self.mapping.get(name, name)
+        return name.lower().replace('-', '_')
 
     def find(self, module_name):
         # pip not installed yet

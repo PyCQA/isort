@@ -2495,6 +2495,7 @@ def test_requirements_finder(tmpdir):
     assert finder._normalize_name('deal') == 'deal'
     assert finder._normalize_name('Django') == 'django'  # lowercase
     assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+    assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     req_file.remove()
 
@@ -2536,5 +2537,6 @@ def test_pipfile_finder(tmpdir):
     assert finder._normalize_name('deal') == 'deal'
     assert finder._normalize_name('Django') == 'django'  # lowercase
     assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+    assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     pipfile.remove()
