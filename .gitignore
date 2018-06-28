@@ -29,6 +29,7 @@ npm-debug.log
 nosetests.xml
 htmlcov
 .cache
+.pytest_cache/
 
 # Translations
 *.mo
