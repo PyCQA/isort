@@ -2470,32 +2470,35 @@ def test_new_lines_are_preserved():
 
 
 def test_requirements_finder(tmpdir):
+    subdir = tmpdir.mkdir('subdir').join("lol.txt")
+    subdir.write("flask")
     req_file = tmpdir.join('requirements.txt')
     req_file.write(
         "Django==1.11\n"
         "-e git+https://github.com/orsinium/deal.git#egg=deal\n"
     )
     si = SortImports(file_contents="")
-    finder = finders.RequirementsFinder(
-        config=si.config,
-        sections=si.sections,
-        path=str(tmpdir)
-    )
+    for path in (str(tmpdir), str(subdir)):
+        finder = finders.RequirementsFinder(
+            config=si.config,
+            sections=si.sections,
+            path=path
+        )
 
-    files = list(finder._get_files())
-    assert len(files) == 1  # file finding
-    assert files[0].endswith('requirements.txt')  # file finding
-    assert list(finder._get_names(str(req_file))) == ['Django', 'deal']  # file parsing
+        files = list(finder._get_files())
+        assert len(files) == 1  # file finding
+        assert files[0].endswith('requirements.txt')  # file finding
+        assert list(finder._get_names(str(req_file))) == ['Django', 'deal']  # file parsing
 
-    assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
-    assert finder.find("flask") is None  # package not in reqs
-    assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+        assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+        assert finder.find("flask") is None  # package not in reqs
+        assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
 
-    assert len(finder.mapping) > 100
-    assert finder._normalize_name('deal') == 'deal'
-    assert finder._normalize_name('Django') == 'django'  # lowercase
-    assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
-    assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
+        assert len(finder.mapping) > 100
+        assert finder._normalize_name('deal') == 'deal'
+        assert finder._normalize_name('Django') == 'django'  # lowercase
+        assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+        assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     req_file.remove()
 
@@ -2527,7 +2530,7 @@ def test_pipfile_finder(tmpdir):
         path=str(tmpdir)
     )
 
-    assert set(finder._get_names()) == {'Django', 'deal'}  # file parsing
+    assert set(finder._get_names(str(tmpdir))) == {'Django', 'deal'}  # file parsing
 
     assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
     assert finder.find("flask") is None  # package not in reqs

@@ -166,16 +166,20 @@ class PathFinder(BaseFinder):
                 return self.config['default_section']
 
 
-class RequirementsFinder(BaseFinder):
-    exts = ('.txt', '.in')
-
+class ReqsBaseFinder(BaseFinder):
     def __init__(self, config, sections, path='.'):
-        super(RequirementsFinder, self).__init__(config, sections)
+        super(ReqsBaseFinder, self).__init__(config, sections)
         self.path = path
         self.mapping = self._load_mapping()
+        self.names = self._load_names()
 
     @staticmethod
     def _load_mapping():
+        """Return list of mappings `package_name -> module_name`
+
+        Example:
+            django-haystack -> haystack
+        """
         if not pipreqs:
             return
         path = os.path.dirname(inspect.getfile(pipreqs))
@@ -184,31 +188,49 @@ class RequirementsFinder(BaseFinder):
             # pypi_name: import_name
             return dict(line.strip().split(":")[::-1] for line in f)
 
-    def _get_files(self):
-        for fname in os.listdir(self.path):
-            if not os.path.isfile(fname):
-                continue
-            if 'requirements' not in fname:
-                continue
-            for ext in self.exts:
-                if fname.endswith(ext):
-                    yield os.path.join(self.path, fname)
-                    break
+    def _load_names(self):
+        """Return list of thirdparty modules from requirements
+        """
+        names = []
+        for path in self._get_files():
+            for name in self._get_names(path):
+                names.append(self._normalize_name(name))
+        return names
 
-    def _get_names(self, path):
-        requirements = parse_requirements(path, session=PipSession())
-        for req in requirements:
-            if req.name:
-                yield req.name
+    @staticmethod
+    def _get_parents(path):
+        prev = ''
+        while path != prev:
+            prev = path
+            yield path
+            path = os.path.dirname(path)
+
+    def _get_files(self):
+        """Return paths to all requirements files
+        """
+        path = os.path.abspath(self.path)
+        if os.path.isfile(path):
+            path = os.path.dirname(path)
+
+        for path in self._get_parents(path):
+            for file_path in self._get_files_from_dir(path):
+                yield file_path
 
     def _normalize_name(self, name):
+        """Convert package name to module name
+
+        Examples:
+            Django -> django
+            django-haystack -> haystack
+            Flask-RESTFul -> flask_restful
+        """
         if self.mapping:
             name = self.mapping.get(name, name)
         return name.lower().replace('-', '_')
 
     def find(self, module_name):
-        # pip not installed yet
-        if not parse_requirements:
+        # required lib not installed yet
+        if not self.enabled:
             return
 
         module_name, _sep, _submodules = module_name.partition('.')
@@ -216,37 +238,61 @@ class RequirementsFinder(BaseFinder):
         if not module_name:
             return
 
-        for path in self._get_files():
-            for name in self._get_names(path):
-                if module_name == self._normalize_name(name):
-                    return self.sections.THIRDPARTY
+        for name in self.names:
+            if module_name == name:
+                return self.sections.THIRDPARTY
 
 
-class PipfileFinder(RequirementsFinder):
-    def _get_names(self):
-        project = Pipfile.load(self.path)
+class RequirementsFinder(ReqsBaseFinder):
+    exts = ('.txt', '.in')
+    enabled = bool(parse_requirements)
+
+    def _get_files_from_dir(self, path):
+        """Return paths to requirements files from passed dir.
+        """
+        for fname in os.listdir(path):
+            if 'requirements' not in fname:
+                continue
+            full_path = os.path.join(path, fname)
+
+            # *requirements*/*.{txt,in}
+            if os.path.isdir(full_path):
+                for subfile_name in os.listdir(path):
+                    for ext in self.exts:
+                        if subfile_name.endswith(ext):
+                            yield os.path.join(path, subfile_name)
+                continue
+
+            # *requirements*.{txt,in}
+            if os.path.isfile(full_path):
+                for ext in self.exts:
+                    if fname.endswith(ext):
+                        yield full_path
+                        break
+
+    def _get_names(self, path):
+        """Load required packages from path to requirements file
+        """
+        requirements = parse_requirements(path, session=PipSession())
+        for req in requirements:
+            if req.name:
+                yield req.name
+
+
+class PipfileFinder(ReqsBaseFinder):
+    enabled = bool(Pipfile)
+
+    def _get_names(self, path):
+        project = Pipfile.load(path)
         sections = project.get_sections()
         if 'packages' not in sections:
             return
         for name, version in sections['packages'].items():
             yield name
 
-    def find(self, module_name):
-        # requirementslib is not installed yet
-        if Pipfile is None:
-            return
-        # Pipfile does not exists
-        if not os.path.exists(os.path.join(self.path, 'Pipfile')):
-            return
-
-        module_name, _sep, _submodules = module_name.partition('.')
-        module_name = module_name.lower()
-        if not module_name:
-            return
-
-        for name in self._get_names():
-            if module_name == self._normalize_name(name):
-                return self.sections.THIRDPARTY
+    def _get_files_from_dir(self, path):
+        if 'Pipfile' in os.listdir(path):
+            yield path
 
 
 class DefaultFinder(BaseFinder):
