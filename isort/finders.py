@@ -287,10 +287,9 @@ class PipfileFinder(ReqsBaseFinder):
         with chdir(path):
             project = Pipfile.load(path)
             sections = project.get_sections()
-            if 'packages' not in sections:
-                return
-            for name, version in sections['packages'].items():
-                yield name
+            for section in sections.values():
+                for name in section:
+                    yield name
 
     def _get_files_from_dir(self, path):
         if 'Pipfile' in os.listdir(path):
