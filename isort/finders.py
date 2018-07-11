@@ -170,8 +170,9 @@ class ReqsBaseFinder(BaseFinder):
     def __init__(self, config, sections, path='.'):
         super(ReqsBaseFinder, self).__init__(config, sections)
         self.path = path
-        self.mapping = self._load_mapping()
-        self.names = self._load_names()
+        if self.enabled:
+            self.mapping = self._load_mapping()
+            self.names = self._load_names()
 
     @staticmethod
     def _load_mapping():
