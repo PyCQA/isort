@@ -12,7 +12,7 @@ from fnmatch import fnmatch
 from glob import glob
 
 from .pie_slice import PY2
-from .utils import exists_case_sensitive
+from .utils import chdir, exists_case_sensitive
 
 try:
     from pipreqs import pipreqs
@@ -273,22 +273,24 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_names(self, path):
         """Load required packages from path to requirements file
         """
-        requirements = parse_requirements(path, session=PipSession())
-        for req in requirements:
-            if req.name:
-                yield req.name
+        with chdir(os.path.dirname(path)):
+            requirements = parse_requirements(path, session=PipSession())
+            for req in requirements:
+                if req.name:
+                    yield req.name
 
 
 class PipfileFinder(ReqsBaseFinder):
     enabled = bool(Pipfile)
 
     def _get_names(self, path):
-        project = Pipfile.load(path)
-        sections = project.get_sections()
-        if 'packages' not in sections:
-            return
-        for name, version in sections['packages'].items():
-            yield name
+        with chdir(path):
+            project = Pipfile.load(path)
+            sections = project.get_sections()
+            if 'packages' not in sections:
+                return
+            for name, version in sections['packages'].items():
+                yield name
 
     def _get_files_from_dir(self, path):
         if 'Pipfile' in os.listdir(path):

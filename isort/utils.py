@@ -1,5 +1,6 @@
 import os
 import sys
+from contextlib import contextmanager
 
 
 def exists_case_sensitive(path):
@@ -15,3 +16,15 @@ def exists_case_sensitive(path):
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result
+
+
+@contextmanager
+def chdir(path):
+    """Context manager for changing dir and restoring previous workdir after exit.
+    """
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)
