@@ -3,7 +3,10 @@ language: python
 cache: pip
 matrix:
   include:
-  - env: TOXENV=isort-check
+  - python: 3.7
+    dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+    sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
+    env: TOXENV=isort-check
   - python: 3.7
     dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
     sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
