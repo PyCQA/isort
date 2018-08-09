@@ -133,11 +133,14 @@ else:
     from itertools import izip as zip  # noqa: F401
     from decimal import Decimal, ROUND_HALF_EVEN
 
-    str = unicode
-    chr = unichr
-    input = raw_input
-    range = xrange
-    integer_types = (int, long)
+    try:
+        str = unicode
+        chr = unichr
+        input = raw_input
+        range = xrange
+        integer_types = (int, long)
+    except NameError:
+        sys.exit('This should not happen!')
 
     import sys
     stdout = sys.stdout
