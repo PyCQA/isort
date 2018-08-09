@@ -133,11 +133,14 @@ else:
     from itertools import izip as zip  # noqa: F401
     from decimal import Decimal, ROUND_HALF_EVEN
 
-    str = unicode
-    chr = unichr
-    input = raw_input
-    range = xrange
-    integer_types = (int, long)
+    try:
+        str = unicode
+        chr = unichr
+        input = raw_input
+        range = xrange
+        integer_types = (int, long)
+    except NameError:
+        sys.exit('This should not happen!')
 
     import sys
     stdout = sys.stdout
@@ -156,10 +159,13 @@ else:
         if python_environment_changes_applied:
             return
 
-        reload(sys)
-        sys.stdout = stdout
-        sys.stderr = stderr
-        sys.setdefaultencoding('utf-8')
+        try:
+            reload(sys)
+            sys.stdout = stdout
+            sys.stderr = stderr
+            sys.setdefaultencoding('utf-8')
+        except NameError:
+            pass  # Python 3
 
         for removed in ('apply', 'cmp', 'coerce', 'execfile', 'raw_input', 'unpacks'):
             globals()[removed] = _create_not_allowed(removed)
@@ -167,10 +173,13 @@ else:
         python_environment_changes_applied = True
 
     def u(s):
-        if isinstance(s, unicode):
-            return s
-        else:
-            return unicode(s.replace(r'\\', r'\\\\'), "unicode_escape")
+        try:
+            if isinstance(s, unicode):
+                return s
+            else:
+                return unicode(s.replace(r'\\', r'\\\\'), "unicode_escape")
+        except NameError:  # Python 3
+            return str(s)
 
     def execute(_code_, _globs_=None, _locs_=None):
         """Execute code in a namespace."""
