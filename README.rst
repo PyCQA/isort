@@ -238,7 +238,9 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
 project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
 
-Or, if you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+If you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+
+You can also add your desired settings under a ``[tool.isort]`` section in your ``pyproject.toml`` file.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
