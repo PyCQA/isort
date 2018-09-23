@@ -258,7 +258,7 @@ You can then override any of these settings by using command line arguments, or 
 SortImports class.
 
 Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
-http://editorconfig.org/
+https://editorconfig.org/
 
 Meaning you place any standard isort configuration parameters within a .editorconfig file under the ``*.py`` section
 and they will be honored.
