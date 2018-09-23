@@ -86,11 +86,23 @@ Installing isort is as simple as:
 
     pip install isort
 
-or if you prefer
+Install isort with requirements.txt support:
 
 .. code-block:: bash
 
-    easy_install isort
+    pip install isort[requirements]
+
+Install isort with Pipfile support:
+
+.. code-block:: bash
+
+    pip install isort[pipfile]
+
+Install isort with both formats support:
+
+.. code-block:: bash
+
+    pip install isort[requirements,pipfile]
 
 Using isort
 ===========
