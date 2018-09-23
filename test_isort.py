@@ -31,7 +31,9 @@ import shutil
 import sys
 import tempfile
 
-from isort.isort import SortImports, exists_case_sensitive
+from isort import finders
+from isort.isort import SortImports
+from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.pie_slice import PY2
 from isort.settings import WrapModes
@@ -1272,7 +1274,7 @@ def test_include_trailing_comma():
     ).output
     assert test_output_wrap_single_import_vertical_indent == (
         "from third_party import (\n"
-        "    lib1,\n"
+        "    lib1\n"
         ")\n"
     )
 
@@ -2511,3 +2513,79 @@ def test_new_lines_are_preserved():
             with io.open(n_newline.name, newline='') as n_newline_file:
                 n_newline_contents = n_newline_file.read()
     assert n_newline_contents == 'import os\nimport sys\n'
+
+
+def test_requirements_finder(tmpdir):
+    subdir = tmpdir.mkdir('subdir').join("lol.txt")
+    subdir.write("flask")
+    req_file = tmpdir.join('requirements.txt')
+    req_file.write(
+        "Django==1.11\n"
+        "-e git+https://github.com/orsinium/deal.git#egg=deal\n"
+    )
+    si = SortImports(file_contents="")
+    for path in (str(tmpdir), str(subdir)):
+        finder = finders.RequirementsFinder(
+            config=si.config,
+            sections=si.sections,
+            path=path
+        )
+
+        files = list(finder._get_files())
+        assert len(files) == 1  # file finding
+        assert files[0].endswith('requirements.txt')  # file finding
+        assert list(finder._get_names(str(req_file))) == ['Django', 'deal']  # file parsing
+
+        assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+        assert finder.find("flask") is None  # package not in reqs
+        assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+
+        assert len(finder.mapping) > 100
+        assert finder._normalize_name('deal') == 'deal'
+        assert finder._normalize_name('Django') == 'django'  # lowercase
+        assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+        assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
+
+    req_file.remove()
+
+
+PIPFILE = """
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.5"
+
+[packages]
+Django = "~=1.11"
+deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
+
+[dev-packages]
+"""
+
+
+def test_pipfile_finder(tmpdir):
+    pipfile = tmpdir.join('Pipfile')
+    pipfile.write(PIPFILE)
+    si = SortImports(file_contents="")
+    finder = finders.PipfileFinder(
+        config=si.config,
+        sections=si.sections,
+        path=str(tmpdir)
+    )
+
+    assert set(finder._get_names(str(tmpdir))) == {'Django', 'deal'}  # file parsing
+
+    assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+    assert finder.find("flask") is None  # package not in reqs
+    assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+
+    assert len(finder.mapping) > 100
+    assert finder._normalize_name('deal') == 'deal'
+    assert finder._normalize_name('Django') == 'django'  # lowercase
+    assert finder._normalize_name('django_haystack') == 'haystack'  # mapping
+    assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
+
+    pipfile.remove()

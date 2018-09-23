@@ -32,23 +32,14 @@ import itertools
 import os
 import re
 import sys
-import sysconfig
 from collections import OrderedDict, namedtuple
 from datetime import datetime
 from difflib import unified_diff
-from fnmatch import fnmatch
-from glob import glob
 
 from . import settings
+from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import OrderedSet, input, itemsview, PY2
-
-KNOWN_SECTION_MAPPING = {
-    'STDLIB': 'STANDARD_LIBRARY',
-    'FUTURE': 'FUTURE_LIBRARY',
-    'FIRSTPARTY': 'FIRST_PARTY',
-    'THIRDPARTY': 'THIRD_PARTY',
-}
+from .pie_slice import OrderedSet, input, itemsview
 
 
 class SortImports(object):
@@ -147,19 +138,7 @@ class SortImports(object):
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': OrderedSet(), 'from': OrderedDict()}
 
-        self.known_patterns = []
-        for placement in reversed(self.sections):
-            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-            config_key = 'known_{0}'.format(known_placement.lower())
-            known_patterns = self.config.get(config_key, [])
-            known_patterns = [
-                pattern
-                for known_pattern in known_patterns
-                for pattern in self._parse_known_pattern(known_pattern)
-            ]
-            for known_pattern in known_patterns:
-                self.known_patterns.append((re.compile('^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'),
-                                            placement))
+        self.finder = FindersManager(config=self.config, sections=self.sections)
 
         self.index = 0
         self.import_index = -1
@@ -222,30 +201,6 @@ class SortImports(object):
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
-    def _is_package(self, path):
-        """
-        Evaluates if path is a python package
-        """
-        if PY2:
-            return os.path.exists(os.path.join(path, '__init__.py'))
-        else:
-            return os.path.isdir(path)
-
-    def _parse_known_pattern(self, pattern):
-        """
-        Expand pattern if identified as a directory and return found sub packages
-        """
-        if pattern.endswith(os.path.sep):
-            patterns = [
-                filename
-                for filename in os.listdir(pattern)
-                if self._is_package(os.path.join(pattern, filename))
-            ]
-        else:
-            patterns = [pattern]
-
-        return patterns
-
     def _show_diff(self, file_contents):
         for line in unified_diff(
             file_contents.splitlines(1),
@@ -272,59 +227,7 @@ class SortImports(object):
         if it can't determine - it assumes it is project code
 
         """
-        for forced_separate in self.config['forced_separate']:
-            # Ensure all forced_separate patterns will match to end of string
-            path_glob = forced_separate
-            if not forced_separate.endswith('*'):
-                path_glob = '%s*' % forced_separate
-
-            if fnmatch(module_name, path_glob) or fnmatch(module_name, '.' + path_glob):
-                return forced_separate
-
-        if module_name.startswith("."):
-            return self.sections.LOCALFOLDER
-
-        # Try to find most specific placement instruction match (if any)
-        parts = module_name.split('.')
-        module_names_to_check = ['.'.join(parts[:first_k]) for first_k in range(len(parts), 0, -1)]
-        for module_name_to_check in module_names_to_check:
-            for pattern, placement in self.known_patterns:
-                if pattern.match(module_name_to_check):
-                    return placement
-
-        # Use a copy of sys.path to avoid any unintended modifications
-        # to it - e.g. `+=` used below will change paths in place and
-        # if not copied, consequently sys.path, which will grow unbounded
-        # with duplicates on every call to this method.
-        paths = list(sys.path)
-        # restore the original import path (i.e. not the path to bin/isort)
-        paths[0] = os.getcwd()
-        virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
-        virtual_env_src = False
-        if virtual_env:
-            paths += [path for path in glob('{0}/lib/python*/site-packages'.format(virtual_env))
-                      if path not in paths]
-            paths += [path for path in glob('{0}/src/*'.format(virtual_env)) if os.path.isdir(path)]
-            virtual_env_src = '{0}/src/'.format(virtual_env)
-
-        # handle case-insensitive paths on windows
-        stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
-
-        for prefix in paths:
-            package_path = "/".join((prefix, module_name.split(".")[0]))
-            is_module = (exists_case_sensitive(package_path + ".py") or
-                         exists_case_sensitive(package_path + ".so"))
-            is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
-            if is_module or is_package:
-                if ('site-packages' in prefix or 'dist-packages' in prefix or
-                        (virtual_env and virtual_env_src in prefix)):
-                    return self.sections.THIRDPARTY
-                elif os.path.normcase(prefix).startswith(stdlib_lib_prefix):
-                    return self.sections.STDLIB
-                else:
-                    return self.config['default_section']
-
-        return self.config['default_section']
+        return self.finder.find(module_name)
 
     def _get_line(self):
         """Returns the current line from the file while incrementing the index."""
@@ -742,13 +645,17 @@ class SortImports(object):
         return statement
 
     def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
+        trailing = ""
+        if len(imports) > 1 and self.config['include_trailing_comma']:
+            trailing = ','
+
         return "{0}({1}{2}{3}{4}{5}{2})".format(
             statement,
             self._add_comments(comments),
             self.line_separator,
             indent,
             ("," + self.line_separator + indent).join(imports),
-            "," if self.config['include_trailing_comma'] else "",
+            trailing,
          )
 
     def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments,
@@ -1065,18 +972,3 @@ def coding_check(fname, default='utf-8'):
                 break
 
     return coding
-
-
-def exists_case_sensitive(path):
-    """
-    Returns if the given path exists and also matches the case on Windows.
-
-    When finding files that can be imported, it is important for the cases to match because while
-    file os.path.exists("module.py") and os.path.exists("MODULE.py") both return True on Windows, Python
-    can only import using the case of the real file.
-    """
-    result = os.path.exists(path)
-    if (sys.platform.startswith('win') or sys.platform == 'darwin') and result:
-        directory, basename = os.path.split(path)
-        result = basename in os.listdir(directory)
-    return result

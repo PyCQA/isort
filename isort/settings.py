@@ -67,8 +67,8 @@ default = {'force_to_top': [],
                                       'bz2', 'cPickle', 'cProfile', 'cStringIO', 'calendar', 'cd', 'cfmfile', 'cgi',
                                       'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections',
                                       'colorsys', 'commands', 'compileall', 'compiler', 'concurrent', 'configparser',
-                                      'contextlib', 'cookielib', 'copy', 'copy_reg', 'copyreg', 'crypt', 'csv',
-                                      'ctypes', 'curses', 'datetime', 'dbhash', 'dbm', 'decimal', 'difflib',
+                                      'contextlib', 'contextvars', 'cookielib', 'copy', 'copy_reg', 'copyreg', 'crypt', 'csv',
+                                      'ctypes', 'curses', 'dataclasses', 'datetime', 'dbhash', 'dbm', 'decimal', 'difflib',
                                       'dircache', 'dis', 'distutils', 'dl', 'doctest', 'dumbdbm', 'dummy_thread',
                                       'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno',
                                       'exceptions', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'findertools',
@@ -147,8 +147,8 @@ def from_path(path):
     _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
     _update_settings_with_config(path, 'pyproject.toml', None, ('tool.isort', ), computed_settings)
     _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', 'isort'), computed_settings)
-    _update_settings_with_config(path, 'setup.cfg', None, ('isort', ), computed_settings)
-    _update_settings_with_config(path, 'tox.ini', None, ('isort', ), computed_settings)
+    _update_settings_with_config(path, 'setup.cfg', None, ('isort', 'tool:isort'), computed_settings)
+    _update_settings_with_config(path, 'tox.ini', None, ('isort', 'tool:isort'), computed_settings)
     return computed_settings
 
 
@@ -173,6 +173,7 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
 
 
 def _update_with_config_file(file_path, sections, computed_settings):
+    cwd = os.path.dirname(file_path)
     settings = _get_config_data(file_path, sections).copy()
     if not settings:
         return
@@ -203,12 +204,14 @@ def _update_with_config_file(file_path, sections, computed_settings):
                 existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith('not_'):
                     computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                elif key.startswith('known_'):
+                    computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
                 else:
                     computed_settings[access_key] = list(existing_data.union(_as_list(value)))
         elif existing_value_type == bool and value.lower().strip() == 'false':
             computed_settings[access_key] = False
         elif key.startswith('known_'):
-            computed_settings[access_key] = list(_as_list(value))
+            computed_settings[access_key] = list(_abspaths(cwd, _as_list(value)))
         elif key == 'force_grid_wrap':
             try:
                 result = existing_value_type(value)
@@ -222,6 +225,16 @@ def _update_with_config_file(file_path, sections, computed_settings):
 
 def _as_list(value):
     return filter(bool, [item.strip() for item in value.replace('\n', ',').split(',')])
+
+
+def _abspaths(cwd, values):
+    paths = [
+        os.path.join(cwd, value)
+        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+        else value
+        for value in values
+    ]
+    return paths
 
 
 @lru_cache()

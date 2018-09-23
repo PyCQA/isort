@@ -97,7 +97,9 @@ def iter_source_code(paths, config, skipped):
                 skipped.append(path)
                 continue
 
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+            for dirpath, dirnames, filenames in os.walk(
+                    path, topdown=True, followlinks=True
+            ):
                 for dirname in list(dirnames):
                     if should_skip(dirname, config, dirpath):
                         skipped.append(dirname)

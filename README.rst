@@ -29,7 +29,7 @@ isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library and `plugins for various editors <https://github.com/timothycrosley/isort/wiki/isort-Plugins>`_ to quickly sort all your imports.
-It currently cleanly supports Python 2.7 - 3.6 without any dependencies.
+It currently cleanly supports Python 2.7 and 3.4+ without any dependencies.
 
 .. image:: https://raw.github.com/timothycrosley/isort/develop/example.gif
    :alt: Example Usage
@@ -86,11 +86,23 @@ Installing isort is as simple as:
 
     pip install isort
 
-or if you prefer
+Install isort with requirements.txt support:
 
 .. code-block:: bash
 
-    easy_install isort
+    pip install isort[requirements]
+
+Install isort with Pipfile support:
+
+.. code-block:: bash
+
+    pip install isort[pipfile]
+
+Install isort with both formats support:
+
+.. code-block:: bash
+
+    pip install isort[requirements,pipfile]
 
 Using isort
 ===========
@@ -238,7 +250,7 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
 project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
 
-If you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+Or, if you prefer, you can add an ``isort`` or ``tool:isort`` section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
 
 You can also add your desired settings under a ``[tool.isort]`` section in your ``pyproject.toml`` file.
 
