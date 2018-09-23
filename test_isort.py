@@ -1274,7 +1274,7 @@ def test_include_trailing_comma():
     ).output
     assert test_output_wrap_single_import_vertical_indent == (
         "from third_party import (\n"
-        "    lib1,\n"
+        "    lib1\n"
         ")\n"
     )
 
