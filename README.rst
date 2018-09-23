@@ -252,6 +252,8 @@ project. isort will look up to 25 directories up, from the file it is ran agains
 
 Or, if you prefer, you can add an ``isort`` or ``tool:isort`` section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
 
+You can also add your desired settings under a ``[tool.isort]`` section in your ``pyproject.toml`` file.
+
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
 
