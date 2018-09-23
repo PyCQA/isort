@@ -65,6 +65,10 @@ def is_python_file(path):
     if path.endswith('.py'):
         return True
 
+    # Skip editor backup files.
+    if path.endswith('~'):
+        return False
+
     try:
         with open(path, 'rb') as fp:
             line = fp.readline(100)

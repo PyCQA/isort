@@ -2435,6 +2435,20 @@ def test_is_python_file_ioerror(tmpdir):
     assert is_python_file(str(does_not_exist)) is False
 
 
+def test_is_python_file_shebang(tmpdir):
+    path = tmpdir.join('myscript')
+    with path.open('w') as fp:
+        fp.write('#!/usr/bin/env python\n')
+    assert is_python_file(str(path)) is True
+
+
+def test_is_python_file_editor_backup(tmpdir):
+    path = tmpdir.join('myscript~')
+    with path.open('w') as fp:
+        fp.write('#!/usr/bin/env python\n')
+    assert is_python_file(str(path)) is False
+
+
 def test_to_ensure_imports_are_brought_to_top_issue_651():
     test_input = ('from __future__ import absolute_import, unicode_literals\n'
                   '\n'
