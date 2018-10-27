@@ -24,6 +24,12 @@ from __future__ import absolute_import
 import collections
 import sys
 
+try:
+    from collections.abc import MutableSet
+except ImportError:
+    # Python 2.7
+    from collections import MutableSet
+
 __version__ = "1.1.0"
 
 PY2 = sys.version_info[0] == 2
@@ -381,7 +387,7 @@ else:
     from functools import lru_cache  # noqa: F401
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(MutableSet):
 
     def __init__(self, iterable=None):
         self.end = end = []
