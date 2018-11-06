@@ -62,7 +62,7 @@ shebang_re = re.compile(br'^#!.*\bpython[23w]?\b')
 
 
 def is_python_file(path):
-    if path.endswith('.py'):
+    if os.path.splitext(path)[1] in ('.py', '.pyi'):
         return True
 
     try:
