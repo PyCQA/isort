@@ -2425,6 +2425,11 @@ def test_is_python_file_editor_backup(tmpdir):
     assert is_python_file(str(path)) is False
 
 
+def test_is_python_typing_stub(tmpdir):
+    stub = tmpdir.join('stub.pyi')
+    assert is_python_file(str(stub)) is True
+
+
 def test_to_ensure_imports_are_brought_to_top_issue_651():
     test_input = ('from __future__ import absolute_import, unicode_literals\n'
                   '\n'

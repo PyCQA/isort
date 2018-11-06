@@ -61,7 +61,8 @@ shebang_re = re.compile(br'^#!.*\bpython[23w]?\b')
 
 
 def is_python_file(path):
-    if path.endswith('.py'):
+    _root, ext = os.path.splitext(path)
+    if ext in ('.py', '.pyi'):
         return True
 
     # Skip editor backup files.
