@@ -2549,6 +2549,31 @@ def test_requirements_finder(tmpdir):
     req_file.remove()
 
 
+def test_forced_separate_is_deterministic_issue_774(tmpdir):
+
+    config_file = tmpdir.join('setup.cfg')
+    config_file.write(
+        "[isort]\n"
+        "forced_separate:\n"
+        "   separate1\n"
+        "   separate2\n"
+        "   separate3\n"
+        "   separate4\n"
+    )
+
+    test_input = ('import time\n'
+                  '\n'
+                  'from separate1 import foo\n'
+                  '\n'
+                  'from separate2 import bar\n'
+                  '\n'
+                  'from separate3 import baz\n'
+                  '\n'
+                  'from separate4 import quux\n')
+
+    assert SortImports(file_contents=test_input, settings_path=config_file.strpath).output == test_input
+
+
 PIPFILE = """
 [[source]]
 url = "https://pypi.org/simple"
