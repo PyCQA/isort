@@ -27,11 +27,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import fnmatch
 import io
 import os
-import posixpath
 import sys
 from collections import namedtuple
 
+import posixpath
+
 from .pie_slice import itemsview, lru_cache, native_str
+from .utils import difference, union
 
 try:
     import configparser
@@ -203,11 +205,11 @@ def _update_with_config_file(file_path, sections, computed_settings):
             else:
                 existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith('not_'):
-                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                    computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith('known_'):
-                    computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
+                    computed_settings[access_key] = union(existing_data, _abspaths(cwd,_as_list(value)))
                 else:
-                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
+                    computed_settings[access_key] = union(existing_data, _as_list(value))
         elif existing_value_type == bool and value.lower().strip() == 'false':
             computed_settings[access_key] = False
         elif key.startswith('known_'):

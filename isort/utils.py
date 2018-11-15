@@ -28,3 +28,26 @@ def chdir(path):
         yield
     finally:
         os.chdir(curdir)
+
+
+def union(a, b):
+    """ Return a list of items that are in `a` or `b`
+    """
+    u = []
+    for item in a:
+        if item not in u:
+            u.append(item)
+    for item in b:
+        if item not in u:
+            u.append(item)
+    return u
+
+
+def difference(a, b):
+    """ Return a list of items from `a` that are not in `b`.
+    """
+    d = []
+    for item in a:
+        if item not in b:
+            d.append(item)
+    return d
