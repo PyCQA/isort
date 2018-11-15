@@ -207,7 +207,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
                 if key.startswith('not_'):
                     computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith('known_'):
-                    computed_settings[access_key] = union(existing_data, _abspaths(cwd,_as_list(value)))
+                    computed_settings[access_key] = union(existing_data, _abspaths(cwd, _as_list(value)))
                 else:
                     computed_settings[access_key] = union(existing_data, _as_list(value))
         elif existing_value_type == bool and value.lower().strip() == 'false':
