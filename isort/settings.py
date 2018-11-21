@@ -138,7 +138,8 @@ default = {'force_to_top': [],
            'show_diff': False,
            'ignore_whitespace': False,
            'no_lines_before': [],
-           'no_inline_sort': False}
+           'no_inline_sort': False,
+           'ignore_comments': False}
 
 
 @lru_cache()

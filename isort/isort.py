@@ -270,11 +270,16 @@ class SortImports(object):
 
     def _add_comments(self, comments, original_string=""):
         """
-            Returns a string with comments added
+            Returns a string with comments added if ignore_comments is not set.
         """
-        return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
-                                                self.config['comment_prefix'],
-                                                "; ".join(comments)) or original_string
+
+        if not self.config['ignore_comments']:
+            return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
+                                                    self.config['comment_prefix'],
+                                                    "; ".join(comments)) or original_string
+
+        return comments and self._strip_comments(original_string)[0]
+
 
     def _wrap(self, line):
         """
