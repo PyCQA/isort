@@ -36,10 +36,12 @@ from collections import OrderedDict, namedtuple
 from datetime import datetime
 from difflib import unified_diff
 
+from ordered_set import OrderedSet
+
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import OrderedSet, input, itemsview
+from .pie_slice import input, itemsview
 
 
 class SortImports(object):

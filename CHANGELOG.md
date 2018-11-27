@@ -1,5 +1,8 @@
 Changelog
 =========
+### UNRELEASED
+- isort now requires ordered-set.
+
 ### 4.3.4 - Feburary 12, 2018 - hotfix release
 - Fixed issue #671: isort is corrupting CRLF files
 
