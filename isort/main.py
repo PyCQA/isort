@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 '''  Tool for sorting imports alphabetically, and automatically separated into sections.
 
 Copyright (C) 2013  Timothy Edmund Crosley
