@@ -22,24 +22,15 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+import configparser
 import fnmatch
-import io
 import os
-import re
 import posixpath
-import sys
+import re
 import warnings
 from collections import namedtuple
 from distutils.util import strtobool
-
-from .pie_slice import lru_cache
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+from functools import lru_cache
 
 try:
     import toml
@@ -171,7 +162,7 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
     tries = 0
     current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, str(name))
+        potential_path = os.path.join(current_directory, name)
         if os.path.exists(potential_path):
             editor_config_file = potential_path
             break
@@ -258,7 +249,7 @@ def _abspaths(cwd, values):
 def _get_config_data(file_path, sections):
     settings = {}
 
-    with io.open(file_path) as config_file:
+    with open(file_path) as config_file:
         if file_path.endswith('.toml'):
             if toml:
                 config = toml.load(config_file)
@@ -283,12 +274,8 @@ def _get_config_data(file_path, sections):
                         break
                     last_position = config_file.tell()
 
-            if sys.version_info >= (3, 2):
-                config = configparser.ConfigParser()
-                config.read_file(config_file)
-            else:
-                config = configparser.SafeConfigParser()
-                config.readfp(config_file)
+            config = configparser.ConfigParser()
+            config.read_file(config_file)
 
             for section in sections:
                 if config.has_section(section):

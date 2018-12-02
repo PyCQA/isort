@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from setuptools import setup
 
@@ -26,22 +26,20 @@ setup(name='isort',
           'pyproject': ['toml'],
           'requirements': ['pip', 'pipreqs'],
       },
-      install_requires=['futures; python_version < "3.2"'],
-      python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
-      keywords='Refactor, Python, Python2, Python3, Refactoring, Imports, Sort, Clean',
+      python_requires=">=3.4",
+      keywords='Refactor, Python, Python3, Refactoring, Imports, Sort, Clean',
       classifiers=['Development Status :: 6 - Mature',
                    'Intended Audience :: Developers',
                    'Natural Language :: English',
                    'Environment :: Console',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python',
-                   'Programming Language :: Python :: 2',
-                   'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
                    'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
+                   'Programming Language :: Python :: 3 :: Only',
                    'Programming Language :: Python :: Implementation :: CPython',
                    'Programming Language :: Python :: Implementation :: PyPy',
                    'Topic :: Software Development :: Libraries',

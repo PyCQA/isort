@@ -45,7 +45,7 @@ def get_lines(command):
     :returns: list of whitespace-stripped lines output by command
     """
     stdout = get_output(command)
-    return [line.strip().decode('utf-8') for line in stdout.splitlines()]
+    return [line.strip().decode() for line in stdout.splitlines()]
 
 
 def git_hook(strict=False):

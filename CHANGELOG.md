@@ -1,5 +1,10 @@
 Changelog
 =========
+### UNRELEASED
+- **Breaking changes:**
+  - isort now requires Python 3.4+ to run but continues to support formating
+    Python 2 code.
+
 ### 4.3.4 - Feburary 12, 2018 - hotfix release
 - Fixed issue #671: isort is corrupting CRLF files
 

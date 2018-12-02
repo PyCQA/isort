@@ -1,4 +1,3 @@
-# coding: utf-8
 """test_isort.py.
 
 Tests all major functionality of the isort library
@@ -21,10 +20,7 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from tempfile import NamedTemporaryFile
-import io
 import os
 import sys
 
@@ -34,7 +30,6 @@ from isort import finders, main, settings
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
-from isort.pie_slice import PY2
 from isort.settings import WrapModes
 
 try:
@@ -843,21 +838,12 @@ def test_known_pattern_path_expansion():
         default_section='THIRDPARTY',
         known_first_party=['./', 'this']
     ).output
-    if PY2:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "from kate_plugin import isort_plugin\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n")
-    else:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n"
-                               "from kate_plugin import isort_plugin\n")
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import isort.settings\n"
+                           "import this\n"
+                           "from kate_plugin import isort_plugin\n")
 
 
 def test_force_single_line_imports():
@@ -2502,29 +2488,29 @@ def test_to_ensure_tabs_dont_become_space_issue_665():
 
 def test_new_lines_are_preserved():
     with NamedTemporaryFile('w', suffix='py') as rn_newline:
-        with io.open(rn_newline.name, mode='w', newline='') as rn_newline_input:
+        with open(rn_newline.name, 'w', newline='') as rn_newline_input:
             rn_newline_input.write('import sys\r\nimport os\r\n')
             rn_newline_input.flush()
             SortImports(rn_newline.name)
-            with io.open(rn_newline.name, newline='') as rn_newline_file:
+            with open(rn_newline.name, newline='') as rn_newline_file:
                 rn_newline_contents = rn_newline_file.read()
     assert rn_newline_contents == 'import os\r\nimport sys\r\n'
 
     with NamedTemporaryFile('w', suffix='py') as r_newline:
-        with io.open(r_newline.name, mode='w', newline='') as r_newline_input:
+        with open(r_newline.name, 'w', newline='') as r_newline_input:
             r_newline_input.write('import sys\rimport os\r')
             r_newline_input.flush()
             SortImports(r_newline.name)
-            with io.open(r_newline.name, newline='') as r_newline_file:
+            with open(r_newline.name, newline='') as r_newline_file:
                 r_newline_contents = r_newline_file.read()
     assert r_newline_contents == 'import os\rimport sys\r'
 
     with NamedTemporaryFile('w', suffix='py') as n_newline:
-        with io.open(n_newline.name, mode='w', newline='') as n_newline_input:
+        with open(n_newline.name, 'w', newline='') as n_newline_input:
             n_newline_input.write('import sys\nimport os\n')
             n_newline_input.flush()
             SortImports(n_newline.name)
-            with io.open(n_newline.name, newline='') as n_newline_file:
+            with open(n_newline.name, newline='') as n_newline_file:
                 n_newline_contents = n_newline_file.read()
     assert n_newline_contents == 'import os\nimport sys\n'
 
@@ -2607,14 +2593,6 @@ def test_pipfile_finder(tmpdir):
     assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     pipfile.remove()
-
-
-@pytest.mark.skipif(sys.version_info[0] == 2, reason="Requires Python 3")
-def test_monkey_patched_urllib():
-    with pytest.raises(ImportError):
-        # Previous versions of isort monkey patched urllib which caused unusual
-        # importing for other projects.
-        from urllib import quote  # noqa: F401
 
 
 def test_argument_parsing():
