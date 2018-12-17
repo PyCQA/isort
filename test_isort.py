@@ -419,7 +419,6 @@ def test_length_sort_section():
                            "import shortie\n")
 
 
-
 def test_convert_hanging():
     """Ensure that isort will convert hanging indents to correct indent
     method."""
