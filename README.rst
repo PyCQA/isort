@@ -463,6 +463,12 @@ This will result in the following output style:
         UnexpectedCodePath,
     )
 
+It is also possible to opt-in to sorting imports by length for only specific
+sections by using ``length_sort_`` followed by the section name as a
+configuration item, e.g.::
+
+    length_sort_stdlib=1
+
 Skip processing of imports (outside of configuration)
 =====================================================
 

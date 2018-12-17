@@ -250,7 +250,7 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config, sub_imports=False, ignore_case=False):
+    def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
         prefix = ""
         if ignore_case:
             module_name = str(module_name).lower()
@@ -265,8 +265,12 @@ class SortImports(object):
             else:
                 prefix = "C"
         module_name = module_name.lower()
+        if section_name is None or 'length_sort_' + str(section_name).lower() not in config:
+            length_sort = config['length_sort']
+        else:
+            length_sort = config['length_sort_' + str(section_name).lower()]
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
-                                  config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
+                                  length_sort and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_comments(self, comments, original_string=""):
         """
@@ -346,7 +350,7 @@ class SortImports(object):
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
             if not self.config['no_inline_sort'] or self.config['force_single_line']:
-                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
+                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case, section_name=section))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -504,9 +508,9 @@ class SortImports(object):
         prev_section_has_imports = False
         for section in sections:
             straight_modules = self.imports[section]['straight']
-            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
             from_modules = self.imports[section]['from']
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config))
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
 
             section_output = []
             if self.config['from_first']:
