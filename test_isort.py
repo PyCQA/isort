@@ -1868,6 +1868,45 @@ def test_pyproject_conf_file():
         shutil.rmtree(tmp_conf_dir, ignore_errors=True)
 
 
+def test_pyproject_conf_file_strings():
+    """Ensure that quotes do not interfere with string interpretation in pyproject.toml files"""
+    tmp_conf_dir = None
+    conf_file_data = (
+        '[build-system]\n'
+        'requires = ["setuptools", "wheel"]\n'
+        '[tool.poetry]\n'
+        'name = "isort"\n'
+        'version = "0.1.0"\n'
+        'license = "MIT"\n'
+        '[tool.isort]\n'
+        'known_first_party="hashlib"\n'
+        'lines_between_types=1\n'
+        'import_heading_firstparty="My Stuff"\n'
+        'import_heading_stdlib="Standard Library"\n'
+    )
+    test_input = (
+        'import os\n'
+        'import hashlib\n'
+    )
+    correct_output = (
+        '# Standard Library\n'
+        'import os\n'
+        '\n'
+        '# My Stuff\n'
+        'import hashlib\n'
+    )
+
+    try:
+        tmp_conf_dir = tempfile.mkdtemp()
+        tmp_conf_name = os.path.join(tmp_conf_dir, 'pyproject.toml')
+        with codecs.open(tmp_conf_name, 'w') as test_config:
+            test_config.writelines(conf_file_data)
+
+        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
+    finally:
+        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+
+
 def test_alphabetic_sorting_no_newlines():
     '''Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)'''
     test_input = "import os\n"

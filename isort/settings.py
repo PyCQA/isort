@@ -262,6 +262,10 @@ def _get_config_data(file_path, sections):
             if config.has_section(section):
                 settings.update(dict(config.items(section)))
 
+        if file_path.endswith('pyproject.toml'):
+            for key in settings.keys():
+                settings[key] = settings[key].strip('"')
+
         return settings
 
     return {}
