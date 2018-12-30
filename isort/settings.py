@@ -29,7 +29,9 @@ import io
 import os
 import posixpath
 import sys
+import warnings
 from collections import namedtuple
+from distutils.util import strtobool
 
 from .pie_slice import itemsview, lru_cache, native_str
 
@@ -37,6 +39,11 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+try:
+    import toml
+except ImportError:
+    toml = False
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
@@ -208,8 +215,11 @@ def _update_with_config_file(file_path, sections, computed_settings):
                     computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
                 else:
                     computed_settings[access_key] = list(existing_data.union(_as_list(value)))
-        elif existing_value_type == bool and value.lower().strip() == 'false':
-            computed_settings[access_key] = False
+        elif existing_value_type == bool:
+            # Only some configuration formats support native boolean values.
+            if not isinstance(value, bool):
+                value = bool(strtobool(value))
+            computed_settings[access_key] = value
         elif key.startswith('known_'):
             computed_settings[access_key] = list(_abspaths(cwd, _as_list(value)))
         elif key == 'force_grid_wrap':
@@ -242,26 +252,40 @@ def _get_config_data(file_path, sections):
     settings = {}
 
     with io.open(file_path) as config_file:
-        if file_path.endswith('.editorconfig'):
-            line = '\n'
-            last_position = config_file.tell()
-            while line:
-                line = config_file.readline()
-                if '[' in line:
-                    config_file.seek(last_position)
-                    break
-                last_position = config_file.tell()
-
-        if sys.version_info >= (3, 2):
-            config = configparser.ConfigParser()
-            config.read_file(config_file)
+        if file_path.endswith('.toml'):
+            if toml:
+                config = toml.load(config_file)
+                for section in sections:
+                    config_section = config
+                    for key in section.split('.'):
+                        config_section = config_section.get(key, {})
+                    settings.update(config_section)
+            else:
+                warnings.warn(
+                    "Found %s but toml package is not installed. To configure"
+                    "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
+                )
         else:
-            config = configparser.SafeConfigParser()
-            config.readfp(config_file)
+            if file_path.endswith('.editorconfig'):
+                line = '\n'
+                last_position = config_file.tell()
+                while line:
+                    line = config_file.readline()
+                    if '[' in line:
+                        config_file.seek(last_position)
+                        break
+                    last_position = config_file.tell()
 
-        for section in sections:
-            if config.has_section(section):
-                settings.update(config.items(section))
+            if sys.version_info >= (3, 2):
+                config = configparser.ConfigParser()
+                config.read_file(config_file)
+            else:
+                config = configparser.SafeConfigParser()
+                config.readfp(config_file)
+
+            for section in sections:
+                if config.has_section(section):
+                    settings.update(config.items(section))
 
     return settings
 
