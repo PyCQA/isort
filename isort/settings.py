@@ -239,6 +239,8 @@ def _abspaths(cwd, values):
 
 @lru_cache()
 def _get_config_data(file_path, sections):
+    settings = {}
+
     with io.open(file_path) as config_file:
         if file_path.endswith('.editorconfig'):
             line = '\n'
@@ -257,14 +259,11 @@ def _get_config_data(file_path, sections):
             config = configparser.SafeConfigParser()
             config.readfp(config_file)
 
-        settings = {}
         for section in sections:
             if config.has_section(section):
                 settings.update(dict(config.items(section)))
 
-        return settings
-
-    return {}
+    return settings
 
 
 def should_skip(filename, config, path='/'):
