@@ -239,7 +239,7 @@ def _abspaths(cwd, values):
 
 @lru_cache()
 def _get_config_data(file_path, sections):
-    with io.open(file_path, 'r') as config_file:
+    with io.open(file_path) as config_file:
         if file_path.endswith('.editorconfig'):
             line = '\n'
             last_position = config_file.tell()
