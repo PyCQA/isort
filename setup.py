@@ -23,6 +23,7 @@ setup(name='isort',
       packages=['isort'],
       extras_require={
           'pipfile': ['pipreqs', 'requirementslib'],
+          'pyproject': ['toml'],
           'requirements': ['pip', 'pipreqs'],
       },
       install_requires=['futures; python_version < "3.2"'],

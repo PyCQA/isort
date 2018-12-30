@@ -31,12 +31,19 @@ import shutil
 import sys
 import tempfile
 
+import pytest
+
 from isort import finders
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.pie_slice import PY2
 from isort.settings import WrapModes
+
+try:
+    import toml
+except ImportError:
+    toml = None
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 
@@ -1822,6 +1829,7 @@ def test_sections_parsed_correct():
         shutil.rmtree(tmp_conf_dir, ignore_errors=True)
 
 
+@pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
 def test_pyproject_conf_file():
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
     tmp_conf_dir = None
@@ -1834,10 +1842,11 @@ def test_pyproject_conf_file():
         'license = "MIT"\n'
         '[tool.isort]\n'
         'lines_between_types=1\n'
-        'known_common=nose\n'
-        'import_heading_common=Common Library\n'
-        'import_heading_stdlib=Standard Library\n'
-        'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
+        'known_common="nose"\n'
+        'import_heading_common="Common Library"\n'
+        'import_heading_stdlib="Standard Library"\n'
+        'sections="FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON"\n'
+        'include_trailing_comma = true\n'
     )
     test_input = (
         'import os\n'
