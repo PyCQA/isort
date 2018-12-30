@@ -261,7 +261,7 @@ def _get_config_data(file_path, sections):
 
         for section in sections:
             if config.has_section(section):
-                settings.update(dict(config.items(section)))
+                settings.update(config.items(section))
 
     return settings
 
