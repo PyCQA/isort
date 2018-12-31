@@ -39,7 +39,7 @@ from difflib import unified_diff
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import OrderedSet, input, itemsview
+from .pie_slice import input, itemsview
 
 
 class SortImports(object):
@@ -136,7 +136,7 @@ class SortImports(object):
         section_names = self.config['sections']
         self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
-            self.imports[section] = {'straight': OrderedSet(), 'from': OrderedDict()}
+            self.imports[section] = {'straight': OrderedDict(), 'from': OrderedDict()}
 
         self.finder = FindersManager(config=self.config, sections=self.sections)
 
@@ -922,10 +922,9 @@ class SortImports(object):
                         if statement_index - 1 == self.import_index:
                             self.import_index -= len(self.comments['above']['from'].get(import_from, []))
 
-                    if root.get(import_from, False):
-                        root[import_from].update(imports)
-                    else:
-                        root[import_from] = OrderedSet(imports)
+                    if import_from not in root:
+                        root[import_from] = OrderedDict()
+                    root[import_from].update((module, None) for module in imports)
                 else:
                     for module in imports:
                         if comments:
@@ -953,7 +952,7 @@ class SortImports(object):
                                 "WARNING: could not place module {0} of line {1} --"
                                 " Do you need to define a default section?".format(import_from, line)
                             )
-                        self.imports[placed_module][import_type].add(module)
+                        self.imports[placed_module][import_type][module] = None
 
 
 def coding_check(fname, default='utf-8'):
