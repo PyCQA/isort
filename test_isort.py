@@ -24,12 +24,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from tempfile import NamedTemporaryFile
-import codecs
-import os
 import io
-import shutil
 import sys
-import tempfile
 
 import pytest
 
@@ -1692,18 +1688,13 @@ def test_import_split_is_word_boundary_aware():
                            ")\n")
 
 
-def test_other_file_encodings():
+def test_other_file_encodings(tmpdir):
     """Test to ensure file encoding is respected"""
-    try:
-        tmp_dir = tempfile.mkdtemp()
-        for encoding in ('latin1', 'utf8'):
-            tmp_fname = os.path.join(tmp_dir, 'test_{0}.py'.format(encoding))
-            with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
-                file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
-                f.write(file_contents)
-        assert SortImports(file_path=tmp_fname).output == file_contents
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+    for encoding in ('latin1', 'utf8'):
+        tmp_fname = tmpdir.join('test_{0}.py'.format(encoding))
+        file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
+        tmp_fname.write_binary(file_contents.encode(encoding))
+        assert SortImports(file_path=str(tmp_fname)).output == file_contents
 
 
 def test_comment_at_top_of_file():
@@ -1792,9 +1783,8 @@ def test_shouldnt_add_lines():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_sections_parsed_correct():
+def test_sections_parsed_correct(tmpdir):
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
-    tmp_conf_dir = None
     conf_file_data = (
         '[settings]\n'
         'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
@@ -1817,22 +1807,13 @@ def test_sections_parsed_correct():
         'import nose\n'
         'from nose import *\n'
     )
-
-    try:
-        tmp_conf_dir = tempfile.mkdtemp()
-        tmp_conf_name = os.path.join(tmp_conf_dir, '.isort.cfg')
-        with codecs.open(tmp_conf_name, 'w') as test_config:
-            test_config.writelines(conf_file_data)
-
-        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
-    finally:
-        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+    tmpdir.join('.isort.cfg').write(conf_file_data)
+    assert SortImports(file_contents=test_input, settings_path=str(tmpdir)).output == correct_output
 
 
 @pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
-def test_pyproject_conf_file():
+def test_pyproject_conf_file(tmpdir):
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
-    tmp_conf_dir = None
     conf_file_data = (
         '[build-system]\n'
         'requires = ["setuptools", "wheel"]\n'
@@ -1865,16 +1846,8 @@ def test_pyproject_conf_file():
         '\n'
         'from nose import *\n'
     )
-
-    try:
-        tmp_conf_dir = tempfile.mkdtemp()
-        tmp_conf_name = os.path.join(tmp_conf_dir, 'pyproject.toml')
-        with codecs.open(tmp_conf_name, 'w') as test_config:
-            test_config.writelines(conf_file_data)
-
-        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
-    finally:
-        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+    tmpdir.join('pyproject.toml').write(conf_file_data)
+    assert SortImports(file_contents=test_input, settings_path=str(tmpdir)).output == correct_output
 
 
 def test_alphabetic_sorting_no_newlines():
@@ -2096,18 +2069,14 @@ def test_exists_case_sensitive_directory(tmpdir):
     assert not exists_case_sensitive(str(tmpdir.join('PKG')))
 
 
-def test_sys_path_mutation():
+def test_sys_path_mutation(tmpdir):
     """Test to ensure sys.path is not modified"""
-    try:
-        tmp_dir = tempfile.mkdtemp()
-        os.makedirs(os.path.join(tmp_dir, 'src', 'a'))
-        test_input = "from myproject import test"
-        options = {'virtual_env': tmp_dir}
-        expected_length = len(sys.path)
-        SortImports(file_contents=test_input, **options).output
-        assert len(sys.path) == expected_length
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+    tmpdir.mkdir('src').mkdir('a')
+    test_input = "from myproject import test"
+    options = {'virtual_env': str(tmpdir)}
+    expected_length = len(sys.path)
+    SortImports(file_contents=test_input, **options).output
+    assert len(sys.path) == expected_length
 
 
 def test_long_single_line():
@@ -2446,15 +2415,13 @@ def test_is_python_file_ioerror(tmpdir):
 
 def test_is_python_file_shebang(tmpdir):
     path = tmpdir.join('myscript')
-    with path.open('w') as fp:
-        fp.write('#!/usr/bin/env python\n')
+    path.write('#!/usr/bin/env python\n')
     assert is_python_file(str(path)) is True
 
 
 def test_is_python_file_editor_backup(tmpdir):
     path = tmpdir.join('myscript~')
-    with path.open('w') as fp:
-        fp.write('#!/usr/bin/env python\n')
+    path.write('#!/usr/bin/env python\n')
     assert is_python_file(str(path)) is False
 
 
