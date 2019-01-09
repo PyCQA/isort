@@ -32,8 +32,6 @@ import setuptools
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
 
-from .pie_slice import itemsview
-
 INTRO = r"""
 /#######################################################################\
 
@@ -129,14 +127,14 @@ class ISortCommand(setuptools.Command):
 
     def initialize_options(self):
         default_settings = default.copy()
-        for (key, value) in itemsview(default_settings):
+        for key, value in default_settings.items():
             setattr(self, key, value)
 
     def finalize_options(self):
         "Get options from config files."
         self.arguments = {}
         computed_settings = from_path(os.getcwd())
-        for (key, value) in itemsview(computed_settings):
+        for key, value in computed_settings.items():
             self.arguments[key] = value
 
     def distribution_files(self):
@@ -289,7 +287,7 @@ def create_parser():
                         help='Tells isort to apply changes recursively without asking')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
-    arguments = {key: value for key, value in itemsview(vars(parser.parse_args())) if value}
+    arguments = {key: value for key, value in vars(parser.parse_args()).items() if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
     return arguments

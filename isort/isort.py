@@ -39,7 +39,7 @@ from difflib import unified_diff
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import input, itemsview
+from .pie_slice import input
 
 
 class SortImports(object):
@@ -53,7 +53,7 @@ class SortImports(object):
         settings_path = settings_path or os.getcwd()
 
         self.config = settings.from_path(settings_path).copy()
-        for key, value in itemsview(setting_overrides):
+        for key, value in setting_overrides.items():
             access_key = key.replace('not_', '').lower()
             # The sections config needs to retain order and can't be converted to a set.
             if access_key != 'sections' and type(self.config.get(access_key)) in (list, tuple):
@@ -85,7 +85,7 @@ class SortImports(object):
         self.import_placements = {}
         self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
         self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
-        self._section_comments = ["# " + value for key, value in itemsview(self.config) if
+        self._section_comments = ["# " + value for key, value in self.config.items() if
                                   key.startswith('import_heading') and value]
 
         self.file_encoding = 'utf-8'

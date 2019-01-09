@@ -2584,3 +2584,11 @@ def test_pipfile_finder(tmpdir):
     assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     pipfile.remove()
+
+
+@pytest.mark.skipif(sys.version_info[0] == 2, reason="Requires Python 3")
+def test_monkey_patched_urllib():
+    with pytest.raises(ImportError):
+        # Previous versions of isort monkey patched urllib which caused unusual
+        # importing for other projects.
+        from urllib import quote  # noqa: F401
