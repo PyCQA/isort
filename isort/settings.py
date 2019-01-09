@@ -33,7 +33,7 @@ import warnings
 from collections import namedtuple
 from distutils.util import strtobool
 
-from .pie_slice import itemsview, lru_cache, native_str
+from .pie_slice import lru_cache
 
 try:
     import configparser
@@ -164,7 +164,7 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
     tries = 0
     current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, native_str(name))
+        potential_path = os.path.join(current_directory, str(name))
         if os.path.exists(potential_path):
             editor_config_file = potential_path
             break
@@ -200,7 +200,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
         if max_line_length:
             computed_settings['line_length'] = float('inf') if max_line_length == 'off' else int(max_line_length)
 
-    for key, value in itemsview(settings):
+    for key, value in settings.items():
         access_key = key.replace('not_', '').lower()
         existing_value_type = type(default.get(access_key, ''))
         if existing_value_type in (list, tuple):
