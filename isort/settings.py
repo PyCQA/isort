@@ -293,7 +293,7 @@ def _get_config_data(file_path, sections):
 def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
     for skip_path in config['skip']:
-        if posixpath.abspath(posixpath.join(path, filename)) == posixpath.abspath(skip_path.replace('\\', '/')):
+        if posixpath.abspath(posixpath.join(path.replace('\\', '/'), filename)) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 
     position = os.path.split(filename)
