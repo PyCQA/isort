@@ -201,6 +201,10 @@ class SortImports(object):
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
+    @property
+    def correctly_sorted(self):
+        return not self.incorrectly_sorted
+
     def _show_diff(self, file_contents):
         for line in unified_diff(
             file_contents.splitlines(1),
