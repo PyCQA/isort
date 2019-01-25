@@ -2596,3 +2596,22 @@ def test_monkey_patched_urllib():
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
         from urllib import quote  # noqa: F401
+
+
+def test_argument_parsing():
+    from isort.main import parse_args
+    args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
+    assert args['order_by_type'] is False
+    assert args['force_to_top'] == ['foo']
+    assert args['skip'] == ['bar']
+    assert args['files'] == ['baz.py']
+
+
+def test_command_line(tmpdir, capsys):
+    from isort.main import main
+    tmpdir.join("file.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
+    main(["-rc", str(tmpdir)])
+    assert tmpdir.join("file.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
+    out, err = capsys.readouterr()
+    assert not err
+    assert str(tmpdir.join("file.py")) in out  # it informs us about fixing

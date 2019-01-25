@@ -172,7 +172,7 @@ class ISortCommand(setuptools.Command):
             exit(1)
 
 
-def create_parser():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     inline_args_group = parser.add_mutually_exclusive_group()
@@ -287,14 +287,14 @@ def create_parser():
                         help='Tells isort to apply changes recursively without asking')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
-    arguments = {key: value for key, value in vars(parser.parse_args()).items() if value}
+    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
     return arguments
 
 
-def main():
-    arguments = create_parser()
+def main(argv=None):
+    arguments = parse_args(argv)
     if arguments.get('show_version'):
         print(INTRO)
         return
