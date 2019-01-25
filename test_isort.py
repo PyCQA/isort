@@ -2607,11 +2607,19 @@ def test_argument_parsing():
     assert args['files'] == ['baz.py']
 
 
-def test_command_line(tmpdir, capsys):
+@pytest.mark.parametrize('multiprocess', (False, True))
+def test_command_line(tmpdir, capfd, multiprocess):
     from isort.main import main
-    tmpdir.join("file.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
-    main(["-rc", str(tmpdir)])
-    assert tmpdir.join("file.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
-    out, err = capsys.readouterr()
+    tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
+    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
+    arguments = ["-rc", str(tmpdir)]
+    if multiprocess:
+        arguments.extend(['--jobs', '2'])
+    main(arguments)
+    assert tmpdir.join("file1.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
+    assert tmpdir.join("file2.py").read() == "import abc\nimport collections\nimport time\n\nimport isort\n"
+    out, err = capfd.readouterr()
     assert not err
-    assert str(tmpdir.join("file.py")) in out  # it informs us about fixing
+    # it informs us about fixing the files:
+    assert str(tmpdir.join("file1.py")) in out
+    assert str(tmpdir.join("file2.py")) in out

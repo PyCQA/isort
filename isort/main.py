@@ -25,7 +25,6 @@ import glob
 import os
 import re
 import sys
-from concurrent.futures import ProcessPoolExecutor
 
 import setuptools
 
@@ -329,29 +328,24 @@ def main(argv=None):
         num_skipped = 0
         if config['verbose'] or config.get('show_logo', False):
             print(INTRO)
+
         jobs = arguments.get('jobs')
         if jobs:
-            executor = ProcessPoolExecutor(max_workers=jobs)
-
-            for sort_attempt in executor.map(functools.partial(sort_imports, **arguments), file_names):
-                if not sort_attempt:
-                    continue
-                incorrectly_sorted = sort_attempt.incorrectly_sorted
-                if arguments.get('check', False) and incorrectly_sorted:
-                    wrong_sorted_files = True
-                if sort_attempt.skipped:
-                    num_skipped += 1
+            import multiprocessing
+            executor = multiprocessing.Pool(jobs)
+            attempt_iterator = executor.imap(functools.partial(sort_imports, **arguments), file_names)
         else:
-            for file_name in file_names:
-                try:
-                    sort_attempt = SortImports(file_name, **arguments)
-                    incorrectly_sorted = sort_attempt.incorrectly_sorted
-                    if arguments.get('check', False) and incorrectly_sorted:
-                        wrong_sorted_files = True
-                    if sort_attempt.skipped:
-                        num_skipped += 1
-                except IOError as e:
-                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+            attempt_iterator = (sort_imports(file_name, **arguments) for file_name in file_names)
+
+        for sort_attempt in attempt_iterator:
+            if not sort_attempt:
+                continue
+            incorrectly_sorted = sort_attempt.incorrectly_sorted
+            if arguments.get('check', False) and incorrectly_sorted:
+                wrong_sorted_files = True
+            if sort_attempt.skipped:
+                num_skipped += 1
+
         if wrong_sorted_files:
             sys.exit(1)
 
