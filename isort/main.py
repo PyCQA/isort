@@ -169,7 +169,7 @@ class ISortCommand(setuptools.Command):
                 except IOError as e:
                     print("WARNING: Unable to parse file {0} due to {1}".format(python_file, e))
         if wrong_sorted_files:
-            exit(1)
+            sys.exit(1)
 
 
 def parse_args(argv=None):
@@ -353,7 +353,7 @@ def main(argv=None):
                 except IOError as e:
                     print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
         if wrong_sorted_files:
-            exit(1)
+            sys.exit(1)
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get('quiet', False):
