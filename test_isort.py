@@ -25,7 +25,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from tempfile import NamedTemporaryFile
 import io
+import os.path
 import sys
+import sysconfig
 
 import pytest
 
@@ -2592,3 +2594,27 @@ def test_monkey_patched_urllib():
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
         from urllib import quote  # noqa: F401
+
+
+@pytest.mark.skipif(sys.version_info[0] == 2, reason="Requires Python 3")
+def test_path_finder(monkeypatch):
+    si = SortImports(file_contents="")
+    finder = finders.PathFinder(
+        config=si.config,
+        sections=si.sections,
+    )
+    third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
+    ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+    imaginary_paths = set([
+        os.path.join(finder.stdlib_lib_prefix, "example_1.py"),
+        os.path.join(third_party_prefix, "example_2.py"),
+        os.path.join(third_party_prefix, "example_3.so"),
+        os.path.join(third_party_prefix, "example_4" + ext_suffix),
+        os.path.join(os.getcwd(), "example_5.py"),
+    ])
+    monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
+    assert finder.find("example_1") == finder.sections.STDLIB
+    assert finder.find("example_2") == finder.sections.THIRDPARTY
+    assert finder.find("example_3") == finder.sections.THIRDPARTY
+    assert finder.find("example_4") == finder.sections.THIRDPARTY
+    assert finder.find("example_5") == finder.sections.FIRSTPARTY
