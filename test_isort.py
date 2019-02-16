@@ -25,11 +25,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from tempfile import NamedTemporaryFile
 import io
+import os
 import sys
 
 import pytest
 
-from isort import finders
+from isort import finders, main, settings
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
@@ -2592,3 +2593,19 @@ def test_monkey_patched_urllib():
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
         from urllib import quote  # noqa: F401
+
+
+@pytest.mark.parametrize('enabled', (False, True))
+def test_safety_excludes(tmpdir, enabled):
+    tmpdir.join("victim.py").write("# ...")
+    tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
+    tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    config = dict(settings.default.copy(), safety_excludes=enabled)
+    skipped = []
+    file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
+    if enabled:
+        assert file_names == {'victim.py'}
+        assert len(skipped) == 2
+    else:
+        assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
+        assert not skipped
