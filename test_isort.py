@@ -2625,7 +2625,7 @@ def test_command_line(tmpdir, capfd, multiprocess):
     assert str(tmpdir.join("file1.py")) in out
     assert str(tmpdir.join("file2.py")) in out
 
-    
+
 @pytest.mark.parametrize('enabled', (False, True))
 def test_safety_excludes(tmpdir, enabled):
     tmpdir.join("victim.py").write("# ...")
