@@ -405,6 +405,24 @@ def test_length_sort():
                            "import looooooooooooooooooooooooooooooooooooooong\n")
 
 
+def test_length_sort_section():
+    """Test setting isort to sort on length instead of alphabetically for a specific section."""
+    test_input = ("import medium_sizeeeeeeeeeeeeee\n"
+                  "import shortie\n"
+                  "import sys\n"
+                  "import os\n"
+                  "import looooooooooooooooooooooooooooooooooooooong\n"
+                  "import medium_sizeeeeeeeeeeeeea\n")
+    test_output = SortImports(file_contents=test_input, length_sort_stdlib=True).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import looooooooooooooooooooooooooooooooooooooong\n"
+                           "import medium_sizeeeeeeeeeeeeea\n"
+                           "import medium_sizeeeeeeeeeeeeee\n"
+                           "import shortie\n")
+
+
 def test_convert_hanging():
     """Ensure that isort will convert hanging indents to correct indent
     method."""
