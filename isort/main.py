@@ -284,11 +284,16 @@ def parse_args(argv=None):
                         help='Tells isort to ignore whitespace differences when --check-only is being used.')
     parser.add_argument('-y', '--apply', dest='apply', action='store_true',
                         help='Tells isort to apply changes recursively without asking')
+    parser.add_argument('--unsafe', dest='unsafe', action='store_true',
+                        help='Tells isort to look for files in standard library directories, etc. '
+                             'where it may not be safe to operate in')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
+    if arguments.pop('unsafe', False):
+        arguments['safety_excludes'] = False
     return arguments
 
 
