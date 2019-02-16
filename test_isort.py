@@ -2529,6 +2529,8 @@ def test_new_lines_are_preserved():
     assert n_newline_contents == 'import os\nimport sys\n'
 
 
+@pytest.mark.skipif(not finders.RequirementsFinder.enabled, reason='RequirementsFinder not enabled (too old version of pip?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_requirements_finder(tmpdir):
     subdir = tmpdir.mkdir('subdir').join("lol.txt")
     subdir.write("flask")
@@ -2580,6 +2582,8 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 """
 
 
+@pytest.mark.skipif(not finders.PipfileFinder.enabled, reason='PipfileFinder not enabled (missing requirementslib?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_pipfile_finder(tmpdir):
     pipfile = tmpdir.join('Pipfile')
     pipfile.write(PIPFILE)
@@ -2611,6 +2615,33 @@ def test_monkey_patched_urllib():
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
         from urllib import quote  # noqa: F401
+
+
+def test_argument_parsing():
+    from isort.main import parse_args
+    args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
+    assert args['order_by_type'] is False
+    assert args['force_to_top'] == ['foo']
+    assert args['skip'] == ['bar']
+    assert args['files'] == ['baz.py']
+
+
+@pytest.mark.parametrize('multiprocess', (False, True))
+def test_command_line(tmpdir, capfd, multiprocess):
+    from isort.main import main
+    tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
+    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
+    arguments = ["-rc", str(tmpdir)]
+    if multiprocess:
+        arguments.extend(['--jobs', '2'])
+    main(arguments)
+    assert tmpdir.join("file1.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
+    assert tmpdir.join("file2.py").read() == "import abc\nimport collections\nimport time\n\nimport isort\n"
+    out, err = capfd.readouterr()
+    assert not err
+    # it informs us about fixing the files:
+    assert str(tmpdir.join("file1.py")) in out
+    assert str(tmpdir.join("file2.py")) in out
 
 
 @pytest.mark.parametrize('enabled', (False, True))
