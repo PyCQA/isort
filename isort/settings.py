@@ -34,7 +34,7 @@ import warnings
 from collections import namedtuple
 from distutils.util import strtobool
 
-from .pie_slice import itemsview, lru_cache, native_str
+from .pie_slice import lru_cache
 from .utils import difference, union
 
 try:
