@@ -24,19 +24,23 @@ OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from tempfile import NamedTemporaryFile
-import codecs
-import os
 import io
-import shutil
+import os
 import sys
-import tempfile
 
-from isort import finders
+import pytest
+
+from isort import finders, main, settings
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.pie_slice import PY2
 from isort.settings import WrapModes
+
+try:
+    import toml
+except ImportError:
+    toml = None
 
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 
@@ -399,6 +403,24 @@ def test_length_sort():
                            "import medium_sizeeeeeeeeeeeeea\n"
                            "import medium_sizeeeeeeeeeeeeee\n"
                            "import looooooooooooooooooooooooooooooooooooooong\n")
+
+
+def test_length_sort_section():
+    """Test setting isort to sort on length instead of alphabetically for a specific section."""
+    test_input = ("import medium_sizeeeeeeeeeeeeee\n"
+                  "import shortie\n"
+                  "import sys\n"
+                  "import os\n"
+                  "import looooooooooooooooooooooooooooooooooooooong\n"
+                  "import medium_sizeeeeeeeeeeeeea\n")
+    test_output = SortImports(file_contents=test_input, length_sort_stdlib=True).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import looooooooooooooooooooooooooooooooooooooong\n"
+                           "import medium_sizeeeeeeeeeeeeea\n"
+                           "import medium_sizeeeeeeeeeeeeee\n"
+                           "import shortie\n")
 
 
 def test_convert_hanging():
@@ -1685,18 +1707,13 @@ def test_import_split_is_word_boundary_aware():
                            ")\n")
 
 
-def test_other_file_encodings():
+def test_other_file_encodings(tmpdir):
     """Test to ensure file encoding is respected"""
-    try:
-        tmp_dir = tempfile.mkdtemp()
-        for encoding in ('latin1', 'utf8'):
-            tmp_fname = os.path.join(tmp_dir, 'test_{0}.py'.format(encoding))
-            with codecs.open(tmp_fname, mode='w', encoding=encoding) as f:
-                file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
-                f.write(file_contents)
-        assert SortImports(file_path=tmp_fname).output == file_contents
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+    for encoding in ('latin1', 'utf8'):
+        tmp_fname = tmpdir.join('test_{0}.py'.format(encoding))
+        file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
+        tmp_fname.write_binary(file_contents.encode(encoding))
+        assert SortImports(file_path=str(tmp_fname)).output == file_contents
 
 
 def test_comment_at_top_of_file():
@@ -1785,9 +1802,8 @@ def test_shouldnt_add_lines():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_sections_parsed_correct():
+def test_sections_parsed_correct(tmpdir):
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
-    tmp_conf_dir = None
     conf_file_data = (
         '[settings]\n'
         'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
@@ -1810,21 +1826,13 @@ def test_sections_parsed_correct():
         'import nose\n'
         'from nose import *\n'
     )
-
-    try:
-        tmp_conf_dir = tempfile.mkdtemp()
-        tmp_conf_name = os.path.join(tmp_conf_dir, '.isort.cfg')
-        with codecs.open(tmp_conf_name, 'w') as test_config:
-            test_config.writelines(conf_file_data)
-
-        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
-    finally:
-        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+    tmpdir.join('.isort.cfg').write(conf_file_data)
+    assert SortImports(file_contents=test_input, settings_path=str(tmpdir)).output == correct_output
 
 
-def test_pyproject_conf_file():
+@pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
+def test_pyproject_conf_file(tmpdir):
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
-    tmp_conf_dir = None
     conf_file_data = (
         '[build-system]\n'
         'requires = ["setuptools", "wheel"]\n'
@@ -1834,10 +1842,11 @@ def test_pyproject_conf_file():
         'license = "MIT"\n'
         '[tool.isort]\n'
         'lines_between_types=1\n'
-        'known_common=nose\n'
-        'import_heading_common=Common Library\n'
-        'import_heading_stdlib=Standard Library\n'
-        'sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n'
+        'known_common="nose"\n'
+        'import_heading_common="Common Library"\n'
+        'import_heading_stdlib="Standard Library"\n'
+        'sections="FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON"\n'
+        'include_trailing_comma = true\n'
     )
     test_input = (
         'import os\n'
@@ -1856,16 +1865,8 @@ def test_pyproject_conf_file():
         '\n'
         'from nose import *\n'
     )
-
-    try:
-        tmp_conf_dir = tempfile.mkdtemp()
-        tmp_conf_name = os.path.join(tmp_conf_dir, 'pyproject.toml')
-        with codecs.open(tmp_conf_name, 'w') as test_config:
-            test_config.writelines(conf_file_data)
-
-        assert SortImports(file_contents=test_input, settings_path=tmp_conf_dir).output == correct_output
-    finally:
-        shutil.rmtree(tmp_conf_dir, ignore_errors=True)
+    tmpdir.join('pyproject.toml').write(conf_file_data)
+    assert SortImports(file_contents=test_input, settings_path=str(tmpdir)).output == correct_output
 
 
 def test_alphabetic_sorting_no_newlines():
@@ -2087,18 +2088,14 @@ def test_exists_case_sensitive_directory(tmpdir):
     assert not exists_case_sensitive(str(tmpdir.join('PKG')))
 
 
-def test_sys_path_mutation():
+def test_sys_path_mutation(tmpdir):
     """Test to ensure sys.path is not modified"""
-    try:
-        tmp_dir = tempfile.mkdtemp()
-        os.makedirs(os.path.join(tmp_dir, 'src', 'a'))
-        test_input = "from myproject import test"
-        options = {'virtual_env': tmp_dir}
-        expected_length = len(sys.path)
-        SortImports(file_contents=test_input, **options).output
-        assert len(sys.path) == expected_length
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+    tmpdir.mkdir('src').mkdir('a')
+    test_input = "from myproject import test"
+    options = {'virtual_env': str(tmpdir)}
+    expected_length = len(sys.path)
+    SortImports(file_contents=test_input, **options).output
+    assert len(sys.path) == expected_length
 
 
 def test_long_single_line():
@@ -2435,6 +2432,23 @@ def test_is_python_file_ioerror(tmpdir):
     assert is_python_file(str(does_not_exist)) is False
 
 
+def test_is_python_file_shebang(tmpdir):
+    path = tmpdir.join('myscript')
+    path.write('#!/usr/bin/env python\n')
+    assert is_python_file(str(path)) is True
+
+
+def test_is_python_file_editor_backup(tmpdir):
+    path = tmpdir.join('myscript~')
+    path.write('#!/usr/bin/env python\n')
+    assert is_python_file(str(path)) is False
+
+
+def test_is_python_typing_stub(tmpdir):
+    stub = tmpdir.join('stub.pyi')
+    assert is_python_file(str(stub)) is True
+
+
 def test_to_ensure_imports_are_brought_to_top_issue_651():
     test_input = ('from __future__ import absolute_import, unicode_literals\n'
                   '\n'
@@ -2515,6 +2529,8 @@ def test_new_lines_are_preserved():
     assert n_newline_contents == 'import os\nimport sys\n'
 
 
+@pytest.mark.skipif(not finders.RequirementsFinder.enabled, reason='RequirementsFinder not enabled (too old version of pip?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_requirements_finder(tmpdir):
     subdir = tmpdir.mkdir('subdir').join("lol.txt")
     subdir.write("flask")
@@ -2591,6 +2607,8 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 """
 
 
+@pytest.mark.skipif(not finders.PipfileFinder.enabled, reason='PipfileFinder not enabled (missing requirementslib?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_pipfile_finder(tmpdir):
     pipfile = tmpdir.join('Pipfile')
     pipfile.write(PIPFILE)
@@ -2614,3 +2632,54 @@ def test_pipfile_finder(tmpdir):
     assert finder._normalize_name('Flask-RESTful') == 'flask_restful'  # conver `-`to `_`
 
     pipfile.remove()
+
+
+@pytest.mark.skipif(sys.version_info[0] == 2, reason="Requires Python 3")
+def test_monkey_patched_urllib():
+    with pytest.raises(ImportError):
+        # Previous versions of isort monkey patched urllib which caused unusual
+        # importing for other projects.
+        from urllib import quote  # noqa: F401
+
+
+def test_argument_parsing():
+    from isort.main import parse_args
+    args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
+    assert args['order_by_type'] is False
+    assert args['force_to_top'] == ['foo']
+    assert args['skip'] == ['bar']
+    assert args['files'] == ['baz.py']
+
+
+@pytest.mark.parametrize('multiprocess', (False, True))
+def test_command_line(tmpdir, capfd, multiprocess):
+    from isort.main import main
+    tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
+    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
+    arguments = ["-rc", str(tmpdir)]
+    if multiprocess:
+        arguments.extend(['--jobs', '2'])
+    main(arguments)
+    assert tmpdir.join("file1.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
+    assert tmpdir.join("file2.py").read() == "import abc\nimport collections\nimport time\n\nimport isort\n"
+    out, err = capfd.readouterr()
+    assert not err
+    # it informs us about fixing the files:
+    assert str(tmpdir.join("file1.py")) in out
+    assert str(tmpdir.join("file2.py")) in out
+
+
+@pytest.mark.parametrize('enabled', (False, True))
+def test_safety_excludes(tmpdir, enabled):
+    tmpdir.join("victim.py").write("# ...")
+    tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
+    tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    config = dict(settings.default.copy(), safety_excludes=enabled)
+    skipped = []
+    file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
+    if enabled:
+        assert file_names == {'victim.py'}
+        assert len(skipped) == 2
+    else:
+        assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
+        assert not skipped
