@@ -31,7 +31,7 @@ import sysconfig
 
 import pytest
 
-from isort import finders
+from isort import finders, main, settings
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
@@ -404,6 +404,24 @@ def test_length_sort():
                            "import medium_sizeeeeeeeeeeeeea\n"
                            "import medium_sizeeeeeeeeeeeeee\n"
                            "import looooooooooooooooooooooooooooooooooooooong\n")
+
+
+def test_length_sort_section():
+    """Test setting isort to sort on length instead of alphabetically for a specific section."""
+    test_input = ("import medium_sizeeeeeeeeeeeeee\n"
+                  "import shortie\n"
+                  "import sys\n"
+                  "import os\n"
+                  "import looooooooooooooooooooooooooooooooooooooong\n"
+                  "import medium_sizeeeeeeeeeeeeea\n")
+    test_output = SortImports(file_contents=test_input, length_sort_stdlib=True).output
+    assert test_output == ("import os\n"
+                           "import sys\n"
+                           "\n"
+                           "import looooooooooooooooooooooooooooooooooooooong\n"
+                           "import medium_sizeeeeeeeeeeeeea\n"
+                           "import medium_sizeeeeeeeeeeeeee\n"
+                           "import shortie\n")
 
 
 def test_convert_hanging():
@@ -2512,6 +2530,8 @@ def test_new_lines_are_preserved():
     assert n_newline_contents == 'import os\nimport sys\n'
 
 
+@pytest.mark.skipif(not finders.RequirementsFinder.enabled, reason='RequirementsFinder not enabled (too old version of pip?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_requirements_finder(tmpdir):
     subdir = tmpdir.mkdir('subdir').join("lol.txt")
     subdir.write("flask")
@@ -2546,6 +2566,31 @@ def test_requirements_finder(tmpdir):
     req_file.remove()
 
 
+def test_forced_separate_is_deterministic_issue_774(tmpdir):
+
+    config_file = tmpdir.join('setup.cfg')
+    config_file.write(
+        "[isort]\n"
+        "forced_separate:\n"
+        "   separate1\n"
+        "   separate2\n"
+        "   separate3\n"
+        "   separate4\n"
+    )
+
+    test_input = ('import time\n'
+                  '\n'
+                  'from separate1 import foo\n'
+                  '\n'
+                  'from separate2 import bar\n'
+                  '\n'
+                  'from separate3 import baz\n'
+                  '\n'
+                  'from separate4 import quux\n')
+
+    assert SortImports(file_contents=test_input, settings_path=config_file.strpath).output == test_input
+
+
 PIPFILE = """
 [[source]]
 url = "https://pypi.org/simple"
@@ -2563,6 +2608,8 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 """
 
 
+@pytest.mark.skipif(not finders.PipfileFinder.enabled, reason='PipfileFinder not enabled (missing requirementslib?)')
+@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_pipfile_finder(tmpdir):
     pipfile = tmpdir.join('Pipfile')
     pipfile.write(PIPFILE)
@@ -2618,3 +2665,46 @@ def test_path_finder(monkeypatch):
     assert finder.find("example_3") == finder.sections.THIRDPARTY
     assert finder.find("example_4") == finder.sections.THIRDPARTY
     assert finder.find("example_5") == finder.sections.FIRSTPARTY
+
+
+def test_argument_parsing():
+    from isort.main import parse_args
+    args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
+    assert args['order_by_type'] is False
+    assert args['force_to_top'] == ['foo']
+    assert args['skip'] == ['bar']
+    assert args['files'] == ['baz.py']
+
+
+@pytest.mark.parametrize('multiprocess', (False, True))
+def test_command_line(tmpdir, capfd, multiprocess):
+    from isort.main import main
+    tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
+    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
+    arguments = ["-rc", str(tmpdir)]
+    if multiprocess:
+        arguments.extend(['--jobs', '2'])
+    main(arguments)
+    assert tmpdir.join("file1.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
+    assert tmpdir.join("file2.py").read() == "import abc\nimport collections\nimport time\n\nimport isort\n"
+    out, err = capfd.readouterr()
+    assert not err
+    # it informs us about fixing the files:
+    assert str(tmpdir.join("file1.py")) in out
+    assert str(tmpdir.join("file2.py")) in out
+
+
+@pytest.mark.parametrize('enabled', (False, True))
+def test_safety_excludes(tmpdir, enabled):
+    tmpdir.join("victim.py").write("# ...")
+    tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
+    tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    config = dict(settings.default.copy(), safety_excludes=enabled)
+    skipped = []
+    file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
+    if enabled:
+        assert file_names == {'victim.py'}
+        assert len(skipped) == 2
+    else:
+        assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
+        assert not skipped

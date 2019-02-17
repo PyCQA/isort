@@ -27,6 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import fnmatch
 import io
 import os
+import re
 import posixpath
 import sys
 import warnings
@@ -34,6 +35,7 @@ from collections import namedtuple
 from distutils.util import strtobool
 
 from .pie_slice import lru_cache
+from .utils import difference, union
 
 try:
     import configparser
@@ -47,6 +49,10 @@ except ImportError:
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
+
+safety_exclude_re = re.compile(
+    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
+)
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
              'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
@@ -145,7 +151,9 @@ default = {'force_to_top': [],
            'show_diff': False,
            'ignore_whitespace': False,
            'no_lines_before': [],
-           'no_inline_sort': False}
+           'no_inline_sort': False,
+           'safety_excludes': True,
+           }
 
 
 @lru_cache()
@@ -210,11 +218,11 @@ def _update_with_config_file(file_path, sections, computed_settings):
             else:
                 existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith('not_'):
-                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                    computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith('known_'):
-                    computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
+                    computed_settings[access_key] = union(existing_data, _abspaths(cwd, _as_list(value)))
                 else:
-                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
+                    computed_settings[access_key] = union(existing_data, _as_list(value))
         elif existing_value_type == bool:
             # Only some configuration formats support native boolean values.
             if not isinstance(value, bool):
@@ -292,8 +300,13 @@ def _get_config_data(file_path, sections):
 
 def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
+    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
+
+    if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
+        return True
+
     for skip_path in config['skip']:
-        if posixpath.abspath(posixpath.join(path.replace('\\', '/'), filename)) == posixpath.abspath(skip_path.replace('\\', '/')):
+        if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 
     position = os.path.split(filename)

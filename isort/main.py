@@ -25,7 +25,6 @@ import glob
 import os
 import re
 import sys
-from concurrent.futures import ProcessPoolExecutor
 
 import setuptools
 
@@ -169,10 +168,10 @@ class ISortCommand(setuptools.Command):
                 except IOError as e:
                     print("WARNING: Unable to parse file {0} due to {1}".format(python_file, e))
         if wrong_sorted_files:
-            exit(1)
+            sys.exit(1)
 
 
-def create_parser():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     inline_args_group = parser.add_mutually_exclusive_group()
@@ -285,16 +284,21 @@ def create_parser():
                         help='Tells isort to ignore whitespace differences when --check-only is being used.')
     parser.add_argument('-y', '--apply', dest='apply', action='store_true',
                         help='Tells isort to apply changes recursively without asking')
+    parser.add_argument('--unsafe', dest='unsafe', action='store_true',
+                        help='Tells isort to look for files in standard library directories, etc. '
+                             'where it may not be safe to operate in')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
-    arguments = {key: value for key, value in vars(parser.parse_args()).items() if value}
+    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if 'dont_order_by_type' in arguments:
         arguments['order_by_type'] = False
+    if arguments.pop('unsafe', False):
+        arguments['safety_excludes'] = False
     return arguments
 
 
-def main():
-    arguments = create_parser()
+def main(argv=None):
+    arguments = parse_args(argv)
     if arguments.get('show_version'):
         print(INTRO)
         return
@@ -329,31 +333,26 @@ def main():
         num_skipped = 0
         if config['verbose'] or config.get('show_logo', False):
             print(INTRO)
+
         jobs = arguments.get('jobs')
         if jobs:
-            executor = ProcessPoolExecutor(max_workers=jobs)
-
-            for sort_attempt in executor.map(functools.partial(sort_imports, **arguments), file_names):
-                if not sort_attempt:
-                    continue
-                incorrectly_sorted = sort_attempt.incorrectly_sorted
-                if arguments.get('check', False) and incorrectly_sorted:
-                    wrong_sorted_files = True
-                if sort_attempt.skipped:
-                    num_skipped += 1
+            import multiprocessing
+            executor = multiprocessing.Pool(jobs)
+            attempt_iterator = executor.imap(functools.partial(sort_imports, **arguments), file_names)
         else:
-            for file_name in file_names:
-                try:
-                    sort_attempt = SortImports(file_name, **arguments)
-                    incorrectly_sorted = sort_attempt.incorrectly_sorted
-                    if arguments.get('check', False) and incorrectly_sorted:
-                        wrong_sorted_files = True
-                    if sort_attempt.skipped:
-                        num_skipped += 1
-                except IOError as e:
-                    print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+            attempt_iterator = (sort_imports(file_name, **arguments) for file_name in file_names)
+
+        for sort_attempt in attempt_iterator:
+            if not sort_attempt:
+                continue
+            incorrectly_sorted = sort_attempt.incorrectly_sorted
+            if arguments.get('check', False) and incorrectly_sorted:
+                wrong_sorted_files = True
+            if sort_attempt.skipped:
+                num_skipped += 1
+
         if wrong_sorted_files:
-            exit(1)
+            sys.exit(1)
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get('quiet', False):
