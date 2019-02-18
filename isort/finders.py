@@ -141,6 +141,9 @@ class PathFinder(BaseFinder):
             for path in glob('{0}/lib/python*/site-packages'.format(self.virtual_env)):
                 if path not in self.paths:
                     self.paths.append(path)
+            for path in glob('{0}/lib/python*/*/site-packages'.format(self.virtual_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
             for path in glob('{0}/src/*'.format(self.virtual_env)):
                 if os.path.isdir(path):
                     self.paths.append(path)
