@@ -150,6 +150,8 @@ class PathFinder(BaseFinder):
 
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
+        if self.stdlib_lib_prefix not in self.paths:
+            self.paths.append(self.stdlib_lib_prefix)
 
         # handle compiled libraries
         self.ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
