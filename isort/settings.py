@@ -46,7 +46,7 @@ try:
     import toml
 except ImportError:
     toml = False
-    
+
 if appdirs.system == 'darwin':
     appdirs.system = 'linux2'
 
