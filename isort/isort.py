@@ -288,7 +288,6 @@ class SortImports(object):
 
         return comments and self._strip_comments(original_string)[0]
 
-
     def _wrap(self, line):
         """
             Returns an import wrapped to the specified line-length, if possible.
