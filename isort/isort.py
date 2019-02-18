@@ -39,7 +39,7 @@ from difflib import unified_diff
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import OrderedSet, input, itemsview
+from .pie_slice import input
 
 
 class SortImports(object):
@@ -53,7 +53,7 @@ class SortImports(object):
         settings_path = settings_path or os.getcwd()
 
         self.config = settings.from_path(settings_path).copy()
-        for key, value in itemsview(setting_overrides):
+        for key, value in setting_overrides.items():
             access_key = key.replace('not_', '').lower()
             # The sections config needs to retain order and can't be converted to a set.
             if access_key != 'sections' and type(self.config.get(access_key)) in (list, tuple):
@@ -85,7 +85,7 @@ class SortImports(object):
         self.import_placements = {}
         self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
         self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
-        self._section_comments = ["# " + value for key, value in itemsview(self.config) if
+        self._section_comments = ["# " + value for key, value in self.config.items() if
                                   key.startswith('import_heading') and value]
 
         self.file_encoding = 'utf-8'
@@ -136,7 +136,7 @@ class SortImports(object):
         section_names = self.config['sections']
         self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
         for section in itertools.chain(self.sections, self.config['forced_separate']):
-            self.imports[section] = {'straight': OrderedSet(), 'from': OrderedDict()}
+            self.imports[section] = {'straight': OrderedDict(), 'from': OrderedDict()}
 
         self.finder = FindersManager(config=self.config, sections=self.sections)
 
@@ -201,6 +201,10 @@ class SortImports(object):
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
+    @property
+    def correctly_sorted(self):
+        return not self.incorrectly_sorted
+
     def _show_diff(self, file_contents):
         for line in unified_diff(
             file_contents.splitlines(1),
@@ -250,7 +254,7 @@ class SortImports(object):
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config, sub_imports=False, ignore_case=False):
+    def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
         prefix = ""
         if ignore_case:
             module_name = str(module_name).lower()
@@ -265,8 +269,12 @@ class SortImports(object):
             else:
                 prefix = "C"
         module_name = module_name.lower()
+        if section_name is None or 'length_sort_' + str(section_name).lower() not in config:
+            length_sort = config['length_sort']
+        else:
+            length_sort = config['length_sort_' + str(section_name).lower()]
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
-                                  config['length_sort'] and (str(len(module_name)) + ":" + module_name) or module_name)
+                                  length_sort and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_comments(self, comments, original_string=""):
         """
@@ -351,7 +359,7 @@ class SortImports(object):
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
             if not self.config['no_inline_sort'] or self.config['force_single_line']:
-                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case))
+                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case, section_name=section))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -509,9 +517,9 @@ class SortImports(object):
         prev_section_has_imports = False
         for section in sections:
             straight_modules = self.imports[section]['straight']
-            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config))
+            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
             from_modules = self.imports[section]['from']
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config))
+            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
 
             section_output = []
             if self.config['from_first']:
@@ -927,10 +935,9 @@ class SortImports(object):
                         if statement_index - 1 == self.import_index:
                             self.import_index -= len(self.comments['above']['from'].get(import_from, []))
 
-                    if root.get(import_from, False):
-                        root[import_from].update(imports)
-                    else:
-                        root[import_from] = OrderedSet(imports)
+                    if import_from not in root:
+                        root[import_from] = OrderedDict()
+                    root[import_from].update((module, None) for module in imports)
                 else:
                     for module in imports:
                         if comments:
@@ -958,7 +965,7 @@ class SortImports(object):
                                 "WARNING: could not place module {0} of line {1} --"
                                 " Do you need to define a default section?".format(import_from, line)
                             )
-                        self.imports[placed_module][import_type].add(module)
+                        self.imports[placed_module][import_type][module] = None
 
 
 def coding_check(fname, default='utf-8'):

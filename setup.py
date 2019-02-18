@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-with open('README.rst', 'r') as f:
+with open('README.rst') as f:
     readme = f.read()
 
 setup(name='isort',
@@ -22,8 +22,9 @@ setup(name='isort',
       },
       packages=['isort'],
       extras_require={
-          'requirements': ['pip', 'pipreqs'],
           'pipfile': ['pipreqs', 'requirementslib'],
+          'pyproject': ['toml'],
+          'requirements': ['pip', 'pipreqs'],
       },
       install_requires=['futures; python_version < "3.2"'],
       python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",

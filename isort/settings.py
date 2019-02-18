@@ -27,19 +27,32 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import fnmatch
 import io
 import os
+import re
 import posixpath
 import sys
+import warnings
 from collections import namedtuple
+from distutils.util import strtobool
 
-from .pie_slice import itemsview, lru_cache, native_str
+from .pie_slice import lru_cache
+from .utils import difference, union
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 
+try:
+    import toml
+except ImportError:
+    toml = False
+
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
+
+safety_exclude_re = re.compile(
+    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
+)
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
              'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
@@ -139,7 +152,8 @@ default = {'force_to_top': [],
            'ignore_whitespace': False,
            'no_lines_before': [],
            'no_inline_sort': False,
-           'ignore_comments': False}
+           'ignore_comments': False
+           'safety_excludes': True}
 
 
 @lru_cache()
@@ -158,7 +172,7 @@ def _update_settings_with_config(path, name, default, sections, computed_setting
     tries = 0
     current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, native_str(name))
+        potential_path = os.path.join(current_directory, str(name))
         if os.path.exists(potential_path):
             editor_config_file = potential_path
             break
@@ -194,7 +208,7 @@ def _update_with_config_file(file_path, sections, computed_settings):
         if max_line_length:
             computed_settings['line_length'] = float('inf') if max_line_length == 'off' else int(max_line_length)
 
-    for key, value in itemsview(settings):
+    for key, value in settings.items():
         access_key = key.replace('not_', '').lower()
         existing_value_type = type(default.get(access_key, ''))
         if existing_value_type in (list, tuple):
@@ -204,13 +218,16 @@ def _update_with_config_file(file_path, sections, computed_settings):
             else:
                 existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith('not_'):
-                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                    computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith('known_'):
-                    computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
+                    computed_settings[access_key] = union(existing_data, _abspaths(cwd, _as_list(value)))
                 else:
-                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
-        elif existing_value_type == bool and value.lower().strip() == 'false':
-            computed_settings[access_key] = False
+                    computed_settings[access_key] = union(existing_data, _as_list(value))
+        elif existing_value_type == bool:
+            # Only some configuration formats support native boolean values.
+            if not isinstance(value, bool):
+                value = bool(strtobool(value))
+            computed_settings[access_key] = value
         elif key.startswith('known_'):
             computed_settings[access_key] = list(_abspaths(cwd, _as_list(value)))
         elif key == 'force_grid_wrap':
@@ -240,38 +257,56 @@ def _abspaths(cwd, values):
 
 @lru_cache()
 def _get_config_data(file_path, sections):
-    with io.open(file_path, 'r') as config_file:
-        if file_path.endswith('.editorconfig'):
-            line = '\n'
-            last_position = config_file.tell()
-            while line:
-                line = config_file.readline()
-                if '[' in line:
-                    config_file.seek(last_position)
-                    break
-                last_position = config_file.tell()
+    settings = {}
 
-        if sys.version_info >= (3, 2):
-            config = configparser.ConfigParser()
-            config.read_file(config_file)
+    with io.open(file_path) as config_file:
+        if file_path.endswith('.toml'):
+            if toml:
+                config = toml.load(config_file)
+                for section in sections:
+                    config_section = config
+                    for key in section.split('.'):
+                        config_section = config_section.get(key, {})
+                    settings.update(config_section)
+            else:
+                warnings.warn(
+                    "Found %s but toml package is not installed. To configure"
+                    "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
+                )
         else:
-            config = configparser.SafeConfigParser()
-            config.readfp(config_file)
+            if file_path.endswith('.editorconfig'):
+                line = '\n'
+                last_position = config_file.tell()
+                while line:
+                    line = config_file.readline()
+                    if '[' in line:
+                        config_file.seek(last_position)
+                        break
+                    last_position = config_file.tell()
 
-        settings = {}
-        for section in sections:
-            if config.has_section(section):
-                settings.update(dict(config.items(section)))
+            if sys.version_info >= (3, 2):
+                config = configparser.ConfigParser()
+                config.read_file(config_file)
+            else:
+                config = configparser.SafeConfigParser()
+                config.readfp(config_file)
 
-        return settings
+            for section in sections:
+                if config.has_section(section):
+                    settings.update(config.items(section))
 
-    return {}
+    return settings
 
 
 def should_skip(filename, config, path='/'):
     """Returns True if the file should be skipped based on the passed in settings."""
+    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
+
+    if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
+        return True
+
     for skip_path in config['skip']:
-        if posixpath.abspath(posixpath.join(path, filename)) == posixpath.abspath(skip_path.replace('\\', '/')):
+        if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 
     position = os.path.split(filename)

@@ -185,7 +185,7 @@ class ReqsBaseFinder(BaseFinder):
             return
         path = os.path.dirname(inspect.getfile(pipreqs))
         path = os.path.join(path, 'mapping')
-        with open(path, "r") as f:
+        with open(path) as f:
             # pypi_name: import_name
             return dict(line.strip().split(":")[::-1] for line in f)
 
