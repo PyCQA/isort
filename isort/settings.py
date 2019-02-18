@@ -34,8 +34,6 @@ from collections import namedtuple
 from distutils.util import strtobool
 
 import appdirs
-if appdirs.system == 'darwin':
-    appdirs.system = 'linux2'
 
 from .pie_slice import lru_cache
 
@@ -48,6 +46,9 @@ try:
     import toml
 except ImportError:
     toml = False
+    
+if appdirs.system == 'darwin':
+    appdirs.system = 'linux2'
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
