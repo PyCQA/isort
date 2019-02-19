@@ -48,13 +48,16 @@ def get_lines(command):
     return [line.strip().decode('utf-8') for line in stdout.splitlines()]
 
 
-def git_hook(strict=False):
+def git_hook(strict=False, modify=False):
     """
     Git pre-commit hook to check staged files for isort errors
 
     :param bool strict - if True, return number of errors on exit,
         causing the hook to fail. If False, return zero so it will
         just act as a warning.
+    :param bool modify - if True, fix the sources if they are not 
+        sorted properly. If False, only report result without 
+        modifying anything.
 
     :return number of errors if in strict mode, 0 otherwise.
     """
@@ -78,5 +81,11 @@ def git_hook(strict=False):
 
             if sort.incorrectly_sorted:
                 errors += 1
+                if modify:
+                    SortImports(
+                        file_path=filename, 
+                        file_contents=staged_contents.decode(),
+                        check=False
+                    )
 
     return errors if strict else 0
