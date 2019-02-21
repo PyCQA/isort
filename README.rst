@@ -584,10 +584,11 @@ To cause the commit to fail if there are isort errors (strict mode), include the
     import sys
     from isort.hooks import git_hook
 
-    sys.exit(git_hook(strict=True))
+    sys.exit(git_hook(strict=True, modify=True))
 
 If you just want to display warnings, but allow the commit to happen anyway, call ``git_hook`` without
-the `strict` parameter.
+the `strict` parameter. If you want to display warnings, but not also fix the code, call ``git_hook`` without
+the `modify` parameter.
 
 Setuptools integration
 ----------------------
