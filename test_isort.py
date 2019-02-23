@@ -2708,3 +2708,10 @@ def test_safety_excludes(tmpdir, enabled):
     else:
         assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
         assert not skipped
+
+
+def test_comments_not_removed_issue_576():
+    test_input = ('import distutils\n'
+                  '# this comment is important and should not be removed\n'
+                  'from sys import api_version as api_version\n')
+    assert SortImports(file_contents=test_input).output == test_input
