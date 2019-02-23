@@ -403,7 +403,7 @@ class SortImports(object):
                         above_comments = self.comments['above']['from'].pop(module, None)
                         if above_comments:
                             section_output.extend(above_comments)
-                            
+
                         section_output.append(self._add_comments(from_comments,
                                                                  self._wrap(import_start + as_imports[from_import])))
 
