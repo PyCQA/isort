@@ -166,8 +166,8 @@ def from_path(path):
 
 def _update_settings_with_config(path, name, default, sections, computed_settings):
     editor_config_file = None
-    for path in default:
-        expanded = os.path.expanduser(path)
+    for potential_settings_path in default:
+        expanded = os.path.expanduser(potential_settings_path)
         if os.path.exists(expanded):
             editor_config_file = expanded
             break
