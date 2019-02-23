@@ -400,6 +400,10 @@ class SortImports(object):
                     while from_imports and from_imports[0] in as_imports:
                         from_import = from_imports.pop(0)
                         from_comments = self.comments['straight'].get('{}.{}'.format(module, from_import))
+                        above_comments = self.comments['above']['from'].pop(module, None)
+                        if above_comments:
+                            section_output.extend(above_comments)
+                            
                         section_output.append(self._add_comments(from_comments,
                                                                  self._wrap(import_start + as_imports[from_import])))
 
