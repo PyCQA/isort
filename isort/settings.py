@@ -169,7 +169,7 @@ def from_path(path):
     isort_defaults = ['~/.isort.cfg']
     if appdirs:
         isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
-        
+
     _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
     _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
     _update_settings_with_config(path, '.isort.cfg', isort_defaults, ('settings', 'isort'), computed_settings)
