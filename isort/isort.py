@@ -255,6 +255,14 @@ class SortImports(object):
 
     @staticmethod
     def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
+        dots = 0
+        while module_name.startswith('.'):
+            dots += 1
+            module_name = module_name[1:]
+
+        if dots:
+            module_name = '{} {}'.format(('.' * dots), module_name)
+
         prefix = ""
         if ignore_case:
             module_name = str(module_name).lower()
