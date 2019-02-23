@@ -2731,4 +2731,3 @@ def test_inconsistent_relative_imports_issue_577():
                   'from ...eu import dignissim\n'
                   'from ...ex import metus\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
-
