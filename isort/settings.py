@@ -34,8 +34,6 @@ import warnings
 from collections import namedtuple
 from distutils.util import strtobool
 
-import appdirs
-
 from .pie_slice import lru_cache
 from .utils import difference, union
 
@@ -49,8 +47,12 @@ try:
 except ImportError:
     toml = False
 
-if appdirs.system == 'darwin':
-    appdirs.system = 'linux2'
+try:
+    import appdirs
+    if appdirs.system == 'darwin':
+        appdirs.system = 'linux2'
+except ImportError:
+    appdirs = None
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
@@ -164,9 +166,13 @@ default = {'force_to_top': [],
 @lru_cache()
 def from_path(path):
     computed_settings = default.copy()
+    isort_defaults = ['~/.isort.cfg']
+    if appdirs:
+        isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
+        
     _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
     _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
-    _update_settings_with_config(path, '.isort.cfg', [appdirs.user_config_dir('isort.cfg'), '~/.isort.cfg'], ('settings', 'isort'), computed_settings)
+    _update_settings_with_config(path, '.isort.cfg', isort_defaults, ('settings', 'isort'), computed_settings)
     _update_settings_with_config(path, 'setup.cfg', [], ('isort', 'tool:isort'), computed_settings)
     _update_settings_with_config(path, 'tox.ini', [], ('isort', 'tool:isort'), computed_settings)
     return computed_settings
