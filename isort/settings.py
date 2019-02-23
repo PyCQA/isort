@@ -27,8 +27,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import fnmatch
 import io
 import os
-import re
 import posixpath
+import re
 import sys
 import warnings
 from collections import namedtuple
