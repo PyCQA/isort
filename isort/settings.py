@@ -3,7 +3,7 @@
 Defines how the default settings for isort should be loaded
 
 (First from the default setting dictionary at the top of the file, then overridden by any settings
- in ~/.isort.cfg if there are any)
+ in ~/.isort.cfg or $XDG_CONFIG_HOME/isort.cfg if there are any)
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
@@ -34,6 +34,8 @@ import warnings
 from collections import namedtuple
 from distutils.util import strtobool
 
+import appdirs
+
 from .pie_slice import lru_cache
 from .utils import difference, union
 
@@ -46,6 +48,9 @@ try:
     import toml
 except ImportError:
     toml = False
+
+if appdirs.system == 'darwin':
+    appdirs.system = 'linux2'
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
@@ -159,16 +164,22 @@ default = {'force_to_top': [],
 @lru_cache()
 def from_path(path):
     computed_settings = default.copy()
-    _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
-    _update_settings_with_config(path, 'pyproject.toml', None, ('tool.isort', ), computed_settings)
-    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', 'isort'), computed_settings)
-    _update_settings_with_config(path, 'setup.cfg', None, ('isort', 'tool:isort'), computed_settings)
-    _update_settings_with_config(path, 'tox.ini', None, ('isort', 'tool:isort'), computed_settings)
+    _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
+    _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
+    _update_settings_with_config(path, '.isort.cfg', [appdirs.user_config_dir('isort.cfg'), '~/.isort.cfg'], ('settings', 'isort'), computed_settings)
+    _update_settings_with_config(path, 'setup.cfg', [], ('isort', 'tool:isort'), computed_settings)
+    _update_settings_with_config(path, 'tox.ini', [], ('isort', 'tool:isort'), computed_settings)
     return computed_settings
 
 
 def _update_settings_with_config(path, name, default, sections, computed_settings):
-    editor_config_file = default and os.path.expanduser(default)
+    editor_config_file = None
+    for potential_settings_path in default:
+        expanded = os.path.expanduser(potential_settings_path)
+        if os.path.exists(expanded):
+            editor_config_file = expanded
+            break
+
     tries = 0
     current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:

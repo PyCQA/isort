@@ -228,7 +228,7 @@ Configuring isort
 If you find the default isort settings do not work well for your project, isort provides several ways to adjust
 the behavior.
 
-To configure isort for a single user create a ``~/.isort.cfg`` file:
+To configure isort for a single user create a ``~/.isort.cfg`` or ``$XDG_CONFIG_HOME/isort.cfg`` file:
 
 .. code-block:: ini
 
