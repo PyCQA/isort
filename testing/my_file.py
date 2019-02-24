@@ -1,2 +1,0 @@
-from veryveryveryveryveryvery import big
-from veryveryveryveryveryvery import small
