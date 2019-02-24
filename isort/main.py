@@ -92,6 +92,9 @@ def sort_imports(file_name, **arguments):
 
 def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
+    if 'not_skip' in config:
+        config['skip'] = list(set(config['skip']).difference(config['not_skip']))
+
     for path in paths:
         if os.path.isdir(path):
             if should_skip(path, config, os.getcwd()):
