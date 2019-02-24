@@ -302,7 +302,7 @@ def _get_config_data(file_path, sections):
                     last_position = config_file.tell()
 
             if sys.version_info >= (3, 2):
-                config = configparser.ConfigParser()
+                config = configparser.ConfigParser(strict=False)
                 config.read_file(config_file)
             else:
                 config = configparser.SafeConfigParser()
