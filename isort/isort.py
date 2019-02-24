@@ -854,7 +854,6 @@ class SortImports(object):
 
                 if self.import_index == -1:
                     self.import_index = self.index - 1
-
                 nested_comments = {}
                 import_string, comments, new_comments = self._strip_comments(line)
                 stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
@@ -873,7 +872,7 @@ class SortImports(object):
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
 
                         # Still need to check for parentheses after an escaped line
-                        if "(" in line.split("#")[0] and not self._at_end():
+                        if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self._at_end():
                             stripped_line = self._strip_syntax(line).strip()
                             if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                                 nested_comments[stripped_line] = comments[-1]
