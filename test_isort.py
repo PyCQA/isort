@@ -25,6 +25,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from tempfile import NamedTemporaryFile
 import io
+import os
 import os.path
 import sys
 import sysconfig
@@ -35,7 +36,6 @@ from isort import finders, main, settings
 from isort.isort import SortImports
 from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
-from isort.pie_slice import PY2
 from isort.settings import WrapModes
 
 try:
@@ -43,17 +43,37 @@ try:
 except ImportError:
     toml = None
 
+TEST_DEFAULT_CONFIG = """
+[*.py]
+max_line_length = 120
+indent_style = space
+indent_size = 4
+known_first_party = isort
+known_third_party = kate
+ignore_frosted_errors = E103
+skip = build,.tox,venv
+balanced_wrapping = true
+not_skip = __init__.py
+"""
+
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
-
 SINGLE_FROM_IMPORT = "from third_party import lib1"
-
 SINGLE_LINE_LONG_IMPORT = "from third_party import lib1, lib2, lib3, lib4, lib5, lib5ab"
-
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
                                    "lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22"
                                    " # comment")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def default_settings_path(tmpdir_factory):
+    config_dir = tmpdir_factory.mktemp('config')
+    config_file = config_dir.join('.editorconfig').strpath
+    with open(config_file, 'w') as editorconfig:
+        editorconfig.write(TEST_DEFAULT_CONFIG)
+        os.chdir(config_dir.strpath)
+    return config_dir.strpath
 
 
 def test_happy_path():
@@ -842,23 +862,14 @@ def test_known_pattern_path_expansion():
     test_output = SortImports(
         file_contents=test_input,
         default_section='THIRDPARTY',
-        known_first_party=['./', 'this']
+        known_first_party=['./', 'this', 'kate_plugin']
     ).output
-    if PY2:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "from kate_plugin import isort_plugin\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n")
-    else:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n"
-                               "from kate_plugin import isort_plugin\n")
+    assert test_output == ("import os\n"
+                            "import sys\n"
+                            "\n"
+                            "import isort.settings\n"
+                            "import this\n"
+                            "from kate_plugin import isort_plugin\n")
 
 
 def test_force_single_line_imports():
