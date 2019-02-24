@@ -71,7 +71,7 @@ REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, li
 def default_settings_path(tmpdir_factory):
     config_dir = tmpdir_factory.mktemp('config')
     config_file = config_dir.join('.editorconfig')
-    with open(config_file, 'w') as editorconfig:
+    with open(str(config_file), 'w') as editorconfig:
         editorconfig.write(TEST_DEFAULT_CONFIG)
         os.chdir(config_dir)
     return str(config_dir)
