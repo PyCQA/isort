@@ -70,11 +70,11 @@ REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, li
 @pytest.fixture(scope="session", autouse=True)
 def default_settings_path(tmpdir_factory):
     config_dir = tmpdir_factory.mktemp('config')
-    config_file = config_dir.join('.editorconfig')
-    with open(str(config_file), 'w') as editorconfig:
+    config_file = config_dir.join('.editorconfig').strpath
+    with open(config_file, 'w') as editorconfig:
         editorconfig.write(TEST_DEFAULT_CONFIG)
-        os.chdir(config_dir)
-    return str(config_dir)
+        os.chdir(config_dir.strpath)
+    return config_dir.strpath
 
 
 def test_happy_path():
@@ -865,21 +865,12 @@ def test_known_pattern_path_expansion():
         default_section='THIRDPARTY',
         known_first_party=['./', 'this', 'kate_plugin']
     ).output
-    if PY2:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "from kate_plugin import isort_plugin\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n")
-    else:
-        assert test_output == ("import os\n"
-                               "import sys\n"
-                               "\n"
-                               "import isort.settings\n"
-                               "import this\n"
-                               "from kate_plugin import isort_plugin\n")
+    assert test_output == ("import os\n"
+                            "import sys\n"
+                            "\n"
+                            "import isort.settings\n"
+                            "import this\n"
+                            "from kate_plugin import isort_plugin\n")
 
 
 def test_force_single_line_imports():
