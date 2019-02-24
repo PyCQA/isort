@@ -2742,3 +2742,13 @@ def test_inconsistent_relative_imports_issue_577():
                   'from ...eu import dignissim\n'
                   'from ...ex import metus\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
+
+
+def test_unwrap_issue_762():
+    test_input = ('from os.path \\\n'
+                  'import (join, split)\n')
+    assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+    test_input = ('from os.\\\n'
+                  '    path import (join, split)')
+    assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
