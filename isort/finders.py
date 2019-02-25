@@ -324,6 +324,7 @@ class FindersManager(object):
         if finders is not None:
             self.finders = finders
         self.finders = tuple(finder(config, sections) for finder in self.finders)
+        self.verbose = self.config.get('verbose', False)
 
     def find(self, module_name):
         for finder in self.finders:
@@ -331,7 +332,7 @@ class FindersManager(object):
                 section = finder.find(module_name)
             except Exception as exception:
                 # isort has to be able to keep trying to identify the correct import section even if one approach fails
-                if config.get('verbose', False):
+                if self.verbose:
                     print('{} encountered an error ({}) while trying to identify the {} module'.format(finder.__name__,
                                                                                                        str(exception),
                                                                                                        module_name))
