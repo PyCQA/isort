@@ -1,9 +1,10 @@
 import os
 import sys
 from contextlib import contextmanager
+from typing import Any, Container, Iterable, Iterator, List
 
 
-def exists_case_sensitive(path):
+def exists_case_sensitive(path: str) -> bool:
     """
     Returns if the given path exists and also matches the case on Windows.
 
@@ -19,7 +20,7 @@ def exists_case_sensitive(path):
 
 
 @contextmanager
-def chdir(path):
+def chdir(path: str) -> Iterator[None]:
     """Context manager for changing dir and restoring previous workdir after exit.
     """
     curdir = os.getcwd()
@@ -30,10 +31,10 @@ def chdir(path):
         os.chdir(curdir)
 
 
-def union(a, b):
+def union(a: Iterable[Any], b: Iterable[Any]) -> List[Any]:
     """ Return a list of items that are in `a` or `b`
     """
-    u = []
+    u = []  # type: List[Any]
     for item in a:
         if item not in u:
             u.append(item)
@@ -43,7 +44,7 @@ def union(a, b):
     return u
 
 
-def difference(a, b):
+def difference(a: Iterable[Any], b: Container[Any]) -> List[Any]:
     """ Return a list of items from `a` that are not in `b`.
     """
     d = []
