@@ -326,22 +326,31 @@ class FindersManager(object):
         PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
-    )
+    )  # type: Sequence[Type[BaseFinder]]
 
-    def __init__(self, config: Mapping[str, Any], sections: Any, finders: Optional[Iterable[BaseFinder]]=None):
+    def __init__(
+        self,
+        config: Mapping[str, Any],
+        sections: Any,
+        finders: Optional[Sequence[Type[BaseFinder]]] = None
+    ) -> None:
         self.verbose = config.get('verbose', False)
+        if finders is not None:
+            self.finders = finders
 
         finders = self._default_finders_classes if finders is None else finders
-        self.finders = []
-        for finder in finders:
+
+        register_finders = []
+        for finder_cls in finders:
             try:
-                self.finders.append(finder(config, sections))
+                register_finders.append(finder_cls(config, sections))
             except Exception as exception:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
-                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder.__name__,
-                                                                                                        str(exception)))
-        self.finders = tuple(self.finders)
+                    print('{} encountered an error ({}) during instantiation '
+                          ' and cannot be used'.format(finder_cls.__name__, str(exception)))
+
+        self.finders = tuple(register_finders)
 
     def find(self, module_name: str) -> Optional[str]:
         for finder in self.finders:
