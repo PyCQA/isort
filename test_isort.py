@@ -1978,14 +1978,17 @@ def test_no_additional_lines_issue_358():
                        '    print_function,\n'
                        '    unicode_literals\n'
                        ')\n')
-    test_output = SortImports(file_contents=test_input, multi_line_output=3, line_length=20).output
+    test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                              line_length=20).output
     assert test_output == expected_output
 
-    test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+    test_output = SortImports(file_contents=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                              line_length=20).output
     assert test_output == expected_output
 
     for attempt in range(5):
-        test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+        test_output = SortImports(file_contents=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                                  line_length=20).output
         assert test_output == expected_output
 
     test_input = ('"""This is a docstring"""\n'
@@ -2006,14 +2009,17 @@ def test_no_additional_lines_issue_358():
                        '    print_function,\n'
                        '    unicode_literals\n'
                        ')\n')
-    test_output = SortImports(file_contents=test_input, multi_line_output=3, line_length=20).output
+    test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                              line_length=20).output
     assert test_output == expected_output
 
-    test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+    test_output = SortImports(file_contents=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                              line_length=20).output
     assert test_output == expected_output
 
     for attempt in range(5):
-        test_output = SortImports(file_contents=test_output, multi_line_output=3, line_length=20).output
+        test_output = SortImports(file_contents=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+                                  line_length=20).output
         assert test_output == expected_output
 
 
@@ -2182,7 +2188,7 @@ def test_alias_using_paren_issue_466():
     expected_output = ('from django.db.backends.mysql.base import (\n'
                        '    DatabaseWrapper as MySQLDatabaseWrapper\n'
                        ')\n')
-    assert SortImports(file_contents=test_input, line_length=50, multi_line_output=5,
+    assert SortImports(file_contents=test_input, line_length=50, multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
                        use_parentheses=True).output == expected_output
 
 
@@ -2304,7 +2310,8 @@ def test_long_import_wrap_support_with_mode_2():
     """Test to ensure mode 2 still allows wrapped imports with slash"""
     test_input = ('from foobar.foobar.foobar.foobar import \\\n'
                   '    an_even_longer_function_name_over_80_characters\n')
-    assert SortImports(file_contents=test_input, multi_line_output=2, line_length=80).output == test_input
+    assert SortImports(file_contents=test_input, multi_line_output=WrapModes.HANGING_INDENT,
+                       line_length=80).output == test_input
 
 
 def test_pylint_comments_incorrectly_wrapped_issue_571():

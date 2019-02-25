@@ -23,13 +23,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import configparser
+import enum
 import fnmatch
 import os
 import posixpath
 import re
 import stat
 import warnings
-from collections import namedtuple
 from distutils.util import strtobool
 from functools import lru_cache
 from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Type
@@ -55,9 +55,21 @@ safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
 )
 
-_wrap_mode_strings = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
-                      'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
-WrapModes = namedtuple('WrapModes', _wrap_mode_strings)(*range(len(_wrap_mode_strings)))  # type: Any
+
+class WrapModes(enum.Enum):
+    GRID = 0  # 0
+    VERTICAL = 1
+    HANGING_INDENT = 2
+    VERTICAL_HANGING_INDENT = 3
+    VERTICAL_GRID = 4
+    VERTICAL_GRID_GROUPED = 5
+    VERTICAL_GRID_GROUPED_NO_COMMA = 6
+    NOQA = 7
+
+    @staticmethod
+    def from_string(value: str) -> 'WrapModes':
+        return WrapModes(int(value))
+
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
@@ -116,7 +128,7 @@ default = {'force_to_top': [],
                                       'zipimport', 'zlib'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
-           'multi_line_output': WrapModes.GRID,  # type: ignore
+           'multi_line_output': WrapModes.GRID,
            'forced_separate': [],
            'indent': ' ' * 4,
            'comment_prefix': '  #',

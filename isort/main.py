@@ -233,7 +233,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help="Forces line endings to the specified value. If not set, values will be guessed per-file.")
     parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
                         dest='length_sort', action='store_true')
-    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=range(len(WrapModes)),
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=WrapModes.from_string,
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).')
     inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
