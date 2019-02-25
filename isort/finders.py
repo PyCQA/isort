@@ -335,7 +335,6 @@ class FindersManager(object):
                                                                                                         str(exception)))
         self.finders = tuple(self.finders)
 
-
     def find(self, module_name):
         for finder in self.finders:
             try:
