@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.8 - Feburary 25, 2019 - hot fix release
+- Fixed a bug that led to the recursive option not always been available from the command line.
+
 ### 4.3.7 - February 25, 2019 - hot fix release
 - Expands the finder failsafe to occur on the creation of the finder objects.
 
