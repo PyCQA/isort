@@ -321,10 +321,20 @@ class FindersManager(object):
     )
 
     def __init__(self, config, sections, finders=None):
-        if finders is not None:
-            self.finders = finders
-        self.finders = tuple(finder(config, sections) for finder in self.finders)
         self.verbose = config.get('verbose', False)
+
+        finders = self.finders if finders is None else finders
+        self.finders = []
+        for finder in finders:
+            try:
+                self.finders.append(finder(config, sections))
+            except Exception as exception:
+                # if one finder fails to instantiate isort can continue using the rest
+                if self.verbose:
+                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder.__name__,
+                                                                                                        str(exception)))
+        self.finders = tuple(self.finders)
+
 
     def find(self, module_name):
         for finder in self.finders:
