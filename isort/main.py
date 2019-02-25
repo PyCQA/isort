@@ -23,6 +23,7 @@ import glob
 import os
 import re
 import sys
+from typing import Any, List  # noqa: F401
 
 import setuptools
 
@@ -123,7 +124,7 @@ class ISortCommand(setuptools.Command):
     """
 
     description = "Run isort on modules registered in setuptools"
-    user_options = []
+    user_options = []  # type: List[Any]
 
     def initialize_options(self):
         default_settings = default.copy()

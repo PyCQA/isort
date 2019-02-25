@@ -38,7 +38,7 @@ from .utils import difference, union
 try:
     import toml
 except ImportError:
-    toml = False
+    toml = None
 
 try:
     import appdirs
@@ -54,9 +54,9 @@ safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
 )
 
-WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
-             'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
-WrapModes = namedtuple('WrapModes', WrapModes)(*range(len(WrapModes)))
+_wrap_mode_strings = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
+                      'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
+WrapModes = namedtuple('WrapModes', _wrap_mode_strings)(*range(len(_wrap_mode_strings)))
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
@@ -115,7 +115,7 @@ default = {'force_to_top': [],
                                       'zipimport', 'zlib'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
-           'multi_line_output': WrapModes.GRID,
+           'multi_line_output': WrapModes.GRID,  # type: ignore
            'forced_separate': [],
            'indent': ' ' * 4,
            'comment_prefix': '  #',

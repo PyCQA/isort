@@ -8,6 +8,8 @@ matrix:
       env: TOXENV=isort-check
     - python: 3.7
       env: TOXENV=lint
+    - python: 3.7
+      env: TOXENV=mypy
     - python: 3.4
       env: TOXENV=py34
     - python: 3.5
