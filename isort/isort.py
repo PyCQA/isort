@@ -32,13 +32,13 @@ import sys
 from collections import OrderedDict, namedtuple
 from datetime import datetime
 from difflib import unified_diff
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Sequence
 
-from isort import utils
+from isort import utils, formatter
 
 from . import settings
 from .finders import FindersManager
-from .natural import nsorted
+from .natural import nsorted, get_naturally_sortable_module_name
 from .settings import WrapModes
 
 if TYPE_CHECKING:
@@ -79,8 +79,8 @@ class SortImports(object):
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
-        self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
-        self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
+        self.remove_imports = [formatter.format_simplified(removal) for removal in self.config['remove_imports']]
+        self.add_imports = [formatter.format_natural(addition) for addition in self.config['add_imports']]
         self._section_comments = ["# " + value for key, value in self.config.items()
                                   if key.startswith('import_heading') and value]
 
@@ -146,12 +146,12 @@ class SortImports(object):
         self.output = self.line_separator.join(self.out_lines)
         if self.config['atomic']:
             try:
-                compile(self._strip_top_comments(self.out_lines, self.line_separator), self.file_path, 'exec', 0, 1)
+                compile(formatter.strip_top_comments(self.out_lines, self.line_separator), self.file_path, 'exec', 0, 1)
             except SyntaxError:
                 self.output = file_contents
                 self.incorrectly_sorted = True
                 try:
-                    compile(self._strip_top_comments(self.in_lines, self.line_separator), self.file_path, 'exec', 0, 1)
+                    compile(formatter.strip_top_comments(self.in_lines, self.line_separator), self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
                           format(self.file_path))
                 except SyntaxError:
@@ -209,14 +209,6 @@ class SortImports(object):
         ):
             sys.stdout.write(line)
 
-    @staticmethod
-    def _strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
-        """Strips # comments that exist at the top of the given lines"""
-        lines = copy.copy(lines)
-        while lines and lines[0].startswith("#"):
-            lines = lines[1:]
-        return line_separator.join(lines)
-
     def place_module(self, module_name: str) -> Optional[str]:
         """Tries to determine if a module is a python std import, third party import, or project code:
 
@@ -231,56 +223,9 @@ class SortImports(object):
         self.index += 1
         return line
 
-    @staticmethod
-    def _import_type(line: str) -> Optional[str]:
-        """If the current line is an import line it will return its type (from or straight)"""
-        if "isort:skip" in line:
-            return None
-        elif line.startswith('import '):
-            return "straight"
-        elif line.startswith('from '):
-            return "from"
-
     def _at_end(self) -> bool:
         """returns True if we are at the end of the file."""
         return self.index == self.number_of_lines
-
-    @staticmethod
-    def _module_key(
-        module_name: str,
-        config: Mapping[str, Any],
-        sub_imports: bool = False,
-        ignore_case: bool = False,
-        section_name: Optional[Any] = None
-    ) -> str:
-        dots = 0
-        while module_name.startswith('.'):
-            dots += 1
-            module_name = module_name[1:]
-
-        if dots:
-            module_name = '{} {}'.format(('.' * dots), module_name)
-
-        prefix = ""
-        if ignore_case:
-            module_name = str(module_name).lower()
-        else:
-            module_name = str(module_name)
-
-        if sub_imports and config['order_by_type']:
-            if module_name.isupper() and len(module_name) > 1:
-                prefix = "A"
-            elif module_name[0:1].isupper():
-                prefix = "B"
-            else:
-                prefix = "C"
-        module_name = module_name.lower()
-        if section_name is None or 'length_sort_' + str(section_name).lower() not in config:
-            length_sort = config['length_sort']
-        else:
-            length_sort = config['length_sort_' + str(section_name).lower()]
-        return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
-                                  length_sort and (str(len(module_name)) + ":" + module_name) or module_name)
 
     def _add_comments(
         self,
@@ -291,12 +236,12 @@ class SortImports(object):
             Returns a string with comments added if ignore_comments is not set.
         """
         if self.config['ignore_comments']:
-            return self._strip_comments(original_string)[0]
+            return formatter.strip_comments(original_string)[0]
 
         if not comments:
             return original_string
         else:
-            return "{0}{1} {2}".format(self._strip_comments(original_string)[0],
+            return "{0}{1} {2}".format(formatter.strip_comments(original_string)[0],
                                        self.config['comment_prefix'],
                                        "; ".join(comments))
 
@@ -369,7 +314,9 @@ class SortImports(object):
             import_start = "from {0} import ".format(module)
             from_imports = list(self.imports[section]['from'][module])
             if not self.config['no_inline_sort'] or self.config['force_single_line']:
-                from_imports = nsorted(from_imports, key=lambda key: self._module_key(key, self.config, True, ignore_case, section_name=section))
+                from_imports = nsorted(from_imports,
+                                       key=lambda key: get_naturally_sortable_module_name(key, self.config, True, ignore_case,
+                                                                                          section_name=section))
             if self.remove_imports:
                 from_imports = [line for line in from_imports if not "{0}.{1}".format(module, line) in
                                 self.remove_imports]
@@ -531,9 +478,13 @@ class SortImports(object):
         prev_section_has_imports = False
         for section in sections:
             straight_modules = self.imports[section]['straight']
-            straight_modules = nsorted(straight_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
+            straight_modules = nsorted(straight_modules,
+                                       key=lambda key: get_naturally_sortable_module_name(key, self.config,
+                                                                                          section_name=section))
             from_modules = self.imports[section]['from']
-            from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
+            from_modules = nsorted(from_modules,
+                                   key=lambda key: get_naturally_sortable_module_name(key, self.config,
+                                                                                      section_name=section))
 
             section_output = []  # type: List[str]
             if self.config['from_first']:
@@ -804,47 +755,6 @@ class SortImports(object):
         else:
             return '{0}{1} NOQA'.format(retval, self.config['comment_prefix'])
 
-    @staticmethod
-    def _strip_comments(
-        line: str,
-        comments: Optional[List[str]] = None
-    ) -> Tuple[str, List[str], bool]:
-        """Removes comments from import line."""
-        if comments is None:
-            comments = []
-
-        new_comments = False
-        comment_start = line.find("#")
-        if comment_start != -1:
-            comments.append(line[comment_start + 1:].strip())
-            new_comments = True
-            line = line[:comment_start]
-
-        return line, comments, new_comments
-
-    @staticmethod
-    def _format_simplified(import_line: str) -> str:
-        import_line = import_line.strip()
-        if import_line.startswith("from "):
-            import_line = import_line.replace("from ", "")
-            import_line = import_line.replace(" import ", ".")
-        elif import_line.startswith("import "):
-            import_line = import_line.replace("import ", "")
-
-        return import_line
-
-    @staticmethod
-    def _format_natural(import_line: str) -> str:
-        import_line = import_line.strip()
-        if not import_line.startswith("from ") and not import_line.startswith("import "):
-            if "." not in import_line:
-                return "import {0}".format(import_line)
-            parts = import_line.split(".")
-            end = parts.pop(-1)
-            return "from {0} import {1}".format(".".join(parts), end)
-
-        return import_line
-
     def _skip_line(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
@@ -919,13 +829,13 @@ class SortImports(object):
                     if part and not part.startswith("from ") and not part.startswith("import "):
                         skip_line = True
 
-            import_type = self._import_type(line)
+            import_type = utils.determine_import_type_or_none(line)
             if not import_type or skip_line:
                 self.out_lines.append(raw_line)
                 continue
 
             for line in (line.strip() for line in line.split(";")):
-                import_type = self._import_type(line)
+                import_type = utils.determine_import_type_or_none(line)
                 if not import_type:
                     self.out_lines.append(line)
                     continue
@@ -933,21 +843,21 @@ class SortImports(object):
                 if self.import_index == -1:
                     self.import_index = self.index - 1
                 nested_comments = {}
-                import_string, comments, new_comments = self._strip_comments(line)
+                import_string, comments, new_comments = formatter.strip_comments(line)
                 line_parts = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
                 if import_type == "from" and len(line_parts) == 2 and line_parts[1] != "*" and new_comments:
                     nested_comments[line_parts[-1]] = comments[0]
 
                 if "(" in line.split("#")[0] and not self._at_end():
                     while not line.strip().endswith(")") and not self._at_end():
-                        line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                        line, comments, new_comments = formatter.strip_comments(self._get_line(), comments)
                         stripped_line = self._strip_syntax(line).strip()
                         if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         import_string += self.line_separator + line
                 else:
                     while line.strip().endswith("\\"):
-                        line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                        line, comments, new_comments = formatter.strip_comments(self._get_line(), comments)
 
                         # Still need to check for parentheses after an escaped line
                         if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self._at_end():
@@ -957,7 +867,7 @@ class SortImports(object):
                             import_string += self.line_separator + line
 
                             while not line.strip().endswith(")") and not self._at_end():
-                                line, comments, new_comments = self._strip_comments(self._get_line(), comments)
+                                line, comments, new_comments = formatter.strip_comments(self._get_line(), comments)
                                 stripped_line = self._strip_syntax(line).strip()
                                 if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                                     nested_comments[stripped_line] = comments[-1]

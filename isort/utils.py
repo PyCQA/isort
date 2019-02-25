@@ -1,7 +1,7 @@
 import os
 import sys
 from contextlib import contextmanager
-from typing import Any, Container, Iterable, Iterator, List
+from typing import Any, Container, Iterable, Iterator, List, Optional
 
 
 def exists_case_sensitive(path: str) -> bool:
@@ -61,3 +61,13 @@ def infer_line_separator(file_contents: str) -> str:
         return '\r'
     else:
         return '\n'
+
+
+def determine_import_type_or_none(line: str) -> Optional[str]:
+    """If the current line is an import line it will return its type (from or straight)"""
+    if "isort:skip" in line:
+        return None
+    elif line.startswith('import '):
+        return "straight"
+    elif line.startswith('from '):
+        return "from"
