@@ -71,6 +71,14 @@ Code Contributors
 - Adam Chainz (@adamchainz)
 - @Brightcells
 - Jonas Trappenberg (@teeberg)
+- Andrew Konstantaras (@akonsta)
+- Jason Brackman (@jasonbrackman)
+- Kathryn Lingel (@katlings)
+- Andrew Gaul (@gaul)
+- John Chadwick (@jchv)
+- Jon Dufresne (@jdufresne)
+- Brian F. Baron (@briabar)
+
 
 Documenters
 ===================

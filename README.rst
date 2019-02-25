@@ -4,7 +4,7 @@
 ########
 
 .. image:: https://badge.fury.io/py/isort.svg
-    :target: http://badge.fury.io/py/isort
+    :target: https://badge.fury.io/py/isort
     :alt: PyPI version
 
 .. image:: https://travis-ci.org/timothycrosley/isort.svg?branch=master
@@ -17,7 +17,7 @@
   :alt: Coverage
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
-    :target: https://pypi.python.org/pypi/hug/
+    :target: https://pypi.org/project/hug/
     :alt: License
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
@@ -29,7 +29,7 @@ isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library and `plugins for various editors <https://github.com/timothycrosley/isort/wiki/isort-Plugins>`_ to quickly sort all your imports.
-It currently cleanly supports Python 2.6 - 3.5 without any dependencies.
+It currently cleanly supports Python 2.7 and 3.4+ without any dependencies.
 
 .. image:: https://raw.github.com/timothycrosley/isort/develop/example.gif
    :alt: Example Usage
@@ -86,11 +86,23 @@ Installing isort is as simple as:
 
     pip install isort
 
-or if you prefer
+Install isort with requirements.txt support:
 
 .. code-block:: bash
 
-    easy_install isort
+    pip install isort[requirements]
+
+Install isort with Pipfile support:
+
+.. code-block:: bash
+
+    pip install isort[pipfile]
+
+Install isort with both formats support:
+
+.. code-block:: bash
+
+    pip install isort[requirements,pipfile]
 
 Using isort
 ===========
@@ -197,7 +209,7 @@ and puts them all at the top of the file grouped together by the type of import:
 - Custom Sections (Defined by sections list in configuration file)
 
 Inside of each section the imports are sorted alphabetically. isort automatically removes duplicate python imports,
-and wraps long from imports to the specified line length (defaults to 80).
+and wraps long from imports to the specified line length (defaults to 79).
 
 When will isort not work?
 =========================
@@ -216,7 +228,7 @@ Configuring isort
 If you find the default isort settings do not work well for your project, isort provides several ways to adjust
 the behavior.
 
-To configure isort for a single user create a ``~/.isort.cfg`` file:
+To configure isort for a single user create a ``~/.isort.cfg`` or ``$XDG_CONFIG_HOME/isort.cfg`` file:
 
 .. code-block:: ini
 
@@ -233,17 +245,20 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
     length_sort=1
     forced_separate=django.contrib,django.utils
     default_section=FIRSTPARTY
+    no_lines_before=LOCALFOLDER
 
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
 project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
 
-Or, if you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+Or, if you prefer, you can add an ``isort`` or ``tool:isort`` section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+
+You can also add your desired settings under a ``[tool.isort]`` section in your ``pyproject.toml`` file.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
 
 Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
-http://editorconfig.org/
+https://editorconfig.org/
 
 Meaning you place any standard isort configuration parameters within a .editorconfig file under the ``*.py`` section
 and they will be honored.
@@ -310,7 +325,20 @@ past the line_length limit and has 6 possible settings:
         lib5, ...
     )
 
-**6 - NOQA**
+**6 - Hanging Grid Grouped, No Trailing Comma**
+
+In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
+Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
+You can enforce a trailing comma by using this in conjunction with `-tc` or `trailing_comma: True`.
+
+.. code-block:: python
+
+    from third_party import (
+        lib1, lib2, lib3, lib4,
+        lib5
+    )
+
+**7 - NOQA**
 
 .. code-block:: python
 
@@ -393,6 +421,17 @@ Example:
 
 would create two new sections with the specified known modules.
 
+The ``no_lines_before`` option will prevent the listed sections from being split from the previous section by an empty line.
+
+Example:
+
+.. code-block:: ini
+
+   sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+   no_lines_before=LOCALFOLDER
+
+would produce a section with both FIRSTPARTY and LOCALFOLDER modules combined.
+
 Auto-comment import sections
 ============================
 
@@ -436,6 +475,12 @@ This will result in the following output style:
         DecayDict,
         UnexpectedCodePath,
     )
+
+It is also possible to opt-in to sorting imports by length for only specific
+sections by using ``length_sort_`` followed by the section name as a
+configuration item, e.g.::
+
+    length_sort_stdlib=1
 
 Skip processing of imports (outside of configuration)
 =====================================================
@@ -500,7 +545,7 @@ From the command line:
 
 .. code-block:: bash
 
-    isort -r "os.system" *.py
+    isort -rm "os.system" *.py
 
 from within Kate:
 
@@ -552,10 +597,11 @@ To cause the commit to fail if there are isort errors (strict mode), include the
     import sys
     from isort.hooks import git_hook
 
-    sys.exit(git_hook(strict=True))
+    sys.exit(git_hook(strict=True, modify=True))
 
 If you just want to display warnings, but allow the commit to happen anyway, call ``git_hook`` without
-the `strict` parameter.
+the `strict` parameter. If you want to display warnings, but not also fix the code, call ``git_hook`` without
+the `modify` parameter.
 
 Setuptools integration
 ----------------------
