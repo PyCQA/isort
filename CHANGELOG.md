@@ -1,10 +1,16 @@
 Changelog
 =========
 
-### 4.4.0 UNRELEASED
-- **Breaking changes:**
-  - isort now requires Python 3.4+ to run but continues to support formating
+### 5.0.0 UNRELEASED
+**Breaking changes:**
+  - isort now requires Python 3.4+ to run but continues to support formatting
     Python 2 code.
+
+Internal:
+  - isort now utilizes mypy and typing to filter out typing related issues before deployment
+
+Planned:
+  - profile support for common project types (black, django, google, etc)
 
 ### 4.3.8 - Feburary 25, 2019 - hot fix release
 - Fixed a bug that led to the recursive option not always been available from the command line.
