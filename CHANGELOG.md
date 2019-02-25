@@ -1,6 +1,5 @@
 Changelog
 =========
-<<<<<<< HEAD
 
 ### 4.4.0 UNRELEASED
 - **Breaking changes:**
