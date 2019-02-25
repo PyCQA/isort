@@ -23,11 +23,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import subprocess
+from typing import List
 
 from isort import SortImports
 
 
-def get_output(command):
+def get_output(command: str) -> bytes:
     """
     Run a command and return raw output
 
@@ -37,7 +38,7 @@ def get_output(command):
     return subprocess.check_output(command.split())
 
 
-def get_lines(command):
+def get_lines(command: str) -> List[str]:
     """
     Run a command and return lines of output
 

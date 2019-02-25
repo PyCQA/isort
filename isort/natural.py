@@ -26,22 +26,26 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import re
+from typing import Any, Callable, Iterable, List, Optional
 
 
-def _atoi(text):
+def _atoi(text: str) -> Any:
     return int(text) if text.isdigit() else text
 
 
-def _natural_keys(text):
+def _natural_keys(text: str) -> List[Any]:
     return [_atoi(c) for c in re.split(r'(\d+)', text)]
 
 
-def nsorted(to_sort, key=None):
+def nsorted(
+    to_sort: Iterable[str],
+    key: Optional[Callable[[str], Any]] = None
+) -> List[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
     else:
-        def key_callback(item):
-            return _natural_keys(key(item))
+        def key_callback(text: str) -> List[Any]:
+            return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback)

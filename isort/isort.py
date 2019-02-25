@@ -32,18 +32,43 @@ import sys
 from collections import OrderedDict, namedtuple
 from datetime import datetime
 from difflib import unified_diff
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
+
+if TYPE_CHECKING:
+    from mypy_extensions import TypedDict
+
+    CommentsAboveDict = TypedDict('CommentsAboveDict', {
+        'straight': Dict[str, Any],
+        'from': Dict[str, Any]
+    })
+
+    CommentsDict = TypedDict('CommentsDict', {
+        'from': Dict[str, Any],
+        'straight': Dict[str, Any],
+        'nested': Dict[str, Any],
+        'above': CommentsAboveDict
+    })
 
 
 class SortImports(object):
     incorrectly_sorted = False
     skipped = False
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, settings_path=None, ask_to_apply=False, **setting_overrides):
+    def __init__(
+        self,
+        file_path: Optional[str] = None,
+        file_contents: Optional[str] = None,
+        write_to_stdout: bool = False,
+        check: bool = False,
+        show_diff: bool = False,
+        settings_path: Optional[str] = None,
+        ask_to_apply: bool = False,
+        **setting_overrides: Any
+    ) -> None:
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -77,8 +102,8 @@ class SortImports(object):
 
         self.config['comment_prefix'] = self.config['comment_prefix'].strip("'").strip('"')
 
-        self.place_imports = {}
-        self.import_placements = {}
+        self.place_imports = {}  # type: Dict[str, List[str]]
+        self.import_placements = {}  # type: Dict[str, str]
         self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
         self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
         self._section_comments = ["# " + value for key, value in self.config.items() if
@@ -124,10 +149,10 @@ class SortImports(object):
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
-        self.out_lines = []
-        self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}
-        self.imports = OrderedDict()
-        self.as_map = {}
+        self.out_lines = []  # type: List[str]
+        self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}  # type: CommentsDict
+        self.imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
+        self.as_map = {}  # type: Dict[str, str]
 
         section_names = self.config['sections']
         self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
@@ -198,13 +223,13 @@ class SortImports(object):
                 output_file.write(self.output)
 
     @property
-    def correctly_sorted(self):
+    def correctly_sorted(self) -> bool:
         return not self.incorrectly_sorted
 
-    def _show_diff(self, file_contents):
+    def _show_diff(self, file_contents: str) -> None:
         for line in unified_diff(
-            file_contents.splitlines(1),
-            self.output.splitlines(1),
+            file_contents.splitlines(keepends=True),
+            self.output.splitlines(keepends=True),
             fromfile=self.file_path + ':before',
             tofile=self.file_path + ':after',
             fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))
@@ -214,14 +239,14 @@ class SortImports(object):
             sys.stdout.write(line)
 
     @staticmethod
-    def _strip_top_comments(lines, line_separator):
+    def _strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
         """Strips # comments that exist at the top of the given lines"""
         lines = copy.copy(lines)
         while lines and lines[0].startswith("#"):
             lines = lines[1:]
         return line_separator.join(lines)
 
-    def place_module(self, module_name):
+    def place_module(self, module_name: str) -> Optional[str]:
         """Tries to determine if a module is a python std import, third party import, or project code:
 
         if it can't determine - it assumes it is project code
@@ -229,28 +254,34 @@ class SortImports(object):
         """
         return self.finder.find(module_name)
 
-    def _get_line(self):
+    def _get_line(self) -> str:
         """Returns the current line from the file while incrementing the index."""
         line = self.in_lines[self.index]
         self.index += 1
         return line
 
     @staticmethod
-    def _import_type(line):
+    def _import_type(line: str) -> Optional[str]:
         """If the current line is an import line it will return its type (from or straight)"""
         if "isort:skip" in line:
-            return
+            return None
         elif line.startswith('import '):
             return "straight"
         elif line.startswith('from '):
             return "from"
 
-    def _at_end(self):
+    def _at_end(self) -> bool:
         """returns True if we are at the end of the file."""
         return self.index == self.number_of_lines
 
     @staticmethod
-    def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
+    def _module_key(
+        module_name: str,
+        config: Mapping[str, Any],
+        sub_imports: bool = False,
+        ignore_case: bool = False,
+        section_name: Optional[Any] = None
+    ) -> str:
         dots = 0
         while module_name.startswith('.'):
             dots += 1
@@ -280,19 +311,25 @@ class SortImports(object):
         return "{0}{1}{2}".format(module_name in config['force_to_top'] and "A" or "B", prefix,
                                   length_sort and (str(len(module_name)) + ":" + module_name) or module_name)
 
-    def _add_comments(self, comments, original_string=""):
+    def _add_comments(
+        self,
+        comments: Sequence[str],
+        original_string: str = ""
+    ) -> str:
         """
             Returns a string with comments added if ignore_comments is not set.
         """
+        if self.config['ignore_comments']:
+            return self._strip_comments(original_string)[0]
 
-        if not self.config['ignore_comments']:
-            return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
-                                                    self.config['comment_prefix'],
-                                                    "; ".join(comments)) or original_string
+        if not comments:
+            return original_string
+        else:
+            return "{0}{1} {2}".format(self._strip_comments(original_string)[0],
+                                       self.config['comment_prefix'],
+                                       "; ".join(comments))
 
-        return comments and self._strip_comments(original_string)[0]
-
-    def _wrap(self, line):
+    def _wrap(self, line: str) -> str:
         """
             Returns an import wrapped to the specified line-length, if possible.
         """
@@ -336,7 +373,7 @@ class SortImports(object):
 
         return line
 
-    def _add_straight_imports(self, straight_modules, section, section_output):
+    def _add_straight_imports(self, straight_modules: Iterable[str], section: str, section_output: List[str]) -> None:
         for module in straight_modules:
             if module in self.remove_imports:
                 continue
@@ -354,7 +391,7 @@ class SortImports(object):
                 section_output.extend(comments_above)
             section_output.append(self._add_comments(self.comments['straight'].get(module), import_definition))
 
-    def _add_from_imports(self, from_modules, section, section_output, ignore_case):
+    def _add_from_imports(self, from_modules: Iterable[str], section: str, section_output: List[str], ignore_case: bool) -> None:
         for module in from_modules:
             if module in self.remove_imports:
                 continue
@@ -477,7 +514,7 @@ class SortImports(object):
                         section_output.extend(above_comments)
                     section_output.append(import_statement)
 
-    def _multi_line_reformat(self, import_start, from_imports, comments):
+    def _multi_line_reformat(self, import_start: str, from_imports: List[str], comments: Sequence[str]) -> str:
         output_mode = settings.WrapModes._fields[self.config['multi_line_output']].lower()
         formatter = getattr(self, "_output_" + output_mode, self._output_grid)
         dynamic_indent = " " * (len(import_start) + 1)
@@ -504,14 +541,14 @@ class SortImports(object):
             return self._wrap(import_statement)
         return import_statement
 
-    def _add_formatted_imports(self):
+    def _add_formatted_imports(self) -> None:
         """Adds the imports back to the file.
 
         (at the index of the first import) sorted alphabetically and split between groups
 
         """
         sort_ignore_case = self.config['force_alphabetical_sort_within_sections']
-        sections = itertools.chain(self.sections, self.config['forced_separate'])
+        sections = itertools.chain(self.sections, self.config['forced_separate'])  # type: Iterable[str]
 
         if self.config['no_sections']:
             self.imports['no_sections'] = {'straight': [], 'from': {}}
@@ -520,7 +557,7 @@ class SortImports(object):
                 self.imports['no_sections']['from'].update(self.imports[section].get('from', {}))
             sections = ('no_sections', )
 
-        output = []
+        output = []  # type: List[str]
         prev_section_has_imports = False
         for section in sections:
             straight_modules = self.imports[section]['straight']
@@ -528,7 +565,7 @@ class SortImports(object):
             from_modules = self.imports[section]['from']
             from_modules = nsorted(from_modules, key=lambda key: self._module_key(key, self.config, section_name=section))
 
-            section_output = []
+            section_output = []  # type: List[str]
             if self.config['from_first']:
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
                 if self.config['lines_between_types'] and from_modules and straight_modules:
@@ -541,7 +578,7 @@ class SortImports(object):
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
 
             if self.config['force_sort_within_sections']:
-                def by_module(line):
+                def by_module(line: str) -> str:
                     section = 'B'
                     if line.startswith('#'):
                         return 'AA'
@@ -588,7 +625,7 @@ class SortImports(object):
 
         if len(self.out_lines) > imports_tail:
             next_construct = ""
-            self._in_quote = False
+            self._in_quote = False  # type: Any
             tail = self.out_lines[imports_tail:]
 
             for index, line in enumerate(tail):
@@ -622,7 +659,15 @@ class SortImports(object):
                         new_out_lines.append("")
             self.out_lines = new_out_lines
 
-    def _output_grid(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_grid(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str]
+    ) -> str:
         statement += "(" + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -643,7 +688,15 @@ class SortImports(object):
                 statement += ", " + next_import
         return statement + ("," if self.config['include_trailing_comma'] else "") + ")"
 
-    def _output_vertical(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str]
+    ) -> str:
         first_import = self._add_comments(comments, imports.pop(0) + ",") + self.line_separator + white_space
         return "{0}({1}{2}{3})".format(
             statement,
@@ -652,7 +705,15 @@ class SortImports(object):
             "," if self.config['include_trailing_comma'] else "",
         )
 
-    def _output_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_hanging_indent(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str]
+    ) -> str:
         statement += imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -664,7 +725,15 @@ class SortImports(object):
             statement = next_statement
         return statement
 
-    def _output_vertical_hanging_indent(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical_hanging_indent(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str]
+    ) -> str:
         trailing = ""
         if len(imports) > 1 and self.config['include_trailing_comma']:
             trailing = ','
@@ -678,8 +747,16 @@ class SortImports(object):
             trailing,
          )
 
-    def _output_vertical_grid_common(self, statement, imports, white_space, indent, line_length, comments,
-                                     need_trailing_char):
+    def _output_vertical_grid_common(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str],
+        need_trailing_char: bool
+    ) -> str:
         statement += self._add_comments(comments, "(") + self.line_separator + indent + imports.pop(0)
         while imports:
             next_import = imports.pop(0)
@@ -696,19 +773,51 @@ class SortImports(object):
             statement += ','
         return statement
 
-    def _output_vertical_grid(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical_grid(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str],
+    ) -> str:
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
                                                  True) + ")"
 
-    def _output_vertical_grid_grouped(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical_grid_grouped(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str],
+    ) -> str:
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
                                                  True) + self.line_separator + ")"
 
-    def _output_vertical_grid_grouped_no_comma(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_vertical_grid_grouped_no_comma(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str],
+    ) -> str:
         return self._output_vertical_grid_common(statement, imports, white_space, indent, line_length, comments,
                                                  False) + self.line_separator + ")"
 
-    def _output_noqa(self, statement, imports, white_space, indent, line_length, comments):
+    def _output_noqa(
+        self,
+        statement: str,
+        imports: List[str],
+        white_space: str,
+        indent: str,
+        line_length: int,
+        comments: Sequence[str],
+    ) -> str:
         retval = '{0}{1}'.format(statement, ', '.join(imports))
         comment_str = ' '.join(comments)
         if comments:
@@ -726,7 +835,10 @@ class SortImports(object):
             return '{0}{1} NOQA'.format(retval, self.config['comment_prefix'])
 
     @staticmethod
-    def _strip_comments(line, comments=None):
+    def _strip_comments(
+        line: str,
+        comments: Optional[List[str]] = None
+    ) -> Tuple[str, List[str], bool]:
         """Removes comments from import line."""
         if comments is None:
             comments = []
@@ -741,7 +853,7 @@ class SortImports(object):
         return line, comments, new_comments
 
     @staticmethod
-    def _format_simplified(import_line):
+    def _format_simplified(import_line: str) -> str:
         import_line = import_line.strip()
         if import_line.startswith("from "):
             import_line = import_line.replace("from ", "")
@@ -752,7 +864,7 @@ class SortImports(object):
         return import_line
 
     @staticmethod
-    def _format_natural(import_line):
+    def _format_natural(import_line: str) -> str:
         import_line = import_line.strip()
         if not import_line.startswith("from ") and not import_line.startswith("import "):
             if "." not in import_line:
@@ -763,7 +875,7 @@ class SortImports(object):
 
         return import_line
 
-    def _skip_line(self, line):
+    def _skip_line(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
             self._in_top_comment = True
@@ -798,7 +910,7 @@ class SortImports(object):
 
         return skip_line or self._in_quote or self._in_top_comment
 
-    def _strip_syntax(self, import_string):
+    def _strip_syntax(self, import_string: str) -> str:
         import_string = import_string.replace("_import", "[[i]]")
         for remove_syntax in ['\\', '(', ')', ',']:
             import_string = import_string.replace(remove_syntax, " ")
@@ -810,7 +922,7 @@ class SortImports(object):
         import_string = import_string.replace("[[i]]", "_import")
         return import_string.replace("{ ", "{|").replace(" }", "|}")
 
-    def _parse(self):
+    def _parse(self) -> None:
         """Parses a python file taking out and categorizing imports."""
         self._in_quote = False
         self._in_top_comment = False
@@ -852,9 +964,9 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 nested_comments = {}
                 import_string, comments, new_comments = self._strip_comments(line)
-                stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
-                if import_type == "from" and len(stripped_line) == 2 and stripped_line[1] != "*" and new_comments:
-                    nested_comments[stripped_line[-1]] = comments[0]
+                line_parts = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
+                if import_type == "from" and len(line_parts) == 2 and line_parts[1] != "*" and new_comments:
+                    nested_comments[line_parts[-1]] = comments[0]
 
                 if "(" in line.split("#")[0] and not self._at_end():
                     while not line.strip().endswith(")") and not self._at_end():
@@ -974,7 +1086,10 @@ class SortImports(object):
                         self.imports[placed_module][import_type][module] = None
 
 
-def coding_check(fname, default='utf-8'):
+def coding_check(
+    fname: str,
+    default: str = 'utf-8'
+) -> str:
 
     # see https://www.python.org/dev/peps/pep-0263/
     pattern = re.compile(br'coding[:=]\s*([-\w.]+)')

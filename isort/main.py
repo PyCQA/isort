@@ -23,7 +23,7 @@ import glob
 import os
 import re
 import sys
-from typing import Any, List  # noqa: F401
+from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 
 import setuptools
 
@@ -56,7 +56,7 @@ INTRO = r"""
 shebang_re = re.compile(br'^#!.*\bpython[23w]?\b')
 
 
-def is_python_file(path):
+def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
     if ext in ('.py', '.pyi'):
         return True
@@ -75,12 +75,12 @@ def is_python_file(path):
 
 
 class SortAttempt(object):
-    def __init__(self, incorrectly_sorted, skipped):
+    def __init__(self, incorrectly_sorted: bool, skipped: bool) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
 
 
-def sort_imports(file_name, **arguments):
+def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
     try:
         result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
@@ -89,7 +89,7 @@ def sort_imports(file_name, **arguments):
         return None
 
 
-def iter_source_code(paths, config, skipped):
+def iter_source_code(paths: Iterable[str], config: MutableMapping[str, Any], skipped: List[str]) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
     if 'not_skip' in config:
         config['skip'] = list(set(config['skip']).difference(config['not_skip']))
@@ -126,19 +126,19 @@ class ISortCommand(setuptools.Command):
     description = "Run isort on modules registered in setuptools"
     user_options = []  # type: List[Any]
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         default_settings = default.copy()
         for key, value in default_settings.items():
             setattr(self, key, value)
 
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         "Get options from config files."
-        self.arguments = {}
+        self.arguments = {}  # type: Dict[str, Any]
         computed_settings = from_path(os.getcwd())
         for key, value in computed_settings.items():
             self.arguments[key] = value
 
-    def distribution_files(self):
+    def distribution_files(self) -> Iterator[str]:
         """Find distribution packages."""
         # This is verbatim from flake8
         if self.distribution.packages:
@@ -157,7 +157,7 @@ class ISortCommand(setuptools.Command):
         # Don't miss the setup.py file itself
         yield "setup.py"
 
-    def run(self):
+    def run(self) -> None:
         arguments = self.arguments
         wrong_sorted_files = False
         arguments['check'] = True
@@ -173,7 +173,7 @@ class ISortCommand(setuptools.Command):
             sys.exit(1)
 
 
-def parse_args(argv=None):
+def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
                                                  'within logical sections.')
     inline_args_group = parser.add_mutually_exclusive_group()
@@ -299,7 +299,7 @@ def parse_args(argv=None):
     return arguments
 
 
-def main(argv=None):
+def main(argv: Optional[Sequence[str]] = None) -> None:
     arguments = parse_args(argv)
     if arguments.get('show_version'):
         print(INTRO)
@@ -329,7 +329,7 @@ def main(argv=None):
         config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
-        skipped = []
+        skipped = []  # type: List[str]
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
@@ -342,7 +342,8 @@ def main(argv=None):
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(functools.partial(sort_imports, **arguments), file_names)
         else:
-            attempt_iterator = (sort_imports(file_name, **arguments) for file_name in file_names)
+            # https://github.com/python/typeshed/pull/2814
+            attempt_iterator = (sort_imports(file_name, **arguments) for file_name in file_names)  # type: ignore
 
         for sort_attempt in attempt_iterator:
             if not sort_attempt:
