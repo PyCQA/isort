@@ -250,6 +250,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
                         help='Shows extra quiet output, only errors are outputted.')
+    parser.add_argument('-r', dest='ambiguous_r_flag', action='store_true')
     parser.add_argument('-rm', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
@@ -304,6 +305,11 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     if arguments.get('show_version'):
         print(INTRO)
         return
+
+    if arguments.get('ambiguous_r_flag'):
+        print('ERROR: Deprecated -r flag set. This flag has been replaced with -rm to remove ambiguity between it and '
+              '-rc for recursive')
+        sys.exit(1)
 
     if 'settings_path' in arguments:
         sp = arguments['settings_path']

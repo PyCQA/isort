@@ -1,10 +1,20 @@
 Changelog
 =========
+<<<<<<< HEAD
 
 ### 4.4.0 UNRELEASED
 - **Breaking changes:**
   - isort now requires Python 3.4+ to run but continues to support formating
     Python 2 code.
+
+### 4.3.8 - Feburary 25, 2019 - hot fix release
+- Fixed a bug that led to the recursive option not always been available from the command line.
+
+### 4.3.7 - February 25, 2019 - hot fix release
+- Expands the finder failsafe to occur on the creation of the finder objects.
+
+### 4.3.6 - February 24, 2019 - hot fix release
+- Fixes a fatal error that occurs if a single finder throws an exception. Important as we add more finders that utilize third party libraries.
 
 ### 4.3.5 - February 24, 2019 - last Python 2.7 Maintenance Release
 

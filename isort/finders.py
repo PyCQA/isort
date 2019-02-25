@@ -326,20 +326,32 @@ class FindersManager(object):
         PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
-    )  # type: Sequence[Type[BaseFinder]]
+    )
 
-    def __init__(
-        self,
-        config: Mapping[str, Any],
-        sections: Any,
-        finders: Optional[Iterable[BaseFinder]] = None
-    ) -> None:
-        if finders is not None:
-            self.finders = finders
-        self.finders = tuple(finder_cls(config, sections) for finder_cls in self._default_finders_classes)
+    def __init__(self, config: Mapping[str, Any], sections: Any, finders: Optional[Iterable[BaseFinder]]=None):
+        self.verbose = config.get('verbose', False)
+
+        finders = self.finders if finders is None else finders
+        self.finders = []
+        for finder in finders:
+            try:
+                self.finders.append(finder(config, sections))
+            except Exception as exception:
+                # if one finder fails to instantiate isort can continue using the rest
+                if self.verbose:
+                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder.__name__,
+                                                                                                        str(exception)))
+        self.finders = tuple(self.finders)
 
     def find(self, module_name: str) -> Optional[str]:
         for finder in self.finders:
-            section = finder.find(module_name)
+            try:
+                section = finder.find(module_name)
+            except Exception as exception:
+                # isort has to be able to keep trying to identify the correct import section even if one approach fails
+                if self.verbose:
+                    print('{} encountered an error ({}) while trying to identify the {} module'.format(finder.__name__,
+                                                                                                       str(exception),
+                                                                                                       module_name))
             if section is not None:
                 return section
