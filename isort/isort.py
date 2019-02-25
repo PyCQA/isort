@@ -89,7 +89,7 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if settings.should_skip(file_path, self.config):
+            if settings.file_should_be_skipped(file_path, self.config):
                 self.skipped = True
                 if self.config['verbose']:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
