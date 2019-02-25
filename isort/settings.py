@@ -283,7 +283,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
 
 @lru_cache()
 def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
-    settings  = {}  # type: Dict[str, Any]
+    settings = {}  # type: Dict[str, Any]
 
     with open(file_path) as config_file:
         if file_path.endswith('.toml'):
