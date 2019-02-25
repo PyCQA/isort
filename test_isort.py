@@ -2752,7 +2752,7 @@ def test_noqa_issue_679():
     # Test to ensure that NOQA notation is being observed as expected
     test_input = ('import os\n'
                   '\n'
-                  'import requests\n'
+                  'import requestsss\n'
                   'import zed # NOQA\n'
                   'import ujson # NOQA\n'
                   '\n'
@@ -2760,7 +2760,7 @@ def test_noqa_issue_679():
     test_output = ('import os\n'
                    '\n'
                    'import foo\n'
-                   'import requests\n'
+                   'import requestsss\n'
                    '\n'
                    'import zed # NOQA\n'
                    'import ujson # NOQA\n')
