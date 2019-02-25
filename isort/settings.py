@@ -363,7 +363,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
     return settings
 
 
-def should_skip(
+def file_should_be_skipped(
     filename: str,
     config: Mapping[str, Any],
     path: str = '/'
