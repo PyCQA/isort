@@ -326,22 +326,28 @@ class FindersManager(object):
         PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
-    )
+    )  # type: Sequence[Type[BaseFinder]]
 
-    def __init__(self, config: Mapping[str, Any], sections: Any, finders: Optional[Iterable[BaseFinder]]=None):
-        self.verbose = config.get('verbose', False)
+    def __init__(
+        self,
+        config: Mapping[str, Any],
+        sections: Any,
+        finder_classes: Optional[Iterable[Type[BaseFinder]]] = None
+    ) -> None:
+        self.verbose = config.get('verbose', False)  # type: bool
 
-        finders = self._default_finders_classes if finders is None else finders
-        self.finders = []
-        for finder in finders:
+        if finder_classes is None:
+            finder_classes = self._default_finders_classes
+        finders = []  # type: List[BaseFinder]
+        for finder_cls in finder_classes:
             try:
-                self.finders.append(finder(config, sections))
+                finders.append(finder_cls(config, sections))
             except Exception as exception:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
-                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder.__name__,
+                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder_cls.__name__,
                                                                                                         str(exception)))
-        self.finders = tuple(self.finders)
+        self.finders = tuple(finders)  # type: Tuple[BaseFinder, ...]
 
     def find(self, module_name: str) -> Optional[str]:
         for finder in self.finders:
@@ -350,7 +356,7 @@ class FindersManager(object):
             except Exception as exception:
                 # isort has to be able to keep trying to identify the correct import section even if one approach fails
                 if self.verbose:
-                    print('{} encountered an error ({}) while trying to identify the {} module'.format(finder.__name__,
+                    print('{} encountered an error ({}) while trying to identify the {} module'.format(finder.__class__.__name__,
                                                                                                        str(exception),
                                                                                                        module_name))
             if section is not None:
