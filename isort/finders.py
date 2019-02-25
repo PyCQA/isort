@@ -331,7 +331,7 @@ class FindersManager(object):
     def __init__(self, config: Mapping[str, Any], sections: Any, finders: Optional[Iterable[BaseFinder]]=None):
         self.verbose = config.get('verbose', False)
 
-        finders = self.finders if finders is None else finders
+        finders = self._default_finders_classes if finders is None else finders
         self.finders = []
         for finder in finders:
             try:
