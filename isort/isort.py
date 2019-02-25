@@ -37,6 +37,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, 
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
+from .settings import WrapModes
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
@@ -334,7 +335,7 @@ class SortImports(object):
             Returns an import wrapped to the specified line-length, if possible.
         """
         wrap_mode = self.config['multi_line_output']
-        if len(line) > self.config['line_length'] and wrap_mode != settings.WrapModes.NOQA:
+        if len(line) > self.config['line_length'] and wrap_mode != WrapModes.NOQA:
             line_without_comment = line
             comment = None
             if '#' in line:
@@ -357,10 +358,9 @@ class SortImports(object):
                         output = "{0}{1}({2}{3}{4}{5})".format(
                             line, splitter, self.line_separator, cont_line,
                             "," if self.config['include_trailing_comma'] else "",
-                            self.line_separator if wrap_mode in (
-                                settings.WrapModes.VERTICAL_HANGING_INDENT,
-                                settings.WrapModes.VERTICAL_GRID_GROUPED,
-                            ) else "")
+                            self.line_separator if wrap_mode in {WrapModes.VERTICAL_HANGING_INDENT,
+                                                                 WrapModes.VERTICAL_GRID_GROUPED}
+                            else "")
                         lines = output.split(self.line_separator)
                         if self.config['comment_prefix'] in lines[-1] and lines[-1].endswith(')'):
                             line, comment = lines[-1].split(self.config['comment_prefix'], 1)
@@ -491,20 +491,20 @@ class SortImports(object):
 
                     # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes
                     if (len(import_statement) > self.config['line_length'] and len(from_import_section) > 0 and
-                            self.config['multi_line_output'] not in (1, 0)):
+                            self.config['multi_line_output'] not in (settings.WrapModes.GRID, settings.WrapModes.VERTICAL)):
                         do_multiline_reformat = True
 
                     if do_multiline_reformat:
                         import_statement = self._multi_line_reformat(import_start, from_import_section, comments)
-                        if self.config['multi_line_output'] == 0:
-                            self.config['multi_line_output'] = 4
+                        if self.config['multi_line_output'] == settings.WrapModes.GRID:
+                            self.config['multi_line_output'] = settings.WrapModes.VERTICAL_GRID
                             try:
                                 other_import_statement = self._multi_line_reformat(import_start, from_import_section, comments)
                                 if (max(len(x)
                                         for x in import_statement.split('\n')) > self.config['line_length']):
                                     import_statement = other_import_statement
                             finally:
-                                self.config['multi_line_output'] = 0
+                                self.config['multi_line_output'] = settings.WrapModes.GRID
                     if not do_multiline_reformat and len(import_statement) > self.config['line_length']:
                         import_statement = self._wrap(import_statement)
 
@@ -515,7 +515,7 @@ class SortImports(object):
                     section_output.append(import_statement)
 
     def _multi_line_reformat(self, import_start: str, from_imports: List[str], comments: Sequence[str]) -> str:
-        output_mode = settings.WrapModes._fields[self.config['multi_line_output']].lower()
+        output_mode = self.config['multi_line_output'].name.lower()
         formatter = getattr(self, "_output_" + output_mode, self._output_grid)
         dynamic_indent = " " * (len(import_start) + 1)
         indent = self.config['indent']
