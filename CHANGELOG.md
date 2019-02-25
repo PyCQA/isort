@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.6 - February 24, 2019 - hot fix release
+- Fixes a fatal error that occurs if a single finder throws an exception. Important as we add more finders that utilize third party libraries.
+
 ### 4.3.5 - February 24, 2019 - last Python 2.7 Maintenance Release
 
 This is the final Python 2.x release of isort, and includes the following major changes:
