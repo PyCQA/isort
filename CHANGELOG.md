@@ -1,5 +1,11 @@
 Changelog
 =========
+
+### 4.4.0 UNRELEASED
+- **Breaking changes:**
+  - isort now requires Python 3.4+ to run but continues to support formating
+    Python 2 code.
+
 ### 4.3.5 - February 24, 2019 - last Python 2.7 Maintenance Release
 
 This is the final Python 2.x release of isort, and includes the following major changes:

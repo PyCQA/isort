@@ -24,10 +24,7 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import copy
-import io
 import itertools
 import os
 import re
@@ -39,7 +36,6 @@ from difflib import unified_diff
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
-from .pie_slice import input
 
 
 class SortImports(object):
@@ -102,7 +98,7 @@ class SortImports(object):
             elif not file_contents:
                 self.file_path = file_path
                 self.file_encoding = coding_check(file_path)
-                with io.open(file_path, encoding=self.file_encoding, newline='') as file_to_import_sort:
+                with open(file_path, encoding=self.file_encoding, newline='') as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
@@ -197,7 +193,7 @@ class SortImports(object):
                         return
                     if answer in ('quit', 'q'):
                         sys.exit(1)
-            with io.open(self.file_path, encoding=self.file_encoding, mode='w', newline='') as output_file:
+            with open(self.file_path, 'w', encoding=self.file_encoding, newline='') as output_file:
                 print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
@@ -984,7 +980,7 @@ def coding_check(fname, default='utf-8'):
     pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
 
     coding = default
-    with io.open(fname, 'rb') as f:
+    with open(fname, 'rb') as f:
         for line_number, line in enumerate(f, 1):
             groups = re.findall(pattern, line)
             if groups:

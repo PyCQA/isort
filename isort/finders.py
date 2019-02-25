@@ -1,7 +1,5 @@
 """Finders try to find right section for passed module name
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import inspect
 import os
 import os.path
@@ -11,7 +9,6 @@ import sysconfig
 from fnmatch import fnmatch
 from glob import glob
 
-from .pie_slice import PY2
 from .utils import chdir, exists_case_sensitive
 
 try:
@@ -70,7 +67,7 @@ class LocalFinder(BaseFinder):
 
 class KnownPatternFinder(BaseFinder):
     def __init__(self, config, sections):
-        super(KnownPatternFinder, self).__init__(config, sections)
+        super().__init__(config, sections)
 
         self.known_patterns = []
         for placement in reversed(self.sections):
@@ -86,16 +83,6 @@ class KnownPatternFinder(BaseFinder):
                 regexp = '^' + known_pattern.replace('*', '.*').replace('?', '.?') + '$'
                 self.known_patterns.append((re.compile(regexp), placement))
 
-    @staticmethod
-    def _is_package(path):
-        """
-        Evaluates if path is a python package
-        """
-        if PY2:
-            return os.path.exists(os.path.join(path, '__init__.py'))
-        else:
-            return os.path.isdir(path)
-
     def _parse_known_pattern(self, pattern):
         """
         Expand pattern if identified as a directory and return found sub packages
@@ -104,7 +91,7 @@ class KnownPatternFinder(BaseFinder):
             patterns = [
                 filename
                 for filename in os.listdir(pattern)
-                if self._is_package(os.path.join(pattern, filename))
+                if os.path.isdir(os.path.join(pattern, filename))
             ]
         else:
             patterns = [pattern]
@@ -123,7 +110,7 @@ class KnownPatternFinder(BaseFinder):
 
 class PathFinder(BaseFinder):
     def __init__(self, config, sections):
-        super(PathFinder, self).__init__(config, sections)
+        super().__init__(config, sections)
 
         # Use a copy of sys.path to avoid any unintended modifications
         # to it - e.g. `+=` used below will change paths in place and
@@ -177,7 +164,7 @@ class PathFinder(BaseFinder):
 
 class ReqsBaseFinder(BaseFinder):
     def __init__(self, config, sections, path='.'):
-        super(ReqsBaseFinder, self).__init__(config, sections)
+        super().__init__(config, sections)
         self.path = path
         if self.enabled:
             self.mapping = self._load_mapping()

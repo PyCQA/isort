@@ -9,4 +9,4 @@ install:
   - pip install tox
 
 test_script:
-  - tox -e isort-check,py27,py34,py35,py36,py37
+  - tox -e isort-check,py34,py35,py36,py37
