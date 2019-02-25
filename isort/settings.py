@@ -28,7 +28,6 @@ import os
 import posixpath
 import re
 import stat
-import sys
 import warnings
 from collections import namedtuple
 from distutils.util import strtobool
