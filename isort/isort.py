@@ -111,12 +111,7 @@ class SortImports(object):
         if self.config['line_ending']:
             self.line_separator = self.config['line_ending']
         else:
-            if '\r\n' in file_contents:
-                self.line_separator = '\r\n'
-            elif '\r' in file_contents:
-                self.line_separator = '\r'
-            else:
-                self.line_separator = '\n'
+            self.line_separator = utils.infer_line_separator(file_contents)
 
         self.in_lines = file_contents.split(self.line_separator)
         self.original_length = len(self.in_lines)
