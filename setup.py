@@ -6,7 +6,7 @@ with open('README.rst') as f:
     readme = f.read()
 
 setup(name='isort',
-      version='4.3.4',
+      version='4.3.5',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',
@@ -25,6 +25,7 @@ setup(name='isort',
           'pipfile': ['pipreqs', 'requirementslib'],
           'pyproject': ['toml'],
           'requirements': ['pip', 'pipreqs'],
+          'xdg_home': ['appdirs'],
       },
       python_requires=">=3.4",
       keywords='Refactor, Python, Python3, Refactoring, Imports, Sort, Clean',

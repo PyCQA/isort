@@ -22,7 +22,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from tempfile import NamedTemporaryFile
 import os
+import os.path
 import sys
+import sysconfig
 
 import pytest
 
@@ -37,17 +39,37 @@ try:
 except ImportError:
     toml = None
 
+TEST_DEFAULT_CONFIG = """
+[*.py]
+max_line_length = 120
+indent_style = space
+indent_size = 4
+known_first_party = isort
+known_third_party = kate
+ignore_frosted_errors = E103
+skip = build,.tox,venv
+balanced_wrapping = true
+not_skip = __init__.py
+"""
+
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
-
 SINGLE_FROM_IMPORT = "from third_party import lib1"
-
 SINGLE_LINE_LONG_IMPORT = "from third_party import lib1, lib2, lib3, lib4, lib5, lib5ab"
-
 REALLY_LONG_IMPORT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
                       "lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22")
 REALLY_LONG_IMPORT_WITH_COMMENT = ("from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, "
                                    "lib10, lib11, lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22"
                                    " # comment")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def default_settings_path(tmpdir_factory):
+    config_dir = tmpdir_factory.mktemp('config')
+    config_file = config_dir.join('.editorconfig').strpath
+    with open(config_file, 'w') as editorconfig:
+        editorconfig.write(TEST_DEFAULT_CONFIG)
+        os.chdir(config_dir.strpath)
+    return config_dir.strpath
 
 
 def test_happy_path():
@@ -836,14 +858,14 @@ def test_known_pattern_path_expansion():
     test_output = SortImports(
         file_contents=test_input,
         default_section='THIRDPARTY',
-        known_first_party=['./', 'this']
+        known_first_party=['./', 'this', 'kate_plugin']
     ).output
     assert test_output == ("import os\n"
-                           "import sys\n"
-                           "\n"
-                           "import isort.settings\n"
-                           "import this\n"
-                           "from kate_plugin import isort_plugin\n")
+                            "import sys\n"
+                            "\n"
+                            "import isort.settings\n"
+                            "import this\n"
+                            "from kate_plugin import isort_plugin\n")
 
 
 def test_force_single_line_imports():
@@ -2551,6 +2573,31 @@ def test_requirements_finder(tmpdir):
     req_file.remove()
 
 
+def test_forced_separate_is_deterministic_issue_774(tmpdir):
+
+    config_file = tmpdir.join('setup.cfg')
+    config_file.write(
+        "[isort]\n"
+        "forced_separate:\n"
+        "   separate1\n"
+        "   separate2\n"
+        "   separate3\n"
+        "   separate4\n"
+    )
+
+    test_input = ('import time\n'
+                  '\n'
+                  'from separate1 import foo\n'
+                  '\n'
+                  'from separate2 import bar\n'
+                  '\n'
+                  'from separate3 import baz\n'
+                  '\n'
+                  'from separate4 import quux\n')
+
+    assert SortImports(file_contents=test_input, settings_path=config_file.strpath).output == test_input
+
+
 PIPFILE = """
 [[source]]
 url = "https://pypi.org/simple"
@@ -2595,6 +2642,36 @@ def test_pipfile_finder(tmpdir):
     pipfile.remove()
 
 
+def test_monkey_patched_urllib():
+    with pytest.raises(ImportError):
+        # Previous versions of isort monkey patched urllib which caused unusual
+        # importing for other projects.
+        from urllib import quote  # noqa: F401
+
+
+def test_path_finder(monkeypatch):
+    si = SortImports(file_contents="")
+    finder = finders.PathFinder(
+        config=si.config,
+        sections=si.sections,
+    )
+    third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
+    ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+    imaginary_paths = set([
+        os.path.join(finder.stdlib_lib_prefix, "example_1.py"),
+        os.path.join(third_party_prefix, "example_2.py"),
+        os.path.join(third_party_prefix, "example_3.so"),
+        os.path.join(third_party_prefix, "example_4" + ext_suffix),
+        os.path.join(os.getcwd(), "example_5.py"),
+    ])
+    monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
+    assert finder.find("example_1") == finder.sections.STDLIB
+    assert finder.find("example_2") == finder.sections.THIRDPARTY
+    assert finder.find("example_3") == finder.sections.THIRDPARTY
+    assert finder.find("example_4") == finder.sections.THIRDPARTY
+    assert finder.find("example_5") == finder.sections.FIRSTPARTY
+
+
 def test_argument_parsing():
     from isort.main import parse_args
     args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
@@ -2636,3 +2713,36 @@ def test_safety_excludes(tmpdir, enabled):
     else:
         assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
         assert not skipped
+
+
+def test_comments_not_removed_issue_576():
+    test_input = ('import distutils\n'
+                  '# this comment is important and should not be removed\n'
+                  'from sys import api_version as api_version\n')
+    assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_inconsistent_relative_imports_issue_577():
+    test_input = ('from . import ipsum\n'
+                  'from . import lorem\n'
+                  'from .dolor import consecteur\n'
+                  'from .sit import apidiscing\n'
+                  'from .. import donec\n'
+                  'from .. import euismod\n'
+                  'from ..mi import iaculis\n'
+                  'from ..nec import tempor\n'
+                  'from ... import diam\n'
+                  'from ... import dui\n'
+                  'from ...eu import dignissim\n'
+                  'from ...ex import metus\n')
+    assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
+
+
+def test_unwrap_issue_762():
+    test_input = ('from os.path \\\n'
+                  'import (join, split)\n')
+    assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+    test_input = ('from os.\\\n'
+                  '    path import (join, split)')
+    assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'

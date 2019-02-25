@@ -27,7 +27,7 @@ import sys
 import setuptools
 
 from isort import SortImports, __version__
-from isort.settings import DEFAULT_SECTIONS, default, from_path, should_skip
+from isort.settings import DEFAULT_SECTIONS, WrapModes, default, from_path, should_skip
 
 INTRO = r"""
 /#######################################################################\
@@ -90,6 +90,9 @@ def sort_imports(file_name, **arguments):
 
 def iter_source_code(paths, config, skipped):
     """Iterate over all Python source files defined in paths."""
+    if 'not_skip' in config:
+        config['skip'] = list(set(config['skip']).difference(config['not_skip']))
+
     for path in paths:
         if os.path.isdir(path):
             if should_skip(path, config, os.getcwd()):
@@ -229,7 +232,7 @@ def parse_args(argv=None):
                         help="Forces line endings to the specified value. If not set, values will be guessed per-file.")
     parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
                         dest='length_sort', action='store_true')
-    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=[0, 1, 2, 3, 4, 5],
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=range(len(WrapModes)),
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).')
     inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
@@ -246,7 +249,7 @@ def parse_args(argv=None):
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
                         help='Shows extra quiet output, only errors are outputted.')
-    parser.add_argument('-r', '--remove-import', dest='remove_imports', action='append',
+    parser.add_argument('-rm', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
     parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
                         help='Recursively look for Python files of which to sort imports')

@@ -251,6 +251,14 @@ class SortImports(object):
 
     @staticmethod
     def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
+        dots = 0
+        while module_name.startswith('.'):
+            dots += 1
+            module_name = module_name[1:]
+
+        if dots:
+            module_name = '{} {}'.format(('.' * dots), module_name)
+
         prefix = ""
         if ignore_case:
             module_name = str(module_name).lower()
@@ -274,11 +282,15 @@ class SortImports(object):
 
     def _add_comments(self, comments, original_string=""):
         """
-            Returns a string with comments added
+            Returns a string with comments added if ignore_comments is not set.
         """
-        return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
-                                                self.config['comment_prefix'],
-                                                "; ".join(comments)) or original_string
+
+        if not self.config['ignore_comments']:
+            return comments and "{0}{1} {2}".format(self._strip_comments(original_string)[0],
+                                                    self.config['comment_prefix'],
+                                                    "; ".join(comments)) or original_string
+
+        return comments and self._strip_comments(original_string)[0]
 
     def _wrap(self, line):
         """
@@ -392,6 +404,10 @@ class SortImports(object):
                     while from_imports and from_imports[0] in as_imports:
                         from_import = from_imports.pop(0)
                         from_comments = self.comments['straight'].get('{}.{}'.format(module, from_import))
+                        above_comments = self.comments['above']['from'].pop(module, None)
+                        if above_comments:
+                            section_output.extend(above_comments)
+
                         section_output.append(self._add_comments(from_comments,
                                                                  self._wrap(import_start + as_imports[from_import])))
 
@@ -834,7 +850,6 @@ class SortImports(object):
 
                 if self.import_index == -1:
                     self.import_index = self.index - 1
-
                 nested_comments = {}
                 import_string, comments, new_comments = self._strip_comments(line)
                 stripped_line = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
@@ -853,7 +868,7 @@ class SortImports(object):
                         line, comments, new_comments = self._strip_comments(self._get_line(), comments)
 
                         # Still need to check for parentheses after an escaped line
-                        if "(" in line.split("#")[0] and not self._at_end():
+                        if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self._at_end():
                             stripped_line = self._strip_syntax(line).strip()
                             if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                                 nested_comments[stripped_line] = comments[-1]

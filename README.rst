@@ -228,7 +228,7 @@ Configuring isort
 If you find the default isort settings do not work well for your project, isort provides several ways to adjust
 the behavior.
 
-To configure isort for a single user create a ``~/.isort.cfg`` file:
+To configure isort for a single user create a ``~/.isort.cfg`` or ``$XDG_CONFIG_HOME/isort.cfg`` file:
 
 .. code-block:: ini
 
@@ -325,7 +325,20 @@ past the line_length limit and has 6 possible settings:
         lib5, ...
     )
 
-**6 - NOQA**
+**6 - Hanging Grid Grouped, No Trailing Comma**
+
+In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
+Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
+You can enforce a trailing comma by using this in conjunction with `-tc` or `trailing_comma: True`.
+
+.. code-block:: python
+
+    from third_party import (
+        lib1, lib2, lib3, lib4,
+        lib5
+    )
+
+**7 - NOQA**
 
 .. code-block:: python
 
@@ -532,7 +545,7 @@ From the command line:
 
 .. code-block:: bash
 
-    isort -r "os.system" *.py
+    isort -rm "os.system" *.py
 
 from within Kate:
 
@@ -584,10 +597,11 @@ To cause the commit to fail if there are isort errors (strict mode), include the
     import sys
     from isort.hooks import git_hook
 
-    sys.exit(git_hook(strict=True))
+    sys.exit(git_hook(strict=True, modify=True))
 
 If you just want to display warnings, but allow the commit to happen anyway, call ``git_hook`` without
-the `strict` parameter.
+the `strict` parameter. If you want to display warnings, but not also fix the code, call ``git_hook`` without
+the `modify` parameter.
 
 Setuptools integration
 ----------------------

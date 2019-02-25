@@ -1,11 +1,46 @@
 Changelog
 =========
-### UNRELEASED
+
+### 4.4.0 UNRELEASED
 - **Breaking changes:**
   - isort now requires Python 3.4+ to run but continues to support formating
     Python 2 code.
 
-### 4.3.4 - Feburary 12, 2018 - hotfix release
+### 4.3.5 - February 24, 2019 - last Python 2.7 Maintenance Release
+
+This is the final Python 2.x release of isort, and includes the following major changes:
+
+Potentially Interface Breaking:
+- The `-r` option for removing imports has been renamed `-rm` to avoid accidental deletions and confusion with the `-rc` recursive option.
+- `__init__.py` has been removed from the default ignore list. The default ignore list is now empty - with all items needing to be explicitly ignored.
+- Isort will now by default ignore .tox / venv folders in an effort to be "safe". You can disable this behaviour by setting the "--unsafe" flag, this is separate from any skip or not skip rules you may have in place.
+- Isort now allows for files missing closing newlines in whitespace check
+- `distutils` support has been removed to simplify setup.py
+
+New:
+- Official Python 3.7 Compatibility.
+- Support for using requirements files to auto determine third-paty section if pipreqs & requirementslib are installed.
+- Added support for using pyproject.toml if toml is installed.
+- Added support for XDG_HOME if appdirs is installed.
+- An option has been added to enable ignoring trailing comments ('ignore_comments') defaulting to False.
+- Added support to enable line length sorting for only specific sections
+- Added a `correctly_sorted` property on the SortsImport to enable more intuitive programmatic checking.
+
+Fixes:
+- Improved black compatibility.
+- Isort will no detect files in the CWD as first-party.
+- Fixed several cases where '-ns' or 'not_skip' was being incorrectly ignored.
+- Fixed sorting of relative path imports ('.', '..', '...', etc).
+- Fixed bugs caused by a failure to maintain order when loading iterables from config files.
+- Correctly handle CPython compiled imports and others that need EXT_SUFFIX to correctly identify.
+- Fixed handling of Symbolic Links to follow them when walking the path.
+- Fixed handling of relative known_paths.
+- Fixed lack of access to all wrap modes from the CLI.
+- Fixed handling of FIFO files.
+- Fixed a bug that could result in multiple imports being inserted on the same line.
+
+
+### 4.3.4 - February 12, 2018 - hotfix release
 - Fixed issue #671: isort is corrupting CRLF files
 
 ### 4.3.3 - Feburary 5, 2018 - hotfix release

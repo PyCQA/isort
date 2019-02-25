@@ -3,7 +3,7 @@
 Defines how the default settings for isort should be loaded
 
 (First from the default setting dictionary at the top of the file, then overridden by any settings
- in ~/.isort.cfg if there are any)
+ in ~/.isort.cfg or $XDG_CONFIG_HOME/isort.cfg if there are any)
 
 Copyright (C) 2013  Timothy Edmund Crosley
 
@@ -27,15 +27,26 @@ import fnmatch
 import os
 import posixpath
 import re
+import stat
+import sys
 import warnings
 from collections import namedtuple
 from distutils.util import strtobool
 from functools import lru_cache
 
+from .utils import difference, union
+
 try:
     import toml
 except ImportError:
     toml = False
+
+try:
+    import appdirs
+    if appdirs.system == 'darwin':
+        appdirs.system = 'linux2'
+except ImportError:
+    appdirs = None
 
 MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look for a config file within
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
@@ -142,23 +153,33 @@ default = {'force_to_top': [],
            'ignore_whitespace': False,
            'no_lines_before': [],
            'no_inline_sort': False,
-           'safety_excludes': True,
-           }
+           'ignore_comments': False,
+           'safety_excludes': True}
 
 
 @lru_cache()
 def from_path(path):
     computed_settings = default.copy()
-    _update_settings_with_config(path, '.editorconfig', '~/.editorconfig', ('*', '*.py', '**.py'), computed_settings)
-    _update_settings_with_config(path, 'pyproject.toml', None, ('tool.isort', ), computed_settings)
-    _update_settings_with_config(path, '.isort.cfg', '~/.isort.cfg', ('settings', 'isort'), computed_settings)
-    _update_settings_with_config(path, 'setup.cfg', None, ('isort', 'tool:isort'), computed_settings)
-    _update_settings_with_config(path, 'tox.ini', None, ('isort', 'tool:isort'), computed_settings)
+    isort_defaults = ['~/.isort.cfg']
+    if appdirs:
+        isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
+
+    _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
+    _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
+    _update_settings_with_config(path, '.isort.cfg', isort_defaults, ('settings', 'isort'), computed_settings)
+    _update_settings_with_config(path, 'setup.cfg', [], ('isort', 'tool:isort'), computed_settings)
+    _update_settings_with_config(path, 'tox.ini', [], ('isort', 'tool:isort'), computed_settings)
     return computed_settings
 
 
 def _update_settings_with_config(path, name, default, sections, computed_settings):
-    editor_config_file = default and os.path.expanduser(default)
+    editor_config_file = None
+    for potential_settings_path in default:
+        expanded = os.path.expanduser(potential_settings_path)
+        if os.path.exists(expanded):
+            editor_config_file = expanded
+            break
+
     tries = 0
     current_directory = path
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
@@ -208,11 +229,11 @@ def _update_with_config_file(file_path, sections, computed_settings):
             else:
                 existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith('not_'):
-                    computed_settings[access_key] = list(existing_data.difference(_as_list(value)))
+                    computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith('known_'):
-                    computed_settings[access_key] = list(existing_data.union(_abspaths(cwd, _as_list(value))))
+                    computed_settings[access_key] = union(existing_data, _abspaths(cwd, _as_list(value)))
                 else:
-                    computed_settings[access_key] = list(existing_data.union(_as_list(value)))
+                    computed_settings[access_key] = union(existing_data, _as_list(value))
         elif existing_value_type == bool:
             # Only some configuration formats support native boolean values.
             if not isinstance(value, bool):
@@ -274,9 +295,8 @@ def _get_config_data(file_path, sections):
                         break
                     last_position = config_file.tell()
 
-            config = configparser.ConfigParser()
+            config = configparser.ConfigParser(strict=False)
             config.read_file(config_file)
-
             for section in sections:
                 if config.has_section(section):
                     settings.update(config.items(section))
@@ -304,5 +324,8 @@ def should_skip(filename, config, path='/'):
     for glob in config['skip_glob']:
         if fnmatch.fnmatch(filename, glob):
             return True
+
+    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+        return True
 
     return False

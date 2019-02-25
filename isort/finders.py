@@ -128,18 +128,27 @@ class PathFinder(BaseFinder):
             for path in glob('{0}/lib/python*/site-packages'.format(self.virtual_env)):
                 if path not in self.paths:
                     self.paths.append(path)
+            for path in glob('{0}/lib/python*/*/site-packages'.format(self.virtual_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
             for path in glob('{0}/src/*'.format(self.virtual_env)):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
+        if self.stdlib_lib_prefix not in self.paths:
+            self.paths.append(self.stdlib_lib_prefix)
+
+        # handle compiled libraries
+        self.ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
 
     def find(self, module_name):
         for prefix in self.paths:
             package_path = "/".join((prefix, module_name.split(".")[0]))
             is_module = (exists_case_sensitive(package_path + ".py") or
-                         exists_case_sensitive(package_path + ".so"))
+                         exists_case_sensitive(package_path + ".so") or
+                         exists_case_sensitive(package_path + self.ext_suffix))
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if 'site-packages' in prefix:
