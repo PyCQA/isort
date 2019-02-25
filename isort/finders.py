@@ -324,7 +324,7 @@ class FindersManager(object):
         if finders is not None:
             self.finders = finders
         self.finders = tuple(finder(config, sections) for finder in self.finders)
-        self.verbose = self.config.get('verbose', False)
+        self.verbose = config.get('verbose', False)
 
     def find(self, module_name):
         for finder in self.finders:
