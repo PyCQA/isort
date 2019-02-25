@@ -325,7 +325,20 @@ past the line_length limit and has 6 possible settings:
         lib5, ...
     )
 
-**6 - NOQA**
+**6 - Hanging Grid Grouped, No Trailing Comma**
+
+In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
+Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
+You can enforce a trailing comma by using this in conjunction with `-tc` or `trailing_comma: True`.
+
+.. code-block:: python
+
+    from third_party import (
+        lib1, lib2, lib3, lib4,
+        lib5
+    )
+
+**7 - NOQA**
 
 .. code-block:: python
 
@@ -532,7 +545,7 @@ From the command line:
 
 .. code-block:: bash
 
-    isort -r "os.system" *.py
+    isort -rm "os.system" *.py
 
 from within Kate:
 
