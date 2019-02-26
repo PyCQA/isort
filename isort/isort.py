@@ -200,16 +200,6 @@ class SortImports(object):
         ):
             sys.stdout.write(line)
 
-    def _consume_line(self) -> str:
-        """Returns the current line from the file while incrementing the index."""
-        line = self.in_lines[self.index]
-        self.index += 1
-        return line
-
-    def _reached_the_end_of_file(self) -> bool:
-        """returns True if we are at the end of the file."""
-        return self.index == self.number_of_lines
-
     def _add_comments(
         self,
         comments: Sequence[str],
