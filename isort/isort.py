@@ -551,7 +551,7 @@ class SortImports(object):
 
             for index, line in enumerate(tail):
                 in_quote = self._in_quote
-                if not self._skip_line(line) and line.strip():
+                if not self._line_should_be_skipped(line) and line.strip():
                     if line.strip().startswith("#") and len(tail) > (index + 1) and tail[index + 1].strip():
                         continue
                     next_construct = line
@@ -755,7 +755,7 @@ class SortImports(object):
         else:
             return '{0}{1} NOQA'.format(retval, self.config['comment_prefix'])
 
-    def _skip_line(self, line: str) -> bool:
+    def _line_should_be_skipped(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
             self._in_top_comment = True
@@ -812,9 +812,9 @@ class SortImports(object):
             line = line.replace("\t", " ").replace('import*', 'import *')
             line = line.replace(" .import ", " . import ")
             statement_index = self.index
-            skip_line = self._skip_line(line)
+            line_should_be_skipped = self._line_should_be_skipped(line)
 
-            if line in self._section_comments and not skip_line:
+            if line in self._section_comments and not line_should_be_skipped:
                 if self.import_index == -1:
                     self.import_index = self.index - 1
                 continue
@@ -827,10 +827,10 @@ class SortImports(object):
             if ";" in line:
                 for part in (part.strip() for part in line.split(";")):
                     if part and not part.startswith("from ") and not part.startswith("import "):
-                        skip_line = True
+                        line_should_be_skipped = True
 
             import_type = utils.determine_import_type_or_none(line)
-            if not import_type or skip_line:
+            if not import_type or line_should_be_skipped:
                 self.out_lines.append(raw_line)
                 continue
 
