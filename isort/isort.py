@@ -790,18 +790,6 @@ class SortImports(object):
 
         return skip_line or self._in_quote or self._in_top_comment
 
-    def _strip_syntax(self, import_string: str) -> str:
-        import_string = import_string.replace("_import", "[[i]]")
-        for remove_syntax in ['\\', '(', ')', ',']:
-            import_string = import_string.replace(remove_syntax, " ")
-        import_list = import_string.split()
-        for key in ('from', 'import'):
-            if key in import_list:
-                import_list.remove(key)
-        import_string = ' '.join(import_list)
-        import_string = import_string.replace("[[i]]", "_import")
-        return import_string.replace("{ ", "{|").replace(" }", "|}")
-
     def _parse(self) -> None:
         """Parses a python file taking out and categorizing imports."""
         self._in_quote = False
@@ -845,14 +833,14 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 nested_comments = {}
                 import_string, comments, new_comments = formatter.strip_comments(line)
-                line_parts = [part for part in self._strip_syntax(import_string).strip().split(" ") if part]
+                line_parts = [part for part in formatter.strip_syntax(import_string).strip().split(" ") if part]
                 if import_type == "from" and len(line_parts) == 2 and line_parts[1] != "*" and new_comments:
                     nested_comments[line_parts[-1]] = comments[0]
 
                 if "(" in line.split("#")[0] and not self._at_end():
                     while not line.strip().endswith(")") and not self._at_end():
                         line, comments, new_comments = formatter.strip_comments(self._get_line(), comments)
-                        stripped_line = self._strip_syntax(line).strip()
+                        stripped_line = formatter.strip_syntax(line).strip()
                         if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         import_string += self.line_separator + line
@@ -862,19 +850,19 @@ class SortImports(object):
 
                         # Still need to check for parentheses after an escaped line
                         if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self._at_end():
-                            stripped_line = self._strip_syntax(line).strip()
+                            stripped_line = formatter.strip_syntax(line).strip()
                             if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                                 nested_comments[stripped_line] = comments[-1]
                             import_string += self.line_separator + line
 
                             while not line.strip().endswith(")") and not self._at_end():
                                 line, comments, new_comments = formatter.strip_comments(self._get_line(), comments)
-                                stripped_line = self._strip_syntax(line).strip()
+                                stripped_line = formatter.strip_syntax(line).strip()
                                 if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                                     nested_comments[stripped_line] = comments[-1]
                                 import_string += self.line_separator + line
 
-                        stripped_line = self._strip_syntax(line).strip()
+                        stripped_line = formatter.strip_syntax(line).strip()
                         if import_type == "from" and stripped_line and " " not in stripped_line and new_comments:
                             nested_comments[stripped_line] = comments[-1]
                         if import_string.strip().endswith(" import") or line.strip().startswith("import "):
@@ -889,7 +877,7 @@ class SortImports(object):
                     import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
                 imports = [item.replace("{|", "{ ").replace("|}", " }") for item in
-                           self._strip_syntax(import_string).split()]
+                           formatter.strip_syntax(import_string).split()]
                 if "as" in imports and (imports.index('as') + 1) < len(imports):
                     while "as" in imports:
                         index = imports.index('as')

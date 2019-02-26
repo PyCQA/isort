@@ -28,6 +28,21 @@ def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
     return line_separator.join(lines)
 
 
+def strip_syntax(import_string: str) -> str:
+    import_string = import_string.replace("_import", "[[i]]")
+    for remove_syntax in ['\\', '(', ')', ',']:
+        import_string = import_string.replace(remove_syntax, " ")
+
+    import_list = import_string.split()
+    for key in ('from', 'import'):
+        if key in import_list:
+            import_list.remove(key)
+
+    import_string = ' '.join(import_list)
+    import_string = import_string.replace("[[i]]", "_import")
+    return import_string.replace("{ ", "{|").replace(" }", "|}")
+
+
 def format_simplified(import_line: str) -> str:
     import_line = import_line.strip()
     if import_line.startswith("from "):
