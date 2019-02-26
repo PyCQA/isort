@@ -2,22 +2,24 @@ import copy
 from typing import List, Optional, Sequence, Tuple
 
 
-def strip_comments(
-    line: str,
-    comments: Optional[List[str]] = None
-) -> Tuple[str, List[str], bool]:
-    """Removes comments from import line."""
+def strip_comments(line: str,
+                   comments: Optional[List[str]] = None
+                   ) -> Tuple[str, List[str], bool]:
+    """
+    Removes comments from import line.
+    'import a  # comment' -> 'import a'
+    """
     if comments is None:
         comments = []
 
-    new_comments = False
+    new_comment_found = False
     comment_start = line.find("#")
-    if comment_start != -1:
+    if comment_start != -1:  # comment found
         comments.append(line[comment_start + 1:].strip())
-        new_comments = True
+        new_comment_found = True
         line = line[:comment_start]
 
-    return line, comments, new_comments
+    return line, comments, new_comment_found
 
 
 def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
