@@ -136,14 +136,17 @@ class SortImports(object):
         self.import_index = -1
         self._top_comment_start_index = -1
         self._top_comment_end_index = -1
+
         self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
+
         self.length_change = len(self.out_lines) - self.original_num_of_lines
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")
         self.output = self.line_separator.join(self.out_lines)
+
         if self.config['atomic']:
             try:
                 compile(formatter.strip_top_comments(self.out_lines, self.line_separator), self.file_path, 'exec', 0, 1)
@@ -156,8 +159,8 @@ class SortImports(object):
                           format(self.file_path))
                 except SyntaxError:
                     print("ERROR: {0} File contains syntax errors.".format(self.file_path))
-
                 return
+
         if check:
             check_output = self.output
             check_against = file_contents
@@ -434,6 +437,7 @@ class SortImports(object):
     def _multi_line_reformat(self, import_start: str, from_imports: List[str], comments: Sequence[str]) -> str:
         reformatter = formatter.MultilineFormatter(self.config, self.line_separator)
         import_statement = reformatter.reformat(import_start, from_imports, comments)
+
         if import_statement.count(self.line_separator) == 0:
             return self._wrap(import_statement)
         return import_statement
@@ -491,7 +495,9 @@ class SortImports(object):
                     if not self.config['order_by_type']:
                         line = line.lower()
                     return '{0}{1}'.format(section, line)
+
                 section_output = nsorted(section_output, key=by_module)
+
             if section_output:
                 section_name = section
                 if section_name in self.place_imports:
@@ -611,10 +617,9 @@ class SortImports(object):
         self._in_quote = False
         self._in_top_comment = False
         while not self.reached_the_end():
-            raw_line = line = self.consume_line()
-            line = line.replace("from.import ", "from . import ")
-            line = line.replace("\t", " ").replace('import*', 'import *')
-            line = line.replace(" .import ", " . import ")
+            raw_line = self.consume_line()
+            line = formatter.normalize_line(raw_line)
+
             statement_index = self.index
             line_should_be_skipped = self._line_should_be_skipped(line)
 
@@ -623,10 +628,10 @@ class SortImports(object):
                     self.import_index = self.index - 1
                 continue
 
-            if "isort:imports-" in line and line.startswith("#"):
-                section = line.split("isort:imports-")[-1].split()[0].upper()
-                self.place_imports[section] = []
-                self.import_placements[line] = section
+            isort_imports_section = formatter.parse_isort_imports_section_or_none(line)
+            if isort_imports_section is not None:
+                self.place_imports[isort_imports_section] = []
+                self.import_placements[line] = isort_imports_section
 
             if ";" in line:
                 for part in (part.strip() for part in line.split(";")):

@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple, Optional
 
 
 def partition_comment(line: str) -> Tuple[str, str]:
@@ -61,6 +61,20 @@ def format_natural(import_line: str) -> str:
         return "from {0} import {1}".format(".".join(parts), end)
 
     return import_line
+
+
+def parse_isort_imports_section_or_none(line: str) -> Optional[str]:
+    section = None
+    if "isort:imports-" in line and line.startswith("#"):
+        section = line.split("isort:imports-")[-1].split()[0].upper()
+    return section
+
+
+def normalize_line(line: str) -> str:
+    line = line.replace("from.import ", "from . import ")
+    line = line.replace("\t", " ").replace('import*', 'import *')
+    line = line.replace(" .import ", " . import ")
+    return line
 
 
 class MultilineFormatter:
