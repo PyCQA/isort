@@ -63,7 +63,7 @@ def infer_line_separator(file_contents: str) -> str:
         return '\n'
 
 
-def determine_import_type_or_none(line: str) -> Optional[str]:
+def get_import_type_or_none(line: str) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
     if "isort:skip" in line:
         return None

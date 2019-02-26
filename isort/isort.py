@@ -826,16 +826,17 @@ class SortImports(object):
 
             if ";" in line:
                 for part in (part.strip() for part in line.split(";")):
-                    if part and not part.startswith("from ") and not part.startswith("import "):
+                    if part and utils.get_import_type_or_none(part) is None:
+                        # part does not have import
                         line_should_be_skipped = True
 
-            import_type = utils.determine_import_type_or_none(line)
+            import_type = utils.get_import_type_or_none(line)
             if not import_type or line_should_be_skipped:
                 self.out_lines.append(raw_line)
                 continue
 
             for line in (line.strip() for line in line.split(";")):
-                import_type = utils.determine_import_type_or_none(line)
+                import_type = utils.get_import_type_or_none(line)
                 if not import_type:
                     self.out_lines.append(line)
                     continue
