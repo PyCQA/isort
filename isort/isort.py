@@ -97,7 +97,7 @@ class SortImports(object):
                 file_contents = None
             elif not file_contents:
                 self.file_path = file_path
-                self.file_encoding = coding_check(file_path)
+                self.file_encoding = utils.coding_check(file_path)
                 with open(file_path, encoding=self.file_encoding, newline='') as file_to_import_sort:
                     file_contents = file_to_import_sort.read()
 
@@ -220,13 +220,13 @@ class SortImports(object):
         """
         return self.finder.find(module_name)
 
-    def consume_line(self) -> str:
+    def _consume_line(self) -> str:
         """Returns the current line from the file while incrementing the index."""
         line = self.in_lines[self.index]
         self.index += 1
         return line
 
-    def reached_the_end(self) -> bool:
+    def _reached_the_end_of_file(self) -> bool:
         """returns True if we are at the end of the file."""
         return self.index == self.number_of_lines
 
@@ -616,8 +616,8 @@ class SortImports(object):
         """Parses a python file taking out and categorizing imports."""
         self._in_quote = False
         self._in_top_comment = False
-        while not self.reached_the_end():
-            raw_line = self.consume_line()
+        while not self._reached_the_end_of_file():
+            raw_line = self._consume_line()
             line = formatter.normalize_line(raw_line)
 
             statement_index = self.index
@@ -634,12 +634,14 @@ class SortImports(object):
                 self.import_placements[line] = isort_imports_section
 
             if ";" in line:
+                # ';' separated lines with non-import code inside are skipped
                 for part in (part.strip() for part in line.split(";")):
                     if part and utils.get_import_type_or_none(part) is None:
                         line_should_be_skipped = True
 
             current_import_type = utils.get_import_type_or_none(line)
             if current_import_type is None or line_should_be_skipped:
+                # not an import line or skipped
                 self.out_lines.append(raw_line)
                 continue
 
@@ -659,20 +661,20 @@ class SortImports(object):
 
                 nested_comments = {}  # type: Dict[str, str]
                 import_string_tokens = [part
-                                        for part in formatter.strip_syntax(import_string).strip().split(" ")
+                                        for part in formatter.remove_syntax_symbols(import_string).strip().split(" ")
                                         if part]
                 if current_import_type == "from" and len(import_string_tokens) == 2 and import_string_tokens[1] != "*" and comment:
                     # 'from PACKAGE import ATTRIBUTE' expression
                     nested_comments[import_string_tokens[-1]] = comment
 
                 # parse lines wrapped with '(' ')'
-                if "(" in line.split("#")[0] and not self.reached_the_end():
-                    while not line.strip().endswith(")") and not self.reached_the_end():
-                        line, comment = formatter.partition_comment(self.consume_line())
+                if "(" in line.split("#")[0] and not self._reached_the_end_of_file():
+                    while not line.strip().endswith(")") and not self._reached_the_end_of_file():
+                        line, comment = formatter.partition_comment(self._consume_line())
                         if comment:
                             comments.append(comment)
 
-                        stripped_line = formatter.strip_syntax(line).strip()
+                        stripped_line = formatter.remove_syntax_symbols(line).strip()
                         if current_import_type == "from" and formatter.is_single_module_name(stripped_line) and comment:
                             nested_comments[stripped_line] = comment
 
@@ -680,29 +682,29 @@ class SortImports(object):
 
                 else:
                     while line.strip().endswith("\\"):
-                        line, comment = formatter.partition_comment(self.consume_line())
+                        line, comment = formatter.partition_comment(self._consume_line())
                         if comment:
                             comments.append(comment)
 
                         # Still need to check for parentheses after an escaped line
-                        if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self.reached_the_end():
-                            stripped_line = formatter.strip_syntax(line).strip()
+                        if "(" in line.split("#")[0] and ")" not in line.split("#")[0] and not self._reached_the_end_of_file():
+                            stripped_line = formatter.remove_syntax_symbols(line).strip()
                             if current_import_type == "from" and formatter.is_single_module_name(stripped_line) and comment:
                                 nested_comments[stripped_line] = comment
 
                             import_string += self.line_separator + line
 
-                            while not line.strip().endswith(")") and not self.reached_the_end():
-                                line, comment = formatter.partition_comment(self.consume_line())
+                            while not line.strip().endswith(")") and not self._reached_the_end_of_file():
+                                line, comment = formatter.partition_comment(self._consume_line())
                                 if comment:
                                     comments.append(comment)
 
-                                stripped_line = formatter.strip_syntax(line).strip()
+                                stripped_line = formatter.remove_syntax_symbols(line).strip()
                                 if current_import_type == "from" and formatter.is_single_module_name(stripped_line) and comment:
                                     nested_comments[stripped_line] = comment
                                 import_string += self.line_separator + line
 
-                        stripped_line = formatter.strip_syntax(line).strip()
+                        stripped_line = formatter.remove_syntax_symbols(line).strip()
                         if current_import_type == "from" and formatter.is_single_module_name(stripped_line) and comment:
                             nested_comments[stripped_line] = comment
 
@@ -712,113 +714,95 @@ class SortImports(object):
                             import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
                 if current_import_type == "from":
-                    import_string = import_string.replace("import(", "import (")
-                    parts = import_string.split(" import ")
-                    from_import = parts[0].split(" ")
-                    import_string = " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
+                    import_string = formatter.normalize_from_import_string(import_string)
 
                 import_items = [item.replace("{|", "{ ").replace("|}", " }")
-                                for item in formatter.strip_syntax(import_string).split()]
+                                for item in formatter.remove_syntax_symbols(import_string).split()]
 
                 if "as" in import_items and (import_items.index('as') + 1) < len(import_items):
                     while "as" in import_items:
                         # consume one 'module as module_alias' item
                         index = import_items.index('as')
                         if current_import_type == "from":
-                            module = import_items[0] + "." + import_items[index - 1]
-                            self.as_map[module] = import_items[index + 1]
+                            imported_module_name = import_items[0] + "." + import_items[index - 1]
+                            self.as_map[imported_module_name] = import_items[index + 1]
                         else:
-                            module = import_items[index - 1]
-                            self.as_map[module] = import_items[index + 1]
+                            imported_module_name = import_items[index - 1]
+                            self.as_map[imported_module_name] = import_items[index + 1]
 
                         if not self.config['combine_as_imports']:
-                            self.comments['straight'][module] = comments
+                            self.comments['straight'][imported_module_name] = comments
                             comments = []
                         del import_items[index:index + 2]
 
                 if current_import_type == "from":
-                    import_from = import_items.pop(0)
-                    module_section = self.determine_import_group(import_from)
+                    imported_from = import_items.pop(0)
+                    import_group = self.determine_import_group(imported_from)
                     if self.config['verbose']:
-                        print("from-type place_module for %s returned %s" % (import_from, module_section))
+                        print("from-type place_module for %s returned %s" % (imported_from, import_group))
 
-                    if module_section == '':
+                    if import_group == '':
                         print(
                             "WARNING: could not place module {0} of line {1} --"
-                            " Do you need to define a default section?".format(import_from, line)
+                            " Do you need to define a default section?".format(imported_from, line)
                         )
 
-                    root = self.parsed_imports[module_section][current_import_type]
-                    for import_name in import_items:
-                        associated_comment = nested_comments.get(import_name)
+                    for imported_module_name in import_items:
+                        # extract comments for 'from PACKAGE import ()' section
+                        associated_comment = nested_comments.get(imported_module_name)
                         if associated_comment:
-                            self.comments['nested'].setdefault(import_from, {})[import_name] = associated_comment
+                            self.comments['nested'].setdefault(imported_from, {})[imported_module_name] = associated_comment
                             comments.pop(comments.index(associated_comment))
+
                     if comments:
-                        self.comments['from'].setdefault(import_from, []).extend(comments)
+                        # all nested comments are parsed by now, remaining are comments for 'from' itself
+                        self.comments['from'].setdefault(imported_from, []).extend(comments)
 
                     if len(self.out_lines) > max(self.import_index, self._top_comment_end_index + 1, 1) - 1:
                         last = self.out_lines and self.out_lines[-1].rstrip() or ""
                         while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
                                'isort:imports-' not in last):
-                            self.comments['above']['from'].setdefault(import_from, []).insert(0, self.out_lines.pop(-1))
+                            self.comments['above']['from'].setdefault(imported_from, []).insert(0, self.out_lines.pop(-1))
                             if len(self.out_lines) > max(self.import_index - 1, self._top_comment_end_index + 1, 1) - 1:
                                 last = self.out_lines[-1].rstrip()
                             else:
                                 last = ""
                         if statement_index - 1 == self.import_index:
-                            self.import_index -= len(self.comments['above']['from'].get(import_from, []))
+                            self.import_index -= len(self.comments['above']['from'].get(imported_from, []))
 
-                    if import_from not in root:
-                        root[import_from] = OrderedDict()
-                    root[import_from].update((module, None) for module in import_items)
+                    root = self.parsed_imports[import_group][current_import_type]
+                    if imported_from not in root:
+                        root[imported_from] = OrderedDict()
 
-                else:
-                    for module in import_items:
+                    root[imported_from].update((module, None) for module in import_items)
+
+                else:  # straight
+                    for imported_module_name in import_items:
                         if comments:
-                            self.comments['straight'][module] = comments
-                            comments = None
+                            self.comments['straight'][imported_module_name] = comments
+                            comments = []
 
                         if len(self.out_lines) > max(self.import_index, self._top_comment_end_index + 1, 1) - 1:
-
                             last = self.out_lines and self.out_lines[-1].rstrip() or ""
                             while (last.startswith("#") and not last.endswith('"""') and not last.endswith("'''") and
                                    'isort:imports-' not in last):
-                                self.comments['above']['straight'].setdefault(module, []).insert(0,
-                                                                                                 self.out_lines.pop(-1))
+                                self.comments['above']['straight'].setdefault(imported_module_name, []).insert(0,
+                                                                                                               self.out_lines.pop(
+                                                                                                                   -1))
                                 if len(self.out_lines) > 0:
                                     last = self.out_lines[-1].rstrip()
                                 else:
                                     last = ""
                             if self.index - 1 == self.import_index:
-                                self.import_index -= len(self.comments['above']['straight'].get(module, []))
-                        module_section = self.determine_import_group(module)
+                                self.import_index -= len(self.comments['above']['straight'].get(imported_module_name, []))
+                        import_group = self.determine_import_group(imported_module_name)
                         if self.config['verbose']:
-                            print("else-type place_module for %s returned %s" % (module, module_section))
-                        if module_section == '':
+                            print("else-type place_module for %s returned %s" % (imported_module_name, import_group))
+
+                        if import_group == '':
                             print(
                                 "WARNING: could not place module {0} of line {1} --"
-                                " Do you need to define a default section?".format(import_from, line)
+                                " Do you need to define a default section?".format(imported_from, line)
                             )
-                        self.parsed_imports[module_section][current_import_type][module] = None
-
-
-def coding_check(
-    fname: str,
-    default: str = 'utf-8'
-) -> str:
-
-    # see https://www.python.org/dev/peps/pep-0263/
-    pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
-
-    coding = default
-    with open(fname, 'rb') as f:
-        for line_number, line in enumerate(f, 1):
-            groups = re.findall(pattern, line)
-            if groups:
-                coding = groups[0].decode('ascii')
-                break
-            if line_number > 2:
-                break
-
-    return coding
+                        # add 'import {imported_module_name}' line to parsed imports
+                        self.parsed_imports[import_group][current_import_type][imported_module_name] = None

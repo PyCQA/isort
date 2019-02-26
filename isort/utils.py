@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from contextlib import contextmanager
 from typing import Any, Container, Iterable, Iterator, List, Optional
@@ -71,3 +72,23 @@ def get_import_type_or_none(line: str) -> Optional[str]:
         return "straight"
     elif line.startswith('from '):
         return "from"
+
+
+def coding_check(fname: str,
+                 default: str = 'utf-8'
+                 ) -> str:
+
+    # see https://www.python.org/dev/peps/pep-0263/
+    pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
+
+    coding = default
+    with open(fname, 'rb') as f:
+        for line_number, line in enumerate(f, 1):
+            groups = re.findall(pattern, line)
+            if groups:
+                coding = groups[0].decode('ascii')
+                break
+            if line_number > 2:
+                break
+
+    return coding

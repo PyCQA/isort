@@ -19,7 +19,7 @@ def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
     return line_separator.join(lines)
 
 
-def strip_syntax(import_string: str) -> str:
+def remove_syntax_symbols(import_string: str) -> str:
     import_string = import_string.replace("_import", "[[i]]")
 
     syntactic_symbols_to_remove = ['\\', '(', ')', ',']
@@ -68,6 +68,13 @@ def parse_isort_imports_section_or_none(line: str) -> Optional[str]:
     if "isort:imports-" in line and line.startswith("#"):
         section = line.split("isort:imports-")[-1].split()[0].upper()
     return section
+
+
+def normalize_from_import_string(import_string: str) -> str:
+    import_string = import_string.replace("import(", "import (")
+    parts = import_string.split(" import ")
+    from_import = parts[0].split(" ")
+    return " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
 
 
 def normalize_line(line: str) -> str:
