@@ -532,11 +532,11 @@ class SortImports(object):
 
         if len(self.out_lines) > imports_tail:
             next_construct = ""
-            self._in_quote = False  # type: Any
+            self._wrapping_quotes = ''
             tail = self.out_lines[imports_tail:]
 
             for index, line in enumerate(tail):
-                in_quote = self._in_quote
+                in_quote = self._wrapping_quotes
                 if not self._line_should_be_skipped(line) and line.strip():
                     if line.strip().startswith("#") and len(tail) > (index + 1) and tail[index + 1].strip():
                         continue
@@ -567,11 +567,12 @@ class SortImports(object):
             self.out_lines = new_out_lines
 
     def _line_should_be_skipped(self, line: str) -> bool:
-        skip_line = self._in_quote
+        inside_multiline_string = bool(self._wrapping_quotes)
+
+        # whether we are in the top comment section
         if self.index == 1 and line.startswith("#"):
             self._in_top_comment = True
             return True
-
         elif self._in_top_comment:
             if not line.startswith("#"):
                 # quit top comment
@@ -579,43 +580,45 @@ class SortImports(object):
                 self._top_comment_end_index = self.index - 1
 
         if '"' in line or "'" in line:
-            index = 0
+            col_ind = 0
             if self._top_comment_start_index == -1 and (line.startswith('"') or line.startswith("'")):
                 # string at top of the file
                 self._top_comment_start_index = self.index
 
-            while index < len(line):
-                if line[index] == "\\":
-                    index += 1
+            while col_ind < len(line):
+                if line[col_ind] == "\\":
+                    col_ind += 1
 
-                elif self._in_quote:
+                elif self._wrapping_quotes:
                     # if in string expression, check whether next symbols are the end of expression
-                    if line[index:index + len(self._in_quote)] == self._in_quote:
-                        self._in_quote = False
+                    if line[col_ind:col_ind + len(self._wrapping_quotes)] == self._wrapping_quotes:
+                        # end of string
+                        self._wrapping_quotes = ''
                         if self._top_comment_end_index < self._top_comment_start_index:
                             self._top_comment_end_index = self.index
 
-                elif line[index] in ("'", '"'):
+                elif line[col_ind] in ("'", '"'):
                     # start of string expression
-                    long_quote = line[index:index + 3]
+                    long_quote = line[col_ind:col_ind + 3]
                     if long_quote in ('"""', "'''"):
-                        self._in_quote = long_quote
-                        index += 2
+                        self._wrapping_quotes = long_quote
+                        col_ind += 2
                     else:
-                        self._in_quote = line[index]
+                        self._wrapping_quotes = line[col_ind]
 
-                elif line[index] == "#":
+                elif line[col_ind] == "#":
                     # start of comment
                     break
 
-                index += 1
+                col_ind += 1
 
-        return skip_line or self._in_quote or self._in_top_comment
+        return inside_multiline_string or bool(self._wrapping_quotes) or self._in_top_comment
 
     def _parse(self) -> None:
         """Parses a python file taking out and categorizing imports."""
-        self._in_quote = False
+        self._wrapping_quotes = ''
         self._in_top_comment = False
+
         while not self._reached_the_end_of_file():
             raw_line = self._consume_line()
             line = formatter.normalize_line(raw_line)
