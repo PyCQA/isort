@@ -114,8 +114,8 @@ class SortImports(object):
             self.line_separator = utils.infer_line_separator(file_contents)
 
         self.in_lines = file_contents.split(self.line_separator)
-        self.original_length = len(self.in_lines)
-        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config['force_adds']:
+        self.original_num_of_lines = len(self.in_lines)
+        if (self.original_num_of_lines > 1 or self.in_lines[:1] not in ([], [""])) or self.config['force_adds']:
             for add_import in self.add_imports:
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
@@ -139,7 +139,7 @@ class SortImports(object):
         self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
-        self.length_change = len(self.out_lines) - self.original_length
+        self.length_change = len(self.out_lines) - self.original_num_of_lines
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")
@@ -583,7 +583,7 @@ class SortImports(object):
             output.pop(0)
 
         output_at = 0
-        if self.import_index < self.original_length:
+        if self.import_index < self.original_num_of_lines:
             output_at = self.import_index
         elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
             output_at = self._first_comment_index_end
