@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Dict, List, Sequence, Tuple, Optional
+from typing import Any, Dict, List, Sequence, Tuple
 
 
 def partition_comment(line: str) -> Tuple[str, str]:
@@ -17,27 +17,6 @@ def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
     while lines and lines[0].startswith("#"):
         lines = lines[1:]
     return line_separator.join(lines)
-
-
-def remove_syntax_symbols(import_string: str) -> str:
-    import_string = import_string.replace("_import", "[[i]]")
-
-    syntactic_symbols_to_remove = ['\\', '(', ')', ',']
-    for symbol in syntactic_symbols_to_remove:
-        import_string = import_string.replace(symbol, " ")
-
-    import_tokens = import_string.split()
-    for key in ('from', 'import'):
-        if key in import_tokens:
-            import_tokens.remove(key)
-
-    import_string = ' '.join(import_tokens)
-    import_string = import_string.replace("[[i]]", "_import")
-    return import_string.replace("{ ", "{|").replace(" }", "|}")
-
-
-def is_single_module_name(line: str) -> bool:
-    return bool(line) and ' ' not in line
 
 
 def format_simplified(import_line: str) -> str:
@@ -61,27 +40,6 @@ def format_natural(import_line: str) -> str:
         return "from {0} import {1}".format(".".join(parts), end)
 
     return import_line
-
-
-def parse_isort_imports_section_or_none(line: str) -> Optional[str]:
-    section = None
-    if "isort:imports-" in line and line.startswith("#"):
-        section = line.split("isort:imports-")[-1].split()[0].upper()
-    return section
-
-
-def normalize_from_import_string(import_string: str) -> str:
-    import_string = import_string.replace("import(", "import (")
-    parts = import_string.split(" import ")
-    from_import = parts[0].split(" ")
-    return " import ".join([from_import[0] + " " + "".join(from_import[1:])] + parts[1:])
-
-
-def normalize_line(line: str) -> str:
-    line = line.replace("from.import ", "from . import ")
-    line = line.replace("\t", " ").replace('import*', 'import *')
-    line = line.replace(" .import ", " . import ")
-    return line
 
 
 class MultilineFormatter:
