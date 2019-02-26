@@ -147,17 +147,13 @@ class MultilineFormatter:
         line_length: int,
         comments: Sequence[str]
     ) -> str:
-        trailing = ""
-        if len(imports) > 1 and self.config['include_trailing_comma']:
-            trailing = ','
-
         return "{0}({1}{2}{3}{4}{5}{2})".format(
             statement,
             self._add_comments(comments),
             self.line_separator,
             indent,
             ("," + self.line_separator + indent).join(imports),
-            trailing,
+            "," if self.config['include_trailing_comma'] else "",
         )
 
     def _output_vertical_grid_common(

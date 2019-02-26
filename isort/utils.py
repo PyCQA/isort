@@ -66,7 +66,7 @@ def infer_line_separator(file_contents: str) -> str:
 
 def get_import_type_or_none(line: str) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
-    if "isort:skip" in line:
+    if "isort:skip" in line or "NOQA" in line:
         return None
     elif line.startswith('import '):
         return "straight"

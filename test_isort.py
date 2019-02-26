@@ -1304,7 +1304,7 @@ def test_include_trailing_comma():
     ).output
     assert test_output_wrap_single_import_vertical_indent == (
         "from third_party import (\n"
-        "    lib1\n"
+        "    lib1,\n"
         ")\n"
     )
 
@@ -2753,3 +2753,22 @@ def test_unwrap_issue_762():
     test_input = ('from os.\\\n'
                   '    path import (join, split)')
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+
+def test_noqa_issue_679():
+    # Test to ensure that NOQA notation is being observed as expected
+    test_input = ('import os\n'
+                  '\n'
+                  'import requestsss\n'
+                  'import zed # NOQA\n'
+                  'import ujson # NOQA\n'
+                  '\n'
+                  'import foo')
+    test_output = ('import os\n'
+                   '\n'
+                   'import foo\n'
+                   'import requestsss\n'
+                   '\n'
+                   'import zed # NOQA\n'
+                   'import ujson # NOQA\n')
+    assert SortImports(file_contents=test_input).output == test_output
