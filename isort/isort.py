@@ -105,27 +105,23 @@ class SortImports(object):
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
 
-        file = files.parse(source_lines=self.in_lines,
-                           line_separator=self.line_separator,
-                           config=self.config)
+        self.parsed_file = files.parse(source_lines=self.in_lines,
+                                       line_separator=self.line_separator,
+                                       config=self.config)
 
-        self.import_index = file.cursor.import_index
-        self.index = file.cursor.index
-        self._top_comment_start_index = file.cursor.top_comment_start_index
-        self._top_comment_end_index = file.cursor.top_comment_end_index
-        self._wrapping_quotes = file.cursor.wrapping_quotes
-        self._in_top_comment = file.cursor.inside_top_comment
-        self.sections = file.sections
+        self.import_index = self.parsed_file.cursor.import_index
+        self._top_comment_start_index = self.parsed_file.cursor.top_comment_start_index
+        self._top_comment_end_index = self.parsed_file.cursor.top_comment_end_index
+        self.sections = self.parsed_file.sections
 
-        self.out_lines = file.output_lines
-        self.parsed_imports = file.parsed_imports
-        self.as_map = file.as_map
-        self.comments = file.comments
+        self.out_lines = self.parsed_file.output_lines
+        self.parsed_imports = self.parsed_file.parsed_imports
+        self.as_map = self.parsed_file.as_map
+        self.comments = self.parsed_file.comments
 
-        self.specified_manual_sections = file.specified_manual_sections
-        self.line_to_manual_section_mapping = file.line_to_manual_section_mapping
+        self.specified_manual_sections = self.parsed_file.specified_manual_sections
+        self.line_to_manual_section_mapping = self.parsed_file.line_to_manual_section_mapping
 
-        # self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
 
@@ -507,7 +503,7 @@ class SortImports(object):
 
             for index, line in enumerate(tail):
                 in_quote = ''
-                if not self._line_should_be_skipped(line) and line.strip():
+                if not self.parsed_file.cursor.line_should_be_skipped(line) and line.strip():
                     if line.strip().startswith("#") and len(tail) > (index + 1) and tail[index + 1].strip():
                         continue
                     next_construct = line
@@ -538,56 +534,3 @@ class SortImports(object):
                         new_out_lines.append("")
 
             self.out_lines = new_out_lines
-
-    def is_top_comment_start(self, line: str) -> bool:
-        return self.index == 1 and line.startswith("#")
-
-    def is_top_comment_end(self, line: str) -> bool:
-        return self._in_top_comment and not line.startswith('#')
-
-    def _line_should_be_skipped(self, line: str) -> bool:
-        inside_multiline_string = bool(self._wrapping_quotes)
-
-        # whether we are in the top comment section
-        if self.is_top_comment_start(line):
-            self._in_top_comment = True
-            return True
-        elif self.is_top_comment_end(line):
-            # quit top comment
-            self._in_top_comment = False
-            self._top_comment_end_index = self.index - 1
-
-        if '"' in line or "'" in line:
-            col_ind = 0
-            if self._top_comment_start_index == -1 and (line.startswith('"') or line.startswith("'")):
-                # string at top of the file
-                self._top_comment_start_index = self.index
-
-            while col_ind < len(line):
-                if line[col_ind] == "\\":
-                    col_ind += 1
-
-                elif self._wrapping_quotes:
-                    # if in string expression, check whether next symbols are the end of expression
-                    if line[col_ind:col_ind + len(self._wrapping_quotes)] == self._wrapping_quotes:
-                        # end of string
-                        self._wrapping_quotes = ''
-                        if self._top_comment_end_index < self._top_comment_start_index:
-                            self._top_comment_end_index = self.index
-
-                elif line[col_ind] in ("'", '"'):
-                    # start of string expression
-                    long_quote = line[col_ind:col_ind + 3]
-                    if long_quote in ('"""', "'''"):
-                        self._wrapping_quotes = long_quote
-                        col_ind += 2
-                    else:
-                        self._wrapping_quotes = line[col_ind]
-
-                elif line[col_ind] == "#":
-                    # start of comment
-                    break
-
-                col_ind += 1
-
-        return inside_multiline_string or bool(self._wrapping_quotes) or self._in_top_comment
