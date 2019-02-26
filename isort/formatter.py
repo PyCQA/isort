@@ -1,25 +1,14 @@
 import copy
-from typing import List, Optional, Sequence, Tuple
+from typing import Sequence, Tuple
 
 
-def strip_comments(line: str,
-                   comments: Optional[List[str]] = None
-                   ) -> Tuple[str, List[str], bool]:
-    """
-    Removes comments from import line.
-    'import a  # comment' -> 'import a'
-    """
-    if comments is None:
-        comments = []
-
-    new_comment_found = False
+def partition_comment(line: str) -> Tuple[str, str]:
+    comment = ''
     comment_start = line.find("#")
-    if comment_start != -1:  # comment found
-        comments.append(line[comment_start + 1:].strip())
-        new_comment_found = True
+    if comment_start != -1:
+        comment = line[comment_start + 1:].strip()
         line = line[:comment_start]
-
-    return line, comments, new_comment_found
+    return line, comment
 
 
 def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
@@ -32,17 +21,23 @@ def strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
 
 def strip_syntax(import_string: str) -> str:
     import_string = import_string.replace("_import", "[[i]]")
-    for remove_syntax in ['\\', '(', ')', ',']:
-        import_string = import_string.replace(remove_syntax, " ")
 
-    import_list = import_string.split()
+    syntactic_symbols_to_remove = ['\\', '(', ')', ',']
+    for symbol in syntactic_symbols_to_remove:
+        import_string = import_string.replace(symbol, " ")
+
+    import_tokens = import_string.split()
     for key in ('from', 'import'):
-        if key in import_list:
-            import_list.remove(key)
+        if key in import_tokens:
+            import_tokens.remove(key)
 
-    import_string = ' '.join(import_list)
+    import_string = ' '.join(import_tokens)
     import_string = import_string.replace("[[i]]", "_import")
     return import_string.replace("{ ", "{|").replace(" }", "|}")
+
+
+def is_single_module_name(line: str) -> bool:
+    return bool(line) and ' ' not in line
 
 
 def format_simplified(import_line: str) -> str:
