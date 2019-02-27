@@ -32,7 +32,7 @@ import stat
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Type
+from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Callable
 
 from .utils import difference, union
 
@@ -216,6 +216,13 @@ def _update_settings_with_config(
         _update_with_config_file(editor_config_file, sections, computed_settings)
 
 
+def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
+    type_converter = type(default.get(setting_name, ''))  # type: Callable[[str], Any]
+    if type_converter == WrapModes:
+        type_converter = WrapModes.from_string
+    return type_converter
+
+
 def _update_with_config_file(
     file_path: str,
     sections: Iterable[str],
@@ -243,7 +250,7 @@ def _update_with_config_file(
 
     for key, value in settings.items():
         access_key = key.replace('not_', '').lower()
-        existing_value_type = type(default.get(access_key, ''))  # type: Type[Any]
+        existing_value_type = _get_str_to_type_converter(access_key)
         if existing_value_type in (list, tuple):
             # sections has fixed order values; no adding or substraction from any set
             if access_key == 'sections':

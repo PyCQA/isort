@@ -26,6 +26,7 @@ import os.path
 import sys
 import sysconfig
 
+import py
 import pytest
 
 from isort import finders, main, settings
@@ -2772,3 +2773,16 @@ def test_noqa_issue_679():
                    'import zed # NOQA\n'
                    'import ujson # NOQA\n')
     assert SortImports(file_contents=test_input).output == test_output
+
+
+def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
+    editorconfig_contents = [
+        'root = true',
+        ' [*.py]',
+        'multi_line_output = 5'
+    ]
+    config_file = tmpdir.join('.editorconfig')
+    config_file.write('\n'.join(editorconfig_contents))
+
+    config = settings.from_path(str(tmpdir))
+    assert config['multi_line_output'] == WrapModes.VERTICAL_GRID_GROUPED
