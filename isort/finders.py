@@ -315,8 +315,8 @@ class FindersManager(object):
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
-        PipfileFinder,
-        RequirementsFinder,
+        # PipfileFinder,
+        # RequirementsFinder,
         DefaultFinder,
     )
 
