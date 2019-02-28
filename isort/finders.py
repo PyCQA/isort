@@ -8,6 +8,7 @@ import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
+from functools import lru_cache
 from glob import glob
 from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Pattern, Sequence, Tuple, Type
 
@@ -288,14 +289,23 @@ class RequirementsFinder(ReqsBaseFinder):
                         yield full_path
                         break
 
-    def _get_names(self, path: str) -> Iterator[str]:
+    def _get_names(self, path: str) -> List[str]:
         """Load required packages from path to requirements file
         """
+        return RequirementsFinder._get_names_cached(path)
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_names_cached(cls, path: str) -> List[str]:
+        result = []
+
         with chdir(os.path.dirname(path)):
             requirements = parse_requirements(path, session=PipSession())
             for req in requirements:
                 if req.name:
-                    yield req.name
+                    result.append(req.name)
+
+        return result
 
 
 class PipfileFinder(ReqsBaseFinder):
