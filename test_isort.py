@@ -2513,32 +2513,38 @@ def test_to_ensure_tabs_dont_become_space_issue_665():
 
 
 def test_new_lines_are_preserved():
-    with NamedTemporaryFile('w', suffix='py') as rn_newline:
-        with io.open(rn_newline.name, mode='w', newline='') as rn_newline_input:
-            rn_newline_input.write('import sys\r\nimport os\r\n')
-            rn_newline_input.flush()
-            SortImports(rn_newline.name)
-            with io.open(rn_newline.name, newline='') as rn_newline_file:
-                rn_newline_contents = rn_newline_file.read()
-    assert rn_newline_contents == 'import os\r\nimport sys\r\n'
+    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as rn_newline:
+        rn_newline.write('import sys\r\nimport os\r\n')
 
-    with NamedTemporaryFile('w', suffix='py') as r_newline:
-        with io.open(r_newline.name, mode='w', newline='') as r_newline_input:
-            r_newline_input.write('import sys\rimport os\r')
-            r_newline_input.flush()
-            SortImports(r_newline.name)
-            with io.open(r_newline.name, newline='') as r_newline_file:
-                r_newline_contents = r_newline_file.read()
-    assert r_newline_contents == 'import os\rimport sys\r'
+    try:
+        SortImports(rn_newline.name)
+        with io.open(rn_newline.name, newline='') as rn_newline_file:
+            rn_newline_contents = rn_newline_file.read()
+        assert rn_newline_contents == 'import os\r\nimport sys\r\n'
+    finally:
+        os.remove(rn_newline.name)
 
-    with NamedTemporaryFile('w', suffix='py') as n_newline:
-        with io.open(n_newline.name, mode='w', newline='') as n_newline_input:
-            n_newline_input.write('import sys\nimport os\n')
-            n_newline_input.flush()
-            SortImports(n_newline.name)
-            with io.open(n_newline.name, newline='') as n_newline_file:
-                n_newline_contents = n_newline_file.read()
-    assert n_newline_contents == 'import os\nimport sys\n'
+    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as r_newline:
+        r_newline.write('import sys\rimport os\r')
+
+    try:
+        SortImports(r_newline.name)
+        with io.open(r_newline.name, newline='') as r_newline_file:
+            r_newline_contents = r_newline_file.read()
+        assert r_newline_contents == 'import os\rimport sys\r'
+    finally:
+        os.remove(r_newline.name)
+
+    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as n_newline:
+        n_newline.write('import sys\nimport os\n')
+
+    try:
+        SortImports(n_newline.name)
+        with io.open(n_newline.name, newline='') as n_newline_file:
+            n_newline_contents = n_newline_file.read()
+        assert n_newline_contents == 'import os\nimport sys\n'
+    finally:
+        os.remove(n_newline.name)
 
 
 @pytest.mark.skipif(not finders.RequirementsFinder.enabled, reason='RequirementsFinder not enabled (too old version of pip?)')
