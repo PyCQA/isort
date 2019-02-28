@@ -39,12 +39,6 @@ from isort.main import is_python_file
 from isort.settings import WrapModes
 
 try:
-    reload(sys)  # Reload does the trick!
-    sys.setdefaultencoding('UTF8')
-except:
-    pass
-
-try:
     import toml
 except ImportError:
     toml = None
@@ -61,12 +55,6 @@ skip = build,.tox,venv
 balanced_wrapping = true
 not_skip = __init__.py
 """
-TEST_SETTINGS_DICT = {'max_line_length': 120, 'indent_style': 'space',
-                      'indent_size': 4, 'known_first_party': ['isort'],
-                      'known_third_party': ['kate'], 'ignore_frosted_errors': ['E103'],
-                      'skip': ['build', '.tox', 'venv'], 'balanced_wrapping': True,
-                      'not_skip': ['__init__.py']}
-
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 SINGLE_FROM_IMPORT = "from third_party import lib1"
 SINGLE_LINE_LONG_IMPORT = "from third_party import lib1, lib2, lib3, lib4, lib5, lib5ab"
@@ -580,9 +568,8 @@ def test_skip_with_file_name():
     test_input = ("import django\n"
                   "import myproject\n")
 
-    my_sort_settings = TEST_SETTINGS_DICT.copy()
-    my_sort_settings['skip'] = ['baz.py']
-    sort_imports = SortImports(file_path='/baz.py', file_contents=test_input, **my_sort_settings)
+    sort_imports = SortImports(file_path='/baz.py', file_contents=test_input, settings_path=os.getcwd(),
+                               skip=['baz.py'])
     assert sort_imports.skipped
     assert sort_imports.output is None
 
@@ -1737,7 +1724,7 @@ def test_other_file_encodings(tmpdir):
         tmp_fname = tmpdir.join('test_{0}.py'.format(encoding))
         file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
         tmp_fname.write_binary(file_contents.encode(encoding))
-        assert SortImports(file_path=str(tmp_fname), **TEST_SETTINGS_DICT).output == file_contents
+        assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
 def test_comment_at_top_of_file():
@@ -2532,7 +2519,7 @@ def test_new_lines_are_preserved():
         with io.open(rn_newline.name, mode='w', newline='') as rn_newline_input:
             rn_newline_input.write('import sys\r\nimport os\r\n')
 
-        SortImports(rn_newline.name, **TEST_SETTINGS_DICT)
+        SortImports(rn_newline.name, settings_path=os.getcwd())
         with io.open(rn_newline.name, newline='') as rn_newline_file:
             rn_newline_contents = rn_newline_file.read()
         assert rn_newline_contents == 'import os\r\nimport sys\r\n'
@@ -2546,7 +2533,7 @@ def test_new_lines_are_preserved():
         with io.open(r_newline.name, mode='w', newline='') as r_newline_input:
             r_newline_input.write('import sys\rimport os\r')
 
-        SortImports(r_newline.name, **TEST_SETTINGS_DICT)
+        SortImports(r_newline.name, settings_path=os.getcwd())
         with io.open(r_newline.name, newline='') as r_newline_file:
             r_newline_contents = r_newline_file.read()
         assert r_newline_contents == 'import os\rimport sys\r'
@@ -2560,7 +2547,7 @@ def test_new_lines_are_preserved():
         with io.open(n_newline.name, mode='w', newline='') as n_newline_input:
             n_newline_input.write('import sys\nimport os\n')
 
-        SortImports(n_newline.name, **TEST_SETTINGS_DICT)
+        SortImports(n_newline.name, settings_path=os.getcwd())
         with io.open(n_newline.name, newline='') as n_newline_file:
             n_newline_contents = n_newline_file.read()
         assert n_newline_contents == 'import os\nimport sys\n'
