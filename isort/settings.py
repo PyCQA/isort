@@ -68,7 +68,7 @@ class WrapModes(enum.Enum):
 
     @staticmethod
     def from_string(value: str) -> 'WrapModes':
-        return WrapModes(int(value))
+        return getattr(WrapModes, value, None) or WrapModes(int(value))
 
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
