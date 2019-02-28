@@ -29,7 +29,6 @@ import io
 import os
 import posixpath
 import re
-import stat
 import sys
 import warnings
 from collections import namedtuple
@@ -337,7 +336,7 @@ def should_skip(filename, config, path='/'):
         if fnmatch.fnmatch(filename, glob):
             return True
 
-    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+    if not (os.path.isfile(normalized_path) or os.path.isdir(normalized_path) or os.path.islink(normalized_path)):
         return True
 
     return False
