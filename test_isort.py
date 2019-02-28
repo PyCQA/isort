@@ -2520,9 +2520,13 @@ def test_new_lines_are_preserved():
             rn_newline_input.write('import sys\r\nimport os\r\n')
 
         SortImports(rn_newline.name, settings_path=os.getcwd())
+        with io.open(rn_newline.name) as new_line_file:
+            print(new_line_file.read()
         with io.open(rn_newline.name, newline='') as rn_newline_file:
             rn_newline_contents = rn_newline_file.read()
         assert rn_newline_contents == 'import os\r\nimport sys\r\n'
+    except:
+        pass
     finally:
         os.remove(rn_newline.name)
 
