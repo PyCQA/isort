@@ -336,8 +336,7 @@ def should_skip(filename, config, path='/'):
         if fnmatch.fnmatch(filename, glob):
             return True
 
-    os_specific_path = os.path.join(posixpath.split(normalized_path))
-    if not (os.path.isfile(os_specific_path) or os.path.isdir(os_specific_path) or os.path.islink(os_specific_path)):
+    if not (os.path.isfile(filename) or os.path.isdir(filename) or os.path.islink(filename)):
         return True
 
     return False
