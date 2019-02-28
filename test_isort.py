@@ -39,6 +39,12 @@ from isort.main import is_python_file
 from isort.settings import WrapModes
 
 try:
+    reload(sys)  # Reload does the trick!
+    sys.setdefaultencoding('UTF8')
+except:
+    pass
+
+try:
     import toml
 except ImportError:
     toml = None
