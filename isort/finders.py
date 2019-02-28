@@ -289,10 +289,11 @@ class RequirementsFinder(ReqsBaseFinder):
                         yield full_path
                         break
 
-    def _get_names(self, path: str) -> List[str]:
+    def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
-        return RequirementsFinder._get_names_cached(path)
+        for i in RequirementsFinder._get_names_cached(path):
+            yield i
 
     @classmethod
     @lru_cache(maxsize=16)
