@@ -2513,10 +2513,11 @@ def test_to_ensure_tabs_dont_become_space_issue_665():
 
 
 def test_new_lines_are_preserved():
-    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as rn_newline:
-        rn_newline.write('import sys\r\nimport os\r\n')
-
+    rn_newline = NamedTemporaryFile('w', suffix='py', delete=False)
     try:
+        with io.open(rn_newline.name, mode='w', newline='') as rn_newline_input:
+            rn_newline_input.write('import sys\r\nimport os\r\n')
+
         SortImports(rn_newline.name)
         with io.open(rn_newline.name, newline='') as rn_newline_file:
             rn_newline_contents = rn_newline_file.read()
@@ -2524,10 +2525,11 @@ def test_new_lines_are_preserved():
     finally:
         os.remove(rn_newline.name)
 
-    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as r_newline:
-        r_newline.write('import sys\rimport os\r')
-
+    r_newline = NamedTemporaryFile('w', suffix='py', delete=False)
     try:
+        with io.open(r_newline.name, mode='w', newline='') as r_newline_input:
+            r_newline_input.write('import sys\rimport os\r')
+
         SortImports(r_newline.name)
         with io.open(r_newline.name, newline='') as r_newline_file:
             r_newline_contents = r_newline_file.read()
@@ -2535,10 +2537,11 @@ def test_new_lines_are_preserved():
     finally:
         os.remove(r_newline.name)
 
-    with NamedTemporaryFile('w', suffix='py', newline='', delete=False) as n_newline:
-        n_newline.write('import sys\nimport os\n')
-
+    n_newline = NamedTemporaryFile('w', suffix='py', delete=False)
     try:
+        with io.open(n_newline.name, mode='w', newline='') as n_newline_input:
+            n_newline_input.write('import sys\nimport os\n')
+
         SortImports(n_newline.name)
         with io.open(n_newline.name, newline='') as n_newline_file:
             n_newline_contents = n_newline_file.read()
