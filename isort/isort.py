@@ -255,13 +255,10 @@ class SortImports(object):
 
     @staticmethod
     def _module_key(module_name, config, sub_imports=False, ignore_case=False, section_name=None):
-        dots = 0
-        while module_name.startswith('.'):
-            dots += 1
-            module_name = module_name[1:]
-
-        if dots:
-            module_name = '{} {}'.format(('.' * dots), module_name)
+        match = re.match(r'^(\.+)\s*(.*)', module_name)
+        if match:
+            sep = ' ' if config['reverse_relative'] else '_'
+            module_name = sep.join(match.groups())
 
         prefix = ""
         if ignore_case:
