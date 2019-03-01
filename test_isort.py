@@ -2729,7 +2729,7 @@ def test_comments_not_removed_issue_576():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_inconsistent_relative_imports_issue_577():
+def test_reverse_relative_imports_issue_417():
     test_input = ('from . import ipsum\n'
                   'from . import lorem\n'
                   'from .dolor import consecteur\n'
@@ -2742,6 +2742,24 @@ def test_inconsistent_relative_imports_issue_577():
                   'from ... import dui\n'
                   'from ...eu import dignissim\n'
                   'from ...ex import metus\n')
+    assert SortImports(file_contents=test_input,
+                       force_single_line=True,
+                       reverse_relative=True).output == test_input
+
+
+def test_inconsistent_relative_imports_issue_577():
+    test_input = ('from ... import diam\n'
+                  'from ... import dui\n'
+                  'from ...eu import dignissim\n'
+                  'from ...ex import metus\n'
+                  'from .. import donec\n'
+                  'from .. import euismod\n'
+                  'from ..mi import iaculis\n'
+                  'from ..nec import tempor\n'
+                  'from . import ipsum\n'
+                  'from . import lorem\n'
+                  'from .dolor import consecteur\n'
+                  'from .sit import apidiscing\n')
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
 

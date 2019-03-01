@@ -253,6 +253,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument('-r', dest='ambiguous_r_flag', action='store_true')
     parser.add_argument('-rm', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
+    parser.add_argument('-rr', '--reverse-relative', dest='reverse_relative', action='store_true',
+                        help='Reverse order of relative imports.')
     parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
                         help='Recursively look for Python files of which to sort imports')
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
