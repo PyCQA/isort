@@ -130,14 +130,19 @@ class PathFinder(BaseFinder):
         self.virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
         self.virtual_env_src = ''
         if self.virtual_env:
-            self.virtual_env_src = '{0}/src/'.format(self.virtual_env)
-            for path in glob('{0}/lib/python*/site-packages'.format(self.virtual_env)):
+            self.virtual_env_src = os.path.join(os.path.join(self.virtual_env, 'src'), '')
+            for path in glob('{}{}'.format(
+                    self.virtual_env_src,  # contains trailing separator.
+                    os.path.join(os.path.join(
+                        'lib', 'python*'), 'site-packages'))):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob('{0}/lib/python*/*/site-packages'.format(self.virtual_env)):
+
+            for path in glob(os.path.join(os.path.join(os.path.join(os.path.join(
+                    self.virtual_env, 'lib'), 'python*'), '*'), 'site-packages')):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob('{0}/src/*'.format(self.virtual_env)):
+            for path in glob(self.virtual_env_src + '*'):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
@@ -151,7 +156,7 @@ class PathFinder(BaseFinder):
 
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
-            package_path = "/".join((prefix, module_name.split(".")[0]))
+            package_path = os.path.sep.join((prefix, module_name.split(".")[0]))
             is_module = (exists_case_sensitive(package_path + ".py") or
                          exists_case_sensitive(package_path + ".so") or
                          exists_case_sensitive(package_path + self.ext_suffix))
