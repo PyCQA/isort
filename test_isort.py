@@ -2718,7 +2718,11 @@ def test_safety_excludes(tmpdir, enabled):
         assert file_names == {'victim.py'}
         assert len(skipped) == 2
     else:
-        assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
+        assert file_names == {
+            os.path.join('.tox', 'verysafe.py'),
+            os.path.join(os.path.join('lib', 'python3.7'), 'importantsystemlibrary.py'),
+            'victim.py',
+        }
         assert not skipped
 
 
