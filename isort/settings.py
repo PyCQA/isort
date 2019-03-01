@@ -356,7 +356,7 @@ def should_skip(
         if fnmatch.fnmatch(filename, glob):
             return True
 
-    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+    if stat.S_ISFIFO(os.stat(os.path.join(path, filename)).st_mode):
         return True
 
     return False
