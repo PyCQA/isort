@@ -11,16 +11,28 @@ matrix:
     - python: 3.7
       env: TOXENV=mypy
     - python: 3.4
-      env: TOXENV=py34
+      env: TOXENV=py34-coverage
     - python: 3.5
-      env: TOXENV=py35
+      env: TOXENV=py35-coverage
     - python: 3.6
-      env: TOXENV=py36
+      env: TOXENV=py36-coverage
     - python: 3.7
-      env: TOXENV=py37
+      env: TOXENV=py37-coverage
     - python: pypy3.5-6.0
       env: TOXENV=pypy3
 install:
   - pip install tox
 script:
   - tox
+after_success:
+  - |
+    # Report coverage for TOXENV=*-coverage.
+    if [[ "${TOXENV%-coverage}" != "$TOXENV" ]]; then
+      set -e
+      # Add last TOXENV to $PATH.
+      PATH="$PWD/.tox/${TOXENV##*,}/bin:$PATH"
+      coverage xml
+      coverage report -m
+      bash <(curl -s https://codecov.io/bash) -Z -X gcov -X coveragepy -X search -X xcode -X gcovout -X fix -f coverage.xml -n $TOXENV
+      set +e
+    fi
