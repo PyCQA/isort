@@ -72,8 +72,9 @@ def default_settings_path(tmpdir_factory):
     config_file = config_dir.join('.editorconfig').strpath
     with open(config_file, 'w') as editorconfig:
         editorconfig.write(TEST_DEFAULT_CONFIG)
-        os.chdir(config_dir.strpath)
-    return config_dir.strpath
+
+    with config_dir.as_cwd():
+        yield config_dir.strpath
 
 
 def test_happy_path():
