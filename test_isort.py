@@ -2397,6 +2397,18 @@ def test_not_splitted_sections():
     assert SortImports(file_contents=test_input, no_lines_before=['STDLIB']).output == test_input
 
 
+def test_no_lines_before_empty_section():
+    test_input = ('import first\n'
+                  'import custom\n')
+    assert SortImports(
+        file_contents=test_input,
+        known_third_party=["first"],
+        known_custom=["custom"],
+        sections=['THIRDPARTY', 'LOCALFOLDER', 'CUSTOM'],
+        no_lines_before=['THIRDPARTY', 'LOCALFOLDER', 'CUSTOM'],
+    ).output == test_input
+
+
 def test_no_inline_sort():
     """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
     is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored."""
