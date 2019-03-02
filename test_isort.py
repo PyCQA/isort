@@ -2526,8 +2526,6 @@ def test_new_lines_are_preserved():
         with io.open(rn_newline.name, newline='') as rn_newline_file:
             rn_newline_contents = rn_newline_file.read()
         assert rn_newline_contents == 'import os\r\nimport sys\r\n'
-    except:
-        pass
     finally:
         os.remove(rn_newline.name)
 
