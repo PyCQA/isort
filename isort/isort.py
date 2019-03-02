@@ -283,13 +283,10 @@ class SortImports(object):
         ignore_case: bool = False,
         section_name: Optional[Any] = None
     ) -> str:
-        dots = 0
-        while module_name.startswith('.'):
-            dots += 1
-            module_name = module_name[1:]
-
-        if dots:
-            module_name = '{} {}'.format(('.' * dots), module_name)
+        match = re.match(r'^(\.+)\s*(.*)', module_name)
+        if match:
+            sep = ' ' if config['reverse_relative'] else '_'
+            module_name = sep.join(match.groups())
 
         prefix = ""
         if ignore_case:
