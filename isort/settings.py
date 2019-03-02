@@ -28,7 +28,6 @@ import fnmatch
 import os
 import posixpath
 import re
-import stat
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
@@ -337,7 +336,10 @@ def should_skip(
     path: str = '/'
 ) -> bool:
     """Returns True if the file should be skipped based on the passed in settings."""
-    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
+    os_path = os.path.join(path, filename)
+    normalized_path = os_path.replace('\\', '/')
+    if normalized_path[1:2] == ':':
+        normalized_path = normalized_path[2:]
 
     if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
         return True
@@ -356,7 +358,7 @@ def should_skip(
         if fnmatch.fnmatch(filename, glob):
             return True
 
-    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+    if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
         return True
 
     return False

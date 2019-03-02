@@ -34,6 +34,11 @@ try:
 except ImportError:
     Pipfile = None
 
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
+
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -268,6 +273,13 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
         """Return paths to requirements files from passed dir.
         """
+        return RequirementsFinder._get_files_from_dir_cached(path)
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_files_from_dir_cached(cls, path):
+        result = []
+
         for fname in os.listdir(path):
             if 'requirements' not in fname:
                 continue
@@ -276,16 +288,16 @@ class RequirementsFinder(ReqsBaseFinder):
             # *requirements*/*.{txt,in}
             if os.path.isdir(full_path):
                 for subfile_name in os.listdir(path):
-                    for ext in self.exts:
+                    for ext in cls.exts:
                         if subfile_name.endswith(ext):
-                            yield os.path.join(path, subfile_name)
+                            result.append(os.path.join(path, subfile_name))
                 continue
 
             # *requirements*.{txt,in}
             if os.path.isfile(full_path):
-                for ext in self.exts:
+                for ext in cls.exts:
                     if fname.endswith(ext):
-                        yield full_path
+                        result.append(full_path)
                         break
 
     def _get_names(self, path: str) -> Iterator[str]:

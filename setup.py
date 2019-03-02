@@ -6,7 +6,7 @@ with open('README.rst') as f:
     readme = f.read()
 
 setup(name='isort',
-      version='4.3.8',
+      version='4.3.9',
       description='A Python utility / library to sort Python imports.',
       long_description=readme,
       author='Timothy Crosley',

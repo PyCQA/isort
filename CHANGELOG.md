@@ -12,6 +12,9 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
+### 4.3.9 - Feburary 25, 2019 - hot fix release
+- Fixed a bug that led to an incompatibility with black: #831
+
 ### 4.3.8 - Feburary 25, 2019 - hot fix release
 - Fixed a bug that led to the recursive option not always been available from the command line.
 
