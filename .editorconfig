@@ -1,0 +1,20 @@
+root = true
+
+[*.py]
+max_line_length = 120
+indent_style = space
+indent_size = 4
+known_first_party = isort
+known_third_party = kate
+ignore_frosted_errors = E103
+skip = build,.tox,venv
+balanced_wrapping = true
+not_skip = __init__.py
+
+[*.{rst,ini}]
+indent_style = space
+indent_size = 4
+
+[*.yml]
+indent_style = space
+indent_size = 2
