@@ -21,6 +21,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 from tempfile import NamedTemporaryFile
+import io
 import os
 import os.path
 import posixpath
