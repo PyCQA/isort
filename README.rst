@@ -329,7 +329,7 @@ past the line_length limit and has 6 possible settings:
 
 In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
 Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
-You can enforce a trailing comma by using this in conjunction with `-tc` or `trailing_comma: True`.
+You can enforce a trailing comma by using this in conjunction with ``-tc`` or ``include_trailing_comma: True``.
 
 .. code-block:: python
 
