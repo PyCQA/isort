@@ -315,10 +315,12 @@ def _get_config_data(file_path, sections):
     return settings
 
 
-def should_skip(filename, config, path='/'):
+def should_skip(filename, config, path=''):
     """Returns True if the file should be skipped based on the passed in settings."""
-    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
-    os_path = os.path.normpath(normalized_path)
+    os_path = os.path.join(path, filename)
+    normalized_path = os_path.replace('\\', '/')
+    if normalized_path[1:2] == ':':
+        normalized_path = normalized_path[2:]
 
     if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
         return True

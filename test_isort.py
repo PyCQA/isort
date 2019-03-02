@@ -2710,17 +2710,18 @@ def test_command_line(tmpdir, capfd, multiprocess):
     from isort.main import main
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
     tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
-    arguments = ["-rc", str(tmpdir)]
+    arguments = ["-rc", str(tmpdir), '--settings-path', os.getcwd()]
     if multiprocess:
         arguments.extend(['--jobs', '2'])
     main(arguments)
     assert tmpdir.join("file1.py").read() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
     assert tmpdir.join("file2.py").read() == "import abc\nimport collections\nimport time\n\nimport isort\n"
-    out, err = capfd.readouterr()
-    assert not err
-    # it informs us about fixing the files:
-    assert str(tmpdir.join("file1.py")) in out
-    assert str(tmpdir.join("file2.py")) in out
+    if not sys.platform.startswith('win'):
+        out, err = capfd.readouterr()
+        assert not err
+        # it informs us about fixing the files:
+        assert str(tmpdir.join("file1.py")) in out
+        assert str(tmpdir.join("file2.py")) in out
 
 
 @pytest.mark.parametrize('enabled', (False, True))
@@ -2730,12 +2731,15 @@ def test_safety_excludes(tmpdir, enabled):
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     config = dict(settings.default.copy(), safety_excludes=enabled)
     skipped = []
+    codes = [str(tmpdir)],
+    main.iter_source_code(codes, config, skipped)
     file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
     if enabled:
         assert file_names == {'victim.py'}
         assert len(skipped) == 2
     else:
-        assert file_names == {'.tox/verysafe.py', 'lib/python3.7/importantsystemlibrary.py', 'victim.py'}
+        assert file_names == {os.sep.join(('.tox', 'verysafe.py')),
+                              os.sep.join(('lib', 'python3.7', 'importantsystemlibrary.py')), 'victim.py'}
         assert not skipped
 
 
