@@ -67,7 +67,7 @@ class WrapModes(enum.Enum):
 
     @staticmethod
     def from_string(value: str) -> 'WrapModes':
-        return WrapModes(int(value))
+        return getattr(WrapModes, value, None) or WrapModes(int(value))
 
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
@@ -270,7 +270,7 @@ def _update_with_config_file(
                 result = default.get(access_key) if value.lower().strip() == 'false' else 2
             computed_settings[access_key] = result
         else:
-            computed_settings[access_key] = existing_value_type(value)
+            computed_settings[access_key] = getattr(existing_value_type, str(value), None) or existing_value_type(value)
 
 
 def _as_list(value: str) -> List[str]:
