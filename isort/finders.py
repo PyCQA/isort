@@ -8,6 +8,7 @@ import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
+from functools import lru_cache
 from glob import glob
 from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Pattern, Sequence, Tuple, Type
 
@@ -33,12 +34,6 @@ try:
     from requirementslib import Pipfile
 except ImportError:
     Pipfile = None
-
-try:
-    from functools import lru_cache
-except ImportError:
-    from backports.functools_lru_cache import lru_cache
-
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -278,7 +273,7 @@ class RequirementsFinder(ReqsBaseFinder):
     @classmethod
     @lru_cache(maxsize=16)
     def _get_files_from_dir_cached(cls, path):
-        result = []
+        results = []
 
         for fname in os.listdir(path):
             if 'requirements' not in fname:
@@ -290,15 +285,17 @@ class RequirementsFinder(ReqsBaseFinder):
                 for subfile_name in os.listdir(path):
                     for ext in cls.exts:
                         if subfile_name.endswith(ext):
-                            result.append(os.path.join(path, subfile_name))
+                            results.append(os.path.join(path, subfile_name))
                 continue
 
             # *requirements*.{txt,in}
             if os.path.isfile(full_path):
                 for ext in cls.exts:
                     if fname.endswith(ext):
-                        result.append(full_path)
+                        results.append(full_path)
                         break
+
+        return results
 
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
