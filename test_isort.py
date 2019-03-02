@@ -27,6 +27,7 @@ from tempfile import NamedTemporaryFile
 import io
 import os
 import os.path
+import posixpath
 import sys
 import sysconfig
 
@@ -2682,11 +2683,11 @@ def test_path_finder(monkeypatch):
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
     imaginary_paths = set([
-        os.path.join(finder.stdlib_lib_prefix, "example_1.py"),
-        os.path.join(third_party_prefix, "example_2.py"),
-        os.path.join(third_party_prefix, "example_3.so"),
-        os.path.join(third_party_prefix, "example_4" + ext_suffix),
-        os.path.join(os.getcwd(), "example_5.py"),
+        posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
+        posixpath.join(third_party_prefix, "example_2.py"),
+        posixpath.join(third_party_prefix, "example_3.so"),
+        posixpath.join(third_party_prefix, "example_4" + ext_suffix),
+        posixpath.join(os.getcwd(), "example_5.py"),
     ])
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
     assert finder.find("example_1") == finder.sections.STDLIB
