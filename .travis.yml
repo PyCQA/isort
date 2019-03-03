@@ -5,14 +5,12 @@ cache: pip
 env:
   - global:
     - PYTEST_ADDOPTS=-vv
+python: 3.7
 matrix:
   include:
-    - python: 3.7
-      env: TOXENV=isort-check
-    - python: 3.7
-      env: TOXENV=lint
-    - python: 3.7
-      env: TOXENV=mypy
+    - env: TOXENV=isort-check
+    - env: TOXENV=lint
+    - env: TOXENV=mypy
     - python: 3.4
       env: TOXENV=py34-coverage
     - python: 3.5
