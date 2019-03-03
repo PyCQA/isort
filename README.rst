@@ -11,10 +11,9 @@
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
-
-.. image:: https://coveralls.io/repos/timothycrosley/isort/badge.svg?branch=release%2F2.6.0&service=github
-  :target: https://coveralls.io/github/timothycrosley/isort?branch=release%2F2.6.0
-  :alt: Coverage
+.. image:: https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/timothycrosley/isort
+    :alt: Code coverage Status
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://pypi.org/project/hug/
