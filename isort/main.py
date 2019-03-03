@@ -28,7 +28,7 @@ from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional
 import setuptools
 
 from isort import SortImports, __version__
-from isort.settings import DEFAULT_SECTIONS, WrapModes, default, from_path, should_skip
+from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
 
 INTRO = r"""
 /#######################################################################\
@@ -96,7 +96,7 @@ def iter_source_code(paths: Iterable[str], config: MutableMapping[str, Any], ski
 
     for path in paths:
         if os.path.isdir(path):
-            if should_skip(path, config, os.getcwd()):
+            if file_should_be_skipped(path, config, os.getcwd()):
                 skipped.append(path)
                 continue
 
@@ -104,13 +104,13 @@ def iter_source_code(paths: Iterable[str], config: MutableMapping[str, Any], ski
                     path, topdown=True, followlinks=True
             ):
                 for dirname in list(dirnames):
-                    if should_skip(dirname, config, dirpath):
+                    if file_should_be_skipped(dirname, config, dirpath):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        if should_skip(filename, config, dirpath):
+                        if file_should_be_skipped(filename, config, dirpath):
                             skipped.append(filename)
                         else:
                             yield filepath
