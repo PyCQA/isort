@@ -12,10 +12,19 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
-### 4.3.9 - Feburary 25, 2019 - hot fix release
+### 4.3.10 - March 2, 2019 - hot fix release
+- Fixed Windows incompatibilities (Issue #835)
+- Fixed relative import sorting bug (Issue #417)
+- Fixed "no_lines_before" to also be respected from previous empty sections.
+- Fixed slow-down introduced by finders mechanism by adding a LRU cache (issue #848)
+- Fixed issue #842 default encoding not-set in Python2
+- Restored Windows automated testing
+- Added Mac automated testing
+
+### 4.3.9 - February 25, 2019 - hot fix release
 - Fixed a bug that led to an incompatibility with black: #831
 
-### 4.3.8 - Feburary 25, 2019 - hot fix release
+### 4.3.8 - February 25, 2019 - hot fix release
 - Fixed a bug that led to the recursive option not always been available from the command line.
 
 ### 4.3.7 - February 25, 2019 - hot fix release

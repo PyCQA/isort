@@ -315,7 +315,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                     settings.update(config_section)
             else:
                 warnings.warn(
-                    "Found %s but toml package is not installed. To configure"
+                    "Found %s but toml package is not installed. To configure "
                     "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
                 )
         else:
