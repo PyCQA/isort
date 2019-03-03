@@ -28,11 +28,10 @@ import fnmatch
 import os
 import posixpath
 import re
-import stat
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Type
+from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Callable
 
 from .utils import difference, union
 
@@ -68,7 +67,7 @@ class WrapModes(enum.Enum):
 
     @staticmethod
     def from_string(value: str) -> 'WrapModes':
-        return WrapModes(int(value))
+        return getattr(WrapModes, value, None) or WrapModes(int(value))
 
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
@@ -135,6 +134,7 @@ default = {'force_to_top': [],
            'length_sort': False,
            'add_imports': [],
            'remove_imports': [],
+           'reverse_relative': False,
            'force_single_line': False,
            'default_section': 'FIRSTPARTY',
            'import_heading_future': '',
@@ -216,6 +216,13 @@ def _update_settings_with_config(
         _update_with_config_file(editor_config_file, sections, computed_settings)
 
 
+def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
+    type_converter = type(default.get(setting_name, ''))  # type: Callable[[str], Any]
+    if type_converter == WrapModes:
+        type_converter = WrapModes.from_string
+    return type_converter
+
+
 def _update_with_config_file(
     file_path: str,
     sections: Iterable[str],
@@ -243,7 +250,7 @@ def _update_with_config_file(
 
     for key, value in settings.items():
         access_key = key.replace('not_', '').lower()
-        existing_value_type = type(default.get(access_key, ''))  # type: Type[Any]
+        existing_value_type = _get_str_to_type_converter(access_key)
         if existing_value_type in (list, tuple):
             # sections has fixed order values; no adding or substraction from any set
             if access_key == 'sections':
@@ -271,7 +278,7 @@ def _update_with_config_file(
                 result = default.get(access_key) if value.lower().strip() == 'false' else 2
             computed_settings[access_key] = result
         else:
-            computed_settings[access_key] = existing_value_type(value)
+            computed_settings[access_key] = getattr(existing_value_type, str(value), None) or existing_value_type(value)
 
 
 def _as_list(value: str) -> List[str]:
@@ -337,7 +344,10 @@ def should_skip(
     path: str = '/'
 ) -> bool:
     """Returns True if the file should be skipped based on the passed in settings."""
-    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
+    os_path = os.path.join(path, filename)
+    normalized_path = os_path.replace('\\', '/')
+    if normalized_path[1:2] == ':':
+        normalized_path = normalized_path[2:]
 
     if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
         return True
@@ -356,7 +366,7 @@ def should_skip(
         if fnmatch.fnmatch(filename, glob):
             return True
 
-    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+    if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
         return True
 
     return False

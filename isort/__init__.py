@@ -22,4 +22,4 @@ OTHER DEALINGS IN THE SOFTWARE.
 from . import settings  # noqa: F401
 from .isort import SortImports  # noqa: F401
 
-__version__ = "4.3.8"
+__version__ = "4.3.9"

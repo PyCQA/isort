@@ -8,6 +8,7 @@ import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
+from functools import lru_cache
 from glob import glob
 from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Pattern, Sequence, Tuple, Type
 
@@ -33,7 +34,6 @@ try:
     from requirementslib import Pipfile
 except ImportError:
     Pipfile = None
-
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -268,6 +268,13 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
         """Return paths to requirements files from passed dir.
         """
+        return RequirementsFinder._get_files_from_dir_cached(path)
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_files_from_dir_cached(cls, path):
+        results = []
+
         for fname in os.listdir(path):
             if 'requirements' not in fname:
                 continue
@@ -276,26 +283,38 @@ class RequirementsFinder(ReqsBaseFinder):
             # *requirements*/*.{txt,in}
             if os.path.isdir(full_path):
                 for subfile_name in os.listdir(path):
-                    for ext in self.exts:
+                    for ext in cls.exts:
                         if subfile_name.endswith(ext):
-                            yield os.path.join(path, subfile_name)
+                            results.append(os.path.join(path, subfile_name))
                 continue
 
             # *requirements*.{txt,in}
             if os.path.isfile(full_path):
-                for ext in self.exts:
+                for ext in cls.exts:
                     if fname.endswith(ext):
-                        yield full_path
+                        results.append(full_path)
                         break
+
+        return results
 
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
+        for i in RequirementsFinder._get_names_cached(path):
+            yield i
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_names_cached(cls, path: str) -> List[str]:
+        result = []
+
         with chdir(os.path.dirname(path)):
             requirements = parse_requirements(path, session=PipSession())
             for req in requirements:
                 if req.name:
-                    yield req.name
+                    result.append(req.name)
+
+        return result
 
 
 class PipfileFinder(ReqsBaseFinder):
