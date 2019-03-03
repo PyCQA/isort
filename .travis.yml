@@ -19,6 +19,7 @@ matrix:
     - python: 3.7
       env: TOXENV=py37-coverage
     - python: pypy3.5-6.0
+      env: TOXENV=pypy3
     - os: osx
       language: generic
       env: TOXENV=py36
