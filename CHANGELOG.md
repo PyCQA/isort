@@ -6,6 +6,8 @@ Changelog
 - Fixed "no_lines_before" to also be respected from previous empty sections.
 - Fixed slow-down introduced by finders mechanism by adding a LRU cache (issue #848)
 - Fixed issue #842 default encoding not-set in Python2
+- Restored Windows automated testing
+- Added Mac automated testing
 
 ### 4.3.9 - Feburary 25, 2019 - hot fix release
 - Fixed a bug that led to an incompatibility with black: #831
