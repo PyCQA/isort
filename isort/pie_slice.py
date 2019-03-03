@@ -30,13 +30,38 @@ PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 VERSION = sys.version_info
 
-__all__ = ['PY2', 'PY3', 'lru_cache']
+__all__ = ['PY2', 'PY3', 'lru_cache', 'apply_changes_to_python_environment']
 
 
 if PY3:
     input = input
+
+    def apply_changes_to_python_environment():
+        pass
 else:
     input = raw_input  # noqa: F821
+
+    python_environment_changes_applied = False
+
+    import sys
+    stdout = sys.stdout
+    stderr = sys.stderr
+
+    def apply_changes_to_python_environment():
+        global python_environment_changes_applied
+        if python_environment_changes_applied or sys.getdefaultencoding() == 'utf-8':
+            python_environment_changes_applied = True
+            return
+
+        try:
+            reload(sys)
+            sys.stdout = stdout
+            sys.stderr = stderr
+            sys.setdefaultencoding('utf-8')
+        except NameError:  # Python 3
+            sys.exit('This should not happen!')
+
+        python_environment_changes_applied = True
 
 
 if sys.version_info < (3, 2):
