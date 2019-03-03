@@ -1,5 +1,6 @@
 init:
   - "SET PATH=C:\\Python27\\Scripts;%PATH%"
+  - "SET PYTEST_ADDOPTS=-vv"
   - "ECHO PATH=%PATH%"
   - python --version
 
