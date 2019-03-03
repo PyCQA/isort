@@ -31,7 +31,7 @@ import re
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Callable
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping
 
 from .utils import difference, union
 
