@@ -9,10 +9,10 @@ Changelog
 - Restored Windows automated testing
 - Added Mac automated testing
 
-### 4.3.9 - Feburary 25, 2019 - hot fix release
+### 4.3.9 - February 25, 2019 - hot fix release
 - Fixed a bug that led to an incompatibility with black: #831
 
-### 4.3.8 - Feburary 25, 2019 - hot fix release
+### 4.3.8 - February 25, 2019 - hot fix release
 - Fixed a bug that led to the recursive option not always been available from the command line.
 
 ### 4.3.7 - February 25, 2019 - hot fix release
