@@ -24,6 +24,9 @@
    :alt: Join the chat at https://gitter.im/timothycrosley/isort
    :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+.. image:: https://pepy.tech/badge/isort
+    :alt: Downloads
+    :target: https://pepy.tech/project/isort
 
 isort your python imports for you so you don't have to.
 
