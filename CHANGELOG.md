@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.11 - March 3, 2019 - hot fix release
+- Fixed issue #876: confused by symlinks pointing to virtualenv gives FIRSTPARTY not THIRDPARTY
+
 ### 4.3.10 - March 2, 2019 - hot fix release
 - Fixed Windows incompatibilities (Issue #835)
 - Fixed relative import sorting bug (Issue #417)
