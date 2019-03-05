@@ -298,11 +298,20 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_names(self, path):
         """Load required packages from path to requirements file
         """
+        return RequirementsFinder._get_names_cached(path)
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_names_cached(cls, path):
+        results = []
+
         with chdir(os.path.dirname(path)):
             requirements = parse_requirements(path, session=PipSession())
             for req in requirements:
                 if req.name:
-                    yield req.name
+                    results.append(req.name)
+
+        return results
 
 
 class PipfileFinder(ReqsBaseFinder):
