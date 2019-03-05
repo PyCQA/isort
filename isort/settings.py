@@ -317,16 +317,22 @@ def _get_config_data(file_path, sections):
 
 
 def should_skip(filename, config, path=''):
-    """Returns True if the file should be skipped based on the passed in settings."""
+    """Returns True if the file and/or folder should be skipped based on the passed in settings."""
     os_path = os.path.join(path, filename)
+
     normalized_path = os_path.replace('\\', '/')
     if normalized_path[1:2] == ':':
         normalized_path = normalized_path[2:]
 
-    if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
+    if config['safety_excludes'] and safety_exclude_re.search('/' + filename('\\', '/') + '/'):
         return True
 
     for skip_path in config['skip']:
+        for specified_path in specified_paths:
+            normalized_specified_path = specified_path.replace('\\', '/')
+            if normalized_path.startswith(normalized_specified_path):
+                normalized_path_skip = normalized_specified_path
+
         if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 

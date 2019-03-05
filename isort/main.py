@@ -83,7 +83,7 @@ class SortAttempt(object):
 
 def sort_imports(file_name, **arguments):
     try:
-        result = SortImports(file_name, **arguments)
+        result = SortImports(file_name, check_skip=False, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
     except IOError as e:
         print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
@@ -97,21 +97,17 @@ def iter_source_code(paths, config, skipped):
 
     for path in paths:
         if os.path.isdir(path):
-            if should_skip(path, config, os.getcwd()):
-                skipped.append(path)
-                continue
-
             for dirpath, dirnames, filenames in os.walk(
                     path, topdown=True, followlinks=True
             ):
                 for dirname in list(dirnames):
-                    if should_skip(dirname, config, dirpath):
+                    if should_skip(dirname, config, dirpath, paths):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        if should_skip(filename, config, dirpath):
+                        if should_skip(filename, config, dirpath, paths):
                             skipped.append(filename)
                         else:
                             yield filepath
