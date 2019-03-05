@@ -34,6 +34,8 @@ from datetime import datetime
 from difflib import unified_diff
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
+from isort import utils
+
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
@@ -46,7 +48,6 @@ if TYPE_CHECKING:
         'straight': Dict[str, Any],
         'from': Dict[str, Any]
     })
-
     CommentsDict = TypedDict('CommentsDict', {
         'from': Dict[str, Any],
         'straight': Dict[str, Any],
@@ -74,48 +75,21 @@ class SortImports(object):
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
 
-        self.config = settings.from_path(settings_path).copy()
-        for key, value in setting_overrides.items():
-            access_key = key.replace('not_', '').lower()
-            # The sections config needs to retain order and can't be converted to a set.
-            if access_key != 'sections' and type(self.config.get(access_key)) in (list, tuple):
-                if key.startswith('not_'):
-                    self.config[access_key] = list(set(self.config[access_key]).difference(value))
-                else:
-                    self.config[access_key] = list(set(self.config[access_key]).union(value))
-            else:
-                self.config[key] = value
-
-        if self.config['force_alphabetical_sort']:
-            self.config.update({'force_alphabetical_sort_within_sections': True,
-                                'no_sections': True,
-                                'lines_between_types': 1,
-                                'from_first': True})
-
-        indent = str(self.config['indent'])
-        if indent.isdigit():
-            indent = " " * int(indent)
-        else:
-            indent = indent.strip("'").strip('"')
-            if indent.lower() == "tab":
-                indent = "\t"
-        self.config['indent'] = indent
-
-        self.config['comment_prefix'] = self.config['comment_prefix'].strip("'").strip('"')
+        self.config = settings.prepare_config(settings_path, **setting_overrides)
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
         self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
         self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
-        self._section_comments = ["# " + value for key, value in self.config.items() if
-                                  key.startswith('import_heading') and value]
+        self._section_comments = ["# " + value for key, value in self.config.items()
+                                  if key.startswith('import_heading') and value]
 
         self.file_encoding = 'utf-8'
         file_name = file_path
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if settings.should_skip(file_path, self.config):
+            if settings.file_should_be_skipped(file_path, self.config):
                 self.skipped = True
                 if self.config['verbose']:
                     print("WARNING: {0} was skipped as it's listed in 'skip' setting"
@@ -137,15 +111,11 @@ class SortImports(object):
         if self.config['line_ending']:
             self.line_separator = self.config['line_ending']
         else:
-            if '\r\n' in file_contents:
-                self.line_separator = '\r\n'
-            elif '\r' in file_contents:
-                self.line_separator = '\r'
-            else:
-                self.line_separator = '\n'
+            self.line_separator = utils.infer_line_separator(file_contents)
+
         self.in_lines = file_contents.split(self.line_separator)
-        self.original_length = len(self.in_lines)
-        if (self.original_length > 1 or self.in_lines[:1] not in ([], [""])) or self.config['force_adds']:
+        self.original_num_of_lines = len(self.in_lines)
+        if (self.original_num_of_lines > 1 or self.in_lines[:1] not in ([], [""])) or self.config['force_adds']:
             for add_import in self.add_imports:
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
@@ -169,7 +139,7 @@ class SortImports(object):
         self._parse()
         if self.import_index != -1:
             self._add_formatted_imports()
-        self.length_change = len(self.out_lines) - self.original_length
+        self.length_change = len(self.out_lines) - self.original_num_of_lines
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")
@@ -532,7 +502,7 @@ class SortImports(object):
                 import_statement = new_import_statement
                 line_length -= 1
                 new_import_statement = formatter(import_start, copy.copy(from_imports),
-                                                dynamic_indent, indent, line_length, comments)
+                                                 dynamic_indent, indent, line_length, comments)
                 lines = new_import_statement.split(self.line_separator)
         if import_statement.count(self.line_separator) == 0:
             return self._wrap(import_statement)
@@ -618,7 +588,7 @@ class SortImports(object):
             output.pop(0)
 
         output_at = 0
-        if self.import_index < self.original_length:
+        if self.import_index < self.original_num_of_lines:
             output_at = self.import_index
         elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
             output_at = self._first_comment_index_end

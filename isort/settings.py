@@ -184,6 +184,38 @@ def from_path(path: str) -> Dict[str, Any]:
     return computed_settings
 
 
+def prepare_config(settings_path: str, **setting_overrides: Any) -> Dict[str, Any]:
+    config = from_path(settings_path).copy()
+    for key, value in setting_overrides.items():
+        access_key = key.replace('not_', '').lower()
+        # The sections config needs to retain order and can't be converted to a set.
+        if access_key != 'sections' and type(config.get(access_key)) in (list, tuple):
+            if key.startswith('not_'):
+                config[access_key] = list(set(config[access_key]).difference(value))
+            else:
+                config[access_key] = list(set(config[access_key]).union(value))
+        else:
+            config[key] = value
+
+    if config['force_alphabetical_sort']:
+        config.update({'force_alphabetical_sort_within_sections': True,
+                       'no_sections': True,
+                       'lines_between_types': 1,
+                       'from_first': True})
+
+    indent = str(config['indent'])
+    if indent.isdigit():
+        indent = " " * int(indent)
+    else:
+        indent = indent.strip("'").strip('"')
+        if indent.lower() == "tab":
+            indent = "\t"
+    config['indent'] = indent
+
+    config['comment_prefix'] = config['comment_prefix'].strip("'").strip('"')
+    return config
+
+
 def _update_settings_with_config(
     path: str,
     name: str,
@@ -315,7 +347,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                     settings.update(config_section)
             else:
                 warnings.warn(
-                    "Found %s but toml package is not installed. To configure"
+                    "Found %s but toml package is not installed. To configure "
                     "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
                 )
         else:
@@ -338,7 +370,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
     return settings
 
 
-def should_skip(
+def file_should_be_skipped(
     filename: str,
     config: Mapping[str, Any],
     path: str = '/'
