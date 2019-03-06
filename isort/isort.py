@@ -26,6 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import codecs
 import copy
 import io
 import itertools
@@ -46,7 +47,7 @@ class SortImports(object):
     incorrectly_sorted = False
     skipped = False
 
-    def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
+    def __init__(self, file_path=None, file_contents=None, file_=None, write_to_stdout=False, check=False,
                  show_diff=False, settings_path=None, ask_to_apply=False, check_skip=True, **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
@@ -100,7 +101,8 @@ class SortImports(object):
                           " or matches a glob in 'skip_glob' setting".format(file_path))
                 file_contents = None
             elif not file_contents:
-                file_encoding = coding_check(file_path)
+                with io.open(file_path, 'rb') as f:
+                    file_encoding = coding_check(f)
                 with io.open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
                     try:
                         file_contents = file_to_import_sort.read()
@@ -125,6 +127,24 @@ class SortImports(object):
                                       "{} encoding or {} fallback encoding".format(file_path,
                                                                                    self.file_encoding,
                                                                                    file_to_import_sort.encoding))
+        elif file_:
+            self.file_encoding = coding_check(file_)
+            file_.seek(0)
+            reader = codecs.getreader(self.file_encoding)
+            file_contents = reader(file_).read()
+
+        # try to decode file_contents
+        if file_contents:
+            try:
+                basestring
+                # python 2
+                need_decode = (str, bytes)
+            except NameError:
+                # python 3
+                need_decode = bytes
+
+            if isinstance(file_contents, need_decode):
+                file_contents = file_contents.decode(coding_check(file_contents.splitlines()))
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             self.skipped = True
@@ -1000,19 +1020,16 @@ class SortImports(object):
                         self.imports[placed_module][import_type][module] = None
 
 
-def coding_check(fname, default='utf-8'):
+def coding_check(lines, default='utf-8'):
 
     # see https://www.python.org/dev/peps/pep-0263/
     pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
 
-    coding = default
-    with io.open(fname, 'rb') as f:
-        for line_number, line in enumerate(f, 1):
-            groups = re.findall(pattern, line)
-            if groups:
-                coding = groups[0].decode('ascii')
-                break
-            if line_number > 2:
-                break
+    for line_number, line in enumerate(lines, 1):
+        groups = re.findall(pattern, line)
+        if groups:
+            return groups[0].decode('ascii')
+        if line_number > 2:
+            break
 
-    return coding
+    return default

@@ -326,7 +326,13 @@ def main(argv=None):
 
     file_names = arguments.pop('files', [])
     if file_names == ['-']:
-        SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
+        try:
+            # python 3
+            file_ = sys.stdin.buffer
+        except AttributeError:
+            # python 2
+            file_ = sys.stdin
+        SortImports(file_=file_, write_to_stdout=True, **arguments)
     else:
         if not file_names:
             file_names = ['.']
