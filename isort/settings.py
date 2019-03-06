@@ -328,11 +328,6 @@ def should_skip(filename, config, path=''):
         return True
 
     for skip_path in config['skip']:
-        for specified_path in specified_paths:
-            normalized_specified_path = specified_path.replace('\\', '/')
-            if normalized_path.startswith(normalized_specified_path):
-                normalized_path_skip = normalized_specified_path
-
         if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
             return True
 
