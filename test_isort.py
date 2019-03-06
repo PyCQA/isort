@@ -2740,6 +2740,22 @@ def test_command_line(tmpdir, capfd, multiprocess):
         assert str(tmpdir.join("file2.py")) in out
 
 
+@pytest.mark.parametrize("quiet", (False, True))
+def test_quiet(tmpdir, capfd, quiet):
+    if sys.platform.startswith("win"):
+        return
+    from isort.main import main
+    tmpdir.join("file1.py").write("import re\nimport os")
+    tmpdir.join("file2.py").write("")
+    arguments = ["-rc", str(tmpdir)]
+    if quiet:
+        arguments.append("-q")
+    main(arguments)
+    out, err = capfd.readouterr()
+    assert not err
+    assert bool(out) != quiet
+
+
 @pytest.mark.parametrize('enabled', (False, True))
 def test_safety_excludes(tmpdir, enabled):
     tmpdir.join("victim.py").write("# ...")
