@@ -2742,6 +2742,7 @@ def test_safety_excludes(tmpdir, enabled):
     tmpdir.join("victim.py").write("# ...")
     tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
     config = dict(settings.default.copy(), safety_excludes=enabled)
     skipped = []
     codes = [str(tmpdir)],
@@ -2749,10 +2750,12 @@ def test_safety_excludes(tmpdir, enabled):
     file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
     if enabled:
         assert file_names == {'victim.py'}
-        assert len(skipped) == 2
+        assert len(skipped) == 3
     else:
         assert file_names == {os.sep.join(('.tox', 'verysafe.py')),
-                              os.sep.join(('lib', 'python3.7', 'importantsystemlibrary.py')), 'victim.py'}
+                              os.sep.join(('lib', 'python3.7', 'importantsystemlibrary.py')),
+                              os.sep.join(('.pants.d', 'pants.py')),
+                              'victim.py'}
         assert not skipped
 
 
