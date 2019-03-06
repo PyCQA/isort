@@ -98,7 +98,7 @@ class SortImports(object):
                 file_contents = None
             elif not file_contents:
                 file_encoding = coding_check(file_path)
-                with io.open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
+                with open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
                     try:
                         file_contents = file_to_import_sort.read()
                         self.file_path = file_path
