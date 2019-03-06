@@ -219,7 +219,8 @@ class SortImports(object):
                     if answer in ('quit', 'q'):
                         sys.exit(1)
             with io.open(self.file_path, encoding=self.file_encoding, mode='w', newline='') as output_file:
-                print("Fixing {0}".format(self.file_path))
+                if not self.config['quiet']:
+                    print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
 
     @property
