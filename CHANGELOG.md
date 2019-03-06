@@ -11,7 +11,10 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
-### 4.3.11 - March 3, 2019 - hot fix release
+### 4.3.12 - March 6, 2019 - hot fix release
+- Fix error caused when virtual environment not detected
+
+### 4.3.11 - March 6, 2019 - hot fix release
 - Fixed issue #876: confused by symlinks pointing to virtualenv gives FIRSTPARTY not THIRDPARTY
 - Fixed issue #873: current version skips every file on travis
 - Additional caching to reduce performance regression introduced in 4.3.5
