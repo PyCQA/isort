@@ -324,7 +324,7 @@ def should_skip(filename, config, path=''):
     if normalized_path[1:2] == ':':
         normalized_path = normalized_path[2:]
 
-    if config['safety_excludes'] and safety_exclude_re.search('/' + filename('\\', '/') + '/'):
+    if config['safety_excludes'] and safety_exclude_re.search('/' + filename.replace('\\', '/') + '/'):
         return True
 
     for skip_path in config['skip']:
