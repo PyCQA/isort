@@ -140,7 +140,8 @@ class PathFinder(BaseFinder):
 
         # virtual env
         self.virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
-        self.virtual_env = os.path.realpath(self.virtual_env)
+        if self.virtual_env:
+            self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = False
         if self.virtual_env:
             self.virtual_env_src = '{0}/src/'.format(self.virtual_env)
