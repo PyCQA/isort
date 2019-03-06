@@ -106,13 +106,25 @@ class SortImports(object):
                         file_contents = file_to_import_sort.read()
                         self.file_path = file_path
                         self.file_encoding = file_encoding
+                        encoding_success = True
                     except UnicodeDecodeError:
-                        file_contents = None
-                        self.skipped = True
-                        if self.config['verbose']:
-                            print("WARNING: {} was skipped as it "
-                                  "couldn't be opened with the given {} encoding".format(file_path,
-                                                                                         self.file_encoding))
+                        encoding_success = False
+
+                if not encoding_success:
+                    with io.open(file_path, new_line='') as file_to_import_sort:
+                        try:
+                            file_contents = file_to_import_sort.read()
+                            self.file_path = file_path
+                            self.file_encoding = file_to_import_sort.encoding
+                        except UnicodeDecodeError:
+                            encoding_success = False
+                            file_contents = None
+                            self.skipped = True
+                            if self.config['verbose']:
+                                print("WARNING: {} was skipped as it couldn't be opened with the given "
+                                      "{} encoding or {} fallback encoding".format(file_path,
+                                                                                   self.file_encoding,
+                                                                                   file_to_import_sort.encoding))
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             self.skipped = True
