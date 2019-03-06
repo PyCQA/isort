@@ -108,7 +108,7 @@ class SortImports(object):
                         encoding_success = False
 
                 if not encoding_success:
-                    with io.open(file_path, new_line='') as file_to_import_sort:
+                    with open(file_path, newline='') as file_to_import_sort:
                         try:
                             file_contents = file_to_import_sort.read()
                             self.file_path = file_path
