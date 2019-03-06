@@ -58,7 +58,8 @@ MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 safety_exclude_re = re.compile(
-    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
+    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
+    r"|lib/python[0-9].[0-9]+)/"
 )
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
@@ -317,14 +318,19 @@ def _get_config_data(file_path, sections):
 
 
 def should_skip(filename, config, path=''):
-    """Returns True if the file should be skipped based on the passed in settings."""
+    """Returns True if the file and/or folder should be skipped based on the passed in settings."""
     os_path = os.path.join(path, filename)
+
     normalized_path = os_path.replace('\\', '/')
     if normalized_path[1:2] == ':':
         normalized_path = normalized_path[2:]
 
-    if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
-        return True
+    if config['safety_excludes']:
+        check_exclude = '/' + filename.replace('\\', '/') + '/'
+        if path and os.path.basename(path) in ('lib', ):
+            check_exclude = '/' + os.path.basename(path) + check_exclude
+        if safety_exclude_re.search(check_exclude):
+            return True
 
     for skip_path in config['skip']:
         if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
