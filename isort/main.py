@@ -82,7 +82,7 @@ class SortAttempt(object):
 
 def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
     try:
-        result = SortImports(file_name, **arguments)
+        result = SortImports(file_name, check_skip=False, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
     except IOError as e:
         print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
@@ -96,10 +96,6 @@ def iter_source_code(paths: Iterable[str], config: MutableMapping[str, Any], ski
 
     for path in paths:
         if os.path.isdir(path):
-            if file_should_be_skipped(path, config, os.getcwd()):
-                skipped.append(path)
-                continue
-
             for dirpath, dirnames, filenames in os.walk(
                     path, topdown=True, followlinks=True
             ):

@@ -1,6 +1,5 @@
 Changelog
 =========
-
 ### 5.0.0 UNRELEASED
 **Breaking changes:**
   - isort now requires Python 3.4+ to run but continues to support formatting
@@ -11,6 +10,11 @@ Internal:
 
 Planned:
   - profile support for common project types (black, django, google, etc)
+
+### 4.3.11 - March 3, 2019 - hot fix release
+- Fixed issue #876: confused by symlinks pointing to virtualenv gives FIRSTPARTY not THIRDPARTY
+- Fixed issue #873: current version skips every file on travis
+- Additional caching to reduce performance regression introduced in 4.3.5
 
 ### 4.3.10 - March 2, 2019 - hot fix release
 - Fixed Windows incompatibilities (Issue #835)
