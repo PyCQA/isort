@@ -60,6 +60,8 @@ def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
     if ext in ('.py', '.pyi'):
         return True
+    if ext in ('.pex', ):
+        return False
 
     # Skip editor backup files.
     if path.endswith('~'):

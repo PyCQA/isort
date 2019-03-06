@@ -97,10 +97,19 @@ class SortImports(object):
                           " or matches a glob in 'skip_glob' setting".format(file_path))
                 file_contents = None
             elif not file_contents:
-                self.file_path = file_path
-                self.file_encoding = coding_check(file_path)
-                with open(file_path, encoding=self.file_encoding, newline='') as file_to_import_sort:
-                    file_contents = file_to_import_sort.read()
+                file_encoding = coding_check(file_path)
+                with io.open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
+                    try:
+                        file_contents = file_to_import_sort.read()
+                        self.file_path = file_path
+                        self.file_encoding = file_encoding
+                    except UnicodeDecodeError:
+                        file_contents = None
+                        self.skipped = True
+                        if self.config['verbose']:
+                            print("WARNING: {} was skipped as it "
+                                  "couldn't be opened with the given {} encoding".format(file_path,
+                                                                                         self.file_encoding))
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             self.skipped = True
