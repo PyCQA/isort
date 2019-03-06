@@ -58,7 +58,7 @@ MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 safety_exclude_re = re.compile(
-    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
+    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|.pants.d|lib/python[0-9].[0-9]+)/"
 )
 
 WrapModes = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
