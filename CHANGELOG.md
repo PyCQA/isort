@@ -1,9 +1,10 @@
 Changelog
 =========
-### 4.3.11 - March 3, 2019 - hot fix release
+### 4.3.11 - March 6, 2019 - hot fix release
 - Fixed issue #876: confused by symlinks pointing to virtualenv gives FIRSTPARTY not THIRDPARTY
 - Fixed issue #873: current version skips every file on travis
 - Additional caching to reduce performance regression introduced in 4.3.5
+- Improved handling of pex files and other binary Python files
 
 ### 4.3.10 - March 2, 2019 - hot fix release
 - Fixed Windows incompatibilities (Issue #835)
