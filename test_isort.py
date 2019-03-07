@@ -2743,13 +2743,16 @@ def test_command_line(tmpdir, capfd, multiprocess):
 @pytest.mark.parametrize('enabled', (False, True))
 def test_safety_excludes(tmpdir, enabled):
     tmpdir.join("victim.py").write("# ...")
-    tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
+    toxdir = tmpdir.mkdir(".tox")
+    toxdir.join("verysafe.py").write("# ...")
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
     config = dict(settings.default.copy(), safety_excludes=enabled)
     skipped = []
     codes = [str(tmpdir)],
     main.iter_source_code(codes, config, skipped)
+
+    # if enabled files within nested unsafe directories should be skipped
     file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
     if enabled:
         assert file_names == {'victim.py'}
@@ -2760,6 +2763,10 @@ def test_safety_excludes(tmpdir, enabled):
                               os.sep.join(('.pants.d', 'pants.py')),
                               'victim.py'}
         assert not skipped
+
+    # directly pointing to files within unsafe directories shouldn't skip them either way
+    file_names = set(os.path.relpath(f, str(toxdir)) for f in main.iter_source_code([str(toxdir)], config, skipped))
+    assert file_names == {'verysafe.py'}
 
 
 def test_comments_not_removed_issue_576():
