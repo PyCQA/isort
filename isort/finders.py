@@ -118,13 +118,8 @@ class PathFinder(BaseFinder):
     def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
         super().__init__(config, sections)
 
-        # Use a copy of sys.path to avoid any unintended modifications
-        # to it - e.g. `+=` used below will change paths in place and
-        # if not copied, consequently sys.path, which will grow unbounded
-        # with duplicates on every call to this method.
-        self.paths = list(sys.path)
         # restore the original import path (i.e. not the path to bin/isort)
-        self.paths[0] = os.getcwd()
+        self.paths = [os.getcwd()]
 
         # virtual env
         self.virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
@@ -143,6 +138,17 @@ class PathFinder(BaseFinder):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
+        # conda
+        self.conda_env = self.config.get('conda_env') or os.environ.get('CONDA_PREFIX') or ''
+        if self.conda_env:
+            self.conda_env = os.path.realpath(self.conda_env)
+            for path in glob('{0}/lib/python*/site-packages'.format(self.conda_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
+            for path in glob('{0}/lib/python*/*/site-packages'.format(self.conda_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
+
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
         if self.stdlib_lib_prefix not in self.paths:
@@ -151,12 +157,18 @@ class PathFinder(BaseFinder):
         # handle compiled libraries
         self.ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
 
+        # add system paths
+        for path in sys.path[1:]:
+            if path not in self.paths:
+                self.paths.append(path)
+
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
             package_path = "/".join((prefix, module_name.split(".")[0]))
             is_module = (exists_case_sensitive(package_path + ".py") or
                          exists_case_sensitive(package_path + ".so") or
-                         exists_case_sensitive(package_path + self.ext_suffix))
+                         exists_case_sensitive(package_path + self.ext_suffix) or
+                         exists_case_sensitive(package_path + "/__init__.py"))
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if 'site-packages' in prefix:
@@ -164,6 +176,8 @@ class PathFinder(BaseFinder):
                 if 'dist-packages' in prefix:
                     return self.sections.THIRDPARTY
                 if self.virtual_env and self.virtual_env_src in prefix:
+                    return self.sections.THIRDPARTY
+                if self.conda_env and self.conda_env in prefix:
                     return self.sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return self.sections.STDLIB
