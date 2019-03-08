@@ -69,7 +69,7 @@ class SortImports(object):
         show_diff: bool = False,
         settings_path: Optional[str] = None,
         ask_to_apply: bool = False,
-         run_path: str='',
+        run_path: str='',
         check_skip: bool = True,
         **setting_overrides: Any
     ) -> None:
