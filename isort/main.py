@@ -276,6 +276,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('--virtual-env', dest='virtual_env',
                         help='Virtual environment to use for determining whether a package is third-party')
+    parser.add_argument('--conda-env', dest='conda_env',
+                        help='Conda environment to use for determining whether a package is third-party')
     parser.add_argument('-vn', '--version-number', action='version', version=__version__,
                         help='Returns just the current version number without the logo')
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
