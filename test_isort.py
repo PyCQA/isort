@@ -2866,3 +2866,11 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
                        'from pkg import recorder\n')
     assert SortImports(file_contents=test_input, case_sensitive=True, order_by_type=False,
                        force_single_line=True).output == expected_output
+
+
+def test_to_ensure_empty_line_not_added_to_file_start_issue_889():
+    test_input = ('# comment\n'
+                  'import os\n'
+                  '# comment2\n'
+                  'import sys\n')
+    assert SortImports(file_contents=test_input).output == test_input
