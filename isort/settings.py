@@ -383,7 +383,7 @@ def file_should_be_skipped(
     if normalized_path[1:2] == ':':
         normalized_path = normalized_path[2:]
 
-    if config['safety_excludes']:
+    if path and config['safety_excludes']:
         check_exclude = '/' + filename.replace('\\', '/') + '/'
         if path and os.path.basename(path) in ('lib', ):
             check_exclude = '/' + os.path.basename(path) + check_exclude

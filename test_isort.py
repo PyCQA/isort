@@ -2769,6 +2769,20 @@ def test_safety_excludes(tmpdir, enabled):
     assert file_names == {'verysafe.py'}
 
 
+@pytest.mark.parametrize('skip_glob_assert', (([], 0, {os.sep.join(('code', 'file.py'))}), (['**/*.py'], 1, {})))
+def test_skip_glob(tmpdir, skip_glob_assert):
+    skip_glob, skipped_count, file_names = skip_glob_assert
+    base_dir = tmpdir.mkdir('build')
+    code_dir = base_dir.mkdir('code')
+    code_dir.join('file.py').write('import os')
+
+    config = dict(settings.default.copy(), skip_glob=skip_glob)
+    skipped = []
+    file_names = set(os.path.relpath(f, str(base_dir)) for f in main.iter_source_code([str(base_dir)], config, skipped))
+    assert len(skipped) == skipped_count
+    assert file_names == file_names
+
+
 def test_comments_not_removed_issue_576():
     test_input = ('import distutils\n'
                   '# this comment is important and should not be removed\n'

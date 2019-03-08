@@ -69,6 +69,7 @@ class SortImports(object):
         show_diff: bool = False,
         settings_path: Optional[str] = None,
         ask_to_apply: bool = False,
+         run_path: str='',
         check_skip: bool = True,
         **setting_overrides: Any
     ) -> None:
@@ -90,12 +91,19 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if check_skip and settings.file_should_be_skipped(file_path, self.config):
-                self.skipped = True
-                if self.config['verbose']:
-                    print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                          " or matches a glob in 'skip_glob' setting".format(file_path))
-                file_contents = None
+            if check_skip:
+                if run_path and file_path.startswith(run_path):
+                    file_name = os.path.relpath(file_path, run_path)
+                else:
+                    file_name = file_path
+                    run_path = ''
+
+                if settings.file_should_be_skipped(file_name, self.config, run_path):
+                    self.skipped = True
+                    if self.config['verbose']:
+                        print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                            " or matches a glob in 'skip_glob' setting".format(file_path))
+                    file_contents = None
             elif not file_contents:
                 file_encoding = coding_check(file_path)
                 with open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
