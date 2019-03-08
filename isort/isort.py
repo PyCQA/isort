@@ -47,7 +47,8 @@ class SortImports(object):
     skipped = False
 
     def __init__(self, file_path=None, file_contents=None, write_to_stdout=False, check=False,
-                 show_diff=False, settings_path=None, ask_to_apply=False, check_skip=True, **setting_overrides):
+                 show_diff=False, settings_path=None, ask_to_apply=False, run_path='', check_skip=True,
+                 **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -93,13 +94,20 @@ class SortImports(object):
         self.file_path = file_path or ""
         if file_path:
             file_path = os.path.abspath(file_path)
-            if check_skip and settings.should_skip(file_path, self.config):
-                self.skipped = True
-                if self.config['verbose']:
-                    print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                          " or matches a glob in 'skip_glob' setting".format(file_path))
-                file_contents = None
-            elif not file_contents:
+            if check_skip:
+                if run_path and file_path.startswith(run_path):
+                    file_name = file_path.replace(run_path, '',  1)
+                else:
+                    file_name = file_path
+                    run_path = ''
+
+                if settings.should_skip(file_name, self.config, run_path):
+                    self.skipped = True
+                    if self.config['verbose']:
+                        print("WARNING: {0} was skipped as it's listed in 'skip' setting"
+                            " or matches a glob in 'skip_glob' setting".format(file_path))
+                    file_contents = None
+            if not self.skipped and not file_contents:
                 file_encoding = coding_check(file_path)
                 with io.open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
                     try:

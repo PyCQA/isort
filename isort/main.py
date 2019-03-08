@@ -85,7 +85,7 @@ class SortAttempt(object):
 
 def sort_imports(file_name, **arguments):
     try:
-        result = SortImports(file_name, check_skip=False, **arguments)
+        result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
     except IOError as e:
         print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
@@ -99,9 +99,7 @@ def iter_source_code(paths, config, skipped):
 
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(
-                    path, topdown=True, followlinks=True
-            ):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
                 for dirname in list(dirnames):
                     if should_skip(dirname, config, dirpath):
                         skipped.append(dirname)
@@ -109,7 +107,8 @@ def iter_source_code(paths, config, skipped):
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        if should_skip(filename, config, dirpath):
+                        relative_file = os.path.relpath(filepath, path)
+                        if should_skip(relative_file, config, path):
                             skipped.append(filename)
                         else:
                             yield filepath
@@ -314,6 +313,7 @@ def main(argv=None):
               '-rc for recursive')
         sys.exit(1)
 
+    arguments['check_skip'] = False
     if 'settings_path' in arguments:
         sp = arguments['settings_path']
         arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
