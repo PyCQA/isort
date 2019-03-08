@@ -303,7 +303,8 @@ class SortImports(object):
                 prefix = "B"
             else:
                 prefix = "C"
-        module_name = module_name.lower()
+        if not config['case_sensitive']:
+            module_name = module_name.lower()
         if section_name is None or 'length_sort_' + str(section_name).lower() not in config:
             length_sort = config['length_sort']
         else:
