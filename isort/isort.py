@@ -1072,7 +1072,7 @@ class SortImports(object):
                                    'isort:imports-' not in last):
                                 self.comments['above']['straight'].setdefault(module, []).insert(0,
                                                                                                  self.out_lines.pop(-1))
-                                if len(self.out_lines) > 0:
+                                if len(self.out_lines) > 0 and len(self.out_lines) != self._first_comment_index_end:
                                     last = self.out_lines[-1].rstrip()
                                 else:
                                     last = ""
