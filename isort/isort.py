@@ -109,8 +109,8 @@ class SortImports(object):
                             " or matches a glob in 'skip_glob' setting".format(file_path))
                     file_contents = None
             if not self.skipped and not file_contents:
-                    with io.open(file_path, 'rb') as f:
-                        file_encoding = coding_check(f)
+                with io.open(file_path, 'rb') as f:
+                    file_encoding = coding_check(f)
                 with io.open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
                     try:
                         file_contents = file_to_import_sort.read()
