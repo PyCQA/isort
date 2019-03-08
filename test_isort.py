@@ -2845,3 +2845,25 @@ def test_unwrap_issue_762():
     test_input = ('from os.\\\n'
                   '    path import (join, split)')
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+
+def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
+    test_input = ('from pkg import BALL\n'
+                  'from pkg import RC\n'
+                  'from pkg import Action\n'
+                  'from pkg import Bacoo\n'
+                  'from pkg import RCNewCode\n'
+                  'from pkg import actual\n'
+                  'from pkg import rc\n'
+                  'from pkg import recorder\n')
+    expected_output = ('from pkg import Action\n'
+                       'from pkg import BALL\n'
+                       'from pkg import Bacoo\n'
+                       'from pkg import RC\n'
+                       'from pkg import RCNewCode\n'
+                       'from pkg import actual\n'
+                       'from pkg import rc\n'
+                       'from pkg import recorder\n')
+    assert SortImports(file_contents=test_input, case_sensitive=True, order_by_type=False,
+                       force_single_line=True).output == expected_output
+
