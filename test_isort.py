@@ -2880,3 +2880,24 @@ def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.pat
 
     config = settings.from_path(str(tmpdir))
     assert config['multi_line_output'] == WrapModes.VERTICAL_GRID_GROUPED
+
+
+def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
+    test_input = ('from pkg import BALL\n'
+                  'from pkg import RC\n'
+                  'from pkg import Action\n'
+                  'from pkg import Bacoo\n'
+                  'from pkg import RCNewCode\n'
+                  'from pkg import actual\n'
+                  'from pkg import rc\n'
+                  'from pkg import recorder\n')
+    expected_output = ('from pkg import Action\n'
+                       'from pkg import BALL\n'
+                       'from pkg import Bacoo\n'
+                       'from pkg import RC\n'
+                       'from pkg import RCNewCode\n'
+                       'from pkg import actual\n'
+                       'from pkg import rc\n'
+                       'from pkg import recorder\n')
+    assert SortImports(file_contents=test_input, case_sensitive=True, order_by_type=False,
+                       force_single_line=True).output == expected_output

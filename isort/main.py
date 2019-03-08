@@ -291,6 +291,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument('--unsafe', dest='unsafe', action='store_true',
                         help='Tells isort to look for files in standard library directories, etc. '
                              'where it may not be safe to operate in')
+    parser.add_argument('--case-sensitive', dest='case_sensitive', action='store_true',
+                        help='Tells isort to include casing when sorting module names')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}

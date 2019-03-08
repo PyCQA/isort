@@ -15,6 +15,7 @@ Planned:
 ### 4.3.13 - March 6, 2019 - hot fix release
 - Fixed the inability to accurately determine import section when a mix of conda and virtual environments are used.
 - Fixed some output being printed even when --quiet mode is enabled.
+- Fixed issue #890 interoperability with PyCharm by allowing case sensitive non type grouped sorting
 
 ### 4.3.12 - March 6, 2019 - hot fix release
 - Fix error caused when virtual environment not detected
