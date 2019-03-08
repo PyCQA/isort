@@ -162,7 +162,8 @@ default = {'force_to_top': [],
            'no_lines_before': [],
            'no_inline_sort': False,
            'ignore_comments': False,
-           'safety_excludes': True}
+           'safety_excludes': True,
+           'case_sensitive': False}
 
 
 @lru_cache()
@@ -325,7 +326,7 @@ def should_skip(filename, config, path=''):
     if normalized_path[1:2] == ':':
         normalized_path = normalized_path[2:]
 
-    if config['safety_excludes']:
+    if path and config['safety_excludes']:
         check_exclude = '/' + filename.replace('\\', '/') + '/'
         if path and os.path.basename(path) in ('lib', ):
             check_exclude = '/' + os.path.basename(path) + check_exclude

@@ -2737,16 +2737,35 @@ def test_command_line(tmpdir, capfd, multiprocess):
         assert str(tmpdir.join("file2.py")) in out
 
 
+@pytest.mark.parametrize("quiet", (False, True))
+def test_quiet(tmpdir, capfd, quiet):
+    if sys.platform.startswith("win"):
+        return
+    from isort.main import main
+    tmpdir.join("file1.py").write("import re\nimport os")
+    tmpdir.join("file2.py").write("")
+    arguments = ["-rc", str(tmpdir)]
+    if quiet:
+        arguments.append("-q")
+    main(arguments)
+    out, err = capfd.readouterr()
+    assert not err
+    assert bool(out) != quiet
+
+
 @pytest.mark.parametrize('enabled', (False, True))
 def test_safety_excludes(tmpdir, enabled):
     tmpdir.join("victim.py").write("# ...")
-    tmpdir.mkdir(".tox").join("verysafe.py").write("# ...")
+    toxdir = tmpdir.mkdir(".tox")
+    toxdir.join("verysafe.py").write("# ...")
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
     config = dict(settings.default.copy(), safety_excludes=enabled)
     skipped = []
     codes = [str(tmpdir)],
     main.iter_source_code(codes, config, skipped)
+
+    # if enabled files within nested unsafe directories should be skipped
     file_names = set(os.path.relpath(f, str(tmpdir)) for f in main.iter_source_code([str(tmpdir)], config, skipped))
     if enabled:
         assert file_names == {'victim.py'}
@@ -2757,6 +2776,24 @@ def test_safety_excludes(tmpdir, enabled):
                               os.sep.join(('.pants.d', 'pants.py')),
                               'victim.py'}
         assert not skipped
+
+    # directly pointing to files within unsafe directories shouldn't skip them either way
+    file_names = set(os.path.relpath(f, str(toxdir)) for f in main.iter_source_code([str(toxdir)], config, skipped))
+    assert file_names == {'verysafe.py'}
+
+
+@pytest.mark.parametrize('skip_glob_assert', (([], 0, {os.sep.join(('code', 'file.py'))}), (['**/*.py'], 1, {})))
+def test_skip_glob(tmpdir, skip_glob_assert):
+    skip_glob, skipped_count, file_names = skip_glob_assert
+    base_dir = tmpdir.mkdir('build')
+    code_dir = base_dir.mkdir('code')
+    code_dir.join('file.py').write('import os')
+
+    config = dict(settings.default.copy(), skip_glob=skip_glob)
+    skipped = []
+    file_names = set(os.path.relpath(f, str(base_dir)) for f in main.iter_source_code([str(base_dir)], config, skipped))
+    assert len(skipped) == skipped_count
+    assert file_names == file_names
 
 
 def test_comments_not_removed_issue_576():
@@ -2808,3 +2845,24 @@ def test_unwrap_issue_762():
     test_input = ('from os.\\\n'
                   '    path import (join, split)')
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+
+def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
+    test_input = ('from pkg import BALL\n'
+                  'from pkg import RC\n'
+                  'from pkg import Action\n'
+                  'from pkg import Bacoo\n'
+                  'from pkg import RCNewCode\n'
+                  'from pkg import actual\n'
+                  'from pkg import rc\n'
+                  'from pkg import recorder\n')
+    expected_output = ('from pkg import Action\n'
+                       'from pkg import BALL\n'
+                       'from pkg import Bacoo\n'
+                       'from pkg import RC\n'
+                       'from pkg import RCNewCode\n'
+                       'from pkg import actual\n'
+                       'from pkg import rc\n'
+                       'from pkg import recorder\n')
+    assert SortImports(file_contents=test_input, case_sensitive=True, order_by_type=False,
+                       force_single_line=True).output == expected_output

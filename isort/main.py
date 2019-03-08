@@ -85,7 +85,7 @@ class SortAttempt(object):
 
 def sort_imports(file_name, **arguments):
     try:
-        result = SortImports(file_name, check_skip=False, **arguments)
+        result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
     except IOError as e:
         print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
@@ -99,9 +99,7 @@ def iter_source_code(paths, config, skipped):
 
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(
-                    path, topdown=True, followlinks=True
-            ):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
                 for dirname in list(dirnames):
                     if should_skip(dirname, config, dirpath):
                         skipped.append(dirname)
@@ -109,7 +107,8 @@ def iter_source_code(paths, config, skipped):
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        if should_skip(filename, config, dirpath):
+                        relative_file = os.path.relpath(filepath, path)
+                        if should_skip(relative_file, config, path):
                             skipped.append(filename)
                         else:
                             yield filepath
@@ -278,6 +277,8 @@ def parse_args(argv=None):
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('--virtual-env', dest='virtual_env',
                         help='Virtual environment to use for determining whether a package is third-party')
+    parser.add_argument('--conda-env', dest='conda_env',
+                        help='Conda environment to use for determining whether a package is third-party')
     parser.add_argument('-vn', '--version-number', action='version', version=__version__,
                         help='Returns just the current version number without the logo')
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
@@ -291,6 +292,8 @@ def parse_args(argv=None):
     parser.add_argument('--unsafe', dest='unsafe', action='store_true',
                         help='Tells isort to look for files in standard library directories, etc. '
                              'where it may not be safe to operate in')
+    parser.add_argument('--case-sensitive', dest='case_sensitive', action='store_true',
+                        help='Tells isort to include casing when sorting module names')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
@@ -312,6 +315,7 @@ def main(argv=None):
               '-rc for recursive')
         sys.exit(1)
 
+    arguments['check_skip'] = False
     if 'settings_path' in arguments:
         sp = arguments['settings_path']
         arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
