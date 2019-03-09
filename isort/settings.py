@@ -344,7 +344,7 @@ def should_skip(filename, config, path=''):
         position = os.path.split(position[0])
 
     for glob in config['skip_glob']:
-        if fnmatch.fnmatch(filename, glob):
+        if fnmatch.fnmatch(filename, glob) or fnmatch.fnmatch('/' + filename, glob):
             return True
 
     if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
