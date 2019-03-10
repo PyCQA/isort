@@ -2782,7 +2782,8 @@ def test_safety_excludes(tmpdir, enabled):
     assert file_names == {'verysafe.py'}
 
 
-@pytest.mark.parametrize('skip_glob_assert', (([], 0, {os.sep.join(('code', 'file.py'))}), (['**/*.py'], 1, {})))
+@pytest.mark.parametrize('skip_glob_assert', (([], 0, {os.sep.join(('code', 'file.py'))}), (['**/*.py'], 1, {}),
+                                              (['*/code/*.py'], 1, {})))
 def test_skip_glob(tmpdir, skip_glob_assert):
     skip_glob, skipped_count, file_names = skip_glob_assert
     base_dir = tmpdir.mkdir('build')
