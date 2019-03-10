@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.14 - March 9, 2019 - hot fix release
+- Fixed a regression with */directory/*.py style patterns
+
 ### 4.3.13 - March 8, 2019 - hot fix release
 - Fixed the inability to accurately determine import section when a mix of conda and virtual environments are used.
 - Fixed some output being printed even when --quiet mode is enabled.
