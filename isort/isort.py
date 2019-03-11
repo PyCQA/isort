@@ -136,8 +136,12 @@ class SortImports(object):
                                                                                    self.file_encoding,
                                                                                    file_to_import_sort.encoding))
         elif file_:
-            self.file_encoding = coding_check(file_)
-            file_.seek(0)
+            try:
+                file_.seek(0)
+                self.file_encoding = coding_check(file_)
+                file_.seek(0)
+            except io.UnsupportedOperation:
+                pass
             reader = codecs.getreader(self.file_encoding)
             file_contents = reader(file_).read()
 

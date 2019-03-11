@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.15 - March 10, 2019 - hot fix release
+- Fixed a regression with handling streaming input from pipes (Issue #895)
+
 ### 4.3.14 - March 9, 2019 - hot fix release
 - Fixed a regression with */directory/*.py style patterns
 
