@@ -2910,3 +2910,16 @@ def test_to_ensure_empty_line_not_added_to_file_start_issue_889():
                   '# comment2\n'
                   'import sys\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys):
+    test_input = ('import os\n'
+                  'import sys\n'
+                  '\n'
+                  '\x0c\n'
+                  'def my_function():\n'
+                  '    print("hi")\n')
+    SortImports(file_contents=test_input, ignore_whitespace=True)
+    out, err = capsys.readouterr()
+    assert out == ''
+    assert err == ''

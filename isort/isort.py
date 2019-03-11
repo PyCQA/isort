@@ -192,8 +192,8 @@ class SortImports(object):
             check_output = self.output
             check_against = file_contents
             if self.config['ignore_whitespace']:
-                check_output = check_output.replace(self.line_separator, "").replace(" ", "")
-                check_against = check_against.replace(self.line_separator, "").replace(" ", "")
+                check_output = check_output.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
+                check_against = check_against.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
 
             if check_output.strip() == check_against.strip():
                 if self.config['verbose']:
