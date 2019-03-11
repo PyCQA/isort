@@ -4,38 +4,46 @@ language: python
 cache: pip
 matrix:
   include:
-    - env: TOXENV=isort-check
-    - env: TOXENV=lint
-    - os: linux
-      python: 2.7
-      env: TOXENV=py27
-    - os: linux
-      python: 3.4
-      env: TOXENV=py34
-    - os: linux
-      python: 3.5
-      env: TOXENV=py35
-    - os: linux
-      python: 3.6
-      env: TOXENV=py36
-    - os: linux
-      python: 3.7
-      env: TOXENV=py37
-    - os: linux
-      python: pypy2.7-6.0
-      env: TOXENV=pypy
-    - os: linux
-      python: pypy3.5-6.0
-      env: TOXENV=pypy3
-    - os: osx
-      language: generic
-      env: TOXENV=py36
-
+  - env: TOXENV=isort-check
+  - env: TOXENV=lint
+  - os: linux
+    python: 2.7
+    env: TOXENV=py27
+  - os: linux
+    python: 3.4
+    env: TOXENV=py34
+  - os: linux
+    python: 3.5
+    env: TOXENV=py35
+  - os: linux
+    python: 3.6
+    env: TOXENV=py36
+  - os: linux
+    python: 3.7
+    env: TOXENV=py37
+  - os: linux
+    python: pypy2.7-6.0
+    env: TOXENV=pypy
+  - os: linux
+    python: pypy3.5-6.0
+    env: TOXENV=pypy3
+  - os: osx
+    language: generic
+    env: TOXENV=py36
 before_install:
-  - ./scripts/before_install.sh
-
+- "./scripts/before_install.sh"
 install:
-  - pip install tox
-
+- pip install tox
 script:
-  - tox
+- tox
+deploy:
+  provider: pypi
+  user: timothycrosley
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    tags: false
+    branch: master
+    condition: "$TOXENV = py37"
+  password:
+    secure: SSFcjBL3dhWvSbo21icmnHQFV7mXfv/eDzxrefHUDMk37MWrvtNKchH8zz7wjAsf2PH1VYL1zkEFwnzuzHgs2aFCK7HDUwAaDSIcvPmJg9Oty+o2WQw16m7UnUac9MIZGmBHQaZuUTw0VJpm3GuPSXtdFJwFq3Tk3TIyUipEwg8=
