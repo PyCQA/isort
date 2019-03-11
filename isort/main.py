@@ -172,7 +172,9 @@ class ISortCommand(setuptools.Command):
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
-                                                 'within logical sections.')
+                                                 'within logical sections. Run with no arguments to run '
+                                                 'interactively. Run with `-` as the first argument to read from '
+                                                 'stdin. Otherwise provide a list of files to sort.')
     inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument('-a', '--add-import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
