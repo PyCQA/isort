@@ -3,9 +3,10 @@ Changelog
 
 ### 5.0.0 UNRELEASED
 **Breaking changes:**
-  - isort now requires Python 3.4+ to run but continues to support formatting
+  - isort now requires Python 3.5+ to run but continues to support formatting
     Python 2 code.
-
+  - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
+      - user
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment
 
