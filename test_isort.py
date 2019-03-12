@@ -2923,3 +2923,10 @@ def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys):
     out, err = capsys.readouterr()
     assert out == ''
     assert err == ''
+
+
+def test_standard_library_deprecates_user_issue_778():
+    test_input = ('import os\n'
+                  '\n'
+                  'import user\n')
+    assert SortImports(file_contents=test_input).output == test_input
