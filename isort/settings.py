@@ -348,10 +348,10 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                         config_section = config_section.get(key, {})
                     settings.update(config_section)
             else:
-                warnings.warn(
-                    "Found %s but toml package is not installed. To configure "
-                    "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
-                )
+                if '[tool.isort]' in config_file.read():
+                    warnings.warn("Found {} with [tool.isort] section, but toml package is not installed. "
+                                  "To configure isort with {}, install with 'isort[pyproject]'.".format(file_path,
+                                                                                                        file_path))
         else:
             if file_path.endswith('.editorconfig'):
                 line = '\n'
