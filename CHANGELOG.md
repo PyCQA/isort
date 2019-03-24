@@ -2,6 +2,7 @@ Changelog
 =========
 ### 4.3.16 - March 23, 2019 - hot fix release
 - Fixed issue #909 - skip and skip-glob are not enforced when using settings-path
+- Fixed issue #907 - appdirs optional requirement does not correctly specify version
 
 ### 4.3.15 - March 10, 2019 - hot fix release
 - Fixed a regression with handling streaming input from pipes (Issue #895)
