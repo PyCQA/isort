@@ -20,22 +20,23 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-from tempfile import NamedTemporaryFile
 import io
 import os
 import os.path
 import posixpath
 import sys
 import sysconfig
+from subprocess import check_output
+from tempfile import NamedTemporaryFile
 
 import py
 import pytest
 
 from isort import finders, main, settings
 from isort.isort import SortImports
-from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.settings import WrapModes
+from isort.utils import exists_case_sensitive
 
 try:
     import toml
@@ -2930,3 +2931,33 @@ def test_standard_library_deprecates_user_issue_778():
                   '\n'
                   'import user\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_settings_path_skip_issue_909(tmpdir):
+    base_dir = tmpdir.mkdir('project')
+    config_dir = base_dir.mkdir('conf')
+    config_dir.join('.isort.cfg').write('[isort]\n'
+                                        'skip =\n'
+                                        '    file_to_be_skipped.py\n'
+                                        'skip_glob =\n'
+                                        '    *glob_skip*\n')
+
+    base_dir.join('file_glob_skip.py').write('import os\n'
+                                             '\n'
+                                             'print("Hello World")\n'
+                                             '\n'
+                                             'import sys\n')
+    base_dir.join('file_to_be_skipped.py').write('import os\n'
+                                                 '\n'
+                                                 'print("Hello World")'
+                                                 '\n'
+                                                 'import sys\n')
+
+    test_run_directory = os.getcwd()
+    os.chdir(str(base_dir))
+    with pytest.raises(Exception):  # without the settings path provided: the command should not skip & identify errors
+        check_output(['isort', '--check-only'])
+    results = check_output(['isort', '--check-only', '--settings-path=conf/.isort.cfg'])
+    os.chdir(str(test_run_directory))
+
+    assert b'skipped 2' in results.lower()
