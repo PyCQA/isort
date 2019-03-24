@@ -25,7 +25,7 @@ setup(name='isort',
           'pipfile': ['pipreqs', 'requirementslib'],
           'pyproject': ['toml'],
           'requirements': ['pip', 'pipreqs'],
-          'xdg_home': ['appdirs'],
+          'xdg_home': ['appdirs>=1.4.0'],
       },
       install_requires=[
           'futures; python_version < "3.2"',
