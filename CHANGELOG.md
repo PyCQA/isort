@@ -1,5 +1,8 @@
 Changelog
 =========
+### 4.3.16 - March 23, 2019 - hot fix release
+- Fixed issue #909 - skip and skip-glob are not enforced when using settings-path
+
 ### 4.3.15 - March 10, 2019 - hot fix release
 - Fixed a regression with handling streaming input from pipes (Issue #895)
 - Fixed handling of \x0c whitespace character (Issue #811)

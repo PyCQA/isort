@@ -345,7 +345,8 @@ def main(argv=None):
             arguments['recursive'] = True
             if not arguments.get('apply', False):
                 arguments['ask_to_apply'] = True
-        config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
+
+        config = from_path(arguments.get('settings_path', '') or os.path.abspath(file_names[0]) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
         skipped = []
