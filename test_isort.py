@@ -2919,3 +2919,10 @@ def test_settings_path_skip_issue_909(tmpdir):
     os.chdir(str(test_run_directory))
 
     assert b'skipped 2' in results.lower()
+
+
+def test_standard_library_deprecates_user_issue_778():
+    test_input = ('import os\n'
+                  '\n'
+                  'import user\n')
+    assert SortImports(file_contents=test_input).output == test_input
