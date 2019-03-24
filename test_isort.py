@@ -2913,6 +2913,8 @@ def test_settings_path_skip_issue_909(tmpdir):
 
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
+    with pytest.raises(Exception): # without the settings path provided: the command should not skip & identify errors
+        check_output(['isort', '--check-only'])
     results = check_output(['isort', '--check-only', '--settings-path=conf/.isort.cfg'])
     os.chdir(str(test_run_directory))
 
