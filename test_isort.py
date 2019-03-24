@@ -23,7 +23,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from tempfile import NamedTemporaryFile
 import io
 import os
 import os.path
@@ -31,14 +30,15 @@ import posixpath
 import sys
 import sysconfig
 from subprocess import check_output
+from tempfile import NamedTemporaryFile
 
 import pytest
 
 from isort import finders, main, settings
 from isort.isort import SortImports
-from isort.utils import exists_case_sensitive
 from isort.main import is_python_file
 from isort.settings import WrapModes
+from isort.utils import exists_case_sensitive
 
 try:
     import toml
@@ -2915,4 +2915,5 @@ def test_settings_path_skip_issue_909(tmpdir):
     os.chdir(str(base_dir))
     results = check_output(['isort', '--check-only', '--settings-path=conf/.isort.cfg'])
     os.chdir(str(test_run_directory))
-    assert b'skipped' in results
+
+    assert b'skipped 2' in results.lower()
