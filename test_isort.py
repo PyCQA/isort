@@ -2977,4 +2977,4 @@ def test_failing_file_check_916():
                 'indent': '    ',
                 'multi_line_output': 3,
                 'lines_after_imports': 2}
-    assert SortImports(test_input, **setting).output == expected_output
+    assert SortImports(test_input, **settings).output == expected_output
