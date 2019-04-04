@@ -2978,3 +2978,5 @@ def test_failing_file_check_916():
                 'multi_line_output': 3,
                 'lines_after_imports': 2}
     assert SortImports(file_contents=test_input, **settings).output == expected_output
+    assert SortImports(file_contents=expected_output, **settings).output == expected_output
+    assert not SortImports(file_contents=expected_output, check=True, **settings).incorrectly_sorted
