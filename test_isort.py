@@ -2973,8 +2973,8 @@ def test_failing_file_check_916():
                        'from __future__ import unicode_literals\n')
     settings = {'known_future_library': 'future',
                 'import_heading_future': 'FUTURE',
-                'sections': 'FUTURE,STDLIB,NORDIGEN,FIRSTPARTY,THIRDPARTY,LOCALFOLDER',
+                'sections': ['FUTURE', 'STDLIB', 'NORDIGEN', 'FIRSTPARTY', 'THIRDPARTY', 'LOCALFOLDER'],
                 'indent': '    ',
                 'multi_line_output': 3,
                 'lines_after_imports': 2}
-    assert SortImports(test_input, **settings).output == expected_output
+    assert SortImports(file_contents=test_input, **settings).output == expected_output
