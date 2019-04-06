@@ -2926,3 +2926,22 @@ def test_standard_library_deprecates_user_issue_778():
                   '\n'
                   'import user\n')
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_failing_file_check_916():
+    test_input = ('#!/usr/bin/env python\n'
+                  '# -*- coding: utf-8 -*-\n'
+                  'from __future__ import unicode_literals\n')
+    expected_output = ('#!/usr/bin/env python\n'
+                       '# -*- coding: utf-8 -*-\n'
+                       '# FUTURE\n'
+                       'from __future__ import unicode_literals\n')
+    settings = {'known_future_library': 'future',
+                'import_heading_future': 'FUTURE',
+                'sections': ['FUTURE', 'STDLIB', 'NORDIGEN', 'FIRSTPARTY', 'THIRDPARTY', 'LOCALFOLDER'],
+                'indent': '    ',
+                'multi_line_output': 3,
+                'lines_after_imports': 2}
+    assert SortImports(file_contents=test_input, **settings).output == expected_output
+    assert SortImports(file_contents=expected_output, **settings).output == expected_output
+    assert not SortImports(file_contents=expected_output, check=True, **settings).incorrectly_sorted

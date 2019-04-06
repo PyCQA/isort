@@ -829,7 +829,7 @@ class SortImports(object):
             self._in_top_comment = True
             return True
         elif self._in_top_comment:
-            if not line.startswith("#"):
+            if not line.startswith("#") or line in self._section_comments:
                 self._in_top_comment = False
                 self._first_comment_index_end = self.index - 1
 
