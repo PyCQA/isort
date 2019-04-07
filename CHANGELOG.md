@@ -13,6 +13,9 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
+### 4.3.17 - April 7, 2019 - hot fix release
+- Fixed issue #905 & #919: Import section headers behaving strangely
+
 ### 4.3.16 - March 23, 2019 - hot fix release
 - Fixed issue #909 - skip and skip-glob are not enforced when using settings-path.
 - Fixed issue #907 - appdirs optional requirement does not correctly specify version
