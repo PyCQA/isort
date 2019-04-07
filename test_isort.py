@@ -2980,3 +2980,20 @@ def test_failing_file_check_916():
     assert SortImports(file_contents=test_input, **settings).output == expected_output
     assert SortImports(file_contents=expected_output, **settings).output == expected_output
     assert not SortImports(file_contents=expected_output, check=True, **settings).incorrectly_sorted
+
+
+def test_import_heading_issue_905():
+    config = {'import_heading_stdlib': 'Standard library imports',
+              'import_heading_thirdparty': 'Third party imports',
+              'import_heading_firstparty': 'Local imports',
+              'known_third_party': ['numpy'],
+              'known_first_party': ['oklib']}
+    test_input = ('# Standard library imports\n'
+                  'import os.path as osp\n'
+                  '\n'
+                  '# Third party imports\n'
+                  'import numpy as np\n'
+                  '\n'
+                  '# Local imports\n'
+                  'from oklib.plot_ok import imagesc\n')
+    assert SortImports(file_contents=test_input, **config).output == test_input
