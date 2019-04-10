@@ -2997,3 +2997,26 @@ def test_import_heading_issue_905():
                   '# Local imports\n'
                   'from oklib.plot_ok import imagesc\n')
     assert SortImports(file_contents=test_input, **config).output == test_input
+
+
+def test_isort_keeps_comments_issue_691():
+    test_input = ('import os\n'
+                  '# This will make sure the app is always imported when\n'
+                  '# Django starts so that shared_task will use this app.\n'
+                  'from .celery import app as celery_app  # noqa\n'
+                  '\n'
+                  'PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))\n'
+                  '\n'
+                  'def path(*subdirectories):\n'
+                  '    return os.path.join(PROJECT_DIR, *subdirectories)\n')
+    expected_output = ('import os\n'
+                       '\n'
+                       '# This will make sure the app is always imported when\n'
+                       '# Django starts so that shared_task will use this app.\n'
+                       'from .celery import app as celery_app  # noqa\n'
+                       '\n'
+                       'PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))\n'
+                       '\n'
+                       'def path(*subdirectories):\n'
+                       '    return os.path.join(PROJECT_DIR, *subdirectories)\n')
+    assert SortImports(file_contents=test_input).output == expected_output
