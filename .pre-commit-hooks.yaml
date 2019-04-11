@@ -2,5 +2,5 @@
     name: isort
     entry: isort
     require_serial: true
-    additional_dependencies: []
     language: python
+    types: [python]
