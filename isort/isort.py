@@ -236,6 +236,8 @@ class SortImports(object):
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
         elif write_to_stdout:
+            if sys.version_info[0] < 3:
+                self.output = self.output.encode(self.file_encoding)
             sys.stdout.write(self.output)
         elif file_name and not check:
             if self.output == file_contents:
