@@ -316,6 +316,8 @@ def _update_with_config_file(
 
 
 def _as_list(value: str) -> List[str]:
+    if isinstance(value, list):
+        return [item.strip() for item in value]
     filtered = [
         item.strip()
         for item in value.replace('\n', ',').split(',')
