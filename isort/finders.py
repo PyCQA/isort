@@ -20,15 +20,9 @@ except ImportError:
     pipreqs = None
 
 try:
-    # pip>=10
-    from pip._internal.download import PipSession
-    from pip._internal.req import parse_requirements
+    from pip_api import parse_requirements
 except ImportError:
-    try:
-        from pip.download import PipSession
-        from pip.req import parse_requirements
-    except ImportError:
-        parse_requirements = None
+    parse_requirements = None
 
 try:
     from requirementslib import Pipfile
@@ -325,8 +319,8 @@ class RequirementsFinder(ReqsBaseFinder):
         result = []
 
         with chdir(os.path.dirname(path)):
-            requirements = parse_requirements(path, session=PipSession())
-            for req in requirements:
+            requirements = parse_requirements(path)
+            for req in requirements.values():
                 if req.name:
                     result.append(req.name)
 
