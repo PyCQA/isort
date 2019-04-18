@@ -24,7 +24,7 @@ setup(name='isort',
       extras_require={
           'pipfile': ['pipreqs', 'requirementslib'],
           'pyproject': ['toml'],
-          'requirements': ['pip', 'pipreqs'],
+          'requirements': ['pip', 'pipreqs', 'pip-api'],
           'xdg_home': ['appdirs>=1.4.0'],
       },
       python_requires=">=3.4",
