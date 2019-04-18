@@ -2578,8 +2578,6 @@ def test_new_lines_are_preserved():
         os.remove(n_newline.name)
 
 
-@pytest.mark.skipif(not finders.RequirementsFinder.enabled, reason='RequirementsFinder not enabled (too old version of pip?)')
-@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_requirements_finder(tmpdir):
     subdir = tmpdir.mkdir('subdir').join("lol.txt")
     subdir.write("flask")
@@ -2656,8 +2654,6 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 """
 
 
-@pytest.mark.skipif(not finders.PipfileFinder.enabled, reason='PipfileFinder not enabled (missing requirementslib?)')
-@pytest.mark.skipif(not finders.pipreqs, reason='pipreqs is missing')
 def test_pipfile_finder(tmpdir):
     pipfile = tmpdir.join('Pipfile')
     pipfile.write(PIPFILE)
