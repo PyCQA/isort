@@ -28,10 +28,11 @@ import copy
 import itertools
 import re
 from collections import OrderedDict, namedtuple
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
 from isort.format import format_natural, format_simplified
+
 from . import settings
 from .finders import FindersManager
 from .natural import nsorted
@@ -108,13 +109,13 @@ class _SortImports(object):
 
         if self.config['atomic']:
             try:
-                out_lines_without_top_comment = self._strip_top_comments(self.out_lines, self.line_separator)
+                out_lines_without_top_comment = self.get_out_lines_without_top_comment()
                 compile(out_lines_without_top_comment, self.file_path, 'exec', 0, 1)
             except SyntaxError:
                 self.output = file_contents
                 self.incorrectly_sorted = True
                 try:
-                    in_lines_without_top_comment = self._strip_top_comments(self.in_lines, self.line_separator)
+                    in_lines_without_top_comment = self.get_in_lines_without_top_comment()
                     compile(in_lines_without_top_comment, self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
                           format(self.file_path))
@@ -137,6 +138,12 @@ class _SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
+
+    def get_out_lines_without_top_comment(self) -> str:
+        return self._strip_top_comments(self.out_lines, self.line_separator)
+
+    def get_in_lines_without_top_comment(self) -> str:
+        return self._strip_top_comments(self.in_lines, self.line_separator)
 
     def determine_line_separator(self, file_contents: str) -> str:
         if self.config['line_ending']:
@@ -972,36 +979,3 @@ class _SortImports(object):
                                 " Do you need to define a default section?".format(import_from, line)
                             )
                         self.imports[placed_module][import_type][module] = None
-
-
-def determine_file_encoding(fname: str, default: str = 'utf-8') -> str:
-    # see https://www.python.org/dev/peps/pep-0263/
-    pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
-
-    coding = default
-    with open(fname, 'rb') as f:
-        for line_number, line in enumerate(f, 1):
-            groups = re.findall(pattern, line)
-            if groups:
-                coding = groups[0].decode('ascii')
-                break
-            if line_number > 2:
-                break
-
-    return coding
-
-
-def read_file_contents(file_path: str, encoding: str, fallback_encoding: str) -> Tuple[Optional[str], Optional[str]]:
-    with open(file_path, encoding=encoding, newline='') as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, encoding
-        except UnicodeDecodeError:
-            pass
-
-    with open(file_path, encoding=fallback_encoding, newline='') as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, fallback_encoding
-        except UnicodeDecodeError:
-            return None, None
