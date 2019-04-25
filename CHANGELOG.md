@@ -89,7 +89,7 @@ New:
 
 Fixes:
 - Improved black compatibility.
-- Isort will no detect files in the CWD as first-party.
+- Isort will now detect files in the CWD as first-party.
 - Fixed several cases where '-ns' or 'not_skip' was being incorrectly ignored.
 - Fixed sorting of relative path imports ('.', '..', '...', etc).
 - Fixed bugs caused by a failure to maintain order when loading iterables from config files.
