@@ -34,8 +34,7 @@ import py
 import pytest
 
 from isort import finders, main, settings
-from isort.isort import SortImports
-from isort.main import is_python_file
+from isort.main import is_python_file, SortImports
 from isort.settings import WrapModes
 from isort.utils import exists_case_sensitive
 

@@ -56,7 +56,7 @@ if TYPE_CHECKING:
     })
 
 
-class SortImports(object):
+class _SortImports(object):
     incorrectly_sorted = False
     skipped = False
 
