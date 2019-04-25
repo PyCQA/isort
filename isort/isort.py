@@ -36,7 +36,7 @@ from difflib import unified_diff
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
-from isort.format import format_natural, format_simplified
+from isort.format import format_natural, format_simplified, show_unified_diff, ask_whether_to_apply_changes_to_file
 
 from . import settings
 from .finders import FindersManager
@@ -160,6 +160,7 @@ class _SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
         self.output = self.line_separator.join(self.out_lines)
+
         if self.config['atomic']:
             try:
                 out_lines_without_top_comment = self._strip_top_comments(self.out_lines, self.line_separator)
@@ -176,6 +177,7 @@ class _SortImports(object):
                     print("ERROR: {0} File contains syntax errors.".format(self.file_path))
 
                 return
+
         if check:
             check_output = self.output
             check_against = file_contents
@@ -190,23 +192,24 @@ class _SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
+
         if show_diff or self.config['show_diff']:
-            self._show_diff(file_contents)
+            show_unified_diff(file_input=file_contents, file_output=self.output,
+                              file_path=self.file_path)
+
         elif write_to_stdout:
             sys.stdout.write(self.output)
+
         elif file_name and not check:
             if self.output == file_contents:
                 return
 
             if ask_to_apply:
-                self._show_diff(file_contents)
-                answer = None
-                while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
-                    answer = input("Apply suggested changes to '{0}' [y/n/q]? ".format(self.file_path)).lower()
-                    if answer in ('no', 'n'):
-                        return
-                    if answer in ('quit', 'q'):
-                        sys.exit(1)
+                show_unified_diff(file_input=file_contents, file_output=self.output,
+                                  file_path=self.file_path)
+                apply_changes = ask_whether_to_apply_changes_to_file(self.file_path)
+                if not apply_changes:
+                    return
 
             with open(self.file_path, 'w', encoding=self.file_encoding, newline='') as output_file:
                 if not self.config['quiet']:
@@ -222,18 +225,6 @@ class _SortImports(object):
     @property
     def correctly_sorted(self) -> bool:
         return not self.incorrectly_sorted
-
-    def _show_diff(self, file_contents: str) -> None:
-        for line in unified_diff(
-            file_contents.splitlines(keepends=True),
-            self.output.splitlines(keepends=True),
-            fromfile=self.file_path + ':before',
-            tofile=self.file_path + ':after',
-            fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))
-                             if self.file_path else datetime.now()),
-            tofiledate=str(datetime.now())
-        ):
-            sys.stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
