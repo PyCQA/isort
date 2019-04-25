@@ -61,23 +61,18 @@ class _SortImports(object):
     skipped = False
 
     def __init__(
-        self,
-        file_path: Optional[str] = None,
-        file_contents: Optional[str] = None,
-        write_to_stdout: bool = False,
-        check: bool = False,
-        show_diff: bool = False,
-        settings_path: Optional[str] = None,
-        ask_to_apply: bool = False,
-        run_path: str = '',
-        check_skip: bool = True,
-        **setting_overrides: Any
+            self, *,
+            config: Dict[str, Any],
+            file_path: Optional[str] = None,
+            file_contents: Optional[str] = None,
+            write_to_stdout: bool = False,
+            check: bool = False,
+            show_diff: bool = False,
+            ask_to_apply: bool = False,
+            run_path: str = '',
+            check_skip: bool = True
     ) -> None:
-        if not settings_path and file_path:
-            settings_path = os.path.dirname(os.path.abspath(file_path))
-        settings_path = settings_path or os.getcwd()
-
-        self.config = settings.prepare_config(settings_path, **setting_overrides)
+        self.config = config
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
@@ -89,6 +84,7 @@ class _SortImports(object):
         self.file_encoding = 'utf-8'
         file_name = file_path
         self.file_path = file_path or ""
+
         if file_path:
             file_path = os.path.abspath(file_path)
             if check_skip:
@@ -188,6 +184,7 @@ class _SortImports(object):
                     print("ERROR: {0} File contains syntax errors.".format(self.file_path))
 
                 return
+
         if check:
             check_output = self.output
             check_against = file_contents
@@ -202,6 +199,7 @@ class _SortImports(object):
 
             print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
             self.incorrectly_sorted = True
+
         if show_diff or self.config['show_diff']:
             self._show_diff(file_contents)
         elif write_to_stdout:
@@ -219,6 +217,7 @@ class _SortImports(object):
                         return
                     if answer in ('quit', 'q'):
                         sys.exit(1)
+
             with open(self.file_path, 'w', encoding=self.file_encoding, newline='') as output_file:
                 if not self.config['quiet']:
                     print("Fixing {0}".format(self.file_path))
