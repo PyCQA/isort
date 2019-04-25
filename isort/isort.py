@@ -36,6 +36,7 @@ from difflib import unified_diff
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
+from isort.format import format_natural, format_simplified
 
 from . import settings
 from .finders import FindersManager
@@ -77,8 +78,8 @@ class _SortImports(object):
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
-        self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
-        self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
+        self.remove_imports = [format_simplified(removal) for removal in self.config['remove_imports']]
+        self.add_imports = [format_natural(addition) for addition in self.config['add_imports']]
         self._section_comments = ["# " + value for key, value in self.config.items()
                                   if key.startswith('import_heading') and value]
 
@@ -106,9 +107,9 @@ class _SortImports(object):
                 # default encoding for open(mode='r') on the system
                 fallback_encoding = locale.getpreferredencoding(False)
 
-                file_contents, used_encoding = self.read_file_contents(file_path,
-                                                                       encoding=preferred_encoding,
-                                                                       fallback_encoding=fallback_encoding)
+                file_contents, used_encoding = read_file_contents(file_path,
+                                                                  encoding=preferred_encoding,
+                                                                  fallback_encoding=fallback_encoding)
                 if used_encoding is None:
                     self.skipped = True
                     if self.config['verbose']:
@@ -217,21 +218,6 @@ class _SortImports(object):
             return self.config['line_ending']
         else:
             return utils.infer_line_separator(file_contents)
-
-    def read_file_contents(self, file_path: str, encoding: str, fallback_encoding: str) -> Tuple[Optional[str], Optional[str]]:
-        with open(file_path, encoding=encoding, newline='') as file_to_import_sort:
-            try:
-                file_contents = file_to_import_sort.read()
-                return file_contents, encoding
-            except UnicodeDecodeError:
-                pass
-
-        with open(file_path, encoding=fallback_encoding, newline='') as file_to_import_sort:
-            try:
-                file_contents = file_to_import_sort.read()
-                return file_contents, fallback_encoding
-            except UnicodeDecodeError:
-                return None, None
 
     @property
     def correctly_sorted(self) -> bool:
@@ -864,29 +850,6 @@ class _SortImports(object):
 
         return line, comments, new_comments
 
-    @staticmethod
-    def _format_simplified(import_line: str) -> str:
-        import_line = import_line.strip()
-        if import_line.startswith("from "):
-            import_line = import_line.replace("from ", "")
-            import_line = import_line.replace(" import ", ".")
-        elif import_line.startswith("import "):
-            import_line = import_line.replace("import ", "")
-
-        return import_line
-
-    @staticmethod
-    def _format_natural(import_line: str) -> str:
-        import_line = import_line.strip()
-        if not import_line.startswith("from ") and not import_line.startswith("import "):
-            if "." not in import_line:
-                return "import {0}".format(import_line)
-            parts = import_line.split(".")
-            end = parts.pop(-1)
-            return "from {0} import {1}".format(".".join(parts), end)
-
-        return import_line
-
     def _skip_line(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
@@ -1113,3 +1076,19 @@ def determine_file_encoding(fname: str, default: str = 'utf-8') -> str:
                 break
 
     return coding
+
+
+def read_file_contents(file_path: str, encoding: str, fallback_encoding: str) -> Tuple[Optional[str], Optional[str]]:
+    with open(file_path, encoding=encoding, newline='') as file_to_import_sort:
+        try:
+            file_contents = file_to_import_sort.read()
+            return file_contents, encoding
+        except UnicodeDecodeError:
+            pass
+
+    with open(file_path, encoding=fallback_encoding, newline='') as file_to_import_sort:
+        try:
+            file_contents = file_to_import_sort.read()
+            return file_contents, fallback_encoding
+        except UnicodeDecodeError:
+            return None, None
