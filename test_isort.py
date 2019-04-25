@@ -28,6 +28,7 @@ import sys
 import sysconfig
 from subprocess import check_output
 from tempfile import NamedTemporaryFile
+from typing import Any, Dict, List
 
 import py
 import pytest
@@ -970,7 +971,7 @@ def test_multiline_import():
                             'line_length': 120,
                             'known_first_party': ['asdf', 'qwer'],
                             'default_section': 'THIRDPARTY',
-                            'forced_separate': 'asdf'}
+                            'forced_separate': 'asdf'}  # type: Dict[str, Any]
     expected_output = ("from pkg import more_stuff\n"
                        "from pkg import other_suff\n"
                        "from pkg import stuff\n")
@@ -1754,7 +1755,7 @@ def test_alphabetic_sorting():
                   "from Products.CMFPlone import utils\n"
                   )
     options = {'force_single_line': True,
-               'force_alphabetical_sort_within_sections': True, }
+               'force_alphabetical_sort_within_sections': True}  # type: Dict[str, Any]
 
     output = SortImports(file_contents=test_input, known_first_party=['django'], **options).output
     assert output == test_input
@@ -1768,7 +1769,7 @@ def test_alphabetic_sorting_multi_line():
     """Test to ensure isort correctly handles multiline import see: issue 364"""
     test_input = ("from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
                   "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n")
-    options = {'force_alphabetical_sort_within_sections': True, }
+    options = {'force_alphabetical_sort_within_sections': True}  # type: Dict[str, Any]
     assert SortImports(file_contents=test_input, **options).output == test_input
 
 
@@ -2075,7 +2076,7 @@ def test_plone_style():
                   "import unittest\n"
                   "import Zope\n")
     options = {'force_single_line': True,
-               'force_alphabetical_sort': True}
+               'force_alphabetical_sort': True}  # type: Dict[str, Any]
     assert SortImports(file_contents=test_input, **options).output == test_input
 
 
@@ -2110,7 +2111,7 @@ def test_sys_path_mutation(tmpdir):
     """Test to ensure sys.path is not modified"""
     tmpdir.mkdir('src').mkdir('a')
     test_input = "from myproject import test"
-    options = {'virtual_env': str(tmpdir)}
+    options = {'virtual_env': str(tmpdir)}  # type: Dict[str, Any]
     expected_length = len(sys.path)
     SortImports(file_contents=test_input, **options).output
     assert len(sys.path) == expected_length
@@ -2683,7 +2684,7 @@ def test_monkey_patched_urllib():
     with pytest.raises(ImportError):
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
-        from urllib import quote  # noqa: F401
+        from urllib import quote  # type: ignore  # noqa: F401
 
 
 def test_path_finder(monkeypatch):
@@ -2761,8 +2762,8 @@ def test_safety_excludes(tmpdir, enabled):
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
     config = dict(settings.default.copy(), safety_excludes=enabled)
-    skipped = []
-    codes = [str(tmpdir)],
+    skipped = []  # type: List[str]
+    codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped)
 
     # if enabled files within nested unsafe directories should be skipped
@@ -2791,7 +2792,7 @@ def test_skip_glob(tmpdir, skip_glob_assert):
     code_dir.join('file.py').write('import os')
 
     config = dict(settings.default.copy(), skip_glob=skip_glob)
-    skipped = []
+    skipped = []  # type: List[str]
     file_names = set(os.path.relpath(f, str(base_dir)) for f in main.iter_source_code([str(base_dir)], config, skipped))
     assert len(skipped) == skipped_count
     assert file_names == file_names
@@ -2972,7 +2973,7 @@ def test_failing_file_check_916():
                 'sections': ['FUTURE', 'STDLIB', 'NORDIGEN', 'FIRSTPARTY', 'THIRDPARTY', 'LOCALFOLDER'],
                 'indent': '    ',
                 'multi_line_output': 3,
-                'lines_after_imports': 2}
+                'lines_after_imports': 2}  # type: Dict[str, Any]
     assert SortImports(file_contents=test_input, **settings).output == expected_output
     assert SortImports(file_contents=expected_output, **settings).output == expected_output
     assert not SortImports(file_contents=expected_output, check=True, **settings).incorrectly_sorted
@@ -2983,7 +2984,7 @@ def test_import_heading_issue_905():
               'import_heading_thirdparty': 'Third party imports',
               'import_heading_firstparty': 'Local imports',
               'known_third_party': ['numpy'],
-              'known_first_party': ['oklib']}
+              'known_first_party': ['oklib']}  # type: Dict[str, Any]
     test_input = ('# Standard library imports\n'
                   'import os.path as osp\n'
                   '\n'

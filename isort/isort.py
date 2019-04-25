@@ -156,7 +156,7 @@ class SortImports(object):
         self.as_map = {}  # type: Dict[str, str]
 
         section_names = self.config['sections']
-        self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])
+        self.sections = namedtuple('Sections', section_names)(*[name for name in section_names])  # type: Any
         for section in itertools.chain(self.sections, self.config['forced_separate']):
             self.imports[section] = {'straight': OrderedDict(), 'from': OrderedDict()}
 
