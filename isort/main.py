@@ -27,7 +27,7 @@ from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional
 
 import setuptools
 
-from isort import __version__, SortImports
+from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
 
 INTRO = r"""
