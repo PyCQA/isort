@@ -54,15 +54,7 @@ if TYPE_CHECKING:
 
 
 class _SortImports(object):
-    incorrectly_sorted = False
-
-    def __init__(
-            self, *,
-            config: Dict[str, Any],
-            file_path: Optional[str] = None,
-            file_contents: Optional[str] = None,
-            check: bool = False,
-    ) -> None:
+    def __init__(self, file_contents: str, config: Dict[str, Any]) -> None:
         self.config = config
 
         self.place_imports = {}  # type: Dict[str, List[str]]
@@ -72,7 +64,6 @@ class _SortImports(object):
         self._section_comments = ["# " + value for key, value in self.config.items()
                                   if key.startswith('import_heading') and value]
 
-        self.file_path = file_path
         self.line_separator = self.determine_line_separator(file_contents)
 
         self.in_lines = file_contents.split(self.line_separator)
@@ -107,53 +98,27 @@ class _SortImports(object):
         self.out_lines.append("")
         self.output = self.line_separator.join(self.out_lines)
 
-        if self.config['atomic']:
-            try:
-                out_lines_without_top_comment = self.get_out_lines_without_top_comment()
-                compile(out_lines_without_top_comment, self.file_path, 'exec', 0, 1)
-            except SyntaxError:
-                self.output = file_contents
-                self.incorrectly_sorted = True
-                try:
-                    in_lines_without_top_comment = self.get_in_lines_without_top_comment()
-                    compile(in_lines_without_top_comment, self.file_path, 'exec', 0, 1)
-                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
-                          format(self.file_path))
-                except SyntaxError:
-                    print("ERROR: {0} File contains syntax errors.".format(self.file_path))
-
-                return
-
-        if check:
-            check_output = self.output
-            check_against = file_contents
-            if self.config['ignore_whitespace']:
-                check_output = check_output.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
-                check_against = check_against.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
-
-            if check_output.strip() == check_against.strip():
-                if self.config['verbose']:
-                    print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
-                return
-
-            print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
-            self.incorrectly_sorted = True
-
     def get_out_lines_without_top_comment(self) -> str:
         return self._strip_top_comments(self.out_lines, self.line_separator)
 
     def get_in_lines_without_top_comment(self) -> str:
         return self._strip_top_comments(self.in_lines, self.line_separator)
 
+    def check_if_input_already_sorted(self, output: str, check_against: str,
+                                      *, current_file_path) -> bool:
+        if output.strip() == check_against.strip():
+            if self.config['verbose']:
+                print("SUCCESS: {0} Everything Looks Good!".format(current_file_path))
+            return True
+
+        print("ERROR: {0} Imports are incorrectly sorted.".format(current_file_path))
+        return False
+
     def determine_line_separator(self, file_contents: str) -> str:
         if self.config['line_ending']:
             return self.config['line_ending']
         else:
             return utils.infer_line_separator(file_contents)
-
-    @property
-    def correctly_sorted(self) -> bool:
-        return not self.incorrectly_sorted
 
     @staticmethod
     def _strip_top_comments(lines: Sequence[str], line_separator: str) -> str:

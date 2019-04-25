@@ -2,7 +2,7 @@ import locale
 import os
 import re
 import sys
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from isort import settings
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
@@ -118,12 +118,40 @@ class SortImports(object):
                 sys.stdout.write(file_contents)
             return
 
-        self.sorted_imports = _SortImports(file_path=self.file_path,
-                                           file_contents=file_contents,
-                                           check=check,
+        self.sorted_imports = _SortImports(file_contents=file_contents,
                                            config=self.config)
         self.output = self.sorted_imports.output
-        self.incorrectly_sorted = self.sorted_imports.incorrectly_sorted
+
+        if self.config['atomic']:
+            try:
+                out_lines_without_top_comment = self.sorted_imports.get_out_lines_without_top_comment()
+                compile(out_lines_without_top_comment, self.file_path, 'exec', 0, 1)
+            except SyntaxError:
+                self.output = file_contents
+                self.incorrectly_sorted = True
+                try:
+                    in_lines_without_top_comment = self.sorted_imports.get_in_lines_without_top_comment()
+                    compile(in_lines_without_top_comment, self.file_path, 'exec', 0, 1)
+                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
+                          format(self.file_path))
+                except SyntaxError:
+                    print("ERROR: {0} File contains syntax errors.".format(self.file_path))
+
+                return
+
+        if check:
+            check_output = self.output
+            check_against = file_contents
+            if self.config['ignore_whitespace']:
+                check_output = check_output.replace(self.sorted_imports.line_separator, "").replace(" ", "").replace("\x0c", "")
+                check_against = check_against.replace(self.sorted_imports.line_separator, "").replace(" ", "").replace("\x0c", "")
+
+            current_input_sorted_correctly = self.sorted_imports.check_if_input_already_sorted(check_output, check_against,
+                                                                                               current_file_path=self.file_path)
+            if current_input_sorted_correctly:
+                return
+            else:
+                self.incorrectly_sorted = True
 
         if show_diff or self.config['show_diff']:
             show_unified_diff(file_input=file_contents, file_output=self.output,
