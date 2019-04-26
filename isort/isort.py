@@ -193,7 +193,7 @@ class _SortImports(object):
 
     def _add_comments(
         self,
-        comments: Sequence[str],
+        comments: Optional[Sequence[str]],
         original_string: str = ""
     ) -> str:
         """

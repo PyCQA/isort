@@ -42,7 +42,7 @@ def read_file_contents(file_path: str, encoding: str, fallback_encoding: str) ->
             return None, None
 
 
-def get_settings_path(settings_path: Optional[str], current_file_path: str) -> str:
+def get_settings_path(settings_path: Optional[str], current_file_path: Optional[str]) -> str:
     if settings_path:
         return settings_path
 
