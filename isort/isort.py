@@ -26,16 +26,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 import copy
 import itertools
-import locale
-import os
 import re
-import sys
 from collections import OrderedDict, namedtuple
-from datetime import datetime
-from difflib import unified_diff
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
+from isort.format import format_natural, format_simplified
 
 from . import settings
 from .finders import FindersManager
@@ -58,73 +54,15 @@ if TYPE_CHECKING:
 
 
 class _SortImports(object):
-    incorrectly_sorted = False
-    skipped = False
-
-    def __init__(
-            self, *,
-            config: Dict[str, Any],
-            file_path: Optional[str] = None,
-            file_contents: Optional[str] = None,
-            write_to_stdout: bool = False,
-            check: bool = False,
-            show_diff: bool = False,
-            ask_to_apply: bool = False,
-            run_path: str = '',
-            check_skip: bool = True
-    ) -> None:
+    def __init__(self, file_contents: str, config: Dict[str, Any]) -> None:
         self.config = config
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
-        self.remove_imports = [self._format_simplified(removal) for removal in self.config['remove_imports']]
-        self.add_imports = [self._format_natural(addition) for addition in self.config['add_imports']]
+        self.remove_imports = [format_simplified(removal) for removal in self.config['remove_imports']]
+        self.add_imports = [format_natural(addition) for addition in self.config['add_imports']]
         self._section_comments = ["# " + value for key, value in self.config.items()
                                   if key.startswith('import_heading') and value]
-
-        self.file_encoding = 'utf-8'
-        file_name = file_path
-        self.file_path = file_path or ""
-        if file_path:
-            file_path = os.path.abspath(file_path)
-            if check_skip:
-                if run_path and file_path.startswith(run_path):
-                    file_name = os.path.relpath(file_path, run_path)
-                else:
-                    file_name = file_path
-                    run_path = ''
-
-                if settings.file_should_be_skipped(file_name, self.config, run_path):
-                    self.skipped = True
-                    if self.config['verbose']:
-                        print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                              " or matches a glob in 'skip_glob' setting".format(file_path))
-                    file_contents = None
-
-            if not self.skipped and not file_contents:
-                preferred_encoding = determine_file_encoding(file_path)
-                # default encoding for open(mode='r') on the system
-                fallback_encoding = locale.getpreferredencoding(False)
-
-                file_contents, used_encoding = self.read_file_contents(file_path,
-                                                                       encoding=preferred_encoding,
-                                                                       fallback_encoding=fallback_encoding)
-                if used_encoding is None:
-                    self.skipped = True
-                    if self.config['verbose']:
-                        print("WARNING: {} was skipped as it couldn't be opened with the given "
-                              "{} encoding or {} fallback encoding".format(file_path,
-                                                                           self.file_encoding,
-                                                                           fallback_encoding))
-                else:
-                    self.file_encoding = used_encoding
-
-        if file_contents is None or ("isort:" + "skip_file") in file_contents:
-            self.skipped = True
-            self.output = None
-            if write_to_stdout and file_contents:
-                sys.stdout.write(file_contents)
-            return
 
         self.line_separator = self.determine_line_separator(file_contents)
 
@@ -159,95 +97,28 @@ class _SortImports(object):
             self.out_lines.pop(-1)
         self.out_lines.append("")
         self.output = self.line_separator.join(self.out_lines)
-        if self.config['atomic']:
-            try:
-                out_lines_without_top_comment = self._strip_top_comments(self.out_lines, self.line_separator)
-                compile(out_lines_without_top_comment, self.file_path, 'exec', 0, 1)
-            except SyntaxError:
-                self.output = file_contents
-                self.incorrectly_sorted = True
-                try:
-                    in_lines_without_top_comment = self._strip_top_comments(self.in_lines, self.line_separator)
-                    compile(in_lines_without_top_comment, self.file_path, 'exec', 0, 1)
-                    print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
-                          format(self.file_path))
-                except SyntaxError:
-                    print("ERROR: {0} File contains syntax errors.".format(self.file_path))
 
-                return
-        if check:
-            check_output = self.output
-            check_against = file_contents
-            if self.config['ignore_whitespace']:
-                check_output = check_output.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
-                check_against = check_against.replace(self.line_separator, "").replace(" ", "").replace("\x0c", "")
+    def get_out_lines_without_top_comment(self) -> str:
+        return self._strip_top_comments(self.out_lines, self.line_separator)
 
-            if check_output.strip() == check_against.strip():
-                if self.config['verbose']:
-                    print("SUCCESS: {0} Everything Looks Good!".format(self.file_path))
-                return
+    def get_in_lines_without_top_comment(self) -> str:
+        return self._strip_top_comments(self.in_lines, self.line_separator)
 
-            print("ERROR: {0} Imports are incorrectly sorted.".format(self.file_path))
-            self.incorrectly_sorted = True
-        if show_diff or self.config['show_diff']:
-            self._show_diff(file_contents)
-        elif write_to_stdout:
-            sys.stdout.write(self.output)
-        elif file_name and not check:
-            if self.output == file_contents:
-                return
+    def check_if_input_already_sorted(self, output: str, check_against: str,
+                                      *, current_file_path) -> bool:
+        if output.strip() == check_against.strip():
+            if self.config['verbose']:
+                print("SUCCESS: {0} Everything Looks Good!".format(current_file_path))
+            return True
 
-            if ask_to_apply:
-                self._show_diff(file_contents)
-                answer = None
-                while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
-                    answer = input("Apply suggested changes to '{0}' [y/n/q]? ".format(self.file_path)).lower()
-                    if answer in ('no', 'n'):
-                        return
-                    if answer in ('quit', 'q'):
-                        sys.exit(1)
-
-            with open(self.file_path, 'w', encoding=self.file_encoding, newline='') as output_file:
-                if not self.config['quiet']:
-                    print("Fixing {0}".format(self.file_path))
-                output_file.write(self.output)
+        print("ERROR: {0} Imports are incorrectly sorted.".format(current_file_path))
+        return False
 
     def determine_line_separator(self, file_contents: str) -> str:
         if self.config['line_ending']:
             return self.config['line_ending']
         else:
             return utils.infer_line_separator(file_contents)
-
-    def read_file_contents(self, file_path: str, encoding: str, fallback_encoding: str) -> Tuple[Optional[str], Optional[str]]:
-        with open(file_path, encoding=encoding, newline='') as file_to_import_sort:
-            try:
-                file_contents = file_to_import_sort.read()
-                return file_contents, encoding
-            except UnicodeDecodeError:
-                pass
-
-        with open(file_path, encoding=fallback_encoding, newline='') as file_to_import_sort:
-            try:
-                file_contents = file_to_import_sort.read()
-                return file_contents, fallback_encoding
-            except UnicodeDecodeError:
-                return None, None
-
-    @property
-    def correctly_sorted(self) -> bool:
-        return not self.incorrectly_sorted
-
-    def _show_diff(self, file_contents: str) -> None:
-        for line in unified_diff(
-            file_contents.splitlines(keepends=True),
-            self.output.splitlines(keepends=True),
-            fromfile=self.file_path + ':before',
-            tofile=self.file_path + ':after',
-            fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(self.file_path))
-                             if self.file_path else datetime.now()),
-            tofiledate=str(datetime.now())
-        ):
-            sys.stdout.write(line)
 
     @staticmethod
     def _strip_top_comments(lines: Sequence[str], line_separator: str) -> str:
@@ -864,29 +735,6 @@ class _SortImports(object):
 
         return line, comments, new_comments
 
-    @staticmethod
-    def _format_simplified(import_line: str) -> str:
-        import_line = import_line.strip()
-        if import_line.startswith("from "):
-            import_line = import_line.replace("from ", "")
-            import_line = import_line.replace(" import ", ".")
-        elif import_line.startswith("import "):
-            import_line = import_line.replace("import ", "")
-
-        return import_line
-
-    @staticmethod
-    def _format_natural(import_line: str) -> str:
-        import_line = import_line.strip()
-        if not import_line.startswith("from ") and not import_line.startswith("import "):
-            if "." not in import_line:
-                return "import {0}".format(import_line)
-            parts = import_line.split(".")
-            end = parts.pop(-1)
-            return "from {0} import {1}".format(".".join(parts), end)
-
-        return import_line
-
     def _skip_line(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
@@ -1096,20 +944,3 @@ class _SortImports(object):
                                 " Do you need to define a default section?".format(import_from, line)
                             )
                         self.imports[placed_module][import_type][module] = None
-
-
-def determine_file_encoding(fname: str, default: str = 'utf-8') -> str:
-    # see https://www.python.org/dev/peps/pep-0263/
-    pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
-
-    coding = default
-    with open(fname, 'rb') as f:
-        for line_number, line in enumerate(f, 1):
-            groups = re.findall(pattern, line)
-            if groups:
-                coding = groups[0].decode('ascii')
-                break
-            if line_number > 2:
-                break
-
-    return coding
