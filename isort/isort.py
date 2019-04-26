@@ -26,6 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 import copy
 import itertools
+import locale
 import os
 import re
 import sys
@@ -61,23 +62,18 @@ class _SortImports(object):
     skipped = False
 
     def __init__(
-        self,
-        file_path: Optional[str] = None,
-        file_contents: Optional[str] = None,
-        write_to_stdout: bool = False,
-        check: bool = False,
-        show_diff: bool = False,
-        settings_path: Optional[str] = None,
-        ask_to_apply: bool = False,
-        run_path: str = '',
-        check_skip: bool = True,
-        **setting_overrides: Any
+            self, *,
+            config: Dict[str, Any],
+            file_path: Optional[str] = None,
+            file_contents: Optional[str] = None,
+            write_to_stdout: bool = False,
+            check: bool = False,
+            show_diff: bool = False,
+            ask_to_apply: bool = False,
+            run_path: str = '',
+            check_skip: bool = True
     ) -> None:
-        if not settings_path and file_path:
-            settings_path = os.path.dirname(os.path.abspath(file_path))
-        settings_path = settings_path or os.getcwd()
-
-        self.config = settings.prepare_config(settings_path, **setting_overrides)
+        self.config = config
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
@@ -102,34 +98,26 @@ class _SortImports(object):
                     self.skipped = True
                     if self.config['verbose']:
                         print("WARNING: {0} was skipped as it's listed in 'skip' setting"
-                            " or matches a glob in 'skip_glob' setting".format(file_path))
+                              " or matches a glob in 'skip_glob' setting".format(file_path))
                     file_contents = None
-            if not self.skipped and not file_contents:
-                file_encoding = coding_check(file_path)
-                with open(file_path, encoding=file_encoding, newline='') as file_to_import_sort:
-                    try:
-                        file_contents = file_to_import_sort.read()
-                        self.file_path = file_path
-                        self.file_encoding = file_encoding
-                        encoding_success = True
-                    except UnicodeDecodeError:
-                        encoding_success = False
 
-                if not encoding_success:
-                    with open(file_path, newline='') as file_to_import_sort:
-                        try:
-                            file_contents = file_to_import_sort.read()
-                            self.file_path = file_path
-                            self.file_encoding = file_to_import_sort.encoding
-                        except UnicodeDecodeError:
-                            encoding_success = False
-                            file_contents = None
-                            self.skipped = True
-                            if self.config['verbose']:
-                                print("WARNING: {} was skipped as it couldn't be opened with the given "
-                                      "{} encoding or {} fallback encoding".format(file_path,
-                                                                                   self.file_encoding,
-                                                                                   file_to_import_sort.encoding))
+            if not self.skipped and not file_contents:
+                preferred_encoding = determine_file_encoding(file_path)
+                # default encoding for open(mode='r') on the system
+                fallback_encoding = locale.getpreferredencoding(False)
+
+                file_contents, used_encoding = self.read_file_contents(file_path,
+                                                                       encoding=preferred_encoding,
+                                                                       fallback_encoding=fallback_encoding)
+                if used_encoding is None:
+                    self.skipped = True
+                    if self.config['verbose']:
+                        print("WARNING: {} was skipped as it couldn't be opened with the given "
+                              "{} encoding or {} fallback encoding".format(file_path,
+                                                                           self.file_encoding,
+                                                                           fallback_encoding))
+                else:
+                    self.file_encoding = used_encoding
 
         if file_contents is None or ("isort:" + "skip_file") in file_contents:
             self.skipped = True
@@ -138,10 +126,7 @@ class _SortImports(object):
                 sys.stdout.write(file_contents)
             return
 
-        if self.config['line_ending']:
-            self.line_separator = self.config['line_ending']
-        else:
-            self.line_separator = utils.infer_line_separator(file_contents)
+        self.line_separator = self.determine_line_separator(file_contents)
 
         self.in_lines = file_contents.split(self.line_separator)
         self.original_num_of_lines = len(self.in_lines)
@@ -176,12 +161,14 @@ class _SortImports(object):
         self.output = self.line_separator.join(self.out_lines)
         if self.config['atomic']:
             try:
-                compile(self._strip_top_comments(self.out_lines, self.line_separator), self.file_path, 'exec', 0, 1)
+                out_lines_without_top_comment = self._strip_top_comments(self.out_lines, self.line_separator)
+                compile(out_lines_without_top_comment, self.file_path, 'exec', 0, 1)
             except SyntaxError:
                 self.output = file_contents
                 self.incorrectly_sorted = True
                 try:
-                    compile(self._strip_top_comments(self.in_lines, self.line_separator), self.file_path, 'exec', 0, 1)
+                    in_lines_without_top_comment = self._strip_top_comments(self.in_lines, self.line_separator)
+                    compile(in_lines_without_top_comment, self.file_path, 'exec', 0, 1)
                     print("ERROR: {0} isort would have introduced syntax errors, please report to the project!".
                           format(self.file_path))
                 except SyntaxError:
@@ -219,10 +206,32 @@ class _SortImports(object):
                         return
                     if answer in ('quit', 'q'):
                         sys.exit(1)
+
             with open(self.file_path, 'w', encoding=self.file_encoding, newline='') as output_file:
                 if not self.config['quiet']:
                     print("Fixing {0}".format(self.file_path))
                 output_file.write(self.output)
+
+    def determine_line_separator(self, file_contents: str) -> str:
+        if self.config['line_ending']:
+            return self.config['line_ending']
+        else:
+            return utils.infer_line_separator(file_contents)
+
+    def read_file_contents(self, file_path: str, encoding: str, fallback_encoding: str) -> Tuple[Optional[str], Optional[str]]:
+        with open(file_path, encoding=encoding, newline='') as file_to_import_sort:
+            try:
+                file_contents = file_to_import_sort.read()
+                return file_contents, encoding
+            except UnicodeDecodeError:
+                pass
+
+        with open(file_path, encoding=fallback_encoding, newline='') as file_to_import_sort:
+            try:
+                file_contents = file_to_import_sort.read()
+                return file_contents, fallback_encoding
+            except UnicodeDecodeError:
+                return None, None
 
     @property
     def correctly_sorted(self) -> bool:
@@ -1089,11 +1098,7 @@ class _SortImports(object):
                         self.imports[placed_module][import_type][module] = None
 
 
-def coding_check(
-    fname: str,
-    default: str = 'utf-8'
-) -> str:
-
+def determine_file_encoding(fname: str, default: str = 'utf-8') -> str:
     # see https://www.python.org/dev/peps/pep-0263/
     pattern = re.compile(br'coding[:=]\s*([-\w.]+)')
 

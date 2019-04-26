@@ -1,5 +1,7 @@
+import os
 from typing import Any, Optional
 
+from isort import settings
 from isort.isort import _SortImports
 
 
@@ -17,8 +19,24 @@ class SortImports(object):
             check_skip: bool = True,
             **setting_overrides: Any
     ):
-        self.sorted_imports = _SortImports(file_path, file_contents, write_to_stdout, check, show_diff, settings_path,
-                                           ask_to_apply, run_path, check_skip, **setting_overrides)
+        _settings_path = settings_path
+        if _settings_path is None:
+            if file_path:
+                _settings_path = os.path.dirname(os.path.abspath(file_path))
+            else:
+                _settings_path = os.getcwd()
+
+        config = settings.prepare_config(_settings_path, **setting_overrides)
+
+        self.sorted_imports = _SortImports(file_path=file_path,
+                                           file_contents=file_contents,
+                                           write_to_stdout=write_to_stdout,
+                                           check=check,
+                                           show_diff=show_diff,
+                                           ask_to_apply=ask_to_apply,
+                                           run_path=run_path,
+                                           check_skip=check_skip,
+                                           config=config)
 
     @property
     def config(self):
