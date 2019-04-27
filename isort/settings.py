@@ -38,7 +38,7 @@ from .utils import difference, union
 try:
     import toml
 except ImportError:
-    toml = None
+    toml = None  # type: ignore
 
 try:
     import appdirs
