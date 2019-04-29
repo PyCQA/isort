@@ -43,12 +43,19 @@ def read_file_contents(file_path: Path, encoding: str, fallback_encoding: str) -
             return None, None
 
 
+def resolve(path: Path) -> Path:
+    if sys.version_info[:2] >= (3, 6):
+        return path.resolve()
+    else:
+        return Path(os.path.abspath(str(path)))
+
+
 def get_settings_path(settings_path: Optional[Path], current_file_path: Optional[Path]) -> Path:
     if settings_path:
         return settings_path
 
     if current_file_path:
-        return current_file_path.resolve().parent
+        return resolve(current_file_path).parent
     else:
         return Path.cwd()
 
@@ -83,7 +90,7 @@ class SortImports(object):
         if file_path:
             self.file_path = file_path  # raw file path (unresolved) ?
 
-            absolute_file_path = file_path.resolve()
+            absolute_file_path = resolve(file_path)
             if check_skip:
                 if run_path and run_path in absolute_file_path.parents:
                     file_name = os.path.relpath(absolute_file_path, run_path)
