@@ -1,7 +1,8 @@
-import os
 import sys
 from datetime import datetime
 from difflib import unified_diff
+from pathlib import Path
+from typing import Optional
 
 
 def format_simplified(import_line: str) -> str:
@@ -27,14 +28,17 @@ def format_natural(import_line: str) -> str:
     return import_line
 
 
-def show_unified_diff(*, file_input: str, file_output: str, file_path: str) -> None:
+def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[Path]) -> None:
+    file_name = '' if file_path is None else str(file_path)
+    file_mtime = str(datetime.now() if file_path is None
+                     else datetime.fromtimestamp(file_path.stat().st_mtime))
+
     unified_diff_lines = unified_diff(
         file_input.splitlines(keepends=True),
         file_output.splitlines(keepends=True),
-        fromfile=file_path + ':before',
-        tofile=file_path + ':after',
-        fromfiledate=str(datetime.fromtimestamp(os.path.getmtime(file_path))
-                         if file_path else datetime.now()),
+        fromfile=file_name + ':before',
+        tofile=file_name + ':after',
+        fromfiledate=file_mtime,
         tofiledate=str(datetime.now())
     )
     for line in unified_diff_lines:

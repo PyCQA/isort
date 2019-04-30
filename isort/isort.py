@@ -98,6 +98,13 @@ class _SortImports(object):
         self.out_lines.append("")
         self.output = self.line_separator.join(self.out_lines)
 
+    def remove_whitespaces(self, contents: str) -> str:
+        contents = (contents
+                    .replace(self.line_separator, "")
+                    .replace(" ", "")
+                    .replace("\x0c", ""))
+        return contents
+
     def get_out_lines_without_top_comment(self) -> str:
         return self._strip_top_comments(self.out_lines, self.line_separator)
 
@@ -105,13 +112,13 @@ class _SortImports(object):
         return self._strip_top_comments(self.in_lines, self.line_separator)
 
     def check_if_input_already_sorted(self, output: str, check_against: str,
-                                      *, current_file_path) -> bool:
+                                      *, logging_file_path: str) -> bool:
         if output.strip() == check_against.strip():
             if self.config['verbose']:
-                print("SUCCESS: {0} Everything Looks Good!".format(current_file_path))
+                print("SUCCESS: {0} Everything Looks Good!".format(logging_file_path))
             return True
 
-        print("ERROR: {0} Imports are incorrectly sorted.".format(current_file_path))
+        print("ERROR: {0} Imports are incorrectly sorted.".format(logging_file_path))
         return False
 
     def determine_line_separator(self, file_contents: str) -> str:

@@ -31,7 +31,8 @@ import re
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
-from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping
+from pathlib import Path
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Union
 
 from .utils import difference, union
 
@@ -172,11 +173,14 @@ default = {'force_to_top': [],
 
 
 @lru_cache()
-def from_path(path: str) -> Dict[str, Any]:
+def from_path(path: Union[str, Path]) -> Dict[str, Any]:
     computed_settings = default.copy()
     isort_defaults = ['~/.isort.cfg']
     if appdirs:
         isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
+
+    if isinstance(path, Path):
+        path = str(path)
 
     _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
     _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
@@ -186,7 +190,7 @@ def from_path(path: str) -> Dict[str, Any]:
     return computed_settings
 
 
-def prepare_config(settings_path: str, **setting_overrides: Any) -> Dict[str, Any]:
+def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, Any]:
     config = from_path(settings_path).copy()
     for key, value in setting_overrides.items():
         access_key = key.replace('not_', '').lower()
