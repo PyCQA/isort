@@ -45,10 +45,10 @@ def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[
         sys.stdout.write(line)
 
 
-def ask_whether_to_apply_changes_to_file(fpath: str) -> bool:
+def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     answer = None
     while answer not in ('yes', 'y', 'no', 'n', 'quit', 'q'):
-        answer = input("Apply suggested changes to '{0}' [y/n/q]? ".format(fpath)).lower()
+        answer = input("Apply suggested changes to '{0}' [y/n/q]? ".format(file_path)).lower()
         if answer in ('no', 'n'):
             return False
         if answer in ('quit', 'q'):
