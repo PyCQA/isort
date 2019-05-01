@@ -296,6 +296,8 @@ def parse_args(argv=None):
                              'where it may not be safe to operate in')
     parser.add_argument('--case-sensitive', dest='case_sensitive', action='store_true',
                         help='Tells isort to include casing when sorting module names')
+    parser.add_argument('--filter-files', dest='filter_files', action='store_true',
+                        help='Tells isort to filter files even when they are explicitly passed in as part of the command')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
@@ -350,6 +352,16 @@ def main(argv=None):
         config.update(arguments)
         wrong_sorted_files = False
         skipped = []
+
+        if config.get('filter_files'):
+            filtered_files = []
+            for file_name in file_names:
+                if should_skip(file_name, config):
+                    skipped.append(file_name)
+                else:
+                    filtered_files.append(file_name)
+            file_names = filtered_files
+
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
