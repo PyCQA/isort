@@ -2944,15 +2944,13 @@ def test_skip_paths_issue_938(tmpdir):
     results = check_output(['isort', 'dont_skip.py', 'migrations/file_glob_skip.py'])
     os.chdir(str(test_run_directory))
 
-    assert not b'skipped' in results.lower()
+    assert b'skipped' not in results.lower()
 
     os.chdir(str(base_dir))
     results = check_output(['isort', '--filter-files', '--settings-path=conf/.isort.cfg', 'dont_skip.py', 'migrations/file_glob_skip.py'])
     os.chdir(str(test_run_directory))
 
     assert b'skipped 1' in results.lower()
-
-
 
 
 def test_standard_library_deprecates_user_issue_778():
