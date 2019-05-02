@@ -13,6 +13,12 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
+### 4.3.18 - May 1, 2019 - hot fix release
+- Fixed an issue with parsing files that contain unicode characters in Python 2
+- Fixed issue #924 - Pulling in pip internals causes depreciation warning
+- Fixed issue #938 - Providing a way to filter explicitly passed in files via configuration settings (`--filter-files`)
+- Improved interoperability with toml configuration files
+
 ### 4.3.17 - April 7, 2019 - hot fix release
 - Fixed issue #905 & #919: Import section headers behaving strangely
 
