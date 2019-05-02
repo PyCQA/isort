@@ -2995,13 +2995,6 @@ def test_skip_paths_issue_938(tmpdir):
     assert b'skipped 1' in results.lower()
 
 
-def test_standard_library_deprecates_user_issue_778():
-    test_input = ('import os\n'
-                  '\n'
-                  'import user\n')
-    assert SortImports(file_contents=test_input).output == test_input
-
-
 def test_failing_file_check_916():
     test_input = ('#!/usr/bin/env python\n'
                   '# -*- coding: utf-8 -*-\n'
