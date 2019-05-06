@@ -2746,3 +2746,257 @@ def test_unwrap_issue_762():
     test_input = ('from os.\\\n'
                   '    path import (join, split)')
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
+
+
+def test_multiple_as_imports():
+    test_input = ('from a import b as b\n'
+                  'from a import b as bb\n'
+                  'from a import b as bb_\n')
+    test_output = SortImports(file_contents=test_input).output
+    assert test_output == test_input
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True).output
+    assert test_output == 'from a import b as b, b as bb, b as bb_\n'
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
+    assert test_output == test_input
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
+    assert test_output == 'from a import b as b, b as bb, b as bb_\n'
+
+    test_input = ('from a import b\n'
+                  'from a import b as b\n'
+                  'from a import b as bb\n'
+                  'from a import b as bb_\n')
+    test_output = SortImports(file_contents=test_input).output
+    assert test_output == 'from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True).output
+    assert test_output == 'from a import b as b, b as bb, b as bb_\n'
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
+    assert test_output == test_input
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
+    assert test_output == 'from a import b, b as b, b as bb, b as bb_\n'
+
+    test_input = ('from a import b as e\n'
+                  'from a import b as c\n'
+                  'from a import b\n'
+                  'from a import b as f\n')
+    test_output = SortImports(file_contents=test_input).output
+    assert test_output == 'from a import b as c\nfrom a import b as e\nfrom a import b as f\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True).output
+    assert test_output == 'from a import b as c, b as e, b as f\n'
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
+    assert test_output == 'from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n'
+    test_output = SortImports(file_contents=test_input, no_inline_sort=True).output
+    assert test_output == 'from a import b as c\nfrom a import b as e\nfrom a import b as f\n'
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True, no_inline_sort=True).output
+    assert test_output == 'from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
+    assert test_output == 'from a import b, b as c, b as e, b as f\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, no_inline_sort=True).output
+    assert test_output == 'from a import b as e, b as c, b as f\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True, no_inline_sort=True).output
+    assert test_output == 'from a import b, b as e, b as c, b as f\n'
+
+    test_input = ('import a as a\n'
+                  'import a as aa\n'
+                  'import a as aa_\n')
+    test_output = SortImports(file_contents=test_input).output
+    assert test_output == test_input
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
+    assert test_output == test_input
+
+    test_input = ('import a\n'
+                  'import a as a\n'
+                  'import a as aa\n'
+                  'import a as aa_\n')
+    test_output = SortImports(file_contents=test_input).output
+    assert test_output == 'import a as a\nimport a as aa\nimport a as aa_\n'
+    test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
+    assert test_output == test_input
+
+def test_all_imports_from_single_module():
+    test_input = ('import a\n'
+                  'from a import *\n'
+                  'from a import b as d\n'
+                  'from a import z, x, y\n'
+                  'from a import b\n'
+                  'from a import w, i as j\n'
+                  'from a import b as c, g as h\n'
+                  'from a import e as f\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w, x, y, z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c, b as d, e as f, g as h, i as j, w, x, y, z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w, x, y, z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import z, x, y, w\n'
+                           'from a import i as j\n'
+                           'from a import g as h\n'
+                           'from a import e as f\n')
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=True).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b, b as c, b as d, e as f, g as h, i as j, w, x, y, z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as d, b as c, z, x, y, w, i as j, g as h, e as f\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=True, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import z, x, y, w\n'
+                           'from a import i as j\n'
+                           'from a import g as h\n'
+                           'from a import e as f\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=True,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=True,
+                              keep_direct_and_as_imports=False, force_single_line=False, no_inline_sort=True).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=True, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=True).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=False,
+                              keep_direct_and_as_imports=False, force_single_line=True, no_inline_sort=True).output
+    assert test_output == 'import a\nfrom a import *\n'
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=True, force_single_line=True, no_inline_sort=False).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=True,
+                              keep_direct_and_as_imports=True, force_single_line=False, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b, b as d, b as c, z, x, y, w, i as j, g as h, e as f\n')
+    test_output = SortImports(file_contents=test_input, combine_star=False, combine_as_imports=False,
+                              keep_direct_and_as_imports=True, force_single_line=True, no_inline_sort=True).output
+    assert test_output == ('import a\n'
+                           'from a import *\n'
+                           'from a import b\n'
+                           'from a import b as c\n'
+                           'from a import b as d\n'
+                           'from a import e as f\n'
+                           'from a import g as h\n'
+                           'from a import i as j\n'
+                           'from a import w\n'
+                           'from a import x\n'
+                           'from a import y\n'
+                           'from a import z\n')
+    test_output = SortImports(file_contents=test_input, combine_star=True, combine_as_imports=True,
+                              keep_direct_and_as_imports=True, force_single_line=True, no_inline_sort=False).output
+    assert test_output == 'import a\nfrom a import *\n'
