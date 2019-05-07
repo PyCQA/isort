@@ -10,7 +10,6 @@ environment:
     - TOXENV: "isort-check"
     - TOXENV: "lint"
     - TOXENV: "mypy"
-    - TOXENV: "py34-coverage"
     - TOXENV: "py35-coverage"
     - TOXENV: "py36-coverage"
     - TOXENV: "py37-coverage"
