@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 from pylama.lint import Linter as BaseLinter
 
-from .isort import SortImports
+from . import SortImports
 
 
 class Linter(BaseLinter):

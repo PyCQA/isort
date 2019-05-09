@@ -23,23 +23,23 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import configparser
+import enum
 import fnmatch
 import os
 import posixpath
 import re
-import stat
 import warnings
-from collections import namedtuple
 from distutils.util import strtobool
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Type
+from pathlib import Path
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Union
 
 from .utils import difference, union
 
 try:
     import toml
 except ImportError:
-    toml = None
+    toml = None  # type: ignore
 
 try:
     import appdirs
@@ -52,12 +52,25 @@ MAX_CONFIG_SEARCH_DEPTH = 25  # The number of parent directories isort will look
 DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 safety_exclude_re = re.compile(
-    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|lib/python[0-9].[0-9]+)/"
+    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
+    r"|lib/python[0-9].[0-9]+)/"
 )
 
-_wrap_mode_strings = ('GRID', 'VERTICAL', 'HANGING_INDENT', 'VERTICAL_HANGING_INDENT', 'VERTICAL_GRID', 'VERTICAL_GRID_GROUPED',
-                      'VERTICAL_GRID_GROUPED_NO_COMMA', 'NOQA')
-WrapModes = namedtuple('WrapModes', _wrap_mode_strings)(*range(len(_wrap_mode_strings)))  # type: Any
+
+class WrapModes(enum.Enum):
+    GRID = 0  # 0
+    VERTICAL = 1
+    HANGING_INDENT = 2
+    VERTICAL_HANGING_INDENT = 3
+    VERTICAL_GRID = 4
+    VERTICAL_GRID_GROUPED = 5
+    VERTICAL_GRID_GROUPED_NO_COMMA = 6
+    NOQA = 7
+
+    @staticmethod
+    def from_string(value: str) -> 'WrapModes':
+        return getattr(WrapModes, str(value), None) or WrapModes(int(value))
+
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
 default = {'force_to_top': [],
@@ -110,19 +123,20 @@ default = {'force_to_top': [],
                                       'test', 'textwrap', 'this', 'thread', 'threading', 'time', 'timeit', 'tkinter',
                                       'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'ttk', 'tty', 'turtle',
                                       'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'urllib2',
-                                      'urlparse', 'user', 'usercustomize', 'uu', 'uuid', 'venv', 'videoreader',
+                                      'urlparse', 'usercustomize', 'uu', 'uuid', 'venv', 'videoreader',
                                       'warnings', 'wave', 'weakref', 'webbrowser', 'whichdb', 'winreg', 'winsound',
                                       'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'xmlrpclib', 'zipapp', 'zipfile',
                                       'zipimport', 'zlib'],
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
-           'multi_line_output': WrapModes.GRID,  # type: ignore
+           'multi_line_output': WrapModes.GRID,
            'forced_separate': [],
            'indent': ' ' * 4,
            'comment_prefix': '  #',
            'length_sort': False,
            'add_imports': [],
            'remove_imports': [],
+           'reverse_relative': False,
            'force_single_line': False,
            'default_section': 'FIRSTPARTY',
            'import_heading_future': '',
@@ -154,15 +168,19 @@ default = {'force_to_top': [],
            'no_lines_before': [],
            'no_inline_sort': False,
            'ignore_comments': False,
-           'safety_excludes': True}
+           'safety_excludes': True,
+           'case_sensitive': False}
 
 
 @lru_cache()
-def from_path(path: str) -> Dict[str, Any]:
+def from_path(path: Union[str, Path]) -> Dict[str, Any]:
     computed_settings = default.copy()
     isort_defaults = ['~/.isort.cfg']
     if appdirs:
         isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
+
+    if isinstance(path, Path):
+        path = str(path)
 
     _update_settings_with_config(path, '.editorconfig', ['~/.editorconfig'], ('*', '*.py', '**.py'), computed_settings)
     _update_settings_with_config(path, 'pyproject.toml', [], ('tool.isort', ), computed_settings)
@@ -170,6 +188,38 @@ def from_path(path: str) -> Dict[str, Any]:
     _update_settings_with_config(path, 'setup.cfg', [], ('isort', 'tool:isort'), computed_settings)
     _update_settings_with_config(path, 'tox.ini', [], ('isort', 'tool:isort'), computed_settings)
     return computed_settings
+
+
+def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, Any]:
+    config = from_path(settings_path).copy()
+    for key, value in setting_overrides.items():
+        access_key = key.replace('not_', '').lower()
+        # The sections config needs to retain order and can't be converted to a set.
+        if access_key != 'sections' and type(config.get(access_key)) in (list, tuple):
+            if key.startswith('not_'):
+                config[access_key] = list(set(config[access_key]).difference(value))
+            else:
+                config[access_key] = list(set(config[access_key]).union(value))
+        else:
+            config[key] = value
+
+    if config['force_alphabetical_sort']:
+        config.update({'force_alphabetical_sort_within_sections': True,
+                       'no_sections': True,
+                       'lines_between_types': 1,
+                       'from_first': True})
+
+    indent = str(config['indent'])
+    if indent.isdigit():
+        indent = " " * int(indent)
+    else:
+        indent = indent.strip("'").strip('"')
+        if indent.lower() == "tab":
+            indent = "\t"
+    config['indent'] = indent
+
+    config['comment_prefix'] = config['comment_prefix'].strip("'").strip('"')
+    return config
 
 
 def _update_settings_with_config(
@@ -204,6 +254,13 @@ def _update_settings_with_config(
         _update_with_config_file(editor_config_file, sections, computed_settings)
 
 
+def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
+    type_converter = type(default.get(setting_name, ''))  # type: Callable[[str], Any]
+    if type_converter == WrapModes:
+        type_converter = WrapModes.from_string
+    return type_converter
+
+
 def _update_with_config_file(
     file_path: str,
     sections: Iterable[str],
@@ -231,7 +288,7 @@ def _update_with_config_file(
 
     for key, value in settings.items():
         access_key = key.replace('not_', '').lower()
-        existing_value_type = type(default.get(access_key, ''))  # type: Type[Any]
+        existing_value_type = _get_str_to_type_converter(access_key)
         if existing_value_type in (list, tuple):
             # sections has fixed order values; no adding or substraction from any set
             if access_key == 'sections':
@@ -259,10 +316,12 @@ def _update_with_config_file(
                 result = default.get(access_key) if value.lower().strip() == 'false' else 2
             computed_settings[access_key] = result
         else:
-            computed_settings[access_key] = existing_value_type(value)
+            computed_settings[access_key] = getattr(existing_value_type, str(value), None) or existing_value_type(value)
 
 
 def _as_list(value: str) -> List[str]:
+    if isinstance(value, list):
+        return [item.strip() for item in value]
     filtered = [
         item.strip()
         for item in value.replace('\n', ',').split(',')
@@ -295,10 +354,10 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                         config_section = config_section.get(key, {})
                     settings.update(config_section)
             else:
-                warnings.warn(
-                    "Found %s but toml package is not installed. To configure"
-                    "isort with %s, install with 'isort[pyproject]'." % (file_path, file_path)
-                )
+                if '[tool.isort]' in config_file.read():
+                    warnings.warn("Found {} with [tool.isort] section, but toml package is not installed. "
+                                  "To configure isort with {}, install with 'isort[pyproject]'.".format(file_path,
+                                                                                                        file_path))
         else:
             if file_path.endswith('.editorconfig'):
                 line = '\n'
@@ -319,16 +378,24 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
     return settings
 
 
-def should_skip(
+def file_should_be_skipped(
     filename: str,
     config: Mapping[str, Any],
-    path: str = '/'
+    path: str = ''
 ) -> bool:
-    """Returns True if the file should be skipped based on the passed in settings."""
-    normalized_path = posixpath.join(path.replace('\\', '/'), filename)
+    """Returns True if the file and/or folder should be skipped based on the passed in settings."""
+    os_path = os.path.join(path, filename)
 
-    if config['safety_excludes'] and safety_exclude_re.search(normalized_path):
-        return True
+    normalized_path = os_path.replace('\\', '/')
+    if normalized_path[1:2] == ':':
+        normalized_path = normalized_path[2:]
+
+    if path and config['safety_excludes']:
+        check_exclude = '/' + filename.replace('\\', '/') + '/'
+        if path and os.path.basename(path) in ('lib', ):
+            check_exclude = '/' + os.path.basename(path) + check_exclude
+        if safety_exclude_re.search(check_exclude):
+            return True
 
     for skip_path in config['skip']:
         if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
@@ -341,10 +408,10 @@ def should_skip(
         position = os.path.split(position[0])
 
     for glob in config['skip_glob']:
-        if fnmatch.fnmatch(filename, glob):
+        if fnmatch.fnmatch(filename, glob) or fnmatch.fnmatch('/' + filename, glob):
             return True
 
-    if stat.S_ISFIFO(os.stat(normalized_path).st_mode):
+    if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
         return True
 
     return False

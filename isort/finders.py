@@ -8,6 +8,7 @@ import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
+from functools import lru_cache
 from glob import glob
 from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Pattern, Sequence, Tuple, Type
 
@@ -19,21 +20,14 @@ except ImportError:
     pipreqs = None
 
 try:
-    # pip>=10
-    from pip._internal.download import PipSession
-    from pip._internal.req import parse_requirements
+    from pip_api import parse_requirements
 except ImportError:
-    try:
-        from pip.download import PipSession
-        from pip.req import parse_requirements
-    except ImportError:
-        parse_requirements = None
+    parse_requirements = None
 
 try:
     from requirementslib import Pipfile
 except ImportError:
     Pipfile = None
-
 
 KNOWN_SECTION_MAPPING = {
     'STDLIB': 'STANDARD_LIBRARY',
@@ -118,16 +112,13 @@ class PathFinder(BaseFinder):
     def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
         super().__init__(config, sections)
 
-        # Use a copy of sys.path to avoid any unintended modifications
-        # to it - e.g. `+=` used below will change paths in place and
-        # if not copied, consequently sys.path, which will grow unbounded
-        # with duplicates on every call to this method.
-        self.paths = list(sys.path)
         # restore the original import path (i.e. not the path to bin/isort)
-        self.paths[0] = os.getcwd()
+        self.paths = [os.getcwd()]
 
         # virtual env
         self.virtual_env = self.config.get('virtual_env') or os.environ.get('VIRTUAL_ENV')
+        if self.virtual_env:
+            self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ''
         if self.virtual_env:
             self.virtual_env_src = '{0}/src/'.format(self.virtual_env)
@@ -141,6 +132,17 @@ class PathFinder(BaseFinder):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
+        # conda
+        self.conda_env = self.config.get('conda_env') or os.environ.get('CONDA_PREFIX') or ''
+        if self.conda_env:
+            self.conda_env = os.path.realpath(self.conda_env)
+            for path in glob('{0}/lib/python*/site-packages'.format(self.conda_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
+            for path in glob('{0}/lib/python*/*/site-packages'.format(self.conda_env)):
+                if path not in self.paths:
+                    self.paths.append(path)
+
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()['stdlib'])
         if self.stdlib_lib_prefix not in self.paths:
@@ -149,12 +151,18 @@ class PathFinder(BaseFinder):
         # handle compiled libraries
         self.ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
 
+        # add system paths
+        for path in sys.path[1:]:
+            if path not in self.paths:
+                self.paths.append(path)
+
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
             package_path = "/".join((prefix, module_name.split(".")[0]))
             is_module = (exists_case_sensitive(package_path + ".py") or
                          exists_case_sensitive(package_path + ".so") or
-                         exists_case_sensitive(package_path + self.ext_suffix))
+                         exists_case_sensitive(package_path + self.ext_suffix) or
+                         exists_case_sensitive(package_path + "/__init__.py"))
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if 'site-packages' in prefix:
@@ -162,6 +170,8 @@ class PathFinder(BaseFinder):
                 if 'dist-packages' in prefix:
                     return self.sections.THIRDPARTY
                 if self.virtual_env and self.virtual_env_src in prefix:
+                    return self.sections.THIRDPARTY
+                if self.conda_env and self.conda_env in prefix:
                     return self.sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return self.sections.STDLIB
@@ -268,6 +278,13 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
         """Return paths to requirements files from passed dir.
         """
+        return RequirementsFinder._get_files_from_dir_cached(path)
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_files_from_dir_cached(cls, path):
+        results = []
+
         for fname in os.listdir(path):
             if 'requirements' not in fname:
                 continue
@@ -276,26 +293,38 @@ class RequirementsFinder(ReqsBaseFinder):
             # *requirements*/*.{txt,in}
             if os.path.isdir(full_path):
                 for subfile_name in os.listdir(path):
-                    for ext in self.exts:
+                    for ext in cls.exts:
                         if subfile_name.endswith(ext):
-                            yield os.path.join(path, subfile_name)
+                            results.append(os.path.join(path, subfile_name))
                 continue
 
             # *requirements*.{txt,in}
             if os.path.isfile(full_path):
-                for ext in self.exts:
+                for ext in cls.exts:
                     if fname.endswith(ext):
-                        yield full_path
+                        results.append(full_path)
                         break
+
+        return results
 
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
+        for i in RequirementsFinder._get_names_cached(path):
+            yield i
+
+    @classmethod
+    @lru_cache(maxsize=16)
+    def _get_names_cached(cls, path: str) -> List[str]:
+        result = []
+
         with chdir(os.path.dirname(path)):
-            requirements = parse_requirements(path, session=PipSession())
-            for req in requirements:
+            requirements = parse_requirements(path)
+            for req in requirements.values():
                 if req.name:
-                    yield req.name
+                    result.append(req.name)
+
+        return result
 
 
 class PipfileFinder(ReqsBaseFinder):
@@ -332,14 +361,32 @@ class FindersManager(object):
         self,
         config: Mapping[str, Any],
         sections: Any,
-        finders: Optional[Iterable[BaseFinder]] = None
+        finder_classes: Optional[Iterable[Type[BaseFinder]]] = None
     ) -> None:
-        if finders is not None:
-            self.finders = finders
-        self.finders = tuple(finder_cls(config, sections) for finder_cls in self._default_finders_classes)
+        self.verbose = config.get('verbose', False)  # type: bool
+
+        if finder_classes is None:
+            finder_classes = self._default_finders_classes
+        finders = []  # type: List[BaseFinder]
+        for finder_cls in finder_classes:
+            try:
+                finders.append(finder_cls(config, sections))
+            except Exception as exception:
+                # if one finder fails to instantiate isort can continue using the rest
+                if self.verbose:
+                    print('{} encountered an error ({}) during instantiation and cannot be used'.format(finder_cls.__name__,
+                                                                                                        str(exception)))
+        self.finders = tuple(finders)  # type: Tuple[BaseFinder, ...]
 
     def find(self, module_name: str) -> Optional[str]:
         for finder in self.finders:
-            section = finder.find(module_name)
+            try:
+                section = finder.find(module_name)
+            except Exception as exception:
+                # isort has to be able to keep trying to identify the correct import section even if one approach fails
+                if self.verbose:
+                    print('{} encountered an error ({}) while trying to identify the {} module'.format(finder.__class__.__name__,
+                                                                                                       str(exception),
+                                                                                                       module_name))
             if section is not None:
                 return section

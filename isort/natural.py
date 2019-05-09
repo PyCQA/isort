@@ -46,6 +46,6 @@ def nsorted(
         key_callback = _natural_keys
     else:
         def key_callback(text: str) -> List[Any]:
-            return _natural_keys(key(text))
+            return _natural_keys(key(text))  # type: ignore
 
     return sorted(to_sort, key=key_callback)

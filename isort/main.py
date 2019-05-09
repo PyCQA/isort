@@ -28,7 +28,7 @@ from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional
 import setuptools
 
 from isort import SortImports, __version__
-from isort.settings import DEFAULT_SECTIONS, WrapModes, default, from_path, should_skip
+from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
 
 INTRO = r"""
 /#######################################################################\
@@ -60,6 +60,8 @@ def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
     if ext in ('.py', '.pyi'):
         return True
+    if ext in ('.pex', ):
+        return False
 
     # Skip editor backup files.
     if path.endswith('~'):
@@ -96,21 +98,16 @@ def iter_source_code(paths: Iterable[str], config: MutableMapping[str, Any], ski
 
     for path in paths:
         if os.path.isdir(path):
-            if should_skip(path, config, os.getcwd()):
-                skipped.append(path)
-                continue
-
-            for dirpath, dirnames, filenames in os.walk(
-                    path, topdown=True, followlinks=True
-            ):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
                 for dirname in list(dirnames):
-                    if should_skip(dirname, config, dirpath):
+                    if file_should_be_skipped(dirname, config, dirpath):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        if should_skip(filename, config, dirpath):
+                        relative_file = os.path.relpath(filepath, path)
+                        if file_should_be_skipped(relative_file, config, path):
                             skipped.append(filename)
                         else:
                             yield filepath
@@ -175,7 +172,9 @@ class ISortCommand(setuptools.Command):
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser = argparse.ArgumentParser(description='Sort Python import definitions alphabetically '
-                                                 'within logical sections.')
+                                                 'within logical sections. Run with no arguments to run '
+                                                 'interactively. Run with `-` as the first argument to read from '
+                                                 'stdin. Otherwise provide a list of files to sort.')
     inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument('-a', '--add-import', dest='add_imports', action='append',
                         help='Adds the specified import line to all files, '
@@ -233,7 +232,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help="Forces line endings to the specified value. If not set, values will be guessed per-file.")
     parser.add_argument('-ls', '--length-sort', help='Sort imports by their string length.',
                         dest='length_sort', action='store_true')
-    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=int, choices=range(len(WrapModes)),
+    parser.add_argument('-m', '--multi-line', dest='multi_line_output', type=WrapModes.from_string,
                         help='Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, '
                         '5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).')
     inline_args_group.add_argument('-nis', '--no-inline-sort', dest='no_inline_sort', action='store_true',
@@ -250,8 +249,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help='Force sortImports to recognize a module as being part of the current python project.')
     parser.add_argument('-q', '--quiet', action='store_true', dest="quiet",
                         help='Shows extra quiet output, only errors are outputted.')
+    parser.add_argument('-r', dest='ambiguous_r_flag', action='store_true')
     parser.add_argument('-rm', '--remove-import', dest='remove_imports', action='append',
                         help='Removes the specified import from all files.')
+    parser.add_argument('-rr', '--reverse-relative', dest='reverse_relative', action='store_true',
+                        help='Reverse order of relative imports.')
     parser.add_argument('-rc', '--recursive', dest='recursive', action='store_true',
                         help='Recursively look for Python files of which to sort imports')
     parser.add_argument('-s', '--skip', help='Files that sort imports should skip over. If you want to skip multiple '
@@ -276,6 +278,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help='Shows verbose output, such as when files are skipped or when a check is successful.')
     parser.add_argument('--virtual-env', dest='virtual_env',
                         help='Virtual environment to use for determining whether a package is third-party')
+    parser.add_argument('--conda-env', dest='conda_env',
+                        help='Conda environment to use for determining whether a package is third-party')
     parser.add_argument('-vn', '--version-number', action='version', version=__version__,
                         help='Returns just the current version number without the logo')
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
@@ -289,6 +293,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument('--unsafe', dest='unsafe', action='store_true',
                         help='Tells isort to look for files in standard library directories, etc. '
                              'where it may not be safe to operate in')
+    parser.add_argument('--case-sensitive', dest='case_sensitive', action='store_true',
+                        help='Tells isort to include casing when sorting module names')
+    parser.add_argument('--filter-files', dest='filter_files', action='store_true',
+                        help='Tells isort to filter files even when they are explicitly passed in as part of the command')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
@@ -305,6 +313,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(INTRO)
         return
 
+    if arguments.get('ambiguous_r_flag'):
+        print('ERROR: Deprecated -r flag set. This flag has been replaced with -rm to remove ambiguity between it and '
+              '-rc for recursive')
+        sys.exit(1)
+
+    arguments['check_skip'] = False
     if 'settings_path' in arguments:
         sp = arguments['settings_path']
         arguments['settings_path'] = os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
@@ -326,10 +340,21 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             arguments['recursive'] = True
             if not arguments.get('apply', False):
                 arguments['ask_to_apply'] = True
-        config = from_path(os.path.abspath(file_names[0]) or os.getcwd()).copy()
+
+        config = from_path(arguments.get('settings_path', '') or os.path.abspath(file_names[0]) or os.getcwd()).copy()
         config.update(arguments)
         wrong_sorted_files = False
         skipped = []  # type: List[str]
+
+        if config.get('filter_files'):
+            filtered_files = []
+            for file_name in file_names:
+                if file_should_be_skipped(file_name, config):
+                    skipped.append(file_name)
+                else:
+                    filtered_files.append(file_name)
+            file_names = filtered_files
+
         if arguments.get('recursive', False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0

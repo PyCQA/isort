@@ -65,7 +65,7 @@ atlassian-ide-plugin.xml
 pip-selfcheck.json
 
 # Python3 Venv Files
-venv/
+.venv/
 pyvenv.cfg
 
 # mypy

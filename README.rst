@@ -11,10 +11,9 @@
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
-
-.. image:: https://coveralls.io/repos/timothycrosley/isort/badge.svg?branch=release%2F2.6.0&service=github
-  :target: https://coveralls.io/github/timothycrosley/isort?branch=release%2F2.6.0
-  :alt: Coverage
+.. image:: https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/timothycrosley/isort
+    :alt: Code coverage Status
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://pypi.org/project/hug/
@@ -24,6 +23,9 @@
    :alt: Join the chat at https://gitter.im/timothycrosley/isort
    :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+.. image:: https://pepy.tech/badge/isort
+    :alt: Downloads
+    :target: https://pepy.tech/project/isort
 
 isort your python imports for you so you don't have to.
 
@@ -329,7 +331,7 @@ past the line_length limit and has 6 possible settings:
 
 In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
 Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
-You can enforce a trailing comma by using this in conjunction with `-tc` or `trailing_comma: True`.
+You can enforce a trailing comma by using this in conjunction with ``-tc`` or ``include_trailing_comma: True``.
 
 .. code-block:: python
 
@@ -355,6 +357,7 @@ own line:
     ...
 
 Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:
+
 *   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
 *   Tab
 *   A verbatim string with quotes around it.

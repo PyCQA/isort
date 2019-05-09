@@ -1,10 +1,77 @@
 Changelog
 =========
 
-### 4.4.0 UNRELEASED
-- **Breaking changes:**
-  - isort now requires Python 3.4+ to run but continues to support formating
+### 5.0.0 UNRELEASED
+**Breaking changes:**
+  - isort now requires Python 3.5+ to run but continues to support formatting
     Python 2 code.
+  - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
+      - user
+Internal:
+  - isort now utilizes mypy and typing to filter out typing related issues before deployment
+
+Planned:
+  - profile support for common project types (black, django, google, etc)
+
+### 4.3.18 - May 1, 2019 - hot fix release
+- Fixed an issue with parsing files that contain unicode characters in Python 2
+- Fixed issue #924 - Pulling in pip internals causes depreciation warning
+- Fixed issue #938 - Providing a way to filter explicitly passed in files via configuration settings (`--filter-files`)
+- Improved interoperability with toml configuration files
+
+### 4.3.17 - April 7, 2019 - hot fix release
+- Fixed issue #905 & #919: Import section headers behaving strangely
+
+### 4.3.16 - March 23, 2019 - hot fix release
+- Fixed issue #909 - skip and skip-glob are not enforced when using settings-path.
+- Fixed issue #907 - appdirs optional requirement does not correctly specify version
+- Fixed issue #902 - Too broad warning about missing toml package
+- Fixed issue #778 - remove `user` from known standard library as it's no longer in any supported Python version.
+
+### 4.3.15 - March 10, 2019 - hot fix release
+- Fixed a regression with handling streaming input from pipes (Issue #895)
+- Fixed handling of \x0c whitespace character (Issue #811)
+- Improved CLI documentation
+
+### 4.3.14 - March 9, 2019 - hot fix release
+- Fixed a regression with */directory/*.py style patterns
+
+### 4.3.13 - March 8, 2019 - hot fix release
+- Fixed the inability to accurately determine import section when a mix of conda and virtual environments are used.
+- Fixed some output being printed even when --quiet mode is enabled.
+- Fixed issue #890 interoperability with PyCharm by allowing case sensitive non type grouped sorting.
+- Fixed issue #889 under some circumstances isort will incorrectly add a new line at the beginning of a file.
+- Fixed issue #885 many files not being skipped according to set skip settings.
+- Fixed issue #842 streaming encoding improvements.
+
+### 4.3.12 - March 6, 2019 - hot fix release
+- Fix error caused when virtual environment not detected
+
+### 4.3.11 - March 6, 2019 - hot fix release
+- Fixed issue #876: confused by symlinks pointing to virtualenv gives FIRSTPARTY not THIRDPARTY
+- Fixed issue #873: current version skips every file on travis
+- Additional caching to reduce performance regression introduced in 4.3.5
+
+### 4.3.10 - March 2, 2019 - hot fix release
+- Fixed Windows incompatibilities (Issue #835)
+- Fixed relative import sorting bug (Issue #417)
+- Fixed "no_lines_before" to also be respected from previous empty sections.
+- Fixed slow-down introduced by finders mechanism by adding a LRU cache (issue #848)
+- Fixed issue #842 default encoding not-set in Python2
+- Restored Windows automated testing
+- Added Mac automated testing
+
+### 4.3.9 - February 25, 2019 - hot fix release
+- Fixed a bug that led to an incompatibility with black: #831
+
+### 4.3.8 - February 25, 2019 - hot fix release
+- Fixed a bug that led to the recursive option not always been available from the command line.
+
+### 4.3.7 - February 25, 2019 - hot fix release
+- Expands the finder failsafe to occur on the creation of the finder objects.
+
+### 4.3.6 - February 24, 2019 - hot fix release
+- Fixes a fatal error that occurs if a single finder throws an exception. Important as we add more finders that utilize third party libraries.
 
 ### 4.3.5 - February 24, 2019 - last Python 2.7 Maintenance Release
 
@@ -28,7 +95,7 @@ New:
 
 Fixes:
 - Improved black compatibility.
-- Isort will no detect files in the CWD as first-party.
+- Isort will now detect files in the CWD as first-party.
 - Fixed several cases where '-ns' or 'not_skip' was being incorrectly ignored.
 - Fixed sorting of relative path imports ('.', '..', '...', etc).
 - Fixed bugs caused by a failure to maintain order when loading iterables from config files.
