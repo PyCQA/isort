@@ -27,7 +27,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 import copy
 import itertools
 import re
-import sys
 from collections import OrderedDict, defaultdict, namedtuple
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
