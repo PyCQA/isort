@@ -2912,6 +2912,7 @@ def test_multiple_as_imports():
     test_output = SortImports(file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True).output
     assert test_output == test_input
 
+
 def test_all_imports_from_single_module():
     test_input = ('import a\n'
                   'from a import *\n'
