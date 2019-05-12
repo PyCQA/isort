@@ -2994,3 +2994,15 @@ def test_import_heading_issue_905():
                   '# Local imports\n'
                   'from oklib.plot_ok import imagesc\n')
     assert SortImports(file_contents=test_input, **config).output == test_input
+
+
+def test_pyi_formatting_issue_942():
+    test_input = ('import os\n'
+                  '\n'
+                  '\n'
+                  'def my_method():\n')
+    expected_pyi_output = ('import os\n'
+                           '\n'
+                           'def my_method():\n')
+    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, extension="pyi").output == expected_pyi_output

@@ -49,7 +49,7 @@ class SortImports(object):
 
     def __init__(self, file_path=None, file_contents=None, file_=None, write_to_stdout=False, check=False,
                  show_diff=False, settings_path=None, ask_to_apply=False, run_path='', check_skip=True,
-                 **setting_overrides):
+                 extension=None, **setting_overrides):
         if not settings_path and file_path:
             settings_path = os.path.dirname(os.path.abspath(file_path))
         settings_path = settings_path or os.getcwd()
@@ -180,7 +180,12 @@ class SortImports(object):
             for add_import in self.add_imports:
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
-
+        
+        if not extension:
+            self.extension = file_name.split('.')[-1] if file_name else "py"
+        else:
+            self.extension = extension
+        
         self.out_lines = []
         self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}
         self.imports = OrderedDict()
