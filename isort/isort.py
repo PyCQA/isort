@@ -180,12 +180,12 @@ class SortImports(object):
             for add_import in self.add_imports:
                 self.in_lines.append(add_import)
         self.number_of_lines = len(self.in_lines)
-        
+
         if not extension:
             self.extension = file_name.split('.')[-1] if file_name else "py"
         else:
             self.extension = extension
-        
+
         self.out_lines = []
         self.comments = {'from': {}, 'straight': {}, 'nested': {}, 'above': {'straight': {}, 'from': {}}}
         self.imports = OrderedDict()
