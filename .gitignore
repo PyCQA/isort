@@ -60,6 +60,7 @@ atlassian-ide-plugin.xml
 *.swp
 *.kate-swp
 .ropeproject/
+.vscode
 
 # pip
 pip-selfcheck.json
@@ -67,3 +68,6 @@ pip-selfcheck.json
 # Python3 Venv Files
 .venv/
 pyvenv.cfg
+
+# mypy
+.mypy_cache
