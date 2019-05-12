@@ -60,6 +60,7 @@ atlassian-ide-plugin.xml
 *.swp
 *.kate-swp
 .ropeproject/
+.vscode
 
 # pip
 pip-selfcheck.json
