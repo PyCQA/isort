@@ -1,6 +1,9 @@
 Changelog
 =========
 
+### 4.3.19 - May 12, 2019 - hot fix release
+- Fixed issue #942 - correctly handle pyi (Python Template Files) to match `black` output
+
 ### 4.3.18 - May 1, 2019 - hot fix release
 - Fixed an issue with parsing files that contain unicode characters in Python 2
 - Fixed issue #924 - Pulling in pip internals causes depreciation warning
