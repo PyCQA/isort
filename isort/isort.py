@@ -54,8 +54,9 @@ if TYPE_CHECKING:
 
 
 class _SortImports(object):
-    def __init__(self, file_contents: str, config: Dict[str, Any]) -> None:
+    def __init__(self, file_contents: str, config: Dict[str, Any], extension: str = "py") -> None:
         self.config = config
+        self.extension = extension
 
         self.place_imports = {}  # type: Dict[str, List[str]]
         self.import_placements = {}  # type: Dict[str, str]
@@ -556,8 +557,10 @@ class _SortImports(object):
 
             if self.config['lines_after_imports'] != -1:
                 self.out_lines[imports_tail:0] = ["" for line in range(self.config['lines_after_imports'])]
-            elif next_construct.startswith("def ") or next_construct.startswith("class ") or \
-               next_construct.startswith("@") or next_construct.startswith("async def"):
+            elif self.extension != "pyi" and (next_construct.startswith("def ") or
+                                              next_construct.startswith("class ") or
+                                              next_construct.startswith("@") or
+                                              next_construct.startswith("async def")):
                 self.out_lines[imports_tail:0] = ["", ""]
             else:
                 self.out_lines[imports_tail:0] = [""]

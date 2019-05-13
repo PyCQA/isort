@@ -1,3 +1,7 @@
 pytest==4.4.1
 ipython==4.1.2
 appdirs
+pipfile
+pyproject
+requirementslib
+pipreqs

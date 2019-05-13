@@ -75,9 +75,11 @@ class SortImports(object):
             ask_to_apply: bool = False,
             run_path: str = '',
             check_skip: bool = True,
+            extension: Optional[str] = None,
             **setting_overrides: Any
     ):
         file_path = None if file_path is None else Path(file_path)
+        file_name = None
         settings_path = None if settings_path is None else Path(settings_path)
 
         self.config = settings.prepare_config(get_settings_path(settings_path, file_path),
@@ -130,8 +132,12 @@ class SortImports(object):
                 sys.stdout.write(file_contents)
             return
 
+        if not extension:
+            extension = file_name.split('.')[-1] if file_name else "py"
+
         self.sorted_imports = _SortImports(file_contents=file_contents,
-                                           config=self.config)
+                                           config=self.config,
+                                           extension=extension)
         self.output = self.sorted_imports.output
 
         if self.config['atomic']:
