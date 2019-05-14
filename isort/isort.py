@@ -140,7 +140,7 @@ class SortImports(object):
                 file_.seek(0)
                 self.file_encoding = coding_check(file_)
                 file_.seek(0)
-            except io.UnsupportedOperation:
+            except (io.UnsupportedOperation, IOError):
                 pass
             reader = codecs.getreader(self.file_encoding)
             file_contents = reader(file_).read()
