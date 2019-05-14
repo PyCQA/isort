@@ -6,8 +6,8 @@ init:
 build: off
 
 install:
-  - pip install -U pip
-  - pip install tox
+  - pip install -U pip --user
+  - pip install tox -U --user
 
 test_script:
   - tox -e isort-check,py27,py34,py35,py36,py37
