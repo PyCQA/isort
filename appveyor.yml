@@ -1,5 +1,5 @@
 init:
-  - "SET PATH=C:\\Python27\\Scripts;C:\Users\appveyor\AppData\Roaming\Python\Scripts;%PATH%"
+  - "SET PATH=C:\\Python27\\Scripts;C:\\Users\\appveyor\\AppData\\Roaming\\Python\\Scripts;%PATH%"
   - "ECHO PATH=%PATH%"
   - python --version
 
