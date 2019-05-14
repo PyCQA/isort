@@ -3,11 +3,12 @@ import os
 import re
 import sys
 from pathlib import Path
+
 from typing import Any, Optional, Tuple
 
 from isort import settings
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
-from isort.isort import _SortImports
+from isort.isort2 import _SortImports2
 
 
 def determine_file_encoding(file_path: Path, default: str = 'utf-8') -> str:
@@ -135,9 +136,12 @@ class SortImports(object):
         if not extension:
             extension = file_name.split('.')[-1] if file_name else "py"
 
-        self.sorted_imports = _SortImports(file_contents=file_contents,
-                                           config=self.config,
-                                           extension=extension)
+        # self.sorted_imports = _SortImports(file_contents=file_contents,
+        #                                    config=self.config,
+        #                                    extension=extension)
+        self.sorted_imports = _SortImports2(file_contents=file_contents,
+                                            config=self.config,
+                                            extension=extension)
         self.output = self.sorted_imports.output
 
         if self.config['atomic']:

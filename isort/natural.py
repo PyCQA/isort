@@ -26,7 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import re
-from typing import Any, Callable, Iterable, List, Optional
+from typing import Any, Callable, Iterable, List, Optional, TypeVar
 
 
 def _atoi(text: str) -> Any:
@@ -37,10 +37,13 @@ def _natural_keys(text: str) -> List[Any]:
     return [_atoi(c) for c in re.split(r'(\d+)', text)]
 
 
+T = TypeVar('T')
+
+
 def nsorted(
-    to_sort: Iterable[str],
+    to_sort: Iterable[T],
     key: Optional[Callable[[str], Any]] = None
-) -> List[str]:
+) -> List[T]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys

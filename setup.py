@@ -21,6 +21,7 @@ setup(name='isort',
         'pylama.linter': ['isort = isort.pylama_isort:Linter'],
       },
       packages=['isort'],
+      install_requires=['parso'],
       extras_require={
           'pipfile': ['pipreqs', 'requirementslib'],
           'pyproject': ['toml'],
