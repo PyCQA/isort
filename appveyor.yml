@@ -6,6 +6,7 @@ init:
 build: off
 
 install:
+  - pip install -U pip
   - pip install tox
 
 test_script:
