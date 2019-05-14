@@ -1,13 +1,12 @@
 init:
-  - "SET PATH=C:\\Python27\\Scripts;C:\\Users\\appveyor\\AppData\\Roaming\\Python\\Scripts;%PATH%"
+  - "SET PATH=C:\\Python27\\Scripts;%PATH%"
   - "ECHO PATH=%PATH%"
   - python --version
 
 build: off
 
 install:
-  - pip install -U pip --user
-  - pip install tox -U --user
+  - pip install tox
 
 test_script:
   - tox -e isort-check,py27,py34,py35,py36,py37
