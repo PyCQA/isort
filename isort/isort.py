@@ -242,12 +242,15 @@ class _SortImports(object):
 
                     cont_line = self._wrap(self.config['indent'] + splitter.join(next_line).lstrip())
                     if self.config['use_parentheses']:
-                        output = "{0}{1}({2}{3}{4}{5})".format(
-                            line, splitter, self.line_separator, cont_line,
-                            "," if self.config['include_trailing_comma'] else "",
-                            self.line_separator if wrap_mode in {WrapModes.VERTICAL_HANGING_INDENT,
-                                                                 WrapModes.VERTICAL_GRID_GROUPED}
-                            else "")
+                        if splitter == "as ":
+                            output = "{0}{1}{2}".format(line, splitter, cont_line.lstrip())
+                        else:
+                            output = "{0}{1}({2}{3}{4}{5})".format(
+                                line, splitter, self.line_separator, cont_line,
+                                "," if self.config['include_trailing_comma'] else "",
+                                self.line_separator if wrap_mode in {WrapModes.VERTICAL_HANGING_INDENT,
+                                                                     WrapModes.VERTICAL_GRID_GROUPED}
+                                else "")
                         lines = output.split(self.line_separator)
                         if self.config['comment_prefix'] in lines[-1] and lines[-1].endswith(')'):
                             line, comment = lines[-1].split(self.config['comment_prefix'], 1)
