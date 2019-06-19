@@ -78,8 +78,8 @@ Code Contributors
 - John Chadwick (@jchv)
 - Jon Dufresne (@jdufresne)
 - Brian F. Baron (@briabar)
--Madison Caldwell (@madirey)
-
+- Madison Caldwell (@madirey)
+- Matt Yule-Bennett (@mattbennett)
 
 Documenters
 ===================
