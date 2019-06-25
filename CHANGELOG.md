@@ -13,6 +13,12 @@ Internal:
 Planned:
   - profile support for common project types (black, django, google, etc)
 
+### 4.3.21 - June 25, 2019 - hot fix release
+- Fixed issue #957 - Long aliases and use_parentheses generates invalid syntax
+
+### 4.3.20 - May 14, 2019 - hot fix release
+- Fixed issue #948 - Pipe redirection broken on Python2.7
+
 ### 4.3.19 - May 12, 2019 - hot fix release
 - Fixed issue #942 - correctly handle pyi (Python Template Files) to match `black` output
 
