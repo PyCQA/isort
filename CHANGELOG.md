@@ -1,6 +1,9 @@
 Changelog
 =========
 
+### 4.3.21 - June 25, 2019 - hot fix release
+- Fixed issue #957 - Long aliases and use_parentheses generates invalid syntax
+
 ### 4.3.20 - May 14, 2019 - hot fix release
 - Fixed issue #948 - Pipe redirection broken on Python2.7
 
