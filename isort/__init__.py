@@ -25,4 +25,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from . import settings  # noqa: F401
 from .isort import SortImports  # noqa: F401
 
-__version__ = "4.3.20"
+__version__ = "4.3.21"
