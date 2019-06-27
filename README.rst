@@ -36,10 +36,6 @@ It requires Python 3.5+ to run but supports formatting Python 2 code too.
 
 ########
 
-.. image:: https://nedbatchelder.com/pix/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White_small.png
-   :width: 75
-   :alt: Tidelift
-
 `Get professionally supported isort with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme>`_
 
 Professional support for isort is available as part of the `Tidelift
