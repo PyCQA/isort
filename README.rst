@@ -33,7 +33,24 @@ isort is a Python utility / library to sort imports alphabetically, and automati
 It provides a command line utility, Python library and `plugins for various editors <https://github.com/timothycrosley/isort/wiki/isort-Plugins>`_ to quickly sort all your imports.
 It requires Python 3.5+ to run but supports formatting Python 2 code too.
 
+
+########
+
+.. image:: https://nedbatchelder.com/pix/Tidelift_Logos_RGB_Tidelift_Shorthand_On-White_small.png
+   :width: 75
+   :alt: Tidelift
+
 `Get professionally supported isort with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme>`_
+
+Professional support for isort is available as part of the `Tidelift
+Subscription`_.  Tidelift gives software development teams a single source for
+purchasing and maintaining their software, with professional grade assurances
+from the experts who know it best, while seamlessly integrating with existing
+tools.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme
+
+########
 
 .. image:: https://raw.github.com/timothycrosley/isort/develop/example.gif
    :alt: Example Usage
