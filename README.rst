@@ -637,8 +637,8 @@ isort themselves, add isort to the setup_requires of your ``setup()`` like so:
 Security contact information
 ==========
 
-To report a security vulnerability, please use the
-.. Tidelift security contact: ttps://tidelift.com/security.
+To report a security vulnerability, please use the Tidelift_security_contact_
+.. Tidelift_security_contact_: https://tidelift.com/security.
 Tidelift will coordinate the fix and disclosure.
 
 Why isort?
