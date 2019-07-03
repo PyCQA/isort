@@ -1965,7 +1965,7 @@ def test_forced_sepatate_globs():
 
 
 def test_no_additional_lines_issue_358():
-    """Test to ensure issue 358 is resovled and running isort multiple times does not add extra newlines"""
+    """Test to ensure issue 358 is resolved and running isort multiple times does not add extra newlines"""
     test_input = ('"""This is a docstring"""\n'
                   '# This is a comment\n'
                   'from __future__ import (\n'
