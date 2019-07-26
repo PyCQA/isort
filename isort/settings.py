@@ -33,7 +33,7 @@ import warnings
 from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Union, Optional
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
 
 from .utils import difference, union
 
