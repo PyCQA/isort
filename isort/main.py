@@ -298,6 +298,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument('--filter-files', dest='filter_files', action='store_true',
                         help='Tells isort to filter files even when they are explicitly passed in as part of the command')
     parser.add_argument('files', nargs='*', help='One or more Python source files that need their imports sorted.')
+    parser.add_argument('-py', '--python-version', action='store', dest='py_version',
+                        help='Tells isort to sort the standard library based on the python version. '
+                             'Default is the version of the running interpreter, for instance: -py 3, -py 2.7')
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if 'dont_order_by_type' in arguments:
