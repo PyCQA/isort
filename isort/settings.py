@@ -33,7 +33,7 @@ import warnings
 from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Union
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Union, Optional
 
 from .utils import difference, union
 
@@ -73,6 +73,7 @@ class WrapModes(enum.Enum):
         return getattr(WrapModes, str(value), None) or WrapModes(int(value))
 
 
+# ToDo: save data in txt files?
 _known_standard_library_3 = ['AL', 'BaseHTTPServer', 'Bastion', 'CGIHTTPServer', 'Carbon', 'ColorPicker',
                                       'ConfigParser', 'Cookie', 'DEVICE', 'DocXMLRPCServer', 'EasyDialogs', 'FL',
                                       'FrameWork', 'GL', 'HTMLParser', 'MacOS', 'MimeWriter', 'MiniAEFrame', 'Nav',
@@ -165,21 +166,42 @@ _known_standard_library_2 = ['AL', 'BaseHTTPServer', 'Bastion', 'CGIHTTPServer',
                                       'zipimport', 'zlib']
 
 
-def _get_known_standard_library() -> list:
+def _get_default(py_version: Optional[str]) -> dict:
     """
-    Returns the correct standard library based on the python interpreter
+    Returns the correct standard library based on either the passed py_version flag or the python interpreter
 
     See Issue 889 and 778 for more information
     """
 
-    major, minor = sys.version_info[0:2]
-    if major == 3:
-        return _known_standard_library_3
-    elif major == 2 and minor == 7:
-        return _known_standard_library_2
+    if py_version is None:
+        major, minor = sys.version_info[0:2]
+    else:
+        minor = 0
 
-    # ToDo: Raise Exception otherwise ?
-    # ToDo: Add Test Cases
+        # we have a minor
+        if "." in py_version:
+            # we do not care about patches just major and minor
+            splits = py_version.split(".")[0:2]
+            major = int(splits[0])
+            minor = int(splits[1])
+        else:
+            major = int(py_version)
+
+    _default = default.copy()
+
+    if major == 3:
+        standard_library = _known_standard_library_3
+    elif major == 2 and minor == 7:
+        standard_library = _known_standard_library_2
+    else:
+        raise ValueError(
+            "The python version %s is not supported. "
+            "You can set a python version with the -py or --python-version flag " % py_version
+        )
+
+    _default['known_standard_library'] = standard_library
+
+    return _default
 
 
 # Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
@@ -192,7 +214,6 @@ default = {'force_to_top': [],
            'sections': DEFAULT_SECTIONS,
            'no_sections': False,
            'known_future_library': ['__future__'],
-           'known_standard_library': _get_known_standard_library(),
            'known_third_party': ['google.appengine.api'],
            'known_first_party': [],
            'multi_line_output': WrapModes.GRID,
@@ -239,8 +260,8 @@ default = {'force_to_top': [],
 
 
 @lru_cache()
-def from_path(path: Union[str, Path]) -> Dict[str, Any]:
-    computed_settings = default.copy()
+def from_path(path: Union[str, Path], py_version: Optional[str] = None) -> Dict[str, Any]:
+    computed_settings = _get_default(py_version)
     isort_defaults = ['~/.isort.cfg']
     if appdirs:
         isort_defaults = [appdirs.user_config_dir('isort.cfg')] + isort_defaults
@@ -257,7 +278,8 @@ def from_path(path: Union[str, Path]) -> Dict[str, Any]:
 
 
 def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, Any]:
-    config = from_path(settings_path).copy()
+    py_version = setting_overrides.pop("py_version", None)
+    config = from_path(settings_path, py_version).copy()
     for key, value in setting_overrides.items():
         access_key = key.replace('not_', '').lower()
         # The sections config needs to retain order and can't be converted to a set.

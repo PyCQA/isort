@@ -3352,3 +3352,24 @@ def test_pyi_formatting_issue_942(tmpdir):
     source_pyi = tmpdir.join('source.pyi')
     source_pyi.write(test_input)
     assert SortImports(file_path=str(source_pyi)).output.splitlines() == expected_pyi_output
+
+
+def test_python_version():
+    from isort.main import parse_args
+
+    # test that the py_version can be added as flag
+    args = parse_args(['-py=2.7'])
+    assert args["py_version"] == "2.7"
+
+    args = parse_args(['--python-version=3'])
+    assert args["py_version"] == "3"
+
+    test_input = ('import os\n'
+                  '\n'
+                  'import user\n')
+    assert SortImports(file_contents=test_input, py_version="3").output == test_input
+
+    # user is part of the standard library in python 2
+    output_python_2 = ('import os\n'
+                       'import user\n')
+    assert SortImports(file_contents=test_input, py_version="2.7").output == output_python_2
