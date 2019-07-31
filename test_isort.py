@@ -3373,3 +3373,7 @@ def test_python_version():
     output_python_2 = ('import os\n'
                        'import user\n')
     assert SortImports(file_contents=test_input, py_version="2.7").output == output_python_2
+
+    test_input = ('import os\nimport xml')
+
+    print(SortImports(file_contents=test_input, py_version="all").output )
