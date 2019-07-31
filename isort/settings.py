@@ -79,13 +79,15 @@ class WrapModes(enum.Enum):
 def _get_default(py_version: Optional[str]) -> dict:
     """
     Returns the correct standard library based on either the passed py_version flag or the python interpreter
+    Additionaly users have the option to pass all as value instead of an
+    version. As an result code will be checked against both standard libraries - python2 & python3
 
     See Issue 889 and 778 for more information
     """
 
     if py_version is None:
         major, minor = sys.version_info[0:2]
-    else:
+    elif py_version is not "all":
         minor = 0
 
         # we have a minor
@@ -99,7 +101,9 @@ def _get_default(py_version: Optional[str]) -> dict:
 
     _default = default.copy()
 
-    if major == 3:
+    if py_version is "all":
+        standard_library = list(set(standard_library_3 + standard_library_2))
+    elif major == 3:
         standard_library = standard_library_3
     elif major == 2 and minor == 7:
         standard_library = standard_library_2
