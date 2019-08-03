@@ -35,9 +35,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
 
-from isort.stdlibs.py_three import standard_library_3
-from isort.stdlibs.py_two import standard_library_2
-
+from .stdlibs.py_three import standard_library_3
+from .stdlibs.py_two import standard_library_2
 from .utils import difference, union
 
 try:

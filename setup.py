@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open('README.rst') as f:
     readme = f.read()
@@ -20,7 +20,7 @@ setup(name='isort',
         'distutils.commands': ['isort = isort.main:ISortCommand'],
         'pylama.linter': ['isort = isort.pylama_isort:Linter'],
       },
-      packages=['isort'],
+      packages=find_packages(),
       extras_require={
           'pipfile': ['pipreqs', 'requirementslib'],
           'pyproject': ['toml'],

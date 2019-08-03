@@ -24,7 +24,6 @@ matrix:
 
 before_install:
 - "./scripts/before_install.sh"
-- "export PYTHONPATH=$PYTHONPATH:$(pwd)"
 install:
 - pip install tox
 script:
