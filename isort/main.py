@@ -284,7 +284,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                         help='Returns just the current version number without the logo')
     parser.add_argument('-w', '--line-width', help='The max length of an import line (used for wrapping long imports).',
                         dest='line_length', type=int)
-    parser.add_argument('-wl', '--wrap-length', dest='wrap_length',
+    parser.add_argument('-wl', '--wrap-length', dest='wrap_length', type=int,
                         help="Specifies how long lines that are wrapped should be, if not set line_length is used.")
     parser.add_argument('-ws', '--ignore-whitespace', action='store_true', dest="ignore_whitespace",
                         help='Tells isort to ignore whitespace differences when --check-only is being used.')
