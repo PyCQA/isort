@@ -53,7 +53,7 @@ DEFAULT_SECTIONS = ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER
 
 safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
-    r"|lib/python[0-9].[0-9]+)/"
+    r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
 
 
