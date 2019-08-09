@@ -217,6 +217,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
                              'length')
     parser.add_argument('-fss', '--force-sort-within-sections', action='store_true', dest="force_sort_within_sections",
                         help='Force imports to be sorted by module, independent of import_type')
+    parser.add_argument('-git', '--exclude-gitignore', action='store_true', dest="exclude_gitignore",
+                        help='Treat project as a git respository and ignore files listed in .gitignore')
     parser.add_argument('-i', '--indent', help='String to place for indents defaults to "    " (4 spaces).',
                         dest='indent', type=str)
     parser.add_argument('-j', '--jobs', help='Number of files to process in parallel.',

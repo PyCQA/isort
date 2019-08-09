@@ -28,6 +28,7 @@ import fnmatch
 import os
 import posixpath
 import re
+import subprocess
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
@@ -169,7 +170,8 @@ default = {'force_to_top': [],
            'no_inline_sort': False,
            'ignore_comments': False,
            'safety_excludes': True,
-           'case_sensitive': False}
+           'case_sensitive': False,
+           'exclude_gitignore': False}
 
 
 @lru_cache()
@@ -399,6 +401,11 @@ def file_should_be_skipped(
 
     for skip_path in config['skip']:
         if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace('\\', '/')):
+            return True
+
+    if config['exclude_gitignore']:
+        result = subprocess.run(['git', 'check-ignore', '--quiet', filename])
+        if result.returncode == 0:
             return True
 
     position = os.path.split(filename)
