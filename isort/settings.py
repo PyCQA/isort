@@ -75,7 +75,7 @@ class WrapModes(enum.Enum):
         return getattr(WrapModes, str(value), None) or WrapModes(int(value))
 
 
-def _get_default(py_version: Optional[str]) -> dict:
+def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     """
     Returns the correct standard library based on either the passed py_version flag or the python interpreter
     Additionaly users have the option to pass all as value instead of an
