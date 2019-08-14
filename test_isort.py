@@ -24,9 +24,9 @@ import io
 import os
 import os.path
 import posixpath
+import subprocess
 import sys
 import sysconfig
-from subprocess import check_output
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, List
 
@@ -3230,11 +3230,15 @@ def test_settings_path_skip_issue_909(tmpdir):
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
     with pytest.raises(Exception):  # without the settings path provided: the command should not skip & identify errors
-        check_output(['isort', '--check-only'])
-    results = check_output(['isort', '--check-only', '--settings-path=conf/.isort.cfg'])
+        subprocess.run(['isort', '--check-only'], check=True)
+    result = subprocess.run(
+        ['isort', '--check-only', '--settings-path=conf/.isort.cfg'],
+        stdout=subprocess.PIPE,
+        check=True
+    )
     os.chdir(str(test_run_directory))
 
-    assert b'skipped 2' in results.lower()
+    assert b'skipped 2' in result.stdout.lower()
 
 
 def test_skip_paths_issue_938(tmpdir):
@@ -3261,16 +3265,24 @@ def test_skip_paths_issue_938(tmpdir):
 
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
-    results = check_output(['isort', 'dont_skip.py', 'migrations/file_glob_skip.py'])
+    result = subprocess.run(
+        ['isort', 'dont_skip.py', 'migrations/file_glob_skip.py'],
+        stdout=subprocess.PIPE,
+        check=True,
+    )
     os.chdir(str(test_run_directory))
 
-    assert b'skipped' not in results.lower()
+    assert b'skipped' not in result.stdout.lower()
 
     os.chdir(str(base_dir))
-    results = check_output(['isort', '--filter-files', '--settings-path=conf/.isort.cfg', 'dont_skip.py', 'migrations/file_glob_skip.py'])
+    result = subprocess.run(
+        ['isort', '--filter-files', '--settings-path=conf/.isort.cfg', 'dont_skip.py', 'migrations/file_glob_skip.py'],
+        stdout=subprocess.PIPE,
+        check=True,
+    )
     os.chdir(str(test_run_directory))
 
-    assert b'skipped 1' in results.lower()
+    assert b'skipped 1' in result.stdout.lower()
 
 
 def test_failing_file_check_916():
