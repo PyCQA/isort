@@ -159,6 +159,7 @@ class _SortImports(object):
             return "straight"
         elif line.startswith('from '):
             return "from"
+        return None
 
     def _at_end(self) -> bool:
         """returns True if we are at the end of the file."""

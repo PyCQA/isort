@@ -57,12 +57,14 @@ class ForcedSeparateFinder(BaseFinder):
 
             if fnmatch(module_name, path_glob) or fnmatch(module_name, '.' + path_glob):
                 return forced_separate
+        return None
 
 
 class LocalFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         if module_name.startswith("."):
             return self.sections.LOCALFOLDER
+        return None
 
 
 class KnownPatternFinder(BaseFinder):
@@ -106,6 +108,7 @@ class KnownPatternFinder(BaseFinder):
             for pattern, placement in self.known_patterns:
                 if pattern.match(module_name_to_check):
                     return placement
+        return None
 
 
 class PathFinder(BaseFinder):
@@ -176,6 +179,7 @@ class PathFinder(BaseFinder):
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return self.sections.STDLIB
                 return self.config['default_section']
+        return None
 
 
 class ReqsBaseFinder(BaseFinder):
@@ -269,6 +273,7 @@ class ReqsBaseFinder(BaseFinder):
         for name in self.names:
             if module_name == name:
                 return self.sections.THIRDPARTY
+        return None
 
 
 class RequirementsFinder(ReqsBaseFinder):
@@ -390,3 +395,4 @@ class FindersManager(object):
                                                                                                        module_name))
             if section is not None:
                 return section
+        return None
