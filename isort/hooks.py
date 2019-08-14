@@ -28,17 +28,18 @@ from typing import List
 from isort import SortImports
 
 
-def get_output(command: str) -> bytes:
+def get_output(command: List[str]) -> str:
     """
     Run a command and return raw output
 
     :param str command: the command to run
     :returns: the stdout output of the command
     """
-    return subprocess.check_output(command.split())
+    result = subprocess.run(command, stdout=subprocess.PIPE, check=True)
+    return result.stdout.decode()
 
 
-def get_lines(command: str) -> List[str]:
+def get_lines(command: List[str]) -> List[str]:
     """
     Run a command and return lines of output
 
@@ -46,7 +47,7 @@ def get_lines(command: str) -> List[str]:
     :returns: list of whitespace-stripped lines output by command
     """
     stdout = get_output(command)
-    return [line.strip().decode() for line in stdout.splitlines()]
+    return [line.strip() for line in stdout.splitlines()]
 
 
 def git_hook(strict=False, modify=False):
@@ -64,19 +65,19 @@ def git_hook(strict=False, modify=False):
     """
 
     # Get list of files modified and staged
-    diff_cmd = "git diff-index --cached --name-only --diff-filter=ACMRTUXB HEAD"
+    diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB HEAD"]
     files_modified = get_lines(diff_cmd)
 
     errors = 0
     for filename in files_modified:
         if filename.endswith('.py'):
             # Get the staged contents of the file
-            staged_cmd = "git show :%s" % filename
+            staged_cmd = ["git", "show", ":%s" % filename]
             staged_contents = get_output(staged_cmd)
 
             sort = SortImports(
                 file_path=filename,
-                file_contents=staged_contents.decode(),
+                file_contents=staged_contents,
                 check=True
             )
 
@@ -85,7 +86,7 @@ def git_hook(strict=False, modify=False):
                 if modify:
                     SortImports(
                         file_path=filename,
-                        file_contents=staged_contents.decode(),
+                        file_contents=staged_contents,
                         check=False,
                     )
 
