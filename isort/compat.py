@@ -95,7 +95,8 @@ class SortImports(object):
             absolute_file_path = resolve(file_path)
             if check_skip:
                 if run_path and run_path in absolute_file_path.parents:
-                    file_name = os.path.relpath(absolute_file_path, run_path)
+                    # TODO: Drop str() when isort is Python 3.6+.
+                    file_name = os.path.relpath(str(absolute_file_path), run_path)
                 else:
                     file_name = str(absolute_file_path)
                     run_path = ''
