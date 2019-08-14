@@ -81,6 +81,8 @@ Code Contributors
 - Madison Caldwell (@madirey)
 - Matt Yule-Bennett (@mattbennett)
 - Jaswanth Kumar (@jaswanth098)
+- Dario Navin (@Zarathustra2)
+
 
 Documenters
 ===================
