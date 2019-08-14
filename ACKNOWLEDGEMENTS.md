@@ -80,6 +80,7 @@ Code Contributors
 - Brian F. Baron (@briabar)
 - Madison Caldwell (@madirey)
 - Matt Yule-Bennett (@mattbennett)
+- Jaswanth Kumar (@jaswanth098)
 
 Documenters
 ===================
