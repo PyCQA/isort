@@ -86,7 +86,7 @@ def _get_default(py_version: Optional[str]) -> dict:
 
     if py_version is None:
         major, minor = sys.version_info[0:2]
-    elif py_version is not "all":
+    elif py_version != "all":
         minor = 0
 
         # we have a minor
@@ -100,7 +100,7 @@ def _get_default(py_version: Optional[str]) -> dict:
 
     _default = default.copy()
 
-    if py_version is "all":
+    if py_version == "all":
         standard_library = list(set(standard_library_3 + standard_library_2))
     elif major == 3:
         standard_library = standard_library_3
