@@ -40,8 +40,12 @@ def sort_kate_imports(add_imports=(), remove_imports=()):
     view = document.activeView()
     position = view.cursorPosition()
     selection = view.selectionRange()
-    sorter = SortImports(file_contents=document.text(), add_imports=add_imports, remove_imports=remove_imports,
-                         settings_path=os.path.dirname(os.path.abspath(str(document.url().path()))))
+    sorter = SortImports(
+        file_contents=document.text(),
+        add_imports=add_imports,
+        remove_imports=remove_imports,
+        settings_path=os.path.dirname(os.path.abspath(str(document.url().path()))),
+    )
     document.setText(sorter.output)
     position.setLine(position.line() + sorter.length_change)
     if selection:
@@ -61,17 +65,21 @@ def sort_imports():
 
 @kate.action(text="Add Import", shortcut="Ctrl+]", menu="Python")
 def add_imports():
-    text, ok = QtGui.QInputDialog.getText(None,
-                                          'Add Import',
-                                          'Enter an import line to add (example: from os import path or os.path):')
+    text, ok = QtGui.QInputDialog.getText(
+        None,
+        "Add Import",
+        "Enter an import line to add (example: from os import path or os.path):",
+    )
     if ok:
         sort_kate_imports(add_imports=text.split(";"))
 
 
 @kate.action(text="Remove Import", shortcut="Ctrl+Shift+]", menu="Python")
 def remove_imports():
-    text, ok = QtGui.QInputDialog.getText(None,
-                                          'Remove Import',
-                                          'Enter an import line to remove (example: os.path or from os import path):')
+    text, ok = QtGui.QInputDialog.getText(
+        None,
+        "Remove Import",
+        "Enter an import line to remove (example: os.path or from os import path):",
+    )
     if ok:
         sort_kate_imports(remove_imports=text.split(";"))
