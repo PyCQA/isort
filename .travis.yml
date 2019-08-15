@@ -22,8 +22,6 @@ matrix:
       language: generic
       env: TOXENV=py36
 
-before_install:
-- "./scripts/before_install.sh"
 install:
 - pip install tox
 script:
