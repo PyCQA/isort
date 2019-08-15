@@ -309,11 +309,11 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
         """Return paths to requirements files from passed dir.
         """
-        return self._get_files_from_dir_cached(path)
+        yield from self._get_files_from_dir_cached(path)
 
     @classmethod
     @lru_cache(maxsize=16)
-    def _get_files_from_dir_cached(cls, path):
+    def _get_files_from_dir_cached(cls, path: str) -> List[str]:
         results = []
 
         for fname in os.listdir(path):
