@@ -245,8 +245,7 @@ class ReqsBaseFinder(BaseFinder):
             path = os.path.dirname(path)
 
         for path in self._get_parents(path):
-            for file_path in self._get_files_from_dir(path):
-                yield file_path
+            yield from self._get_files_from_dir(path)
 
     def _normalize_name(self, name: str) -> str:
         """Convert package name to module name
@@ -315,8 +314,7 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
-        for i in RequirementsFinder._get_names_cached(path):
-            yield i
+        yield from RequirementsFinder._get_names_cached(path)
 
     @classmethod
     @lru_cache(maxsize=16)
