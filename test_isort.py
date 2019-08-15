@@ -2343,7 +2343,7 @@ def test_no_additional_lines_issue_358() -> None:
     ).output
     assert test_output == expected_output
 
-    for attempt in range(5):
+    for _attempt in range(5):
         test_output = SortImports(
             file_contents=test_output,
             multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -2387,7 +2387,7 @@ def test_no_additional_lines_issue_358() -> None:
     ).output
     assert test_output == expected_output
 
-    for attempt in range(5):
+    for _attempt in range(5):
         test_output = SortImports(
             file_contents=test_output,
             multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
