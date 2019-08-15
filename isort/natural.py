@@ -34,17 +34,17 @@ def _atoi(text: str) -> Any:
 
 
 def _natural_keys(text: str) -> List[Any]:
-    return [_atoi(c) for c in re.split(r'(\d+)', text)]
+    return [_atoi(c) for c in re.split(r"(\d+)", text)]
 
 
 def nsorted(
-    to_sort: Iterable[str],
-    key: Optional[Callable[[str], Any]] = None
+    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None
 ) -> List[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
     else:
+
         def key_callback(text: str) -> List[Any]:
             return _natural_keys(key(text))  # type: ignore
 

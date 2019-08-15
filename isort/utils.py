@@ -13,7 +13,7 @@ def exists_case_sensitive(path: str) -> bool:
     can only import using the case of the real file.
     """
     result = os.path.exists(path)
-    if (sys.platform.startswith('win') or sys.platform == 'darwin') and result:
+    if (sys.platform.startswith("win") or sys.platform == "darwin") and result:
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result
@@ -55,9 +55,9 @@ def difference(a: Iterable[Any], b: Container[Any]) -> List[Any]:
 
 
 def infer_line_separator(file_contents: str) -> str:
-    if '\r\n' in file_contents:
-        return '\r\n'
-    elif '\r' in file_contents:
-        return '\r'
+    if "\r\n" in file_contents:
+        return "\r\n"
+    elif "\r" in file_contents:
+        return "\r"
     else:
-        return '\n'
+        return "\n"
