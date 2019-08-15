@@ -86,7 +86,7 @@ class KnownPatternFinder(BaseFinder):
         self.known_patterns = []  # type: List[Tuple[Pattern[str], str]]
         for placement in reversed(self.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-            config_key = "known_{0}".format(known_placement.lower())
+            config_key = "known_{}".format(known_placement.lower())
             known_patterns = self.config.get(config_key, [])
             known_patterns = [
                 pattern
@@ -140,16 +140,14 @@ class PathFinder(BaseFinder):
             self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ""
         if self.virtual_env:
-            self.virtual_env_src = "{0}/src/".format(self.virtual_env)
-            for path in glob("{0}/lib/python*/site-packages".format(self.virtual_env)):
+            self.virtual_env_src = "{}/src/".format(self.virtual_env)
+            for path in glob("{}/lib/python*/site-packages".format(self.virtual_env)):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob(
-                "{0}/lib/python*/*/site-packages".format(self.virtual_env)
-            ):
+            for path in glob("{}/lib/python*/*/site-packages".format(self.virtual_env)):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob("{0}/src/*".format(self.virtual_env)):
+            for path in glob("{}/src/*".format(self.virtual_env)):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
@@ -159,10 +157,10 @@ class PathFinder(BaseFinder):
         )
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
-            for path in glob("{0}/lib/python*/site-packages".format(self.conda_env)):
+            for path in glob("{}/lib/python*/site-packages".format(self.conda_env)):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob("{0}/lib/python*/*/site-packages".format(self.conda_env)):
+            for path in glob("{}/lib/python*/*/site-packages".format(self.conda_env)):
                 if path not in self.paths:
                     self.paths.append(path)
 
@@ -271,8 +269,7 @@ class ReqsBaseFinder(BaseFinder):
             path = os.path.dirname(path)
 
         for path in self._get_parents(path):
-            for file_path in self._get_files_from_dir(path):
-                yield file_path
+            yield from self._get_files_from_dir(path)
 
     def _normalize_name(self, name: str) -> str:
         """Convert package name to module name
@@ -341,8 +338,7 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
-        for i in self._get_names_cached(path):
-            yield i
+        yield from self._get_names_cached(path)
 
     @classmethod
     @lru_cache(maxsize=16)
@@ -377,7 +373,7 @@ class DefaultFinder(BaseFinder):
         return self.config["default_section"]
 
 
-class FindersManager(object):
+class FindersManager:
     _default_finders_classes = (
         ForcedSeparateFinder,
         LocalFinder,

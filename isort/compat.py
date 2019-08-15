@@ -64,7 +64,7 @@ def get_settings_path(
         return Path.cwd()
 
 
-class SortImports(object):
+class SortImports:
     incorrectly_sorted = False
     skipped = False
 
@@ -110,7 +110,7 @@ class SortImports(object):
                     self.skipped = True
                     if self.config["verbose"]:
                         print(
-                            "WARNING: {0} was skipped as it's listed in 'skip' setting"
+                            "WARNING: {} was skipped as it's listed in 'skip' setting"
                             " or matches a glob in 'skip_glob' setting".format(
                                 absolute_file_path
                             )
@@ -174,13 +174,13 @@ class SortImports(object):
                         in_lines_without_top_comment, logging_file_path, "exec", 0, 1
                     )
                     print(
-                        "ERROR: {0} isort would have introduced syntax errors, please report to the project!".format(
+                        "ERROR: {} isort would have introduced syntax errors, please report to the project!".format(
                             logging_file_path
                         )
                     )
                 except SyntaxError:
                     print(
-                        "ERROR: {0} File contains syntax errors.".format(
+                        "ERROR: {} File contains syntax errors.".format(
                             logging_file_path
                         )
                     )
@@ -233,7 +233,7 @@ class SortImports(object):
                 "w", encoding=file_encoding, newline=""
             ) as output_file:
                 if not self.config["quiet"]:
-                    print("Fixing {0}".format(self.file_path))
+                    print("Fixing {}".format(self.file_path))
 
                 output_file.write(self.output)
 

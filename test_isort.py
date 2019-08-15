@@ -20,7 +20,6 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-import io
 import os
 import os.path
 import posixpath
@@ -2037,8 +2036,8 @@ def test_import_split_is_word_boundary_aware() -> None:
 def test_other_file_encodings(tmpdir):
     """Test to ensure file encoding is respected"""
     for encoding in ("latin1", "utf8"):
-        tmp_fname = tmpdir.join("test_{0}.py".format(encoding))
-        file_contents = "# coding: {0}\n\ns = u'ã'\n".format(encoding)
+        tmp_fname = tmpdir.join("test_{}.py".format(encoding))
+        file_contents = "# coding: {}\n\ns = u'ã'\n".format(encoding)
         tmp_fname.write_binary(file_contents.encode(encoding))
         assert (
             SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output
@@ -3067,13 +3066,13 @@ def test_new_lines_are_preserved() -> None:
         pass
 
     try:
-        with io.open(rn_newline.name, mode="w", newline="") as rn_newline_input:
+        with open(rn_newline.name, mode="w", newline="") as rn_newline_input:
             rn_newline_input.write("import sys\r\nimport os\r\n")
 
         SortImports(rn_newline.name, settings_path=os.getcwd())
-        with io.open(rn_newline.name) as new_line_file:
+        with open(rn_newline.name) as new_line_file:
             print(new_line_file.read())
-        with io.open(rn_newline.name, newline="") as rn_newline_file:
+        with open(rn_newline.name, newline="") as rn_newline_file:
             rn_newline_contents = rn_newline_file.read()
         assert rn_newline_contents == "import os\r\nimport sys\r\n"
     finally:
@@ -3083,11 +3082,11 @@ def test_new_lines_are_preserved() -> None:
         pass
 
     try:
-        with io.open(r_newline.name, mode="w", newline="") as r_newline_input:
+        with open(r_newline.name, mode="w", newline="") as r_newline_input:
             r_newline_input.write("import sys\rimport os\r")
 
         SortImports(r_newline.name, settings_path=os.getcwd())
-        with io.open(r_newline.name, newline="") as r_newline_file:
+        with open(r_newline.name, newline="") as r_newline_file:
             r_newline_contents = r_newline_file.read()
         assert r_newline_contents == "import os\rimport sys\r"
     finally:
@@ -3097,11 +3096,11 @@ def test_new_lines_are_preserved() -> None:
         pass
 
     try:
-        with io.open(n_newline.name, mode="w", newline="") as n_newline_input:
+        with open(n_newline.name, mode="w", newline="") as n_newline_input:
             n_newline_input.write("import sys\nimport os\n")
 
         SortImports(n_newline.name, settings_path=os.getcwd())
-        with io.open(n_newline.name, newline="") as n_newline_file:
+        with open(n_newline.name, newline="") as n_newline_file:
             n_newline_contents = n_newline_file.read()
         assert n_newline_contents == "import os\nimport sys\n"
     finally:
@@ -3228,15 +3227,13 @@ def test_path_finder(monkeypatch):
     finder = finders.PathFinder(config=si.config, sections=si.sections)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
-    imaginary_paths = set(
-        [
-            posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
-            posixpath.join(third_party_prefix, "example_2.py"),
-            posixpath.join(third_party_prefix, "example_3.so"),
-            posixpath.join(third_party_prefix, "example_4" + ext_suffix),
-            posixpath.join(os.getcwd(), "example_5.py"),
-        ]
-    )
+    imaginary_paths = {
+        posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
+        posixpath.join(third_party_prefix, "example_2.py"),
+        posixpath.join(third_party_prefix, "example_3.so"),
+        posixpath.join(third_party_prefix, "example_4" + ext_suffix),
+        posixpath.join(os.getcwd(), "example_5.py"),
+    }
     monkeypatch.setattr(
         "isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths
     )
@@ -3319,10 +3316,10 @@ def test_safety_excludes(tmpdir, enabled):
     main.iter_source_code(codes, config, skipped)
 
     # if enabled files within nested unsafe directories should be skipped
-    file_names = set(
+    file_names = {
         os.path.relpath(f, str(tmpdir))
         for f in main.iter_source_code([str(tmpdir)], config, skipped)
-    )
+    }
     if enabled:
         assert file_names == {"victim.py"}
         assert len(skipped) == 3
@@ -3336,10 +3333,10 @@ def test_safety_excludes(tmpdir, enabled):
         assert not skipped
 
     # directly pointing to files within unsafe directories shouldn't skip them either way
-    file_names = set(
+    file_names = {
         os.path.relpath(f, str(toxdir))
         for f in main.iter_source_code([str(toxdir)], config, skipped)
-    )
+    }
     assert file_names == {"verysafe.py"}
 
 
@@ -3359,10 +3356,10 @@ def test_skip_glob(tmpdir, skip_glob_assert):
 
     config = dict(settings.default.copy(), skip_glob=skip_glob)
     skipped = []  # type: List[str]
-    file_names = set(
+    file_names = {
         os.path.relpath(f, str(base_dir))
         for f in main.iter_source_code([str(base_dir)], config, skipped)
-    )
+    }
     assert len(skipped) == skipped_count
     assert file_names == file_names
 

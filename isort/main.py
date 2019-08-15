@@ -63,7 +63,7 @@ INTRO = r"""
 
          isort your Python imports for you so you don't have to
 
-                            VERSION {0}
+                            VERSION {}
 
 \########################################################################/
 """.format(
@@ -87,13 +87,13 @@ def is_python_file(path: str) -> bool:
     try:
         with open(path, "rb") as fp:
             line = fp.readline(100)
-    except IOError:
+    except OSError:
         return False
     else:
         return bool(shebang_re.match(line))
 
 
-class SortAttempt(object):
+class SortAttempt:
     def __init__(self, incorrectly_sorted: bool, skipped: bool) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
@@ -103,8 +103,8 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
     try:
         result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
-    except IOError as e:
-        print("WARNING: Unable to parse file {0} due to {1}".format(file_name, e))
+    except OSError as e:
+        print("WARNING: Unable to parse file {} due to {}".format(file_name, e))
         return None
 
 
@@ -187,9 +187,9 @@ class ISortCommand(setuptools.Command):
                     ).incorrectly_sorted
                     if incorrectly_sorted:
                         wrong_sorted_files = True
-                except IOError as e:
+                except OSError as e:
                     print(
-                        "WARNING: Unable to parse file {0} due to {1}".format(
+                        "WARNING: Unable to parse file {} due to {}".format(
                             python_file, e
                         )
                     )
@@ -638,7 +638,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         )
         if not os.path.isdir(arguments["settings_path"]):
             print(
-                "WARNING: settings_path dir does not exist: {0}".format(
+                "WARNING: settings_path dir does not exist: {}".format(
                     arguments["settings_path"]
                 )
             )
@@ -648,7 +648,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         arguments["virtual_env"] = os.path.abspath(venv)
         if not os.path.isdir(arguments["virtual_env"]):
             print(
-                "WARNING: virtual_env dir does not exist: {0}".format(
+                "WARNING: virtual_env dir does not exist: {}".format(
                     arguments["virtual_env"]
                 )
             )
@@ -718,10 +718,10 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             if config["verbose"]:
                 for was_skipped in skipped:
                     print(
-                        "WARNING: {0} was skipped as it's listed in 'skip' setting"
+                        "WARNING: {} was skipped as it's listed in 'skip' setting"
                         " or matches a glob in 'skip_glob' setting".format(was_skipped)
                     )
-            print("Skipped {0} files".format(num_skipped))
+            print("Skipped {} files".format(num_skipped))
 
 
 if __name__ == "__main__":
