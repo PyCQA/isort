@@ -283,7 +283,7 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
         """Return paths to requirements files from passed dir.
         """
-        return RequirementsFinder._get_files_from_dir_cached(path)
+        return self._get_files_from_dir_cached(path)
 
     @classmethod
     @lru_cache(maxsize=16)
@@ -315,7 +315,7 @@ class RequirementsFinder(ReqsBaseFinder):
     def _get_names(self, path: str) -> Iterator[str]:
         """Load required packages from path to requirements file
         """
-        for i in RequirementsFinder._get_names_cached(path):
+        for i in self._get_names_cached(path):
             yield i
 
     @classmethod
