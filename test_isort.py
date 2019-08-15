@@ -76,7 +76,7 @@ def default_settings_path(tmpdir_factory):
         yield config_dir.strpath
 
 
-def test_happy_path():
+def test_happy_path() -> None:
     """Test the most basic use case, straight imports no code, simply not organized by category."""
     test_input = ("import sys\n"
                   "import os\n"
@@ -91,7 +91,7 @@ def test_happy_path():
                            "import myproject.test\n")
 
 
-def test_code_intermixed():
+def test_code_intermixed() -> None:
     """Defines what should happen when isort encounters imports intermixed with
     code.
 
@@ -111,7 +111,7 @@ def test_code_intermixed():
                            "print('I like to put code between imports cause I want stuff to break')\n")
 
 
-def test_correct_space_between_imports():
+def test_correct_space_between_imports() -> None:
     """Ensure after imports a correct amount of space (in newlines) is
     enforced.
 
@@ -158,7 +158,7 @@ def test_correct_space_between_imports():
                                  "print('yo')\n")
 
 
-def test_sort_on_number():
+def test_sort_on_number() -> None:
     """Ensure numbers get sorted logically (10 > 9 not the other way around)"""
     test_input = ("import lib10\n"
                   "import lib9\n")
@@ -167,7 +167,7 @@ def test_sort_on_number():
                            "import lib10\n")
 
 
-def test_line_length():
+def test_line_length() -> None:
     """Ensure isort enforces the set line_length."""
     assert len(SortImports(file_contents=REALLY_LONG_IMPORT, line_length=80).output.split("\n")[0]) <= 80
     assert len(SortImports(file_contents=REALLY_LONG_IMPORT, line_length=120).output.split("\n")[0]) <= 120
@@ -214,7 +214,7 @@ def test_line_length():
                            "                         lib22)\n")
 
 
-def test_output_modes():
+def test_output_modes() -> None:
     """Test setting isort to use various output modes works as expected"""
     test_output_grid = SortImports(file_contents=REALLY_LONG_IMPORT,
                                    multi_line_output=WrapModes.GRID, line_length=40).output
@@ -403,7 +403,7 @@ def test_output_modes():
                                                                    ")\n")
 
 
-def test_qa_comment_case():
+def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
     test_output = SortImports(file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA).output
     assert test_output == "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA\n"
@@ -413,7 +413,7 @@ def test_qa_comment_case():
     assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
 
 
-def test_length_sort():
+def test_length_sort() -> None:
     """Test setting isort to sort on length instead of alphabetically."""
     test_input = ("import medium_sizeeeeeeeeeeeeee\n"
                   "import shortie\n"
@@ -426,7 +426,7 @@ def test_length_sort():
                            "import looooooooooooooooooooooooooooooooooooooong\n")
 
 
-def test_length_sort_section():
+def test_length_sort_section() -> None:
     """Test setting isort to sort on length instead of alphabetically for a specific section."""
     test_input = ("import medium_sizeeeeeeeeeeeeee\n"
                   "import shortie\n"
@@ -444,7 +444,7 @@ def test_length_sort_section():
                            "import shortie\n")
 
 
-def test_convert_hanging():
+def test_convert_hanging() -> None:
     """Ensure that isort will convert hanging indents to correct indent
     method."""
     test_input = ("from third_party import lib1, lib2, \\\n"
@@ -467,7 +467,7 @@ def test_convert_hanging():
                            "                         lib22)\n")
 
 
-def test_custom_indent():
+def test_custom_indent() -> None:
     """Ensure setting a custom indent will work as expected."""
     test_output = SortImports(file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.HANGING_INDENT,
                               line_length=40, indent="   ", balanced_wrapping=False).output
@@ -502,7 +502,7 @@ def test_custom_indent():
                            "  lib20, lib21, lib22\n")
 
 
-def test_use_parentheses():
+def test_use_parentheses() -> None:
     test_input = (
         "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import "
         "    my_custom_function as my_special_function"
@@ -548,7 +548,7 @@ def test_use_parentheses():
     )
 
 
-def test_skip():
+def test_skip() -> None:
     """Ensure skipping a single import will work as expected."""
     test_input = ("import myproject\n"
                   "import django\n"
@@ -564,7 +564,7 @@ def test_skip():
                            "import sys  # isort:skip this import needs to be placed here\n")
 
 
-def test_skip_with_file_name():
+def test_skip_with_file_name() -> None:
     """Ensure skipping a file works even when file_contents is provided."""
     test_input = ("import django\n"
                   "import myproject\n")
@@ -575,7 +575,7 @@ def test_skip_with_file_name():
     assert sort_imports.output is None
 
 
-def test_skip_within_file():
+def test_skip_within_file() -> None:
     """Ensure skipping a whole file works."""
     test_input = ("# isort:skip_file\n"
                   "import django\n"
@@ -585,7 +585,7 @@ def test_skip_within_file():
     assert sort_imports.output is None
 
 
-def test_force_to_top():
+def test_force_to_top() -> None:
     """Ensure forcing a single import to the top of its category works as expected."""
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -598,7 +598,7 @@ def test_force_to_top():
                            "import lib6\n")
 
 
-def test_add_imports():
+def test_add_imports() -> None:
     """Ensures adding imports works as expected."""
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -660,7 +660,7 @@ def test_add_imports():
     assert test_output == ("import lib4\n")
 
 
-def test_remove_imports():
+def test_remove_imports() -> None:
     """Ensures removing imports works as expected."""
     test_input = ("import lib6\n"
                   "import lib2\n"
@@ -682,7 +682,7 @@ def test_remove_imports():
                            "import lib5\n")
 
 
-def test_explicitly_local_import():
+def test_explicitly_local_import() -> None:
     """Ensure that explicitly local imports are separated."""
     test_input = ("import lib1\n"
                   "import lib2\n"
@@ -695,7 +695,7 @@ def test_explicitly_local_import():
                                                             "from . import lib7\n")
 
 
-def test_quotes_in_file():
+def test_quotes_in_file() -> None:
     """Ensure imports within triple quotes don't get imported."""
     test_input = ('import os\n'
                   '\n'
@@ -768,7 +768,7 @@ def test_check_newline_in_imports(capsys):
     assert 'SUCCESS' in out
 
 
-def test_forced_separate():
+def test_forced_separate() -> None:
     """Ensure that forcing certain sub modules to show separately works as expected."""
     test_input = ('import sys\n'
                   'import warnings\n'
@@ -798,7 +798,7 @@ def test_forced_separate():
                        line_length=120, order_by_type=False).output == test_input
 
 
-def test_default_section():
+def test_default_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
                   "import os\n"
@@ -822,7 +822,7 @@ def test_default_section():
                                   "import django.settings\n")
 
 
-def test_first_party_overrides_standard_section():
+def test_first_party_overrides_standard_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = ("from HTMLParser import HTMLParseError, HTMLParser\n"
                   "import sys\n"
@@ -838,7 +838,7 @@ def test_first_party_overrides_standard_section():
                            "import profile.test\n")
 
 
-def test_thirdy_party_overrides_standard_section():
+def test_thirdy_party_overrides_standard_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = ("import sys\n"
                   "import os\n"
@@ -852,7 +852,7 @@ def test_thirdy_party_overrides_standard_section():
                            "import profile.test\n")
 
 
-def test_known_pattern_path_expansion():
+def test_known_pattern_path_expansion() -> None:
     """Test to ensure patterns ending with path sep gets expanded and nested packages treated as known patterns"""
     test_input = ("from kate_plugin import isort_plugin\n"
                   "import sys\n"
@@ -872,7 +872,7 @@ def test_known_pattern_path_expansion():
                             "from kate_plugin import isort_plugin\n")
 
 
-def test_force_single_line_imports():
+def test_force_single_line_imports() -> None:
     """Test to ensure forcing imports to each have their own line works as expected."""
     test_input = ("from third_party import lib1, lib2, \\\n"
                   "    lib3, lib4, lib5, lib6, lib7, \\\n"
@@ -904,7 +904,7 @@ def test_force_single_line_imports():
                            "from third_party import lib22\n")
 
 
-def test_force_single_line_long_imports():
+def test_force_single_line_long_imports() -> None:
     test_input = ("from veryveryveryveryveryvery import small, big\n")
     test_output = SortImports(file_contents=test_input, multi_line_output=WrapModes.NOQA,
                               line_length=40, force_single_line=True).output
@@ -912,7 +912,7 @@ def test_force_single_line_long_imports():
                            "from veryveryveryveryveryvery import small  # NOQA\n")
 
 
-def test_titled_imports():
+def test_titled_imports() -> None:
     """Tests setting custom titled/commented import sections."""
     test_input = ("import sys\n"
                   "import unicodedata\n"
@@ -937,7 +937,7 @@ def test_titled_imports():
     assert test_second_run == test_output
 
 
-def test_balanced_wrapping():
+def test_balanced_wrapping() -> None:
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
     test_input = ("from __future__ import (absolute_import, division, print_function,\n"
                   "                        unicode_literals)")
@@ -946,7 +946,7 @@ def test_balanced_wrapping():
                            "                        print_function, unicode_literals)\n")
 
 
-def test_relative_import_with_space():
+def test_relative_import_with_space() -> None:
     """Tests the case where the relation and the module that is being imported from is separated with a space."""
     test_input = ("from ... fields.sproqet import SproqetCollection")
     assert SortImports(file_contents=test_input).output == ("from ...fields.sproqet import SproqetCollection\n")
@@ -958,7 +958,7 @@ def test_relative_import_with_space():
     assert SortImports(file_contents=test_input).output == test_output
 
 
-def test_multiline_import():
+def test_multiline_import() -> None:
     """Test the case where import spawns multiple lines with inconsistent indentation."""
     test_input = ("from pkg \\\n"
                   "    import stuff, other_suff \\\n"
@@ -977,7 +977,7 @@ def test_multiline_import():
     assert SortImports(file_contents=test_input, **custom_configuration).output == expected_output
 
 
-def test_single_multiline():
+def test_single_multiline() -> None:
     """Test the case where a single import spawns multiple lines."""
     test_input = ("from os import\\\n"
                   "        getuid\n"
@@ -991,7 +991,7 @@ def test_single_multiline():
     )
 
 
-def test_atomic_mode():
+def test_atomic_mode() -> None:
     # without syntax error, everything works OK
     test_input = ("from b import d, c\n"
                   "from a import f, e\n")
@@ -1003,7 +1003,7 @@ def test_atomic_mode():
     assert SortImports(file_contents=test_input, atomic=True).output == test_input
 
 
-def test_order_by_type():
+def test_order_by_type() -> None:
     test_input = "from module import Class, CONSTANT, function"
     assert SortImports(file_contents=test_input,
                        order_by_type=True).output == ("from module import CONSTANT, Class, function\n")
@@ -1032,7 +1032,7 @@ def test_order_by_type():
                  "from subprocess import PIPE, STDOUT, Popen\n")
 
 
-def test_custom_lines_after_import_section():
+def test_custom_lines_after_import_section() -> None:
     """Test the case where the number of lines to output after imports has been explicitly set."""
     test_input = ("from a import b\n"
                   "foo = 'bar'\n")
@@ -1049,7 +1049,7 @@ def test_custom_lines_after_import_section():
                                                                                    "foo = 'bar'\n")
 
 
-def test_smart_lines_after_import_section():
+def test_smart_lines_after_import_section() -> None:
     """Tests the default 'smart' behavior for dealing with lines after the import section"""
     # one space if not method or class after imports
     test_input = ("from a import b\n"
@@ -1120,7 +1120,7 @@ def test_smart_lines_after_import_section():
                                                             "    pass\n")
 
 
-def test_settings_combine_instead_of_overwrite():
+def test_settings_combine_instead_of_overwrite() -> None:
     """Test to ensure settings combine logically, instead of fully overwriting."""
     assert set(SortImports(known_standard_library=['not_std_library']).config['known_standard_library']) == \
            set(SortImports().config['known_standard_library'] + ['not_std_library'])
@@ -1129,7 +1129,7 @@ def test_settings_combine_instead_of_overwrite():
            {item for item in SortImports().config['known_standard_library'] if item != 'thread'}
 
 
-def test_combined_from_and_as_imports():
+def test_combined_from_and_as_imports() -> None:
     """Test to ensure it's possible to combine from and as imports."""
     test_input = ("from translate.misc.multistring import multistring\n"
                   "from translate.storage import base, factory\n"
@@ -1140,7 +1140,7 @@ def test_combined_from_and_as_imports():
     assert SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == test_output
 
 
-def test_as_imports_with_line_length():
+def test_as_imports_with_line_length() -> None:
     """Test to ensure it's possible to combine from and as imports."""
     test_input = ("from translate.storage import base as storage_base\n"
                   "from translate.storage.placeables import general, parse as rich_parse\n")
@@ -1150,7 +1150,7 @@ def test_as_imports_with_line_length():
                    "from translate.storage.placeables import \\\n    parse as rich_parse\n")
 
 
-def test_keep_comments():
+def test_keep_comments() -> None:
     """Test to ensure isort properly keeps comments in tact after sorting."""
     # Straight Import
     test_input = ("import foo  # bar\n")
@@ -1206,7 +1206,7 @@ def test_keep_comments():
     )
 
 
-def test_multiline_split_on_dot():
+def test_multiline_split_on_dot() -> None:
     """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
     test_input = ("from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
                   "    my_module import my_function")
@@ -1215,7 +1215,7 @@ def test_multiline_split_on_dot():
              "    my_function\n")
 
 
-def test_import_star():
+def test_import_star() -> None:
     """Test to ensure isort handles star imports correctly"""
     test_input = ("from blah import *\n"
                   "from blah import _potato\n")
@@ -1224,7 +1224,7 @@ def test_import_star():
     assert SortImports(file_contents=test_input, combine_star=True).output == ("from blah import *\n")
 
 
-def test_include_trailing_comma():
+def test_include_trailing_comma() -> None:
     """Test for the include_trailing_comma option"""
     test_output_grid = SortImports(
         file_contents=SHORT_IMPORT,
@@ -1313,7 +1313,7 @@ def test_include_trailing_comma():
     )
 
 
-def test_similar_to_std_library():
+def test_similar_to_std_library() -> None:
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
     test_input = ("import datetime\n"
                   "\n"
@@ -1322,7 +1322,7 @@ def test_similar_to_std_library():
     assert SortImports(file_contents=test_input, known_third_party=["requests", "times"]).output == test_input
 
 
-def test_correctly_placed_imports():
+def test_correctly_placed_imports() -> None:
     """Test to ensure comments stay on correct placement after being sorted"""
     test_input = ("from a import b # comment for b\n"
                   "from a import c # comment for c\n")
@@ -1379,7 +1379,7 @@ def test_correctly_placed_imports():
                        known_third_party=["django", "model_mommy"]).output == test_input
 
 
-def test_auto_detection():
+def test_auto_detection() -> None:
     """Initial test to ensure isort auto-detection works correctly - will grow over time as new issues are raised."""
 
     # Issue 157
@@ -1394,7 +1394,7 @@ def test_auto_detection():
     assert SortImports(file_contents=test_input, default_section="THIRDPARTY").output == test_input
 
 
-def test_same_line_statements():
+def test_same_line_statements() -> None:
     """Ensure isort correctly handles the case where a single line contains multiple statements including an import"""
     test_input = ("import pdb; import nose\n")
     assert SortImports(file_contents=test_input).output == ("import pdb\n"
@@ -1406,7 +1406,7 @@ def test_same_line_statements():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_long_line_comments():
+def test_long_line_comments() -> None:
     """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = ("from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
                   "update_live_app, update_live_cron  # noqa\n"
@@ -1419,14 +1419,14 @@ def test_long_line_comments():
                  "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n")
 
 
-def test_tab_character_in_import():
+def test_tab_character_in_import() -> None:
     """Ensure isort correctly handles import statements that contain a tab character"""
     test_input = ("from __future__ import print_function\n"
                   "from __future__ import\tprint_function\n")
     assert SortImports(file_contents=test_input).output == "from __future__ import print_function\n"
 
 
-def test_split_position():
+def test_split_position() -> None:
     """Ensure isort splits on import instead of . when possible"""
     test_input = ("from p24.shared.exceptions.master.host_state_flag_unchanged import HostStateUnchangedException\n")
     assert SortImports(file_contents=test_input, line_length=80).output == \
@@ -1434,7 +1434,7 @@ def test_split_position():
                                              "    HostStateUnchangedException\n")
 
 
-def test_place_comments():
+def test_place_comments() -> None:
     """Ensure manually placing imports works as expected"""
     test_input = ("import sys\n"
                   "import os\n"
@@ -1463,7 +1463,7 @@ def test_place_comments():
     assert test_output == expected_output
 
 
-def test_placement_control():
+def test_placement_control() -> None:
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
                   "import sys\n"
@@ -1489,7 +1489,7 @@ def test_placement_control():
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
 
-def test_custom_sections():
+def test_custom_sections() -> None:
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
                   "import sys\n"
@@ -1537,7 +1537,7 @@ def test_custom_sections():
                            "import p24.shared.media_wiki_syntax as syntax\n")
 
 
-def test_glob_known():
+def test_glob_known() -> None:
     """Ensure that most specific placement control match wins"""
     test_input = ("import os\n"
                   "from django_whatever import whatever\n"
@@ -1569,7 +1569,7 @@ def test_glob_known():
                            "from . import another\n")
 
 
-def test_sticky_comments():
+def test_sticky_comments() -> None:
     """Test to ensure it is possible to make comments 'stick' above imports"""
     test_input = ("import os\n"
                   "\n"
@@ -1585,26 +1585,26 @@ def test_sticky_comments():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_zipimport():
+def test_zipimport() -> None:
     """Imports ending in "import" shouldn't be clobbered"""
     test_input = "from zipimport import zipimport\n"
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_from_ending():
+def test_from_ending() -> None:
     """Imports ending in "from" shouldn't be clobbered."""
     test_input = "from foo import get_foo_from, get_foo\n"
     expected_output = "from foo import get_foo, get_foo_from\n"
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_from_first():
+def test_from_first() -> None:
     """Tests the setting from_first works correctly"""
     test_input = "from os import path\nimport os\n"
     assert SortImports(file_contents=test_input, from_first=True).output == test_input
 
 
-def test_top_comments():
+def test_top_comments() -> None:
     """Ensure correct behavior with top comments"""
     test_input = ("# -*- encoding: utf-8 -*-\n"
                   "# Test comment\n"
@@ -1626,13 +1626,13 @@ def test_top_comments():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_consistency():
+def test_consistency() -> None:
     """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
     test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
     assert SortImports(file_contents=test_input, order_by_type=True).output == test_input
 
 
-def test_force_grid_wrap():
+def test_force_grid_wrap() -> None:
     """Ensures removing imports works as expected."""
     test_input = (
       "from bar import lib2\n"
@@ -1657,7 +1657,7 @@ from foo import (
     assert test_output == test_input
 
 
-def test_force_grid_wrap_long():
+def test_force_grid_wrap_long() -> None:
     """Ensure that force grid wrap still happens with long line length"""
     test_input = (
       "from foo import lib6, lib7\n"
@@ -1679,7 +1679,7 @@ from foo import (
 """
 
 
-def test_uses_jinja_variables():
+def test_uses_jinja_variables() -> None:
     """Test a basic set of imports that use jinja variables"""
     test_input = ("import sys\n"
                   "import os\n"
@@ -1699,7 +1699,7 @@ def test_uses_jinja_variables():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_fcntl():
+def test_fcntl() -> None:
     """Test to ensure fcntl gets correctly recognized as stdlib import"""
     test_input = ("import fcntl\n"
                   "import os\n"
@@ -1707,7 +1707,7 @@ def test_fcntl():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_import_split_is_word_boundary_aware():
+def test_import_split_is_word_boundary_aware() -> None:
     """Test to ensure that isort splits words in a boundary aware manner"""
     test_input = ("from mycompany.model.size_value_array_import_func import \\\n"
                 "    get_size_value_array_import_func_jobs")
@@ -1728,7 +1728,7 @@ def test_other_file_encodings(tmpdir):
         assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
-def test_comment_at_top_of_file():
+def test_comment_at_top_of_file() -> None:
     """Test to ensure isort correctly handles top of file comments"""
     test_input = ("# Comment one\n"
                   "from django import forms\n"
@@ -1741,7 +1741,7 @@ def test_comment_at_top_of_file():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_alphabetic_sorting():
+def test_alphabetic_sorting() -> None:
     """Test to ensure isort correctly handles single line imports"""
     test_input = ("import unittest\n"
                   "\n"
@@ -1764,7 +1764,7 @@ def test_alphabetic_sorting():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_alphabetic_sorting_multi_line():
+def test_alphabetic_sorting_multi_line() -> None:
     """Test to ensure isort correctly handles multiline import see: issue 364"""
     test_input = ("from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
                   "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n")
@@ -1772,7 +1772,7 @@ def test_alphabetic_sorting_multi_line():
     assert SortImports(file_contents=test_input, **options).output == test_input
 
 
-def test_comments_not_duplicated():
+def test_comments_not_duplicated() -> None:
     """Test to ensure comments aren't duplicated: issue 303"""
     test_input = ('from flask import url_for\n'
                   "# Whole line comment\n"
@@ -1783,7 +1783,7 @@ def test_comments_not_duplicated():
     assert output.count("# inline comment\n") == 1
 
 
-def test_top_of_line_comments():
+def test_top_of_line_comments() -> None:
     """Test to ensure top of line comments stay where they should: issue 260"""
     test_input = ('# -*- coding: utf-8 -*-\n'
                   'from django.db import models\n'
@@ -1798,7 +1798,7 @@ def test_top_of_line_comments():
     assert output.startswith('# -*- coding: utf-8 -*-\n')
 
 
-def test_basic_comment():
+def test_basic_comment() -> None:
     """Test to ensure a basic comment wont crash isort"""
     test_input = ('import logging\n'
                   '# Foo\n'
@@ -1806,7 +1806,7 @@ def test_basic_comment():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_shouldnt_add_lines():
+def test_shouldnt_add_lines() -> None:
     """Ensure that isort doesn't add a blank line when a top of import comment is present, issue #316"""
     test_input = ('"""Text"""\n'
                   '# This is a comment\n'
@@ -1881,7 +1881,7 @@ def test_pyproject_conf_file(tmpdir):
     assert SortImports(file_contents=test_input, settings_path=str(tmpdir)).output == correct_output
 
 
-def test_alphabetic_sorting_no_newlines():
+def test_alphabetic_sorting_no_newlines() -> None:
     '''Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)'''
     test_input = "import os\n"
     test_output = SortImports(file_contents=test_input, force_alphabetical_sort_within_sections=True).output
@@ -1898,7 +1898,7 @@ def test_alphabetic_sorting_no_newlines():
     assert test_input == test_output
 
 
-def test_sort_within_section():
+def test_sort_within_section() -> None:
     '''Test to ensure its possible to force isort to sort within sections'''
     test_input = ('from Foob import ar\n'
                   'import foo\n'
@@ -1917,7 +1917,7 @@ def test_sort_within_section():
     assert test_output == test_input
 
 
-def test_sorting_with_two_top_comments():
+def test_sorting_with_two_top_comments() -> None:
     '''Test to ensure isort will sort files that contain 2 top comments'''
     test_input = ('#! comment1\n'
                   "''' comment2\n"
@@ -1931,7 +1931,7 @@ def test_sorting_with_two_top_comments():
                                                             'import b\n')
 
 
-def test_lines_between_sections():
+def test_lines_between_sections() -> None:
     """Test to ensure lines_between_sections works"""
     test_input = ('from bar import baz\n'
                   'import os\n')
@@ -1941,7 +1941,7 @@ def test_lines_between_sections():
                                                                                       'from bar import baz\n')
 
 
-def test_forced_sepatate_globs():
+def test_forced_sepatate_globs() -> None:
     """Test to ensure that forced_separate glob matches lines"""
     test_input = ('import os\n'
                   '\n'
@@ -1964,7 +1964,7 @@ def test_forced_sepatate_globs():
                           'from myproject.foo.models import Foo\n')
 
 
-def test_no_additional_lines_issue_358():
+def test_no_additional_lines_issue_358() -> None:
     """Test to ensure issue 358 is resolved and running isort multiple times does not add extra newlines"""
     test_input = ('"""This is a docstring"""\n'
                   '# This is a comment\n'
@@ -2027,7 +2027,7 @@ def test_no_additional_lines_issue_358():
         assert test_output == expected_output
 
 
-def test_import_by_paren_issue_375():
+def test_import_by_paren_issue_375() -> None:
     """Test to ensure isort can correctly handle sorting imports where the paren is directly by the import body"""
     test_input = ('from .models import(\n'
                   '   Foo,\n'
@@ -2036,7 +2036,7 @@ def test_import_by_paren_issue_375():
     assert SortImports(file_contents=test_input).output == 'from .models import Bar, Foo\n'
 
 
-def test_import_by_paren_issue_460():
+def test_import_by_paren_issue_460() -> None:
     """Test to ensure isort can doesnt move comments around """
     test_input = """
 # First comment
@@ -2048,7 +2048,7 @@ import os
     assert SortImports(file_contents=(test_input)).output == test_input
 
 
-def test_function_with_docstring():
+def test_function_with_docstring() -> None:
     """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
     add_imports = ['from __future__ import unicode_literals']
     test_input = ('def foo():\n'
@@ -2063,7 +2063,7 @@ def test_function_with_docstring():
     assert SortImports(file_contents=test_input, add_imports=add_imports).output == expected_output
 
 
-def test_plone_style():
+def test_plone_style() -> None:
     """Test to ensure isort correctly plone style imports"""
     test_input = ("from django.contrib.gis.geos import GEOSException\n"
                   "from plone.app.testing import getRoles\n"
@@ -2079,7 +2079,7 @@ def test_plone_style():
     assert SortImports(file_contents=test_input, **options).output == test_input
 
 
-def test_third_party_case_sensitive():
+def test_third_party_case_sensitive() -> None:
     """Modules which match builtins by name but not on case should not be picked up on Windows."""
     test_input = ("import thirdparty\n"
                   "import os\n"
@@ -2116,7 +2116,7 @@ def test_sys_path_mutation(tmpdir):
     assert len(sys.path) == expected_length
 
 
-def test_long_single_line():
+def test_long_single_line() -> None:
     """Test to ensure long single lines get handled correctly"""
     output = SortImports(file_contents="from ..views import ("
                                        " _a,"
@@ -2133,7 +2133,7 @@ def test_long_single_line():
         assert len(line) <= 79
 
 
-def test_import_inside_class_issue_432():
+def test_import_inside_class_issue_432() -> None:
     """Test to ensure issue 432 is resolved and isort doesn't insert imports in the middle of classes"""
     test_input = ("# coding=utf-8\n"
                   "class Foo:\n"
@@ -2149,14 +2149,14 @@ def test_import_inside_class_issue_432():
     assert SortImports(file_contents=test_input, add_imports=['import baz']).output == expected_output
 
 
-def test_wildcard_import_without_space_issue_496():
+def test_wildcard_import_without_space_issue_496() -> None:
     """Test to ensure issue #496: wildcard without space, is resolved"""
     test_input = 'from findorserver.coupon.models import*'
     expected_output = 'from findorserver.coupon.models import *\n'
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_import_line_mangles_issues_491():
+def test_import_line_mangles_issues_491() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = ('import os  # ([\n'
                   '\n'
@@ -2164,7 +2164,7 @@ def test_import_line_mangles_issues_491():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_import_line_mangles_issues_505():
+def test_import_line_mangles_issues_505() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = ('from sys import *  # (\n'
                   '\n'
@@ -2174,14 +2174,14 @@ def test_import_line_mangles_issues_505():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_import_line_mangles_issues_439():
+def test_import_line_mangles_issues_439() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = ('import a  # () import\n'
                   'from b import b\n')
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_alias_using_paren_issue_466():
+def test_alias_using_paren_issue_466() -> None:
     """Test to ensure issue #466: Alias causes slash incorrectly is resolved"""
     test_input = 'from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n'
     expected_output = ('from django.db.backends.mysql.base import (\n'
@@ -2196,7 +2196,7 @@ def test_alias_using_paren_issue_466():
                        use_parentheses=True).output == expected_output
 
 
-def test_long_alias_using_paren_issue_957():
+def test_long_alias_using_paren_issue_957() -> None:
     test_input = ('from package import module as very_very_very_very_very_very_very_very_very_very_long_alias\n')
     expected_output = ('from package import (\n'
                        '    module as very_very_very_very_very_very_very_very_very_very_long_alias\n'
@@ -2246,7 +2246,7 @@ def test_ignore_whitespace(capsys):
     assert out == ''
 
 
-def test_import_wraps_with_comment_issue_471():
+def test_import_wraps_with_comment_issue_471() -> None:
     """Test to ensure issue #471 is resolved"""
     test_input = ('from very_long_module_name import SuperLongClassName  #@UnusedImport'
                   ' -- long string of comments which wrap over')
@@ -2256,7 +2256,7 @@ def test_import_wraps_with_comment_issue_471():
                        use_parentheses=True).output == expected_output
 
 
-def test_import_case_produces_inconsistent_results_issue_472():
+def test_import_case_produces_inconsistent_results_issue_472() -> None:
     """Test to ensure sorting imports with same name but different case produces the same result across platforms"""
     test_input = ('from sqlalchemy.dialects.postgresql import ARRAY\n'
                   'from sqlalchemy.dialects.postgresql import array\n')
@@ -2266,7 +2266,7 @@ def test_import_case_produces_inconsistent_results_issue_472():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_inconsistent_behavior_in_python_2_and_3_issue_479():
+def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
     """Test to ensure Python 2 and 3 have the same behavior"""
     test_input = ('from future.standard_library import hooks\n'
                   'from workalendar.europe import UnitedKingdom\n')
@@ -2274,7 +2274,7 @@ def test_inconsistent_behavior_in_python_2_and_3_issue_479():
                        known_first_party=["future"]).output == test_input
 
 
-def test_sort_within_section_comments_issue_436():
+def test_sort_within_section_comments_issue_436() -> None:
     """Test to ensure sort within sections leaves comments untouched"""
     test_input = ('import os.path\n'
                   'import re\n'
@@ -2286,7 +2286,7 @@ def test_sort_within_section_comments_issue_436():
     assert SortImports(file_contents=test_input, force_sort_within_sections=True).output == test_input
 
 
-def test_sort_within_sections_with_force_to_top_issue_473():
+def test_sort_within_sections_with_force_to_top_issue_473() -> None:
     """Test to ensure it's possible to sort within sections with items forced to top"""
     test_input = ('import z\n'
                   'import foo\n'
@@ -2295,7 +2295,7 @@ def test_sort_within_sections_with_force_to_top_issue_473():
                        force_to_top=['z']).output == test_input
 
 
-def test_correct_number_of_new_lines_with_comment_issue_435():
+def test_correct_number_of_new_lines_with_comment_issue_435() -> None:
     """Test to ensure that injecting a comment in-between imports doesn't mess up the new line spacing"""
     test_input = ('import foo\n'
                   '\n'
@@ -2307,7 +2307,7 @@ def test_correct_number_of_new_lines_with_comment_issue_435():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_future_below_encoding_issue_545():
+def test_future_below_encoding_issue_545() -> None:
     """Test to ensure future is always below comment"""
     test_input = ('#!/usr/bin/env python\n'
                   'from __future__ import print_function\n'
@@ -2323,7 +2323,7 @@ def test_future_below_encoding_issue_545():
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_no_extra_lines_issue_557():
+def test_no_extra_lines_issue_557() -> None:
     """Test to ensure no extra lines are prepended"""
     test_input = ('import os\n'
                   '\n'
@@ -2334,7 +2334,7 @@ def test_no_extra_lines_issue_557():
                        force_sort_within_sections=True).output == expected_output
 
 
-def test_long_import_wrap_support_with_mode_2():
+def test_long_import_wrap_support_with_mode_2() -> None:
     """Test to ensure mode 2 still allows wrapped imports with slash"""
     test_input = ('from foobar.foobar.foobar.foobar import \\\n'
                   '    an_even_longer_function_name_over_80_characters\n')
@@ -2342,7 +2342,7 @@ def test_long_import_wrap_support_with_mode_2():
                        line_length=80).output == test_input
 
 
-def test_pylint_comments_incorrectly_wrapped_issue_571():
+def test_pylint_comments_incorrectly_wrapped_issue_571() -> None:
     """Test to ensure pylint comments don't get wrapped"""
     test_input = ('from PyQt5.QtCore import QRegExp  # @UnresolvedImport pylint: disable=import-error,'
                   'useless-suppression\n')
@@ -2351,7 +2351,7 @@ def test_pylint_comments_incorrectly_wrapped_issue_571():
     assert SortImports(file_contents=test_input, line_length=60).output == expected_output
 
 
-def test_ensure_async_methods_work_issue_537():
+def test_ensure_async_methods_work_issue_537() -> None:
     """Test to ensure async methods are correctly identified"""
     test_input = ('from myapp import myfunction\n'
                   '\n'
@@ -2361,7 +2361,7 @@ def test_ensure_async_methods_work_issue_537():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
+def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590() -> None:
     """Test to ensure combination from and as import statements are sorted correct"""
     test_input = ('from os import defpath\n'
                   'from os import pathsep as separator\n')
@@ -2376,7 +2376,7 @@ def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590():
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
 
-def test_ensure_line_endings_are_preserved_issue_493():
+def test_ensure_line_endings_are_preserved_issue_493() -> None:
     """Test to ensure line endings are not converted"""
     test_input = ('from os import defpath\r\n'
                   'from os import pathsep as separator\r\n')
@@ -2389,7 +2389,7 @@ def test_ensure_line_endings_are_preserved_issue_493():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_not_splitted_sections():
+def test_not_splitted_sections() -> None:
     whiteline = '\n'
     stdlib_section = 'import unittest\n'
     firstparty_section = 'from app.pkg1 import mdl1\n'
@@ -2422,7 +2422,7 @@ def test_not_splitted_sections():
     assert SortImports(file_contents=test_input, no_lines_before=['STDLIB']).output == test_input
 
 
-def test_no_lines_before_empty_section():
+def test_no_lines_before_empty_section() -> None:
     test_input = ('import first\n'
                   'import custom\n')
     assert SortImports(
@@ -2434,7 +2434,7 @@ def test_no_lines_before_empty_section():
     ).output == test_input
 
 
-def test_no_inline_sort():
+def test_no_inline_sort() -> None:
     """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
     is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored."""
     test_input = 'from foo import a, c, b\n'
@@ -2449,7 +2449,7 @@ def test_no_inline_sort():
     assert SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=True).output == expected
 
 
-def test_relative_import_of_a_module():
+def test_relative_import_of_a_module() -> None:
     """Imports can be dynamically created (PEP302) and is used by modules such as six.  This test ensures that
     these types of imports are still sorted to the correct type instead of being categorized as local."""
     test_input = ('from __future__ import absolute_import\n'
@@ -2473,7 +2473,7 @@ def test_relative_import_of_a_module():
     assert sorted_result == expected_results
 
 
-def test_escaped_parens_sort():
+def test_escaped_parens_sort() -> None:
     test_input = ('from foo import \\ \n'
                   '(a,\n'
                   'b,\n'
@@ -2504,7 +2504,7 @@ def test_is_python_typing_stub(tmpdir):
     assert is_python_file(str(stub)) is True
 
 
-def test_to_ensure_imports_are_brought_to_top_issue_651():
+def test_to_ensure_imports_are_brought_to_top_issue_651() -> None:
     test_input = ('from __future__ import absolute_import, unicode_literals\n'
                   '\n'
                   'VAR = """\n'
@@ -2521,7 +2521,7 @@ def test_to_ensure_imports_are_brought_to_top_issue_651():
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_to_ensure_importing_from_imports_module_works_issue_662():
+def test_to_ensure_importing_from_imports_module_works_issue_662() -> None:
     test_input = ('@wraps(fun)\n'
                   'def __inner(*args, **kwargs):\n'
                   '    from .imports import qualname\n'
@@ -2529,7 +2529,7 @@ def test_to_ensure_importing_from_imports_module_works_issue_662():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_to_ensure_no_unexpected_changes_issue_666():
+def test_to_ensure_no_unexpected_changes_issue_666() -> None:
     test_input = ('from django.conf import settings\n'
                   'from django.core.management import call_command\n'
                   'from django.core.management.base import BaseCommand\n'
@@ -2546,7 +2546,7 @@ def test_to_ensure_no_unexpected_changes_issue_666():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_to_ensure_tabs_dont_become_space_issue_665():
+def test_to_ensure_tabs_dont_become_space_issue_665() -> None:
     test_input = ('import os\n'
                   '\n'
                   '\n'
@@ -2555,7 +2555,7 @@ def test_to_ensure_tabs_dont_become_space_issue_665():
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_new_lines_are_preserved():
+def test_new_lines_are_preserved() -> None:
     with NamedTemporaryFile('w', suffix='py', delete=False) as rn_newline:
         pass
 
@@ -2702,7 +2702,7 @@ def test_pipfile_finder(tmpdir):
     pipfile.remove()
 
 
-def test_monkey_patched_urllib():
+def test_monkey_patched_urllib() -> None:
     with pytest.raises(ImportError):
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
@@ -2732,7 +2732,7 @@ def test_path_finder(monkeypatch):
     assert finder.find("example_5") == finder.sections.FIRSTPARTY
 
 
-def test_argument_parsing():
+def test_argument_parsing() -> None:
     from isort.main import parse_args
     args = parse_args(['-dt', '-t', 'foo', '--skip=bar', 'baz.py'])
     assert args['order_by_type'] is False
@@ -2820,14 +2820,14 @@ def test_skip_glob(tmpdir, skip_glob_assert):
     assert file_names == file_names
 
 
-def test_comments_not_removed_issue_576():
+def test_comments_not_removed_issue_576() -> None:
     test_input = ('import distutils\n'
                   '# this comment is important and should not be removed\n'
                   'from sys import api_version as api_version\n')
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_reverse_relative_imports_issue_417():
+def test_reverse_relative_imports_issue_417() -> None:
     test_input = ('from . import ipsum\n'
                   'from . import lorem\n'
                   'from .dolor import consecteur\n'
@@ -2845,7 +2845,7 @@ def test_reverse_relative_imports_issue_417():
                        reverse_relative=True).output == test_input
 
 
-def test_inconsistent_relative_imports_issue_577():
+def test_inconsistent_relative_imports_issue_577() -> None:
     test_input = ('from ... import diam\n'
                   'from ... import dui\n'
                   'from ...eu import dignissim\n'
@@ -2861,7 +2861,7 @@ def test_inconsistent_relative_imports_issue_577():
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
 
-def test_unwrap_issue_762():
+def test_unwrap_issue_762() -> None:
     test_input = ('from os.path \\\n'
                   'import (join, split)\n')
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
@@ -2871,7 +2871,7 @@ def test_unwrap_issue_762():
     assert SortImports(file_contents=test_input).output == 'from os.path import join, split\n'
 
 
-def test_multiple_as_imports():
+def test_multiple_as_imports() -> None:
     test_input = ('from a import b as b\n'
                   'from a import b as bb\n'
                   'from a import b as bb_\n')
@@ -2936,7 +2936,7 @@ def test_multiple_as_imports():
     assert test_output == test_input
 
 
-def test_all_imports_from_single_module():
+def test_all_imports_from_single_module() -> None:
     test_input = ('import a\n'
                   'from a import *\n'
                   'from a import b as d\n'
@@ -3126,7 +3126,7 @@ def test_all_imports_from_single_module():
     assert test_output == 'import a\nfrom a import *\n'
 
 
-def test_noqa_issue_679():
+def test_noqa_issue_679() -> None:
     # Test to ensure that NOQA notation is being observed as expected
     test_input = ('import os\n'
                   '\n'
@@ -3158,7 +3158,7 @@ def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.pat
     assert config['multi_line_output'] == WrapModes.VERTICAL_GRID_GROUPED
 
 
-def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
+def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> None:
     test_input = ('from pkg import BALL\n'
                   'from pkg import RC\n'
                   'from pkg import Action\n'
@@ -3179,7 +3179,7 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890():
                        force_single_line=True).output == expected_output
 
 
-def test_to_ensure_empty_line_not_added_to_file_start_issue_889():
+def test_to_ensure_empty_line_not_added_to_file_start_issue_889() -> None:
     test_input = ('# comment\n'
                   'import os\n'
                   '# comment2\n'
@@ -3200,7 +3200,7 @@ def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys):
     assert err == ''
 
 
-def test_standard_library_deprecates_user_issue_778():
+def test_standard_library_deprecates_user_issue_778() -> None:
     test_input = ('import os\n'
                   '\n'
                   'import user\n')
@@ -3285,7 +3285,7 @@ def test_skip_paths_issue_938(tmpdir):
     assert b'skipped 1' in result.stdout.lower()
 
 
-def test_failing_file_check_916():
+def test_failing_file_check_916() -> None:
     test_input = ('#!/usr/bin/env python\n'
                   '# -*- coding: utf-8 -*-\n'
                   'from __future__ import unicode_literals\n')
@@ -3304,7 +3304,7 @@ def test_failing_file_check_916():
     assert not SortImports(file_contents=expected_output, check=True, **settings).incorrectly_sorted
 
 
-def test_import_heading_issue_905():
+def test_import_heading_issue_905() -> None:
     config = {'import_heading_stdlib': 'Standard library imports',
               'import_heading_thirdparty': 'Third party imports',
               'import_heading_firstparty': 'Local imports',
@@ -3321,7 +3321,7 @@ def test_import_heading_issue_905():
     assert SortImports(file_contents=test_input, **config).output == test_input
 
 
-def test_isort_keeps_comments_issue_691():
+def test_isort_keeps_comments_issue_691() -> None:
     test_input = ('import os\n'
                   '# This will make sure the app is always imported when\n'
                   '# Django starts so that shared_task will use this app.\n'
@@ -3366,7 +3366,7 @@ def test_pyi_formatting_issue_942(tmpdir):
     assert SortImports(file_path=str(source_pyi)).output.splitlines() == expected_pyi_output
 
 
-def test_python_version():
+def test_python_version() -> None:
     from isort.main import parse_args
 
     # test that the py_version can be added as flag
