@@ -20,10 +20,10 @@ def format_natural(import_line: str) -> str:
     import_line = import_line.strip()
     if not import_line.startswith("from ") and not import_line.startswith("import "):
         if "." not in import_line:
-            return "import {0}".format(import_line)
+            return "import {}".format(import_line)
         parts = import_line.split(".")
         end = parts.pop(-1)
-        return "from {0} import {1}".format(".".join(parts), end)
+        return "from {} import {}".format(".".join(parts), end)
 
     return import_line
 
@@ -54,7 +54,7 @@ def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     answer = None
     while answer not in ("yes", "y", "no", "n", "quit", "q"):
         answer = input(
-            "Apply suggested changes to '{0}' [y/n/q]? ".format(file_path)
+            "Apply suggested changes to '{}' [y/n/q]? ".format(file_path)
         ).lower()
         if answer in ("no", "n"):
             return False
