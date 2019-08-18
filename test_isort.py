@@ -4188,9 +4188,13 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
         "import b\n"
         "# noinspection PyUnresolvedReferences\n"
         "import c\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import d as dd\n"
         "from a import a\n"
         "# noinspection PyUnresolvedReferences\n"
         "from b import b\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from c import c as cc\n"
     )
     expected_output = (
         "import os\n"
@@ -4202,10 +4206,16 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
         "\n"
         "# noinspection PyUnresolvedReferences\n"
         "import c\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import d as dd\n"
         "from a import a\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
         "from b import b\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from c import c as cc\n"
     )
     assert SortImports(file_contents=test_input, **config).output == expected_output
 
