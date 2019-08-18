@@ -4178,6 +4178,38 @@ def test_isort_keeps_comments_issue_691() -> None:
     assert SortImports(file_contents=test_input).output == expected_output
 
 
+def test_isort_ensures_blank_line_between_import_and_comment() -> None:
+    config = {"ensure_newline_before_comments": True}  # type: Dict[str, Any]
+    test_input = (
+        "import os\n"
+        "import sys\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import a\n"
+        "import b\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import c\n"
+        "from a import a\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from b import b\n"
+    )
+    expected_output = (
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import a\n"
+        "import b\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import c\n"
+        "from a import a\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from b import b\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == expected_output
+
+
 def test_pyi_formatting_issue_942(tmpdir):
     test_input = "import os\n" "\n" "\n" "def my_method():\n"
     expected_py_output = test_input.splitlines()

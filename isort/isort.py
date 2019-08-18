@@ -353,6 +353,8 @@ class _SortImports:
 
             comments_above = self.comments["above"]["straight"].pop(module, None)
             if comments_above:
+                if section_output and self.config.get("ensure_newline_before_comments"):
+                    section_output.append("")
                 section_output.extend(comments_above)
             section_output.extend(
                 self._add_comments(self.comments["straight"].get(module), idef)
@@ -470,6 +472,10 @@ class _SortImports:
                             module, None
                         )
                         if above_comments:
+                            if section_output and self.config.get(
+                                "ensure_newline_before_comments"
+                            ):
+                                section_output.append("")
                             section_output.extend(above_comments)
 
                         if (
@@ -521,6 +527,10 @@ class _SortImports:
                                 module, None
                             )
                             if above_comments:
+                                if section_output and self.config.get(
+                                    "ensure_newline_before_comments"
+                                ):
+                                    section_output.append("")
                                 section_output.extend(above_comments)
                             section_output.append(self._wrap(single_import_line))
                             from_imports.remove(from_import)
@@ -598,6 +608,10 @@ class _SortImports:
                 if import_statement:
                     above_comments = self.comments["above"]["from"].pop(module, None)
                     if above_comments:
+                        if section_output and self.config.get(
+                            "ensure_newline_before_comments"
+                        ):
+                            section_output.append("")
                         section_output.extend(above_comments)
                     section_output.append(import_statement)
 
