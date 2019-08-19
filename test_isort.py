@@ -4185,7 +4185,17 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
         "known_two": ["two"],
         "known_three": ["three"],
         "known_four": ["four"],
-        "sections": ["FUTURE", "STDLIB", "FIRSTPARTY", "THIRDPARTY", "LOCALFOLDER", "ONE", "TWO", "THREE", "FOUR"],
+        "sections": [
+            "FUTURE",
+            "STDLIB",
+            "FIRSTPARTY",
+            "THIRDPARTY",
+            "LOCALFOLDER",
+            "ONE",
+            "TWO",
+            "THREE",
+            "FOUR",
+        ],
     }  # type: Dict[str, Any]
     test_input = (
         "import os\n"
