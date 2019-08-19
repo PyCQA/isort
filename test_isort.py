@@ -4179,43 +4179,59 @@ def test_isort_keeps_comments_issue_691() -> None:
 
 
 def test_isort_ensures_blank_line_between_import_and_comment() -> None:
-    config = {"ensure_newline_before_comments": True}  # type: Dict[str, Any]
+    config = {
+        "ensure_newline_before_comments": True,
+        "known_one": ["one"],
+        "known_two": ["two"],
+        "known_three": ["three"],
+        "known_four": ["four"],
+        "sections": ["FUTURE", "STDLIB", "FIRSTPARTY", "THIRDPARTY", "LOCALFOLDER", "ONE", "TWO", "THREE", "FOUR"],
+    }  # type: Dict[str, Any]
     test_input = (
         "import os\n"
-        "import sys\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import a\n"
-        "import b\n"
+        "import one.a\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import c\n"
+        "import one.b\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import d as dd\n"
-        "from a import a\n"
+        "import two.a as aa\n"
         "# noinspection PyUnresolvedReferences\n"
-        "from b import b\n"
+        "import two.b as bb\n"
         "# noinspection PyUnresolvedReferences\n"
-        "from c import c as cc\n"
+        "from three.a import a\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.b import b\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.a import a as aa\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.b import b as bb\n"
     )
     expected_output = (
         "import os\n"
-        "import sys\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import a\n"
-        "import b\n"
+        "import one.a\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import c\n"
+        "import one.b\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import d as dd\n"
-        "from a import a\n"
+        "import two.a as aa\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "from b import b\n"
+        "import two.b as bb\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "from c import c as cc\n"
+        "from three.a import a\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.b import b\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.a import a as aa\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.b import b as bb\n"
     )
     assert SortImports(file_contents=test_input, **config).output == expected_output
 
