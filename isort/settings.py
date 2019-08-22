@@ -352,7 +352,7 @@ def _update_with_config_file(
                 value = bool(strtobool(value))
             computed_settings[access_key] = value
         elif key.startswith("known_"):
-            computed_settings[access_key] = list(_abspaths(cwd, _as_list(value)))
+            computed_settings[access_key] = _abspaths(cwd, _as_list(value))
         elif key == "force_grid_wrap":
             try:
                 result = existing_value_type(value)
