@@ -27,7 +27,7 @@ import subprocess
 import sys
 import sysconfig
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
@@ -68,7 +68,7 @@ REALLY_LONG_IMPORT_WITH_COMMENT = (
 
 
 @pytest.fixture(scope="session", autouse=True)
-def default_settings_path(tmpdir_factory):
+def default_settings_path(tmpdir_factory) -> Iterator[str]:
     config_dir = tmpdir_factory.mktemp("config")
     config_file = config_dir.join(".editorconfig").strpath
     with open(config_file, "w") as editorconfig:
@@ -876,7 +876,7 @@ def test_quotes_in_file() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_check_newline_in_imports(capsys):
+def test_check_newline_in_imports(capsys) -> None:
     """Ensure tests works correctly when new lines are in imports."""
     test_input = "from lib1 import (\n" "    sub1,\n" "    sub2,\n" "    sub3\n)\n"
 
@@ -2033,7 +2033,7 @@ def test_import_split_is_word_boundary_aware() -> None:
     )
 
 
-def test_other_file_encodings(tmpdir):
+def test_other_file_encodings(tmpdir) -> None:
     """Test to ensure file encoding is respected"""
     for encoding in ("latin1", "utf8"):
         tmp_fname = tmpdir.join("test_{}.py".format(encoding))
@@ -2138,7 +2138,7 @@ def test_shouldnt_add_lines() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_sections_parsed_correct(tmpdir):
+def test_sections_parsed_correct(tmpdir) -> None:
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
     conf_file_data = (
         "[settings]\n"
@@ -2167,7 +2167,7 @@ def test_sections_parsed_correct(tmpdir):
 
 
 @pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
-def test_pyproject_conf_file(tmpdir):
+def test_pyproject_conf_file(tmpdir) -> None:
     """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
     conf_file_data = (
         "[build-system]\n"
@@ -2463,21 +2463,21 @@ def test_third_party_case_sensitive() -> None:
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_exists_case_sensitive_file(tmpdir):
+def test_exists_case_sensitive_file(tmpdir) -> None:
     """Test exists_case_sensitive function for a file."""
     tmpdir.join("module.py").ensure(file=1)
     assert exists_case_sensitive(str(tmpdir.join("module.py")))
     assert not exists_case_sensitive(str(tmpdir.join("MODULE.py")))
 
 
-def test_exists_case_sensitive_directory(tmpdir):
+def test_exists_case_sensitive_directory(tmpdir) -> None:
     """Test exists_case_sensitive function for a directory."""
     tmpdir.join("pkg").ensure(dir=1)
     assert exists_case_sensitive(str(tmpdir.join("pkg")))
     assert not exists_case_sensitive(str(tmpdir.join("PKG")))
 
 
-def test_sys_path_mutation(tmpdir):
+def test_sys_path_mutation(tmpdir) -> None:
     """Test to ensure sys.path is not modified"""
     tmpdir.mkdir("src").mkdir("a")
     test_input = "from myproject import test"
@@ -2637,21 +2637,21 @@ def test_long_alias_using_paren_issue_957() -> None:
     assert out == expected_output
 
 
-def test_strict_whitespace_by_default(capsys):
+def test_strict_whitespace_by_default(capsys) -> None:
     test_input = "import os\n" "from django.conf import settings\n"
     SortImports(file_contents=test_input, check=True)
     out, err = capsys.readouterr()
     assert out == "ERROR:  Imports are incorrectly sorted.\n"
 
 
-def test_strict_whitespace_no_closing_newline_issue_676(capsys):
+def test_strict_whitespace_no_closing_newline_issue_676(capsys) -> None:
     test_input = "import os\n" "\n" "from django.conf import settings\n" "\n" "print(1)"
     SortImports(file_contents=test_input, check=True)
     out, err = capsys.readouterr()
     assert out == ""
 
 
-def test_ignore_whitespace(capsys):
+def test_ignore_whitespace(capsys) -> None:
     test_input = "import os\n" "from django.conf import settings\n"
     SortImports(file_contents=test_input, check=True, ignore_whitespace=True)
     out, err = capsys.readouterr()
@@ -2984,24 +2984,24 @@ def test_escaped_parens_sort() -> None:
     assert SortImports(file_contents=test_input).output == expected
 
 
-def test_is_python_file_ioerror(tmpdir):
+def test_is_python_file_ioerror(tmpdir) -> None:
     does_not_exist = tmpdir.join("fake.txt")
     assert is_python_file(str(does_not_exist)) is False
 
 
-def test_is_python_file_shebang(tmpdir):
+def test_is_python_file_shebang(tmpdir) -> None:
     path = tmpdir.join("myscript")
     path.write("#!/usr/bin/env python\n")
     assert is_python_file(str(path)) is True
 
 
-def test_is_python_file_editor_backup(tmpdir):
+def test_is_python_file_editor_backup(tmpdir) -> None:
     path = tmpdir.join("myscript~")
     path.write("#!/usr/bin/env python\n")
     assert is_python_file(str(path)) is False
 
 
-def test_is_python_typing_stub(tmpdir):
+def test_is_python_typing_stub(tmpdir) -> None:
     stub = tmpdir.join("stub.pyi")
     assert is_python_file(str(stub)) is True
 
@@ -3107,7 +3107,7 @@ def test_new_lines_are_preserved() -> None:
         os.remove(n_newline.name)
 
 
-def test_requirements_finder(tmpdir):
+def test_requirements_finder(tmpdir) -> None:
     subdir = tmpdir.mkdir("subdir").join("lol.txt")
     subdir.write("flask")
     req_file = tmpdir.join("requirements.txt")
@@ -3143,7 +3143,7 @@ def test_requirements_finder(tmpdir):
     req_file.remove()
 
 
-def test_forced_separate_is_deterministic_issue_774(tmpdir):
+def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
 
     config_file = tmpdir.join("setup.cfg")
     config_file.write(
@@ -3190,7 +3190,7 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 """
 
 
-def test_pipfile_finder(tmpdir):
+def test_pipfile_finder(tmpdir) -> None:
     pipfile = tmpdir.join("Pipfile")
     pipfile.write(PIPFILE)
     si = SortImports(file_contents="")
@@ -3222,7 +3222,7 @@ def test_monkey_patched_urllib() -> None:
         from urllib import quote  # type: ignore  # noqa: F401
 
 
-def test_path_finder(monkeypatch):
+def test_path_finder(monkeypatch) -> None:
     si = SortImports(file_contents="")
     finder = finders.PathFinder(config=si.config, sections=si.sections)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
@@ -3255,7 +3255,7 @@ def test_argument_parsing() -> None:
 
 
 @pytest.mark.parametrize("multiprocess", (False, True))
-def test_command_line(tmpdir, capfd, multiprocess):
+def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     from isort.main import main
 
     tmpdir.join("file1.py").write(
@@ -3285,7 +3285,7 @@ def test_command_line(tmpdir, capfd, multiprocess):
 
 
 @pytest.mark.parametrize("quiet", (False, True))
-def test_quiet(tmpdir, capfd, quiet):
+def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
     from isort.main import main
@@ -3302,7 +3302,7 @@ def test_quiet(tmpdir, capfd, quiet):
 
 
 @pytest.mark.parametrize("enabled", (False, True))
-def test_safety_excludes(tmpdir, enabled):
+def test_safety_excludes(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
     toxdir.join("verysafe.py").write("# ...")
@@ -3344,11 +3344,11 @@ def test_safety_excludes(tmpdir, enabled):
     "skip_glob_assert",
     (
         ([], 0, {os.sep.join(("code", "file.py"))}),
-        (["**/*.py"], 1, {}),
-        (["*/code/*.py"], 1, {}),
+        (["**/*.py"], 1, set()),
+        (["*/code/*.py"], 1, set()),
     ),
 )
-def test_skip_glob(tmpdir, skip_glob_assert):
+def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
     skip_glob, skipped_count, file_names = skip_glob_assert
     base_dir = tmpdir.mkdir("build")
     code_dir = base_dir.mkdir("code")
@@ -3992,7 +3992,7 @@ def test_to_ensure_empty_line_not_added_to_file_start_issue_889() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys):
+def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys) -> None:
     test_input = (
         "import os\n"
         "import sys\n"
@@ -4012,7 +4012,7 @@ def test_standard_library_deprecates_user_issue_778() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
 
-def test_settings_path_skip_issue_909(tmpdir):
+def test_settings_path_skip_issue_909(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
     config_dir.join(".isort.cfg").write(
@@ -4046,7 +4046,7 @@ def test_settings_path_skip_issue_909(tmpdir):
     assert b"skipped 2" in result.stdout.lower()
 
 
-def test_skip_paths_issue_938(tmpdir):
+def test_skip_paths_issue_938(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
     config_dir.join(".isort.cfg").write(
@@ -4178,7 +4178,7 @@ def test_isort_keeps_comments_issue_691() -> None:
     assert SortImports(file_contents=test_input).output == expected_output
 
 
-def test_pyi_formatting_issue_942(tmpdir):
+def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n" "\n" "\n" "def my_method():\n"
     expected_py_output = test_input.splitlines()
     expected_pyi_output = ("import os\n" "\n" "def my_method():\n").splitlines()

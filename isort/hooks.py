@@ -50,7 +50,7 @@ def get_lines(command: List[str]) -> List[str]:
     return [line.strip() for line in stdout.splitlines()]
 
 
-def git_hook(strict=False, modify=False):
+def git_hook(strict: bool = False, modify: bool = False) -> int:
     """
     Git pre-commit hook to check staged files for isort errors
 
