@@ -965,16 +965,14 @@ def test_first_party_overrides_standard_section() -> None:
         "from HTMLParser import HTMLParseError, HTMLParser\n"
         "import sys\n"
         "import os\n"
-        "import this\n"
         "import profile.test\n"
     )
     test_output = SortImports(
-        file_contents=test_input, known_first_party=["profile"]
+        file_contents=test_input, known_first_party=["profile"], py_version="2.7"
     ).output
     assert test_output == (
         "import os\n"
         "import sys\n"
-        "import this\n"
         "from HTMLParser import HTMLParseError, HTMLParser\n"
         "\n"
         "import profile.test\n"
@@ -983,13 +981,11 @@ def test_first_party_overrides_standard_section() -> None:
 
 def test_thirdy_party_overrides_standard_section() -> None:
     """Test to ensure changing the default section works as expected."""
-    test_input = "import sys\nimport os\nimport this\nimport profile.test\n"
+    test_input = "import sys\nimport os\nimport profile.test\n"
     test_output = SortImports(
         file_contents=test_input, known_third_party=["profile"]
     ).output
-    assert test_output == (
-        "import os\nimport sys\nimport this\n\nimport profile.test\n"
-    )
+    assert test_output == "import os\nimport sys\n\nimport profile.test\n"
 
 
 def test_known_pattern_path_expansion() -> None:
@@ -1206,7 +1202,9 @@ def test_order_by_type() -> None:
         "from subprocess import PIPE, Popen, STDOUT\n"
     )
 
-    assert SortImports(file_contents=test_input, order_by_type=True).output == (
+    assert SortImports(
+        file_contents=test_input, order_by_type=True, py_version="2.7"
+    ).output == (
         "import glob\n"
         "import os\n"
         "import shutil\n"
