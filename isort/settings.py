@@ -45,8 +45,7 @@ from typing import (
     Union,
 )
 
-from .stdlibs.py_three import standard_library_3
-from .stdlibs.py_two import standard_library_2
+from .stdlibs import py3, py27
 from .utils import difference, union
 
 try:
@@ -114,11 +113,11 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     _default = default.copy()
 
     if py_version == "all":
-        standard_library = list(set(standard_library_3 + standard_library_2))
+        standard_library = list(set(py3.stdlib + py27.stdlib))
     elif major == 3:
-        standard_library = standard_library_3
+        standard_library = py3.stdlib
     elif major == 2 and minor == 7:
-        standard_library = standard_library_2
+        standard_library = py27.stdlib
     else:
         raise ValueError(
             "The python version %s is not supported. "
@@ -352,7 +351,7 @@ def _update_with_config_file(
                 value = bool(strtobool(value))
             computed_settings[access_key] = value
         elif key.startswith("known_"):
-            computed_settings[access_key] = list(_abspaths(cwd, _as_list(value)))
+            computed_settings[access_key] = _abspaths(cwd, _as_list(value))
         elif key == "force_grid_wrap":
             try:
                 result = existing_value_type(value)
