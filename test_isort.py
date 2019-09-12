@@ -4154,6 +4154,74 @@ def test_isort_keeps_comments_issue_691() -> None:
     assert SortImports(file_contents=test_input).output == expected_output
 
 
+def test_isort_ensures_blank_line_between_import_and_comment() -> None:
+    config = {
+        "ensure_newline_before_comments": True,
+        "known_one": ["one"],
+        "known_two": ["two"],
+        "known_three": ["three"],
+        "known_four": ["four"],
+        "sections": [
+            "FUTURE",
+            "STDLIB",
+            "FIRSTPARTY",
+            "THIRDPARTY",
+            "LOCALFOLDER",
+            "ONE",
+            "TWO",
+            "THREE",
+            "FOUR",
+        ],
+    }  # type: Dict[str, Any]
+    test_input = (
+        "import os\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import one.a\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import one.b\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import two.a as aa\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import two.b as bb\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.a import a\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.b import b\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.a import a as aa\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.b import b as bb\n"
+    )
+    expected_output = (
+        "import os\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import one.a\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import one.b\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import two.a as aa\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "import two.b as bb\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.a import a\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from three.b import b\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.a import a as aa\n"
+        "\n"
+        "# noinspection PyUnresolvedReferences\n"
+        "from four.b import b as bb\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == expected_output
+
+
 def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()
