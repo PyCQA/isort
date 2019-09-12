@@ -82,6 +82,8 @@ Code Contributors
 - Matt Yule-Bennett (@mattbennett)
 - Jaswanth Kumar (@jaswanth098)
 - Dario Navin (@Zarathustra2)
+- Danny Weinberg (@FuegoFro)
+
 
 
 Documenters
