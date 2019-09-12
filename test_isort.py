@@ -4224,8 +4224,8 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
 
 def test_pyi_formatting_issue_942(tmpdir):
     test_input = "import os\n" "\n" "\n" "def my_method():\n"
-    
-    
+
+
 def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()
