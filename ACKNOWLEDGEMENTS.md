@@ -78,6 +78,12 @@ Code Contributors
 - John Chadwick (@jchv)
 - Jon Dufresne (@jdufresne)
 - Brian F. Baron (@briabar)
+- Madison Caldwell (@madirey)
+- Matt Yule-Bennett (@mattbennett)
+- Jaswanth Kumar (@jaswanth098)
+- Dario Navin (@Zarathustra2)
+- Danny Weinberg (@FuegoFro)
+
 
 
 Documenters

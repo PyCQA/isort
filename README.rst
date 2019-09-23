@@ -11,10 +11,9 @@
     :target: https://travis-ci.org/timothycrosley/isort
     :alt: Build Status
 
-
-.. image:: https://coveralls.io/repos/timothycrosley/isort/badge.svg?branch=release%2F2.6.0&service=github
-  :target: https://coveralls.io/github/timothycrosley/isort?branch=release%2F2.6.0
-  :alt: Coverage
+.. image:: https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/timothycrosley/isort
+    :alt: Code coverage Status
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://pypi.org/project/hug/
@@ -24,12 +23,30 @@
    :alt: Join the chat at https://gitter.im/timothycrosley/isort
    :target: https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+.. image:: https://pepy.tech/badge/isort
+    :alt: Downloads
+    :target: https://pepy.tech/project/isort
 
 isort your python imports for you so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and automatically separated into sections.
 It provides a command line utility, Python library and `plugins for various editors <https://github.com/timothycrosley/isort/wiki/isort-Plugins>`_ to quickly sort all your imports.
-It currently cleanly supports Python 2.7 - 3.6 without any dependencies.
+It requires Python 3.5+ to run but supports formatting Python 2 code too.
+
+
+########
+
+`Get professionally supported isort with the Tidelift Subscription <https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme>`_
+
+Professional support for isort is available as part of the `Tidelift
+Subscription`_.  Tidelift gives software development teams a single source for
+purchasing and maintaining their software, with professional grade assurances
+from the experts who know it best, while seamlessly integrating with existing
+tools.
+
+.. _Tidelift Subscription: https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme
+
+########
 
 .. image:: https://raw.github.com/timothycrosley/isort/develop/example.gif
    :alt: Example Usage
@@ -228,7 +245,7 @@ Configuring isort
 If you find the default isort settings do not work well for your project, isort provides several ways to adjust
 the behavior.
 
-To configure isort for a single user create a ``~/.isort.cfg`` file:
+To configure isort for a single user create a ``~/.isort.cfg`` or ``$XDG_CONFIG_HOME/isort.cfg`` file:
 
 .. code-block:: ini
 
@@ -250,13 +267,15 @@ To configure isort for a single user create a ``~/.isort.cfg`` file:
 Additionally, you can specify project level configuration simply by placing a ``.isort.cfg`` file at the root of your
 project. isort will look up to 25 directories up, from the file it is ran against, to find a project specific configuration.
 
-Or, if you prefer, you can add an isort section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+Or, if you prefer, you can add an ``isort`` or ``tool:isort`` section to your project's ``setup.cfg`` or ``tox.ini`` file with any desired settings.
+
+You can also add your desired settings under a ``[tool.isort]`` section in your ``pyproject.toml`` file.
 
 You can then override any of these settings by using command line arguments, or by passing in override values to the
 SortImports class.
 
 Finally, as of version 3.0 isort supports editorconfig files using the standard syntax defined here:
-http://editorconfig.org/
+https://editorconfig.org/
 
 Meaning you place any standard isort configuration parameters within a .editorconfig file under the ``*.py`` section
 and they will be honored.
@@ -323,7 +342,20 @@ past the line_length limit and has 6 possible settings:
         lib5, ...
     )
 
-**6 - NOQA**
+**6 - Hanging Grid Grouped, No Trailing Comma**
+
+In Mode 5 isort leaves a single extra space to maintain consistency of output when a comma is added at the end.
+Mode 6 is the same - except that no extra space is maintained leading to the possibility of lines one character longer.
+You can enforce a trailing comma by using this in conjunction with ``-tc`` or ``include_trailing_comma: True``.
+
+.. code-block:: python
+
+    from third_party import (
+        lib1, lib2, lib3, lib4,
+        lib5
+    )
+
+**7 - NOQA**
 
 .. code-block:: python
 
@@ -340,6 +372,7 @@ own line:
     ...
 
 Note: to change the how constant indents appear - simply change the indent property with the following accepted formats:
+
 *   Number of spaces you would like. For example: 4 would cause standard 4 space indentation.
 *   Tab
 *   A verbatim string with quotes around it.
@@ -461,6 +494,12 @@ This will result in the following output style:
         UnexpectedCodePath,
     )
 
+It is also possible to opt-in to sorting imports by length for only specific
+sections by using ``length_sort_`` followed by the section name as a
+configuration item, e.g.::
+
+    length_sort_stdlib=1
+
 Skip processing of imports (outside of configuration)
 =====================================================
 
@@ -524,7 +563,7 @@ From the command line:
 
 .. code-block:: bash
 
-    isort -r "os.system" *.py
+    isort -rm "os.system" *.py
 
 from within Kate:
 
@@ -576,10 +615,11 @@ To cause the commit to fail if there are isort errors (strict mode), include the
     import sys
     from isort.hooks import git_hook
 
-    sys.exit(git_hook(strict=True))
+    sys.exit(git_hook(strict=True, modify=True))
 
 If you just want to display warnings, but allow the commit to happen anyway, call ``git_hook`` without
-the `strict` parameter.
+the `strict` parameter. If you want to display warnings, but not also fix the code, call ``git_hook`` without
+the `modify` parameter.
 
 Setuptools integration
 ----------------------
@@ -609,6 +649,13 @@ isort themselves, add isort to the setup_requires of your ``setup()`` like so:
         ]
     )
 
+Security contact information
+==========
+
+To report a security vulnerability, please use the `Tidelift security
+contact`_. Tidelift will coordinate the fix and disclosure.
+
+.. _Tidelift security contact: https://tidelift.com/security
 
 Why isort?
 ==========

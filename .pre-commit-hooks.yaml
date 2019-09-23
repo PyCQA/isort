@@ -1,0 +1,6 @@
+-   id: isort
+    name: isort
+    entry: isort
+    require_serial: true
+    language: python
+    types: [python]

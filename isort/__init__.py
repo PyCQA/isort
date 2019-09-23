@@ -19,10 +19,7 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from . import settings  # noqa: F401
-from .isort import SortImports  # noqa: F401
+from .compat import SortImports  # noqa: F401
 
-__version__ = "4.3.4"
+__version__ = "4.3.21"
