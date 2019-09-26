@@ -83,7 +83,8 @@ Code Contributors
 - Jaswanth Kumar (@jaswanth098)
 - Dario Navin (@Zarathustra2)
 - Danny Weinberg (@FuegoFro)
-
+- Gram (@orsinium)
+- Hugo van Kemenade (@hugovk)
 
 
 Documenters
