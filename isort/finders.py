@@ -320,10 +320,10 @@ class RequirementsFinder(ReqsBaseFinder):
 
             # *requirements*/*.{txt,in}
             if os.path.isdir(full_path):
-                for subfile_name in os.listdir(path):
+                for subfile_name in os.listdir(full_path):
                     for ext in cls.exts:
                         if subfile_name.endswith(ext):
-                            results.append(os.path.join(path, subfile_name))
+                            results.append(os.path.join(full_path, subfile_name))
                 continue
 
             # *requirements*.{txt,in}
