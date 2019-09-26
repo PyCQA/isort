@@ -131,8 +131,8 @@ class PathFinder(BaseFinder):
 
         # restore the original import path (i.e. not the path to bin/isort)
         root_dir = os.getcwd()
-        src_root_dir = '{0}/src'.format(root_dir)
-        self.paths = [root_dir, src_root_dir]
+        src_dir = '{0}/src'.format(root_dir)
+        self.paths = [root_dir, src_dir]
 
         # virtual env
         self.virtual_env = self.config.get("virtual_env") or os.environ.get(
