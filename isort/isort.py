@@ -86,6 +86,8 @@ class _SortImports:
             if key.startswith("import_heading") and value
         ]
 
+        self.seen_headings = set()
+
         self.line_separator = self.determine_line_separator(file_contents)
 
         self.in_lines = file_contents.split(self.line_separator)
@@ -753,11 +755,14 @@ class _SortImports:
                 )
                 if section_title:
                     section_comment = "# {}".format(section_title)
-                    if (
-                        section_comment not in self.out_lines[0:1]
-                        and section_comment not in self.in_lines[0:1]
-                    ):
-                        section_output.insert(0, section_comment)
+                    if section_title in self.seen_headings:
+                        if section_comment in self.out_lines[0:1]:
+                            self.out_lines = self.out_lines[1:]
+                    else:
+                        if section_comment not in self.out_lines[0:1]:
+                            section_output.insert(0, section_comment)
+                        if self.config['dedup_headings']:
+                            self.seen_headings.add(section_title)
 
                 if pending_lines_before or not no_lines_before:
                     output += [""] * self.config["lines_between_sections"]

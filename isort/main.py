@@ -286,6 +286,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Only order imports alphabetically, do not attempt type ordering",
     )
     parser.add_argument(
+        "--dont-dedup-headings",
+        action="store_false",
+        dest="dedup_headings",
+        help="Tells isort to repeat headings even if they have already been output.",
+    )
+    parser.add_argument(
         "-e",
         "--balanced",
         dest="balanced_wrapping",
@@ -606,7 +612,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     )
 
     arguments = {
-        key: value for key, value in vars(parser.parse_args(argv)).items() if value
+        key: value for key, value in vars(parser.parse_args(argv)).items() if value is not None
     }
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False

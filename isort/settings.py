@@ -184,6 +184,7 @@ default = {
     "ignore_comments": False,
     "safety_excludes": True,
     "case_sensitive": False,
+    "dedup_headings": True,
 }
 
 
