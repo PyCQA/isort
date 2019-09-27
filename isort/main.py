@@ -286,6 +286,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Only order imports alphabetically, do not attempt type ordering",
     )
     parser.add_argument(
+        "-duph",
         "--dont-dedup-headings",
         action="store_false",
         dest="dedup_headings",
