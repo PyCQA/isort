@@ -698,8 +698,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 functools.partial(sort_imports, **arguments), file_names
             )
         else:
-            # https://github.com/python/typeshed/pull/2814
-            attempt_iterator = (  # type: ignore
+            attempt_iterator = (
                 sort_imports(file_name, **arguments) for file_name in file_names
             )
 
