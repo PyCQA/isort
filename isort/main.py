@@ -281,8 +281,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument(
         "-dt",
         "--dont-order-by-type",
-        dest="dont_order_by_type",
-        action="store_true",
+        dest="order_by_type",
+        action="store_false",
         help="Only order imports alphabetically, do not attempt type ordering",
     )
     parser.add_argument(
@@ -580,8 +580,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     )
     parser.add_argument(
         "--unsafe",
-        dest="unsafe",
-        action="store_true",
+        dest="safety_excludes",
+        action="store_false",
         help="Tells isort to look for files in standard library directories, etc. "
         "where it may not be safe to operate in",
     )
@@ -614,10 +614,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     arguments = {
         key: value for key, value in vars(parser.parse_args(argv)).items() if value is not None
     }
-    if "dont_order_by_type" in arguments:
-        arguments["order_by_type"] = False
-    if arguments.pop("unsafe", False):
-        arguments["safety_excludes"] = False
     return arguments
 
 
