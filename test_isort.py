@@ -1523,6 +1523,26 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1,\n)\n"
     )
 
+    trailing_comma_with_comment = "from six.moves.urllib.parse import urlencode  # pylint: disable=no-name-in-module,import-error"
+    expected_trailing_comma_with_comment = "from six.moves.urllib.parse import (\n    urlencode,  # pylint: disable=no-name-in-module,import-error\n)\n"
+    trailing_comma_with_comment = SortImports(
+        file_contents=trailing_comma_with_comment,
+        line_length=80,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        include_trailing_comma=True,
+        use_parentheses=True,
+    ).output
+    assert trailing_comma_with_comment == expected_trailing_comma_with_comment
+    # The next time around, it should be equal
+    trailing_comma_with_comment = SortImports(
+        file_contents=trailing_comma_with_comment,
+        line_length=80,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        include_trailing_comma=True,
+        use_parentheses=True,
+    ).output
+    assert trailing_comma_with_comment == expected_trailing_comma_with_comment
+
 
 def test_similar_to_std_library() -> None:
     """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
