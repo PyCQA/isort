@@ -85,7 +85,7 @@ Code Contributors
 - Danny Weinberg (@FuegoFro)
 - Gram (@orsinium)
 - Hugo van Kemenade (@hugovk)
-
+- Géry Ogam (@maggyero)
 
 Documenters
 ===================
