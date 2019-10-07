@@ -66,6 +66,9 @@ if TYPE_CHECKING:
 
 
 class _SortImports:
+    _import_line_intro_re = re.compile("^(?:from|import) ")
+    _import_line_midline_import_re = re.compile(" import ")
+
     def __init__(
         self, file_contents: str, config: Dict[str, Any], extension: str = "py"
     ) -> None:
@@ -426,7 +429,7 @@ class _SortImports:
                     )
                     from_imports = None
                 elif self.config["force_single_line"]:
-                    import_statements = []
+                    import_statement = None
                     while from_imports:
                         from_import = from_imports.pop(0)
                         single_import_line = self._add_comments(
@@ -447,20 +450,19 @@ class _SortImports:
                                 self.config["keep_direct_and_as_imports"]
                                 and self.imports[section]["from"][module][from_import]
                             ):
-                                import_statements.append(self._wrap(single_import_line))
+                                section_output.append(self._wrap(single_import_line))
                             from_comments = self.comments["straight"].get(
                                 "{}.{}".format(module, from_import)
                             )
-                            import_statements.extend(
+                            section_output.extend(
                                 self._add_comments(
                                     from_comments, self._wrap(import_start + as_import)
                                 )
                                 for as_import in nsorted(as_imports[from_import])
                             )
                         else:
-                            import_statements.append(self._wrap(single_import_line))
+                            section_output.append(self._wrap(single_import_line))
                         comments = None
-                    import_statement = self.line_separator.join(import_statements)
                 else:
                     while from_imports and from_imports[0] in as_imports:
                         from_import = from_imports.pop(0)
@@ -730,8 +732,9 @@ class _SortImports:
                     if line.startswith("#"):
                         return "AA"
 
-                    line = re.sub("^from ", "", line)
-                    line = re.sub("^import ", "", line)
+                    line = self._import_line_intro_re.sub(
+                        "", self._import_line_midline_import_re.sub(".", line)
+                    )
                     if line.split(" ")[0] in self.config["force_to_top"]:
                         section = "A"
                     if not self.config["order_by_type"]:
