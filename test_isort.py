@@ -4271,3 +4271,8 @@ def test_python_version() -> None:
     test_input = "import os\nimport xml"
 
     print(SortImports(file_contents=test_input, py_version="all").output)
+
+
+def test_isort_with_single_character_import() -> None:
+    test_input = "from django.db.models import CASCADE, Q, SET_NULL\n"
+    assert SortImports(file_contents=test_input).output == test_input

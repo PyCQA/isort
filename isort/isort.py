@@ -217,7 +217,7 @@ class _SortImports:
             module_name = str(module_name)
 
         if sub_imports and config["order_by_type"]:
-            if module_name.isupper() and len(module_name) > 1:
+            if module_name.isupper():
                 prefix = "A"
             elif module_name[0:1].isupper():
                 prefix = "B"
