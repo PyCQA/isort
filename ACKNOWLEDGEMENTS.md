@@ -89,6 +89,8 @@ Code Contributors
 - Cody Scott (@Siecje)
 - Pedro Algarvio (@s0undt3ch)
 - Chris St. Pierre (@stpierre)
+- Sebastian Rittau (@srittau)
+
 
 Documenters
 ===================
