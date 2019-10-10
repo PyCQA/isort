@@ -87,7 +87,7 @@ Code Contributors
 - Hugo van Kemenade (@hugovk)
 - Géry Ogam (@maggyero)
 - Cody Scott (@Siecje)
-
+- Pedro Algarvio (@s0undt3ch)
 
 Documenters
 ===================
