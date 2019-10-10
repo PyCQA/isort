@@ -273,7 +273,11 @@ class _SortImports:
                 ) and not line_without_comment.strip().startswith(splitter):
                     line_parts = re.split(exp, line_without_comment)
                     if comment:
-                        line_parts[-1] = "{}#{}".format(line_parts[-1], comment)
+                        line_parts[-1] = "{}{}  #{}".format(
+                            line_parts[-1].strip(),
+                            "," if self.config["include_trailing_comma"] else "",
+                            comment,
+                        )
                     next_line = []
                     while (len(line) + 2) > (
                         self.config["wrap_length"] or self.config["line_length"]
@@ -295,7 +299,9 @@ class _SortImports:
                                 splitter,
                                 self.line_separator,
                                 cont_line,
-                                "," if self.config["include_trailing_comma"] else "",
+                                ","
+                                if self.config["include_trailing_comma"] and not comment
+                                else "",
                                 self.line_separator
                                 if wrap_mode
                                 in {
@@ -1285,8 +1291,9 @@ class _SortImports:
                     placed_module = self.place_module(import_from)
                     if self.config["verbose"]:
                         print(
-                            "from-type place_module for %s returned %s"
-                            % (import_from, placed_module)
+                            "from-type place_module for {} returned {}".format(
+                                import_from, placed_module
+                            )
                         )
                     if placed_module == "":
                         print(
@@ -1391,8 +1398,9 @@ class _SortImports:
                         placed_module = self.place_module(module)
                         if self.config["verbose"]:
                             print(
-                                "else-type place_module for %s returned %s"
-                                % (module, placed_module)
+                                "else-type place_module for {} returned {}".format(
+                                    module, placed_module
+                                )
                             )
                         if placed_module == "":
                             print(
