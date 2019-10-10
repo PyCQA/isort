@@ -86,6 +86,8 @@ Code Contributors
 - Gram (@orsinium)
 - Hugo van Kemenade (@hugovk)
 - Géry Ogam (@maggyero)
+- Cody Scott (@Siecje)
+
 
 Documenters
 ===================
