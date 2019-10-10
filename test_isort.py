@@ -2031,6 +2031,28 @@ def test_other_file_encodings(tmpdir) -> None:
         )
 
 
+def test_encoding_not_in_comment(tmpdir) -> None:
+    """Test that 'encoding' not in a comment is ignored"""
+    tmp_fname = tmpdir.join("test_encoding.py")
+    file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n".format("utf8")
+    tmp_fname.write_binary(file_contents.encode("utf8"))
+    assert (
+        SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output
+        == file_contents
+    )
+
+
+def test_encoding_not_in_first_two_lines(tmpdir) -> None:
+    """Test that 'encoding' not in the first two lines is ignored"""
+    tmp_fname = tmpdir.join("test_encoding.py")
+    file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n".format("utf8")
+    tmp_fname.write_binary(file_contents.encode("utf8"))
+    assert (
+        SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output
+        == file_contents
+    )
+
+
 def test_comment_at_top_of_file() -> None:
     """Test to ensure isort correctly handles top of file comments"""
     test_input = (
