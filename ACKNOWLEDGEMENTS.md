@@ -88,6 +88,7 @@ Code Contributors
 - Géry Ogam (@maggyero)
 - Cody Scott (@Siecje)
 - Pedro Algarvio (@s0undt3ch)
+- Chris St. Pierre (@stpierre)
 
 Documenters
 ===================
