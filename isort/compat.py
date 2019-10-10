@@ -12,16 +12,16 @@ from isort.isort import _SortImports
 
 def determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
     # see https://www.python.org/dev/peps/pep-0263/
-    pattern = re.compile(br"coding[:=]\s*([-\w.]+)")
+    pattern = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
     coding = default
     with file_path.open("rb") as f:
         for line_number, line in enumerate(f, 1):
+            if line_number > 2:
+                break
             groups = re.findall(pattern, line)
             if groups:
                 coding = groups[0].decode("ascii")
-                break
-            if line_number > 2:
                 break
 
     return coding
