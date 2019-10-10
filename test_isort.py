@@ -4307,6 +4307,31 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
     )
 
 
+def test_move_class_issue_751() -> None:
+    test_input = (
+        "# -*- coding: utf-8 -*-"
+        "\n"
+        "# Define your item pipelines here"
+        "#"
+        "# Don't forget to add your pipeline to the ITEM_PIPELINES setting"
+        "# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html"
+        "from datetime import datetime"
+        "from .items import WeiboMblogItem"
+        "\n"
+        "class WeiboMblogPipeline(object):"
+        "    def process_item(self, item, spider):"
+        "        if isinstance(item, WeiboMblogItem):"
+        "            item = self._process_item(item, spider)"
+        "        return item"
+        "\n"
+        "    def _process_item(self, item, spider):"
+        "        item['inserted_at'] = datetime.now()"
+        "        return item"
+        "\n"
+    )
+    assert SortImports(file_contents=test_input).output == test_input
+
+
 def test_python_version() -> None:
     from isort.main import parse_args
 
