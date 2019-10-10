@@ -4262,6 +4262,25 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
     assert SortImports(file_contents=test_input, **config).output == expected_output
 
 
+def test_moving_comments_issue_726():
+    config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
+    test_input = (
+        "import Blue.models as BlueModels\n"
+        "# comment for PlaidModel\n"
+        "from Plaid.models import PlaidModel\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == test_input
+
+    test_input = (
+        "# comment for BlueModels\n"
+        "import Blue.models as BlueModels\n"
+        "# comment for PlaidModel\n"
+        "# another comment for PlaidModel\n"
+        "from Plaid.models import PlaidModel\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == test_input
+
+
 def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()

@@ -707,6 +707,9 @@ class _SortImports:
                 ),
             )
 
+            if self.config["force_sort_within_sections"]:
+                copied_comments = copy.deepcopy(self.comments)
+
             section_output = []  # type: List[str]
             if self.config["from_first"]:
                 self._add_from_imports(
@@ -735,8 +738,6 @@ class _SortImports:
 
                 def by_module(line: str) -> str:
                     section = "B"
-                    if line.startswith("#"):
-                        return "AA"
 
                     line = self._import_line_intro_re.sub(
                         "", self._import_line_midline_import_re.sub(".", line)
@@ -747,7 +748,26 @@ class _SortImports:
                         line = line.lower()
                     return "{}{}".format(section, line)
 
+                # Remove comments
+                section_output = [
+                    line for line in section_output if not line.startswith("#")
+                ]
+
                 section_output = nsorted(section_output, key=by_module)
+
+                # Add comments back
+                all_comments = copied_comments["above"]["from"]
+                all_comments.update(copied_comments["above"]["straight"])
+                comment_indexes = {}
+                for module, comment_list in all_comments.items():
+                    for idx, line in enumerate(section_output):
+                        if module in line:
+                            comment_indexes[idx] = comment_list
+                added = 0
+                for idx, comment_list in comment_indexes.items():
+                    for comment in comment_list:
+                        section_output.insert(idx + added, comment)
+                        added += 1
 
             section_name = section
             no_lines_before = section_name in self.config["no_lines_before"]
