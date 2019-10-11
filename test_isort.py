@@ -4377,3 +4377,12 @@ def test_python_version() -> None:
     test_input = "import os\nimport xml"
 
     print(SortImports(file_contents=test_input, py_version="all").output)
+
+
+def test_isort_with_single_character_import() -> None:
+    """Tests to ensure isort handles single capatilized single character imports as class objects by default
+
+    See Issue #376: https://github.com/timothycrosley/isort/issues/376
+    """
+    test_input = "from django.db.models import CASCADE, SET_NULL, Q\n"
+    assert SortImports(file_contents=test_input).output == test_input
