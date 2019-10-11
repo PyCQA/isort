@@ -739,9 +739,8 @@ class _SortImports:
                 def by_module(line: str) -> str:
                     section = "B"
 
-                    line = self._import_line_intro_re.sub(
-                        "", self._import_line_midline_import_re.sub(".", line)
-                    )
+                    line = re.sub("^from ", "", line)
+                    line = re.sub("^import ", "", line)
                     if line.split(" ")[0] in self.config["force_to_top"]:
                         section = "A"
                     if not self.config["order_by_type"]:

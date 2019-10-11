@@ -1081,8 +1081,27 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
     assert test_output == (
         "from third_party import lib_a\n"
         "from third_party import lib_b\n"
-        "from third_party.lib_c import lib1\n"
         "from third_party import lib_d\n"
+        "from third_party.lib_c import lib1\n"
+    )
+
+
+def test_force_single_line_imports2() -> None:
+    test_input = (
+        "from third_party import lib_a, lib_b, lib_d\n"
+        "from third_party.lib_c import lib1\n"
+    )
+    test_output = SortImports(
+        file_contents=test_input,
+        multi_line_output=WrapModes.GRID,
+        line_length=40,
+        force_single_line=True,
+    ).output
+    assert test_output == (
+        "from third_party import lib_a\n"
+        "from third_party import lib_b\n"
+        "from third_party import lib_d\n"
+        "from third_party.lib_c import lib1\n"
     )
 
 
@@ -4386,3 +4405,12 @@ def test_isort_with_single_character_import() -> None:
     """
     test_input = "from django.db.models import CASCADE, SET_NULL, Q\n"
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_top_level_import_order() -> None:
+    config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
+    test_input = (
+        "from rest_framework import throttling, viewsets\n"
+        "from rest_framework.authentication import TokenAuthentication\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == test_input
