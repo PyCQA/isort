@@ -3017,6 +3017,7 @@ def test_path_finder(monkeypatch) -> None:
         posixpath.join(third_party_prefix, "example_4" + ext_suffix),
         posixpath.join(os.getcwd(), "example_5.py"),
     }
+
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
     assert finder.find("example_1") == finder.sections.STDLIB
     assert finder.find("example_2") == finder.sections.THIRDPARTY

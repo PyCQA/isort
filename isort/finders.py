@@ -190,6 +190,8 @@ class PathFinder(BaseFinder):
                     return self.sections.THIRDPARTY
                 if self.virtual_env and self.virtual_env_src in prefix:
                     return self.sections.THIRDPARTY
+                if os.path.normcase(prefix) == self.stdlib_lib_prefix:
+                    return self.sections.STDLIB
                 if self.conda_env and self.conda_env in prefix:
                     return self.sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):

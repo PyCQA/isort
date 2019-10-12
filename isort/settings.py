@@ -9,6 +9,7 @@ import configparser
 import enum
 import fnmatch
 import os
+import posixpath
 import re
 import sys
 import warnings
@@ -16,8 +17,6 @@ from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
-
-import posixpath
 
 from .stdlibs import py3, py27
 from .utils import difference, union
