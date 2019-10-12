@@ -11,13 +11,3 @@ install:
 
 test_script:
   - poetry run pytest -s --cov=isort/ --cov=test_isort.py --cov-report=term-missing --cov-report html
-
-on_success:
-  # Add tox environment to PATH.
-  - "SET PATH=%CD%\\.tox\\%TOXENV%\\scripts;%PATH%"
-  - IF NOT "x%TOXENV:-coverage=%"=="x%TOXENV%" (
-      pip install codecov &&
-      coverage xml &&
-      coverage report -m &&
-      codecov --required -X gcov pycov search -f coverage.xml -n %TOXENV%-windows
-    )
