@@ -10,7 +10,7 @@ install:
   - poetry install
 
 test_script:
-  - poetry run pytest -s --cov=isort/ --cov=test_isort.py --cov-report=term-missing ${@} --cov-report html
+  - poetry run pytest -s --cov=isort/ --cov=test_isort.py --cov-report=term-missing --cov-report html
 
 on_success:
   # Add tox environment to PATH.
