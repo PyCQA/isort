@@ -31,11 +31,12 @@ python = "^3.5"
 appdirs = {version = "^1.4.0", optional = true}
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
+tomlkit = {version = "0.5.3", optional = true}
 toml = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
 
 [tool.poetry.extras]
-pipfile = ["pipreqs", "requirementslib"]
+pipfile = ["pipreqs", "tomlkit", "requirementslib"]
 pyproject = ["toml"]
 requirements = ["pipreqs", "pip-api"]
 xdg_home = ["appdirs"]
@@ -57,7 +58,7 @@ appdirs = "^1.4"
 pipfile = "^0.0.2"
 requirementslib = "^1.5"
 pipreqs = "^0.4.9"
-tomlkit = "^0.5.8"
+tomlkit = "0.5.3"
 pip_api = "^0.0.12"
 
 [tool.poetry.scripts]
