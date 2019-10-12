@@ -1,24 +1,6 @@
-"""test_isort.py.
+"""Tests all major functionality of the isort library
 
-Tests all major functionality of the isort library
 Should be ran using py.test by simply running py.test in the isort project directory
-
-Copyright (C) 2013  Timothy Edmund Crosley
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
 """
 import os
 import os.path
@@ -3073,7 +3055,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     )
     if not sys.platform.startswith("win"):
         out, err = capfd.readouterr()
-        assert not err
+        assert not [error for error in err.split("\n") if error and not "warning:" in error]
         # it informs us about fixing the files:
         assert str(tmpdir.join("file1.py")) in out
         assert str(tmpdir.join("file2.py")) in out
