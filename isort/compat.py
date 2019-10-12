@@ -52,9 +52,7 @@ def resolve(path: Path) -> Path:
         return Path(os.path.abspath(str(path)))
 
 
-def get_settings_path(
-    settings_path: Optional[Path], current_file_path: Optional[Path]
-) -> Path:
+def get_settings_path(settings_path: Optional[Path], current_file_path: Optional[Path]) -> Path:
     if settings_path:
         return settings_path
 
@@ -111,9 +109,7 @@ class SortImports:
                     if self.config["verbose"]:
                         print(
                             "WARNING: {} was skipped as it's listed in 'skip' setting"
-                            " or matches a glob in 'skip_glob' setting".format(
-                                absolute_file_path
-                            )
+                            " or matches a glob in 'skip_glob' setting".format(absolute_file_path)
                         )
                     file_contents = None
 
@@ -134,9 +130,7 @@ class SortImports:
                         print(
                             "WARNING: {} was skipped as it couldn't be opened with the given "
                             "{} encoding or {} fallback encoding".format(
-                                str(absolute_file_path),
-                                file_encoding,
-                                fallback_encoding,
+                                str(absolute_file_path), file_encoding, fallback_encoding
                             )
                         )
                 else:
@@ -170,20 +164,13 @@ class SortImports:
                     in_lines_without_top_comment = (
                         self.sorted_imports.get_in_lines_without_top_comment()
                     )
-                    compile(
-                        in_lines_without_top_comment, logging_file_path, "exec", 0, 1
-                    )
+                    compile(in_lines_without_top_comment, logging_file_path, "exec", 0, 1)
                     print(
-                        "ERROR: {} isort would have introduced syntax errors, please report to the project!".format(
-                            logging_file_path
-                        )
+                        "ERROR: {} isort would have introduced syntax errors, "
+                        "please report to the project!".format(logging_file_path)
                     )
                 except SyntaxError:
-                    print(
-                        "ERROR: {} File contains syntax errors.".format(
-                            logging_file_path
-                        )
-                    )
+                    print("ERROR: {} File contains syntax errors.".format(logging_file_path))
 
                 return
 
@@ -204,9 +191,7 @@ class SortImports:
 
         if show_diff or self.config["show_diff"]:
             show_unified_diff(
-                file_input=file_contents,
-                file_output=self.output,
-                file_path=self.file_path,
+                file_input=file_contents, file_output=self.output, file_path=self.file_path
             )
 
         elif write_to_stdout:
@@ -219,19 +204,13 @@ class SortImports:
 
             if ask_to_apply:
                 show_unified_diff(
-                    file_input=file_contents,
-                    file_output=self.output,
-                    file_path=self.file_path,
+                    file_input=file_contents, file_output=self.output, file_path=self.file_path
                 )
-                apply_changes = ask_whether_to_apply_changes_to_file(
-                    str(self.file_path)
-                )
+                apply_changes = ask_whether_to_apply_changes_to_file(str(self.file_path))
                 if not apply_changes:
                     return
 
-            with self.file_path.open(
-                "w", encoding=file_encoding, newline=""
-            ) as output_file:
+            with self.file_path.open("w", encoding=file_encoding, newline="") as output_file:
                 if not self.config["quiet"]:
                     print("Fixing {}".format(self.file_path))
 

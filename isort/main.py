@@ -1,49 +1,16 @@
-"""  Tool for sorting imports alphabetically, and automatically separated into sections.
-
-Copyright (C) 2013  Timothy Edmund Crosley
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-"""
+"""Tool for sorting imports alphabetically, and automatically separated into sections."""
 import argparse
 import functools
 import glob
 import os
 import re
 import sys
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    MutableMapping,
-    Optional,
-    Sequence,
-)
+from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 
 import setuptools
 
 from isort import SortImports, __version__
-from isort.settings import (
-    DEFAULT_SECTIONS,
-    WrapModes,
-    default,
-    file_should_be_skipped,
-    from_path,
-)
+from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
 
 INTRO = r"""
 /#######################################################################\
@@ -117,9 +84,7 @@ def iter_source_code(
 
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(
-                path, topdown=True, followlinks=True
-            ):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
                 for dirname in list(dirnames):
                     if file_should_be_skipped(dirname, config, dirpath):
                         skipped.append(dirname)
@@ -182,17 +147,11 @@ class ISortCommand(setuptools.Command):
         for path in self.distribution_files():
             for python_file in glob.iglob(os.path.join(path, "*.py")):
                 try:
-                    incorrectly_sorted = SortImports(
-                        python_file, **arguments
-                    ).incorrectly_sorted
+                    incorrectly_sorted = SortImports(python_file, **arguments).incorrectly_sorted
                     if incorrectly_sorted:
                         wrong_sorted_files = True
                 except OSError as e:
-                    print(
-                        "WARNING: Unable to parse file {} due to {}".format(
-                            python_file, e
-                        )
-                    )
+                    print("WARNING: Unable to parse file {} due to {}".format(python_file, e))
         if wrong_sorted_files:
             sys.exit(1)
 
@@ -254,7 +213,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--combine-star",
         dest="combine_star",
         action="store_true",
-        help="Ensures that if a star import is present, nothing else is imported from that namespace.",
+        help="Ensures that if a star import is present, "
+        "nothing else is imported from that namespace.",
     )
     parser.add_argument(
         "-d",
@@ -297,7 +257,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--future",
         dest="known_future_library",
         action="append",
-        help="Force sortImports to recognize a module as part of the future compatibility libraries.",
+        help="Force sortImports to recognize a module as part "
+        "of the future compatibility libraries.",
     )
     parser.add_argument(
         "-fas",
@@ -317,7 +278,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "-ff",
         "--from-first",
         dest="from_first",
-        help="Switches the typical ordering preference, showing from imports first then straight ones.",
+        help="Switches the typical ordering preference, "
+        "showing from imports first then straight ones.",
     )
     parser.add_argument(
         "-fgw",
@@ -344,11 +306,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         type=str,
     )
     parser.add_argument(
-        "-j",
-        "--jobs",
-        help="Number of files to process in parallel.",
-        dest="jobs",
-        type=int,
+        "-j", "--jobs", help="Number of files to process in parallel.", dest="jobs", type=int
     )
     parser.add_argument(
         "-k",
@@ -360,22 +318,18 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument(
         "-l",
         "--lines",
-        help="[Deprecated] The max length of an import line (used for wrapping "
-        "long imports).",
+        help="[Deprecated] The max length of an import line (used for wrapping " "long imports).",
         dest="line_length",
         type=int,
     )
-    parser.add_argument(
-        "-lai", "--lines-after-imports", dest="lines_after_imports", type=int
-    )
-    parser.add_argument(
-        "-lbt", "--lines-between-types", dest="lines_between_types", type=int
-    )
+    parser.add_argument("-lai", "--lines-after-imports", dest="lines_after_imports", type=int)
+    parser.add_argument("-lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
         "-le",
         "--line-ending",
         dest="line_ending",
-        help="Forces line endings to the specified value. If not set, values will be guessed per-file.",
+        help="Forces line endings to the specified value. "
+        "If not set, values will be guessed per-file.",
     )
     parser.add_argument(
         "-ls",
@@ -397,7 +351,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--no-inline-sort",
         dest="no_inline_sort",
         action="store_true",
-        help="Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c ,b`).",
+        help="Leaves `from` imports with multiple imports 'as-is' "
+        "(e.g. `from foo import a, c ,b`).",
     )
     parser.add_argument(
         "-nlb",
@@ -589,12 +544,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--filter-files",
         dest="filter_files",
         action="store_true",
-        help="Tells isort to filter files even when they are explicitly passed in as part of the command",
+        help="Tells isort to filter files even when they are explicitly passed in as "
+        "part of the command",
     )
     parser.add_argument(
-        "files",
-        nargs="*",
-        help="One or more Python source files that need their imports sorted.",
+        "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
     parser.add_argument(
         "-py",
@@ -605,9 +559,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "Default is the version of the running interpreter, for instance: -py 3, -py 2.7",
     )
 
-    arguments = {
-        key: value for key, value in vars(parser.parse_args(argv)).items() if value
-    }
+    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
     if arguments.pop("unsafe", False):
@@ -623,7 +575,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     if arguments.get("ambiguous_r_flag"):
         print(
-            "ERROR: Deprecated -r flag set. This flag has been replaced with -rm to remove ambiguity between it and "
+            "ERROR: Deprecated -r flag set. "
+            "This flag has been replaced with -rm to remove ambiguity between it and "
             "-rc for recursive"
         )
         sys.exit(1)
@@ -632,26 +585,18 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     if "settings_path" in arguments:
         sp = arguments["settings_path"]
         arguments["settings_path"] = (
-            os.path.abspath(sp)
-            if os.path.isdir(sp)
-            else os.path.dirname(os.path.abspath(sp))
+            os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
         )
         if not os.path.isdir(arguments["settings_path"]):
             print(
-                "WARNING: settings_path dir does not exist: {}".format(
-                    arguments["settings_path"]
-                )
+                "WARNING: settings_path dir does not exist: {}".format(arguments["settings_path"])
             )
 
     if "virtual_env" in arguments:
         venv = arguments["virtual_env"]
         arguments["virtual_env"] = os.path.abspath(venv)
         if not os.path.isdir(arguments["virtual_env"]):
-            print(
-                "WARNING: virtual_env dir does not exist: {}".format(
-                    arguments["virtual_env"]
-                )
-            )
+            print("WARNING: virtual_env dir does not exist: {}".format(arguments["virtual_env"]))
 
     file_names = arguments.pop("files", [])
     if file_names == ["-"]:
@@ -664,9 +609,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 arguments["ask_to_apply"] = True
 
         config = from_path(
-            arguments.get("settings_path", "")
-            or os.path.abspath(file_names[0])
-            or os.getcwd()
+            arguments.get("settings_path", "") or os.path.abspath(file_names[0]) or os.getcwd()
         ).copy()
         config.update(arguments)
         wrong_sorted_files = False

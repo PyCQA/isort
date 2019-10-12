@@ -4,46 +4,20 @@ Defines how the default settings for isort should be loaded
 
 (First from the default setting dictionary at the top of the file, then overridden by any settings
  in ~/.isort.cfg or $XDG_CONFIG_HOME/isort.cfg if there are any)
-
-Copyright (C) 2013  Timothy Edmund Crosley
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
 """
 import configparser
 import enum
 import fnmatch
 import os
-import posixpath
 import re
 import sys
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Union,
-)
+from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
+
+import posixpath
 
 from .stdlibs import py3, py27
 from .utils import difference, union
@@ -89,8 +63,8 @@ class WrapModes(enum.Enum):
 
 def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     """
-    Returns the correct standard library based on either the passed py_version flag or the python interpreter
-    Additionaly users have the option to pass all as value instead of an
+    Returns the correct standard library based on either the passed py_version flag or the python
+    interpreter. Additionaly users have the option to pass all as value instead of an
     version. As an result code will be checked against both standard libraries - python2 & python3
 
     See Issue 889 and 778 for more information
@@ -121,8 +95,7 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     else:
         raise ValueError(
             "The python version %s is not supported. "
-            "You can set a python version with the -py or --python-version flag "
-            % py_version
+            "You can set a python version with the -py or --python-version flag " % py_version
         )
 
     _default["known_standard_library"] = standard_library
@@ -130,7 +103,8 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     return _default
 
 
-# Note that none of these lists must be complete as they are simply fallbacks for when included auto-detection fails.
+# Note that none of these lists must be complete as they are simply
+# fallbacks for when included auto-detection fails.
 default = {
     "force_to_top": [],
     "skip": [],
@@ -188,9 +162,7 @@ default = {
 
 
 @lru_cache()
-def from_path(
-    path: Union[str, Path], py_version: Optional[str] = None
-) -> Dict[str, Any]:
+def from_path(path: Union[str, Path], py_version: Optional[str] = None) -> Dict[str, Any]:
     computed_settings = _get_default(py_version)
     isort_defaults = ["~/.isort.cfg"]
     if appdirs:
@@ -200,24 +172,14 @@ def from_path(
         path = str(path)
 
     _update_settings_with_config(
-        path,
-        ".editorconfig",
-        ["~/.editorconfig"],
-        ("*", "*.py", "**.py"),
-        computed_settings,
+        path, ".editorconfig", ["~/.editorconfig"], ("*", "*.py", "**.py"), computed_settings
     )
-    _update_settings_with_config(
-        path, "pyproject.toml", [], ("tool.isort",), computed_settings
-    )
+    _update_settings_with_config(path, "pyproject.toml", [], ("tool.isort",), computed_settings)
     _update_settings_with_config(
         path, ".isort.cfg", isort_defaults, ("settings", "isort"), computed_settings
     )
-    _update_settings_with_config(
-        path, "setup.cfg", [], ("isort", "tool:isort"), computed_settings
-    )
-    _update_settings_with_config(
-        path, "tox.ini", [], ("isort", "tool:isort"), computed_settings
-    )
+    _update_settings_with_config(path, "setup.cfg", [], ("isort", "tool:isort"), computed_settings)
+    _update_settings_with_config(path, "tox.ini", [], ("isort", "tool:isort"), computed_settings)
     return computed_settings
 
 
@@ -330,21 +292,15 @@ def _update_with_config_file(
             if access_key == "sections":
                 computed_settings[access_key] = tuple(_as_list(value))
             else:
-                existing_data = set(
-                    computed_settings.get(access_key, default.get(access_key))
-                )
+                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
                 if key.startswith("not_"):
-                    computed_settings[access_key] = difference(
-                        existing_data, _as_list(value)
-                    )
+                    computed_settings[access_key] = difference(existing_data, _as_list(value))
                 elif key.startswith("known_"):
                     computed_settings[access_key] = union(
                         existing_data, _abspaths(cwd, _as_list(value))
                     )
                 else:
-                    computed_settings[access_key] = union(
-                        existing_data, _as_list(value)
-                    )
+                    computed_settings[access_key] = union(existing_data, _as_list(value))
         elif existing_value_type == bool:
             # Only some configuration formats support native boolean values.
             if not isinstance(value, bool):
@@ -357,9 +313,7 @@ def _update_with_config_file(
                 result = existing_value_type(value)
             except ValueError:
                 # backwards compat
-                result = (
-                    default.get(access_key) if value.lower().strip() == "false" else 2
-                )
+                result = default.get(access_key) if value.lower().strip() == "false" else 2
             computed_settings[access_key] = result
         else:
             computed_settings[access_key] = getattr(
@@ -370,9 +324,7 @@ def _update_with_config_file(
 def _as_list(value: str) -> List[str]:
     if isinstance(value, list):
         return [item.strip() for item in value]
-    filtered = [
-        item.strip() for item in value.replace("\n", ",").split(",") if item.strip()
-    ]
+    filtered = [item.strip() for item in value.replace("\n", ",").split(",") if item.strip()]
     return filtered
 
 
@@ -427,9 +379,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
     return settings
 
 
-def file_should_be_skipped(
-    filename: str, config: Mapping[str, Any], path: str = ""
-) -> bool:
+def file_should_be_skipped(filename: str, config: Mapping[str, Any], path: str = "") -> bool:
     """Returns True if the file and/or folder should be skipped based on the passed in settings."""
     os_path = os.path.join(path, filename)
 
@@ -445,9 +395,7 @@ def file_should_be_skipped(
             return True
 
     for skip_path in config["skip"]:
-        if posixpath.abspath(normalized_path) == posixpath.abspath(
-            skip_path.replace("\\", "/")
-        ):
+        if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace("\\", "/")):
             return True
 
     position = os.path.split(filename)
@@ -460,9 +408,7 @@ def file_should_be_skipped(
         if fnmatch.fnmatch(filename, glob) or fnmatch.fnmatch("/" + filename, glob):
             return True
 
-    if not (
-        os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)
-    ):
+    if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
         return True
 
     return False

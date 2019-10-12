@@ -115,9 +115,7 @@ class KnownPatternFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         # Try to find most specific placement instruction match (if any)
         parts = module_name.split(".")
-        module_names_to_check = (
-            ".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1)
-        )
+        module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
         for module_name_to_check in module_names_to_check:
             for pattern, placement in self.known_patterns:
                 if pattern.match(module_name_to_check):
@@ -135,9 +133,7 @@ class PathFinder(BaseFinder):
         self.paths = [root_dir, src_dir]
 
         # virtual env
-        self.virtual_env = self.config.get("virtual_env") or os.environ.get(
-            "VIRTUAL_ENV"
-        )
+        self.virtual_env = self.config.get("virtual_env") or os.environ.get("VIRTUAL_ENV")
         if self.virtual_env:
             self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ""
@@ -154,9 +150,7 @@ class PathFinder(BaseFinder):
                     self.paths.append(path)
 
         # conda
-        self.conda_env = (
-            self.config.get("conda_env") or os.environ.get("CONDA_PREFIX") or ""
-        )
+        self.conda_env = self.config.get("conda_env") or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
             for path in glob("{}/lib/python*/site-packages".format(self.conda_env)):
@@ -188,9 +182,7 @@ class PathFinder(BaseFinder):
                 or exists_case_sensitive(package_path + self.ext_suffix)
                 or exists_case_sensitive(package_path + "/__init__.py")
             )
-            is_package = exists_case_sensitive(package_path) and os.path.isdir(
-                package_path
-            )
+            is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if "site-packages" in prefix:
                     return self.sections.THIRDPARTY
@@ -209,9 +201,7 @@ class PathFinder(BaseFinder):
 class ReqsBaseFinder(BaseFinder):
     enabled = False
 
-    def __init__(
-        self, config: Mapping[str, Any], sections: Any, path: str = "."
-    ) -> None:
+    def __init__(self, config: Mapping[str, Any], sections: Any, path: str = ".") -> None:
         super().__init__(config, sections)
         self.path = path
         if self.enabled:
@@ -404,9 +394,10 @@ class FindersManager:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
                     print(
-                        "{} encountered an error ({}) during instantiation and cannot be used".format(
-                            finder_cls.__name__, str(exception)
-                        )
+                        (
+                            "{} encountered an error ({}) during "
+                            "instantiation and cannot be used"
+                        ).format(finder_cls.__name__, str(exception))
                     )
         self.finders = tuple(finders)  # type: Tuple[BaseFinder, ...]
 
@@ -415,12 +406,13 @@ class FindersManager:
             try:
                 section = finder.find(module_name)
             except Exception as exception:
-                # isort has to be able to keep trying to identify the correct import section even if one approach fails
+                # isort has to be able to keep trying to identify the correct
+                # import section even if one approach fails
                 if self.verbose:
                     print(
-                        "{} encountered an error ({}) while trying to identify the {} module".format(
-                            finder.__class__.__name__, str(exception), module_name
-                        )
+                        (
+                            "{} encountered an error ({}) while trying to identify the {}" " module"
+                        ).format(finder.__class__.__name__, str(exception), module_name)
                     )
             if section is not None:
                 return section

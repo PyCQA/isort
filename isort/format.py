@@ -28,14 +28,10 @@ def format_natural(import_line: str) -> str:
     return import_line
 
 
-def show_unified_diff(
-    *, file_input: str, file_output: str, file_path: Optional[Path]
-) -> None:
+def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[Path]) -> None:
     file_name = "" if file_path is None else str(file_path)
     file_mtime = str(
-        datetime.now()
-        if file_path is None
-        else datetime.fromtimestamp(file_path.stat().st_mtime)
+        datetime.now() if file_path is None else datetime.fromtimestamp(file_path.stat().st_mtime)
     )
 
     unified_diff_lines = unified_diff(
@@ -53,9 +49,8 @@ def show_unified_diff(
 def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     answer = None
     while answer not in ("yes", "y", "no", "n", "quit", "q"):
-        answer = input(
-            "Apply suggested changes to '{}' [y/n/q]? ".format(file_path)
-        ).lower()
+        answer = input("Apply suggested changes to '{}' [y/n/q]? ".format(file_path))  # nosec
+        answer = answer.lower()
         if answer in ("no", "n"):
             return False
         if answer in ("quit", "q"):
