@@ -5,21 +5,12 @@ init:
 
 build: off
 
-environment:
-  matrix:
-    - TOXENV: "isort-check"
-    - TOXENV: "lint"
-    - TOXENV: "mypy"
-    - TOXENV: "py35-coverage"
-    - TOXENV: "py36-coverage"
-    - TOXENV: "py37-coverage"
-
 install:
   - pip3 install poetry
   - poetry install
 
 test_script:
-  - pytest -s --cov=isort/ --cov=tests --cov-report=term-missing ${@} --cov-report html
+  - pytest -s --cov=isort/ --cov=test_isort.py --cov-report=term-missing ${@} --cov-report html
 
 on_success:
   # Add tox environment to PATH.
