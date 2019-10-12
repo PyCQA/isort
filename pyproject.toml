@@ -1,0 +1,75 @@
+[tool.poetry]
+name = "isort"
+version = "4.3.21"
+description = "A Python utility / library to sort Python imports."
+authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
+license = "MIT"
+readme = "README.rst"
+repository = "https://github.com/timothycrosley/isort"
+website = "http://timothycrosley.github.io/isort/"
+keywords = ["Refactor", "Lint", "Imports", "Sort", "Clean"]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.dependencies]
+python = "^3.5"
+appdirs = {version = "^1.4.0", optional = true}
+pipreqs = {version = "*", optional = true}
+requirementslib = {version = "*", optional = true}
+tomlkit = {version = "0.5.3", optional = true}
+toml = {version = "*", optional = true}
+pip-api = {version = "*", optional = true}
+
+[tool.poetry.extras]
+pipfile = ["pipreqs", "tomlkit", "requirementslib"]
+pyproject = ["toml"]
+requirements = ["pipreqs", "pip-api"]
+xdg_home = ["appdirs"]
+
+[tool.poetry.dev-dependencies]
+vulture = "^1.0"
+bandit = "^1.6"
+safety = "^1.8"
+flake8-bugbear = "^19.8"
+black = {version = "^18.3-alpha.0", allows-prereleases = true, optional = true, python = "^3.6"}
+mypy = "^0.730.0"
+ipython = "^7.7"
+pytest = "^5.0"
+pytest-cov = "^2.7"
+pytest-mock = "^1.10"
+pep8-naming = "^0.8.2"
+portray = { version = "^1.3.0", optional = true, python = "^3.6" }
+appdirs = "^1.4"
+pipfile = "^0.0.2"
+requirementslib = "^1.5"
+pipreqs = "^0.4.9"
+tomlkit = "0.5.3"
+pip_api = "^0.0.12"
+
+[tool.poetry.scripts]
+isort = "isort.main:main"
+
+[tool.poetry.plugins."distutils.commands"]
+isort = "isort.main:ISortCommand"
+
+[tool.poetry.plugins."pylama.linter"]
+isort = "isort = isort.pylama_isort:Linter"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

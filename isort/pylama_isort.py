@@ -20,12 +20,7 @@ class Linter(BaseLinter):
 
             if SortImports(path, check=True).incorrectly_sorted:
                 return [
-                    {
-                        "lnum": 0,
-                        "col": 0,
-                        "text": "Incorrectly sorted imports.",
-                        "type": "ISORT",
-                    }
+                    {"lnum": 0, "col": 0, "text": "Incorrectly sorted imports.", "type": "ISORT"}
                 ]
             else:
                 return []

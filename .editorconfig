@@ -1,7 +1,7 @@
 root = true
 
 [*.py]
-max_line_length = 120
+max_line_length = 100
 indent_style = space
 indent_size = 4
 known_first_party = isort
