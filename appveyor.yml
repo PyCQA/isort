@@ -15,10 +15,11 @@ environment:
     - TOXENV: "py37-coverage"
 
 install:
-  - pip install tox
+  - pip3 install poetry
+  - poetry install
 
 test_script:
-  - tox
+  - pytest -s --cov=isort/ --cov=tests --cov-report=term-missing ${@} --cov-report html
 
 on_success:
   # Add tox environment to PATH.
