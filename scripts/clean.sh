@@ -1,4 +1,4 @@
 #!/bin/bash -xe
 
-poetry run isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=100 --recursive isort/ test_isort.py
-poetry run black isort/ test_isort.py -l 100
+poetry run isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=100 --recursive isort/ tests/
+poetry run black isort/ tests/ -l 100

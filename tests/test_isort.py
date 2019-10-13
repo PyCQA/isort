@@ -152,7 +152,7 @@ def test_line_length() -> None:
         "                         lib21, lib22)\n"
     )
 
-    TEST_INPUT = (
+    test_input = (
         "from django.contrib.gis.gdal.field import (\n"
         "    OFTDate, OFTDateTime, OFTInteger, OFTInteger64, OFTReal, OFTString,\n"
         "    OFTTime,\n"
@@ -160,13 +160,13 @@ def test_line_length() -> None:
     )  # Test case described in issue #654
     assert (
         SortImports(
-            file_contents=TEST_INPUT,
+            file_contents=test_input,
             include_trailing_comma=True,
             line_length=79,
             multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
             balanced_wrapping=False,
         ).output
-        == TEST_INPUT
+        == test_input
     )
 
     test_output = SortImports(
@@ -426,7 +426,8 @@ def test_output_modes() -> None:
         file_contents=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.NOQA
     ).output
     assert output_noqa == (
-        "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11,"
+        "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7,"
+        " lib8, lib9, lib10, lib11,"
         " lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  "
         "# NOQA comment\n"
     )
@@ -833,7 +834,8 @@ def test_forced_separate() -> None:
         "\n"
         "from django.contrib.admin import FieldListFilter\n"
         "from django.contrib.admin.exceptions import DisallowedModelAdminLookup\n"
-        "from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, TO_FIELD_VAR\n"
+        "from django.contrib.admin.options import IncorrectLookupParameters, IS_POPUP_VAR, "
+        "TO_FIELD_VAR\n"
     )
     assert (
         SortImports(
@@ -901,7 +903,9 @@ def test_thirdy_party_overrides_standard_section() -> None:
 
 
 def test_known_pattern_path_expansion() -> None:
-    """Test to ensure patterns ending with path sep gets expanded and nested packages treated as known patterns"""
+    """Test to ensure patterns ending with path sep gets expanded
+    and nested packages treated as known patterns.
+    """
     test_input = (
         "from kate_plugin import isort_plugin\n"
         "import sys\n"
@@ -1050,7 +1054,9 @@ def test_balanced_wrapping() -> None:
 
 
 def test_relative_import_with_space() -> None:
-    """Tests the case where the relation and the module that is being imported from is separated with a space."""
+    """Tests the case where the relation and the module that is being imported from is separated
+    with a space.
+    """
     test_input = "from ... fields.sproqet import SproqetCollection"
     assert SortImports(file_contents=test_input).output == (
         "from ...fields.sproqet import SproqetCollection\n"
@@ -1308,7 +1314,9 @@ def test_keep_comments() -> None:
 
 
 def test_multiline_split_on_dot() -> None:
-    """Test to ensure isort correctly handles multiline imports, even when split right after a '.'"""
+    """Test to ensure isort correctly handles multiline imports,
+    even when split right after a '.'
+    """
     test_input = (
         "from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
         "    my_module import my_function"
@@ -1406,8 +1414,15 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1,\n)\n"
     )
 
-    trailing_comma_with_comment = "from six.moves.urllib.parse import urlencode  # pylint: disable=no-name-in-module,import-error"
-    expected_trailing_comma_with_comment = "from six.moves.urllib.parse import (\n    urlencode,  # pylint: disable=no-name-in-module,import-error\n)\n"
+    trailing_comma_with_comment = (
+        "from six.moves.urllib.parse import urlencode  "
+        "# pylint: disable=no-name-in-module,import-error"
+    )
+    expected_trailing_comma_with_comment = (
+        "from six.moves.urllib.parse import (\n"
+        "    urlencode,  # pylint: disable=no-n"
+        "ame-in-module,import-error\n)\n"
+    )
     trailing_comma_with_comment = SortImports(
         file_contents=trailing_comma_with_comment,
         line_length=80,
@@ -1428,7 +1443,9 @@ def test_include_trailing_comma() -> None:
 
 
 def test_similar_to_std_library() -> None:
-    """Test to ensure modules that are named similarly to a standard library import don't end up clobbered"""
+    """Test to ensure modules that are named similarly to a standard library import
+    don't end up clobbered
+    """
     test_input = "import datetime\n\nimport requests\nimport times\n"
     assert (
         SortImports(file_contents=test_input, known_third_party=["requests", "times"]).output
@@ -1453,43 +1470,65 @@ def test_correctly_placed_imports() -> None:
         "from django.test import TestCase\n"
         "from model_mommy import mommy\n"
         "\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_d"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_item_product\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_item_product_d"
         "efinition\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_d"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_item_product_d"
         "efinition_platform\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_item_product_p"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_item_product_p"
         "latform\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_territory_reta"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_territory_reta"
         "il_model\n"
-        "from apps.clientman.commands.download_usage_rights import associate_right_for_territory_reta"
+        "from apps.clientman.commands.download_usage_rights import "
+        "associate_right_for_territory_reta"
         "il_model_definition_platform_provider  # noqa\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_defini"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_item_product\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_item_product_defini"
         "tion\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_defini"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_item_product_defini"
         "tion_platform\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_item_product_platfo"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_item_product_platfo"
         "rm\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_territory_retail_mo"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_territory_retail_mo"
         "del\n"
-        "from apps.clientman.commands.download_usage_rights import clear_right_for_territory_retail_mo"
+        "from apps.clientman.commands.download_usage_rights import "
+        "clear_right_for_territory_retail_mo"
         "del_definition_platform_provider  # noqa\n"
-        "from apps.clientman.commands.download_usage_rights import create_download_usage_right\n"
-        "from apps.clientman.commands.download_usage_rights import delete_download_usage_right\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_d"
+        "from apps.clientman.commands.download_usage_rights import "
+        "create_download_usage_right\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "delete_download_usage_right\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_item_product\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_item_product_d"
         "efinition\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_d"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_item_product_d"
         "efinition_platform\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_item_product_p"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_item_product_p"
         "latform\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_territory_reta"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_territory_reta"
         "il_model\n"
-        "from apps.clientman.commands.download_usage_rights import disable_download_for_territory_reta"
+        "from apps.clientman.commands.download_usage_rights import "
+        "disable_download_for_territory_reta"
         "il_model_definition_platform_provider  # noqa\n"
-        "from apps.clientman.commands.download_usage_rights import get_download_rights_for_item\n"
-        "from apps.clientman.commands.download_usage_rights import get_right\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "get_download_rights_for_item\n"
+        "from apps.clientman.commands.download_usage_rights import "
+        "get_right\n"
     )
     assert (
         SortImports(
@@ -1503,7 +1542,9 @@ def test_correctly_placed_imports() -> None:
 
 
 def test_auto_detection() -> None:
-    """Initial test to ensure isort auto-detection works correctly - will grow over time as new issues are raised."""
+    """Initial test to ensure isort auto-detection works correctly -
+    will grow over time as new issues are raised.
+    """
 
     # Issue 157
     test_input = "import binascii\nimport os\n\nimport cv2\nimport requests\n"
@@ -1517,7 +1558,9 @@ def test_auto_detection() -> None:
 
 
 def test_same_line_statements() -> None:
-    """Ensure isort correctly handles the case where a single line contains multiple statements including an import"""
+    """Ensure isort correctly handles the case where a single line
+    contains multiple statements including an import
+    """
     test_input = "import pdb; import nose\n"
     assert SortImports(file_contents=test_input).output == ("import pdb\n\nimport nose\n")
 
@@ -1528,16 +1571,20 @@ def test_same_line_statements() -> None:
 def test_long_line_comments() -> None:
     """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = (
-        "from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, sync_live_envdir, "
+        "from foo.utils.fabric_stuff.live import check_clean_live, deploy_live, "
+        "sync_live_envdir, "
         "update_live_app, update_live_cron  # noqa\n"
-        "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, sync_stage_envdir, "
+        "from foo.utils.fabric_stuff.stage import check_clean_stage, deploy_stage, "
+        "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
     assert SortImports(file_contents=test_input).output == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
-        "                                         sync_live_envdir, update_live_app, update_live_cron)\n"
+        "                                         sync_live_envdir, update_live_app, "
+        "update_live_cron)\n"
         "from foo.utils.fabric_stuff.stage import (check_clean_stage, deploy_stage,  # noqa\n"
-        "                                          sync_stage_envdir, update_stage_app, update_stage_cron)\n"
+        "                                          sync_stage_envdir, update_stage_app, "
+        "update_stage_cron)\n"
     )
 
 
@@ -1551,7 +1598,10 @@ def test_tab_character_in_import() -> None:
 
 def test_split_position() -> None:
     """Ensure isort splits on import instead of . when possible"""
-    test_input = "from p24.shared.exceptions.master.host_state_flag_unchanged import HostStateUnchangedException\n"
+    test_input = (
+        "from p24.shared.exceptions.master.host_state_flag_unchanged "
+        "import HostStateUnchangedException\n"
+    )
     assert SortImports(file_contents=test_input, line_length=80).output == (
         "from p24.shared.exceptions.master.host_state_flag_unchanged import \\\n"
         "    HostStateUnchangedException\n"
@@ -2008,13 +2058,17 @@ def test_basic_comment() -> None:
 
 
 def test_shouldnt_add_lines() -> None:
-    """Ensure that isort doesn't add a blank line when a top of import comment is present, issue #316"""
+    """Ensure that isort doesn't add a blank line when a top of import comment is present,
+    See: issue #316
+    """
     test_input = '"""Text"""\n' "# This is a comment\nimport pkg_resources\n"
     assert SortImports(file_contents=test_input).output == test_input
 
 
 def test_sections_parsed_correct(tmpdir) -> None:
-    """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
+    """Ensure that modules for custom sections parsed as list from config file and
+    isort result is correct
+    """
     conf_file_data = (
         "[settings]\n"
         "sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON\n"
@@ -2038,7 +2092,9 @@ def test_sections_parsed_correct(tmpdir) -> None:
 
 @pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
 def test_pyproject_conf_file(tmpdir) -> None:
-    """Ensure that modules for custom sections parsed as list from config file and isort result is correct"""
+    """Ensure that modules for custom sections parsed as list from config file and
+    isort result is correct
+    """
     conf_file_data = (
         "[build-system]\n"
         'requires = ["setuptools", "wheel"]\n'
@@ -2071,7 +2127,9 @@ def test_pyproject_conf_file(tmpdir) -> None:
 
 
 def test_alphabetic_sorting_no_newlines() -> None:
-    """Test to ensure that alphabetical sort does not erroneously introduce new lines (issue #328)"""
+    """Test to ensure that alphabetical sort does not
+    erroneously introduce new lines (issue #328)
+    """
     test_input = "import os\n"
     test_output = SortImports(
         file_contents=test_input, force_alphabetical_sort_within_sections=True
@@ -2162,7 +2220,9 @@ def test_forced_sepatate_globs() -> None:
 
 
 def test_no_additional_lines_issue_358() -> None:
-    """Test to ensure issue 358 is resolved and running isort multiple times does not add extra newlines"""
+    """Test to ensure issue 358 is resolved and running isort multiple times
+    does not add extra newlines
+    """
     test_input = (
         '"""This is a docstring"""\n'
         "# This is a comment\n"
@@ -2251,7 +2311,9 @@ def test_no_additional_lines_issue_358() -> None:
 
 
 def test_import_by_paren_issue_375() -> None:
-    """Test to ensure isort can correctly handle sorting imports where the paren is directly by the import body"""
+    """Test to ensure isort can correctly handle sorting imports where the
+    paren is directly by the import body
+    """
     test_input = "from .models import(\n   Foo,\n   Bar,\n)\n"
     assert SortImports(file_contents=test_input).output == "from .models import Bar, Foo\n"
 
@@ -2269,7 +2331,9 @@ import os
 
 
 def test_function_with_docstring() -> None:
-    """Test to ensure isort can correctly sort imports when the first found content is a function with a docstring"""
+    """Test to ensure isort can correctly sort imports when the first found content is a
+    function with a docstring
+    """
     add_imports = ["from __future__ import unicode_literals"]
     test_input = "def foo():\n" '    """ Single line triple quoted doctring """\n' "    pass\n"
     expected_output = (
@@ -2355,7 +2419,9 @@ def test_long_single_line() -> None:
 
 
 def test_import_inside_class_issue_432() -> None:
-    """Test to ensure issue 432 is resolved and isort doesn't insert imports in the middle of classes"""
+    """Test to ensure issue 432 is resolved and isort
+    doesn't insert imports in the middle of classes
+    """
     test_input = "# coding=utf-8\nclass Foo:\n    def bar(self):\n        pass\n"
     expected_output = (
         "# coding=utf-8\n"
@@ -2430,7 +2496,10 @@ def test_alias_using_paren_issue_466() -> None:
 
 
 def test_long_alias_using_paren_issue_957() -> None:
-    test_input = "from package import module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
+    test_input = (
+        "from package import module as very_very_very_very_very_very_very"
+        "_very_very_very_long_alias\n"
+    )
     expected_output = (
         "from package import (\n"
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
@@ -2445,7 +2514,10 @@ def test_long_alias_using_paren_issue_957() -> None:
     ).output
     assert out == expected_output
 
-    test_input = "from deep.deep.deep.deep.deep.deep.deep.deep.deep.package import module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
+    test_input = (
+        "from deep.deep.deep.deep.deep.deep.deep.deep.deep.package import module as "
+        "very_very_very_very_very_very_very_very_very_very_long_alias\n"
+    )
     expected_output = (
         "from deep.deep.deep.deep.deep.deep.deep.deep.deep.package import (\n"
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
@@ -2462,11 +2534,13 @@ def test_long_alias_using_paren_issue_957() -> None:
 
     test_input = (
         "from deep.deep.deep.deep.deep.deep.deep.deep.deep.package "
-        "import very_very_very_very_very_very_very_very_very_very_long_module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
+        "import very_very_very_very_very_very_very_very_very_very_long_module as very_very_very_"
+        "very_very_very_very_very_very_very_long_alias\n"
     )
     expected_output = (
         "from deep.deep.deep.deep.deep.deep.deep.deep.deep.package import (\n"
-        "    very_very_very_very_very_very_very_very_very_very_long_module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
+        "    very_very_very_very_very_very_very_very_very_very_long_module as very_very_very_very"
+        "_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
     out = SortImports(
@@ -2519,14 +2593,19 @@ def test_import_wraps_with_comment_issue_471() -> None:
 
 
 def test_import_case_produces_inconsistent_results_issue_472() -> None:
-    """Test to ensure sorting imports with same name but different case produces the same result across platforms"""
+    """Test to ensure sorting imports with same name but different case produces
+    the same result across platforms
+    """
     test_input = (
         "from sqlalchemy.dialects.postgresql import ARRAY\n"
         "from sqlalchemy.dialects.postgresql import array\n"
     )
     assert SortImports(file_contents=test_input, force_single_line=True).output == test_input
 
-    test_input = "from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n"
+    test_input = (
+        "from scrapy.core.downloader.handlers.http import "
+        "HttpDownloadHandler, HTTPDownloadHandler\n"
+    )
     assert SortImports(file_contents=test_input).output == test_input
 
 
@@ -2567,7 +2646,9 @@ def test_sort_within_sections_with_force_to_top_issue_473() -> None:
 
 
 def test_correct_number_of_new_lines_with_comment_issue_435() -> None:
-    """Test to ensure that injecting a comment in-between imports doesn't mess up the new line spacing"""
+    """Test to ensure that injecting a comment in-between imports
+    doesn't mess up the new line spacing
+    """
     test_input = "import foo\n\n# comment\n\n\ndef baz():\n    pass\n"
     assert SortImports(file_contents=test_input).output == test_input
 
@@ -2597,11 +2678,13 @@ def test_no_extra_lines_issue_557() -> None:
     test_input = (
         "import os\n"
         "\n"
-        "from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n"
+        "from scrapy.core.downloader.handlers.http import "
+        "HttpDownloadHandler, HTTPDownloadHandler\n"
     )
     expected_output = (
         "import os\n"
-        "from scrapy.core.downloader.handlers.http import HttpDownloadHandler, HTTPDownloadHandler\n"
+        "from scrapy.core.downloader.handlers.http import HttpDownloadHandler, "
+        "HTTPDownloadHandler\n"
     )
     assert (
         SortImports(
@@ -2699,7 +2782,8 @@ def test_not_splitted_sections() -> None:
     assert (
         SortImports(file_contents=test_input, no_lines_before=["FIRSTPARTY"]).output == test_input
     )
-    # in case when THIRDPARTY section is excluded from sections list, it's ok to merge STDLIB and FIRSTPARTY
+    # in case when THIRDPARTY section is excluded from sections list,
+    # it's ok to merge STDLIB and FIRSTPARTY
     assert SortImports(
         file_contents=test_input,
         sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
@@ -2727,7 +2811,9 @@ def test_no_lines_before_empty_section() -> None:
 
 def test_no_inline_sort() -> None:
     """Test to ensure multiple `from` imports in one line are not sorted if `--no-inline-sort` flag
-    is enabled. If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored."""
+    is enabled.
+    If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored.
+    """
     test_input = "from foo import a, c, b\n"
     assert (
         SortImports(file_contents=test_input, no_inline_sort=True, force_single_line=False).output
@@ -2749,8 +2835,10 @@ def test_no_inline_sort() -> None:
 
 
 def test_relative_import_of_a_module() -> None:
-    """Imports can be dynamically created (PEP302) and is used by modules such as six.  This test ensures that
-    these types of imports are still sorted to the correct type instead of being categorized as local."""
+    """Imports can be dynamically created (PEP302) and is used by modules such as six.
+    This test ensures that these types of imports are still sorted to the correct type
+    instead of being categorized as local.
+    """
     test_input = (
         "from __future__ import absolute_import\n"
         "\n"
@@ -2828,7 +2916,8 @@ def test_to_ensure_importing_from_imports_module_works_issue_662() -> None:
         "@wraps(fun)\n"
         "def __inner(*args, **kwargs):\n"
         "    from .imports import qualname\n"
-        "    warn(description=description or qualname(fun), deprecation=deprecation, removal=removal)\n"
+        "    warn(description=description or qualname(fun), deprecation=deprecation, "
+        "removal=removal)\n"
     )
     assert SortImports(file_contents=test_input).output == test_input
 
@@ -3041,7 +3130,9 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     from isort.main import main
 
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
-    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
+    tmpdir.join("file2.py").write(
+        ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
+    )
     arguments = ["-rc", str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
@@ -3056,7 +3147,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     )
     if not sys.platform.startswith("win"):
         out, err = capfd.readouterr()
-        assert not [error for error in err.split("\n") if error and not "warning:" in error]
+        assert not [error for error in err.split("\n") if error and "warning:" not in error]
         # it informs us about fixing the files:
         assert str(tmpdir.join("file1.py")) in out
         assert str(tmpdir.join("file2.py")) in out
@@ -4046,7 +4137,8 @@ def test_python_version() -> None:
 
 
 def test_isort_with_single_character_import() -> None:
-    """Tests to ensure isort handles single capatilized single character imports as class objects by default
+    """Tests to ensure isort handles single capatilized single character imports
+    as class objects by default
 
     See Issue #376: https://github.com/timothycrosley/isort/issues/376
     """
