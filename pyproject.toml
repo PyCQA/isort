@@ -73,3 +73,7 @@ isort = "isort = isort.pylama_isort:Linter"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.portray.mkdocs.theme]
+name = "material"
+palette = {primary = "blue", accent = "light blue"}
