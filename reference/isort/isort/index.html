@@ -1,0 +1,3386 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+    
+    
+      
+        <title>Isort - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-isortisort" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="isort" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              isort
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Isort
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="isort" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Contributing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Contributing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+      1. Contributing Guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+      2. Coding Standard
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+      3. Code Of Conduct
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+      4. Acknowledgements
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
+    
+    <label class="md-nav__link" for="nav-4-1">
+      Isort
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-1">
+        Isort
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../compat/" title="Compat" class="md-nav__link">
+      Compat
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../format/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hooks/" title="Hooks" class="md-nav__link">
+      Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Isort
+      </label>
+    
+    <a href="./" title="Isort" class="md-nav__link md-nav__link--active">
+      Isort
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../main/" title="Main" class="md-nav__link">
+      Main
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../natural/" title="Natural" class="md-nav__link">
+      Natural
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pylama_isort/" title="Pylama Isort" class="md-nav__link">
+      Pylama Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1-12" type="checkbox" id="nav-4-1-12">
+    
+    <label class="md-nav__link" for="nav-4-1-12">
+      Stdlibs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-4-1-12">
+        Stdlibs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py27/" title="Py27" class="md-nav__link">
+      Py27
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py3/" title="Py3" class="md-nav__link">
+      Py3
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/timothycrosley/isort/edit/master/reference/isort/isort.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-isortisort">Module isort.isort</h1>
+<p>isort.py.</p>
+<p>Exposes a simple library to sort through imports within Python code</p>
+<p>usage:
+    SortImports(file_name)
+or:
+    sorted = SortImports(file_contents=file_contents).output</p>
+<p>Copyright (C) 2013  Timothy Edmund Crosley</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="s2">&quot;&quot;&quot;isort.py.</span>
+
+<span class="s2">Exposes a simple library to sort through imports within Python code</span>
+
+<span class="s2">usage:</span>
+
+<span class="s2">    SortImports(file_name)</span>
+
+<span class="s2">or:</span>
+
+<span class="s2">    sorted = SortImports(file_contents=file_contents).output</span>
+
+<span class="s2">Copyright (C) 2013  Timothy Edmund Crosley</span>
+
+<span class="s2">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated</span>
+
+<span class="s2">documentation files (the &quot;</span><span class="nv">Software</span><span class="s2">&quot;), to deal in the Software without restriction, including without limitation</span>
+
+<span class="s2">the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and</span>
+
+<span class="s2">to permit persons to whom the Software is furnished to do so, subject to the following conditions:</span>
+
+<span class="s2">The above copyright notice and this permission notice shall be included in all copies or</span>
+
+<span class="s2">substantial portions of the Software.</span>
+
+<span class="s2">THE SOFTWARE IS PROVIDED &quot;</span><span class="nv">AS</span> <span class="nv">IS</span><span class="s2">&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED</span>
+
+<span class="s2">TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL</span>
+
+<span class="s2">THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF</span>
+
+<span class="s2">CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</span>
+
+<span class="s2">OTHER DEALINGS IN THE SOFTWARE.</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">copy</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">itertools</span>
+
+<span class="s s-Atom">import</span> <span class="s s-Atom">re</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">collections</span> <span class="s s-Atom">import</span> <span class="nv">OrderedDict</span><span class="p">,</span> <span class="s s-Atom">defaultdict</span><span class="p">,</span> <span class="s s-Atom">namedtuple</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">typing</span> <span class="nf">import</span> <span class="p">(</span>
+
+    <span class="nv">TYPE_CHECKING</span><span class="p">,</span>
+
+    <span class="nv">Any</span><span class="p">,</span>
+
+    <span class="nv">Dict</span><span class="p">,</span>
+
+    <span class="nv">Iterable</span><span class="p">,</span>
+
+    <span class="nv">List</span><span class="p">,</span>
+
+    <span class="nv">Mapping</span><span class="p">,</span>
+
+    <span class="nv">Optional</span><span class="p">,</span>
+
+    <span class="nv">Sequence</span><span class="p">,</span>
+
+    <span class="nv">Tuple</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span> <span class="s s-Atom">import</span> <span class="s s-Atom">utils</span>
+
+<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">format</span> <span class="s s-Atom">import</span> <span class="s s-Atom">format_natural</span><span class="p">,</span> <span class="s s-Atom">format_simplified</span>
+
+<span class="s s-Atom">from</span> <span class="p">.</span> <span class="s s-Atom">import</span> <span class="s s-Atom">settings</span>
+
+<span class="s s-Atom">from</span> <span class="p">.</span><span class="s s-Atom">finders</span> <span class="s s-Atom">import</span> <span class="nv">FindersManager</span>
+
+<span class="s s-Atom">from</span> <span class="p">.</span><span class="s s-Atom">natural</span> <span class="s s-Atom">import</span> <span class="s s-Atom">nsorted</span>
+
+<span class="s s-Atom">from</span> <span class="p">.</span><span class="s s-Atom">settings</span> <span class="s s-Atom">import</span> <span class="nv">WrapModes</span>
+
+<span class="s s-Atom">if</span> <span class="nv">TYPE_CHECKING</span><span class="s s-Atom">:</span>
+
+    <span class="s s-Atom">from</span> <span class="s s-Atom">mypy_extensions</span> <span class="s s-Atom">import</span> <span class="nv">TypedDict</span>
+
+    <span class="nv">CommentsAboveDict</span> <span class="o">=</span> <span class="nv">TypedDict</span><span class="p">(</span>
+
+        <span class="s2">&quot;CommentsAboveDict&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;straight&quot;</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">],</span> <span class="s2">&quot;from&quot;</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">]}</span>
+
+    <span class="p">)</span>
+
+    <span class="nv">CommentsDict</span> <span class="o">=</span> <span class="nv">TypedDict</span><span class="p">(</span>
+
+        <span class="s2">&quot;CommentsDict&quot;</span><span class="p">,</span>
+
+        <span class="p">{</span>
+
+            <span class="s2">&quot;from&quot;</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">],</span>
+
+            <span class="s2">&quot;straight&quot;</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">],</span>
+
+            <span class="s2">&quot;nested&quot;</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">],</span>
+
+            <span class="s2">&quot;above&quot;</span><span class="s s-Atom">:</span> <span class="nv">CommentsAboveDict</span><span class="p">,</span>
+
+        <span class="p">},</span>
+
+    <span class="p">)</span>
+
+<span class="s s-Atom">class</span> <span class="k">_</span><span class="nv">SortImports</span><span class="s s-Atom">:</span>
+
+    <span class="k">_</span><span class="s s-Atom">import_line_intro_re</span> <span class="o">=</span> <span class="s s-Atom">re</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="s2">&quot;^(?:from|import) &quot;</span><span class="p">)</span>
+
+    <span class="k">_</span><span class="s s-Atom">import_line_midline_import_re</span> <span class="o">=</span> <span class="s s-Atom">re</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="s2">&quot; import &quot;</span><span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span>
+
+        <span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">file_contents:</span> <span class="s s-Atom">str</span><span class="p">,</span> <span class="nn">config</span><span class="p">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">],</span> <span class="nn">extension</span><span class="p">:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;py&quot;</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">None</span><span class="s s-Atom">:</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span> <span class="o">=</span> <span class="s s-Atom">config</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">extension</span> <span class="o">=</span> <span class="s s-Atom">extension</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">place_imports</span> <span class="o">=</span> <span class="p">{}</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">import_placements</span> <span class="o">=</span> <span class="p">{}</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="s s-Atom">str</span><span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">remove_imports</span> <span class="o">=</span> <span class="p">[</span>
+
+            <span class="nf">format_simplified</span><span class="p">(</span><span class="s s-Atom">removal</span><span class="p">)</span> <span class="s s-Atom">for</span> <span class="s s-Atom">removal</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;remove_imports&quot;</span><span class="p">]</span>
+
+        <span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">add_imports</span> <span class="o">=</span> <span class="p">[</span>
+
+            <span class="nf">format_natural</span><span class="p">(</span><span class="s s-Atom">addition</span><span class="p">)</span> <span class="s s-Atom">for</span> <span class="s s-Atom">addition</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;add_imports&quot;</span><span class="p">]</span>
+
+        <span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">section_comments</span> <span class="o">=</span> <span class="p">[</span>
+
+            <span class="s2">&quot;# &quot;</span> <span class="o">+</span> <span class="s s-Atom">value</span>
+
+            <span class="s s-Atom">for</span> <span class="s s-Atom">key</span><span class="p">,</span> <span class="s s-Atom">value</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">.</span><span class="nf">items</span><span class="p">()</span>
+
+            <span class="s s-Atom">if</span> <span class="s s-Atom">key</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s2">&quot;import_heading&quot;</span><span class="p">)</span> <span class="s s-Atom">and</span> <span class="s s-Atom">value</span>
+
+        <span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nf">determine_line_separator</span><span class="p">(</span><span class="s s-Atom">file_contents</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">in_lines</span> <span class="o">=</span> <span class="s s-Atom">file_contents</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">original_num_of_lines</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">in_lines</span><span class="p">)</span>
+
+        <span class="nf">if</span> <span class="p">(</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">original_num_of_lines</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="s s-Atom">or</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">in_lines</span><span class="p">[</span><span class="s s-Atom">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">not</span> <span class="nf">in</span> <span class="p">([],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+
+        <span class="p">)</span> <span class="s s-Atom">or</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;force_adds&quot;</span><span class="p">]</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">for</span> <span class="s s-Atom">add_import</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">add_imports:</span>
+
+                <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">in_lines</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">add_import</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">number_of_lines</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">in_lines</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span> <span class="o">=</span> <span class="p">[]</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">comments</span> <span class="o">=</span> <span class="p">{</span>
+
+            <span class="s2">&quot;from&quot;</span><span class="s s-Atom">:</span> <span class="p">{},</span>
+
+            <span class="s2">&quot;straight&quot;</span><span class="s s-Atom">:</span> <span class="p">{},</span>
+
+            <span class="s2">&quot;nested&quot;</span><span class="s s-Atom">:</span> <span class="p">{},</span>
+
+            <span class="s2">&quot;above&quot;</span><span class="s s-Atom">:</span> <span class="p">{</span><span class="s2">&quot;straight&quot;</span><span class="s s-Atom">:</span> <span class="p">{},</span> <span class="s2">&quot;from&quot;</span><span class="s s-Atom">:</span> <span class="p">{}},</span>
+
+        <span class="p">}</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">CommentsDict</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">imports</span> <span class="o">=</span> <span class="nv">OrderedDict</span><span class="p">()</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">OrderedDict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Any</span><span class="p">]]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">as_map</span> <span class="o">=</span> <span class="nf">defaultdict</span><span class="p">(</span><span class="s s-Atom">list</span><span class="p">)</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]</span>
+
+        <span class="s s-Atom">section_names</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;sections&quot;</span><span class="p">]</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">sections</span> <span class="o">=</span> <span class="nf">namedtuple</span><span class="p">(</span><span class="s2">&quot;Sections&quot;</span><span class="p">,</span> <span class="s s-Atom">section_names</span><span class="p">)(</span>
+
+            <span class="o">*</span><span class="p">[</span><span class="s s-Atom">name</span> <span class="s s-Atom">for</span> <span class="s s-Atom">name</span> <span class="s s-Atom">in</span> <span class="s s-Atom">section_names</span><span class="p">]</span>
+
+        <span class="p">)</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="nv">Any</span>
+
+        <span class="s s-Atom">for</span> <span class="s s-Atom">section</span> <span class="s s-Atom">in</span> <span class="s s-Atom">itertools</span><span class="p">.</span><span class="nf">chain</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">sections</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;forced_separate&quot;</span><span class="p">])</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">imports</span><span class="p">[</span><span class="s s-Atom">section</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;straight&quot;</span><span class="s s-Atom">:</span> <span class="nv">OrderedDict</span><span class="p">(),</span> <span class="s2">&quot;from&quot;</span><span class="s s-Atom">:</span> <span class="nv">OrderedDict</span><span class="p">()}</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">finder</span> <span class="o">=</span> <span class="nv">FindersManager</span><span class="p">(</span><span class="s s-Atom">config</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">,</span> <span class="s s-Atom">sections</span><span class="o">=</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">sections</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">import_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">first_comment_index_start</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">first_comment_index_end</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">parse</span><span class="p">()</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">import_index</span> <span class="p">!</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">add_formatted_imports</span><span class="p">()</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">length_change</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span><span class="p">)</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">original_num_of_lines</span>
+
+        <span class="s s-Atom">while</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span> <span class="s s-Atom">and</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nf">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">output</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">out_lines</span><span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="nf">remove_whitespaces</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="nn">contents</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
+
+        <span class="s s-Atom">contents</span> <span class="o">=</span> <span class="p">(</span>
+
+            <span class="s s-Atom">contents</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="err">&quot;</span><span class="s s-Atom">\x0c</span><span class="s2">&quot;, &quot;&quot;)</span>
+
+<span class="s2">        )</span>
+
+<span class="s2">        return contents</span>
+
+<span class="s2">    def get_out_lines_without_top_comment(self) -&gt; str:</span>
+
+<span class="s2">        return self._strip_top_comments(self.out_lines, self.line_separator)</span>
+
+<span class="s2">    def get_in_lines_without_top_comment(self) -&gt; str:</span>
+
+<span class="s2">        return self._strip_top_comments(self.in_lines, self.line_separator)</span>
+
+<span class="s2">    def check_if_input_already_sorted(</span>
+
+<span class="s2">        self, output: str, check_against: str, *, logging_file_path: str</span>
+
+<span class="s2">    ) -&gt; bool:</span>
+
+<span class="s2">        if output.strip() == check_against.strip():</span>
+
+<span class="s2">            if self.config[&quot;</span><span class="s s-Atom">verbose</span><span class="s2">&quot;]:</span>
+
+<span class="s2">                print(&quot;</span><span class="nv">SUCCESS</span><span class="s s-Atom">:</span> <span class="p">{}</span> <span class="nv">Everything</span> <span class="nv">Looks</span> <span class="nv">Good</span><span class="p">!</span><span class="s2">&quot;.format(logging_file_path))</span>
+
+<span class="s2">            return True</span>
+
+<span class="s2">        print(&quot;</span><span class="nv">ERROR</span><span class="s s-Atom">:</span> <span class="p">{}</span> <span class="nv">Imports</span> <span class="s s-Atom">are</span> <span class="s s-Atom">incorrectly</span> <span class="s s-Atom">sorted</span><span class="p">.</span><span class="s2">&quot;.format(logging_file_path))</span>
+
+<span class="s2">        return False</span>
+
+<span class="s2">    def determine_line_separator(self, file_contents: str) -&gt; str:</span>
+
+<span class="s2">        if self.config[&quot;</span><span class="s s-Atom">line_ending</span><span class="s2">&quot;]:</span>
+
+<span class="s2">            return self.config[&quot;</span><span class="s s-Atom">line_ending</span><span class="s2">&quot;]</span>
+
+<span class="s2">        else:</span>
+
+<span class="s2">            return utils.infer_line_separator(file_contents)</span>
+
+<span class="s2">    @staticmethod</span>
+
+<span class="s2">    def _strip_top_comments(lines: Sequence[str], line_separator: str) -&gt; str:</span>
+
+<span class="s2">        &quot;&quot;&quot;</span><span class="nv">Strips</span> <span class="s s-Atom">#</span> <span class="s s-Atom">comments</span> <span class="s s-Atom">that</span> <span class="s s-Atom">exist</span> <span class="s s-Atom">at</span> <span class="s s-Atom">the</span> <span class="s s-Atom">top</span> <span class="s s-Atom">of</span> <span class="s s-Atom">the</span> <span class="s s-Atom">given</span> <span class="s s-Atom">lines</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">        lines = copy.copy(lines)</span>
+
+<span class="s2">        while lines and lines[0].startswith(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;):</span>
+
+<span class="s2">            lines = lines[1:]</span>
+
+<span class="s2">        return line_separator.join(lines)</span>
+
+<span class="s2">    def place_module(self, module_name: str) -&gt; Optional[str]:</span>
+
+<span class="s2">        &quot;&quot;&quot;</span><span class="nv">Tries</span> <span class="s s-Atom">to</span> <span class="s s-Atom">determine</span> <span class="s s-Atom">if</span> <span class="s s-Atom">a</span> <span class="s s-Atom">module</span> <span class="o">is</span> <span class="s s-Atom">a</span> <span class="s s-Atom">python</span> <span class="s s-Atom">std</span> <span class="s s-Atom">import</span><span class="p">,</span> <span class="s s-Atom">third</span> <span class="s s-Atom">party</span> <span class="s s-Atom">import</span><span class="p">,</span> <span class="s s-Atom">or</span> <span class="s s-Atom">project</span> <span class="nn">code</span><span class="p">:</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">it</span> <span class="s s-Atom">can&#39;t determine - it assumes it is project code</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        return self.finder.find(module_name)</span>
+
+<span class="s s-Atom">    def _get_line(self) -&gt; str:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;Returns the current line from the file while incrementing the index.&quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        line = self.in_lines[self.index]</span>
+
+<span class="s s-Atom">        self.index += 1</span>
+
+<span class="s s-Atom">        return line</span>
+
+<span class="s s-Atom">    @staticmethod</span>
+
+<span class="s s-Atom">    def _import_type(line: str) -&gt; Optional[str]:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;If the current line is an import line it will return its type (from or straight)&quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        if &quot;isort:skip&quot; in line or &quot;NOQA&quot; in line:</span>
+
+<span class="s s-Atom">            return None</span>
+
+<span class="s s-Atom">        elif line.startswith(&quot;import &quot;):</span>
+
+<span class="s s-Atom">            return &quot;straight&quot;</span>
+
+<span class="s s-Atom">        elif line.startswith(&quot;from &quot;):</span>
+
+<span class="s s-Atom">            return &quot;from&quot;</span>
+
+<span class="s s-Atom">        return None</span>
+
+<span class="s s-Atom">    def _at_end(self) -&gt; bool:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;returns True if we are at the end of the file.&quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        return self.index == self.number_of_lines</span>
+
+<span class="s s-Atom">    @staticmethod</span>
+
+<span class="s s-Atom">    def _module_key(</span>
+
+<span class="s s-Atom">        module_name: str,</span>
+
+<span class="s s-Atom">        config: Mapping[str, Any],</span>
+
+<span class="s s-Atom">        sub_imports: bool = False,</span>
+
+<span class="s s-Atom">        ignore_case: bool = False,</span>
+
+<span class="s s-Atom">        section_name: Optional[Any] = None,</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        match = re.match(r&quot;^(\.+)\s*(.*)&quot;, module_name)</span>
+
+<span class="s s-Atom">        if match:</span>
+
+<span class="s s-Atom">            sep = &quot; &quot; if config[&quot;reverse_relative&quot;] else &quot;_&quot;</span>
+
+<span class="s s-Atom">            module_name = sep.join(match.groups())</span>
+
+<span class="s s-Atom">        prefix = &quot;&quot;</span>
+
+<span class="s s-Atom">        if ignore_case:</span>
+
+<span class="s s-Atom">            module_name = str(module_name).lower()</span>
+
+<span class="s s-Atom">        else:</span>
+
+<span class="s s-Atom">            module_name = str(module_name)</span>
+
+<span class="s s-Atom">        if sub_imports and config[&quot;order_by_type&quot;]:</span>
+
+<span class="s s-Atom">            if module_name.isupper() and len(module_name) &gt; 1:  # see issue #376</span>
+
+<span class="s s-Atom">                prefix = &quot;A&quot;</span>
+
+<span class="s s-Atom">            elif module_name[0:1].isupper():</span>
+
+<span class="s s-Atom">                prefix = &quot;B&quot;</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                prefix = &quot;C&quot;</span>
+
+<span class="s s-Atom">        if not config[&quot;case_sensitive&quot;]:</span>
+
+<span class="s s-Atom">            module_name = module_name.lower()</span>
+
+<span class="s s-Atom">        if (</span>
+
+<span class="s s-Atom">            section_name is None</span>
+
+<span class="s s-Atom">            or &quot;length_sort_&quot; + str(section_name).lower() not in config</span>
+
+<span class="s s-Atom">        ):</span>
+
+<span class="s s-Atom">            length_sort = config[&quot;length_sort&quot;]</span>
+
+<span class="s s-Atom">        else:</span>
+
+<span class="s s-Atom">            length_sort = config[&quot;length_sort_&quot; + str(section_name).lower()]</span>
+
+<span class="s s-Atom">        return &quot;{}{}{}&quot;.format(</span>
+
+<span class="s s-Atom">            module_name in config[&quot;force_to_top&quot;] and &quot;A&quot; or &quot;B&quot;,</span>
+
+<span class="s s-Atom">            prefix,</span>
+
+<span class="s s-Atom">            length_sort and (str(len(module_name)) + &quot;:&quot; + module_name) or module_name,</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">    def _add_comments(</span>
+
+<span class="s s-Atom">        self, comments: Optional[Sequence[str]], original_string: str = &quot;&quot;</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">            Returns a string with comments added if ignore_comments is not set.</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        if self.config[&quot;ignore_comments&quot;]:</span>
+
+<span class="s s-Atom">            return self._strip_comments(original_string)[0]</span>
+
+<span class="s s-Atom">        if not comments:</span>
+
+<span class="s s-Atom">            return original_string</span>
+
+<span class="s s-Atom">        else:</span>
+
+<span class="s s-Atom">            return &quot;{}{} {}&quot;.format(</span>
+
+<span class="s s-Atom">                self._strip_comments(original_string)[0],</span>
+
+<span class="s s-Atom">                self.config[&quot;comment_prefix&quot;],</span>
+
+<span class="s s-Atom">                &quot;; &quot;.join(comments),</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">    def _wrap(self, line: str) -&gt; str:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">            Returns an import wrapped to the specified line-length, if possible.</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        wrap_mode = self.config[&quot;multi_line_output&quot;]</span>
+
+<span class="s s-Atom">        if len(line) &gt; self.config[&quot;line_length&quot;] and wrap_mode != WrapModes.NOQA:</span>
+
+<span class="s s-Atom">            line_without_comment = line</span>
+
+<span class="s s-Atom">            comment = None</span>
+
+<span class="s s-Atom">            if &quot;#&quot; in line:</span>
+
+<span class="s s-Atom">                line_without_comment, comment = line.split(&quot;#&quot;, 1)</span>
+
+<span class="s s-Atom">            for splitter in (&quot;import &quot;, &quot;.&quot;, &quot;as &quot;):</span>
+
+<span class="s s-Atom">                exp = r&quot;\b&quot; + re.escape(splitter) + r&quot;\b&quot;</span>
+
+<span class="s s-Atom">                if re.search(</span>
+
+<span class="s s-Atom">                    exp, line_without_comment</span>
+
+<span class="s s-Atom">                ) and not line_without_comment.strip().startswith(splitter):</span>
+
+<span class="s s-Atom">                    line_parts = re.split(exp, line_without_comment)</span>
+
+<span class="s s-Atom">                    if comment:</span>
+
+<span class="s s-Atom">                        line_parts[-1] = &quot;{}{}  #{}&quot;.format(</span>
+
+<span class="s s-Atom">                            line_parts[-1].strip(),</span>
+
+<span class="s s-Atom">                            &quot;,&quot; if self.config[&quot;include_trailing_comma&quot;] else &quot;&quot;,</span>
+
+<span class="s s-Atom">                            comment,</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                    next_line = []</span>
+
+<span class="s s-Atom">                    while (len(line) + 2) &gt; (</span>
+
+<span class="s s-Atom">                        self.config[&quot;wrap_length&quot;] or self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">                    ) and line_parts:</span>
+
+<span class="s s-Atom">                        next_line.append(line_parts.pop())</span>
+
+<span class="s s-Atom">                        line = splitter.join(line_parts)</span>
+
+<span class="s s-Atom">                    if not line:</span>
+
+<span class="s s-Atom">                        line = next_line.pop()</span>
+
+<span class="s s-Atom">                    cont_line = self._wrap(</span>
+
+<span class="s s-Atom">                        self.config[&quot;indent&quot;] + splitter.join(next_line).lstrip()</span>
+
+<span class="s s-Atom">                    )</span>
+
+<span class="s s-Atom">                    if self.config[&quot;use_parentheses&quot;]:</span>
+
+<span class="s s-Atom">                        if splitter == &quot;as &quot;:</span>
+
+<span class="s s-Atom">                            output = &quot;{}{}{}&quot;.format(line, splitter, cont_line.lstrip())</span>
+
+<span class="s s-Atom">                        else:</span>
+
+<span class="s s-Atom">                            output = &quot;{}{}({}{}{}{})&quot;.format(</span>
+
+<span class="s s-Atom">                                line,</span>
+
+<span class="s s-Atom">                                splitter,</span>
+
+<span class="s s-Atom">                                self.line_separator,</span>
+
+<span class="s s-Atom">                                cont_line,</span>
+
+<span class="s s-Atom">                                &quot;,&quot;</span>
+
+<span class="s s-Atom">                                if self.config[&quot;include_trailing_comma&quot;] and not comment</span>
+
+<span class="s s-Atom">                                else &quot;&quot;,</span>
+
+<span class="s s-Atom">                                self.line_separator</span>
+
+<span class="s s-Atom">                                if wrap_mode</span>
+
+<span class="s s-Atom">                                in {</span>
+
+<span class="s s-Atom">                                    WrapModes.VERTICAL_HANGING_INDENT,</span>
+
+<span class="s s-Atom">                                    WrapModes.VERTICAL_GRID_GROUPED,</span>
+
+<span class="s s-Atom">                                }</span>
+
+<span class="s s-Atom">                                else &quot;&quot;,</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        lines = output.split(self.line_separator)</span>
+
+<span class="s s-Atom">                        if self.config[&quot;comment_prefix&quot;] in lines[-1] and lines[</span>
+
+<span class="s s-Atom">                            -1</span>
+
+<span class="s s-Atom">                        ].endswith(&quot;)&quot;):</span>
+
+<span class="s s-Atom">                            line, comment = lines[-1].split(</span>
+
+<span class="s s-Atom">                                self.config[&quot;comment_prefix&quot;], 1</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            lines[-1] = (</span>
+
+<span class="s s-Atom">                                line</span>
+
+<span class="s s-Atom">                                + &quot;)&quot;</span>
+
+<span class="s s-Atom">                                + self.config[&quot;comment_prefix&quot;]</span>
+
+<span class="s s-Atom">                                + comment[:-1]</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        return self.line_separator.join(lines)</span>
+
+<span class="s s-Atom">                    return &quot;{}{}\\{}{}&quot;.format(</span>
+
+<span class="s s-Atom">                        line, splitter, self.line_separator, cont_line</span>
+
+<span class="s s-Atom">                    )</span>
+
+<span class="s s-Atom">        elif (</span>
+
+<span class="s s-Atom">            len(line) &gt; self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">            and wrap_mode == settings.WrapModes.NOQA</span>
+
+<span class="s s-Atom">        ):</span>
+
+<span class="s s-Atom">            if &quot;# NOQA&quot; not in line:</span>
+
+<span class="s s-Atom">                return &quot;{}{} NOQA&quot;.format(line, self.config[&quot;comment_prefix&quot;])</span>
+
+<span class="s s-Atom">        return line</span>
+
+<span class="s s-Atom">    def _add_straight_imports(</span>
+
+<span class="s s-Atom">        self, straight_modules: Iterable[str], section: str, section_output: List[str]</span>
+
+<span class="s s-Atom">    ) -&gt; None:</span>
+
+<span class="s s-Atom">        for module in straight_modules:</span>
+
+<span class="s s-Atom">            if module in self.remove_imports:</span>
+
+<span class="s s-Atom">                continue</span>
+
+<span class="s s-Atom">            import_definition = []</span>
+
+<span class="s s-Atom">            if module in self.as_map:</span>
+
+<span class="s s-Atom">                if (</span>
+
+<span class="s s-Atom">                    self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                    and self.imports[section][&quot;straight&quot;][module]</span>
+
+<span class="s s-Atom">                ):</span>
+
+<span class="s s-Atom">                    import_definition.append(&quot;import {}&quot;.format(module))</span>
+
+<span class="s s-Atom">                import_definition.extend(</span>
+
+<span class="s s-Atom">                    &quot;import {} as {}&quot;.format(module, as_import)</span>
+
+<span class="s s-Atom">                    for as_import in self.as_map[module]</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                import_definition.append(&quot;import {}&quot;.format(module))</span>
+
+<span class="s s-Atom">            comments_above = self.comments[&quot;above&quot;][&quot;straight&quot;].pop(module, None)</span>
+
+<span class="s s-Atom">            if comments_above:</span>
+
+<span class="s s-Atom">                if section_output and self.config.get(&quot;ensure_newline_before_comments&quot;):</span>
+
+<span class="s s-Atom">                    section_output.append(&quot;&quot;)</span>
+
+<span class="s s-Atom">                section_output.extend(comments_above)</span>
+
+<span class="s s-Atom">            section_output.extend(</span>
+
+<span class="s s-Atom">                self._add_comments(self.comments[&quot;straight&quot;].get(module), idef)</span>
+
+<span class="s s-Atom">                for idef in import_definition</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">    def _add_from_imports(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        from_modules: Iterable[str],</span>
+
+<span class="s s-Atom">        section: str,</span>
+
+<span class="s s-Atom">        section_output: List[str],</span>
+
+<span class="s s-Atom">        ignore_case: bool,</span>
+
+<span class="s s-Atom">    ) -&gt; None:</span>
+
+<span class="s s-Atom">        for module in from_modules:</span>
+
+<span class="s s-Atom">            if module in self.remove_imports:</span>
+
+<span class="s s-Atom">                continue</span>
+
+<span class="s s-Atom">            import_start = &quot;from {} import &quot;.format(module)</span>
+
+<span class="s s-Atom">            from_imports = list(self.imports[section][&quot;from&quot;][module])</span>
+
+<span class="s s-Atom">            if not self.config[&quot;no_inline_sort&quot;] or self.config[&quot;force_single_line&quot;]:</span>
+
+<span class="s s-Atom">                from_imports = nsorted(</span>
+
+<span class="s s-Atom">                    from_imports,</span>
+
+<span class="s s-Atom">                    key=lambda key: self._module_key(</span>
+
+<span class="s s-Atom">                        key, self.config, True, ignore_case, section_name=section</span>
+
+<span class="s s-Atom">                    ),</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">            if self.remove_imports:</span>
+
+<span class="s s-Atom">                from_imports = [</span>
+
+<span class="s s-Atom">                    line</span>
+
+<span class="s s-Atom">                    for line in from_imports</span>
+
+<span class="s s-Atom">                    if not &quot;{}.{}&quot;.format(module, line) in self.remove_imports</span>
+
+<span class="s s-Atom">                ]</span>
+
+<span class="s s-Atom">            sub_modules = [</span>
+
+<span class="s s-Atom">                &quot;{}.{}&quot;.format(module, from_import) for from_import in from_imports</span>
+
+<span class="s s-Atom">            ]</span>
+
+<span class="s s-Atom">            as_imports = {</span>
+
+<span class="s s-Atom">                from_import: [</span>
+
+<span class="s s-Atom">                    &quot;{} as {}&quot;.format(from_import, as_module)</span>
+
+<span class="s s-Atom">                    for as_module in self.as_map[sub_module]</span>
+
+<span class="s s-Atom">                ]</span>
+
+<span class="s s-Atom">                for from_import, sub_module in zip(from_imports, sub_modules)</span>
+
+<span class="s s-Atom">                if sub_module in self.as_map</span>
+
+<span class="s s-Atom">            }</span>
+
+<span class="s s-Atom">            if self.config[&quot;combine_as_imports&quot;] and not (</span>
+
+<span class="s s-Atom">                &quot;*&quot; in from_imports and self.config[&quot;combine_star&quot;]</span>
+
+<span class="s s-Atom">            ):</span>
+
+<span class="s s-Atom">                if not self.config[&quot;no_inline_sort&quot;]:</span>
+
+<span class="s s-Atom">                    for as_import in as_imports:</span>
+
+<span class="s s-Atom">                        as_imports[as_import] = nsorted(as_imports[as_import])</span>
+
+<span class="s s-Atom">                for from_import in copy.copy(from_imports):</span>
+
+<span class="s s-Atom">                    if from_import in as_imports:</span>
+
+<span class="s s-Atom">                        idx = from_imports.index(from_import)</span>
+
+<span class="s s-Atom">                        if (</span>
+
+<span class="s s-Atom">                            self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                            and self.imports[section][&quot;from&quot;][module][from_import]</span>
+
+<span class="s s-Atom">                        ):</span>
+
+<span class="s s-Atom">                            from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(</span>
+
+<span class="s s-Atom">                                from_import</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        else:</span>
+
+<span class="s s-Atom">                            from_imports[idx : (idx + 1)] = as_imports.pop(from_import)</span>
+
+<span class="s s-Atom">            while from_imports:</span>
+
+<span class="s s-Atom">                comments = self.comments[&quot;from&quot;].pop(module, ())</span>
+
+<span class="s s-Atom">                if &quot;*&quot; in from_imports and self.config[&quot;combine_star&quot;]:</span>
+
+<span class="s s-Atom">                    import_statement = self._wrap(</span>
+
+<span class="s s-Atom">                        self._add_comments(comments, &quot;{}*&quot;.format(import_start))</span>
+
+<span class="s s-Atom">                    )</span>
+
+<span class="s s-Atom">                    from_imports = None</span>
+
+<span class="s s-Atom">                elif self.config[&quot;force_single_line&quot;]:</span>
+
+<span class="s s-Atom">                    import_statement = None</span>
+
+<span class="s s-Atom">                    while from_imports:</span>
+
+<span class="s s-Atom">                        from_import = from_imports.pop(0)</span>
+
+<span class="s s-Atom">                        single_import_line = self._add_comments(</span>
+
+<span class="s s-Atom">                            comments, import_start + from_import</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        comment = (</span>
+
+<span class="s s-Atom">                            self.comments[&quot;nested&quot;]</span>
+
+<span class="s s-Atom">                            .get(module, {})</span>
+
+<span class="s s-Atom">                            .pop(from_import, None)</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        if comment:</span>
+
+<span class="s s-Atom">                            single_import_line += &quot;{} {}&quot;.format(</span>
+
+<span class="s s-Atom">                                comments and &quot;;&quot; or self.config[&quot;comment_prefix&quot;],</span>
+
+<span class="s s-Atom">                                comment,</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        if from_import in as_imports:</span>
+
+<span class="s s-Atom">                            if (</span>
+
+<span class="s s-Atom">                                self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                                and self.imports[section][&quot;from&quot;][module][from_import]</span>
+
+<span class="s s-Atom">                            ):</span>
+
+<span class="s s-Atom">                                section_output.append(self._wrap(single_import_line))</span>
+
+<span class="s s-Atom">                            from_comments = self.comments[&quot;straight&quot;].get(</span>
+
+<span class="s s-Atom">                                &quot;{}.{}&quot;.format(module, from_import)</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            section_output.extend(</span>
+
+<span class="s s-Atom">                                self._add_comments(</span>
+
+<span class="s s-Atom">                                    from_comments, self._wrap(import_start + as_import)</span>
+
+<span class="s s-Atom">                                )</span>
+
+<span class="s s-Atom">                                for as_import in nsorted(as_imports[from_import])</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        else:</span>
+
+<span class="s s-Atom">                            section_output.append(self._wrap(single_import_line))</span>
+
+<span class="s s-Atom">                        comments = None</span>
+
+<span class="s s-Atom">                else:</span>
+
+<span class="s s-Atom">                    while from_imports and from_imports[0] in as_imports:</span>
+
+<span class="s s-Atom">                        from_import = from_imports.pop(0)</span>
+
+<span class="s s-Atom">                        as_imports[from_import] = nsorted(as_imports[from_import])</span>
+
+<span class="s s-Atom">                        from_comments = self.comments[&quot;straight&quot;].get(</span>
+
+<span class="s s-Atom">                            &quot;{}.{}&quot;.format(module, from_import)</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        above_comments = self.comments[&quot;above&quot;][&quot;from&quot;].pop(</span>
+
+<span class="s s-Atom">                            module, None</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        if above_comments:</span>
+
+<span class="s s-Atom">                            if section_output and self.config.get(</span>
+
+<span class="s s-Atom">                                &quot;ensure_newline_before_comments&quot;</span>
+
+<span class="s s-Atom">                            ):</span>
+
+<span class="s s-Atom">                                section_output.append(&quot;&quot;)</span>
+
+<span class="s s-Atom">                            section_output.extend(above_comments)</span>
+
+<span class="s s-Atom">                        if (</span>
+
+<span class="s s-Atom">                            self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                            and self.imports[section][&quot;from&quot;][module][from_import]</span>
+
+<span class="s s-Atom">                        ):</span>
+
+<span class="s s-Atom">                            section_output.append(</span>
+
+<span class="s s-Atom">                                self._add_comments(</span>
+
+<span class="s s-Atom">                                    from_comments,</span>
+
+<span class="s s-Atom">                                    self._wrap(import_start + from_import),</span>
+
+<span class="s s-Atom">                                )</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                        section_output.extend(</span>
+
+<span class="s s-Atom">                            self._add_comments(</span>
+
+<span class="s s-Atom">                                from_comments, self._wrap(import_start + as_import)</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            for as_import in as_imports[from_import]</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                    star_import = False</span>
+
+<span class="s s-Atom">                    if &quot;*&quot; in from_imports:</span>
+
+<span class="s s-Atom">                        section_output.append(</span>
+
+<span class="s s-Atom">                            self._add_comments(comments, &quot;{}*&quot;.format(import_start))</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        from_imports.remove(&quot;*&quot;)</span>
+
+<span class="s s-Atom">                        star_import = True</span>
+
+<span class="s s-Atom">                        comments = None</span>
+
+<span class="s s-Atom">                    for from_import in copy.copy(from_imports):</span>
+
+<span class="s s-Atom">                        if (</span>
+
+<span class="s s-Atom">                            from_import in as_imports</span>
+
+<span class="s s-Atom">                            and not self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                        ):</span>
+
+<span class="s s-Atom">                            continue</span>
+
+<span class="s s-Atom">                        comment = (</span>
+
+<span class="s s-Atom">                            self.comments[&quot;nested&quot;]</span>
+
+<span class="s s-Atom">                            .get(module, {})</span>
+
+<span class="s s-Atom">                            .pop(from_import, None)</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        if comment:</span>
+
+<span class="s s-Atom">                            single_import_line = self._add_comments(</span>
+
+<span class="s s-Atom">                                comments, import_start + from_import</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            single_import_line += &quot;{} {}&quot;.format(</span>
+
+<span class="s s-Atom">                                comments and &quot;;&quot; or self.config[&quot;comment_prefix&quot;],</span>
+
+<span class="s s-Atom">                                comment,</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            above_comments = self.comments[&quot;above&quot;][&quot;from&quot;].pop(</span>
+
+<span class="s s-Atom">                                module, None</span>
+
+<span class="s s-Atom">                            )</span>
+
+<span class="s s-Atom">                            if above_comments:</span>
+
+<span class="s s-Atom">                                if section_output and self.config.get(</span>
+
+<span class="s s-Atom">                                    &quot;ensure_newline_before_comments&quot;</span>
+
+<span class="s s-Atom">                                ):</span>
+
+<span class="s s-Atom">                                    section_output.append(&quot;&quot;)</span>
+
+<span class="s s-Atom">                                section_output.extend(above_comments)</span>
+
+<span class="s s-Atom">                            section_output.append(self._wrap(single_import_line))</span>
+
+<span class="s s-Atom">                            from_imports.remove(from_import)</span>
+
+<span class="s s-Atom">                            comments = None</span>
+
+<span class="s s-Atom">                    from_import_section = []</span>
+
+<span class="s s-Atom">                    while from_imports and (</span>
+
+<span class="s s-Atom">                        from_imports[0] not in as_imports</span>
+
+<span class="s s-Atom">                        or (</span>
+
+<span class="s s-Atom">                            self.config[&quot;keep_direct_and_as_imports&quot;]</span>
+
+<span class="s s-Atom">                            and self.config[&quot;combine_as_imports&quot;]</span>
+
+<span class="s s-Atom">                            and self.imports[section][&quot;from&quot;][module][from_import]</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        from_import_section.append(from_imports.pop(0))</span>
+
+<span class="s s-Atom">                    if star_import:</span>
+
+<span class="s s-Atom">                        import_statement = import_start + (&quot;, &quot;).join(</span>
+
+<span class="s s-Atom">                            from_import_section</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                    else:</span>
+
+<span class="s s-Atom">                        import_statement = self._add_comments(</span>
+
+<span class="s s-Atom">                            comments, import_start + (&quot;, &quot;).join(from_import_section)</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                    if not from_import_section:</span>
+
+<span class="s s-Atom">                        import_statement = &quot;&quot;</span>
+
+<span class="s s-Atom">                    do_multiline_reformat = False</span>
+
+<span class="s s-Atom">                    force_grid_wrap = self.config[&quot;force_grid_wrap&quot;]</span>
+
+<span class="s s-Atom">                    if force_grid_wrap and len(from_import_section) &gt;= force_grid_wrap:</span>
+
+<span class="s s-Atom">                        do_multiline_reformat = True</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        len(import_statement) &gt; self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">                        and len(from_import_section) &gt; 1</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        do_multiline_reformat = True</span>
+
+<span class="s s-Atom">                    # If line too long AND have imports AND we are NOT using GRID or VERTICAL wrap modes</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        len(import_statement) &gt; self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">                        and len(from_import_section) &gt; 0</span>
+
+<span class="s s-Atom">                        and self.config[&quot;multi_line_output&quot;]</span>
+
+<span class="s s-Atom">                        not in (settings.WrapModes.GRID, settings.WrapModes.VERTICAL)</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        do_multiline_reformat = True</span>
+
+<span class="s s-Atom">                    if do_multiline_reformat:</span>
+
+<span class="s s-Atom">                        import_statement = self._multi_line_reformat(</span>
+
+<span class="s s-Atom">                            import_start, from_import_section, comments</span>
+
+<span class="s s-Atom">                        )</span>
+
+<span class="s s-Atom">                        if self.config[&quot;multi_line_output&quot;] == settings.WrapModes.GRID:</span>
+
+<span class="s s-Atom">                            self.config[</span>
+
+<span class="s s-Atom">                                &quot;multi_line_output&quot;</span>
+
+<span class="s s-Atom">                            ] = settings.WrapModes.VERTICAL_GRID</span>
+
+<span class="s s-Atom">                            try:</span>
+
+<span class="s s-Atom">                                other_import_statement = self._multi_line_reformat(</span>
+
+<span class="s s-Atom">                                    import_start, from_import_section, comments</span>
+
+<span class="s s-Atom">                                )</span>
+
+<span class="s s-Atom">                                if (</span>
+
+<span class="s s-Atom">                                    max(len(x) for x in import_statement.split(&quot;\n&quot;))</span>
+
+<span class="s s-Atom">                                    &gt; self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">                                ):</span>
+
+<span class="s s-Atom">                                    import_statement = other_import_statement</span>
+
+<span class="s s-Atom">                            finally:</span>
+
+<span class="s s-Atom">                                self.config[</span>
+
+<span class="s s-Atom">                                    &quot;multi_line_output&quot;</span>
+
+<span class="s s-Atom">                                ] = settings.WrapModes.GRID</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        not do_multiline_reformat</span>
+
+<span class="s s-Atom">                        and len(import_statement) &gt; self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        import_statement = self._wrap(import_statement)</span>
+
+<span class="s s-Atom">                if import_statement:</span>
+
+<span class="s s-Atom">                    above_comments = self.comments[&quot;above&quot;][&quot;from&quot;].pop(module, None)</span>
+
+<span class="s s-Atom">                    if above_comments:</span>
+
+<span class="s s-Atom">                        if section_output and self.config.get(</span>
+
+<span class="s s-Atom">                            &quot;ensure_newline_before_comments&quot;</span>
+
+<span class="s s-Atom">                        ):</span>
+
+<span class="s s-Atom">                            section_output.append(&quot;&quot;)</span>
+
+<span class="s s-Atom">                        section_output.extend(above_comments)</span>
+
+<span class="s s-Atom">                    section_output.append(import_statement)</span>
+
+<span class="s s-Atom">    def _multi_line_reformat(</span>
+
+<span class="s s-Atom">        self, import_start: str, from_imports: List[str], comments: Sequence[str]</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        output_mode = self.config[&quot;multi_line_output&quot;].name.lower()</span>
+
+<span class="s s-Atom">        formatter = getattr(self, &quot;_output_&quot; + output_mode, self._output_grid)</span>
+
+<span class="s s-Atom">        dynamic_indent = &quot; &quot; * (len(import_start) + 1)</span>
+
+<span class="s s-Atom">        indent = self.config[&quot;indent&quot;]</span>
+
+<span class="s s-Atom">        line_length = self.config[&quot;wrap_length&quot;] or self.config[&quot;line_length&quot;]</span>
+
+<span class="s s-Atom">        import_statement = formatter(</span>
+
+<span class="s s-Atom">            import_start,</span>
+
+<span class="s s-Atom">            copy.copy(from_imports),</span>
+
+<span class="s s-Atom">            dynamic_indent,</span>
+
+<span class="s s-Atom">            indent,</span>
+
+<span class="s s-Atom">            line_length,</span>
+
+<span class="s s-Atom">            comments,</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">        if self.config[&quot;balanced_wrapping&quot;]:</span>
+
+<span class="s s-Atom">            lines = import_statement.split(self.line_separator)</span>
+
+<span class="s s-Atom">            line_count = len(lines)</span>
+
+<span class="s s-Atom">            if len(lines) &gt; 1:</span>
+
+<span class="s s-Atom">                minimum_length = min(len(line) for line in lines[:-1])</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                minimum_length = 0</span>
+
+<span class="s s-Atom">            new_import_statement = import_statement</span>
+
+<span class="s s-Atom">            while (</span>
+
+<span class="s s-Atom">                len(lines[-1]) &lt; minimum_length</span>
+
+<span class="s s-Atom">                and len(lines) == line_count</span>
+
+<span class="s s-Atom">                and line_length &gt; 10</span>
+
+<span class="s s-Atom">            ):</span>
+
+<span class="s s-Atom">                import_statement = new_import_statement</span>
+
+<span class="s s-Atom">                line_length -= 1</span>
+
+<span class="s s-Atom">                new_import_statement = formatter(</span>
+
+<span class="s s-Atom">                    import_start,</span>
+
+<span class="s s-Atom">                    copy.copy(from_imports),</span>
+
+<span class="s s-Atom">                    dynamic_indent,</span>
+
+<span class="s s-Atom">                    indent,</span>
+
+<span class="s s-Atom">                    line_length,</span>
+
+<span class="s s-Atom">                    comments,</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">                lines = new_import_statement.split(self.line_separator)</span>
+
+<span class="s s-Atom">        if import_statement.count(self.line_separator) == 0:</span>
+
+<span class="s s-Atom">            return self._wrap(import_statement)</span>
+
+<span class="s s-Atom">        return import_statement</span>
+
+<span class="s s-Atom">    def _add_formatted_imports(self) -&gt; None:</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;Adds the imports back to the file.</span>
+
+<span class="s s-Atom">        (at the index of the first import) sorted alphabetically and split between groups</span>
+
+<span class="s s-Atom">        &quot;&quot;&quot;</span>
+
+<span class="s s-Atom">        sort_ignore_case = self.config[&quot;force_alphabetical_sort_within_sections&quot;]</span>
+
+<span class="s s-Atom">        sections = itertools.chain(</span>
+
+<span class="s s-Atom">            self.sections, self.config[&quot;forced_separate&quot;]</span>
+
+<span class="s s-Atom">        )  # type: Iterable[str]</span>
+
+<span class="s s-Atom">        if self.config[&quot;no_sections&quot;]:</span>
+
+<span class="s s-Atom">            self.imports[&quot;no_sections&quot;] = {&quot;straight&quot;: [], &quot;from&quot;: {}}</span>
+
+<span class="s s-Atom">            for section in sections:</span>
+
+<span class="s s-Atom">                self.imports[&quot;no_sections&quot;][&quot;straight&quot;].extend(</span>
+
+<span class="s s-Atom">                    self.imports[section].get(&quot;straight&quot;, [])</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">                self.imports[&quot;no_sections&quot;][&quot;from&quot;].update(</span>
+
+<span class="s s-Atom">                    self.imports[section].get(&quot;from&quot;, {})</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">            sections = (&quot;no_sections&quot;,)</span>
+
+<span class="s s-Atom">        output = []  # type: List[str]</span>
+
+<span class="s s-Atom">        pending_lines_before = False</span>
+
+<span class="s s-Atom">        for section in sections:</span>
+
+<span class="s s-Atom">            straight_modules = self.imports[section][&quot;straight&quot;]</span>
+
+<span class="s s-Atom">            straight_modules = nsorted(</span>
+
+<span class="s s-Atom">                straight_modules,</span>
+
+<span class="s s-Atom">                key=lambda key: self._module_key(</span>
+
+<span class="s s-Atom">                    key, self.config, section_name=section</span>
+
+<span class="s s-Atom">                ),</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">            from_modules = self.imports[section][&quot;from&quot;]</span>
+
+<span class="s s-Atom">            from_modules = nsorted(</span>
+
+<span class="s s-Atom">                from_modules,</span>
+
+<span class="s s-Atom">                key=lambda key: self._module_key(</span>
+
+<span class="s s-Atom">                    key, self.config, section_name=section</span>
+
+<span class="s s-Atom">                ),</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">            if self.config[&quot;force_sort_within_sections&quot;]:</span>
+
+<span class="s s-Atom">                copied_comments = copy.deepcopy(self.comments)</span>
+
+<span class="s s-Atom">            section_output = []  # type: List[str]</span>
+
+<span class="s s-Atom">            if self.config[&quot;from_first&quot;]:</span>
+
+<span class="s s-Atom">                self._add_from_imports(</span>
+
+<span class="s s-Atom">                    from_modules, section, section_output, sort_ignore_case</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">                if (</span>
+
+<span class="s s-Atom">                    self.config[&quot;lines_between_types&quot;]</span>
+
+<span class="s s-Atom">                    and from_modules</span>
+
+<span class="s s-Atom">                    and straight_modules</span>
+
+<span class="s s-Atom">                ):</span>
+
+<span class="s s-Atom">                    section_output.extend([&quot;&quot;] * self.config[&quot;lines_between_types&quot;])</span>
+
+<span class="s s-Atom">                self._add_straight_imports(straight_modules, section, section_output)</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                self._add_straight_imports(straight_modules, section, section_output)</span>
+
+<span class="s s-Atom">                if (</span>
+
+<span class="s s-Atom">                    self.config[&quot;lines_between_types&quot;]</span>
+
+<span class="s s-Atom">                    and from_modules</span>
+
+<span class="s s-Atom">                    and straight_modules</span>
+
+<span class="s s-Atom">                ):</span>
+
+<span class="s s-Atom">                    section_output.extend([&quot;&quot;] * self.config[&quot;lines_between_types&quot;])</span>
+
+<span class="s s-Atom">                self._add_from_imports(</span>
+
+<span class="s s-Atom">                    from_modules, section, section_output, sort_ignore_case</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">            if self.config[&quot;force_sort_within_sections&quot;]:</span>
+
+<span class="s s-Atom">                def by_module(line: str) -&gt; str:</span>
+
+<span class="s s-Atom">                    section = &quot;B&quot;</span>
+
+<span class="s s-Atom">                    line = self._import_line_intro_re.sub(</span>
+
+<span class="s s-Atom">                        &quot;&quot;, self._import_line_midline_import_re.sub(&quot;.&quot;, line)</span>
+
+<span class="s s-Atom">                    )</span>
+
+<span class="s s-Atom">                    if line.split(&quot; &quot;)[0] in self.config[&quot;force_to_top&quot;]:</span>
+
+<span class="s s-Atom">                        section = &quot;A&quot;</span>
+
+<span class="s s-Atom">                    if not self.config[&quot;order_by_type&quot;]:</span>
+
+<span class="s s-Atom">                        line = line.lower()</span>
+
+<span class="s s-Atom">                    return &quot;{}{}&quot;.format(section, line)</span>
+
+<span class="s s-Atom">                # Remove comments</span>
+
+<span class="s s-Atom">                section_output = [</span>
+
+<span class="s s-Atom">                    line for line in section_output if not line.startswith(&quot;#&quot;)</span>
+
+<span class="s s-Atom">                ]</span>
+
+<span class="s s-Atom">                section_output = nsorted(section_output, key=by_module)</span>
+
+<span class="s s-Atom">                # Add comments back</span>
+
+<span class="s s-Atom">                all_comments = copied_comments[&quot;above&quot;][&quot;from&quot;]</span>
+
+<span class="s s-Atom">                all_comments.update(copied_comments[&quot;above&quot;][&quot;straight&quot;])</span>
+
+<span class="s s-Atom">                comment_indexes = {}</span>
+
+<span class="s s-Atom">                for module, comment_list in all_comments.items():</span>
+
+<span class="s s-Atom">                    for idx, line in enumerate(section_output):</span>
+
+<span class="s s-Atom">                        if module in line:</span>
+
+<span class="s s-Atom">                            comment_indexes[idx] = comment_list</span>
+
+<span class="s s-Atom">                added = 0</span>
+
+<span class="s s-Atom">                for idx, comment_list in comment_indexes.items():</span>
+
+<span class="s s-Atom">                    for comment in comment_list:</span>
+
+<span class="s s-Atom">                        section_output.insert(idx + added, comment)</span>
+
+<span class="s s-Atom">                        added += 1</span>
+
+<span class="s s-Atom">            section_name = section</span>
+
+<span class="s s-Atom">            no_lines_before = section_name in self.config[&quot;no_lines_before&quot;]</span>
+
+<span class="s s-Atom">            if section_output:</span>
+
+<span class="s s-Atom">                if section_name in self.place_imports:</span>
+
+<span class="s s-Atom">                    self.place_imports[section_name] = section_output</span>
+
+<span class="s s-Atom">                    continue</span>
+
+<span class="s s-Atom">                section_title = self.config.get(</span>
+
+<span class="s s-Atom">                    &quot;import_heading_&quot; + str(section_name).lower(), &quot;&quot;</span>
+
+<span class="s s-Atom">                )</span>
+
+<span class="s s-Atom">                if section_title:</span>
+
+<span class="s s-Atom">                    section_comment = &quot;# {}&quot;.format(section_title)</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        section_comment not in self.out_lines[0:1]</span>
+
+<span class="s s-Atom">                        and section_comment not in self.in_lines[0:1]</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        section_output.insert(0, section_comment)</span>
+
+<span class="s s-Atom">                if pending_lines_before or not no_lines_before:</span>
+
+<span class="s s-Atom">                    output += [&quot;&quot;] * self.config[&quot;lines_between_sections&quot;]</span>
+
+<span class="s s-Atom">                output += section_output</span>
+
+<span class="s s-Atom">                pending_lines_before = False</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                pending_lines_before = pending_lines_before or not no_lines_before</span>
+
+<span class="s s-Atom">        while output and output[-1].strip() == &quot;&quot;:</span>
+
+<span class="s s-Atom">            output.pop()</span>
+
+<span class="s s-Atom">        while output and output[0].strip() == &quot;&quot;:</span>
+
+<span class="s s-Atom">            output.pop(0)</span>
+
+<span class="s s-Atom">        output_at = 0</span>
+
+<span class="s s-Atom">        if self.import_index &lt; self.original_num_of_lines:</span>
+
+<span class="s s-Atom">            output_at = self.import_index</span>
+
+<span class="s s-Atom">        elif (</span>
+
+<span class="s s-Atom">            self._first_comment_index_end != -1 and self._first_comment_index_start &lt;= 2</span>
+
+<span class="s s-Atom">        ):</span>
+
+<span class="s s-Atom">            output_at = self._first_comment_index_end</span>
+
+<span class="s s-Atom">        self.out_lines[output_at:0] = output</span>
+
+<span class="s s-Atom">        imports_tail = output_at + len(output)</span>
+
+<span class="s s-Atom">        while [</span>
+
+<span class="s s-Atom">            character.strip()</span>
+
+<span class="s s-Atom">            for character in self.out_lines[imports_tail : imports_tail + 1]</span>
+
+<span class="s s-Atom">        ] == [&quot;&quot;]:</span>
+
+<span class="s s-Atom">            self.out_lines.pop(imports_tail)</span>
+
+<span class="s s-Atom">        if len(self.out_lines) &gt; imports_tail:</span>
+
+<span class="s s-Atom">            next_construct = &quot;&quot;</span>
+
+<span class="s s-Atom">            self._in_quote = False  # type: Any</span>
+
+<span class="s s-Atom">            tail = self.out_lines[imports_tail:]</span>
+
+<span class="s s-Atom">            for index, line in enumerate(tail):</span>
+
+<span class="s s-Atom">                in_quote = self._in_quote</span>
+
+<span class="s s-Atom">                if not self._skip_line(line) and line.strip():</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        line.strip().startswith(&quot;#&quot;)</span>
+
+<span class="s s-Atom">                        and len(tail) &gt; (index + 1)</span>
+
+<span class="s s-Atom">                        and tail[index + 1].strip()</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        continue</span>
+
+<span class="s s-Atom">                    next_construct = line</span>
+
+<span class="s s-Atom">                    break</span>
+
+<span class="s s-Atom">                elif not in_quote:</span>
+
+<span class="s s-Atom">                    parts = line.split()</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        len(parts) &gt;= 3</span>
+
+<span class="s s-Atom">                        and parts[1] == &quot;=&quot;</span>
+
+<span class="s s-Atom">                        and &quot;&#39;</span><span class="s2">&quot; not in parts[0]</span>
+
+<span class="s2">                        and &#39;&quot;</span><span class="s s-Atom">&#39; not in parts[0]</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        next_construct = line</span>
+
+<span class="s s-Atom">                        break</span>
+
+<span class="s s-Atom">            if self.config[&quot;lines_after_imports&quot;] != -1:</span>
+
+<span class="s s-Atom">                self.out_lines[imports_tail:0] = [</span>
+
+<span class="s s-Atom">                    &quot;&quot; for line in range(self.config[&quot;lines_after_imports&quot;])</span>
+
+<span class="s s-Atom">                ]</span>
+
+<span class="s s-Atom">            elif self.extension != &quot;pyi&quot; and (</span>
+
+<span class="s s-Atom">                next_construct.startswith(&quot;def &quot;)</span>
+
+<span class="s s-Atom">                or next_construct.startswith(&quot;class &quot;)</span>
+
+<span class="s s-Atom">                or next_construct.startswith(&quot;@&quot;)</span>
+
+<span class="s s-Atom">                or next_construct.startswith(&quot;async def&quot;)</span>
+
+<span class="s s-Atom">            ):</span>
+
+<span class="s s-Atom">                self.out_lines[imports_tail:0] = [&quot;&quot;, &quot;&quot;]</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                self.out_lines[imports_tail:0] = [&quot;&quot;]</span>
+
+<span class="s s-Atom">        if self.place_imports:</span>
+
+<span class="s s-Atom">            new_out_lines = []</span>
+
+<span class="s s-Atom">            for index, line in enumerate(self.out_lines):</span>
+
+<span class="s s-Atom">                new_out_lines.append(line)</span>
+
+<span class="s s-Atom">                if line in self.import_placements:</span>
+
+<span class="s s-Atom">                    new_out_lines.extend(</span>
+
+<span class="s s-Atom">                        self.place_imports[self.import_placements[line]]</span>
+
+<span class="s s-Atom">                    )</span>
+
+<span class="s s-Atom">                    if (</span>
+
+<span class="s s-Atom">                        len(self.out_lines) &lt;= index</span>
+
+<span class="s s-Atom">                        or self.out_lines[index + 1].strip() != &quot;&quot;</span>
+
+<span class="s s-Atom">                    ):</span>
+
+<span class="s s-Atom">                        new_out_lines.append(&quot;&quot;)</span>
+
+<span class="s s-Atom">            self.out_lines = new_out_lines</span>
+
+<span class="s s-Atom">    def _output_grid(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        statement: str,</span>
+
+<span class="s s-Atom">        imports: List[str],</span>
+
+<span class="s s-Atom">        white_space: str,</span>
+
+<span class="s s-Atom">        indent: str,</span>
+
+<span class="s s-Atom">        line_length: int,</span>
+
+<span class="s s-Atom">        comments: Sequence[str],</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        statement += &quot;(&quot; + imports.pop(0)</span>
+
+<span class="s s-Atom">        while imports:</span>
+
+<span class="s s-Atom">            next_import = imports.pop(0)</span>
+
+<span class="s s-Atom">            next_statement = self._add_comments(</span>
+
+<span class="s s-Atom">                comments, statement + &quot;, &quot; + next_import</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">            if len(next_statement.split(self.line_separator)[-1]) + 1 &gt; line_length:</span>
+
+<span class="s s-Atom">                lines = [&quot;{}{}&quot;.format(white_space, next_import.split(&quot; &quot;)[0])]</span>
+
+<span class="s s-Atom">                for part in next_import.split(&quot; &quot;)[1:]:</span>
+
+<span class="s s-Atom">                    new_line = &quot;{} {}&quot;.format(lines[-1], part)</span>
+
+<span class="s s-Atom">                    if len(new_line) + 1 &gt; line_length:</span>
+
+<span class="s s-Atom">                        lines.append(&quot;{}{}&quot;.format(white_space, part))</span>
+
+<span class="s s-Atom">                    else:</span>
+
+<span class="s s-Atom">                        lines[-1] = new_line</span>
+
+<span class="s s-Atom">                next_import = self.line_separator.join(lines)</span>
+
+<span class="s s-Atom">                statement = self._add_comments(</span>
+
+<span class="s s-Atom">                    comments, &quot;{},&quot;.format(statement)</span>
+
+<span class="s s-Atom">                ) + &quot;{}{}&quot;.format(self.line_separator, next_import)</span>
+
+<span class="s s-Atom">                comments = None</span>
+
+<span class="s s-Atom">            else:</span>
+
+<span class="s s-Atom">                statement += &quot;, &quot; + next_import</span>
+
+<span class="s s-Atom">        return statement + (&quot;,&quot; if self.config[&quot;include_trailing_comma&quot;] else &quot;&quot;) + &quot;)&quot;</span>
+
+<span class="s s-Atom">    def _output_vertical(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        statement: str,</span>
+
+<span class="s s-Atom">        imports: List[str],</span>
+
+<span class="s s-Atom">        white_space: str,</span>
+
+<span class="s s-Atom">        indent: str,</span>
+
+<span class="s s-Atom">        line_length: int,</span>
+
+<span class="s s-Atom">        comments: Sequence[str],</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        first_import = (</span>
+
+<span class="s s-Atom">            self._add_comments(comments, imports.pop(0) + &quot;,&quot;)</span>
+
+<span class="s s-Atom">            + self.line_separator</span>
+
+<span class="s s-Atom">            + white_space</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">        return &quot;{}({}{}{})&quot;.format(</span>
+
+<span class="s s-Atom">            statement,</span>
+
+<span class="s s-Atom">            first_import,</span>
+
+<span class="s s-Atom">            (&quot;,&quot; + self.line_separator + white_space).join(imports),</span>
+
+<span class="s s-Atom">            &quot;,&quot; if self.config[&quot;include_trailing_comma&quot;] else &quot;&quot;,</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">    def _output_hanging_indent(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        statement: str,</span>
+
+<span class="s s-Atom">        imports: List[str],</span>
+
+<span class="s s-Atom">        white_space: str,</span>
+
+<span class="s s-Atom">        indent: str,</span>
+
+<span class="s s-Atom">        line_length: int,</span>
+
+<span class="s s-Atom">        comments: Sequence[str],</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        statement += imports.pop(0)</span>
+
+<span class="s s-Atom">        while imports:</span>
+
+<span class="s s-Atom">            next_import = imports.pop(0)</span>
+
+<span class="s s-Atom">            next_statement = self._add_comments(</span>
+
+<span class="s s-Atom">                comments, statement + &quot;, &quot; + next_import</span>
+
+<span class="s s-Atom">            )</span>
+
+<span class="s s-Atom">            if len(next_statement.split(self.line_separator)[-1]) + 3 &gt; line_length:</span>
+
+<span class="s s-Atom">                next_statement = self._add_comments(</span>
+
+<span class="s s-Atom">                    comments, &quot;{}, \\&quot;.format(statement)</span>
+
+<span class="s s-Atom">                ) + &quot;{}{}{}&quot;.format(self.line_separator, indent, next_import)</span>
+
+<span class="s s-Atom">                comments = None</span>
+
+<span class="s s-Atom">            statement = next_statement</span>
+
+<span class="s s-Atom">        return statement</span>
+
+<span class="s s-Atom">    def _output_vertical_hanging_indent(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        statement: str,</span>
+
+<span class="s s-Atom">        imports: List[str],</span>
+
+<span class="s s-Atom">        white_space: str,</span>
+
+<span class="s s-Atom">        indent: str,</span>
+
+<span class="s s-Atom">        line_length: int,</span>
+
+<span class="s s-Atom">        comments: Sequence[str],</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        return &quot;{0}({1}{2}{3}{4}{5}{2})&quot;.format(</span>
+
+<span class="s s-Atom">            statement,</span>
+
+<span class="s s-Atom">            self._add_comments(comments),</span>
+
+<span class="s s-Atom">            self.line_separator,</span>
+
+<span class="s s-Atom">            indent,</span>
+
+<span class="s s-Atom">            (&quot;,&quot; + self.line_separator + indent).join(imports),</span>
+
+<span class="s s-Atom">            &quot;,&quot; if self.config[&quot;include_trailing_comma&quot;] else &quot;&quot;,</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">    def _output_vertical_grid_common(</span>
+
+<span class="s s-Atom">        self,</span>
+
+<span class="s s-Atom">        statement: str,</span>
+
+<span class="s s-Atom">        imports: List[str],</span>
+
+<span class="s s-Atom">        white_space: str,</span>
+
+<span class="s s-Atom">        indent: str,</span>
+
+<span class="s s-Atom">        line_length: int,</span>
+
+<span class="s s-Atom">        comments: Sequence[str],</span>
+
+<span class="s s-Atom">        need_trailing_char: bool,</span>
+
+<span class="s s-Atom">    ) -&gt; str:</span>
+
+<span class="s s-Atom">        statement += (</span>
+
+<span class="s s-Atom">            self._add_comments(comments, &quot;(&quot;)</span>
+
+<span class="s s-Atom">            + self.line_separator</span>
+
+<span class="s s-Atom">            + indent</span>
+
+<span class="s s-Atom">            + imports.pop(0)</span>
+
+<span class="s s-Atom">        )</span>
+
+<span class="s s-Atom">        while imports:</span>
+
+<span class="s s-Atom">            next_import = imports.pop(0)</span>
+
+<span class="s s-Atom">            next_statement = &quot;{}, {}&quot;.format(statement, next_import)</span>
+
+<span class="s s-Atom">            current_line_length = len(next_statement.split(self.line_separator)[-1])</span>
+
+<span class="s s-Atom">            if imports or need_trailing_char:</span>
+
+<span class="s s-Atom">                # If we have more imports we need to account for a comma after this import</span>
+
+<span class="s s-Atom">                # We might also need to account for a closing ) we&#39;re</span> <span class="s s-Atom">going</span> <span class="s s-Atom">to</span> <span class="s s-Atom">add</span><span class="p">.</span>
+
+                <span class="s s-Atom">current_line_length</span> <span class="s s-Atom">+=</span> <span class="mi">1</span>
+
+            <span class="s s-Atom">if</span> <span class="s s-Atom">current_line_length</span> <span class="o">&gt;</span> <span class="s s-Atom">line_length:</span>
+
+                <span class="s s-Atom">next_statement</span> <span class="o">=</span> <span class="s2">&quot;{},{}{}{}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span>
+
+                    <span class="s s-Atom">statement</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span><span class="p">,</span> <span class="s s-Atom">indent</span><span class="p">,</span> <span class="s s-Atom">next_import</span>
+
+                <span class="p">)</span>
+
+            <span class="s s-Atom">statement</span> <span class="o">=</span> <span class="s s-Atom">next_statement</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;include_trailing_comma&quot;</span><span class="p">]</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">statement</span> <span class="s s-Atom">+=</span> <span class="s2">&quot;,&quot;</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">statement</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">output_vertical_grid</span><span class="p">(</span>
+
+        <span class="s s-Atom">self</span><span class="p">,</span>
+
+        <span class="nn">statement</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">imports</span><span class="p">:</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+        <span class="s s-Atom">white_space:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">indent</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="s s-Atom">line_length:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+        <span class="nn">comments</span><span class="p">:</span> <span class="nv">Sequence</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
+
+        <span class="nf">return</span> <span class="p">(</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">output_vertical_grid_common</span><span class="p">(</span>
+
+                <span class="s s-Atom">statement</span><span class="p">,</span> <span class="s s-Atom">imports</span><span class="p">,</span> <span class="s s-Atom">white_space</span><span class="p">,</span> <span class="s s-Atom">indent</span><span class="p">,</span> <span class="s s-Atom">line_length</span><span class="p">,</span> <span class="s s-Atom">comments</span><span class="p">,</span> <span class="nv">True</span>
+
+            <span class="p">)</span>
+
+            <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">output_vertical_grid_grouped</span><span class="p">(</span>
+
+        <span class="s s-Atom">self</span><span class="p">,</span>
+
+        <span class="nn">statement</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">imports</span><span class="p">:</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+        <span class="s s-Atom">white_space:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">indent</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="s s-Atom">line_length:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+        <span class="nn">comments</span><span class="p">:</span> <span class="nv">Sequence</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
+
+        <span class="nf">return</span> <span class="p">(</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">output_vertical_grid_common</span><span class="p">(</span>
+
+                <span class="s s-Atom">statement</span><span class="p">,</span> <span class="s s-Atom">imports</span><span class="p">,</span> <span class="s s-Atom">white_space</span><span class="p">,</span> <span class="s s-Atom">indent</span><span class="p">,</span> <span class="s s-Atom">line_length</span><span class="p">,</span> <span class="s s-Atom">comments</span><span class="p">,</span> <span class="nv">True</span>
+
+            <span class="p">)</span>
+
+            <span class="o">+</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span>
+
+            <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">output_vertical_grid_grouped_no_comma</span><span class="p">(</span>
+
+        <span class="s s-Atom">self</span><span class="p">,</span>
+
+        <span class="nn">statement</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">imports</span><span class="p">:</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+        <span class="s s-Atom">white_space:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">indent</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="s s-Atom">line_length:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+        <span class="nn">comments</span><span class="p">:</span> <span class="nv">Sequence</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
+
+        <span class="nf">return</span> <span class="p">(</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">output_vertical_grid_common</span><span class="p">(</span>
+
+                <span class="s s-Atom">statement</span><span class="p">,</span> <span class="s s-Atom">imports</span><span class="p">,</span> <span class="s s-Atom">white_space</span><span class="p">,</span> <span class="s s-Atom">indent</span><span class="p">,</span> <span class="s s-Atom">line_length</span><span class="p">,</span> <span class="s s-Atom">comments</span><span class="p">,</span> <span class="nv">False</span>
+
+            <span class="p">)</span>
+
+            <span class="o">+</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">line_separator</span>
+
+            <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+        <span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">output_noqa</span><span class="p">(</span>
+
+        <span class="s s-Atom">self</span><span class="p">,</span>
+
+        <span class="nn">statement</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">imports</span><span class="p">:</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+        <span class="s s-Atom">white_space:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="nn">indent</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span>
+
+        <span class="s s-Atom">line_length:</span> <span class="s s-Atom">int</span><span class="p">,</span>
+
+        <span class="nn">comments</span><span class="p">:</span> <span class="nv">Sequence</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
+
+        <span class="s s-Atom">retval</span> <span class="o">=</span> <span class="s2">&quot;{}{}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s s-Atom">statement</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s s-Atom">imports</span><span class="p">))</span>
+
+        <span class="s s-Atom">comment_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s s-Atom">comments</span><span class="p">)</span>
+
+        <span class="s s-Atom">if</span> <span class="nn">comments</span><span class="p">:</span>
+
+            <span class="nf">if</span> <span class="p">(</span>
+
+                <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">retval</span><span class="p">)</span> <span class="o">+</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">comment_str</span><span class="p">)</span>
+
+                <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">line_length</span>
+
+            <span class="p">)</span><span class="s s-Atom">:</span>
+
+                <span class="s s-Atom">return</span> <span class="s2">&quot;{}{} {}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span>
+
+                    <span class="s s-Atom">retval</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">],</span> <span class="s s-Atom">comment_str</span>
+
+                <span class="p">)</span>
+
+        <span class="nn">else</span><span class="p">:</span>
+
+            <span class="s s-Atom">if</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">retval</span><span class="p">)</span> <span class="s s-Atom">&lt;=</span> <span class="s s-Atom">line_length:</span>
+
+                <span class="s s-Atom">return</span> <span class="s s-Atom">retval</span>
+
+        <span class="s s-Atom">if</span> <span class="nn">comments</span><span class="p">:</span>
+
+            <span class="s s-Atom">if</span> <span class="s2">&quot;NOQA&quot;</span> <span class="s s-Atom">in</span> <span class="nn">comments</span><span class="p">:</span>
+
+                <span class="s s-Atom">return</span> <span class="s2">&quot;{}{} {}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span>
+
+                    <span class="s s-Atom">retval</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">],</span> <span class="s s-Atom">comment_str</span>
+
+                <span class="p">)</span>
+
+            <span class="nn">else</span><span class="p">:</span>
+
+                <span class="s s-Atom">return</span> <span class="s2">&quot;{}{} NOQA {}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span>
+
+                    <span class="s s-Atom">retval</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">],</span> <span class="s s-Atom">comment_str</span>
+
+                <span class="p">)</span>
+
+        <span class="nn">else</span><span class="p">:</span>
+
+            <span class="s s-Atom">return</span> <span class="s2">&quot;{}{} NOQA&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s s-Atom">retval</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">config</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">])</span>
+
+    <span class="s s-Atom">@staticmethod</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">strip_comments</span><span class="p">(</span>
+
+        <span class="nn">line</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">,</span> <span class="nn">comments</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">None</span>
+
+    <span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Tuple</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">],</span> <span class="s s-Atom">bool</span><span class="p">]</span><span class="s s-Atom">:</span>
+
+        <span class="s2">&quot;&quot;&quot;Removes comments from import line.&quot;&quot;&quot;</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">comments</span> <span class="o">is</span> <span class="nv">None</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">comments</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="s s-Atom">new_comments</span> <span class="o">=</span> <span class="nv">False</span>
+
+        <span class="s s-Atom">comment_start</span> <span class="o">=</span> <span class="s s-Atom">line</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">comment_start</span> <span class="p">!</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">comments</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">line</span><span class="p">[</span><span class="s s-Atom">comment_start</span> <span class="o">+</span> <span class="mi">1</span> <span class="s s-Atom">:</span><span class="p">].</span><span class="nf">strip</span><span class="p">())</span>
+
+            <span class="s s-Atom">new_comments</span> <span class="o">=</span> <span class="nv">True</span>
+
+            <span class="s s-Atom">line</span> <span class="o">=</span> <span class="s s-Atom">line</span><span class="p">[</span><span class="s s-Atom">:comment_start</span><span class="p">]</span>
+
+        <span class="s s-Atom">return</span> <span class="s s-Atom">line</span><span class="p">,</span> <span class="s s-Atom">comments</span><span class="p">,</span> <span class="s s-Atom">new_comments</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">skip_line</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="nn">line</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">bool</span><span class="p">:</span>
+
+        <span class="s s-Atom">skip_line</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">in_quote</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">index</span> <span class="o">==</span> <span class="mi">1</span> <span class="s s-Atom">and</span> <span class="s s-Atom">line</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">in_top_comment</span> <span class="o">=</span> <span class="nv">True</span>
+
+            <span class="s s-Atom">return</span> <span class="nv">True</span>
+
+        <span class="s s-Atom">elif</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">in_top_comment:</span>
+
+            <span class="s s-Atom">if</span> <span class="o">not</span> <span class="s s-Atom">line</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="s s-Atom">or</span> <span class="s s-Atom">line</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">section_comments:</span>
+
+                <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">in_top_comment</span> <span class="o">=</span> <span class="nv">False</span>
+
+                <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">first_comment_index_end</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">index</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">&#39;&quot;&#39;</span> <span class="s s-Atom">in</span> <span class="s s-Atom">line</span> <span class="s s-Atom">or</span> <span class="s2">&quot;&#39;&quot;</span> <span class="s s-Atom">in</span> <span class="nn">line</span><span class="p">:</span>
+
+            <span class="s s-Atom">index</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="s s-Atom">if</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">first_comment_index_start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="nf">and</span> <span class="p">(</span>
+
+                <span class="s s-Atom">line</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s s-Atom">&#39;&quot;&#39;</span><span class="p">)</span> <span class="s s-Atom">or</span> <span class="s s-Atom">line</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+
+            <span class="p">)</span><span class="s s-Atom">:</span>
+
+                <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">first_comment_index_start</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">index</span>
+
+            <span class="s s-Atom">while</span> <span class="s s-Atom">index</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">line</span><span class="p">)</span><span class="s s-Atom">:</span>
+
+                <span class="s s-Atom">if</span> <span class="s s-Atom">line</span><span class="p">[</span><span class="s s-Atom">index</span><span class="p">]</span> <span class="o">==</span> <span class="err">&quot;</span><span class="s s-Atom">\\</span><span class="s2">&quot;:</span>
+
+<span class="s2">                    index += 1</span>
+
+<span class="s2">                elif self._in_quote:</span>
+
+<span class="s2">                    if line[index : index + len(self._in_quote)] == self._in_quote:</span>
+
+<span class="s2">                        self._in_quote = False</span>
+
+<span class="s2">                        if (</span>
+
+<span class="s2">                            self._first_comment_index_end</span>
+
+<span class="s2">                            &lt; self._first_comment_index_start</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            self._first_comment_index_end = self.index</span>
+
+<span class="s2">                elif line[index] in (&quot;</span><span class="s s-Atom">&#39;&quot;, &#39;</span><span class="s2">&quot;&#39;):</span>
+
+<span class="s2">                    long_quote = line[index : index + 3]</span>
+
+<span class="s2">                    if long_quote in (&#39;&quot;&quot;&quot;</span><span class="s s-Atom">&#39;, &quot;&#39;&#39;&#39;</span><span class="s2">&quot;):</span>
+
+<span class="s2">                        self._in_quote = long_quote</span>
+
+<span class="s2">                        index += 2</span>
+
+<span class="s2">                    else:</span>
+
+<span class="s2">                        self._in_quote = line[index]</span>
+
+<span class="s2">                elif line[index] == &quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;:</span>
+
+<span class="s2">                    break</span>
+
+<span class="s2">                index += 1</span>
+
+<span class="s2">        return skip_line or self._in_quote or self._in_top_comment</span>
+
+<span class="s2">    def _strip_syntax(self, import_string: str) -&gt; str:</span>
+
+<span class="s2">        import_string = import_string.replace(&quot;</span><span class="k">_</span><span class="s s-Atom">import</span><span class="s2">&quot;, &quot;</span><span class="p">[[</span><span class="s s-Atom">i</span><span class="p">]]</span><span class="s2">&quot;)</span>
+
+<span class="s2">        for remove_syntax in [&quot;</span><span class="s s-Atom">\\</span><span class="s2">&quot;, &quot;</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="s2">&quot;, &quot;</span><span class="p">,</span><span class="s2">&quot;]:</span>
+
+<span class="s2">            import_string = import_string.replace(remove_syntax, &quot;</span> <span class="s2">&quot;)</span>
+
+<span class="s2">        import_list = import_string.split()</span>
+
+<span class="s2">        for key in (&quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;, &quot;</span><span class="s s-Atom">import</span><span class="s2">&quot;):</span>
+
+<span class="s2">            if key in import_list:</span>
+
+<span class="s2">                import_list.remove(key)</span>
+
+<span class="s2">        import_string = &quot;</span> <span class="s2">&quot;.join(import_list)</span>
+
+<span class="s2">        import_string = import_string.replace(&quot;</span><span class="p">[[</span><span class="s s-Atom">i</span><span class="p">]]</span><span class="s2">&quot;, &quot;</span><span class="k">_</span><span class="s s-Atom">import</span><span class="s2">&quot;)</span>
+
+<span class="s2">        return import_string.replace(&quot;</span><span class="p">{</span> <span class="s2">&quot;, &quot;</span><span class="p">{|</span><span class="s2">&quot;).replace(&quot;</span> <span class="p">}</span><span class="s2">&quot;, &quot;</span><span class="p">|}</span><span class="s2">&quot;)</span>
+
+<span class="s2">    def _parse(self) -&gt; None:</span>
+
+<span class="s2">        &quot;&quot;&quot;</span><span class="nv">Parses</span> <span class="s s-Atom">a</span> <span class="s s-Atom">python</span> <span class="s s-Atom">file</span> <span class="s s-Atom">taking</span> <span class="s s-Atom">out</span> <span class="s s-Atom">and</span> <span class="s s-Atom">categorizing</span> <span class="s s-Atom">imports</span><span class="p">.</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">        self._in_quote = False</span>
+
+<span class="s2">        self._in_top_comment = False</span>
+
+<span class="s2">        while not self._at_end():</span>
+
+<span class="s2">            raw_line = line = self._get_line()</span>
+
+<span class="s2">            line = line.replace(&quot;</span><span class="s s-Atom">from</span><span class="p">.</span><span class="s s-Atom">import</span> <span class="s2">&quot;, &quot;</span><span class="s s-Atom">from</span> <span class="p">.</span> <span class="s s-Atom">import</span> <span class="s2">&quot;)</span>
+
+<span class="s2">            line = line.replace(&quot;</span><span class="s s-Atom">\t</span><span class="s2">&quot;, &quot;</span> <span class="s2">&quot;).replace(&quot;</span><span class="s s-Atom">import*</span><span class="s2">&quot;, &quot;</span><span class="s s-Atom">import</span> <span class="s s-Atom">*</span><span class="s2">&quot;)</span>
+
+<span class="s2">            line = line.replace(&quot;</span> <span class="p">.</span><span class="s s-Atom">import</span> <span class="s2">&quot;, &quot;</span> <span class="p">.</span> <span class="s s-Atom">import</span> <span class="s2">&quot;)</span>
+
+<span class="s2">            statement_index = self.index</span>
+
+<span class="s2">            skip_line = self._skip_line(line)</span>
+
+<span class="s2">            if line in self._section_comments and not skip_line:</span>
+
+<span class="s2">                if self.import_index == -1:</span>
+
+<span class="s2">                    self.import_index = self.index - 1</span>
+
+<span class="s2">                continue</span>
+
+<span class="s2">            if &quot;</span><span class="nn">isort</span><span class="p">:</span><span class="s s-Atom">imports-</span><span class="s2">&quot; in line and line.startswith(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;):</span>
+
+<span class="s2">                section = line.split(&quot;</span><span class="nn">isort</span><span class="p">:</span><span class="s s-Atom">imports-</span><span class="s2">&quot;)[-1].split()[0].upper()</span>
+
+<span class="s2">                self.place_imports[section] = []</span>
+
+<span class="s2">                self.import_placements[line] = section</span>
+
+<span class="s2">            if &quot;</span><span class="p">;</span><span class="s2">&quot; in line:</span>
+
+<span class="s2">                for part in (part.strip() for part in line.split(&quot;</span><span class="p">;</span><span class="s2">&quot;)):</span>
+
+<span class="s2">                    if (</span>
+
+<span class="s2">                        part</span>
+
+<span class="s2">                        and not part.startswith(&quot;</span><span class="s s-Atom">from</span> <span class="s2">&quot;)</span>
+
+<span class="s2">                        and not part.startswith(&quot;</span><span class="s s-Atom">import</span> <span class="s2">&quot;)</span>
+
+<span class="s2">                    ):</span>
+
+<span class="s2">                        skip_line = True</span>
+
+<span class="s2">            import_type = self._import_type(line)</span>
+
+<span class="s2">            if not import_type or skip_line:</span>
+
+<span class="s2">                self.out_lines.append(raw_line)</span>
+
+<span class="s2">                continue</span>
+
+<span class="s2">            for line in (line.strip() for line in line.split(&quot;</span><span class="p">;</span><span class="s2">&quot;)):</span>
+
+<span class="s2">                import_type = self._import_type(line)</span>
+
+<span class="s2">                if not import_type:</span>
+
+<span class="s2">                    self.out_lines.append(line)</span>
+
+<span class="s2">                    continue</span>
+
+<span class="s2">                if self.import_index == -1:</span>
+
+<span class="s2">                    self.import_index = self.index - 1</span>
+
+<span class="s2">                nested_comments = {}</span>
+
+<span class="s2">                import_string, comments, new_comments = self._strip_comments(line)</span>
+
+<span class="s2">                line_parts = [</span>
+
+<span class="s2">                    part</span>
+
+<span class="s2">                    for part in self._strip_syntax(import_string).strip().split(&quot;</span> <span class="s2">&quot;)</span>
+
+<span class="s2">                    if part</span>
+
+<span class="s2">                ]</span>
+
+<span class="s2">                if (</span>
+
+<span class="s2">                    import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;</span>
+
+<span class="s2">                    and len(line_parts) == 2</span>
+
+<span class="s2">                    and line_parts[1] != &quot;</span><span class="s s-Atom">*</span><span class="s2">&quot;</span>
+
+<span class="s2">                    and new_comments</span>
+
+<span class="s2">                ):</span>
+
+<span class="s2">                    nested_comments[line_parts[-1]] = comments[0]</span>
+
+<span class="s2">                if &quot;</span><span class="p">(</span><span class="s2">&quot; in line.split(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;)[0] and not self._at_end():</span>
+
+<span class="s2">                    while not line.strip().endswith(&quot;</span><span class="p">)</span><span class="s2">&quot;) and not self._at_end():</span>
+
+<span class="s2">                        line, comments, new_comments = self._strip_comments(</span>
+
+<span class="s2">                            self._get_line(), comments</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                        stripped_line = self._strip_syntax(line).strip()</span>
+
+<span class="s2">                        if (</span>
+
+<span class="s2">                            import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;</span>
+
+<span class="s2">                            and stripped_line</span>
+
+<span class="s2">                            and &quot;</span> <span class="s2">&quot; not in stripped_line</span>
+
+<span class="s2">                            and new_comments</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            nested_comments[stripped_line] = comments[-1]</span>
+
+<span class="s2">                        import_string += self.line_separator + line</span>
+
+<span class="s2">                else:</span>
+
+<span class="s2">                    while line.strip().endswith(&quot;</span><span class="s s-Atom">\\</span><span class="s2">&quot;):</span>
+
+<span class="s2">                        line, comments, new_comments = self._strip_comments(</span>
+
+<span class="s2">                            self._get_line(), comments</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                        # Still need to check for parentheses after an escaped line</span>
+
+<span class="s2">                        if (</span>
+
+<span class="s2">                            &quot;</span><span class="p">(</span><span class="s2">&quot; in line.split(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;)[0]</span>
+
+<span class="s2">                            and &quot;</span><span class="p">)</span><span class="s2">&quot; not in line.split(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;)[0]</span>
+
+<span class="s2">                            and not self._at_end()</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            stripped_line = self._strip_syntax(line).strip()</span>
+
+<span class="s2">                            if (</span>
+
+<span class="s2">                                import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;</span>
+
+<span class="s2">                                and stripped_line</span>
+
+<span class="s2">                                and &quot;</span> <span class="s2">&quot; not in stripped_line</span>
+
+<span class="s2">                                and new_comments</span>
+
+<span class="s2">                            ):</span>
+
+<span class="s2">                                nested_comments[stripped_line] = comments[-1]</span>
+
+<span class="s2">                            import_string += self.line_separator + line</span>
+
+<span class="s2">                            while not line.strip().endswith(&quot;</span><span class="p">)</span><span class="s2">&quot;) and not self._at_end():</span>
+
+<span class="s2">                                line, comments, new_comments = self._strip_comments(</span>
+
+<span class="s2">                                    self._get_line(), comments</span>
+
+<span class="s2">                                )</span>
+
+<span class="s2">                                stripped_line = self._strip_syntax(line).strip()</span>
+
+<span class="s2">                                if (</span>
+
+<span class="s2">                                    import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;</span>
+
+<span class="s2">                                    and stripped_line</span>
+
+<span class="s2">                                    and &quot;</span> <span class="s2">&quot; not in stripped_line</span>
+
+<span class="s2">                                    and new_comments</span>
+
+<span class="s2">                                ):</span>
+
+<span class="s2">                                    nested_comments[stripped_line] = comments[-1]</span>
+
+<span class="s2">                                import_string += self.line_separator + line</span>
+
+<span class="s2">                        stripped_line = self._strip_syntax(line).strip()</span>
+
+<span class="s2">                        if (</span>
+
+<span class="s2">                            import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;</span>
+
+<span class="s2">                            and stripped_line</span>
+
+<span class="s2">                            and &quot;</span> <span class="s2">&quot; not in stripped_line</span>
+
+<span class="s2">                            and new_comments</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            nested_comments[stripped_line] = comments[-1]</span>
+
+<span class="s2">                        if import_string.strip().endswith(</span>
+
+<span class="s2">                            &quot;</span> <span class="s s-Atom">import</span><span class="s2">&quot;</span>
+
+<span class="s2">                        ) or line.strip().startswith(&quot;</span><span class="s s-Atom">import</span> <span class="s2">&quot;):</span>
+
+<span class="s2">                            import_string += self.line_separator + line</span>
+
+<span class="s2">                        else:</span>
+
+<span class="s2">                            import_string = (</span>
+
+<span class="s2">                                import_string.rstrip().rstrip(&quot;</span><span class="s s-Atom">\\</span><span class="s2">&quot;)</span>
+
+<span class="s2">                                + &quot;</span> <span class="s2">&quot;</span>
+
+<span class="s2">                                + line.lstrip()</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                if import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;:</span>
+
+<span class="s2">                    import_string = import_string.replace(&quot;</span><span class="nf">import</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="nf">import</span> <span class="p">(</span><span class="s2">&quot;)</span>
+
+<span class="s2">                    parts = import_string.split(&quot;</span> <span class="s s-Atom">import</span> <span class="s2">&quot;)</span>
+
+<span class="s2">                    from_import = parts[0].split(&quot;</span> <span class="s2">&quot;)</span>
+
+<span class="s2">                    import_string = &quot;</span> <span class="s s-Atom">import</span> <span class="s2">&quot;.join(</span>
+
+<span class="s2">                        [from_import[0] + &quot;</span> <span class="s2">&quot; + &quot;&quot;.join(from_import[1:])] + parts[1:]</span>
+
+<span class="s2">                    )</span>
+
+<span class="s2">                imports = [</span>
+
+<span class="s2">                    item.replace(&quot;</span><span class="p">{|</span><span class="s2">&quot;, &quot;</span><span class="p">{</span> <span class="s2">&quot;).replace(&quot;</span><span class="p">|}</span><span class="s2">&quot;, &quot;</span> <span class="p">}</span><span class="s2">&quot;)</span>
+
+<span class="s2">                    for item in self._strip_syntax(import_string).split()</span>
+
+<span class="s2">                ]</span>
+
+<span class="s2">                straight_import = True</span>
+
+<span class="s2">                if &quot;</span><span class="s s-Atom">as</span><span class="s2">&quot; in imports and (imports.index(&quot;</span><span class="s s-Atom">as</span><span class="s2">&quot;) + 1) &lt; len(imports):</span>
+
+<span class="s2">                    straight_import = False</span>
+
+<span class="s2">                    while &quot;</span><span class="s s-Atom">as</span><span class="s2">&quot; in imports:</span>
+
+<span class="s2">                        index = imports.index(&quot;</span><span class="s s-Atom">as</span><span class="s2">&quot;)</span>
+
+<span class="s2">                        if import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;:</span>
+
+<span class="s2">                            module = imports[0] + &quot;</span><span class="p">.</span><span class="s2">&quot; + imports[index - 1]</span>
+
+<span class="s2">                            self.as_map[module].append(imports[index + 1])</span>
+
+<span class="s2">                        else:</span>
+
+<span class="s2">                            module = imports[index - 1]</span>
+
+<span class="s2">                            self.as_map[module].append(imports[index + 1])</span>
+
+<span class="s2">                        if not self.config[&quot;</span><span class="s s-Atom">combine_as_imports</span><span class="s2">&quot;]:</span>
+
+<span class="s2">                            self.comments[&quot;</span><span class="s s-Atom">straight</span><span class="s2">&quot;][module] = comments</span>
+
+<span class="s2">                            comments = []</span>
+
+<span class="s2">                        del imports[index : index + 2]</span>
+
+<span class="s2">                if import_type == &quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;:</span>
+
+<span class="s2">                    import_from = imports.pop(0)</span>
+
+<span class="s2">                    placed_module = self.place_module(import_from)</span>
+
+<span class="s2">                    if self.config[&quot;</span><span class="s s-Atom">verbose</span><span class="s2">&quot;]:</span>
+
+<span class="s2">                        print(</span>
+
+<span class="s2">                            &quot;</span><span class="s s-Atom">from</span><span class="o">-</span><span class="s s-Atom">type</span> <span class="s s-Atom">place_module</span> <span class="s s-Atom">for</span> <span class="p">{}</span> <span class="s s-Atom">returned</span> <span class="p">{}</span><span class="s2">&quot;.format(</span>
+
+<span class="s2">                                import_from, placed_module</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                    if placed_module == &quot;&quot;:</span>
+
+<span class="s2">                        print(</span>
+
+<span class="s2">                            &quot;</span><span class="nv">WARNING</span><span class="s s-Atom">:</span> <span class="s s-Atom">could</span> <span class="o">not</span> <span class="s s-Atom">place</span> <span class="s s-Atom">module</span> <span class="p">{}</span> <span class="s s-Atom">of</span> <span class="s s-Atom">line</span> <span class="p">{}</span> <span class="s s-Atom">--</span><span class="s2">&quot;</span>
+
+<span class="s2">                            &quot;</span> <span class="nv">Do</span> <span class="s s-Atom">you</span> <span class="s s-Atom">need</span> <span class="s s-Atom">to</span> <span class="s s-Atom">define</span> <span class="s s-Atom">a</span> <span class="s s-Atom">default</span> <span class="s s-Atom">section?</span><span class="s2">&quot;.format(</span>
+
+<span class="s2">                                import_from, line</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                    root = self.imports[placed_module][import_type]</span>
+
+<span class="s2">                    for import_name in imports:</span>
+
+<span class="s2">                        associated_comment = nested_comments.get(import_name)</span>
+
+<span class="s2">                        if associated_comment:</span>
+
+<span class="s2">                            self.comments[&quot;</span><span class="s s-Atom">nested</span><span class="s2">&quot;].setdefault(import_from, {})[</span>
+
+<span class="s2">                                import_name</span>
+
+<span class="s2">                            ] = associated_comment</span>
+
+<span class="s2">                            comments.pop(comments.index(associated_comment))</span>
+
+<span class="s2">                    if comments:</span>
+
+<span class="s2">                        self.comments[&quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;].setdefault(import_from, []).extend(</span>
+
+<span class="s2">                            comments</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                    if (</span>
+
+<span class="s2">                        len(self.out_lines)</span>
+
+<span class="s2">                        &gt; max(self.import_index, self._first_comment_index_end + 1, 1)</span>
+
+<span class="s2">                        - 1</span>
+
+<span class="s2">                    ):</span>
+
+<span class="s2">                        last = self.out_lines and self.out_lines[-1].rstrip() or &quot;&quot;</span>
+
+<span class="s2">                        while (</span>
+
+<span class="s2">                            last.startswith(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;)</span>
+
+<span class="s2">                            and not last.endswith(&#39;&quot;&quot;&quot;</span><span class="s s-Atom">&#39;)</span>
+
+<span class="s s-Atom">                            and not last.endswith(&quot;&#39;&#39;&#39;</span><span class="s2">&quot;)</span>
+
+<span class="s2">                            and &quot;</span><span class="nn">isort</span><span class="p">:</span><span class="s s-Atom">imports-</span><span class="s2">&quot; not in last</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            self.comments[&quot;</span><span class="s s-Atom">above</span><span class="s2">&quot;][&quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;].setdefault(</span>
+
+<span class="s2">                                import_from, []</span>
+
+<span class="s2">                            ).insert(0, self.out_lines.pop(-1))</span>
+
+<span class="s2">                            if (</span>
+
+<span class="s2">                                len(self.out_lines)</span>
+
+<span class="s2">                                &gt; max(</span>
+
+<span class="s2">                                    self.import_index - 1,</span>
+
+<span class="s2">                                    self._first_comment_index_end + 1,</span>
+
+<span class="s2">                                    1,</span>
+
+<span class="s2">                                )</span>
+
+<span class="s2">                                - 1</span>
+
+<span class="s2">                            ):</span>
+
+<span class="s2">                                last = self.out_lines[-1].rstrip()</span>
+
+<span class="s2">                            else:</span>
+
+<span class="s2">                                last = &quot;&quot;</span>
+
+<span class="s2">                        if statement_index - 1 == self.import_index:</span>
+
+<span class="s2">                            self.import_index -= len(</span>
+
+<span class="s2">                                self.comments[&quot;</span><span class="s s-Atom">above</span><span class="s2">&quot;][&quot;</span><span class="s s-Atom">from</span><span class="s2">&quot;].get(import_from, [])</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                    if import_from not in root:</span>
+
+<span class="s2">                        root[import_from] = OrderedDict(</span>
+
+<span class="s2">                            (module, straight_import) for module in imports</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                    else:</span>
+
+<span class="s2">                        root[import_from].update(</span>
+
+<span class="s2">                            (</span>
+
+<span class="s2">                                module,</span>
+
+<span class="s2">                                straight_import | root[import_from].get(module, False),</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                            for module in imports</span>
+
+<span class="s2">                        )</span>
+
+<span class="s2">                else:</span>
+
+<span class="s2">                    for module in imports:</span>
+
+<span class="s2">                        if comments:</span>
+
+<span class="s2">                            self.comments[&quot;</span><span class="s s-Atom">straight</span><span class="s2">&quot;][module] = comments</span>
+
+<span class="s2">                            comments = None</span>
+
+<span class="s2">                        if (</span>
+
+<span class="s2">                            len(self.out_lines)</span>
+
+<span class="s2">                            &gt; max(</span>
+
+<span class="s2">                                self.import_index, self._first_comment_index_end + 1, 1</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                            - 1</span>
+
+<span class="s2">                        ):</span>
+
+<span class="s2">                            last = self.out_lines and self.out_lines[-1].rstrip() or &quot;&quot;</span>
+
+<span class="s2">                            while (</span>
+
+<span class="s2">                                last.startswith(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;)</span>
+
+<span class="s2">                                and not last.endswith(&#39;&quot;&quot;&quot;</span><span class="s s-Atom">&#39;)</span>
+
+<span class="s s-Atom">                                and not last.endswith(&quot;&#39;&#39;&#39;</span><span class="s2">&quot;)</span>
+
+<span class="s2">                                and &quot;</span><span class="nn">isort</span><span class="p">:</span><span class="s s-Atom">imports-</span><span class="s2">&quot; not in last</span>
+
+<span class="s2">                            ):</span>
+
+<span class="s2">                                self.comments[&quot;</span><span class="s s-Atom">above</span><span class="s2">&quot;][&quot;</span><span class="s s-Atom">straight</span><span class="s2">&quot;].setdefault(</span>
+
+<span class="s2">                                    module, []</span>
+
+<span class="s2">                                ).insert(0, self.out_lines.pop(-1))</span>
+
+<span class="s2">                                if (</span>
+
+<span class="s2">                                    len(self.out_lines) &gt; 0</span>
+
+<span class="s2">                                    and len(self.out_lines)</span>
+
+<span class="s2">                                    != self._first_comment_index_end</span>
+
+<span class="s2">                                ):</span>
+
+<span class="s2">                                    last = self.out_lines[-1].rstrip()</span>
+
+<span class="s2">                                else:</span>
+
+<span class="s2">                                    last = &quot;&quot;</span>
+
+<span class="s2">                            if self.index - 1 == self.import_index:</span>
+
+<span class="s2">                                self.import_index -= len(</span>
+
+<span class="s2">                                    self.comments[&quot;</span><span class="s s-Atom">above</span><span class="s2">&quot;][&quot;</span><span class="s s-Atom">straight</span><span class="s2">&quot;].get(module, [])</span>
+
+<span class="s2">                                )</span>
+
+<span class="s2">                        placed_module = self.place_module(module)</span>
+
+<span class="s2">                        if self.config[&quot;</span><span class="s s-Atom">verbose</span><span class="s2">&quot;]:</span>
+
+<span class="s2">                            print(</span>
+
+<span class="s2">                                &quot;</span><span class="s s-Atom">else</span><span class="o">-</span><span class="s s-Atom">type</span> <span class="s s-Atom">place_module</span> <span class="s s-Atom">for</span> <span class="p">{}</span> <span class="s s-Atom">returned</span> <span class="p">{}</span><span class="s2">&quot;.format(</span>
+
+<span class="s2">                                    module, placed_module</span>
+
+<span class="s2">                                )</span>
+
+<span class="s2">                            )</span>
+
+<span class="s2">                        if placed_module == &quot;&quot;:</span>
+
+<span class="s2">                            print(</span>
+
+<span class="s2">                                &quot;</span><span class="nv">WARNING</span><span class="s s-Atom">:</span> <span class="s s-Atom">could</span> <span class="o">not</span> <span class="s s-Atom">place</span> <span class="s s-Atom">module</span> <span class="p">{}</span> <span class="s s-Atom">of</span> <span class="s s-Atom">line</span> <span class="p">{}</span> <span class="s s-Atom">--</span><span class="s2">&quot;</span>
+
+<span class="s2">                                &quot;</span> <span class="nv">Do</span> <span class="s s-Atom">you</span> <span class="s s-Atom">need</span> <span class="s s-Atom">to</span> <span class="s s-Atom">define</span> <span class="s s-Atom">a</span> <span class="s s-Atom">default</span> <span class="s s-Atom">section?</span><span class="err">&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span>
+
+                                    <span class="s s-Atom">import_from</span><span class="p">,</span> <span class="s s-Atom">line</span>
+
+                                <span class="p">)</span>
+
+                            <span class="p">)</span>
+
+                        <span class="s s-Atom">straight_import</span> <span class="p">|</span><span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">imports</span><span class="p">[</span><span class="s s-Atom">placed_module</span><span class="p">][</span><span class="s s-Atom">import_type</span><span class="p">].</span><span class="nf">get</span><span class="p">(</span>
+
+                            <span class="s s-Atom">module</span><span class="p">,</span> <span class="nv">False</span>
+
+                        <span class="p">)</span>
+
+                        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">imports</span><span class="p">[</span><span class="s s-Atom">placed_module</span><span class="p">][</span><span class="s s-Atom">import_type</span><span class="p">][</span>
+
+                            <span class="s s-Atom">module</span>
+
+                        <span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">straight_import</span>
+</pre></div>
+
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><span class="n">TYPE_CHECKING</span>
+</pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../" title="Index" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Index
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../main/" title="Main" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Main
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>
