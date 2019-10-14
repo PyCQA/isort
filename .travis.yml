@@ -3,7 +3,6 @@ language: python
 cache: pip
 install:
 - pip3 install poetry
-- pip3 install cruft
 - poetry install
 matrix:
   include:
