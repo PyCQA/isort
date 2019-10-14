@@ -29,6 +29,6 @@ deploy:
   on:
     tags: false
     branch: master
-    condition: "$TOXENV = py37"
+    condition: "$DEPLOY = py37"
   password:
     secure: SSFcjBL3dhWvSbo21icmnHQFV7mXfv/eDzxrefHUDMk37MWrvtNKchH8zz7wjAsf2PH1VYL1zkEFwnzuzHgs2aFCK7HDUwAaDSIcvPmJg9Oty+o2WQw16m7UnUac9MIZGmBHQaZuUTw0VJpm3GuPSXtdFJwFq3Tk3TIyUipEwg8=
