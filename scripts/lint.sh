@@ -1,10 +1,9 @@
 #!/bin/bash
 set -euxo pipefail
 
-version=$(python3 -V 2>&1 | grep -Po '(?<=Python )(.+)')
-parsedVersion=$(echo "${version//./}")
+pyversion=$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
 
-if [[ "$parsedVersion" -lt "360" ]]
+if [[ "$pyversion" -lt "360" ]]
 then
     echo "WARNING: Some linters have been skipped. Run against 3.6+ for full set of linters to run against the project!"
 else
