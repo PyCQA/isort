@@ -11,31 +11,7 @@ import setuptools
 
 from isort import SortImports, __version__
 from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
-
-INTRO = r"""
-/#######################################################################\
-
-     `sMMy`
-     .yyyy-                                                      `
-    ##soos##                                                    ./o.
-          `     ``..-..`         ``...`.``         `   ```` ``-ssso```
-     .s:-y-   .+osssssso/.     ./ossss+:so+:`    :+o-`/osso:+sssssssso/
-     .s::y-   osss+.``.``     -ssss+-.`-ossso`   ssssso/::..::+ssss:::.
-     .s::y-   /ssss+//:-.`   `ssss+     `ssss+   sssso`       :ssss`
-     .s::y-   `-/+oossssso/  `ssss/      sssso   ssss/        :ssss`
-     .y-/y-       ````:ssss`  ossso.    :ssss:   ssss/        :ssss.
-     `/so:`    `-//::/osss+   `+ssss+-/ossso:    /sso-        `osssso/.
-       \/      `-/oooo++/-      .:/++:/++/-`      ..           `://++/.
-
-
-         isort your Python imports for you so you don't have to
-
-                            VERSION {}
-
-\########################################################################/
-""".format(
-    __version__
-)
+from isort.logo import ASCII_ART
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 
@@ -570,7 +546,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
 def main(argv: Optional[Sequence[str]] = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
-        print(INTRO)
+        print(ASCII_ART)
         return
 
     if arguments.get("ambiguous_r_flag"):
@@ -628,7 +604,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
         if config["verbose"] or config.get("show_logo", False):
-            print(INTRO)
+            print(ASCII_ART)
 
         jobs = arguments.get("jobs")
         if jobs:
