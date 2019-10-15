@@ -3,6 +3,7 @@
 
 class Parser(object):
     """Defines the direct interaction between jiphy and the file content"""
+    __slots__ = (index, code, output)
 
     def __init__(self, code):
         self.index = 0
