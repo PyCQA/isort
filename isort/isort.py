@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, 
 from isort import utils
 from isort.format import format_natural, format_simplified
 
-from . import settings
+from . import output, parse, settings
 from .finders import FindersManager
 from .natural import nsorted
 from .settings import WrapModes
@@ -201,22 +201,6 @@ class _SortImports:
             length_sort and (str(len(module_name)) + ":" + module_name) or module_name,
         )
 
-    def _add_comments(self, comments: Optional[Sequence[str]], original_string: str = "") -> str:
-        """
-            Returns a string with comments added if ignore_comments is not set.
-        """
-        if self.config["ignore_comments"]:
-            return self._strip_comments(original_string)[0]
-
-        if not comments:
-            return original_string
-        else:
-            return "{}{} {}".format(
-                self._strip_comments(original_string)[0],
-                self.config["comment_prefix"],
-                "; ".join(comments),
-            )
-
     def _wrap(self, line: str) -> str:
         """
             Returns an import wrapped to the specified line-length, if possible.
@@ -309,7 +293,12 @@ class _SortImports:
                     section_output.append("")
                 section_output.extend(comments_above)
             section_output.extend(
-                self._add_comments(self.comments["straight"].get(module), idef)
+                output.with_comments(
+                    self.comments["straight"].get(module),
+                    idef,
+                    removed=self.config["ignore_comments"],
+                    comment_prefix=self.config["comment_prefix"],
+                )
                 for idef in import_definition
             )
 
@@ -370,15 +359,23 @@ class _SortImports:
                 comments = self.comments["from"].pop(module, ())
                 if "*" in from_imports and self.config["combine_star"]:
                     import_statement = self._wrap(
-                        self._add_comments(comments, "{}*".format(import_start))
+                        output.with_comments(
+                            comments,
+                            "{}*".format(import_start),
+                            removed=self.config["ignore_comments"],
+                            comment_prefix=self.config["comment_prefix"],
+                        )
                     )
                     from_imports = None
                 elif self.config["force_single_line"]:
                     import_statement = None
                     while from_imports:
                         from_import = from_imports.pop(0)
-                        single_import_line = self._add_comments(
-                            comments, import_start + from_import
+                        single_import_line = output.with_comments(
+                            comments,
+                            import_start + from_import,
+                            removed=self.config["ignore_comments"],
+                            comment_prefix=self.config["comment_prefix"],
                         )
                         comment = self.comments["nested"].get(module, {}).pop(from_import, None)
                         if comment:
@@ -395,8 +392,11 @@ class _SortImports:
                                 "{}.{}".format(module, from_import)
                             )
                             section_output.extend(
-                                self._add_comments(
-                                    from_comments, self._wrap(import_start + as_import)
+                                output.with_comments(
+                                    from_comments,
+                                    self._wrap(import_start + as_import),
+                                    removed=self.config["ignore_comments"],
+                                    comment_prefix=self.config["comment_prefix"],
                                 )
                                 for as_import in nsorted(as_imports[from_import])
                             )
@@ -421,19 +421,32 @@ class _SortImports:
                             and self.imports[section]["from"][module][from_import]
                         ):
                             section_output.append(
-                                self._add_comments(
-                                    from_comments, self._wrap(import_start + from_import)
+                                output.with_comments(
+                                    from_comments,
+                                    self._wrap(import_start + from_import),
+                                    removed=self.config["ignore_comments"],
+                                    comment_prefix=self.config["comment_prefix"],
                                 )
                             )
                         section_output.extend(
-                            self._add_comments(from_comments, self._wrap(import_start + as_import))
+                            output.with_comments(
+                                from_comments,
+                                self._wrap(import_start + as_import),
+                                removed=self.config["ignore_comments"],
+                                comment_prefix=self.config["comment_prefix"],
+                            )
                             for as_import in as_imports[from_import]
                         )
 
                     star_import = False
                     if "*" in from_imports:
                         section_output.append(
-                            self._add_comments(comments, "{}*".format(import_start))
+                            output.with_comments(
+                                comments,
+                                "{}*".format(import_start),
+                                removed=self.config["ignore_comments"],
+                                comment_prefix=self.config["comment_prefix"],
+                            )
                         )
                         from_imports.remove("*")
                         star_import = True
@@ -447,8 +460,11 @@ class _SortImports:
                             continue
                         comment = self.comments["nested"].get(module, {}).pop(from_import, None)
                         if comment:
-                            single_import_line = self._add_comments(
-                                comments, import_start + from_import
+                            single_import_line = output.with_comments(
+                                comments,
+                                import_start + from_import,
+                                removed=self.config["ignore_comments"],
+                                comment_prefix=self.config["comment_prefix"],
                             )
                             single_import_line += "{} {}".format(
                                 comments and ";" or self.config["comment_prefix"], comment
@@ -477,8 +493,11 @@ class _SortImports:
                     if star_import:
                         import_statement = import_start + (", ").join(from_import_section)
                     else:
-                        import_statement = self._add_comments(
-                            comments, import_start + (", ").join(from_import_section)
+                        import_statement = output.with_comments(
+                            comments,
+                            import_start + (", ").join(from_import_section),
+                            removed=self.config["ignore_comments"],
+                            comment_prefix=self.config["comment_prefix"],
                         )
                     if not from_import_section:
                         import_statement = ""
@@ -540,12 +559,21 @@ class _SortImports:
         self, import_start: str, from_imports: List[str], comments: Sequence[str]
     ) -> str:
         output_mode = self.config["multi_line_output"].name.lower()
-        formatter = getattr(self, "_output_" + output_mode, self._output_grid)
+        formatter = getattr(output, output_mode, output.grid)
         dynamic_indent = " " * (len(import_start) + 1)
         indent = self.config["indent"]
         line_length = self.config["wrap_length"] or self.config["line_length"]
         import_statement = formatter(
-            import_start, copy.copy(from_imports), dynamic_indent, indent, line_length, comments
+            import_start,
+            copy.copy(from_imports),
+            dynamic_indent,
+            indent,
+            line_length,
+            comments,
+            line_separator=self.line_separator,
+            comment_prefix=self.config["comment_prefix"],
+            include_trailing_comma=self.config["include_trailing_comma"],
+            remove_comments=self.config["ignore_comments"],
         )
         if self.config["balanced_wrapping"]:
             lines = import_statement.split(self.line_separator)
@@ -565,6 +593,10 @@ class _SortImports:
                     indent,
                     line_length,
                     comments,
+                    line_separator=self.line_separator,
+                    comment_prefix=self.config["comment_prefix"],
+                    include_trailing_comma=self.config["include_trailing_comma"],
+                    remove_comments=self.config["ignore_comments"],
                 )
                 lines = new_import_statement.split(self.line_separator)
         if import_statement.count(self.line_separator) == 0:
@@ -748,219 +780,6 @@ class _SortImports:
                         new_out_lines.append("")
             self.out_lines = new_out_lines
 
-    def _output_grid(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        statement += "(" + imports.pop(0)
-        while imports:
-            next_import = imports.pop(0)
-            next_statement = self._add_comments(comments, statement + ", " + next_import)
-            if len(next_statement.split(self.line_separator)[-1]) + 1 > line_length:
-                lines = ["{}{}".format(white_space, next_import.split(" ")[0])]
-                for part in next_import.split(" ")[1:]:
-                    new_line = "{} {}".format(lines[-1], part)
-                    if len(new_line) + 1 > line_length:
-                        lines.append("{}{}".format(white_space, part))
-                    else:
-                        lines[-1] = new_line
-                next_import = self.line_separator.join(lines)
-                statement = self._add_comments(comments, "{},".format(statement)) + "{}{}".format(
-                    self.line_separator, next_import
-                )
-                comments = None
-            else:
-                statement += ", " + next_import
-        return statement + ("," if self.config["include_trailing_comma"] else "") + ")"
-
-    def _output_vertical(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        first_import = (
-            self._add_comments(comments, imports.pop(0) + ",") + self.line_separator + white_space
-        )
-        return "{}({}{}{})".format(
-            statement,
-            first_import,
-            ("," + self.line_separator + white_space).join(imports),
-            "," if self.config["include_trailing_comma"] else "",
-        )
-
-    def _output_hanging_indent(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        statement += imports.pop(0)
-        while imports:
-            next_import = imports.pop(0)
-            next_statement = self._add_comments(comments, statement + ", " + next_import)
-            if len(next_statement.split(self.line_separator)[-1]) + 3 > line_length:
-                next_statement = self._add_comments(
-                    comments, "{}, \\".format(statement)
-                ) + "{}{}{}".format(self.line_separator, indent, next_import)
-                comments = None
-            statement = next_statement
-        return statement
-
-    def _output_vertical_hanging_indent(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        return "{0}({1}{2}{3}{4}{5}{2})".format(
-            statement,
-            self._add_comments(comments),
-            self.line_separator,
-            indent,
-            ("," + self.line_separator + indent).join(imports),
-            "," if self.config["include_trailing_comma"] else "",
-        )
-
-    def _output_vertical_grid_common(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-        need_trailing_char: bool,
-    ) -> str:
-        statement += (
-            self._add_comments(comments, "(") + self.line_separator + indent + imports.pop(0)
-        )
-        while imports:
-            next_import = imports.pop(0)
-            next_statement = "{}, {}".format(statement, next_import)
-            current_line_length = len(next_statement.split(self.line_separator)[-1])
-            if imports or need_trailing_char:
-                # If we have more imports we need to account for a comma after this import
-                # We might also need to account for a closing ) we're going to add.
-                current_line_length += 1
-            if current_line_length > line_length:
-                next_statement = "{},{}{}{}".format(
-                    statement, self.line_separator, indent, next_import
-                )
-            statement = next_statement
-        if self.config["include_trailing_comma"]:
-            statement += ","
-        return statement
-
-    def _output_vertical_grid(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        return (
-            self._output_vertical_grid_common(
-                statement, imports, white_space, indent, line_length, comments, True
-            )
-            + ")"
-        )
-
-    def _output_vertical_grid_grouped(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        return (
-            self._output_vertical_grid_common(
-                statement, imports, white_space, indent, line_length, comments, True
-            )
-            + self.line_separator
-            + ")"
-        )
-
-    def _output_vertical_grid_grouped_no_comma(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        return (
-            self._output_vertical_grid_common(
-                statement, imports, white_space, indent, line_length, comments, False
-            )
-            + self.line_separator
-            + ")"
-        )
-
-    def _output_noqa(
-        self,
-        statement: str,
-        imports: List[str],
-        white_space: str,
-        indent: str,
-        line_length: int,
-        comments: Sequence[str],
-    ) -> str:
-        retval = "{}{}".format(statement, ", ".join(imports))
-        comment_str = " ".join(comments)
-        if comments:
-            if (
-                len(retval) + len(self.config["comment_prefix"]) + 1 + len(comment_str)
-                <= line_length
-            ):
-                return "{}{} {}".format(retval, self.config["comment_prefix"], comment_str)
-        else:
-            if len(retval) <= line_length:
-                return retval
-        if comments:
-            if "NOQA" in comments:
-                return "{}{} {}".format(retval, self.config["comment_prefix"], comment_str)
-            else:
-                return "{}{} NOQA {}".format(retval, self.config["comment_prefix"], comment_str)
-        else:
-            return "{}{} NOQA".format(retval, self.config["comment_prefix"])
-
-    @staticmethod
-    def _strip_comments(
-        line: str, comments: Optional[List[str]] = None
-    ) -> Tuple[str, List[str], bool]:
-        """Removes comments from import line."""
-        if comments is None:
-            comments = []
-
-        new_comments = False
-        comment_start = line.find("#")
-        if comment_start != -1:
-            comments.append(line[comment_start + 1 :].strip())
-            new_comments = True
-            line = line[:comment_start]
-
-        return line, comments, new_comments
-
     def _skip_line(self, line: str) -> bool:
         skip_line = self._in_quote
         if self.index == 1 and line.startswith("#"):
@@ -1051,7 +870,8 @@ class _SortImports:
                 if self.import_index == -1:
                     self.import_index = self.index - 1
                 nested_comments = {}
-                import_string, comments, new_comments = self._strip_comments(line)
+                import_string, comment = parse.import_comment(line)
+                comments = [comment] if comment else []
                 line_parts = [
                     part for part in self._strip_syntax(import_string).strip().split(" ") if part
                 ]
@@ -1059,29 +879,29 @@ class _SortImports:
                     import_type == "from"
                     and len(line_parts) == 2
                     and line_parts[1] != "*"
-                    and new_comments
+                    and comments
                 ):
                     nested_comments[line_parts[-1]] = comments[0]
 
                 if "(" in line.split("#")[0] and not self._at_end():
                     while not line.strip().endswith(")") and not self._at_end():
-                        line, comments, new_comments = self._strip_comments(
-                            self._get_line(), comments
-                        )
+                        line, new_comment = parse.import_comment(self._get_line())
+                        if new_comment:
+                            comments.append(new_comment)
                         stripped_line = self._strip_syntax(line).strip()
                         if (
                             import_type == "from"
                             and stripped_line
                             and " " not in stripped_line
-                            and new_comments
+                            and new_comment
                         ):
                             nested_comments[stripped_line] = comments[-1]
                         import_string += self.line_separator + line
                 else:
                     while line.strip().endswith("\\"):
-                        line, comments, new_comments = self._strip_comments(
-                            self._get_line(), comments
-                        )
+                        line, new_comment = parse.import_comment(self._get_line())
+                        if new_comment:
+                            comments.append(new_comment)
 
                         # Still need to check for parentheses after an escaped line
                         if (
@@ -1094,21 +914,21 @@ class _SortImports:
                                 import_type == "from"
                                 and stripped_line
                                 and " " not in stripped_line
-                                and new_comments
+                                and new_comment
                             ):
                                 nested_comments[stripped_line] = comments[-1]
                             import_string += self.line_separator + line
 
                             while not line.strip().endswith(")") and not self._at_end():
-                                line, comments, new_comments = self._strip_comments(
-                                    self._get_line(), comments
-                                )
+                                line, new_comment = parse.import_comment(self._get_line())
+                                if new_comment:
+                                    comments.append(new_comment)
                                 stripped_line = self._strip_syntax(line).strip()
                                 if (
                                     import_type == "from"
                                     and stripped_line
                                     and " " not in stripped_line
-                                    and new_comments
+                                    and new_comment
                                 ):
                                     nested_comments[stripped_line] = comments[-1]
                                 import_string += self.line_separator + line
@@ -1118,7 +938,7 @@ class _SortImports:
                             import_type == "from"
                             and stripped_line
                             and " " not in stripped_line
-                            and new_comments
+                            and new_comment
                         ):
                             nested_comments[stripped_line] = comments[-1]
                         if import_string.strip().endswith(" import") or line.strip().startswith(
