@@ -2,7 +2,6 @@
 
 from sphinx.ext.intersphinx import fetch_inventory
 
-
 URL = "https://docs.python.org/{}/objects.inv"
 PATH = "isort/stdlibs/py{}.py"
 VERSIONS = [("2", "7"), ("3",)]
