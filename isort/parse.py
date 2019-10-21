@@ -1,5 +1,22 @@
 """Defines parsing functions used by isort for parsing import definitions"""
-from typing import Tuple, List, Generator, Iterator
+from collections import defaultdict, OrderedDict
+from typing import Tuple, List, Generator, Iterator, TYPE_CHECKING, Optional, Any
+from .finders import FindersManager
+from itertools import chain
+
+
+if TYPE_CHECKING:
+    from mypy_extensions import TypedDict
+
+    CommentsDict = TypedDict(
+        "CommentsDict",
+        {
+            "from": Dict[str, Any],
+            "straight": Dict[str, Any],
+            "nested": Dict[str, Any],
+            "above": CommentsAboveDict,
+        },
+    )
 
 
 def import_comment(line: str) -> Tuple[str, str]:
@@ -13,9 +30,49 @@ def import_comment(line: str) -> Tuple[str, str]:
     return (line, "")
 
 
-def skip_line(line: str, in_quote: str, in_top_comment: bool, index: int,
-              section_comments: Iterator[str], first_comment_index_start: int,
-              first_comment_index_end: int) -> (bool, str, bool, int, int):
+def import_type(line: str) -> Optional[str]:
+    """If the current line is an import line it will return its type (from or straight)"""
+    if "isort:skip" in line or "NOQA" in line:
+        return None
+    elif line.startswith("import "):
+        return "straight"
+    elif line.startswith("from "):
+        return "from"
+    return None
+
+
+def _strip_syntax(import_string: str) -> str:
+    import_string = import_string.replace("_import", "[[i]]")
+    for remove_syntax in ["\\", "(", ")", ","]:
+        import_string = import_string.replace(remove_syntax, " ")
+    import_list = import_string.split()
+    for key in ("from", "import"):
+        if key in import_list:
+            import_list.remove(key)
+    import_string = " ".join(import_list)
+    import_string = import_string.replace("[[i]]", "_import")
+    return import_string.replace("{ ", "{|").replace(" }", "|}")
+
+
+def skip_line(
+    line: str,
+    in_quote: str,
+    in_top_comment: bool,
+    index: int,
+    section_comments: Iterator[str],
+    first_comment_index_start: int,
+    first_comment_index_end: int,
+) -> (bool, str, bool, int, int):
+    """Determine if a given line should be skipped.
+
+    Returns back a tuple containing:
+
+    (skip_line: bool,
+     in_quote: str,
+     in_top_comment: bool,
+     first_comment_index_start: int,
+     first_comment_index_end: int)
+    """
     skip_line = bool(in_quote)
     if index == 1 and line.startswith("#"):
         in_top_comment = True
@@ -26,10 +83,8 @@ def skip_line(line: str, in_quote: str, in_top_comment: bool, index: int,
             first_comment_index_end = index - 1
 
     if '"' in line or "'" in line:
-        index = 0
-        if first_comment_index_start == -1 and (
-            line.startswith('"') or line.startswith("'")
-        ):
+        char_index = 0
+        if first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
             first_comment_index_start = index
         while char_index < len(line):
             if line[char_index] == "\\":
@@ -50,13 +105,30 @@ def skip_line(line: str, in_quote: str, in_top_comment: bool, index: int,
                 break
             char_index += 1
 
-    return (bool(skip_line or in_quote or in_top_comment), in_quote,
-            in_top_comment, first_comment_index_start, first_comment_index_end)
+    return (
+        bool(skip_line or in_quote or in_top_comment),
+        in_quote,
+        in_top_comment,
+        first_comment_index_start,
+        first_comment_index_end,
+    )
 
 
-def file_contents(contents: str, line_separator: str, add_imports: Iterator[str], force_adds: bool) -> dict:
+def file_contents(
+    contents: str,
+    line_separator: str,
+    add_imports: Iterator[str],
+    force_adds: bool,
+    sections: Any,
+    section_comments: Iterator[str],
+    forced_separate: Iterator[str],
+    combine_as_imports: bool,
+    verbose: bool,
+    finder: FindersManager,
+) -> dict:
     """Parses a python file taking out and categorizing imports."""
     in_lines = contents.split(line_separator)
+    out_lines = []
     original_line_count = len(in_lines)
 
     if original_line_count > 1 or in_lines[:1] not in ([], [""]) or force_adds:
@@ -64,77 +136,108 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
 
     line_count = len(in_lines)
 
+    place_imports = {}  # type: Dict[str, List[str]]
+    import_placements = {}  # type: Dict[str, str]
+    as_map = defaultdict(list)
+    imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
+    for section in chain(sections, forced_separate):
+        imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
+    categorized_comments = {
+        "from": {},
+        "straight": {},
+        "nested": {},
+        "above": {"straight": {}, "from": {}},
+    }  # type: CommentsDict
 
-
-    self._in_quote = False
-    self._in_top_comment = False
-    while not self._at_end():
-        raw_line = line = self._get_line()
+    index = 0
+    import_index = -1
+    in_quote = ""
+    in_top_comment = False
+    first_comment_index_start = -1
+    first_comment_index_end = -1
+    while index < line_count:
+        raw_line = line = in_lines[index]
         line = line.replace("from.import ", "from . import ")
         line = line.replace("\t", " ").replace("import*", "import *")
         line = line.replace(" .import ", " . import ")
-        statement_index = self.index
-        skip_line = self._skip_line(line)
+        index += 1
+        statement_index = index
 
-        if line in self._section_comments and not skip_line:
-            if self.import_index == -1:
-                self.import_index = self.index - 1
+        (
+            skipping_line,
+            in_quote,
+            in_top_comment,
+            first_comment_index_start,
+            first_comment_index_end,
+        ) = skip_line(
+            line,
+            in_quote=in_quote,
+            in_top_comment=in_top_comment,
+            index=index,
+            section_comments=section_comments,
+            first_comment_index_start=first_comment_index_start,
+            first_comment_index_end=first_comment_index_end,
+        )
+
+        if line in section_comments and not skipping_line:
+            if import_index == -1:
+                import_index = index - 1
             continue
 
         if "isort:imports-" in line and line.startswith("#"):
             section = line.split("isort:imports-")[-1].split()[0].upper()
-            self.place_imports[section] = []
-            self.import_placements[line] = section
+            place_imports[section] = []
+            import_placements[line] = section
 
         if ";" in line:
             for part in (part.strip() for part in line.split(";")):
                 if part and not part.startswith("from ") and not part.startswith("import "):
-                    skip_line = True
+                    skipping_line = True
 
-        import_type = self._import_type(line)
-        if not import_type or skip_line:
-            self.out_lines.append(raw_line)
+        type_of_import = import_type(line)
+        if not type_of_import or skipping_line:
+            out_lines.append(raw_line)
             continue
 
         for line in (line.strip() for line in line.split(";")):
-            import_type = self._import_type(line)
-            if not import_type:
-                self.out_lines.append(line)
+            type_of_import = import_type(line)
+            if not type_of_import:
+                out_lines.append(line)
                 continue
 
-            if self.import_index == -1:
-                self.import_index = self.index - 1
+            if import_index == -1:
+                import_index = index - 1
             nested_comments = {}
-            import_string, comment = parse.import_comment(line)
+            import_string, comment = import_comment(line)
             comments = [comment] if comment else []
-            line_parts = [
-                part for part in self._strip_syntax(import_string).strip().split(" ") if part
-            ]
+            line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
             if (
-                import_type == "from"
+                type_of_import == "from"
                 and len(line_parts) == 2
                 and line_parts[1] != "*"
                 and comments
             ):
                 nested_comments[line_parts[-1]] = comments[0]
 
-            if "(" in line.split("#")[0] and not self._at_end():
-                while not line.strip().endswith(")") and not self._at_end():
-                    line, new_comment = parse.import_comment(self._get_line())
+            if "(" in line.split("#")[0] and index < line_count:
+                while not line.strip().endswith(")") and index < line_count:
+                    line, new_comment = import_comment(in_lines[index])
+                    index += 1
                     if new_comment:
                         comments.append(new_comment)
-                    stripped_line = self._strip_syntax(line).strip()
+                    stripped_line = _strip_syntax(line).strip()
                     if (
-                        import_type == "from"
+                        type_of_import == "from"
                         and stripped_line
                         and " " not in stripped_line
                         and new_comment
                     ):
                         nested_comments[stripped_line] = comments[-1]
-                    import_string += self.line_separator + line
+                    import_string += line_separator + line
             else:
                 while line.strip().endswith("\\"):
-                    line, new_comment = parse.import_comment(self._get_line())
+                    line, new_comment = import_comment(in_lines[index])
+                    index += 1
                     if new_comment:
                         comments.append(new_comment)
 
@@ -142,35 +245,36 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
                     if (
                         "(" in line.split("#")[0]
                         and ")" not in line.split("#")[0]
-                        and not self._at_end()
+                        and index < line_count
                     ):
-                        stripped_line = self._strip_syntax(line).strip()
+                        stripped_line = _strip_syntax(line).strip()
                         if (
-                            import_type == "from"
+                            type_of_import == "from"
                             and stripped_line
                             and " " not in stripped_line
                             and new_comment
                         ):
                             nested_comments[stripped_line] = comments[-1]
-                        import_string += self.line_separator + line
+                        import_string += line_separator + line
 
-                        while not line.strip().endswith(")") and not self._at_end():
-                            line, new_comment = parse.import_comment(self._get_line())
+                        while not line.strip().endswith(")") and index < line_count:
+                            line, new_comment = import_comment(in_lines[index])
+                            index += 1
                             if new_comment:
                                 comments.append(new_comment)
-                            stripped_line = self._strip_syntax(line).strip()
+                            stripped_line = _strip_syntax(line).strip()
                             if (
-                                import_type == "from"
+                                type_of_import == "from"
                                 and stripped_line
                                 and " " not in stripped_line
                                 and new_comment
                             ):
                                 nested_comments[stripped_line] = comments[-1]
-                            import_string += self.line_separator + line
+                            import_string += line_separator + line
 
-                    stripped_line = self._strip_syntax(line).strip()
+                    stripped_line = _strip_syntax(line).strip()
                     if (
-                        import_type == "from"
+                        type_of_import == "from"
                         and stripped_line
                         and " " not in stripped_line
                         and new_comment
@@ -179,13 +283,11 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
                     if import_string.strip().endswith(" import") or line.strip().startswith(
                         "import "
                     ):
-                        import_string += self.line_separator + line
+                        import_string += line_separator + line
                     else:
-                        import_string = (
-                            import_string.rstrip().rstrip("\\") + " " + line.lstrip()
-                        )
+                        import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
-            if import_type == "from":
+            if type_of_import == "from":
                 import_string = import_string.replace("import(", "import (")
                 parts = import_string.split(" import ")
                 from_import = parts[0].split(" ")
@@ -193,29 +295,29 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
                     [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
                 )
 
-            imports = [
+            just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
-                for item in self._strip_syntax(import_string).split()
+                for item in _strip_syntax(import_string).split()
             ]
             straight_import = True
-            if "as" in imports and (imports.index("as") + 1) < len(imports):
+            if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
-                while "as" in imports:
-                    index = imports.index("as")
-                    if import_type == "from":
-                        module = imports[0] + "." + imports[index - 1]
-                        self.as_map[module].append(imports[index + 1])
+                while "as" in just_imports:
+                    index = just_imports.index("as")
+                    if type_of_import == "from":
+                        module = just_imports[0] + "." + just_imports[index - 1]
+                        as_map[module].append(just_imports[index + 1])
                     else:
-                        module = imports[index - 1]
-                        self.as_map[module].append(imports[index + 1])
-                    if not self.config["combine_as_imports"]:
-                        self.comments["straight"][module] = comments
+                        module = just_imports[index - 1]
+                        as_map[module].append(just_imports[index + 1])
+                    if not combine_as_imports:
+                        categorized_comments["straight"][module] = comments
                         comments = []
-                    del imports[index : index + 2]
-            if import_type == "from":
-                import_from = imports.pop(0)
-                placed_module = self.place_module(import_from)
-                if self.config["verbose"]:
+                    del just_imports[index : index + 2]
+            if type_of_import == "from":
+                import_from = just_imports.pop(0)
+                placed_module = finder.find(import_from)
+                if verbose:
                     print(
                         "from-type place_module for {} returned {}".format(
                             import_from, placed_module
@@ -226,87 +328,77 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
                         "WARNING: could not place module {} of line {} --"
                         " Do you need to define a default section?".format(import_from, line)
                     )
-                root = self.imports[placed_module][import_type]
-                for import_name in imports:
+                root = imports[placed_module][type_of_import]
+                for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment:
-                        self.comments["nested"].setdefault(import_from, {})[
+                        categorized_comments["nested"].setdefault(import_from, {})[
                             import_name
                         ] = associated_comment
                         comments.pop(comments.index(associated_comment))
                 if comments:
-                    self.comments["from"].setdefault(import_from, []).extend(comments)
+                    categorized_comments["from"].setdefault(import_from, []).extend(comments)
 
-                if (
-                    len(self.out_lines)
-                    > max(self.import_index, self._first_comment_index_end + 1, 1) - 1
-                ):
-                    last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                if len(out_lines) > max(import_index, first_comment_index_end + 1, 1) - 1:
+                    last = out_lines and out_lines[-1].rstrip() or ""
                     while (
                         last.startswith("#")
                         and not last.endswith('"""')
                         and not last.endswith("'''")
                         and "isort:imports-" not in last
                     ):
-                        self.comments["above"]["from"].setdefault(import_from, []).insert(
-                            0, self.out_lines.pop(-1)
+                        categorized_comments["above"]["from"].setdefault(import_from, []).insert(
+                            0, out_lines.pop(-1)
                         )
                         if (
-                            len(self.out_lines)
-                            > max(self.import_index - 1, self._first_comment_index_end + 1, 1)
-                            - 1
+                            len(out_lines)
+                            > max(import_index - 1, first_comment_index_end + 1, 1) - 1
                         ):
-                            last = self.out_lines[-1].rstrip()
+                            last = out_lines[-1].rstrip()
                         else:
                             last = ""
-                    if statement_index - 1 == self.import_index:
-                        self.import_index -= len(
-                            self.comments["above"]["from"].get(import_from, [])
+                    if statement_index - 1 == import_index:
+                        import_index -= len(
+                            categorized_comments["above"]["from"].get(import_from, [])
                         )
 
                 if import_from not in root:
                     root[import_from] = OrderedDict(
-                        (module, straight_import) for module in imports
+                        (module, straight_import) for module in just_imports
                     )
                 else:
                     root[import_from].update(
                         (module, straight_import | root[import_from].get(module, False))
-                        for module in imports
+                        for module in just_imports
                     )
             else:
-                for module in imports:
+                for module in just_imports:
                     if comments:
-                        self.comments["straight"][module] = comments
+                        categorized_comments["straight"][module] = comments
                         comments = None
 
-                    if (
-                        len(self.out_lines)
-                        > max(self.import_index, self._first_comment_index_end + 1, 1) - 1
-                    ):
+                    if len(out_lines) > max(import_index, first_comment_index_end + 1, 1) - 1:
 
-                        last = self.out_lines and self.out_lines[-1].rstrip() or ""
+                        last = out_lines and out_lines[-1].rstrip() or ""
                         while (
                             last.startswith("#")
                             and not last.endswith('"""')
                             and not last.endswith("'''")
                             and "isort:imports-" not in last
                         ):
-                            self.comments["above"]["straight"].setdefault(module, []).insert(
-                                0, self.out_lines.pop(-1)
+                            categorized_comments["above"]["straight"].setdefault(module, []).insert(
+                                0, out_lines.pop(-1)
                             )
-                            if (
-                                len(self.out_lines) > 0
-                                and len(self.out_lines) != self._first_comment_index_end
-                            ):
-                                last = self.out_lines[-1].rstrip()
+                            if len(out_lines) > 0 and len(out_lines) != first_comment_index_end:
+                                last = out_lines[-1].rstrip()
                             else:
                                 last = ""
-                        if self.index - 1 == self.import_index:
-                            self.import_index -= len(
-                                self.comments["above"]["straight"].get(module, [])
+                        if index - 1 == import_index:
+                            import_index -= len(
+                                categorized_comments["above"]["straight"].get(module, [])
                             )
-                    placed_module = self.place_module(module)
-                    if self.config["verbose"]:
+                    placed_module = finder.find(module)
+                    if verbose:
                         print(
                             "else-type place_module for {} returned {}".format(
                                 module, placed_module
@@ -315,11 +407,9 @@ def file_contents(contents: str, line_separator: str, add_imports: Iterator[str]
                     if placed_module == "":
                         print(
                             "WARNING: could not place module {} of line {} --"
-                            " Do you need to define a default section?".format(
-                                import_from, line
-                            )
+                            " Do you need to define a default section?".format(import_from, line)
                         )
-                    straight_import |= self.imports[placed_module][import_type].get(
-                        module, False
-                    )
-                    self.imports[placed_module][import_type][module] = straight_import
+                    straight_import |= imports[placed_module][type_of_import].get(module, False)
+                    imports[placed_module][type_of_import][module] = straight_import
+
+    change_count = len(out_lines) - original_line_count
