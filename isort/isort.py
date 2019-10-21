@@ -9,7 +9,7 @@ import copy
 import itertools
 import re
 from collections import OrderedDict, defaultdict, namedtuple
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
 from isort.format import format_natural, format_simplified
@@ -18,22 +18,6 @@ from . import output, parse, settings
 from .finders import FindersManager
 from .natural import nsorted
 from .settings import WrapModes
-
-if TYPE_CHECKING:
-    from mypy_extensions import TypedDict
-
-    CommentsAboveDict = TypedDict(
-        "CommentsAboveDict", {"straight": Dict[str, Any], "from": Dict[str, Any]}
-    )
-    CommentsDict = TypedDict(
-        "CommentsDict",
-        {
-            "from": Dict[str, Any],
-            "straight": Dict[str, Any],
-            "nested": Dict[str, Any],
-            "above": CommentsAboveDict,
-        },
-    )
 
 
 class _SortImports:
@@ -44,8 +28,6 @@ class _SortImports:
         self.config = config
         self.extension = extension
 
-        self.place_imports = {}  # type: Dict[str, List[str]]
-        self.import_placements = {}  # type: Dict[str, str]
         self.remove_imports = [
             format_simplified(removal) for removal in self.config["remove_imports"]
         ]
@@ -54,49 +36,43 @@ class _SortImports:
             for key, value in self.config.items()
             if key.startswith("import_heading") and value
         ]
-
-
-        # TODO: REMOVE POST REFACTORING
-        #self.in_lines = file_contents.split(self.line_separator)
-        #self.original_num_of_lines = len(self.in_lines)
-        #if (self.original_num_of_lines > 1 or self.in_lines[:1] not in ([], [""])) or self.config[
-            #"force_adds"
-        #]:
-            #for add_import in self.add_imports:
-                #self.in_lines.append(add_import)
-        #self.number_of_lines = len(self.in_lines)
-
-        self.out_lines = []  # type: List[str]
-        self.comments = {
-            "from": {},
-            "straight": {},
-            "nested": {},
-            "above": {"straight": {}, "from": {}},
-        }  # type: CommentsDict
-        self.imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
-        self.as_map = defaultdict(list)  # type: Dict[str, List[str]]
-
         section_names = self.config["sections"]
         self.sections = namedtuple("Sections", section_names)(
             *[name for name in section_names]
         )  # type: Any
-        for section in itertools.chain(self.sections, self.config["forced_separate"]):
-            self.imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
 
         self.finder = FindersManager(config=self.config, sections=self.sections)
-
-        self.index = 0
-        self.import_index = -1
-        self._first_comment_index_start = -1
-        self._first_comment_index_end = -1
-
-        parse.file_contents(file_contents, line_separator=self.config["line_ending"] or utils.infer_line_separator(file_contents),
-                            add_imports=(format_natural(addition) for addition in self.config["add_imports"]),
-                            force_adds=self.config["force_adds"])
+        self.line_separator = self.config["line_ending"] or utils.infer_line_separator(
+            file_contents
+        )
+        (
+            self.in_lines,
+            self.out_lines,
+            self.import_index,
+            self.place_imports,
+            self.import_placements,
+            self.as_map,
+            self.imports,
+            self.comments,
+            self._first_comment_index_start,
+            self._first_comment_index_end,
+            self.length_change,
+            self.original_num_of_lines,
+        ) = parse.file_contents(
+            file_contents,
+            line_separator=self.line_separator,
+            add_imports=(format_natural(addition) for addition in self.config["add_imports"]),
+            force_adds=self.config["force_adds"],
+            sections=self.sections,
+            section_comments=self._section_comments,
+            forced_separate=self.config["forced_separate"],
+            combine_as_imports=self.config["combine_as_imports"],
+            verbose=self.config["verbose"],
+            finder=self.finder,
+        )
 
         if self.import_index != -1:
             self._add_formatted_imports()
-        self.length_change = len(self.out_lines) - self.original_num_of_lines
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")
@@ -130,35 +106,6 @@ class _SortImports:
         while lines and lines[0].startswith("#"):
             lines = lines[1:]
         return line_separator.join(lines)
-
-    def place_module(self, module_name: str) -> Optional[str]:
-        """Tries to determine if a module is a python std import, third party import, or project code:
-
-        if it can't determine - it assumes it is project code
-
-        """
-        return self.finder.find(module_name)
-
-    def _get_line(self) -> str:
-        """Returns the current line from the file while incrementing the index."""
-        line = self.in_lines[self.index]
-        self.index += 1
-        return line
-
-    @staticmethod
-    def _import_type(line: str) -> Optional[str]:
-        """If the current line is an import line it will return its type (from or straight)"""
-        if "isort:skip" in line or "NOQA" in line:
-            return None
-        elif line.startswith("import "):
-            return "straight"
-        elif line.startswith("from "):
-            return "from"
-        return None
-
-    def _at_end(self) -> bool:
-        """returns True if we are at the end of the file."""
-        return self.index == self.number_of_lines
 
     @staticmethod
     def _module_key(
@@ -733,9 +680,22 @@ class _SortImports:
 
             for index, line in enumerate(tail):
                 in_quote = self._in_quote
-                (should_skip, self._in_quote, self.in_top_comment, self._first_comment_index_start, self._first_comment_index_end) = parse.skip_line(line, in_quote=self._in_quote, in_top_comment=self.in_top_comment,
-                                              index=self.index, section_comments=self._section_comments, first_comment_index_start=self._first_comment_index_start, first_comment_index_end=self._first_comment_index_end)
-                if not self._skip_line(line) and line.strip():
+                (
+                    should_skip,
+                    self._in_quote,
+                    self.in_top_comment,
+                    self._first_comment_index_start,
+                    self._first_comment_index_end,
+                ) = parse.skip_line(
+                    line,
+                    in_quote=self._in_quote,
+                    in_top_comment=False,
+                    index=len(self.out_lines),
+                    section_comments=self._section_comments,
+                    first_comment_index_start=self._first_comment_index_start,
+                    first_comment_index_end=self._first_comment_index_end,
+                )
+                if not should_skip and line.strip():
                     if (
                         line.strip().startswith("#")
                         and len(tail) > (index + 1)
@@ -778,17 +738,3 @@ class _SortImports:
                     if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
                         new_out_lines.append("")
             self.out_lines = new_out_lines
-
-
-
-    def _strip_syntax(self, import_string: str) -> str:
-        import_string = import_string.replace("_import", "[[i]]")
-        for remove_syntax in ["\\", "(", ")", ","]:
-            import_string = import_string.replace(remove_syntax, " ")
-        import_list = import_string.split()
-        for key in ("from", "import"):
-            if key in import_list:
-                import_list.remove(key)
-        import_string = " ".join(import_list)
-        import_string = import_string.replace("[[i]]", "_import")
-        return import_string.replace("{ ", "{|").replace(" }", "|}")

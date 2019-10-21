@@ -1,12 +1,17 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import defaultdict, OrderedDict
-from typing import Tuple, List, Generator, Iterator, TYPE_CHECKING, Optional, Any
+from typing import Tuple, List, Generator, Iterator, TYPE_CHECKING, Optional, Any, Dict
 from .finders import FindersManager
 from itertools import chain
+from warnings import warn
 
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
+
+    CommentsAboveDict = TypedDict(
+        "CommentsAboveDict", {"straight": Dict[str, Any], "from": Dict[str, Any]}
+    )
 
     CommentsDict = TypedDict(
         "CommentsDict",
@@ -59,10 +64,10 @@ def skip_line(
     in_quote: str,
     in_top_comment: bool,
     index: int,
-    section_comments: Iterator[str],
+    section_comments: List[str],
     first_comment_index_start: int,
     first_comment_index_end: int,
-) -> (bool, str, bool, int, int):
+) -> Tuple[bool, str, bool, int, int]:
     """Determine if a given line should be skipped.
 
     Returns back a tuple containing:
@@ -76,7 +81,7 @@ def skip_line(
     skip_line = bool(in_quote)
     if index == 1 and line.startswith("#"):
         in_top_comment = True
-        return True
+        return (True, in_quote, in_top_comment, first_comment_index_start, first_comment_index_end)
     elif in_top_comment:
         if not line.startswith("#") or line in section_comments:
             in_top_comment = False
@@ -120,12 +125,25 @@ def file_contents(
     add_imports: Iterator[str],
     force_adds: bool,
     sections: Any,
-    section_comments: Iterator[str],
+    section_comments: List[str],
     forced_separate: Iterator[str],
     combine_as_imports: bool,
     verbose: bool,
     finder: FindersManager,
-) -> dict:
+) -> Tuple[
+    List[str],
+    List[str],
+    int,
+    Dict[str, List[str]],
+    Dict[str, str],
+    Dict[str, List[str]],
+    Dict[str, Dict[str, Any]],
+    "CommentsDict",
+    int,
+    int,
+    int,
+    int,
+]:
     """Parses a python file taking out and categorizing imports."""
     in_lines = contents.split(line_separator)
     out_lines = []
@@ -138,7 +156,7 @@ def file_contents(
 
     place_imports = {}  # type: Dict[str, List[str]]
     import_placements = {}  # type: Dict[str, str]
-    as_map = defaultdict(list)
+    as_map = defaultdict(list)  # type: Dict[str, List[str]]
     imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
     for section in chain(sections, forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
@@ -194,13 +212,13 @@ def file_contents(
                 if part and not part.startswith("from ") and not part.startswith("import "):
                     skipping_line = True
 
-        type_of_import = import_type(line)
+        type_of_import = import_type(line) or ""  # type: str
         if not type_of_import or skipping_line:
             out_lines.append(raw_line)
             continue
 
         for line in (line.strip() for line in line.split(";")):
-            type_of_import = import_type(line)
+            type_of_import = import_type(line) or ""
             if not type_of_import:
                 out_lines.append(line)
                 continue
@@ -324,11 +342,11 @@ def file_contents(
                         )
                     )
                 if placed_module == "":
-                    print(
-                        "WARNING: could not place module {} of line {} --"
+                    warn(
+                        "could not place module {} of line {} --"
                         " Do you need to define a default section?".format(import_from, line)
                     )
-                root = imports[placed_module][type_of_import]
+                root = imports[placed_module][type_of_import]  # type: ignore
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment:
@@ -375,7 +393,7 @@ def file_contents(
                 for module in just_imports:
                     if comments:
                         categorized_comments["straight"][module] = comments
-                        comments = None
+                        comments = []
 
                     if len(out_lines) > max(import_index, first_comment_index_end + 1, 1) - 1:
 
@@ -405,11 +423,28 @@ def file_contents(
                             )
                         )
                     if placed_module == "":
-                        print(
-                            "WARNING: could not place module {} of line {} --"
+                        warn(
+                            "could not place module {} of line {} --"
                             " Do you need to define a default section?".format(import_from, line)
                         )
-                    straight_import |= imports[placed_module][type_of_import].get(module, False)
-                    imports[placed_module][type_of_import][module] = straight_import
+                    straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
+                        module, False
+                    )
+                    imports[placed_module][type_of_import][module] = straight_import  # type: ignore
 
     change_count = len(out_lines) - original_line_count
+
+    return (
+        in_lines,
+        out_lines,
+        import_index,
+        place_imports,
+        import_placements,
+        as_map,
+        imports,
+        categorized_comments,
+        first_comment_index_start,
+        first_comment_index_end,
+        change_count,
+        original_line_count,
+    )
