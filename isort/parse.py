@@ -1,10 +1,10 @@
 """Defines parsing functions used by isort for parsing import definitions"""
-from collections import defaultdict, OrderedDict
-from typing import Tuple, List, Generator, Iterator, TYPE_CHECKING, Optional, Any, Dict
-from .finders import FindersManager
+from collections import OrderedDict, defaultdict
 from itertools import chain
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, Optional, Tuple
 from warnings import warn
 
+from .finders import FindersManager
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
@@ -321,17 +321,17 @@ def file_contents(
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
-                    index = just_imports.index("as")
+                    as_index = just_imports.index("as")
                     if type_of_import == "from":
-                        module = just_imports[0] + "." + just_imports[index - 1]
-                        as_map[module].append(just_imports[index + 1])
+                        module = just_imports[0] + "." + just_imports[as_index - 1]
+                        as_map[module].append(just_imports[as_index + 1])
                     else:
-                        module = just_imports[index - 1]
-                        as_map[module].append(just_imports[index + 1])
+                        module = just_imports[as_index - 1]
+                        as_map[module].append(just_imports[as_index + 1])
                     if not combine_as_imports:
                         categorized_comments["straight"][module] = comments
                         comments = []
-                    del just_imports[index : index + 2]
+                    del just_imports[as_index : as_index + 2]
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder.find(import_from)
