@@ -1,4 +1,4 @@
-from hypothesis_auto import auto_pytest_magic
+import sys
 
 from isort import parse
 from isort.finders import FindersManager
@@ -12,10 +12,6 @@ import abc
 def function():
     pass
 """
-auto_pytest_magic(parse.import_comment)
-auto_pytest_magic(parse.import_type)
-auto_pytest_magic(parse._strip_syntax)
-auto_pytest_magic(parse.skip_line)
 
 
 def test_file_contents():
@@ -49,3 +45,12 @@ def test_file_contents():
     assert import_index == 1
     assert change_count == -2
     assert original_line_count == len(in_lines)
+
+
+if sys.version_info[1] > 5:
+    from hypothesis_auto import auto_pytest_magic
+
+    auto_pytest_magic(parse.import_comment)
+    auto_pytest_magic(parse.import_type)
+    auto_pytest_magic(parse._strip_syntax)
+    auto_pytest_magic(parse.skip_line)

@@ -32,7 +32,7 @@ nosetests.xml
 htmlcov
 .cache
 .pytest_cache/
-.hypothesis
+.hypothesis/
 
 # Translations
 *.mo
