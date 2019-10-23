@@ -12,7 +12,7 @@ from collections import OrderedDict, defaultdict, namedtuple
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
-from isort.format import format_natural, format_simplified
+from isort.format import format_simplified
 
 from . import output, parse, settings
 from .finders import FindersManager
@@ -41,10 +41,6 @@ class _SortImports:
             *[name for name in section_names]
         )  # type: Any
 
-        self.finder = FindersManager(config=self.config, sections=self.sections)
-        self.line_separator = self.config["line_ending"] or utils.infer_line_separator(
-            file_contents
-        )
         (
             self.in_lines,
             self.out_lines,
@@ -58,17 +54,12 @@ class _SortImports:
             self._first_comment_index_end,
             self.length_change,
             self.original_num_of_lines,
+            self.line_separator,
         ) = parse.file_contents(
             file_contents,
-            line_separator=self.line_separator,
-            add_imports=(format_natural(addition) for addition in self.config["add_imports"]),
-            force_adds=self.config["force_adds"],
             sections=self.sections,
             section_comments=self._section_comments,
-            forced_separate=self.config["forced_separate"],
-            combine_as_imports=self.config["combine_as_imports"],
-            verbose=self.config["verbose"],
-            finder=self.finder,
+            config=self.config,
         )
 
         if self.import_index != -1:

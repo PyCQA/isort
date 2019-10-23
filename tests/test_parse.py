@@ -1,7 +1,6 @@
 import sys
 
 from isort import parse
-from isort.finders import FindersManager
 from isort.settings import DEFAULT_SECTIONS, default
 
 TEST_CONTENTS = """
@@ -28,17 +27,9 @@ def test_file_contents():
         first_comment_index_end,
         change_count,
         original_line_count,
+        line_separator,
     ) = parse.file_contents(
-        TEST_CONTENTS,
-        line_separator="\n",
-        add_imports=[],
-        force_adds=False,
-        sections=["FIRSTPARTY"],
-        section_comments=[],
-        forced_separate=[],
-        combine_as_imports=False,
-        verbose=False,
-        finder=FindersManager(config=default, sections=DEFAULT_SECTIONS),
+        TEST_CONTENTS, sections=["FIRSTPARTY"], section_comments=[], config=default
     )
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)

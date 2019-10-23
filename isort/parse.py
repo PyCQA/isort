@@ -4,6 +4,8 @@ from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, Optional, Tuple
 from warnings import warn
 
+from isort.format import format_natural
+
 from .finders import FindersManager
 
 if TYPE_CHECKING:
@@ -22,6 +24,15 @@ if TYPE_CHECKING:
             "above": CommentsAboveDict,
         },
     )
+
+
+def infer_line_separator(file_contents: str) -> str:
+    if "\r\n" in file_contents:
+        return "\r\n"
+    elif "\r" in file_contents:
+        return "\r"
+    else:
+        return "\n"
 
 
 def import_comment(line: str) -> Tuple[str, str]:
@@ -120,16 +131,7 @@ def skip_line(
 
 
 def file_contents(
-    contents: str,
-    line_separator: str,
-    add_imports: Iterator[str],
-    force_adds: bool,
-    sections: Any,
-    section_comments: List[str],
-    forced_separate: Iterator[str],
-    combine_as_imports: bool,
-    verbose: bool,
-    finder: FindersManager,
+    contents: str, sections: Any, section_comments: List[str], config: Dict[str, Any]
 ) -> Tuple[
     List[str],
     List[str],
@@ -143,13 +145,17 @@ def file_contents(
     int,
     int,
     int,
+    str,
 ]:
     """Parses a python file taking out and categorizing imports."""
+    line_separator = config["line_ending"] or infer_line_separator(contents)  # type: str
+    add_imports = (format_natural(addition) for addition in config["add_imports"])
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
+    finder = FindersManager(config=config, sections=sections)
 
-    if original_line_count > 1 or in_lines[:1] not in ([], [""]) or force_adds:
+    if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config["force_adds"]:
         in_lines.extend(add_imports)
 
     line_count = len(in_lines)
@@ -158,7 +164,7 @@ def file_contents(
     import_placements = {}  # type: Dict[str, str]
     as_map = defaultdict(list)  # type: Dict[str, List[str]]
     imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
-    for section in chain(sections, forced_separate):
+    for section in chain(sections, config["forced_separate"]):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments = {
         "from": {},
@@ -328,14 +334,14 @@ def file_contents(
                     else:
                         module = just_imports[as_index - 1]
                         as_map[module].append(just_imports[as_index + 1])
-                    if not combine_as_imports:
+                    if not config["combine_as_imports"]:
                         categorized_comments["straight"][module] = comments
                         comments = []
                     del just_imports[as_index : as_index + 2]
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder.find(import_from)
-                if verbose:
+                if config["verbose"]:
                     print(
                         "from-type place_module for {} returned {}".format(
                             import_from, placed_module
@@ -416,7 +422,7 @@ def file_contents(
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
                     placed_module = finder.find(module)
-                    if verbose:
+                    if config["verbose"]:
                         print(
                             "else-type place_module for {} returned {}".format(
                                 module, placed_module
@@ -447,4 +453,5 @@ def file_contents(
         first_comment_index_end,
         change_count,
         original_line_count,
+        line_separator,
     )

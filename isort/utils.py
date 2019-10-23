@@ -52,12 +52,3 @@ def difference(a: Iterable[Any], b: Container[Any]) -> List[Any]:
         if item not in b:
             d.append(item)
     return d
-
-
-def infer_line_separator(file_contents: str) -> str:
-    if "\r\n" in file_contents:
-        return "\r\n"
-    elif "\r" in file_contents:
-        return "\r"
-    else:
-        return "\n"
