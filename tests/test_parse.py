@@ -43,5 +43,6 @@ if sys.version_info[1] > 5:
 
     auto_pytest_magic(parse.import_comment)
     auto_pytest_magic(parse.import_type)
-    auto_pytest_magic(parse._strip_syntax)
     auto_pytest_magic(parse.skip_line)
+    auto_pytest_magic(parse._strip_syntax)
+    auto_pytest_magic(parse._infer_line_separator)

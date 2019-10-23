@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     )
 
 
-def infer_line_separator(file_contents: str) -> str:
+def _infer_line_separator(file_contents: str) -> str:
     if "\r\n" in file_contents:
         return "\r\n"
     elif "\r" in file_contents:
@@ -148,7 +148,7 @@ def file_contents(
     str,
 ]:
     """Parses a python file taking out and categorizing imports."""
-    line_separator = config["line_ending"] or infer_line_separator(contents)  # type: str
+    line_separator = config["line_ending"] or _infer_line_separator(contents)  # type: str
     add_imports = (format_natural(addition) for addition in config["add_imports"])
     in_lines = contents.split(line_separator)
     out_lines = []
