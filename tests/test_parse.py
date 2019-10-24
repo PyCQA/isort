@@ -28,9 +28,9 @@ def test_file_contents():
         change_count,
         original_line_count,
         line_separator,
-    ) = parse.file_contents(
-        TEST_CONTENTS, sections=["FIRSTPARTY"], section_comments=[], config=default
-    )
+        sections,
+        section_comments,
+    ) = parse.file_contents(TEST_CONTENTS, config=default)
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)
     assert import_index == 1

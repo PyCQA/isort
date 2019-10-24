@@ -1,5 +1,5 @@
 """Defines parsing functions used by isort for parsing import definitions"""
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict, namedtuple
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, Optional, Tuple
 from warnings import warn
@@ -131,7 +131,7 @@ def skip_line(
 
 
 def file_contents(
-    contents: str, sections: Any, section_comments: List[str], config: Dict[str, Any]
+    contents: str, config: Dict[str, Any]
 ) -> Tuple[
     List[str],
     List[str],
@@ -146,6 +146,8 @@ def file_contents(
     int,
     int,
     str,
+    Any,
+    List[str],
 ]:
     """Parses a python file taking out and categorizing imports."""
     line_separator = config["line_ending"] or _infer_line_separator(contents)  # type: str
@@ -153,6 +155,11 @@ def file_contents(
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
+
+    sections = namedtuple("Sections", config["sections"])(*config["sections"])  # type: Any
+    section_comments = [
+        "# " + value for key, value in config.items() if key.startswith("import_heading") and value
+    ]
     finder = FindersManager(config=config, sections=sections)
 
     if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config["force_adds"]:
@@ -454,4 +461,6 @@ def file_contents(
         change_count,
         original_line_count,
         line_separator,
+        sections,
+        section_comments,
     )

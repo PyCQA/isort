@@ -31,15 +31,6 @@ class _SortImports:
         self.remove_imports = [
             format_simplified(removal) for removal in self.config["remove_imports"]
         ]
-        self._section_comments = [
-            "# " + value
-            for key, value in self.config.items()
-            if key.startswith("import_heading") and value
-        ]
-        section_names = self.config["sections"]
-        self.sections = namedtuple("Sections", section_names)(
-            *[name for name in section_names]
-        )  # type: Any
 
         (
             self.in_lines,
@@ -55,12 +46,9 @@ class _SortImports:
             self.length_change,
             self.original_num_of_lines,
             self.line_separator,
-        ) = parse.file_contents(
-            file_contents,
-            sections=self.sections,
-            section_comments=self._section_comments,
-            config=self.config,
-        )
+            self.sections,
+            self._section_comments,
+        ) = parse.file_contents(file_contents, config=self.config)
 
         if self.import_index != -1:
             self._add_formatted_imports()
