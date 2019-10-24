@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from isort import utils
 from isort.format import format_simplified
 
-from . import output, parse, settings
+from . import output, parse, settings, wrap_modes
 from .finders import FindersManager
 from .natural import nsorted
 from .settings import WrapModes
@@ -481,18 +481,19 @@ class _SortImports:
     def _multi_line_reformat(
         self, import_start: str, from_imports: List[str], comments: Sequence[str]
     ) -> str:
-        output_mode = self.config["multi_line_output"].name.lower()
-        formatter = getattr(output, output_mode, output.grid)
+        formatter = getattr(
+            wrap_modes, self.config["multi_line_output"].name.lower(), wrap_modes.grid
+        )
         dynamic_indent = " " * (len(import_start) + 1)
         indent = self.config["indent"]
         line_length = self.config["wrap_length"] or self.config["line_length"]
         import_statement = formatter(
-            import_start,
-            copy.copy(from_imports),
-            dynamic_indent,
-            indent,
-            line_length,
-            comments,
+            statement=import_start,
+            imports=copy.copy(from_imports),
+            white_space=dynamic_indent,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
             line_separator=self.line_separator,
             comment_prefix=self.config["comment_prefix"],
             include_trailing_comma=self.config["include_trailing_comma"],
@@ -510,12 +511,12 @@ class _SortImports:
                 import_statement = new_import_statement
                 line_length -= 1
                 new_import_statement = formatter(
-                    import_start,
-                    copy.copy(from_imports),
-                    dynamic_indent,
-                    indent,
-                    line_length,
-                    comments,
+                    statement=import_start,
+                    imports=copy.copy(from_imports),
+                    white_space=dynamic_indent,
+                    indent=indent,
+                    line_length=line_length,
+                    comments=comments,
                     line_separator=self.line_separator,
                     comment_prefix=self.config["comment_prefix"],
                     include_trailing_comma=self.config["include_trailing_comma"],
