@@ -1,7 +1,7 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import OrderedDict, defaultdict, namedtuple
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple
 from warnings import warn
 
 from isort.format import format_natural
@@ -130,25 +130,25 @@ def skip_line(
     )
 
 
-def file_contents(
-    contents: str, config: Dict[str, Any]
-) -> Tuple[
-    List[str],
-    List[str],
-    int,
-    Dict[str, List[str]],
-    Dict[str, str],
-    Dict[str, List[str]],
-    Dict[str, Dict[str, Any]],
-    "CommentsDict",
-    int,
-    int,
-    int,
-    int,
-    str,
-    Any,
-    List[str],
-]:
+class ParsedContent(NamedTuple):
+    in_lines: List[str]
+    lines_without_imports: List[str]
+    import_index: int
+    place_imports: Dict[str, List[str]]
+    import_placements: Dict[str, str]
+    as_map: Dict[str, List[str]]
+    imports: Dict[str, Dict[str, Any]]
+    categorized_comments: "CommentsDict"
+    first_comment_index_start: int
+    first_comment_index_end: int
+    change_count: int
+    original_line_count: int
+    line_separator: str
+    sections: Any
+    section_comments: List[str]
+
+
+def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config["line_ending"] or _infer_line_separator(contents)
     add_imports = (format_natural(addition) for addition in config["add_imports"])
@@ -447,20 +447,20 @@ def file_contents(
 
     change_count = len(out_lines) - original_line_count
 
-    return (
-        in_lines,
-        out_lines,
-        import_index,
-        place_imports,
-        import_placements,
-        as_map,
-        imports,
-        categorized_comments,
-        first_comment_index_start,
-        first_comment_index_end,
-        change_count,
-        original_line_count,
-        line_separator,
-        sections,
-        section_comments,
+    return ParsedContent(
+        in_lines=in_lines,
+        lines_without_imports=out_lines,
+        import_index=import_index,
+        place_imports=place_imports,
+        import_placements=import_placements,
+        as_map=as_map,
+        imports=imports,
+        categorized_comments=categorized_comments,
+        first_comment_index_start=first_comment_index_start,
+        first_comment_index_end=first_comment_index_end,
+        change_count=change_count,
+        original_line_count=original_line_count,
+        line_separator=line_separator,
+        sections=sections,
+        section_comments=section_comments,
     )
