@@ -5,8 +5,7 @@ from typing import Any, Container, Iterable, Iterator, List
 
 
 def exists_case_sensitive(path: str) -> bool:
-    """
-    Returns if the given path exists and also matches the case on Windows.
+    """Returns if the given path exists and also matches the case on Windows.
 
     When finding files that can be imported, it is important for the cases to match because while
     file os.path.exists("module.py") and os.path.exists("MODULE.py") both return True on Windows,
@@ -21,8 +20,7 @@ def exists_case_sensitive(path: str) -> bool:
 
 @contextmanager
 def chdir(path: str) -> Iterator[None]:
-    """Context manager for changing dir and restoring previous workdir after exit.
-    """
+    """Context manager for changing dir and restoring previous workdir after exit."""
     curdir = os.getcwd()
     os.chdir(path)
     try:
@@ -32,9 +30,8 @@ def chdir(path: str) -> Iterator[None]:
 
 
 def union(a: Iterable[Any], b: Iterable[Any]) -> List[Any]:
-    """ Return a list of items that are in `a` or `b`
-    """
-    u = []  # type: List[Any]
+    """Return a list of items that are in `a` or `b`"""
+    u: List[Any] = []
     for item in a:
         if item not in u:
             u.append(item)
@@ -45,8 +42,7 @@ def union(a: Iterable[Any], b: Iterable[Any]) -> List[Any]:
 
 
 def difference(a: Iterable[Any], b: Container[Any]) -> List[Any]:
-    """ Return a list of items from `a` that are not in `b`.
-    """
+    """Return a list of items from `a` that are not in `b`."""
     d = []
     for item in a:
         if item not in b:

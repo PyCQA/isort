@@ -150,13 +150,13 @@ def file_contents(
     List[str],
 ]:
     """Parses a python file taking out and categorizing imports."""
-    line_separator = config["line_ending"] or _infer_line_separator(contents)  # type: str
+    line_separator: str = config["line_ending"] or _infer_line_separator(contents)
     add_imports = (format_natural(addition) for addition in config["add_imports"])
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
 
-    sections = namedtuple("Sections", config["sections"])(*config["sections"])  # type: Any
+    sections: Any = namedtuple("Sections", config["sections"])(*config["sections"])
     section_comments = [
         "# " + value for key, value in config.items() if key.startswith("import_heading") and value
     ]
@@ -167,18 +167,18 @@ def file_contents(
 
     line_count = len(in_lines)
 
-    place_imports = {}  # type: Dict[str, List[str]]
-    import_placements = {}  # type: Dict[str, str]
-    as_map = defaultdict(list)  # type: Dict[str, List[str]]
-    imports = OrderedDict()  # type: OrderedDict[str, Dict[str, Any]]
+    place_imports: Dict[str, List[str]] = {}
+    import_placements: Dict[str, str] = {}
+    as_map: Dict[str, List[str]] = defaultdict(list)
+    imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
     for section in chain(sections, config["forced_separate"]):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
-    categorized_comments = {
+    categorized_comments: CommentsDict = {
         "from": {},
         "straight": {},
         "nested": {},
         "above": {"straight": {}, "from": {}},
-    }  # type: CommentsDict
+    }
 
     index = 0
     import_index = -1
@@ -225,7 +225,7 @@ def file_contents(
                 if part and not part.startswith("from ") and not part.startswith("import "):
                     skipping_line = True
 
-        type_of_import = import_type(line) or ""  # type: str
+        type_of_import: str = import_type(line) or ""
         if not type_of_import or skipping_line:
             out_lines.append(raw_line)
             continue

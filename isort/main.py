@@ -83,7 +83,7 @@ class ISortCommand(setuptools.Command):
     """
 
     description = "Run isort on modules registered in setuptools"
-    user_options = []  # type: List[Any]
+    user_options: List[Any] = []
 
     def initialize_options(self) -> None:
         default_settings = default.copy()
@@ -92,7 +92,7 @@ class ISortCommand(setuptools.Command):
 
     def finalize_options(self) -> None:
         "Get options from config files."
-        self.arguments = {}  # type: Dict[str, Any]
+        self.arguments: Dict[str, Any] = {}
         computed_settings = from_path(os.getcwd())
         for key, value in computed_settings.items():
             self.arguments[key] = value
@@ -589,7 +589,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         ).copy()
         config.update(arguments)
         wrong_sorted_files = False
-        skipped = []  # type: List[str]
+        skipped: List[str] = []
 
         if config.get("filter_files"):
             filtered_files = []

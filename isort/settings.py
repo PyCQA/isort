@@ -252,7 +252,7 @@ def _update_settings_with_config(
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
-    type_converter = type(default.get(setting_name, ""))  # type: Callable[[str], Any]
+    type_converter: Callable[[str], Any] = type(default.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = WrapModes.from_string
     return type_converter
@@ -339,7 +339,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
 
 @lru_cache()
 def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
-    settings = {}  # type: Dict[str, Any]
+    settings: Dict[str, Any] = {}
 
     with open(file_path) as config_file:
         if file_path.endswith(".toml"):

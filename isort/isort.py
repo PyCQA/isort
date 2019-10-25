@@ -534,9 +534,7 @@ class _SortImports:
 
         """
         sort_ignore_case = self.config["force_alphabetical_sort_within_sections"]
-        sections = itertools.chain(
-            self.sections, self.config["forced_separate"]
-        )  # type: Iterable[str]
+        sections: Iterable[str] = itertools.chain(self.sections, self.config["forced_separate"])
 
         if self.config["no_sections"]:
             self.imports["no_sections"] = {"straight": [], "from": {}}
@@ -547,7 +545,7 @@ class _SortImports:
                 self.imports["no_sections"]["from"].update(self.imports[section].get("from", {}))
             sections = ("no_sections",)
 
-        output = []  # type: List[str]
+        output: List[str] = []
         pending_lines_before = False
         for section in sections:
             straight_modules = self.imports[section]["straight"]
@@ -564,7 +562,7 @@ class _SortImports:
             if self.config["force_sort_within_sections"]:
                 copied_comments = copy.deepcopy(self.comments)
 
-            section_output = []  # type: List[str]
+            section_output: List[str] = []
             if self.config["from_first"]:
                 self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
                 if self.config["lines_between_types"] and from_modules and straight_modules:
@@ -655,7 +653,7 @@ class _SortImports:
 
         if len(self.out_lines) > imports_tail:
             next_construct = ""
-            self._in_quote = False  # type: Any
+            self._in_quote: str = ""
             tail = self.out_lines[imports_tail:]
 
             for index, line in enumerate(tail):
