@@ -31,20 +31,20 @@ def chdir(path: str) -> Iterator[None]:
 
 def union(a: Iterable[Any], b: Iterable[Any]) -> List[Any]:
     """Return a list of items that are in `a` or `b`"""
-    u: List[Any] = []
+    unioned: List[Any] = []
     for item in a:
-        if item not in u:
-            u.append(item)
+        if item not in unioned:
+            unioned.append(item)
     for item in b:
-        if item not in u:
-            u.append(item)
-    return u
+        if item not in unioned:
+            unioned.append(item)
+    return unioned
 
 
 def difference(a: Iterable[Any], b: Container[Any]) -> List[Any]:
     """Return a list of items from `a` that are not in `b`."""
-    d = []
+    differences = []
     for item in a:
         if item not in b:
-            d.append(item)
-    return d
+            differences.append(item)
+    return differences
