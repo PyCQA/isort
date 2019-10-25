@@ -19,7 +19,7 @@ isort is a Python utility / library to sort imports alphabetically, and
 automatically separated into sections. It provides a command line
 utility, Python library and [plugins for various
 editors](https://github.com/timothycrosley/isort/wiki/isort-Plugins) to
-quickly sort all your imports. It requires Python 3.5+ to run but
+quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
 ------------------------------------------------------------------------
