@@ -1,15 +1,20 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
 import enum
 from inspect import signature
-from typing import Any, Callable, List
+from typing import Any, Callable, Dict, List, Sequence
 
+from . import settings
 from .output import with_comments
 
-_wrap_modes = []
+_wrap_modes: Dict[str, Callable[[Any], str]] = {}
 
 
 def from_string(value: str) -> "WrapModes":
     return getattr(WrapModes, str(value), None) or WrapModes(int(value))
+
+
+def formatter_from_string(name: str):
+    return _wrap_modes.get(name.upper(), grid)
 
 
 def _wrap_mode_interface(
@@ -32,7 +37,7 @@ def _wrap_mode(function):
     """Registers an individual wrap mode. Function name and order are significant and used for
        creating enum.
     """
-    _wrap_modes.append((function.__name__.upper(), function))
+    _wrap_modes[function.__name__.upper()] = function
     function.__signature__ = signature(_wrap_mode_interface)
     function.__annotations__ = _wrap_mode_interface.__annotations__
     return function
@@ -266,5 +271,5 @@ def noqa(**interface):
 
 
 WrapModes = enum.Enum(  # type: ignore
-    "WrapModes", {wrap_mode[0]: index for index, wrap_mode in enumerate(_wrap_modes)}
+    "WrapModes", {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
 )

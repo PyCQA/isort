@@ -11,7 +11,14 @@ import setuptools
 
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
-from isort.settings import DEFAULT_SECTIONS, WrapModes, default, file_should_be_skipped, from_path
+from isort.settings import (
+    DEFAULT_SECTIONS,
+    WrapModes,
+    default,
+    file_should_be_skipped,
+    from_path,
+    wrap_mode_from_string,
+)
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 
@@ -318,7 +325,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "-m",
         "--multi-line",
         dest="multi_line_output",
-        type=WrapModes.from_string,
+        type=wrap_mode_from_string,
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
