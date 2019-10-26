@@ -281,13 +281,9 @@ def wrap(
     line_separator: str,
 ) -> str:
     formatter = _wrap_modes.get(config["multi_line_output"].name.upper(), grid)
-    breakpoint()
-    print("HI")
-    print(formatter)
     dynamic_indent = " " * (len(import_start) + 1)
     indent = config["indent"]
     line_length = config["wrap_length"] or config["line_length"]
-    print(line_length)
     import_statement = formatter(
         statement=import_start,
         imports=copy.copy(from_imports),
@@ -332,9 +328,6 @@ def wrap(
 def wrap_line(line: str, line_separator: str, config: Dict[str, Any]) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     wrap_mode = config["multi_line_output"]
-    print(wrap_mode)
-    print("line: ", repr(line_separator))
-    print(config["line_length"])
     if len(line) > config["line_length"] and wrap_mode != WrapModes.NOQA:  # type: ignore
         line_without_comment = line
         comment = None

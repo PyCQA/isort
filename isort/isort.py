@@ -397,7 +397,10 @@ class _SortImports:
                         len(import_statement) > self.config["line_length"]
                         and len(from_import_section) > 0
                         and self.config["multi_line_output"]
-                        not in (settings.WrapModes.GRID, settings.WrapModes.VERTICAL)
+                        not in (
+                            settings.WrapModes.GRID,  # type: ignore
+                            settings.WrapModes.VERTICAL,  # type: ignore
+                        )
                     ):
                         do_multiline_reformat = True
 
@@ -409,8 +412,13 @@ class _SortImports:
                             self.config,
                             self.line_separator,
                         )
-                        if self.config["multi_line_output"] == settings.WrapModes.GRID:
-                            self.config["multi_line_output"] = settings.WrapModes.VERTICAL_GRID
+                        if (
+                            self.config["multi_line_output"]
+                            == settings.WrapModes.GRID  # type: ignore
+                        ):  # type: ignore
+                            self.config[
+                                "multi_line_output"
+                            ] = settings.WrapModes.VERTICAL_GRID  # type: ignore
                             try:
                                 other_import_statement = wrap_modes.wrap(
                                     import_start,
@@ -425,7 +433,9 @@ class _SortImports:
                                 ):
                                     import_statement = other_import_statement
                             finally:
-                                self.config["multi_line_output"] = settings.WrapModes.GRID
+                                self.config[
+                                    "multi_line_output"
+                                ] = settings.WrapModes.GRID  # type: ignore
                     if (
                         not do_multiline_reformat
                         and len(import_statement) > self.config["line_length"]

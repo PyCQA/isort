@@ -20,6 +20,8 @@ from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping,
 
 from .stdlibs import py3, py27
 from .utils import difference, union
+from .wrap_modes import WrapModes
+from .wrap_modes import from_string as wrap_mode_from_string
 
 try:
     import toml
@@ -43,21 +45,6 @@ safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
-
-
-class WrapModes(enum.Enum):
-    GRID = 0  # 0
-    VERTICAL = 1
-    HANGING_INDENT = 2
-    VERTICAL_HANGING_INDENT = 3
-    VERTICAL_GRID = 4
-    VERTICAL_GRID_GROUPED = 5
-    VERTICAL_GRID_GROUPED_NO_COMMA = 6
-    NOQA = 7
-
-    @staticmethod
-    def from_string(value: str) -> "WrapModes":
-        return getattr(WrapModes, str(value), None) or WrapModes(int(value))
 
 
 def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
@@ -116,7 +103,7 @@ default = {
     "known_future_library": ["__future__"],
     "known_third_party": ["google.appengine.api"],
     "known_first_party": [],
-    "multi_line_output": WrapModes.GRID,
+    "multi_line_output": WrapModes.GRID,  # type: ignore
     "forced_separate": [],
     "indent": " " * 4,
     "comment_prefix": "  #",
@@ -254,7 +241,7 @@ def _update_settings_with_config(
 def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
     type_converter: Callable[[str], Any] = type(default.get(setting_name, ""))
     if type_converter == WrapModes:
-        type_converter = WrapModes.from_string
+        type_converter = wrap_mode_from_string
     return type_converter
 
 
