@@ -14,10 +14,9 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from isort import utils
 from isort.format import format_simplified
 
-from . import output, parse, settings, wrap_modes
+from . import output, parse, settings, wrap
 from .finders import FindersManager
 from .natural import nsorted
-from .settings import WrapModes
 
 
 class _SortImports:
@@ -215,7 +214,7 @@ class _SortImports:
             while from_imports:
                 comments = self.comments["from"].pop(module, ())
                 if "*" in from_imports and self.config["combine_star"]:
-                    import_statement = wrap_modes.wrap_line(
+                    import_statement = wrap.line(
                         output.with_comments(
                             comments,
                             "{}*".format(import_start),
@@ -247,9 +246,7 @@ class _SortImports:
                                 and self.imports[section]["from"][module][from_import]
                             ):
                                 section_output.append(
-                                    wrap_modes.wrap_line(
-                                        single_import_line, self.line_separator, self.config
-                                    )
+                                    wrap.line(single_import_line, self.line_separator, self.config)
                                 )
                             from_comments = self.comments["straight"].get(
                                 "{}.{}".format(module, from_import)
@@ -257,7 +254,7 @@ class _SortImports:
                             section_output.extend(
                                 output.with_comments(
                                     from_comments,
-                                    wrap_modes.wrap_line(
+                                    wrap.line(
                                         import_start + as_import, self.line_separator, self.config
                                     ),
                                     removed=self.config["ignore_comments"],
@@ -267,9 +264,7 @@ class _SortImports:
                             )
                         else:
                             section_output.append(
-                                wrap_modes.wrap_line(
-                                    single_import_line, self.line_separator, self.config
-                                )
+                                wrap.line(single_import_line, self.line_separator, self.config)
                             )
                         comments = None
                 else:
@@ -292,7 +287,7 @@ class _SortImports:
                             section_output.append(
                                 output.with_comments(
                                     from_comments,
-                                    wrap_modes.wrap_line(
+                                    wrap.line(
                                         import_start + from_import, self.line_separator, self.config
                                     ),
                                     removed=self.config["ignore_comments"],
@@ -302,7 +297,7 @@ class _SortImports:
                         section_output.extend(
                             output.with_comments(
                                 from_comments,
-                                wrap_modes.wrap_line(
+                                wrap.line(
                                     import_start + as_import, self.line_separator, self.config
                                 ),
                                 removed=self.config["ignore_comments"],
@@ -350,9 +345,7 @@ class _SortImports:
                                     section_output.append("")
                                 section_output.extend(above_comments)
                             section_output.append(
-                                wrap_modes.wrap_line(
-                                    single_import_line, self.line_separator, self.config
-                                )
+                                wrap.line(single_import_line, self.line_separator, self.config)
                             )
                             from_imports.remove(from_import)
                             comments = None
@@ -398,14 +391,14 @@ class _SortImports:
                         and len(from_import_section) > 0
                         and self.config["multi_line_output"]
                         not in (
-                            settings.WrapModes.GRID,  # type: ignore
-                            settings.WrapModes.VERTICAL,  # type: ignore
+                            wrap.Modes.GRID,  # type: ignore
+                            wrap.Modes.VERTICAL,  # type: ignore
                         )
                     ):
                         do_multiline_reformat = True
 
                     if do_multiline_reformat:
-                        import_statement = wrap_modes.wrap(
+                        import_statement = wrap.import_statement(
                             import_start,
                             from_import_section,
                             comments,
@@ -413,14 +406,13 @@ class _SortImports:
                             self.line_separator,
                         )
                         if (
-                            self.config["multi_line_output"]
-                            == settings.WrapModes.GRID  # type: ignore
+                            self.config["multi_line_output"] == wrap.Modes.GRID  # type: ignore
                         ):  # type: ignore
                             self.config[
                                 "multi_line_output"
-                            ] = settings.WrapModes.VERTICAL_GRID  # type: ignore
+                            ] = wrap.Modes.VERTICAL_GRID  # type: ignore
                             try:
-                                other_import_statement = wrap_modes.wrap(
+                                other_import_statement = wrap.import_statement(
                                     import_start,
                                     from_import_section,
                                     comments,
@@ -433,14 +425,12 @@ class _SortImports:
                                 ):
                                     import_statement = other_import_statement
                             finally:
-                                self.config[
-                                    "multi_line_output"
-                                ] = settings.WrapModes.GRID  # type: ignore
+                                self.config["multi_line_output"] = wrap.Modes.GRID  # type: ignore
                     if (
                         not do_multiline_reformat
                         and len(import_statement) > self.config["line_length"]
                     ):
-                        import_statement = wrap_modes.wrap_line(
+                        import_statement = wrap.line(
                             import_statement, self.line_separator, self.config
                         )
 
