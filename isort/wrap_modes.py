@@ -3,8 +3,7 @@ import enum
 from inspect import signature
 from typing import Any, Callable, Dict, List, Sequence
 
-from . import settings
-from .output import with_comments
+from . import comments, settings
 
 _wrap_modes: Dict[str, Callable[[Any], str]] = {}
 
@@ -51,7 +50,7 @@ def grid(**interface):
     interface["statement"] += "(" + interface["imports"].pop(0)
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = with_comments(
+        next_statement = comments.add_to_line(
             interface["comments"],
             interface["statement"] + ", " + next_import,
             removed=interface["remove_comments"],
@@ -69,7 +68,7 @@ def grid(**interface):
                 else:
                     lines[-1] = new_line
             next_import = interface["line_separator"].join(lines)
-            interface["statement"] = with_comments(
+            interface["statement"] = comments.add_to_line(
                 interface["comments"],
                 "{},".format(interface["statement"]),
                 removed=interface["remove_comments"],
@@ -87,7 +86,7 @@ def vertical(**interface):
         return ""
 
     first_import = (
-        with_comments(
+        comments.add_to_line(
             interface["comments"],
             interface["imports"].pop(0) + ",",
             removed=interface["remove_comments"],
@@ -112,7 +111,7 @@ def hanging_indent(**interface):
     interface["statement"] += interface["imports"].pop(0)
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = with_comments(
+        next_statement = comments.add_to_line(
             interface["comments"],
             interface["statement"] + ", " + next_import,
             removed=interface["remove_comments"],
@@ -122,7 +121,7 @@ def hanging_indent(**interface):
             len(next_statement.split(interface["line_separator"])[-1]) + 3
             > interface["line_length"]
         ):
-            next_statement = with_comments(
+            next_statement = comments.add_to_line(
                 interface["comments"],
                 "{}, \\".format(interface["statement"]),
                 removed=interface["remove_comments"],
@@ -137,7 +136,7 @@ def hanging_indent(**interface):
 def vertical_hanging_indent(**interface):
     return "{0}({1}{2}{3}{4}{5}{2})".format(
         interface["statement"],
-        with_comments(
+        comments.add_to_line(
             interface["comments"],
             "",
             removed=interface["remove_comments"],
@@ -155,7 +154,7 @@ def vertical_grid_common(need_trailing_char: bool, **interface):
         return ""
 
     interface["statement"] += (
-        with_comments(
+        comments.add_to_line(
             interface["comments"],
             "(",
             removed=interface["remove_comments"],

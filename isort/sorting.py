@@ -1,5 +1,5 @@
 import re
-from typing import Mapping, Optional, Any
+from typing import Any, Mapping, Optional
 
 
 def module_key(

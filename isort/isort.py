@@ -13,13 +13,12 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from isort import utils
 
-from . import output, parse, settings, wrap, sorting, output
+from . import output, parse, settings, sorting, wrap
 from .finders import FindersManager
 from .natural import nsorted
 
 
 class _SortImports:
-
     def __init__(self, file_contents: str, config: Dict[str, Any], extension: str = "py") -> None:
         self.config = config
         self.extension = extension

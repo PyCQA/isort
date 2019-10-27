@@ -1,41 +1,28 @@
-from typing import List, Optional
+import copy
+import itertools
 import re
+from typing import Any, Dict, Iterable, List, Optional
 
-from . import parse, sorting
 from isort.format import format_simplified
 
+from . import parse, sorting, wrap
+from .comments import add_to_line as with_comments
+from .natural import nsorted
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
 
-def with_comments(
-    comments: Optional[List[str]],
-    original_string: str = "",
-    removed: bool = False,
-    comment_prefix: str = "",
-) -> str:
-    """Returns a string with comments added if removed is not set."""
-    if removed:
-        return parse.import_comment(original_string)[0]
 
-    if not comments:
-        return original_string
-    else:
-        return "{}{} {}".format(
-            parse.import_comment(original_string)[0], comment_prefix, "; ".join(comments)
-        )
-
-
-def with_formatted_imports(parsed: parse.ParsedContent, config: Dict[str, Any], extension: str="py") -> List[str]:
+def with_formatted_imports(
+    parsed: parse.ParsedContent, config: Dict[str, Any], extension: str = "py"
+) -> List[str]:
     """Adds the imports back to the file.
 
     (at the index of the first import) sorted alphabetically and split between groups
 
     """
     formatted_output: List[str] = parsed.lines_without_imports.copy()
-    remove_imports = [
-        format_simplified(removal) for removal in config["remove_imports"]
-    ]
+    remove_imports = [format_simplified(removal) for removal in config["remove_imports"]]
 
     sort_ignore_case = config["force_alphabetical_sort_within_sections"]
     sections: Iterable[str] = itertools.chain(parsed.sections, config["forced_separate"])
@@ -54,13 +41,11 @@ def with_formatted_imports(parsed: parse.ParsedContent, config: Dict[str, Any], 
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
         straight_modules = nsorted(
-            straight_modules,
-            key=lambda key: sorting.module_key(key, config, section_name=section),
+            straight_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
         )
         from_modules = parsed.imports[section]["from"]
         from_modules = nsorted(
-            from_modules,
-            key=lambda key: sorting.module_key(key, config, section_name=section),
+            from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
         )
 
         if config["force_sort_within_sections"]:
@@ -68,24 +53,42 @@ def with_formatted_imports(parsed: parse.ParsedContent, config: Dict[str, Any], 
 
         section_output: List[str] = []
         if config["from_first"]:
-            section_output = _with_from_imports(parsed, config, from_modules, section, section_output, sort_ignore_case, remove_imports)
+            section_output = _with_from_imports(
+                parsed,
+                config,
+                from_modules,
+                section,
+                section_output,
+                sort_ignore_case,
+                remove_imports,
+            )
             if config["lines_between_types"] and from_modules and straight_modules:
                 section_output.extend([""] * config["lines_between_types"])
-            section_output = _with_straight_imports(parsed, config, straight_modules, section, section_output, remove_imports)
+            section_output = _with_straight_imports(
+                parsed, config, straight_modules, section, section_output, remove_imports
+            )
         else:
-            section_output = _with_straight_imports(parsed, config, straight_modules, section, section_output, remove_imports)
+            section_output = _with_straight_imports(
+                parsed, config, straight_modules, section, section_output, remove_imports
+            )
             if config["lines_between_types"] and from_modules and straight_modules:
                 section_output.extend([""] * config["lines_between_types"])
-            section_output = _with_from_imports(parsed, config, from_modules, section, section_output, sort_ignore_case, remove_imports)
+            section_output = _with_from_imports(
+                parsed,
+                config,
+                from_modules,
+                section,
+                section_output,
+                sort_ignore_case,
+                remove_imports,
+            )
 
         if config["force_sort_within_sections"]:
 
             def by_module(line: str) -> str:
                 section = "B"
 
-                line = _import_line_intro_re.sub(
-                    "", _import_line_midline_import_re.sub(".", line)
-                )
+                line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
                 if line.split(" ")[0] in config["force_to_top"]:
                     section = "A"
                 if not config["order_by_type"]:
@@ -162,7 +165,7 @@ def with_formatted_imports(parsed: parse.ParsedContent, config: Dict[str, Any], 
 
         for index, line in enumerate(tail):
             in_quote = _in_quote
-            should_skip,_in_quote, *_ = parse.skip_line(
+            should_skip, _in_quote, *_ = parse.skip_line(
                 line,
                 in_quote=_in_quote,
                 in_top_comment=False,
@@ -192,9 +195,7 @@ def with_formatted_imports(parsed: parse.ParsedContent, config: Dict[str, Any], 
                     break
 
         if config["lines_after_imports"] != -1:
-            formatted_output[imports_tail:0] = [
-                "" for line in range(config["lines_after_imports"])
-            ]
+            formatted_output[imports_tail:0] = ["" for line in range(config["lines_after_imports"])]
         elif extension != "pyi" and (
             next_construct.startswith("def ")
             or next_construct.startswith("class ")
@@ -225,7 +226,7 @@ def _with_from_imports(
     section: str,
     section_output: List[str],
     ignore_case: bool,
-    remove_imports: List[str]
+    remove_imports: List[str],
 ) -> List[str]:
     new_section_output = section_output.copy()
     for module in from_modules:
@@ -243,23 +244,18 @@ def _with_from_imports(
             )
         if remove_imports:
             from_imports = [
-                line
-                for line in from_imports
-                if not "{}.{}".format(module, line) in remove_imports
+                line for line in from_imports if not "{}.{}".format(module, line) in remove_imports
             ]
 
         sub_modules = ["{}.{}".format(module, from_import) for from_import in from_imports]
         as_imports = {
             from_import: [
-                "{} as {}".format(from_import, as_module)
-                for as_module in parsed.as_map[sub_module]
+                "{} as {}".format(from_import, as_module) for as_module in parsed.as_map[sub_module]
             ]
             for from_import, sub_module in zip(from_imports, sub_modules)
             if sub_module in parsed.as_map
         }
-        if config["combine_as_imports"] and not (
-            "*" in from_imports and config["combine_star"]
-        ):
+        if config["combine_as_imports"] and not ("*" in from_imports and config["combine_star"]):
             if not config["no_inline_sort"]:
                 for as_import in as_imports:
                     as_imports[as_import] = nsorted(as_imports[as_import])
@@ -278,7 +274,7 @@ def _with_from_imports(
             comments = parsed.categorized_comments["from"].pop(module, ())
             if "*" in from_imports and config["combine_star"]:
                 import_statement = wrap.line(
-                    output.with_comments(
+                    with_comments(
                         comments,
                         "{}*".format(import_start),
                         removed=config["ignore_comments"],
@@ -292,13 +288,15 @@ def _with_from_imports(
                 import_statement = None
                 while from_imports:
                     from_import = from_imports.pop(0)
-                    single_import_line = output.with_comments(
+                    single_import_line = with_comments(
                         comments,
                         import_start + from_import,
                         removed=config["ignore_comments"],
                         comment_prefix=config["comment_prefix"],
                     )
-                    comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+                    comment = (
+                        parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+                    )
                     if comment:
                         single_import_line += "{} {}".format(
                             comments and ";" or config["comment_prefix"], comment
@@ -315,11 +313,9 @@ def _with_from_imports(
                             "{}.{}".format(module, from_import)
                         )
                         new_section_output.extend(
-                            output.with_comments(
+                            with_comments(
                                 from_comments,
-                                wrap.line(
-                                    import_start + as_import, parsed.line_separator, config
-                                ),
+                                wrap.line(import_start + as_import, parsed.line_separator, config),
                                 removed=config["ignore_comments"],
                                 comment_prefix=config["comment_prefix"],
                             )
@@ -348,7 +344,7 @@ def _with_from_imports(
                         and parsed.imports[section]["from"][module][from_import]
                     ):
                         new_section_output.append(
-                            output.with_comments(
+                            with_comments(
                                 from_comments,
                                 wrap.line(
                                     import_start + from_import, parsed.line_separator, config
@@ -358,11 +354,9 @@ def _with_from_imports(
                             )
                         )
                     new_section_output.extend(
-                        output.with_comments(
+                        with_comments(
                             from_comments,
-                            wrap.line(
-                                import_start + as_import, parsed.line_separator, config
-                            ),
+                            wrap.line(import_start + as_import, parsed.line_separator, config),
                             removed=config["ignore_comments"],
                             comment_prefix=config["comment_prefix"],
                         )
@@ -372,7 +366,7 @@ def _with_from_imports(
                 star_import = False
                 if "*" in from_imports:
                     new_section_output.append(
-                        output.with_comments(
+                        with_comments(
                             comments,
                             "{}*".format(import_start),
                             removed=config["ignore_comments"],
@@ -384,14 +378,13 @@ def _with_from_imports(
                     comments = None
 
                 for from_import in copy.copy(from_imports):
-                    if (
-                        from_import in as_imports
-                        and not config["keep_direct_and_as_imports"]
-                    ):
+                    if from_import in as_imports and not config["keep_direct_and_as_imports"]:
                         continue
-                    comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+                    comment = (
+                        parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+                    )
                     if comment:
-                        single_import_line = output.with_comments(
+                        single_import_line = with_comments(
                             comments,
                             import_start + from_import,
                             removed=config["ignore_comments"],
@@ -400,11 +393,11 @@ def _with_from_imports(
                         single_import_line += "{} {}".format(
                             comments and ";" or config["comment_prefix"], comment
                         )
-                        above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+                        above_comments = parsed.categorized_comments["above"]["from"].pop(
+                            module, None
+                        )
                         if above_comments:
-                            if new_section_output and config.get(
-                                "ensure_newline_before_comments"
-                            ):
+                            if new_section_output and config.get("ensure_newline_before_comments"):
                                 new_section_output.append("")
                             new_section_output.extend(above_comments)
                         new_section_output.append(
@@ -426,7 +419,7 @@ def _with_from_imports(
                 if star_import:
                     import_statement = import_start + (", ").join(from_import_section)
                 else:
-                    import_statement = output.with_comments(
+                    import_statement = with_comments(
                         comments,
                         import_start + (", ").join(from_import_section),
                         removed=config["ignore_comments"],
@@ -441,10 +434,7 @@ def _with_from_imports(
                 if force_grid_wrap and len(from_import_section) >= force_grid_wrap:
                     do_multiline_reformat = True
 
-                if (
-                    len(import_statement) > config["line_length"]
-                    and len(from_import_section) > 1
-                ):
+                if len(import_statement) > config["line_length"] and len(from_import_section) > 1:
                     do_multiline_reformat = True
 
                 # If line too long AND have imports AND we are
@@ -453,27 +443,18 @@ def _with_from_imports(
                     len(import_statement) > config["line_length"]
                     and len(from_import_section) > 0
                     and config["multi_line_output"]
-                    not in (
-                        wrap.Modes.GRID,  # type: ignore
-                        wrap.Modes.VERTICAL,  # type: ignore
-                    )
+                    not in (wrap.Modes.GRID, wrap.Modes.VERTICAL)  # type: ignore  # type: ignore
                 ):
                     do_multiline_reformat = True
 
                 if do_multiline_reformat:
                     import_statement = wrap.import_statement(
-                        import_start,
-                        from_import_section,
-                        comments,
-                        config,
-                        parsed.line_separator,
+                        import_start, from_import_section, comments, config, parsed.line_separator
                     )
                     if (
                         config["multi_line_output"] == wrap.Modes.GRID  # type: ignore
                     ):  # type: ignore
-                        config[
-                            "multi_line_output"
-                        ] = wrap.Modes.VERTICAL_GRID  # type: ignore
+                        config["multi_line_output"] = wrap.Modes.VERTICAL_GRID  # type: ignore
                         try:
                             other_import_statement = wrap.import_statement(
                                 import_start,
@@ -489,13 +470,8 @@ def _with_from_imports(
                                 import_statement = other_import_statement
                         finally:
                             config["multi_line_output"] = wrap.Modes.GRID  # type: ignore
-                if (
-                    not do_multiline_reformat
-                    and len(import_statement) > config["line_length"]
-                ):
-                    import_statement = wrap.line(
-                        import_statement, parsed.line_separator, config
-                    )
+                if not do_multiline_reformat and len(import_statement) > config["line_length"]:
+                    import_statement = wrap.line(import_statement, parsed.line_separator, config)
 
             if import_statement:
                 above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
@@ -507,9 +483,13 @@ def _with_from_imports(
     return new_section_output
 
 
-
 def _with_straight_imports(
-    parsed: parse.ParsedContent, config: Dict[str, Any], straight_modules: Iterable[str], section: str, section_output: List[str], remove_imports: List[str]=[]
+    parsed: parse.ParsedContent,
+    config: Dict[str, Any],
+    straight_modules: Iterable[str],
+    section: str,
+    section_output: List[str],
+    remove_imports: List[str] = [],
 ) -> List[str]:
     new_section_output = section_output.copy()
     for module in straight_modules:
@@ -518,10 +498,7 @@ def _with_straight_imports(
 
         import_definition = []
         if module in parsed.as_map:
-            if (
-                config["keep_direct_and_as_imports"]
-                and parsed.imports[section]["straight"][module]
-            ):
+            if config["keep_direct_and_as_imports"] and parsed.imports[section]["straight"][module]:
                 import_definition.append("import {}".format(module))
             import_definition.extend(
                 "import {} as {}".format(module, as_import) for as_import in parsed.as_map[module]
@@ -535,7 +512,7 @@ def _with_straight_imports(
                 new_section_output.append("")
             new_section_output.extend(comments_above)
         new_section_output.extend(
-            output.with_comments(
+            with_comments(
                 parsed.categorized_comments["straight"].get(module),
                 idef,
                 removed=config["ignore_comments"],
