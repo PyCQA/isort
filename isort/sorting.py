@@ -1,3 +1,6 @@
+import re
+from typing import Mapping, Optional, Any
+
 
 def module_key(
     module_name: str,
