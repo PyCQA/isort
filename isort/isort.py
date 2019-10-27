@@ -15,7 +15,6 @@ from isort import utils
 
 from . import output, parse, settings, sorting, wrap
 from .finders import FindersManager
-from .natural import nsorted
 
 
 class _SortImports:

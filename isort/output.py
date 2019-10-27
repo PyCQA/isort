@@ -1,16 +1,12 @@
 import copy
 import itertools
-import re
+from functools import partial
 from typing import Any, Dict, Iterable, List, Optional
 
 from isort.format import format_simplified
 
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
-from .natural import nsorted
-
-_import_line_intro_re = re.compile("^(?:from|import) ")
-_import_line_midline_import_re = re.compile(" import ")
 
 
 def sorted_imports(
@@ -40,11 +36,11 @@ def sorted_imports(
     pending_lines_before = False
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
-        straight_modules = nsorted(
+        straight_modules = sorting.naturally(
             straight_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
         )
         from_modules = parsed.imports[section]["from"]
-        from_modules = nsorted(
+        from_modules = sorting.naturally(
             from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
         )
 
@@ -84,21 +80,17 @@ def sorted_imports(
             )
 
         if config["force_sort_within_sections"]:
-
-            def by_module(line: str) -> str:
-                section = "B"
-
-                line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
-                if line.split(" ")[0] in config["force_to_top"]:
-                    section = "A"
-                if not config["order_by_type"]:
-                    line = line.lower()
-                return "{}{}".format(section, line)
-
             # Remove comments
             section_output = [line for line in section_output if not line.startswith("#")]
 
-            section_output = nsorted(section_output, key=by_module)
+            section_output = sorting.naturally(
+                section_output,
+                key=partial(
+                    sorting.section_key,
+                    order_by_type=config["order_by_type"],
+                    force_to_top=config["force_to_top"],
+                ),
+            )
 
             # Add comments back
             all_comments = copied_comments["above"]["from"]
@@ -236,7 +228,7 @@ def _with_from_imports(
         import_start = "from {} import ".format(module)
         from_imports = list(parsed.imports[section]["from"][module])
         if not config["no_inline_sort"] or config["force_single_line"]:
-            from_imports = nsorted(
+            from_imports = sorting.naturally(
                 from_imports,
                 key=lambda key: sorting.module_key(
                     key, config, True, ignore_case, section_name=section
@@ -258,7 +250,7 @@ def _with_from_imports(
         if config["combine_as_imports"] and not ("*" in from_imports and config["combine_star"]):
             if not config["no_inline_sort"]:
                 for as_import in as_imports:
-                    as_imports[as_import] = nsorted(as_imports[as_import])
+                    as_imports[as_import] = sorting.naturally(as_imports[as_import])
             for from_import in copy.copy(from_imports):
                 if from_import in as_imports:
                     idx = from_imports.index(from_import)
@@ -319,7 +311,7 @@ def _with_from_imports(
                                 removed=config["ignore_comments"],
                                 comment_prefix=config["comment_prefix"],
                             )
-                            for as_import in nsorted(as_imports[from_import])
+                            for as_import in sorting.naturally(as_imports[from_import])
                         )
                     else:
                         new_section_output.append(
@@ -329,7 +321,7 @@ def _with_from_imports(
             else:
                 while from_imports and from_imports[0] in as_imports:
                     from_import = from_imports.pop(0)
-                    as_imports[from_import] = nsorted(as_imports[from_import])
+                    as_imports[from_import] = sorting.naturally(as_imports[from_import])
                     from_comments = parsed.categorized_comments["straight"].get(
                         "{}.{}".format(module, from_import)
                     )

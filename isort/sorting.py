@@ -1,5 +1,8 @@
 import re
-from typing import Any, Mapping, Optional
+from typing import Any, Callable, Iterable, List, Mapping, Optional
+
+_import_line_intro_re = re.compile("^(?:from|import) ")
+_import_line_midline_import_re = re.compile(" import ")
 
 
 def module_key(
@@ -38,3 +41,34 @@ def module_key(
         prefix,
         length_sort and (str(len(module_name)) + ":" + module_name) or module_name,
     )
+
+
+def section_key(line: str, order_by_type: bool, force_to_top: List[str]) -> str:
+    section = "B"
+
+    line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
+    if line.split(" ")[0] in force_to_top:
+        section = "A"
+    if not order_by_type:
+        line = line.lower()
+    return "{}{}".format(section, line)
+
+
+def naturally(to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None) -> List[str]:
+    """Returns a naturally sorted list"""
+    if key is None:
+        key_callback = _natural_keys
+    else:
+
+        def key_callback(text: str) -> List[Any]:
+            return _natural_keys(key(text))  # type: ignore
+
+    return sorted(to_sort, key=key_callback)
+
+
+def _atoi(text: str) -> Any:
+    return int(text) if text.isdigit() else text
+
+
+def _natural_keys(text: str) -> List[Any]:
+    return [_atoi(c) for c in re.split(r"(\d+)", text)]
