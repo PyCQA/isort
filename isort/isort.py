@@ -14,14 +14,12 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from isort import utils
 from isort.format import format_simplified
 
-from . import output, parse, settings, wrap
+from . import output, parse, settings, wrap, sorting, output
 from .finders import FindersManager
 from .natural import nsorted
 
 
 class _SortImports:
-    _import_line_intro_re = re.compile("^(?:from|import) ")
-    _import_line_midline_import_re = re.compile(" import ")
 
     def __init__(self, file_contents: str, config: Dict[str, Any], extension: str = "py") -> None:
         self.config = config
@@ -31,6 +29,7 @@ class _SortImports:
             format_simplified(removal) for removal in self.config["remove_imports"]
         ]
 
+        parsed = parse.file_contents(file_contents, config=self.config)
         (
             self.in_lines,
             self.out_lines,
@@ -47,10 +46,10 @@ class _SortImports:
             self.line_separator,
             self.sections,
             self._section_comments,
-        ) = parse.file_contents(file_contents, config=self.config)
+        ) = parsed
 
         if self.import_index != -1:
-            self._add_formatted_imports()
+            output.with_formatted_imports(parsed, self.config, self.extension)
         while self.out_lines and self.out_lines[-1].strip() == "":
             self.out_lines.pop(-1)
         self.out_lines.append("")
@@ -84,44 +83,6 @@ class _SortImports:
         while lines and lines[0].startswith("#"):
             lines = lines[1:]
         return line_separator.join(lines)
-
-    @staticmethod
-    def _module_key(
-        module_name: str,
-        config: Mapping[str, Any],
-        sub_imports: bool = False,
-        ignore_case: bool = False,
-        section_name: Optional[Any] = None,
-    ) -> str:
-        match = re.match(r"^(\.+)\s*(.*)", module_name)
-        if match:
-            sep = " " if config["reverse_relative"] else "_"
-            module_name = sep.join(match.groups())
-
-        prefix = ""
-        if ignore_case:
-            module_name = str(module_name).lower()
-        else:
-            module_name = str(module_name)
-
-        if sub_imports and config["order_by_type"]:
-            if module_name.isupper() and len(module_name) > 1:  # see issue #376
-                prefix = "A"
-            elif module_name[0:1].isupper():
-                prefix = "B"
-            else:
-                prefix = "C"
-        if not config["case_sensitive"]:
-            module_name = module_name.lower()
-        if section_name is None or "length_sort_" + str(section_name).lower() not in config:
-            length_sort = config["length_sort"]
-        else:
-            length_sort = config["length_sort_" + str(section_name).lower()]
-        return "{}{}{}".format(
-            module_name in config["force_to_top"] and "A" or "B",
-            prefix,
-            length_sort and (str(len(module_name)) + ":" + module_name) or module_name,
-        )
 
     def _add_straight_imports(
         self, straight_modules: Iterable[str], section: str, section_output: List[str]
@@ -174,7 +135,7 @@ class _SortImports:
             if not self.config["no_inline_sort"] or self.config["force_single_line"]:
                 from_imports = nsorted(
                     from_imports,
-                    key=lambda key: self._module_key(
+                    key=lambda key: sorting.module_key(
                         key, self.config, True, ignore_case, section_name=section
                     ),
                 )
@@ -441,193 +402,3 @@ class _SortImports:
                             section_output.append("")
                         section_output.extend(above_comments)
                     section_output.append(import_statement)
-
-    def _add_formatted_imports(self) -> None:
-        """Adds the imports back to the file.
-
-        (at the index of the first import) sorted alphabetically and split between groups
-
-        """
-        sort_ignore_case = self.config["force_alphabetical_sort_within_sections"]
-        sections: Iterable[str] = itertools.chain(self.sections, self.config["forced_separate"])
-
-        if self.config["no_sections"]:
-            self.imports["no_sections"] = {"straight": [], "from": {}}
-            for section in sections:
-                self.imports["no_sections"]["straight"].extend(
-                    self.imports[section].get("straight", [])
-                )
-                self.imports["no_sections"]["from"].update(self.imports[section].get("from", {}))
-            sections = ("no_sections",)
-
-        output: List[str] = []
-        pending_lines_before = False
-        for section in sections:
-            straight_modules = self.imports[section]["straight"]
-            straight_modules = nsorted(
-                straight_modules,
-                key=lambda key: self._module_key(key, self.config, section_name=section),
-            )
-            from_modules = self.imports[section]["from"]
-            from_modules = nsorted(
-                from_modules,
-                key=lambda key: self._module_key(key, self.config, section_name=section),
-            )
-
-            if self.config["force_sort_within_sections"]:
-                copied_comments = copy.deepcopy(self.comments)
-
-            section_output: List[str] = []
-            if self.config["from_first"]:
-                self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
-                if self.config["lines_between_types"] and from_modules and straight_modules:
-                    section_output.extend([""] * self.config["lines_between_types"])
-                self._add_straight_imports(straight_modules, section, section_output)
-            else:
-                self._add_straight_imports(straight_modules, section, section_output)
-                if self.config["lines_between_types"] and from_modules and straight_modules:
-                    section_output.extend([""] * self.config["lines_between_types"])
-                self._add_from_imports(from_modules, section, section_output, sort_ignore_case)
-
-            if self.config["force_sort_within_sections"]:
-
-                def by_module(line: str) -> str:
-                    section = "B"
-
-                    line = self._import_line_intro_re.sub(
-                        "", self._import_line_midline_import_re.sub(".", line)
-                    )
-                    if line.split(" ")[0] in self.config["force_to_top"]:
-                        section = "A"
-                    if not self.config["order_by_type"]:
-                        line = line.lower()
-                    return "{}{}".format(section, line)
-
-                # Remove comments
-                section_output = [line for line in section_output if not line.startswith("#")]
-
-                section_output = nsorted(section_output, key=by_module)
-
-                # Add comments back
-                all_comments = copied_comments["above"]["from"]
-                all_comments.update(copied_comments["above"]["straight"])
-                comment_indexes = {}
-                for module, comment_list in all_comments.items():
-                    for idx, line in enumerate(section_output):
-                        if module in line:
-                            comment_indexes[idx] = comment_list
-                added = 0
-                for idx, comment_list in comment_indexes.items():
-                    for comment in comment_list:
-                        section_output.insert(idx + added, comment)
-                        added += 1
-
-            section_name = section
-            no_lines_before = section_name in self.config["no_lines_before"]
-
-            if section_output:
-                if section_name in self.place_imports:
-                    self.place_imports[section_name] = section_output
-                    continue
-
-                section_title = self.config.get("import_heading_" + str(section_name).lower(), "")
-                if section_title:
-                    section_comment = "# {}".format(section_title)
-                    if (
-                        section_comment not in self.out_lines[0:1]
-                        and section_comment not in self.in_lines[0:1]
-                    ):
-                        section_output.insert(0, section_comment)
-
-                if pending_lines_before or not no_lines_before:
-                    output += [""] * self.config["lines_between_sections"]
-
-                output += section_output
-
-                pending_lines_before = False
-            else:
-                pending_lines_before = pending_lines_before or not no_lines_before
-
-        while output and output[-1].strip() == "":
-            output.pop()
-        while output and output[0].strip() == "":
-            output.pop(0)
-
-        output_at = 0
-        if self.import_index < self.original_num_of_lines:
-            output_at = self.import_index
-        elif self._first_comment_index_end != -1 and self._first_comment_index_start <= 2:
-            output_at = self._first_comment_index_end
-        self.out_lines[output_at:0] = output
-
-        imports_tail = output_at + len(output)
-        while [
-            character.strip() for character in self.out_lines[imports_tail : imports_tail + 1]
-        ] == [""]:
-            self.out_lines.pop(imports_tail)
-
-        if len(self.out_lines) > imports_tail:
-            next_construct = ""
-            self._in_quote: str = ""
-            tail = self.out_lines[imports_tail:]
-
-            for index, line in enumerate(tail):
-                in_quote = self._in_quote
-                (
-                    should_skip,
-                    self._in_quote,
-                    self.in_top_comment,
-                    self._first_comment_index_start,
-                    self._first_comment_index_end,
-                ) = parse.skip_line(
-                    line,
-                    in_quote=self._in_quote,
-                    in_top_comment=False,
-                    index=len(self.out_lines),
-                    section_comments=self._section_comments,
-                    first_comment_index_start=self._first_comment_index_start,
-                    first_comment_index_end=self._first_comment_index_end,
-                )
-                if not should_skip and line.strip():
-                    if (
-                        line.strip().startswith("#")
-                        and len(tail) > (index + 1)
-                        and tail[index + 1].strip()
-                    ):
-                        continue
-                    next_construct = line
-                    break
-                elif not in_quote:
-                    parts = line.split()
-                    if (
-                        len(parts) >= 3
-                        and parts[1] == "="
-                        and "'" not in parts[0]
-                        and '"' not in parts[0]
-                    ):
-                        next_construct = line
-                        break
-
-            if self.config["lines_after_imports"] != -1:
-                self.out_lines[imports_tail:0] = [
-                    "" for line in range(self.config["lines_after_imports"])
-                ]
-            elif self.extension != "pyi" and (
-                next_construct.startswith("def ")
-                or next_construct.startswith("class ")
-                or next_construct.startswith("@")
-                or next_construct.startswith("async def")
-            ):
-                self.out_lines[imports_tail:0] = ["", ""]
-            else:
-                self.out_lines[imports_tail:0] = [""]
-
-        if self.place_imports:
-            new_out_lines = []
-            for index, line in enumerate(self.out_lines):
-                new_out_lines.append(line)
-                if line in self.import_placements:
-                    new_out_lines.extend(self.place_imports[self.import_placements[line]])
-                    if len(self.out_lines) <= index or self.out_lines[index + 1].strip() != "":
-                        new_out_lines.append("")
-            self.out_lines = new_out_lines
