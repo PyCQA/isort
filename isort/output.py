@@ -283,9 +283,9 @@ def _with_from_imports(
                     parsed.line_separator,
                     config,
                 )
-                from_imports = None
+                from_imports = []
             elif config["force_single_line"]:
-                import_statement = None
+                import_statement = ""
                 while from_imports:
                     from_import = from_imports.pop(0)
                     single_import_line = with_comments(
@@ -489,7 +489,7 @@ def _with_straight_imports(
     straight_modules: Iterable[str],
     section: str,
     section_output: List[str],
-    remove_imports: List[str] = [],
+    remove_imports: List[str],
 ) -> List[str]:
     new_section_output = section_output.copy()
     for module in straight_modules:

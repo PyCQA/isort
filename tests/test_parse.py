@@ -1,4 +1,4 @@
-import sys
+from hypothesis_auto import auto_pytest_magic
 
 from isort import parse
 from isort.settings import DEFAULT_SECTIONS, default
@@ -38,11 +38,7 @@ def test_file_contents():
     assert original_line_count == len(in_lines)
 
 
-if sys.version_info[1] > 5:
-    from hypothesis_auto import auto_pytest_magic
-
-    auto_pytest_magic(parse.import_comment)
-    auto_pytest_magic(parse.import_type)
-    auto_pytest_magic(parse.skip_line)
-    auto_pytest_magic(parse._strip_syntax)
-    auto_pytest_magic(parse._infer_line_separator)
+auto_pytest_magic(parse.import_type)
+auto_pytest_magic(parse.skip_line)
+auto_pytest_magic(parse._strip_syntax)
+auto_pytest_magic(parse._infer_line_separator)
