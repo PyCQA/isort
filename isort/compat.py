@@ -218,8 +218,8 @@ class SortImports:
 
     @property
     def sections(self):
-        return self.sorted_imports.sections
+        return self.sorted_imports.parsed.sections
 
     @property
     def length_change(self) -> int:
-        return self.sorted_imports.length_change
+        return self.sorted_imports.parsed.change_count

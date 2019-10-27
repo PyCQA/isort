@@ -6,6 +6,7 @@ from warnings import warn
 
 from isort.format import format_natural
 
+from .comments import parse as parse_comments
 from .finders import FindersManager
 
 if TYPE_CHECKING:
@@ -33,17 +34,6 @@ def _infer_line_separator(file_contents: str) -> str:
         return "\r"
     else:
         return "\n"
-
-
-def import_comment(line: str) -> Tuple[str, str]:
-    """Parses import lines for comments and returns back the
-    import statement and the associated comment.
-    """
-    comment_start = line.find("#")
-    if comment_start != -1:
-        return (line[:comment_start], line[comment_start + 1 :].strip())
-
-    return (line, "")
 
 
 def import_type(line: str) -> Optional[str]:
@@ -239,7 +229,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
             if import_index == -1:
                 import_index = index - 1
             nested_comments = {}
-            import_string, comment = import_comment(line)
+            import_string, comment = parse_comments(line)
             comments = [comment] if comment else []
             line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
             if (
@@ -252,7 +242,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
 
             if "(" in line.split("#")[0] and index < line_count:
                 while not line.strip().endswith(")") and index < line_count:
-                    line, new_comment = import_comment(in_lines[index])
+                    line, new_comment = parse_comments(in_lines[index])
                     index += 1
                     if new_comment:
                         comments.append(new_comment)
@@ -267,7 +257,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                     import_string += line_separator + line
             else:
                 while line.strip().endswith("\\"):
-                    line, new_comment = import_comment(in_lines[index])
+                    line, new_comment = parse_comments(in_lines[index])
                     index += 1
                     if new_comment:
                         comments.append(new_comment)
@@ -289,7 +279,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                         import_string += line_separator + line
 
                         while not line.strip().endswith(")") and index < line_count:
-                            line, new_comment = import_comment(in_lines[index])
+                            line, new_comment = parse_comments(in_lines[index])
                             index += 1
                             if new_comment:
                                 comments.append(new_comment)
