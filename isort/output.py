@@ -13,7 +13,7 @@ _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
 
 
-def with_formatted_imports(
+def sorted_imports(
     parsed: parse.ParsedContent, config: Dict[str, Any], extension: str = "py"
 ) -> List[str]:
     """Adds the imports back to the file.
