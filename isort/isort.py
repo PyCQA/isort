@@ -50,10 +50,10 @@ class _SortImports:
     ) -> bool:
         if output.strip() == check_against.strip():
             if self.config["verbose"]:
-                print("SUCCESS: {} Everything Looks Good!".format(logging_file_path))
+                print(f"SUCCESS: {logging_file_path} Everything Looks Good!")
             return True
 
-        print("ERROR: {} Imports are incorrectly sorted.".format(logging_file_path))
+        print(f"ERROR: {logging_file_path} Imports are incorrectly sorted.")
         return False
 
     @staticmethod

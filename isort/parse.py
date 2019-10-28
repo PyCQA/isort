@@ -339,15 +339,11 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                 import_from = just_imports.pop(0)
                 placed_module = finder.find(import_from)
                 if config["verbose"]:
-                    print(
-                        "from-type place_module for {} returned {}".format(
-                            import_from, placed_module
-                        )
-                    )
+                    print(f"from-type place_module for {import_from} returned {placed_module}")
                 if placed_module == "":
                     warn(
-                        "could not place module {} of line {} --"
-                        " Do you need to define a default section?".format(import_from, line)
+                        f"could not place module {import_from} of line {line} --"
+                        " Do you need to define a default section?"
                     )
                 root = imports[placed_module][type_of_import]  # type: ignore
                 for import_name in just_imports:
@@ -420,15 +416,11 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                             )
                     placed_module = finder.find(module)
                     if config["verbose"]:
-                        print(
-                            "else-type place_module for {} returned {}".format(
-                                module, placed_module
-                            )
-                        )
+                        print(f"else-type place_module for {module} returned {placed_module}")
                     if placed_module == "":
                         warn(
-                            "could not place module {} of line {} --"
-                            " Do you need to define a default section?".format(import_from, line)
+                            f"could not place module {import_from} of line {line} --"
+                            " Do you need to define a default section?"
                         )
                     straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
                         module, False

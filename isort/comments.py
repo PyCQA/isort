@@ -25,4 +25,4 @@ def add_to_line(
     if not comments:
         return original_string
     else:
-        return "{}{} {}".format(parse(original_string)[0], comment_prefix, "; ".join(comments))
+        return f"{parse(original_string)[0]}{comment_prefix} {'; '.join(comments)}"

@@ -86,7 +86,7 @@ class KnownPatternFinder(BaseFinder):
         self.known_patterns: List[Tuple[Pattern[str], str]] = []
         for placement in reversed(self.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-            config_key = "known_{}".format(known_placement.lower())
+            config_key = f"known_{known_placement.lower()}"
             known_patterns = self.config.get(config_key, [])
             known_patterns = [
                 pattern
@@ -129,7 +129,7 @@ class PathFinder(BaseFinder):
 
         # restore the original import path (i.e. not the path to bin/isort)
         root_dir = os.getcwd()
-        src_dir = "{0}/src".format(root_dir)
+        src_dir = f"{root_dir}/src"
         self.paths = [root_dir, src_dir]
 
         # virtual env
@@ -138,14 +138,14 @@ class PathFinder(BaseFinder):
             self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ""
         if self.virtual_env:
-            self.virtual_env_src = "{}/src/".format(self.virtual_env)
-            for path in glob("{}/lib/python*/site-packages".format(self.virtual_env)):
+            self.virtual_env_src = f"{self.virtual_env}/src/"
+            for path in glob(f"{self.virtual_env}/lib/python*/site-packages"):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob("{}/lib/python*/*/site-packages".format(self.virtual_env)):
+            for path in glob(f"{self.virtual_env}/lib/python*/*/site-packages"):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob("{}/src/*".format(self.virtual_env)):
+            for path in glob(f"{self.virtual_env}/src/*"):
                 if os.path.isdir(path):
                     self.paths.append(path)
 
@@ -153,10 +153,10 @@ class PathFinder(BaseFinder):
         self.conda_env = self.config.get("conda_env") or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
-            for path in glob("{}/lib/python*/site-packages".format(self.conda_env)):
+            for path in glob(f"{self.conda_env}/lib/python*/site-packages"):
                 if path not in self.paths:
                     self.paths.append(path)
-            for path in glob("{}/lib/python*/*/site-packages".format(self.conda_env)):
+            for path in glob(f"{self.conda_env}/lib/python*/*/site-packages"):
                 if path not in self.paths:
                     self.paths.append(path)
 
@@ -396,9 +396,9 @@ class FindersManager:
                 if self.verbose:
                     print(
                         (
-                            "{} encountered an error ({}) during "
+                            f"{finder_cls.__name__} encountered an error ({exception}) during "
                             "instantiation and cannot be used"
-                        ).format(finder_cls.__name__, str(exception))
+                        )
                     )
         self.finders: Tuple[BaseFinder, ...] = tuple(finders)
 
@@ -411,9 +411,8 @@ class FindersManager:
                 # import section even if one approach fails
                 if self.verbose:
                     print(
-                        (
-                            "{} encountered an error ({}) while trying to identify the {}" " module"
-                        ).format(finder.__class__.__name__, str(exception), module_name)
+                        f"{finder.__class__.__name__} encountered an error ({exception}) while "
+                        f"trying to identify the {module_name} module"
                     )
             if section is not None:
                 return section

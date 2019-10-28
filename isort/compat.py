@@ -4,6 +4,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, Optional, Tuple
+from warnings import warn
 
 from isort import settings
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
@@ -78,7 +79,7 @@ class SortImports:
         run_path: str = "",
         check_skip: bool = True,
         extension: Optional[str] = None,
-        **setting_overrides: Any
+        **setting_overrides: Any,
     ):
         file_path = None if file_path is None else Path(file_path)
         file_name = None
@@ -107,9 +108,9 @@ class SortImports:
                 if settings.file_should_be_skipped(file_name, self.config, run_path):
                     self.skipped = True
                     if self.config["verbose"]:
-                        print(
-                            "WARNING: {} was skipped as it's listed in 'skip' setting"
-                            " or matches a glob in 'skip_glob' setting".format(absolute_file_path)
+                        warn(
+                            f"{absolute_file_path} was skipped as it's listed in 'skip' setting"
+                            " or matches a glob in 'skip_glob' setting"
                         )
                     file_contents = None
 
@@ -127,11 +128,10 @@ class SortImports:
                 if used_encoding is None:
                     self.skipped = True
                     if self.config["verbose"]:
-                        print(
-                            "WARNING: {} was skipped as it couldn't be opened with the given "
-                            "{} encoding or {} fallback encoding".format(
-                                str(absolute_file_path), file_encoding, fallback_encoding
-                            )
+                        warn(
+                            f"{absolute_file_path} was skipped as it couldn't be opened with the "
+                            f"given {file_encoding} encoding or {fallback_encoding} fallback "
+                            "encoding"
                         )
                 else:
                     file_encoding = used_encoding
@@ -166,11 +166,11 @@ class SortImports:
                     )
                     compile(in_lines_without_top_comment, logging_file_path, "exec", 0, 1)
                     print(
-                        "ERROR: {} isort would have introduced syntax errors, "
-                        "please report to the project!".format(logging_file_path)
+                        f"ERROR: {logging_file_path} isort would have introduced syntax errors, "
+                        "please report to the project!"
                     )
                 except SyntaxError:
-                    print("ERROR: {} File contains syntax errors.".format(logging_file_path))
+                    print(f"ERROR: {logging_file_path} File contains syntax errors.")
 
                 return
 
@@ -212,7 +212,7 @@ class SortImports:
 
             with self.file_path.open("w", encoding=file_encoding, newline="") as output_file:
                 if not self.config["quiet"]:
-                    print("Fixing {}".format(self.file_path))
+                    print(f"Fixing {self.file_path}")
 
                 output_file.write(self.output)
 

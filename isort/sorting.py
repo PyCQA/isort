@@ -36,11 +36,9 @@ def module_key(
         length_sort = config["length_sort"]
     else:
         length_sort = config["length_sort_" + str(section_name).lower()]
-    return "{}{}{}".format(
-        module_name in config["force_to_top"] and "A" or "B",
-        prefix,
-        length_sort and (str(len(module_name)) + ":" + module_name) or module_name,
-    )
+
+    _length_sort_maybe = length_sort and (str(len(module_name)) + ":" + module_name) or module_name
+    return f"{module_name in config['force_to_top'] and 'A' or 'B'}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, order_by_type: bool, force_to_top: List[str]) -> str:
@@ -51,7 +49,7 @@ def section_key(line: str, order_by_type: bool, force_to_top: List[str]) -> str:
         section = "A"
     if not order_by_type:
         line = line.lower()
-    return "{}{}".format(section, line)
+    return f"{section}{line}"
 
 
 def naturally(to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None) -> List[str]:

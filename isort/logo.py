@@ -1,6 +1,6 @@
 from ._version import __version__
 
-ASCII_ART = r"""
+ASCII_ART = rf"""
 /#######################################################################\
 
      `sMMy`
@@ -18,17 +18,13 @@ ASCII_ART = r"""
 
          isort your Python imports for you so you don't have to
 
-                            VERSION {}
+                            VERSION {__version__}
 
 \########################################################################/
-""".format(
-    __version__
-)
+"""
 
-__doc__ = """
+__doc__ = f"""
 ```python
-{}
+{ASCII_ART}
 ```
-""".format(
-    ASCII_ART
-)
+"""

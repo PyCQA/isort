@@ -74,11 +74,8 @@ def line(line: str, line_separator: str, config: Dict[str, Any]) -> str:
             ):
                 line_parts = re.split(exp, line_without_comment)
                 if comment:
-                    line_parts[-1] = "{}{}  #{}".format(
-                        line_parts[-1].strip(),
-                        "," if config["include_trailing_comma"] else "",
-                        comment,
-                    )
+                    _comma_maybe = "," if config["include_trailing_comma"] else ""
+                    line_parts[-1] = f"{line_parts[-1].strip()}{_comma_maybe}  #{comment}"
                 next_line = []
                 while (len(line) + 2) > (
                     config["wrap_length"] or config["line_length"]
@@ -93,31 +90,28 @@ def line(line: str, line_separator: str, config: Dict[str, Any]) -> str:
                 )
                 if config["use_parentheses"]:
                     if splitter == "as ":
-                        output = "{}{}{}".format(line, splitter, cont_line.lstrip())
+                        output = f"{line}{splitter}{cont_line.lstrip()}"
                     else:
-                        output = "{}{}({}{}{}{})".format(
-                            line,
-                            splitter,
-                            line_separator,
-                            cont_line,
-                            "," if config["include_trailing_comma"] and not comment else "",
-                            line_separator
-                            if wrap_mode
-                            in {
-                                Modes.VERTICAL_HANGING_INDENT,  # type: ignore
-                                Modes.VERTICAL_GRID_GROUPED,  # type: ignore
-                            }
-                            else "",
+                        _comma = "," if config["include_trailing_comma"] and not comment else ""
+                        if wrap_mode in (
+                            Modes.VERTICAL_HANGING_INDENT,  # type: ignore
+                            Modes.VERTICAL_GRID_GROUPED,  # type: ignore
+                        ):
+                            _separator = line_separator
+                        else:
+                            _separator = ""
+                        output = (
+                            f"{line}{splitter}({line_separator}{cont_line}{_comma}{_separator})"
                         )
                     lines = output.split(line_separator)
                     if config["comment_prefix"] in lines[-1] and lines[-1].endswith(")"):
                         line, comment = lines[-1].split(config["comment_prefix"], 1)
                         lines[-1] = line + ")" + config["comment_prefix"] + comment[:-1]
                     return line_separator.join(lines)
-                return "{}{}\\{}{}".format(line, splitter, line_separator, cont_line)
+                return f"{line}{splitter}\\{line_separator}{cont_line}"
     elif len(line) > config["line_length"] and wrap_mode == Modes.NOQA:  # type: ignore
         if "# NOQA" not in line:
-            return "{}{} NOQA".format(line, config["comment_prefix"])
+            return f"{line}{config['comment_prefix']} NOQA"
 
     return line
 

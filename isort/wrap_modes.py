@@ -60,20 +60,23 @@ def grid(**interface):
             len(next_statement.split(interface["line_separator"])[-1]) + 1
             > interface["line_length"]
         ):
-            lines = ["{}{}".format(interface["white_space"], next_import.split(" ")[0])]
+            lines = [f"{interface['white_space']}{next_import.split(' ')[0]}"]
             for part in next_import.split(" ")[1:]:
-                new_line = "{} {}".format(lines[-1], part)
+                new_line = f"{lines[-1]} {part}"
                 if len(new_line) + 1 > interface["line_length"]:
-                    lines.append("{}{}".format(interface["white_space"], part))
+                    lines.append(f"{interface['white_space']}{part}")
                 else:
                     lines[-1] = new_line
             next_import = interface["line_separator"].join(lines)
-            interface["statement"] = comments.add_to_line(
-                interface["comments"],
-                "{},".format(interface["statement"]),
-                removed=interface["remove_comments"],
-                comment_prefix=interface["comment_prefix"],
-            ) + "{}{}".format(interface["line_separator"], next_import)
+            interface["statement"] = (
+                comments.add_to_line(
+                    interface["comments"],
+                    f"{interface['statement']},",
+                    removed=interface["remove_comments"],
+                    comment_prefix=interface["comment_prefix"],
+                )
+                + f"{interface['line_separator']}{next_import}"
+            )
             interface["comments"] = []
         else:
             interface["statement"] += ", " + next_import
@@ -95,12 +98,12 @@ def vertical(**interface):
         + interface["line_separator"]
         + interface["white_space"]
     )
-    return "{}({}{}{})".format(
-        interface["statement"],
-        first_import,
-        ("," + interface["line_separator"] + interface["white_space"]).join(interface["imports"]),
-        "," if interface["include_trailing_comma"] else "",
+
+    _imports = ("," + interface["line_separator"] + interface["white_space"]).join(
+        interface["imports"]
     )
+    _comma_maybe = "," if interface["include_trailing_comma"] else ""
+    return f"{interface['statement']}({first_import}{_imports}{_comma_maybe})"
 
 
 @_wrap_mode
@@ -121,12 +124,15 @@ def hanging_indent(**interface):
             len(next_statement.split(interface["line_separator"])[-1]) + 3
             > interface["line_length"]
         ):
-            next_statement = comments.add_to_line(
-                interface["comments"],
-                "{}, \\".format(interface["statement"]),
-                removed=interface["remove_comments"],
-                comment_prefix=interface["comment_prefix"],
-            ) + "{}{}{}".format(interface["line_separator"], interface["indent"], next_import)
+            next_statement = (
+                comments.add_to_line(
+                    interface["comments"],
+                    f"{interface['statement']}, \\",
+                    removed=interface["remove_comments"],
+                    comment_prefix=interface["comment_prefix"],
+                )
+                + f"{interface['line_separator']}{interface['indent']}{next_import}"
+            )
             interface["comments"] = []
         interface["statement"] = next_statement
     return interface["statement"]
@@ -134,18 +140,17 @@ def hanging_indent(**interface):
 
 @_wrap_mode
 def vertical_hanging_indent(**interface):
-    return "{0}({1}{2}{3}{4}{5}{2})".format(
-        interface["statement"],
-        comments.add_to_line(
-            interface["comments"],
-            "",
-            removed=interface["remove_comments"],
-            comment_prefix=interface["comment_prefix"],
-        ),
-        interface["line_separator"],
-        interface["indent"],
-        ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"]),
-        "," if interface["include_trailing_comma"] else "",
+    _line_with_comments = comments.add_to_line(
+        interface["comments"],
+        "",
+        removed=interface["remove_comments"],
+        comment_prefix=interface["comment_prefix"],
+    )
+    _imports = ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"])
+    _comma_maybe = "," if interface["include_trailing_comma"] else ""
+    return (
+        f"{interface['statement']}({_line_with_comments}{interface['line_separator']}"
+        f"{interface['indent']}{_imports}{_comma_maybe}{interface['line_separator']})"
     )
 
 
@@ -166,18 +171,16 @@ def vertical_grid_common(need_trailing_char: bool, **interface):
     )
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = "{}, {}".format(interface["statement"], next_import)
+        next_statement = f"{interface['statement']}, {next_import}"
         current_line_length = len(next_statement.split(interface["line_separator"])[-1])
         if interface["imports"] or need_trailing_char:
             # If we have more interface["imports"] we need to account for a comma after this import
             # We might also need to account for a closing ) we're going to add.
             current_line_length += 1
         if current_line_length > interface["line_length"]:
-            next_statement = "{},{}{}{}".format(
-                interface["statement"],
-                interface["line_separator"],
-                interface["indent"],
-                next_import,
+            next_statement = (
+                f"{interface['statement']},{interface['line_separator']}"
+                f"{interface['indent']}{next_import}"
             )
         interface["statement"] = next_statement
     if interface["include_trailing_comma"]:
@@ -249,24 +252,25 @@ def vertical_grid_grouped_no_comma(**interface):
 
 @_wrap_mode
 def noqa(**interface):
-    retval = "{}{}".format(interface["statement"], ", ".join(interface["imports"]))
+    _imports = ", ".join(interface["imports"])
+    retval = f"{interface['statement']}{_imports}"
     comment_str = " ".join(interface["comments"])
     if interface["comments"]:
         if (
             len(retval) + len(interface["comment_prefix"]) + 1 + len(comment_str)
             <= interface["line_length"]
         ):
-            return "{}{} {}".format(retval, interface["comment_prefix"], comment_str)
+            return f"{retval}{interface['comment_prefix']} {comment_str}"
     else:
         if len(retval) <= interface["line_length"]:
             return retval
     if interface["comments"]:
         if "NOQA" in interface["comments"]:
-            return "{}{} {}".format(retval, interface["comment_prefix"], comment_str)
+            return f"{retval}{interface['comment_prefix']} {comment_str}"
         else:
-            return "{}{} NOQA {}".format(retval, interface["comment_prefix"], comment_str)
+            return f"{retval}{interface['comment_prefix']} NOQA {comment_str}"
     else:
-        return "{}{} NOQA".format(retval, interface["comment_prefix"])
+        return f"{retval}{interface['comment_prefix']} NOQA"
 
 
 WrapModes = enum.Enum(  # type: ignore

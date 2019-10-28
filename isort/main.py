@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
+from warnings import warn
 
 import setuptools
 
@@ -53,8 +54,8 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
     try:
         result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
-    except OSError as e:
-        print("WARNING: Unable to parse file {} due to {}".format(file_name, e))
+    except OSError as error:
+        warn(f"Unable to parse file {file_name} due to {error}")
         return None
 
 
@@ -133,8 +134,8 @@ class ISortCommand(setuptools.Command):
                     incorrectly_sorted = SortImports(python_file, **arguments).incorrectly_sorted
                     if incorrectly_sorted:
                         wrong_sorted_files = True
-                except OSError as e:
-                    print("WARNING: Unable to parse file {} due to {}".format(python_file, e))
+                except OSError as error:
+                    print(f"WARNING: Unable to parse file {python_file} due to {error}")
         if wrong_sorted_files:
             sys.exit(1)
 
@@ -571,15 +572,13 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
         )
         if not os.path.isdir(arguments["settings_path"]):
-            print(
-                "WARNING: settings_path dir does not exist: {}".format(arguments["settings_path"])
-            )
+            warn(f"settings_path dir does not exist: {arguments['settings_path']}")
 
     if "virtual_env" in arguments:
         venv = arguments["virtual_env"]
         arguments["virtual_env"] = os.path.abspath(venv)
         if not os.path.isdir(arguments["virtual_env"]):
-            print("WARNING: virtual_env dir does not exist: {}".format(arguments["virtual_env"]))
+            warn(f"virtual_env dir does not exist: {arguments['virtual_env']}")
 
     file_names = arguments.pop("files", [])
     if file_names == ["-"]:
@@ -643,11 +642,11 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         if num_skipped and not arguments.get("quiet", False):
             if config["verbose"]:
                 for was_skipped in skipped:
-                    print(
-                        "WARNING: {} was skipped as it's listed in 'skip' setting"
-                        " or matches a glob in 'skip_glob' setting".format(was_skipped)
+                    warn(
+                        f"{was_skipped} was skipped as it's listed in 'skip' setting"
+                        " or matches a glob in 'skip_glob' setting"
                     )
-            print("Skipped {} files".format(num_skipped))
+            print(f"Skipped {num_skipped} files")
 
 
 if __name__ == "__main__":

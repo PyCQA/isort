@@ -1948,8 +1948,8 @@ def test_import_split_is_word_boundary_aware() -> None:
 def test_other_file_encodings(tmpdir) -> None:
     """Test to ensure file encoding is respected"""
     for encoding in ("latin1", "utf8"):
-        tmp_fname = tmpdir.join("test_{}.py".format(encoding))
-        file_contents = "# coding: {}\n\ns = u'ã'\n".format(encoding)
+        tmp_fname = tmpdir.join(f"test_{encoding}.py")
+        file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
         assert (
             SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
@@ -1959,7 +1959,7 @@ def test_other_file_encodings(tmpdir) -> None:
 def test_encoding_not_in_comment(tmpdir) -> None:
     """Test that 'encoding' not in a comment is ignored"""
     tmp_fname = tmpdir.join("test_encoding.py")
-    file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n".format("utf8")
+    file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
@@ -1967,7 +1967,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     """Test that 'encoding' not in the first two lines is ignored"""
     tmp_fname = tmpdir.join("test_encoding.py")
-    file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n".format("utf8")
+    file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 

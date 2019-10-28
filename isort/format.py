@@ -20,10 +20,10 @@ def format_natural(import_line: str) -> str:
     import_line = import_line.strip()
     if not import_line.startswith("from ") and not import_line.startswith("import "):
         if "." not in import_line:
-            return "import {}".format(import_line)
+            return f"import {import_line}"
         parts = import_line.split(".")
         end = parts.pop(-1)
-        return "from {} import {}".format(".".join(parts), end)
+        return f"from {'.'.join(parts)} import {end}"
 
     return import_line
 
@@ -49,7 +49,7 @@ def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[
 def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     answer = None
     while answer not in ("yes", "y", "no", "n", "quit", "q"):
-        answer = input("Apply suggested changes to '{}' [y/n/q]? ".format(file_path))  # nosec
+        answer = input(f"Apply suggested changes to '{file_path}' [y/n/q]? ")  # nosec
         answer = answer.lower()
         if answer in ("no", "n"):
             return False
