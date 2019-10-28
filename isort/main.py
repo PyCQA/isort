@@ -135,7 +135,7 @@ class ISortCommand(setuptools.Command):
                     if incorrectly_sorted:
                         wrong_sorted_files = True
                 except OSError as error:
-                    print(f"WARNING: Unable to parse file {python_file} due to {error}")
+                    warn(f"Unable to parse file {python_file} due to {error}")
         if wrong_sorted_files:
             sys.exit(1)
 
