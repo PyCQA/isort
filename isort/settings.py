@@ -18,6 +18,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
 
+from ._future import dataclass
 from .stdlibs import py3, py27
 from .utils import difference, union
 from .wrap_modes import WrapModes
@@ -91,6 +92,65 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 
 # Note that none of these lists must be complete as they are simply
 # fallbacks for when included auto-detection fails.
+@dataclass
+class Config:
+    """Defines the configuration parameters used by isort"""
+    force_to_top =  []
+    skip =  []
+    skip_glob =  []
+    line_length =  79
+    wrap_length =  0
+    line_ending =  None
+    sections =  DEFAULT_SECTIONS
+    no_sections =  False
+    known_future_library =  ["__future__"]
+    known_third_party =  ["google.appengine.api"]
+    known_first_party =  []
+    multi_line_output =  WrapModes.GRID  # type: ignore
+    forced_separate =  []
+    indent =  " " * 4
+    comment_prefix =  "  #"
+    length_sort =  False
+    add_imports =  []
+    remove_imports =  []
+    reverse_relative =  False
+    force_single_line =  False
+    default_section =  "FIRSTPARTY"
+    import_heading_future =  ""
+    import_heading_stdlib =  ""
+    import_heading_thirdparty =  ""
+    import_heading_firstparty =  ""
+    import_heading_localfolder =  ""
+    balanced_wrapping =  False
+    use_parentheses =  False
+    order_by_type =  True
+    atomic =  False
+    lines_after_imports =  -1
+    lines_between_sections =  1
+    lines_between_types =  0
+    combine_as_imports =  False
+    combine_star =  False
+    keep_direct_and_as_imports =  False
+    include_trailing_comma =  False
+    from_first =  False
+    verbose =  False
+    quiet =  False
+    force_adds =  False
+    force_alphabetical_sort_within_sections =  False
+    force_alphabetical_sort =  False
+    force_grid_wrap =  0
+    force_sort_within_sections =  False
+    show_diff =  False
+    ignore_whitespace =  False
+    no_lines_before =  []
+    no_inline_sort =  False
+    ignore_comments =  False
+    safety_excludes =  True
+    case_sensitive =  False
+
+
+
+
 default = {
     "force_to_top": [],
     "skip": [],
