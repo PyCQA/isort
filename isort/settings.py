@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
 
 from ._future import dataclass
-from .stdlibs import py3, py27
+from . import stdlibs
 from .utils import difference, union
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
@@ -46,48 +46,28 @@ safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
+VALID_PY_TARGETS = tuple(target for target in dir(stdlibs) if not target.startswith("_"))
 
 
 def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
-    """
-    Returns the correct standard library based on either the passed py_version flag or the python
+    """Returns the correct standard library based on either the passed py_version flag or the python
     interpreter. Additionaly users have the option to pass all as value instead of an
     version. As an result code will be checked against both standard libraries - python2 & python3
 
     See Issue 889 and 778 for more information
     """
+    py_version = py_version or "all"
+    if py_version == "auto":
+         py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
-    if py_version is None:
-        major, minor = sys.version_info[0:2]
-    elif py_version != "all":
-        minor = 0
-
-        # we have a minor
-        if "." in py_version:
-            # we do not care about patches just major and minor
-            splits = py_version.split(".")[0:2]
-            major = int(splits[0])
-            minor = int(splits[1])
-        else:
-            major = int(py_version)
-
-    _default = default.copy()
-
-    if py_version == "all":
-        standard_library = list(set(py3.stdlib + py27.stdlib))
-    elif major == 3:
-        standard_library = py3.stdlib
-    elif major == 2 and minor == 7:
-        standard_library = py27.stdlib
-    else:
+    if py_version not in VALID_PY_TARGETS:
         raise ValueError(
-            "The python version %s is not supported. "
-            "You can set a python version with the -py or --python-version flag " % py_version
+            f"The python version {py_version} is not supported. "
+            "You can set a python version with the -py or --python-version flag. "
+            f"The following versions are supported: {VALID_PY_TARGETS}"
         )
 
-    _default["known_standard_library"] = standard_library
-
-    return _default
+    return {**default, "known_standard_library": getattr(stdlibs, py_version)}
 
 
 # Note that none of these lists must be complete as they are simply

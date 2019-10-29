@@ -14,6 +14,7 @@ from isort import SortImports, __version__
 from isort.logo import ASCII_ART
 from isort.settings import (
     DEFAULT_SECTIONS,
+    VALID_PY_TARGETS,
     WrapModes,
     default,
     file_should_be_skipped,
@@ -539,8 +540,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--python-version",
         action="store",
         dest="py_version",
-        help="Tells isort to sort the standard library based on the python version. "
-        "Default is the version of the running interpreter, for instance: -py 3, -py 2.7",
+        choices=VALID_PY_TARGETS + ("auto", ),
+        help="Tells isort to sort the standard library based on the the specified python version."
+        "Default is to assume any python version could be the target, and use a union off all "
+        "stdlib modules across versions. If auto is specified, the version of the interpreter "
+        f"used to run isort (py{sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
