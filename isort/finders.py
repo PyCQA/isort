@@ -1,5 +1,4 @@
-"""Finders try to find right section for passed module name
-"""
+"""Finders try to find right section for passed module name"""
 import inspect
 import os
 import os.path
@@ -98,9 +97,7 @@ class KnownPatternFinder(BaseFinder):
                 self.known_patterns.append((re.compile(regexp), placement))
 
     def _parse_known_pattern(self, pattern: str) -> List[str]:
-        """
-        Expand pattern if identified as a directory and return found sub packages
-        """
+        """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
                 filename
@@ -238,8 +235,7 @@ class ReqsBaseFinder(BaseFinder):
             # return dict(tuple(line.strip().split(":")[::-1]) for line in f)
 
     def _load_names(self) -> List[str]:
-        """Return list of thirdparty modules from requirements
-        """
+        """Return list of thirdparty modules from requirements"""
         names = []
         for path in self._get_files():
             for name in self._get_names(path):
@@ -255,8 +251,7 @@ class ReqsBaseFinder(BaseFinder):
             path = os.path.dirname(path)
 
     def _get_files(self) -> Iterator[str]:
-        """Return paths to all requirements files
-        """
+        """Return paths to all requirements files"""
         path = os.path.abspath(self.path)
         if os.path.isfile(path):
             path = os.path.dirname(path)
@@ -297,8 +292,7 @@ class RequirementsFinder(ReqsBaseFinder):
     enabled = bool(parse_requirements)
 
     def _get_files_from_dir(self, path: str) -> Iterator[str]:
-        """Return paths to requirements files from passed dir.
-        """
+        """Return paths to requirements files from passed dir."""
         yield from self._get_files_from_dir_cached(path)
 
     @classmethod
@@ -329,8 +323,7 @@ class RequirementsFinder(ReqsBaseFinder):
         return results
 
     def _get_names(self, path: str) -> Iterator[str]:
-        """Load required packages from path to requirements file
-        """
+        """Load required packages from path to requirements file"""
         yield from self._get_names_cached(path)
 
     @classmethod
