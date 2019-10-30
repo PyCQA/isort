@@ -4,12 +4,12 @@ import functools
 import glob
 import os
 import re
+import sys
+from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 from warnings import warn
 
 import setuptools
-from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 
-import sys
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
 from isort.settings import (

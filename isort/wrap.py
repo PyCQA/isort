@@ -1,6 +1,5 @@
 import copy
 import re
-
 from typing import Any, Dict, List, Sequence
 
 from .wrap_modes import WrapModes as Modes

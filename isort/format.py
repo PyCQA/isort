@@ -1,10 +1,8 @@
+import sys
 from datetime import datetime
 from difflib import unified_diff
 from pathlib import Path
-
 from typing import Optional
-
-import sys
 
 
 def format_simplified(import_line: str) -> str:

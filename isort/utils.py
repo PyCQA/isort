@@ -1,9 +1,7 @@
 import os
-from contextlib import contextmanager
-
-from typing import Any, Container, Iterable, Iterator, List
-
 import sys
+from contextlib import contextmanager
+from typing import Any, Container, Iterable, Iterator, List
 
 
 def exists_case_sensitive(path: str) -> bool:

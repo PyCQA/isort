@@ -1,5 +1,4 @@
 import re
-
 from typing import Any, Callable, Iterable, List, Mapping, Optional
 
 _import_line_intro_re = re.compile("^(?:from|import) ")

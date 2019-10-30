@@ -13,9 +13,8 @@ import copy
 import inspect
 import keyword
 import re
-import types
-
 import sys
+import types
 
 __all__ = [
     "dataclass",

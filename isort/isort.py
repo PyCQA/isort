@@ -6,12 +6,11 @@ or:
     sorted = SortImports(file_contents=file_contents).output
 """
 import copy
+import itertools
 import re
 from collections import OrderedDict, defaultdict, namedtuple
-
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
-import itertools
 from isort import utils
 
 from . import output, parse, settings, sorting, wrap

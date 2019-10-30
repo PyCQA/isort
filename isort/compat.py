@@ -1,12 +1,11 @@
 import locale
 import os
 import re
+import sys
 from pathlib import Path
+from typing import Any, Optional, Tuple
 from warnings import warn
 
-from typing import Any, Optional, Tuple
-
-import sys
 from isort import settings
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from isort.isort import _SortImports

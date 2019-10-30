@@ -11,11 +11,11 @@ import fnmatch
 import os
 import posixpath
 import re
+import sys
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
-
 from typing import (
     Any,
     Callable,
@@ -28,8 +28,6 @@ from typing import (
     Tuple,
     Union,
 )
-
-import sys
 
 from . import stdlibs
 from ._future import dataclass, field
@@ -60,7 +58,7 @@ safety_exclude_re = re.compile(
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
 VALID_PY_TARGETS: Iterable[str] = tuple(
-    target for target in dir(stdlibs) if not target.startswith("_")
+    target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
 
 
@@ -82,7 +80,10 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
             f"The following versions are supported: {VALID_PY_TARGETS}"
         )
 
-    return {**default, "known_standard_library": getattr(stdlibs, py_version)}
+    if py_version != "all":
+        py_version = f"py{py_version}"
+
+    return {**default, "known_standard_library": getattr(stdlibs, py_version).stdlib}
 
 
 # Note that none of these lists must be complete as they are simply
