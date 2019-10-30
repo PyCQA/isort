@@ -1,7 +1,6 @@
-import sys
-
 from hypothesis_auto import auto_pytest_magic
 
+import sys
 from isort import wrap_modes
 
 auto_pytest_magic(wrap_modes.grid, auto_allow_exceptions_=(ValueError,))

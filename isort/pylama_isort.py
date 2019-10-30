@@ -1,8 +1,9 @@
 import os
-import sys
-from typing import Any, Dict, List
 
 from pylama.lint import Linter as BaseLinter
+from typing import Any, Dict, List
+
+import sys
 
 from . import SortImports
 

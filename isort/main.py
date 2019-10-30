@@ -4,12 +4,12 @@ import functools
 import glob
 import os
 import re
-import sys
-from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 from warnings import warn
 
 import setuptools
+from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 
+import sys
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
 from isort.settings import (
@@ -540,7 +540,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--python-version",
         action="store",
         dest="py_version",
-        choices=VALID_PY_TARGETS + ("auto", ),
+        choices=tuple(VALID_PY_TARGETS) + ("auto",),
         help="Tells isort to sort the standard library based on the the specified python version."
         "Default is to assume any python version could be the target, and use a union off all "
         "stdlib modules across versions. If auto is specified, the version of the interpreter "

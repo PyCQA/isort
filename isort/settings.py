@@ -11,15 +11,28 @@ import fnmatch
 import os
 import posixpath
 import re
-import sys
 import warnings
 from distutils.util import strtobool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
 
-from ._future import dataclass
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Union,
+)
+
+import sys
+
 from . import stdlibs
+from ._future import dataclass, field
 from .utils import difference, union
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
@@ -37,16 +50,18 @@ try:
 except ImportError:
     appdirs = None
 
-MAX_CONFIG_SEARCH_DEPTH = (
+MAX_CONFIG_SEARCH_DEPTH: int = (
     25
 )  # The number of parent directories isort will look for a config file within
-DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
+DEFAULT_SECTIONS: Iterable[str] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 
 safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
-VALID_PY_TARGETS = tuple(target for target in dir(stdlibs) if not target.startswith("_"))
+VALID_PY_TARGETS: Iterable[str] = tuple(
+    target for target in dir(stdlibs) if not target.startswith("_")
+)
 
 
 def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
@@ -58,7 +73,7 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
     """
     py_version = py_version or "all"
     if py_version == "auto":
-         py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+        py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
     if py_version not in VALID_PY_TARGETS:
         raise ValueError(
@@ -75,60 +90,59 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 @dataclass
 class Config:
     """Defines the configuration parameters used by isort"""
-    force_to_top =  []
-    skip =  []
-    skip_glob =  []
-    line_length =  79
-    wrap_length =  0
-    line_ending =  None
-    sections =  DEFAULT_SECTIONS
-    no_sections =  False
-    known_future_library =  ["__future__"]
-    known_third_party =  ["google.appengine.api"]
-    known_first_party =  []
-    multi_line_output =  WrapModes.GRID  # type: ignore
-    forced_separate =  []
-    indent =  " " * 4
-    comment_prefix =  "  #"
-    length_sort =  False
-    add_imports =  []
-    remove_imports =  []
-    reverse_relative =  False
-    force_single_line =  False
-    default_section =  "FIRSTPARTY"
-    import_heading_future =  ""
-    import_heading_stdlib =  ""
-    import_heading_thirdparty =  ""
-    import_heading_firstparty =  ""
-    import_heading_localfolder =  ""
-    balanced_wrapping =  False
-    use_parentheses =  False
-    order_by_type =  True
-    atomic =  False
-    lines_after_imports =  -1
-    lines_between_sections =  1
-    lines_between_types =  0
-    combine_as_imports =  False
-    combine_star =  False
-    keep_direct_and_as_imports =  False
-    include_trailing_comma =  False
-    from_first =  False
-    verbose =  False
-    quiet =  False
-    force_adds =  False
-    force_alphabetical_sort_within_sections =  False
-    force_alphabetical_sort =  False
-    force_grid_wrap =  0
-    force_sort_within_sections =  False
-    show_diff =  False
-    ignore_whitespace =  False
-    no_lines_before =  []
-    no_inline_sort =  False
-    ignore_comments =  False
-    safety_excludes =  True
-    case_sensitive =  False
 
-
+    force_to_top: List[str] = field(default_factory=list)
+    skip: List[str] = field(default_factory=list)
+    skip_glob: List[str] = field(default_factory=list)
+    line_length: int = 79
+    wrap_length: int = 0
+    line_ending: str = ""
+    sections: Iterable[str] = DEFAULT_SECTIONS
+    no_sections: bool = False
+    known_future_library: List[str] = field(default_factory=lambda: ["__future__"])
+    known_third_party: List[str] = field(default_factory=lambda: ["google.appengine.api"])
+    known_first_party: List[str] = field(default_factory=list)
+    multi_line_output = WrapModes.GRID  # type: ignore
+    forced_separate: List[str] = field(default_factory=list)
+    indent: str = " " * 4
+    comment_prefix: str = "  #"
+    length_sort: bool = False
+    add_imports: List[str] = field(default_factory=list)
+    remove_imports: List[str] = field(default_factory=list)
+    reverse_relative: bool = False
+    force_single_line: bool = False
+    default_section: str = "FIRSTPARTY"
+    import_heading_future: str = ""
+    import_heading_stdlib: str = ""
+    import_heading_thirdparty: str = ""
+    import_heading_firstparty: str = ""
+    import_heading_localfolder: str = ""
+    balanced_wrapping: bool = False
+    use_parentheses: bool = False
+    order_by_type: bool = True
+    atomic: bool = False
+    lines_after_imports: int = -1
+    lines_between_sections: int = 1
+    lines_between_types: int = 0
+    combine_as_imports: bool = False
+    combine_star: bool = False
+    keep_direct_and_as_imports: bool = False
+    include_trailing_comma: bool = False
+    from_first: bool = False
+    verbose: bool = False
+    quiet: bool = False
+    force_adds: bool = False
+    force_alphabetical_sort_within_sections: bool = False
+    force_alphabetical_sort: bool = False
+    force_grid_wrap: int = 0
+    force_sort_within_sections: bool = False
+    show_diff: bool = False
+    ignore_whitespace: bool = False
+    no_lines_before: List[str] = field(default_factory=list)
+    no_inline_sort: bool = False
+    ignore_comments: bool = False
+    safety_excludes: bool = True
+    case_sensitive: bool = False
 
 
 default = {

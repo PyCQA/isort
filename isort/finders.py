@@ -3,12 +3,12 @@ import inspect
 import os
 import os.path
 import re
-import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
+
 from typing import (
     Any,
     Dict,
@@ -22,6 +22,8 @@ from typing import (
     Tuple,
     Type,
 )
+
+import sys
 
 from .utils import chdir, exists_case_sensitive
 

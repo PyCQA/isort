@@ -4,6 +4,7 @@ usage:
     exit_code = git_hook(strict=True|False, modify=True|False)
 """
 import subprocess  # nosec - Needed for hook
+
 from typing import List
 
 from isort import SortImports
