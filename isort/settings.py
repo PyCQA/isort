@@ -230,7 +230,7 @@ def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, A
     for key, value in setting_overrides.items():
         access_key = key.replace("not_", "").lower()
         # The sections config needs to retain order and can't be converted to a set.
-        if access_key != "sections" and type(config.get(access_key)) in (list, tuple):
+        if access_key != "sections" and type(config.get(access_key)) in (list, tuple, set):
             if key.startswith("not_"):
                 config[access_key] = list(set(config[access_key]).difference(value))
             else:
