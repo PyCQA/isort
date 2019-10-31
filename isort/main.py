@@ -541,10 +541,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store",
         dest="py_version",
         choices=tuple(VALID_PY_TARGETS) + ("auto",),
-        help="Tells isort to sort the standard library based on the the specified python version."
-        "Default is to assume any python version could be the target, and use a union off all "
-        "stdlib modules across versions. If auto is specified, the version of the interpreter "
-        f"used to run isort (py{sys.version_info.major}{sys.version_info.minor}) will be used.",
+        help="Tells isort to set the known standard library based on the the specified Python "
+        "version. Default is to assume any Python 3 version could be the target, and use a union "
+        "off all stdlib modules across versions. If auto is specified, the version of the "
+        "interpreter used to run isort "
+        f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}

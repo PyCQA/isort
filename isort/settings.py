@@ -69,7 +69,7 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 
     See Issue 889 and 778 for more information
     """
-    py_version = py_version or "all"
+    py_version = py_version or "3"
     if py_version == "auto":
         py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
