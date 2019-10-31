@@ -884,7 +884,7 @@ def test_first_party_overrides_standard_section() -> None:
         "import profile.test\n"
     )
     test_output = SortImports(
-        file_contents=test_input, known_first_party=["profile"], py_version="2.7"
+        file_contents=test_input, known_first_party=["profile"], py_version="27"
     ).output
     assert test_output == (
         "import os\n"
@@ -1132,7 +1132,7 @@ def test_order_by_type() -> None:
         "from subprocess import PIPE, Popen, STDOUT\n"
     )
 
-    assert SortImports(file_contents=test_input, order_by_type=True, py_version="2.7").output == (
+    assert SortImports(file_contents=test_input, order_by_type=True, py_version="27").output == (
         "import glob\n"
         "import os\n"
         "import shutil\n"
