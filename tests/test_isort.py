@@ -1218,7 +1218,7 @@ def test_settings_combine_instead_of_overwrite() -> None:
     """Test to ensure settings combine logically, instead of fully overwriting."""
     assert set(
         SortImports(known_standard_library=["not_std_library"]).config["known_standard_library"]
-    ) == set(SortImports().config["known_standard_library"] + ["not_std_library"])
+    ) == set(SortImports().config["known_standard_library"]) | {"not_std_library"}
 
     assert set(
         SortImports(not_known_standard_library=["thread"]).config["known_standard_library"]
