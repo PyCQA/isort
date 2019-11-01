@@ -2,6 +2,7 @@
 
 Should be ran using py.test by simply running py.test in the isort project directory
 """
+import importlib.machinery
 import os
 import os.path
 import posixpath
@@ -3098,21 +3099,27 @@ def test_path_finder(monkeypatch) -> None:
     si = SortImports(file_contents="")
     finder = finders.PathFinder(config=si.config, sections=si.sections)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
-    ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
-    imaginary_paths = {
-        posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
-        posixpath.join(third_party_prefix, "example_2.py"),
-        posixpath.join(third_party_prefix, "example_3.so"),
-        posixpath.join(third_party_prefix, "example_4" + ext_suffix),
-        posixpath.join(os.getcwd(), "example_5.py"),
-    }
+    ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
+    imaginary_paths = set(
+        [
+            posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
+            posixpath.join(third_party_prefix, "example_2.py"),
+            posixpath.join(os.getcwd(), "example_3.py"),
+        ]
+    )
+    imaginary_paths.update(
+        {
+            posixpath.join(third_party_prefix, "example_" + str(i) + ext_suffix)
+            for i, ext_suffix in enumerate(ext_suffixes, 4)
+        }
+    )
 
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
     assert finder.find("example_1") == finder.sections.STDLIB
     assert finder.find("example_2") == finder.sections.THIRDPARTY
-    assert finder.find("example_3") == finder.sections.THIRDPARTY
-    assert finder.find("example_4") == finder.sections.THIRDPARTY
-    assert finder.find("example_5") == finder.sections.FIRSTPARTY
+    assert finder.find("example_3") == finder.sections.FIRSTPARTY
+    for i, _ in enumerate(ext_suffixes, 4):
+        assert finder.find("example_" + str(i)) == finder.sections.THIRDPARTY
 
 
 def test_argument_parsing() -> None:
