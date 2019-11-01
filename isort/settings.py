@@ -91,7 +91,25 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 @dataclass
 class Config:
     """Defines the configuration parameters used by isort"""
+    def __init__(self, py_version: str, known_standard_library: Optional[List[str]]=None*args, **kwargs):
+        known_standard_library = {} if known_standard_library is None else set(known_standard_library)
+        py_version = py_version or "3"
+        if py_version == "auto":
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
+        if py_version not in VALID_PY_TARGETS:
+            raise ValueError(
+                f"The python version {py_version} is not supported. "
+                "You can set a python version with the -py or --python-version flag. "
+                f"The following versions are supported: {VALID_PY_TARGETS}"
+            )
+
+        if py_version != "all":
+            py_version = f"py{py_version}"
+
+        return super().__init__(py_version=py_version, known_standard_library=known_standard_library, *args, **kwargs)
+
+    py_version: str = "3"
     force_to_top: List[str] = field(default_factory=list)
     skip: List[str] = field(default_factory=list)
     skip_glob: List[str] = field(default_factory=list)
@@ -103,6 +121,7 @@ class Config:
     known_future_library: List[str] = field(default_factory=lambda: ["__future__"])
     known_third_party: List[str] = field(default_factory=lambda: ["google.appengine.api"])
     known_first_party: List[str] = field(default_factory=list)
+    known_standard_library: List[str] = field(default_factory=list)
     multi_line_output = WrapModes.GRID  # type: ignore
     forced_separate: List[str] = field(default_factory=list)
     indent: str = " " * 4
