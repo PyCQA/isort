@@ -13,7 +13,7 @@ import posixpath
 import re
 import sys
 import warnings
-from distutils.util import strtobool
+from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
 from typing import (
@@ -49,35 +49,33 @@ try:
 except ImportError:
     appdirs = None
 
-MAX_CONFIG_SEARCH_DEPTH: int = (
-    25
-)  # The number of parent directories isort will look for a config file within
-DEFAULT_SECTIONS: Iterable[str] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
-
 safety_exclude_re = re.compile(
     r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
-VALID_PY_TARGETS: Iterable[str] = tuple(
+
+MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
+DEFAULT_SECTIONS: Tuple[str, ...] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
+VALID_PY_TARGETS: Tuple[str, ...] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
-CONFIG_SOURCES = (".isort.cfg", "pyproject.toml", "setup.cfg", "tox.ini", ".editorconfig")
-CONFIG_SECTIONS = {
+CONFIG_SOURCES: Tuple[str, ...] = (".isort.cfg", "pyproject.toml", "setup.cfg", "tox.ini", ".editorconfig")
+CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
     ".isort.cfg": ("settings", "isort"),
     "pyproject.toml": ("tool.isort",),
     "setup.cfg": ("isort", "tool:isort"),
     "tox.ini": ("isort", "tool:isort"),
     ".editorconfig": ("*", "*.py", "**.py"),
 }
-FALLBACK_CONFIG_SECTIONS = ("isort", "tool:isort", "tool.isort")
-
+FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
+FALLBACK_CONFIGS: Tuple[str, ...]
 if appdirs:
-    FALLBACK_CONFIGS = [
+    FALLBACK_CONFIGS = (
         appdirs.user_config_dir(".isort.cfg"),
         appdirs.user_config_dir(".editorconfig"),
-    ]
+    )
 else:
-    FALLBACK_CONFIGS = ["~/.isort.cfg", "~/.editorconfig"]
+    FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
 
 
 @dataclass(frozen=True)
@@ -88,25 +86,25 @@ class _Config:
     dynamically determined later on.
     """
     py_version: str = "3"
-    force_to_top: List[str] = field(default_factory=list)
-    skip: List[str] = field(default_factory=list)
-    skip_glob: List[str] = field(default_factory=list)
+    force_to_top: FrozenSet[str] = frozenset()
+    skip: FrozenSet[str] = frozenset()
+    skip_glob: FrozenSet[str] = frozenset()
     line_length: int = 79
     wrap_length: int = 0
     line_ending: str = ""
-    sections: Iterable[str] = DEFAULT_SECTIONS
+    sections: Tuple[str, ...] = DEFAULT_SECTIONS
     no_sections: bool = False
-    known_future_library: List[str] = field(default_factory=lambda: ["__future__"])
-    known_third_party: List[str] = field(default_factory=lambda: ["google.appengine.api"])
-    known_first_party: List[str] = field(default_factory=list)
-    known_standard_library: List[str] = field(default_factory=list)
+    known_future_library: FrozenSet[str] = frozenset(("__future__", ))
+    known_third_party: FrozenSet[str] = frozenset(("google.appengine.api", ))
+    known_first_party: FrozenSet[str] = frozenset()
+    known_standard_library: FrozenSet[str] = frozenset()
     multi_line_output = WrapModes.GRID  # type: ignore
-    forced_separate: List[str] = field(default_factory=list)
+    forced_separate: FrozenSet[str] = frozenset()
     indent: str = " " * 4
     comment_prefix: str = "  #"
     length_sort: bool = False
-    add_imports: List[str] = field(default_factory=list)
-    remove_imports: List[str] = field(default_factory=list)
+    add_imports: FrozenSet[str] = frozenset()
+    remove_imports: FrozenSet[str] = frozenset()
     reverse_relative: bool = False
     force_single_line: bool = False
     default_section: str = "FIRSTPARTY"
@@ -136,12 +134,12 @@ class _Config:
     force_sort_within_sections: bool = False
     show_diff: bool = False
     ignore_whitespace: bool = False
-    no_lines_before: List[str] = field(default_factory=list)
+    no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False
     ignore_comments: bool = False
     safety_excludes: bool = True
     case_sensitive: bool = False
-    sources: List[Dict[str, Any]] = field(default_factory=list)
+    sources: FrozenSet[str] = frozenset()
 
     def __post_init__(self):
         py_version = self.py_version
@@ -186,13 +184,23 @@ class Config(_Config):
             config_settings = {}
 
         if config_settings:
-
-
-
             sources.append(config_settings)
         if config_overrides:
             config_overrides["source"] = "runtime"
             sources.append(config_overrides)
+
+        combined_config = {**config_settings, **config_overrides}
+        if "indent" in combined_config:
+            indent = str(combined_config["indent"])
+            if indent.isdigit():
+                indent = " " * int(indent)
+            else:
+                indent = indent.strip("'").strip('"')
+                if indent.lower() == "tab":
+                    indent = "\t"
+            combined_config["indent"] = indent
+
+        super().__init__(**combined_config)
 
     def file_should_be_skipped(self, filename: str, path: str = "") -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
@@ -227,33 +235,6 @@ class Config(_Config):
             return True
 
         return False
-
-
-def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, Any]:
-    py_version = setting_overrides.pop("py_version", None)
-    config = from_path(settings_path, py_version).copy()
-    for key, value in setting_overrides.items():
-        access_key = key.replace("not_", "").lower()
-        # The sections config needs to retain order and can't be converted to a set.
-        if access_key != "sections" and type(config.get(access_key)) in (list, tuple, set):
-            if key.startswith("not_"):
-                config[access_key] = list(set(config[access_key]).difference(value))
-            else:
-                config[access_key] = list(set(config[access_key]).union(value))
-        else:
-            config[key] = value
-
-    indent = str(config["indent"])
-    if indent.isdigit():
-        indent = " " * int(indent)
-    else:
-        indent = indent.strip("'").strip('"')
-        if indent.lower() == "tab":
-            indent = "\t"
-    config["indent"] = indent
-
-    config["comment_prefix"] = config["comment_prefix"].strip("'").strip('"')
-    return config
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
@@ -392,14 +373,12 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
             elif key == "force_grid_wrap":
                 try:
                     result = existing_value_type(value)
-                except ValueError:
-                    # backwards compat
-                    result = default.get(access_key) if value.lower().strip() == "false" else 2
-                computed_settings[access_key] = result
+                except ValueError:  # backwards compatibility for true / false force grid wrap
+                    result = 0 if value.lower().strip() == "false" else 2
+                settings[key] = result
+            elif key == "comment_prefix":
+                settings[key] = str(value).strip("'").strip('"')
             else:
-                existing_value_type(value)
+                settings[key] = existing_value_type(value)
 
     return settings
-
-
-
