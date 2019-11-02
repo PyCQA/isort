@@ -3,12 +3,15 @@ Changelog
 
 ### 5.0.0 UNRELEASED
 **Breaking changes:**
-  - isort now requires Python 3.5+ to run but continues to support formatting
+  - isort now requires Python 3.6+ to run but continues to support formatting on ALL versions of python including
     Python 2 code.
   - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
       - user
+  - Config files are no longer composed on-top of each-other. Instead the first config file found is used.
+
 Internal:
-  - isort now utilizes mypy and typing to filter out typing related issues before deployment
+  - isort now utilizes mypy and typing to filter out typing related issues before deployment.
+  - isort now utilizes black internally to ensure more consistent formatting.
 
 Planned:
   - profile support for common project types (black, django, google, etc)
