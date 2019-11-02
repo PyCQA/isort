@@ -88,27 +88,9 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 
 # Note that none of these lists must be complete as they are simply
 # fallbacks for when included auto-detection fails.
-@dataclass
+@dataclass(frozen=True)
 class Config:
     """Defines the configuration parameters used by isort"""
-    def __init__(self, py_version: str, known_standard_library: Optional[List[str]]=None*args, **kwargs):
-        known_standard_library = {} if known_standard_library is None else set(known_standard_library)
-        py_version = py_version or "3"
-        if py_version == "auto":
-            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
-
-        if py_version not in VALID_PY_TARGETS:
-            raise ValueError(
-                f"The python version {py_version} is not supported. "
-                "You can set a python version with the -py or --python-version flag. "
-                f"The following versions are supported: {VALID_PY_TARGETS}"
-            )
-
-        if py_version != "all":
-            py_version = f"py{py_version}"
-
-        return super().__init__(py_version=py_version, known_standard_library=known_standard_library, *args, **kwargs)
-
     py_version: str = "3"
     force_to_top: List[str] = field(default_factory=list)
     skip: List[str] = field(default_factory=list)
@@ -163,6 +145,26 @@ class Config:
     ignore_comments: bool = False
     safety_excludes: bool = True
     case_sensitive: bool = False
+    sources: List[Dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self):
+        known_standard_library = set(self.known_standard_library)
+        if self.py_version == "auto":
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+
+        if py_version not in VALID_PY_TARGETS:
+            raise ValueError(
+                f"The python version {py_version} is not supported. "
+                "You can set a python version with the -py or --python-version flag. "
+                f"The following versions are supported: {VALID_PY_TARGETS}"
+            )
+
+        if py_version != "all":
+            object.__setattr__(self, "py_version", f"py{py_version}")
+
+        object.__setattr__(self, "known_standard_library",
+                           list(getattr(stdlibs, py_version).stdlib | self.known_standard_library))
+
 
 
 default = {
