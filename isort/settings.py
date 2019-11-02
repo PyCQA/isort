@@ -28,6 +28,7 @@ from typing import (
     Tuple,
     Union,
 )
+from warnings import warn
 
 from . import stdlibs
 from ._future import dataclass, field
@@ -60,6 +61,22 @@ safety_exclude_re = re.compile(
 VALID_PY_TARGETS: Iterable[str] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
+CONFIG_SOURCES = (".isort.cfg", "pyproject.toml", "setup.cfg", "tox.ini", ".editorconfig")
+CONFIG_SECTIONS = {
+    ".isort.cfg": ("settings", "isort"),
+    "pyproject.toml": ("tool.isort",),
+    "setup.cfg": ("isort", "tool:isort"),
+    "tox.ini": ("isort", "tool:isort"),
+    ".editorconfig": ("*", "*.py", "**.py"),
+}
+
+if appdirs:
+    FALLBACK_CONFIGS = [
+        appdirs.user_config_dir(".isort.cfg"),
+        appdirs.user_config_dir(".editorconfig"),
+    ]
+else:
+    FALLBACK_CONFIGS = ["~/.isort.cfg", "~/.editorconfig"]
 
 
 def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
@@ -91,6 +108,7 @@ def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
 @dataclass(frozen=True)
 class Config:
     """Defines the configuration parameters used by isort"""
+
     py_version: str = "3"
     force_to_top: List[str] = field(default_factory=list)
     skip: List[str] = field(default_factory=list)
@@ -148,7 +166,6 @@ class Config:
     sources: List[Dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self):
-        known_standard_library = set(self.known_standard_library)
         if self.py_version == "auto":
             py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
@@ -162,9 +179,11 @@ class Config:
         if py_version != "all":
             object.__setattr__(self, "py_version", f"py{py_version}")
 
-        object.__setattr__(self, "known_standard_library",
-                           list(getattr(stdlibs, py_version).stdlib | self.known_standard_library))
-
+        object.__setattr__(
+            self,
+            "known_standard_library",
+            list(getattr(stdlibs, py_version).stdlib | self.known_standard_library),
+        )
 
 
 default = {
@@ -398,6 +417,36 @@ def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
         for value in values
     ]
     return paths
+
+
+@lru_cache()
+def _find_config(path: str) -> Dict[str, Any]:
+    current_directory = path
+    tries = 0
+    while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+        for config_file_name in CONFIG_SOURCES:
+            potential_config_file = os.path.join(current_directory, config_file_name)
+            if os.path.isfile(potential_config_file):
+                config_data: Dict[str, Any]
+                try:
+                    config_data = _get_config_data(
+                        potential_config_file, CONFIG_SECTIONS[config_file_name]
+                    )
+                except Exception:
+                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    config_data = {}
+                if config_data:
+                    config_data["source"] = potential_config_file
+                    return config_data
+
+        new_directory = os.path.split(current_directory)[0]
+        if new_directory == current_directory:
+            break
+
+        current_directory = new_directory
+        tries += 1
+
+    return {}
 
 
 @lru_cache()
