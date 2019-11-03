@@ -200,6 +200,14 @@ class Config(_Config):
                     indent = "\t"
             combined_config["indent"] = indent
 
+        # coerce all provided config values into their correct type
+        for key, value in combined_config.items():
+            default_value = _DEFAULT_SETTINGS.get(key, None)
+            if default_value is None:
+                continue
+
+            combined_config[key] = type(default_value)(value)
+
         super().__init__(**combined_config)
 
     def file_should_be_skipped(self, filename: str, path: str = "") -> bool:
@@ -243,14 +251,6 @@ def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
         type_converter = wrap_mode_from_string
     return type_converter
 
-
-def _update_with_config_file(
-    file_path: str, sections: Iterable[str], computed_settings: MutableMapping[str, Any]
-) -> None:
-    cwd = os.path.dirname(file_path)
-    settings = _get_config_data(file_path, sections).copy()
-    if not settings:
-        return
 
 def _as_list(value: str) -> List[str]:
     if isinstance(value, list):
@@ -358,11 +358,10 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)
-            if existing_value_type in (list, tuple):
-                if key == "sections":  # sections need to maintain order
-                    settings[key] = tuple(_as_list(value))
-                else: # other list options do not and can be uniquified using set.
-                    settings[key] = set(settings.get(key))
+            if existing_value_type == tuple:
+                settings[key] = tuple(_as_list(value))
+            elif existing_value_type == frozenset:
+                settings[key] = frozenset(settings.get(key))
             elif existing_value_type == bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
@@ -382,3 +381,6 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                 settings[key] = existing_value_type(value)
 
     return settings
+
+
+DEFAULT_CONFIG = Config()
