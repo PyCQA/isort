@@ -24,6 +24,7 @@ from typing import (
 )
 
 from .utils import chdir, exists_case_sensitive
+from .settings import Config, DEFAULT_CONFIG
 
 try:
     from pipreqs import pipreqs
@@ -49,7 +50,7 @@ KNOWN_SECTION_MAPPING = {
 
 
 class BaseFinder(metaclass=ABCMeta):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
+    def __init__(self, config: Config, sections: Any) -> None:
         self.config = config
         self.sections = sections
 
@@ -60,7 +61,7 @@ class BaseFinder(metaclass=ABCMeta):
 
 class ForcedSeparateFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
-        for forced_separate in self.config["forced_separate"]:
+        for forced_separate in self.config.forced_separate:
             # Ensure all forced_separate patterns will match to end of string
             path_glob = forced_separate
             if not forced_separate.endswith("*"):
@@ -79,14 +80,14 @@ class LocalFinder(BaseFinder):
 
 
 class KnownPatternFinder(BaseFinder):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
+    def __init__(self, config: Config, sections: Any) -> None:
         super().__init__(config, sections)
 
         self.known_patterns: List[Tuple[Pattern[str], str]] = []
         for placement in reversed(self.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
             config_key = f"known_{known_placement.lower()}"
-            known_patterns = self.config.get(config_key, [])
+            known_patterns = list(getattr(self.config, config_key, []))
             known_patterns = [
                 pattern
                 for known_pattern in known_patterns
@@ -121,7 +122,7 @@ class KnownPatternFinder(BaseFinder):
 
 
 class PathFinder(BaseFinder):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
+    def __init__(self, config: Config, sections: Any) -> None:
         super().__init__(config, sections)
 
         # restore the original import path (i.e. not the path to bin/isort)
@@ -130,7 +131,7 @@ class PathFinder(BaseFinder):
         self.paths = [root_dir, src_dir]
 
         # virtual env
-        self.virtual_env = self.config.get("virtual_env") or os.environ.get("VIRTUAL_ENV")
+        self.virtual_env = self.config.virtual_env or os.environ.get("VIRTUAL_ENV")
         if self.virtual_env:
             self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ""
@@ -147,7 +148,7 @@ class PathFinder(BaseFinder):
                     self.paths.append(path)
 
         # conda
-        self.conda_env = self.config.get("conda_env") or os.environ.get("CONDA_PREFIX") or ""
+        self.conda_env = self.config.conda_env or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
             for path in glob(f"{self.conda_env}/lib/python*/site-packages"):
@@ -193,14 +194,14 @@ class PathFinder(BaseFinder):
                     return self.sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return self.sections.STDLIB
-                return self.config["default_section"]
+                return self.config.default_section
         return None
 
 
 class ReqsBaseFinder(BaseFinder):
     enabled = False
 
-    def __init__(self, config: Mapping[str, Any], sections: Any, path: str = ".") -> None:
+    def __init__(self, config: Config, sections: Any, path: str = ".") -> None:
         super().__init__(config, sections)
         self.path = path
         if self.enabled:
@@ -356,7 +357,7 @@ class PipfileFinder(ReqsBaseFinder):
 
 class DefaultFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
-        return self.config["default_section"]
+        return self.config.default_section
 
 
 class FindersManager:
@@ -372,11 +373,11 @@ class FindersManager:
 
     def __init__(
         self,
-        config: Mapping[str, Any],
+        config: Config,
         sections: Any,
         finder_classes: Optional[Iterable[Type[BaseFinder]]] = None,
     ) -> None:
-        self.verbose: bool = config.get("verbose", False)
+        self.verbose: bool = config.verbose
 
         if finder_classes is None:
             finder_classes = self._default_finders_classes

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTup
 from warnings import warn
 
 from isort.format import format_natural
+from isort.settings import Config, DEFAULT_CONFIG
 
 from .comments import parse as parse_comments
 from .finders import FindersManager
@@ -138,21 +139,21 @@ class ParsedContent(NamedTuple):
     section_comments: List[str]
 
 
-def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
+def file_contents(contents: str, config: Config=DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
-    line_separator: str = config["line_ending"] or _infer_line_separator(contents)
-    add_imports = (format_natural(addition) for addition in config["add_imports"])
+    line_separator: str = config.line_ending or _infer_line_separator(contents)
+    add_imports = (format_natural(addition) for addition in config.add_imports)
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
 
-    sections: Any = namedtuple("Sections", config["sections"])(*config["sections"])
+    sections: Any = namedtuple("Sections", config.sections)(*config.sections)
     section_comments = [
-        "# " + value for key, value in config.items() if key.startswith("import_heading") and value
+        "# " + value for key, value in vars(config).items() if key.startswith("import_heading") and value
     ]
     finder = FindersManager(config=config, sections=sections)
 
-    if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config["force_adds"]:
+    if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config.force_adds:
         in_lines.extend(add_imports)
 
     line_count = len(in_lines)
@@ -161,7 +162,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
     import_placements: Dict[str, str] = {}
     as_map: Dict[str, List[str]] = defaultdict(list)
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
-    for section in chain(sections, config["forced_separate"]):
+    for section in chain(sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments: CommentsDict = {
         "from": {},
@@ -331,14 +332,14 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                     else:
                         module = just_imports[as_index - 1]
                         as_map[module].append(just_imports[as_index + 1])
-                    if not config["combine_as_imports"]:
+                    if not config.combine_as_imports:
                         categorized_comments["straight"][module] = comments
                         comments = []
                     del just_imports[as_index : as_index + 2]
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder.find(import_from)
-                if config["verbose"]:
+                if config.verbose:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
                 if placed_module == "":
                     warn(
@@ -415,7 +416,7 @@ def file_contents(contents: str, config: Dict[str, Any]) -> ParsedContent:
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
                     placed_module = finder.find(module)
-                    if config["verbose"]:
+                    if config.verbose:
                         print(f"else-type place_module for {module} returned {placed_module}")
                     if placed_module == "":
                         warn(

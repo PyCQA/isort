@@ -27,6 +27,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
+    FrozenSet
 )
 from warnings import warn
 
@@ -140,6 +141,8 @@ class _Config:
     safety_excludes: bool = True
     case_sensitive: bool = False
     sources: FrozenSet[str] = frozenset()
+    virtual_env: str = ""
+    conda_env: str = ""
 
     def __post_init__(self):
         py_version = self.py_version
