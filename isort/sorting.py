@@ -1,5 +1,6 @@
 import re
 from typing import Any, Callable, Iterable, List, Mapping, Optional
+from . settings import Config
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
@@ -7,14 +8,14 @@ _import_line_midline_import_re = re.compile(" import ")
 
 def module_key(
     module_name: str,
-    config: Mapping[str, Any],
+    config: Config,
     sub_imports: bool = False,
     ignore_case: bool = False,
     section_name: Optional[Any] = None,
 ) -> str:
     match = re.match(r"^(\.+)\s*(.*)", module_name)
     if match:
-        sep = " " if config["reverse_relative"] else "_"
+        sep = " " if config.reverse_relative else "_"
         module_name = sep.join(match.groups())
 
     prefix = ""
@@ -23,22 +24,23 @@ def module_key(
     else:
         module_name = str(module_name)
 
-    if sub_imports and config["order_by_type"]:
+    if sub_imports and config.order_by_type:
         if module_name.isupper() and len(module_name) > 1:  # see issue #376
             prefix = "A"
         elif module_name[0:1].isupper():
             prefix = "B"
         else:
             prefix = "C"
-    if not config["case_sensitive"]:
+    if not config.case_sensitive:
         module_name = module_name.lower()
-    if section_name is None or "length_sort_" + str(section_name).lower() not in config:
-        length_sort = config["length_sort"]
+
+    if section_name:
+        length_sort = getattr(config, "length_sort_" + str(section_name).lower(), config.length_sort)
     else:
-        length_sort = config["length_sort_" + str(section_name).lower()]
+        length_sort = config.length_sort
 
     _length_sort_maybe = length_sort and (str(len(module_name)) + ":" + module_name) or module_name
-    return f"{module_name in config['force_to_top'] and 'A' or 'B'}{prefix}{_length_sort_maybe}"
+    return f"{module_name in config.force_to_top and 'A' or 'B'}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, order_by_type: bool, force_to_top: List[str]) -> str:

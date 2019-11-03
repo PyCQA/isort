@@ -143,6 +143,7 @@ class _Config:
     sources: FrozenSet[str] = frozenset()
     virtual_env: str = ""
     conda_env: str = ""
+    ensure_newline_before_comments: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
