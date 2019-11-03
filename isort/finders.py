@@ -1,4 +1,5 @@
 """Finders try to find right section for passed module name"""
+import importlib.machinery
 import inspect
 import os
 import os.path
@@ -163,9 +164,6 @@ class PathFinder(BaseFinder):
         if self.stdlib_lib_prefix not in self.paths:
             self.paths.append(self.stdlib_lib_prefix)
 
-        # handle compiled libraries
-        self.ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
-
         # add system paths
         for path in sys.path[1:]:
             if path not in self.paths:
@@ -176,8 +174,10 @@ class PathFinder(BaseFinder):
             package_path = "/".join((prefix, module_name.split(".")[0]))
             is_module = (
                 exists_case_sensitive(package_path + ".py")
-                or exists_case_sensitive(package_path + ".so")
-                or exists_case_sensitive(package_path + self.ext_suffix)
+                or any(
+                    exists_case_sensitive(package_path + ext_suffix)
+                    for ext_suffix in importlib.machinery.EXTENSION_SUFFIXES
+                )
                 or exists_case_sensitive(package_path + "/__init__.py")
             )
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
