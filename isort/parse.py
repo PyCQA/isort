@@ -139,7 +139,7 @@ class ParsedContent(NamedTuple):
     section_comments: List[str]
 
 
-def file_contents(contents: str, config: Config=DEFAULT_CONFIG) -> ParsedContent:
+def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
     add_imports = (format_natural(addition) for addition in config.add_imports)
@@ -149,7 +149,9 @@ def file_contents(contents: str, config: Config=DEFAULT_CONFIG) -> ParsedContent
 
     sections: Any = namedtuple("Sections", config.sections)(*config.sections)
     section_comments = [
-        "# " + value for key, value in vars(config).items() if key.startswith("import_heading") and value
+        "# " + value
+        for key, value in vars(config).items()
+        if key.startswith("import_heading") and value
     ]
     finder = FindersManager(config=config, sections=sections)
 

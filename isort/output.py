@@ -11,7 +11,7 @@ from .settings import Config, DEFAULT_CONFIG
 
 
 def sorted_imports(
-    parsed: parse.ParsedContent, config: Config=DEFAULT_CONFIG, extension: str = "py"
+    parsed: parse.ParsedContent, config: Config = DEFAULT_CONFIG, extension: str = "py"
 ) -> List[str]:
     """Adds the imports back to the file.
 
@@ -444,9 +444,7 @@ def _with_from_imports(
                     import_statement = wrap.import_statement(
                         import_start, from_import_section, comments, config, parsed.line_separator
                     )
-                    if (
-                        config.multi_line_output == wrap.Modes.GRID  # type: ignore
-                    ):  # type: ignore
+                    if config.multi_line_output == wrap.Modes.GRID:  # type: ignore  # type: ignore
                         config.multi_line_output = wrap.Modes.VERTICAL_GRID  # type: ignore
                         try:
                             other_import_statement = wrap.import_statement(

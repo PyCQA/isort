@@ -1,6 +1,6 @@
 import re
 from typing import Any, Callable, Iterable, List, Mapping, Optional
-from . settings import Config
+from .settings import Config
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
@@ -35,7 +35,9 @@ def module_key(
         module_name = module_name.lower()
 
     if section_name:
-        length_sort = getattr(config, "length_sort_" + str(section_name).lower(), config.length_sort)
+        length_sort = getattr(
+            config, "length_sort_" + str(section_name).lower(), config.length_sort
+        )
     else:
         length_sort = config.length_sort
 

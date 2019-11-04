@@ -27,7 +27,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
-    FrozenSet
+    FrozenSet,
 )
 from warnings import warn
 
@@ -60,7 +60,13 @@ DEFAULT_SECTIONS: Tuple[str, ...] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPAR
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
-CONFIG_SOURCES: Tuple[str, ...] = (".isort.cfg", "pyproject.toml", "setup.cfg", "tox.ini", ".editorconfig")
+CONFIG_SOURCES: Tuple[str, ...] = (
+    ".isort.cfg",
+    "pyproject.toml",
+    "setup.cfg",
+    "tox.ini",
+    ".editorconfig",
+)
 CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
     ".isort.cfg": ("settings", "isort"),
     "pyproject.toml": ("tool.isort",),
@@ -86,6 +92,7 @@ class _Config:
     NOTE: known lists, such as known_standard_library, are intentionally not complete as they are
     dynamically determined later on.
     """
+
     py_version: str = "3"
     force_to_top: FrozenSet[str] = frozenset()
     skip: FrozenSet[str] = frozenset()
@@ -95,8 +102,8 @@ class _Config:
     line_ending: str = ""
     sections: Tuple[str, ...] = DEFAULT_SECTIONS
     no_sections: bool = False
-    known_future_library: FrozenSet[str] = frozenset(("__future__", ))
-    known_third_party: FrozenSet[str] = frozenset(("google.appengine.api", ))
+    known_future_library: FrozenSet[str] = frozenset(("__future__",))
+    known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
     multi_line_output = WrapModes.GRID  # type: ignore
@@ -148,7 +155,14 @@ class _Config:
     def __post_init__(self):
         py_version = self.py_version
         if py_version == "auto":
-            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
+                py_version = "2"
+            elif sys.version_info.major == 3 and (
+                sys.version_info.minor <= 5 or sys.version_info.minor >= 8
+            ):
+                py_version = "3"
+            else:
+                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -172,16 +186,20 @@ class _Config:
             object.__setattr__(self, "lines_between_types", 1)
             object.__setattr__(self, "from_first", True)
 
+
 _DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
 
 
 class Config(_Config):
-    def __init__(self, settings_file:str="", settings_path:str="", **config_overrides):
+    def __init__(self, settings_file: str = "", settings_path: str = "", **config_overrides):
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
         config_settings: Dict[str, Any]
         if settings_file:
-            config_settings = config_data = get_config_data(settings_file, CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS))
+            config_settings = config_data = get_config_data(
+                settings_file,
+                CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
+            )
         elif settings_path:
             config_settings = _find_config(settings_path)
         else:
@@ -230,7 +248,9 @@ class Config(_Config):
                 return True
 
         for skip_path in self.skip:
-            if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace("\\", "/")):
+            if posixpath.abspath(normalized_path) == posixpath.abspath(
+                skip_path.replace("\\", "/")
+            ):
                 return True
 
         position = os.path.split(filename)
@@ -264,12 +284,14 @@ def _as_list(value: str) -> List[str]:
 
 
 def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
-    paths = set([
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
-        for value in values
-    ])
+    paths = set(
+        [
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+            for value in values
+        ]
+    )
     return paths
 
 
