@@ -158,14 +158,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "automatically determining correct placement.",
     )
     parser.add_argument(
-        "-ac",
+        "--ac",
         "--atomic",
         dest="atomic",
         action="store_true",
         help="Ensures the output doesn't save if the resulting file contains syntax errors.",
     )
     parser.add_argument(
-        "-af",
+        "--af",
         "--force-adds",
         dest="force_adds",
         action="store_true",
@@ -187,14 +187,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "command line without modifying the file.",
     )
     parser.add_argument(
-        "-ca",
+        "--ca",
         "--combine-as",
         dest="combine_as_imports",
         action="store_true",
         help="Combines as imports on the same line.",
     )
     parser.add_argument(
-        "-cs",
+        "--cs",
         "--combine-star",
         dest="combine_star",
         action="store_true",
@@ -209,7 +209,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
     )
     parser.add_argument(
-        "-df",
+        "--df",
         "--diff",
         dest="show_diff",
         action="store_true",
@@ -217,18 +217,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "changing it in place",
     )
     parser.add_argument(
-        "-ds",
+        "--ds",
         "--no-sections",
         help="Put all imports into the same section bucket",
         dest="no_sections",
         action="store_true",
-    )
-    parser.add_argument(
-        "-dt",
-        "--dont-order-by-type",
-        dest="dont_order_by_type",
-        action="store_true",
-        help="Only order imports alphabetically, do not attempt type ordering",
     )
     parser.add_argument(
         "-e",
@@ -246,28 +239,28 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "of the future compatibility libraries.",
     )
     parser.add_argument(
-        "-fas",
+        "--fas",
         "--force-alphabetical-sort",
         action="store_true",
         dest="force_alphabetical_sort",
         help="Force all imports to be sorted as a single section",
     )
     parser.add_argument(
-        "-fass",
+        "--fass",
         "--force-alphabetical-sort-within-sections",
         action="store_true",
         dest="force_alphabetical_sort",
         help="Force all imports to be sorted alphabetically within a section",
     )
     parser.add_argument(
-        "-ff",
+        "--ff",
         "--from-first",
         dest="from_first",
         help="Switches the typical ordering preference, "
         "showing from imports first then straight ones.",
     )
     parser.add_argument(
-        "-fgw",
+        "--fgw",
         "--force-grid-wrap",
         nargs="?",
         const=2,
@@ -277,7 +270,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "length",
     )
     parser.add_argument(
-        "-fss",
+        "--fss",
         "--force-sort-within-sections",
         action="store_true",
         dest="force_sort_within_sections",
@@ -310,14 +303,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument("-lai", "--lines-after-imports", dest="lines_after_imports", type=int)
     parser.add_argument("-lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
-        "-le",
+        "--le",
         "--line-ending",
         dest="line_ending",
         help="Forces line endings to the specified value. "
         "If not set, values will be guessed per-file.",
     )
     parser.add_argument(
-        "-ls",
+        "--ls",
         "--length-sort",
         help="Sort imports by their string length.",
         dest="length_sort",
@@ -332,7 +325,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
     inline_args_group.add_argument(
-        "-nis",
+        "--nis",
         "--no-inline-sort",
         dest="no_inline_sort",
         action="store_true",
@@ -340,17 +333,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "(e.g. `from foo import a, c ,b`).",
     )
     parser.add_argument(
-        "-nlb",
+        "--nlb",
         "--no-lines-before",
         help="Sections which should not be split with previous by empty lines",
         dest="no_lines_before",
-        action="append",
-    )
-    parser.add_argument(
-        "-ns",
-        "--dont-skip",
-        help="Files that sort imports should never skip over.",
-        dest="not_skip",
         action="append",
     )
     parser.add_argument(
@@ -361,11 +347,18 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Force sortImports to recognize a module as being part of a third party library.",
     )
     parser.add_argument(
-        "-ot",
+        "--ot",
         "--order-by-type",
         dest="order_by_type",
         action="store_true",
         help="Order imports by type in addition to alphabetically",
+    )
+    parser.add_argument(
+        "--dot",
+        "--dont-order-by-type",
+        dest="dont_order_by_type",
+        action="store_true",
+        help="Don't order imports by type in addition to alphabetically",
     )
     parser.add_argument(
         "-p",
@@ -383,21 +376,21 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     )
     parser.add_argument("-r", dest="ambiguous_r_flag", action="store_true")
     parser.add_argument(
-        "-rm",
+        "--rm",
         "--remove-import",
         dest="remove_imports",
         action="append",
         help="Removes the specified import from all files.",
     )
     parser.add_argument(
-        "-rr",
+        "--rr",
         "--reverse-relative",
         dest="reverse_relative",
         action="store_true",
         help="Reverse order of relative imports.",
     )
     parser.add_argument(
-        "-rc",
+        "--rc",
         "--recursive",
         dest="recursive",
         action="store_true",
@@ -412,28 +405,28 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="append",
     )
     parser.add_argument(
-        "-sd",
+        "--sd",
         "--section-default",
         dest="default_section",
         help="Sets the default section for imports (by default FIRSTPARTY) options: "
         + str(DEFAULT_SECTIONS),
     )
     parser.add_argument(
-        "-sg",
+        "--sg",
         "--skip-glob",
         help="Files that sort imports should skip over.",
         dest="skip_glob",
         action="append",
     )
     inline_args_group.add_argument(
-        "-sl",
+        "--sl",
         "--force-single-line-imports",
         dest="force_single_line",
         action="store_true",
         help="Forces all from imports to appear on their own line",
     )
     parser.add_argument(
-        "-sp",
+        "--sp",
         "--settings-path",
         dest="settings_path",
         help="Explicitly set the settings path instead of auto determining based on file location.",
@@ -446,14 +439,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="append",
     )
     parser.add_argument(
-        "-tc",
+        "--tc",
         "--trailing-comma",
         dest="include_trailing_comma",
         action="store_true",
         help="Includes a trailing comma on multi line imports that include parentheses.",
     )
     parser.add_argument(
-        "-up",
+        "--up",
         "--use-parentheses",
         dest="use_parentheses",
         action="store_true",
@@ -461,7 +454,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     )
     parser.add_argument("-v", "--version", action="store_true", dest="show_version")
     parser.add_argument(
-        "-vb",
+        "--vb",
         "--verbose",
         action="store_true",
         dest="verbose",
@@ -478,7 +471,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Conda environment to use for determining whether a package is third-party",
     )
     parser.add_argument(
-        "-vn",
+        "--vn",
         "--version-number",
         action="version",
         version=__version__,
@@ -492,14 +485,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         type=int,
     )
     parser.add_argument(
-        "-wl",
+        "--wl",
         "--wrap-length",
         dest="wrap_length",
         type=int,
         help="Specifies how long lines that are wrapped should be, if not set line_length is used.",
     )
     parser.add_argument(
-        "-ws",
+        "--ws",
         "--ignore-whitespace",
         action="store_true",
         dest="ignore_whitespace",
@@ -536,7 +529,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
     parser.add_argument(
-        "-py",
+        "--py",
         "--python-version",
         action="store",
         dest="py_version",
@@ -548,6 +541,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
+    values = vars(parser.parse_args(argv))
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False

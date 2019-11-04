@@ -8,6 +8,8 @@ Changelog
   - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
       - user
   - Config files are no longer composed on-top of each-other. Instead the first config file found is used.
+    - Since there is no longer composition negative form settings (such as --dont-skip) are no longer required and have been removed.
+  - Two-letter shortened setting names (like `ac` for `atomic`) now require two dashes to avoid ambiguity: `--ac`.
 
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.
