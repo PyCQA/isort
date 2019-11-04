@@ -56,6 +56,7 @@ safety_exclude_re = re.compile(
 )
 
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
+STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
 DEFAULT_SECTIONS: Tuple[str, ...] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
@@ -313,6 +314,10 @@ def _find_config(path: str) -> Dict[str, Any]:
                     config_data = {}
                 if config_data:
                     return config_data
+
+        for stop_dir in STOP_CONFIG_SEARCH_ON_DIRS:
+            if os.path.isdir(stop_dir):
+                break
 
         new_directory = os.path.split(current_directory)[0]
         if new_directory == current_directory:
