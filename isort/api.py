@@ -3,15 +3,14 @@ from . import parse, output
 from .exceptions import UnableToDetermineEncoding, FileSkipComment, IntroducedSyntaxErrors
 import re
 from pathlib import Path
-from typing import Any, Optional, Tuple
-
-_ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
+from typing import Any, Optional, Tuple, NamedTuple
+from .io import File
 
 
 def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, disregard_skip: bool=False, **config_kwargs) -> str:
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
-        if FILE_SKIP_COMMENT in contents:
+        if FILE_SKIP_COMMENT in file_contents:
             raise FileSkipComment(content_source)
 
         elif file_path and config.is_skipped(file_path):
@@ -36,48 +35,9 @@ def sorted_contents(file_contents: str, extension: str = "py", config: Config=DE
 
 
 def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -> str:
-    file_path = Path(filename).resolve()
+    file_data = File.read(filename)
     if config_kwargs or config is DEFAULT_CONFIG:
         if not "settings_path" in config_kwargs and not "settings_file" in config_kwargs:
-            config_kwargs["settings_path"] = file_path.parent
+            config_kwargs["settings_path"] = file_data.path.parent
 
-    contents, used_encoding = _read_file_contents(file_path)
-    return sorted_contents(file_contents=contents, extension=file_path.suffix, config=config, file_path=file_path, **config_kwargs)
-
-
-def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
-    # see https://www.python.org/dev/peps/pep-0263/
-    coding = default
-    with file_path.open("rb") as f:
-        for line_number, line in enumerate(f, 1):
-            if line_number > 2:
-                break
-            groups = re.findall(_ENCODING_PATTERN, line)
-            if groups:
-                coding = groups[0].decode("ascii")
-                break
-
-    return coding
-
-
-def _read_file_contents(
-    file_path: Path
-) -> Tuple[Optional[str], Optional[str]]:
-    encoding = _determine_file_encoding(file_path)
-    with file_path.open(encoding=encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, encoding
-        except UnicodeDecodeError:
-            pass
-
-    # Try default encoding for open(mode='r') on the system
-    fallback_encoding = _locale.getpreferredencoding(False)
-    with file_path.open(encoding=fallback_encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, fallback_encoding
-        except UnicodeDecodeError:
-            pass
-
-    raise UnableToDetermineEncoding(file_path, encoding, fallback_encoding)
+    return sorted_contents(file_contents=file_data.contents, extension=file_data.path.suffix, config=config, file_path=file_data.path, **config_kwargs)
