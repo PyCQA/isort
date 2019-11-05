@@ -1,6 +1,6 @@
 from .settings import Config, DEFAULT_CONFIG, FILE_SKIP_COMMENT
 from . import parse, output
-from .exceptions import UnableToDetermineEncoding, FileSkipComment
+from .exceptions import UnableToDetermineEncoding, FileSkipComment, IntroducedSyntaxErrors
 import re
 from pathlib import Path
 from typing import Any, Optional, Tuple
@@ -8,14 +8,27 @@ from typing import Any, Optional, Tuple
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
-def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, **config_kwargs) -> str:
+def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, **config_kwargs) -> str:
+    content_source = str(file_path or "Passed in content")
+    if FILE_SKIP_COMMENT in contents:
+        raise FileSkipComment(content_source)
+
     if config_kwargs and config is not DEFAULT_CONFIG:
         raise ValueError("You can either specify custom configuration options using kwargs or "
                          "passing in a Config object. Not Both!")
     elif config_kwargs:
         config = Config(**config_kwargs)
 
-    return output.sorted_imports(parse.file_contents(file_contents, config=config), config, extension)
+    if settings.atomic:
+        compile(file_contents, content_source, "exec", 0, 1)
+
+    parsed_output = output.sorted_imports(parse.file_contents(file_contents, config=config), config, extension)
+    if settings.atomic:
+        try:
+            compile(file_contents, content_source, "exec", 0, 1)
+        except SyntaxError:
+            raise IntroducedSyntaxErrors(content_source)
+    return parsed_output
 
 
 def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -> str:
@@ -25,10 +38,7 @@ def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -
             config_kwargs["settings_path"] = file_path.parent
 
     contents, used_encoding = _read_file_contents(file_path)
-    if FILE_SKIP_COMMENT in contents:
-        raise FileSkipComment(file_path)
-
-    return sorted_contents(file_contents=contents, extension=file_path.suffix, config=config, **config_kwargs)
+    return sorted_contents(file_contents=contents, extension=file_path.suffix, config=config, file_path=file_path, **config_kwargs)
 
 
 def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:

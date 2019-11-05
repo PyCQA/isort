@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional, Tuple
 from warnings import warn
 
-from isort import settings
+from isort import settings, api
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from isort.isort import _SortImports
 
@@ -40,15 +40,6 @@ class SortImports:
         extension: Optional[str] = None,
         **setting_overrides: Any,
     ):
-        file_path = None if file_path is None else Path(file_path)
-        file_name = None
-        settings_path = None if settings_path is None else Path(settings_path)
-
-        self.config = settings.prepare_config(
-            get_settings_path(settings_path, file_path), **setting_overrides
-        )
-        self.output = None
-
         file_encoding = "utf-8"
 
         self.file_path = None
@@ -109,29 +100,29 @@ class SortImports:
         )
         self.output = self.sorted_imports.output
 
-        if self.config["atomic"]:
-            logging_file_path = str(self.file_path or "")
-            try:
-                out_lines_without_top_comment = (
-                    self.sorted_imports.get_out_lines_without_top_comment()
-                )
-                compile(out_lines_without_top_comment, logging_file_path, "exec", 0, 1)
-            except SyntaxError:
-                self.output = file_contents
-                self.incorrectly_sorted = True
-                try:
-                    in_lines_without_top_comment = (
-                        self.sorted_imports.get_in_lines_without_top_comment()
-                    )
-                    compile(in_lines_without_top_comment, logging_file_path, "exec", 0, 1)
-                    print(
-                        f"ERROR: {logging_file_path} isort would have introduced syntax errors, "
-                        "please report to the project!"
-                    )
-                except SyntaxError:
-                    print(f"ERROR: {logging_file_path} File contains syntax errors.")
+        #if self.config["atomic"]:
+            #logging_file_path = str(self.file_path or "")
+            #try:
+                #out_lines_without_top_comment = (
+                    #self.sorted_imports.get_out_lines_without_top_comment()
+                #)
+                #compile(out_lines_without_top_comment, logging_file_path, "exec", 0, 1)
+            #except SyntaxError:
+                #self.output = file_contents
+                #self.incorrectly_sorted = True
+                #try:
+                    #in_lines_without_top_comment = (
+                        #self.sorted_imports.get_in_lines_without_top_comment()
+                    #)
+                    #compile(in_lines_without_top_comment, logging_file_path, "exec", 0, 1)
+                    #print(
+                        #f"ERROR: {logging_file_path} isort would have introduced syntax errors, "
+                        #"please report to the project!"
+                    #)
+                #except SyntaxError:
+                    #print(f"ERROR: {logging_file_path} File contains syntax errors.")
 
-                return
+                #return
 
         if check:
             check_output = self.output
