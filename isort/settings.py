@@ -13,6 +13,7 @@ import posixpath
 import re
 import sys
 import warnings
+from pathlib import Path
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
@@ -153,6 +154,7 @@ class _Config:
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
+    directory: str = ""
 
     def __post_init__(self):
         py_version = self.py_version
@@ -232,12 +234,22 @@ class Config(_Config):
 
             combined_config[key] = type(default_value)(value)
 
+        if "directory" not in combined_config:
+            combined_config["directory"] = os.path.basename(config_settings.get("source", None) or os.getcwd())
+
         combined_config.pop("source", None)
         super().__init__(**combined_config)
 
-    def file_should_be_skipped(self, filename: str, path: str = "") -> bool:
+    def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
-        os_path = os.path.join(path, filename)
+        if self.directory and self.directory in file_path.parents:
+            file_name = os.path.relpath(file_path, self.directory)
+            path = self.directory
+        else:
+            file_name = str(absolute_file_path)
+            path = ""
+
+        os_path = str(file_path)
 
         normalized_path = os_path.replace("\\", "/")
         if normalized_path[1:2] == ":":

@@ -1,5 +1,5 @@
 """All isort specific exception classes should be defined here"""
-from path import Path
+from pathlib import Path
 from .settings import FILE_SKIP_COMMENT
 
 
@@ -43,3 +43,11 @@ class FileSkipComment(FileSkipped):
 
     def __init__(self, file_path: Path):
         super().__init__(f"{file_path} contains an {FILE_SKIP_COMMENT} comment and was skipped.", file_path=file_path)
+
+
+class FileSkipSetting(FileSkipped):
+    """Raised when an entire file is skipped due to provided isort settings"""
+
+    def __init__(self, file_path: Path):
+        super().__init__(f"{file_path} was skipped as it's listed in 'skip' setting"
+                         " or matches a glob in 'skip_glob' setting", file_path=file_path)

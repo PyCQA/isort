@@ -8,10 +8,14 @@ from typing import Any, Optional, Tuple
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
-def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, **config_kwargs) -> str:
+def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, disregard_skip: bool=False, **config_kwargs) -> str:
     content_source = str(file_path or "Passed in content")
-    if FILE_SKIP_COMMENT in contents:
-        raise FileSkipComment(content_source)
+    if not disregard_skip:
+        if FILE_SKIP_COMMENT in contents:
+            raise FileSkipComment(content_source)
+
+        elif file_path and config.is_skipped(file_path):
+            raise FileSkipSetting(file_path)
 
     if config_kwargs and config is not DEFAULT_CONFIG:
         raise ValueError("You can either specify custom configuration options using kwargs or "
