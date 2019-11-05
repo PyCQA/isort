@@ -1,5 +1,6 @@
 from .settings import Config, DEFAULT_CONFIG
 from . import parse, output
+from .exceptions import UnableToDetermineEncoding
 import re
 from pathlib import Path
 from typing import Any, Optional, Tuple
@@ -60,4 +61,6 @@ def _read_file_contents(
             file_contents = file_to_import_sort.read()
             return file_contents, fallback_encoding
         except UnicodeDecodeError:
-            return None, None
+            pass
+
+    raise UnableToDetermineEncoding(file_path, encoding, fallback_encoding)
