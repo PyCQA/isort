@@ -14,7 +14,6 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from isort import utils
 
 from . import output, parse, settings, sorting, wrap
-from .finders import FindersManager
 
 
 class _SortImports:
@@ -22,16 +21,7 @@ class _SortImports:
         self.config = config
 
         self.parsed = parse.file_contents(file_contents, config=self.config)
-        if self.parsed.import_index != -1:
-            self.out_lines = output.sorted_imports(self.parsed, self.config, extension)
-        else:
-            self.out_lines = self.parsed.lines_without_imports
-
-        while self.out_lines and self.out_lines[-1].strip() == "":
-            self.out_lines.pop(-1)
-
-        self.out_lines.append("")
-        self.output = self.parsed.line_separator.join(self.out_lines)
+        self.output = output.sorted_imports(self.parsed, self.config, extension)
 
     def remove_whitespaces(self, contents: str) -> str:
         contents = (

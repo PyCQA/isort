@@ -231,6 +231,7 @@ class Config(_Config):
 
             combined_config[key] = type(default_value)(value)
 
+        combined_config.pop("source", None)
         super().__init__(**combined_config)
 
     def file_should_be_skipped(self, filename: str, path: str = "") -> bool:
@@ -386,6 +387,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                 settings["line_length"] = (
                     float("inf") if max_line_length == "off" else int(max_line_length)
                 )
+            settings = {key: value for key, value in settings.items() if key in _DEFAULT_SETTINGS.keys()}
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)

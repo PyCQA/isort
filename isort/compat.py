@@ -11,54 +11,13 @@ from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from isort.isort import _SortImports
 
 
-def determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
-    # see https://www.python.org/dev/peps/pep-0263/
-    pattern = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
-
-    coding = default
-    with file_path.open("rb") as f:
-        for line_number, line in enumerate(f, 1):
-            if line_number > 2:
-                break
-            groups = re.findall(pattern, line)
-            if groups:
-                coding = groups[0].decode("ascii")
-                break
-
-    return coding
-
-
-def read_file_contents(
-    file_path: Path, encoding: str, fallback_encoding: str
-) -> Tuple[Optional[str], Optional[str]]:
-    with file_path.open(encoding=encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, encoding
-        except UnicodeDecodeError:
-            pass
-
-    with file_path.open(encoding=fallback_encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, fallback_encoding
-        except UnicodeDecodeError:
-            return None, None
-
-
-def resolve(path: Path) -> Path:
-    if sys.version_info[:2] >= (3, 6):
-        return path.resolve()
-    else:
-        return Path(os.path.abspath(str(path)))
-
 
 def get_settings_path(settings_path: Optional[Path], current_file_path: Optional[Path]) -> Path:
     if settings_path:
         return settings_path
 
     if current_file_path:
-        return resolve(current_file_path).parent
+        return current_file_path.resolve().parent
     else:
         return Path.cwd()
 
@@ -96,7 +55,7 @@ class SortImports:
         if file_path:
             self.file_path = file_path  # raw file path (unresolved) ?
 
-            absolute_file_path = resolve(file_path)
+            absolute_file_path = file_path.resolve()
             if check_skip:
                 if run_path and run_path in absolute_file_path.parents:
                     # TODO: Drop str() when isort is Python 3.6+.

@@ -12,12 +12,15 @@ from .settings import Config, DEFAULT_CONFIG
 
 def sorted_imports(
     parsed: parse.ParsedContent, config: Config = DEFAULT_CONFIG, extension: str = "py"
-) -> List[str]:
+) -> str:
     """Adds the imports back to the file.
 
     (at the index of the first import) sorted alphabetically and split between groups
 
     """
+    if parsed.import_index == -1:
+        return _output_as_string(parsed.lines_without_imports, parsed.line_separator)
+
     formatted_output: List[str] = parsed.lines_without_imports.copy()
     remove_imports = [format_simplified(removal) for removal in config.remove_imports]
 
@@ -209,7 +212,7 @@ def sorted_imports(
                     new_out_lines.append("")
         formatted_output = new_out_lines
 
-    return formatted_output
+    return _output_as_string(formatted_output, parsed.line_separator)
 
 
 def _with_from_imports(
@@ -513,3 +516,15 @@ def _with_straight_imports(
         )
 
     return new_section_output
+
+
+def _output_as_string(lines: List[str], line_separator: str) -> str:
+    return line_separator.join(_normalize_empty_lines(lines))
+
+
+def _normalize_empty_lines(lines: List[str]) -> List[str]:
+    while lines and lines[-1].strip() == "":
+        lines.pop(-1)
+
+    lines.append("")
+    return lines
