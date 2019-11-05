@@ -16,10 +16,10 @@ from isort.settings import (
     DEFAULT_SECTIONS,
     VALID_PY_TARGETS,
     WrapModes,
-    default,
-    file_should_be_skipped,
-    from_path,
-    wrap_mode_from_string,
+    # default,
+    # file_should_be_skipped,
+    # from_path,
+    # wrap_mode_from_string,
 )
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")

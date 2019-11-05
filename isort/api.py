@@ -7,7 +7,7 @@ from typing import Any, Optional, Tuple, NamedTuple
 from .io import File
 
 
-def sorted_contents(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, disregard_skip: bool=False, **config_kwargs) -> str:
+def sorted_imports(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, disregard_skip: bool=False, **config_kwargs) -> str:
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
         if FILE_SKIP_COMMENT in file_contents:
@@ -22,11 +22,11 @@ def sorted_contents(file_contents: str, extension: str = "py", config: Config=DE
     elif config_kwargs:
         config = Config(**config_kwargs)
 
-    if settings.atomic:
+    if config.atomic:
         compile(file_contents, content_source, "exec", 0, 1)
 
     parsed_output = output.sorted_imports(parse.file_contents(file_contents, config=config), config, extension)
-    if settings.atomic:
+    if config.atomic:
         try:
             compile(file_contents, content_source, "exec", 0, 1)
         except SyntaxError:
@@ -36,8 +36,7 @@ def sorted_contents(file_contents: str, extension: str = "py", config: Config=DE
 
 def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -> str:
     file_data = File.read(filename)
-    if config_kwargs or config is DEFAULT_CONFIG:
-        if not "settings_path" in config_kwargs and not "settings_file" in config_kwargs:
-            config_kwargs["settings_path"] = file_data.path.parent
+    if config is DEFAULT_CONFIG and not "settings_path" in config_kwargs and not "settings_file" in config_kwargs:
+        config_kwargs["settings_path"] = file_data.path.parent
 
     return sorted_contents(file_contents=file_data.contents, extension=file_data.path.suffix, config=config, file_path=file_data.path, **config_kwargs)
