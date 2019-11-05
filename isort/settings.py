@@ -55,6 +55,7 @@ safety_exclude_re = re.compile(
     r"|lib/python[0-9].[0-9]+|node_modules)/"
 )
 
+FILE_SKIP_COMMENT: str = ("isort:" + "skip_file") # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
 DEFAULT_SECTIONS: Tuple[str, ...] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")

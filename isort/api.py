@@ -1,6 +1,6 @@
-from .settings import Config, DEFAULT_CONFIG
+from .settings import Config, DEFAULT_CONFIG, FILE_SKIP_COMMENT
 from . import parse, output
-from .exceptions import UnableToDetermineEncoding
+from .exceptions import UnableToDetermineEncoding, FileSkipComment
 import re
 from pathlib import Path
 from typing import Any, Optional, Tuple
@@ -25,6 +25,9 @@ def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -
             config_kwargs["settings_path"] = file_path.parent
 
     contents, used_encoding = _read_file_contents(file_path)
+    if FILE_SKIP_COMMENT in contents:
+        raise FileSkipComment(file_path)
+
     return sorted_contents(file_contents=contents, extension=file_path.suffix, config=config, **config_kwargs)
 
 

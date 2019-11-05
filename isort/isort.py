@@ -5,6 +5,7 @@ usage:
 or:
     sorted = SortImports(file_contents=file_contents).output
 """
+# isort:skip_file
 import copy
 import itertools
 import re

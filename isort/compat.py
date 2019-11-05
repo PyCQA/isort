@@ -95,7 +95,7 @@ class SortImports:
                 else:
                     file_encoding = used_encoding
 
-        if file_contents is None or ("isort:" + "skip_file") in file_contents:
+        if file_contents is None or settings.FILE_SKIP_COMMENT in file_contents:
             self.skipped = True
             if write_to_stdout and file_contents:
                 sys.stdout.write(file_contents)
