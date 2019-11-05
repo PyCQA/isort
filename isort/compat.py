@@ -9,6 +9,7 @@ from warnings import warn
 from isort import settings, api
 from isort.format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from isort.isort import _SortImports
+from .io import File
 from .exceptions import FileSkipped
 
 
@@ -46,9 +47,10 @@ class SortImports:
         self.file_path = None
         try:
             if file_path:
-                self.output = api.sorted_file(file_path, extension=extension, **setting_overrides)
-            else:
-                self.output = api.sorted_imports(file_contents, extension=extension, **setting_overrides)
+                file_contents, file_path, file_encoding = File.read(file_path)
+                extension = file_path.suffix
+
+            self.output = api.sorted_imports(file_contents, extension=extension, **setting_overrides)
         except FileSkipped as error:
             if self.config["verbose"]:
                 warn(error.message)
