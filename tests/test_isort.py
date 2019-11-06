@@ -3140,7 +3140,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     tmpdir.join("file2.py").write(
         ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
     )
-    arguments = ["-rc", str(tmpdir), "--settings-path", os.getcwd()]
+    arguments = ["--rc", str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
     main(arguments)
@@ -3168,7 +3168,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
     tmpdir.join("file1.py").write("import re\nimport os")
     tmpdir.join("file2.py").write("")
-    arguments = ["-rc", str(tmpdir)]
+    arguments = ["--rc", str(tmpdir)]
     if quiet:
         arguments.append("-q")
     main(arguments)
@@ -4125,7 +4125,7 @@ def test_python_version() -> None:
     from isort.main import parse_args
 
     # test that the py_version can be added as flag
-    args = parse_args(["-py=27"])
+    args = parse_args(["--py=27"])
     assert args["py_version"] == "27"
 
     args = parse_args(["--python-version=3"])
