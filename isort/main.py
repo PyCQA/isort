@@ -585,6 +585,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         config_dict = arguments.copy()
         config_dict.pop("recursive", False)
         config_dict.pop("ask_to_apply", False)
+        jobs = config_dict.pop("jobs", ())
         show_logo = config_dict.pop("show_logo", False)
         filter_files = config_dict.pop("filter_files", False)
         config = Config(**config_dict)
@@ -607,7 +608,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         if config.verbose or show_logo:
             print(ASCII_ART)
 
-        jobs = arguments.get("jobs")
         if jobs:
             import multiprocessing
 
