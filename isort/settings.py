@@ -114,6 +114,7 @@ class _Config:
     indent: str = " " * 4
     comment_prefix: str = "  #"
     length_sort: bool = False
+    length_sort_sections: FrozenSet[str] = frozenset()
     add_imports: FrozenSet[str] = frozenset()
     remove_imports: FrozenSet[str] = frozenset()
     reverse_relative: bool = False

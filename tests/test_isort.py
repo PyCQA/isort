@@ -486,7 +486,7 @@ def test_length_sort_section() -> None:
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"
     )
-    test_output = SortImports(file_contents=test_input, length_sort_stdlib=True).output
+    test_output = SortImports(file_contents=test_input, length_sort_sections=("stdlib", )).output
     assert test_output == (
         "import os\n"
         "import sys\n"
