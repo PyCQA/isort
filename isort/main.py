@@ -5,6 +5,7 @@ import glob
 import os
 import re
 import sys
+from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 from warnings import warn
 
@@ -16,6 +17,7 @@ from isort.settings import (
     DEFAULT_SECTIONS,
     VALID_PY_TARGETS,
     WrapModes,
+    Config
     # default,
     # file_should_be_skipped,
     # from_path,
@@ -61,24 +63,21 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
 
 
 def iter_source_code(
-    paths: Iterable[str], config: MutableMapping[str, Any], skipped: List[str]
+    paths: Iterable[str], config: Config, skipped: List[str]
 ) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
-    if "not_skip" in config:
-        config["skip"] = list(set(config["skip"]).difference(config["not_skip"]))
-
     for path in paths:
         if os.path.isdir(path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
+                base_path = Path(dirpath)
                 for dirname in list(dirnames):
-                    if file_should_be_skipped(dirname, config, dirpath):
+                    if config.is_skipped(base_path / dirname):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        relative_file = os.path.relpath(filepath, path)
-                        if file_should_be_skipped(relative_file, config, path):
+                        if config.is_skipped(Path(filepath)):
                             skipped.append(filename)
                         else:
                             yield filepath
@@ -556,7 +555,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(ASCII_ART)
         return
 
-    arguments["check_skip"] = False
     if "settings_path" in arguments:
         sp = arguments["settings_path"]
         arguments["settings_path"] = (
@@ -581,14 +579,20 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             if not arguments.get("apply", False):
                 arguments["ask_to_apply"] = True
 
-        config = from_path(
-            arguments.get("settings_path", "") or os.path.abspath(file_names[0]) or os.getcwd()
-        ).copy()
-        config.update(arguments)
+        if not "settings_path" in arguments:
+            arguments["settings_path"] = os.path.abspath(file_names[0]) or os.getcwd()
+
+        config_dict = arguments.copy()
+        config_dict.pop("recursive", False)
+        config_dict.pop("ask_to_apply", False)
+        show_logo = config_dict.pop("show_logo", False)
+        filter_files = config_dict.pop("filter_files", False)
+        config = Config(**config_dict)
+
         wrong_sorted_files = False
         skipped: List[str] = []
 
-        if config.get("filter_files"):
+        if filter_files:
             filtered_files = []
             for file_name in file_names:
                 if file_should_be_skipped(file_name, config):
@@ -600,7 +604,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         if arguments.get("recursive", False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
-        if config["verbose"] or config.get("show_logo", False):
+        if config.verbose or show_logo:
             print(ASCII_ART)
 
         jobs = arguments.get("jobs")
@@ -609,12 +613,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(
-                functools.partial(sort_imports, **arguments), file_names
+                functools.partial(sort_imports, **config_dict), file_names
             )
         else:
             # https://github.com/python/typeshed/pull/2814
             attempt_iterator = (  # type: ignore
-                sort_imports(file_name, **arguments) for file_name in file_names
+                sort_imports(file_name, **config_dict) for file_name in file_names
             )
 
         for sort_attempt in attempt_iterator:
@@ -631,7 +635,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get("quiet", False):
-            if config["verbose"]:
+            if config.verbose:
                 for was_skipped in skipped:
                     warn(
                         f"{was_skipped} was skipped as it's listed in 'skip' setting"

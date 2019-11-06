@@ -1,10 +1,11 @@
-from .settings import Config, DEFAULT_CONFIG, FILE_SKIP_COMMENT
-from . import parse, output
-from .exceptions import UnableToDetermineEncoding, FileSkipComment, IntroducedSyntaxErrors
 import re
 from pathlib import Path
-from typing import Any, Optional, Tuple, NamedTuple
+from typing import Any, NamedTuple, Optional, Tuple
+
+from . import output, parse
+from .exceptions import FileSkipComment, IntroducedSyntaxErrors, UnableToDetermineEncoding
 from .io import File
+from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
 
 
 def sorted_imports(file_contents: str, extension: str = "py", config: Config=DEFAULT_CONFIG, file_path: Optional[Path]=None, disregard_skip: bool=False, **config_kwargs) -> str:

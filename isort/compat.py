@@ -6,13 +6,12 @@ from pathlib import Path
 from typing import Any, Optional, Tuple
 from warnings import warn
 
-from . import settings, api
-from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
-from .isort import _SortImports
-from .io import File
+from . import api, settings
 from .exceptions import FileSkipped
+from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
+from .io import File
+from .isort import _SortImports
 from .settings import Config
-
 
 
 def get_settings_path(settings_path: Optional[Path], current_file_path: Optional[Path]) -> Path:
@@ -59,6 +58,8 @@ class SortImports:
         except FileSkipped as error:
             if config.verbose:
                 warn(error.message)
+
+            return
 
         if check:
             check_output = self.output

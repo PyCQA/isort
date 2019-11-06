@@ -1,5 +1,6 @@
 """All isort specific exception classes should be defined here"""
 from pathlib import Path
+
 from .settings import FILE_SKIP_COMMENT
 
 

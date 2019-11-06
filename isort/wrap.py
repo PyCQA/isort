@@ -1,10 +1,10 @@
 import copy
 import re
-from typing import Any, Dict, List, Sequence, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
+from .settings import DEFAULT_CONFIG, Config
 from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string
-from .settings import Config, DEFAULT_CONFIG
 
 
 def import_statement(

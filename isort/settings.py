@@ -245,7 +245,7 @@ class Config(_Config):
             file_name = os.path.relpath(file_path, self.directory)
             path = self.directory
         else:
-            file_name = str(absolute_file_path)
+            file_name = str(file_path)
             path = ""
 
         os_path = str(file_path)
@@ -255,7 +255,7 @@ class Config(_Config):
             normalized_path = normalized_path[2:]
 
         if path and self.safety_excludes:
-            check_exclude = "/" + filename.replace("\\", "/") + "/"
+            check_exclude = "/" + file_name.replace("\\", "/") + "/"
             if path and os.path.basename(path) in ("lib",):
                 check_exclude = "/" + os.path.basename(path) + check_exclude
             if safety_exclude_re.search(check_exclude):
@@ -267,14 +267,14 @@ class Config(_Config):
             ):
                 return True
 
-        position = os.path.split(filename)
+        position = os.path.split(file_name)
         while position[1]:
             if position[1] in self.skip:
                 return True
             position = os.path.split(position[0])
 
         for glob in self.skip_glob:
-            if fnmatch.fnmatch(filename, glob) or fnmatch.fnmatch("/" + filename, glob):
+            if fnmatch.fnmatch(file_name, glob) or fnmatch.fnmatch("/" + file_name, glob):
                 return True
 
         if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):

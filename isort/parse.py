@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTup
 from warnings import warn
 
 from isort.format import format_natural
-from isort.settings import Config, DEFAULT_CONFIG
+from isort.settings import DEFAULT_CONFIG, Config
 
 from .comments import parse as parse_comments
 from .finders import FindersManager

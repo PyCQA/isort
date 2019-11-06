@@ -10,22 +10,11 @@ from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Mapping,
-    Optional,
-    Pattern,
-    Sequence,
-    Tuple,
-    Type,
-)
+from typing import (Any, Dict, Iterable, Iterator, List, Mapping,
+                    Optional, Pattern, Sequence, Tuple, Type)
 
+from .settings import DEFAULT_CONFIG, Config
 from .utils import chdir, exists_case_sensitive
-from .settings import Config, DEFAULT_CONFIG
 
 try:
     from pipreqs import pipreqs

@@ -1,7 +1,7 @@
 """Defines any IO utilities used by isort"""
 import re
-from typing import NamedTuple, Optional, Tuple
 from pathlib import Path
+from typing import NamedTuple, Optional, Tuple
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
