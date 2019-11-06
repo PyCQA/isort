@@ -109,6 +109,7 @@ class _Config:
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
+    known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
     multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
     forced_separate: FrozenSet[str] = frozenset()
     indent: str = " " * 4
@@ -226,8 +227,14 @@ class Config(_Config):
                     indent = "\t"
             combined_config["indent"] = indent
 
-        # coerce all provided config values into their correct type
+
+        known_other = {}
         for key, value in combined_config.items():
+            # Collect all known sections beyond those that have direct entries
+            if key.startswith("known_") and key not in ("known_standard_library", "known_future_library", "known_third_party", "known_first_party"):
+                known_other[key[len("known_"):]] = frozenset(value)
+
+            # Coerce all provided config values into their correct type
             default_value = _DEFAULT_SETTINGS.get(key, None)
             if default_value is None:
                 continue
@@ -237,8 +244,12 @@ class Config(_Config):
         if "directory" not in combined_config:
             combined_config["directory"] = os.path.basename(config_settings.get("source", None) or os.getcwd())
 
+        # Remove any config values that are used for creating config object but aren't defined in dataclass
         combined_config.pop("source", None)
-        super().__init__(**combined_config)
+        for known_key in known_other.keys():
+            combined_config.pop(f"known_{known_key}", None)
+
+        super().__init__(known_other=known_other, **combined_config)
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""

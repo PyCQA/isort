@@ -75,9 +75,9 @@ class KnownPatternFinder(BaseFinder):
 
         self.known_patterns: List[Tuple[Pattern[str], str]] = []
         for placement in reversed(self.sections):
-            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-            config_key = f"known_{known_placement.lower()}"
-            known_patterns = list(getattr(self.config, config_key, []))
+            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
+            config_key = f"known_{known_placement}"
+            known_patterns = list(getattr(self.config, config_key, self.config.known_other.get(known_placement, [])))
             known_patterns = [
                 pattern
                 for known_pattern in known_patterns
