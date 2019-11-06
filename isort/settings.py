@@ -109,7 +109,7 @@ class _Config:
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
-    multi_line_output = WrapModes.GRID  # type: ignore
+    multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
     forced_separate: FrozenSet[str] = frozenset()
     indent: str = " " * 4
     comment_prefix: str = "  #"

@@ -1,6 +1,6 @@
 import copy
 import re
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Sequence, Optional
 
 from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string
@@ -13,9 +13,10 @@ def import_statement(
     comments: Sequence[str],
     line_separator: str,
     config: Config=DEFAULT_CONFIG,
+    multi_line_output: Optional[Modes]=None
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
-    formatter = formatter_from_string(config.multi_line_output.name)
+    formatter = formatter_from_string(multi_line_output or config.multi_line_output.name)
     dynamic_indent = " " * (len(import_start) + 1)
     indent = config.indent
     line_length = config.wrap_length or config.line_length

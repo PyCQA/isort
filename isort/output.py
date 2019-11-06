@@ -445,25 +445,22 @@ def _with_from_imports(
 
                 if do_multiline_reformat:
                     import_statement = wrap.import_statement(
-                        import_start, from_import_section, comments, config, parsed.line_separator
+                        import_start=import_start, from_imports=from_import_section, comments=comments, line_separator=parsed.line_separator, config=config
                     )
                     if config.multi_line_output == wrap.Modes.GRID:  # type: ignore  # type: ignore
-                        config.multi_line_output = wrap.Modes.VERTICAL_GRID  # type: ignore
-                        try:
-                            other_import_statement = wrap.import_statement(
-                                import_start,
-                                from_import_section,
-                                comments,
-                                config,
-                                parsed.line_separator,
-                            )
-                            if (
-                                max(len(x) for x in import_statement.split("\n"))
-                                > config.line_length
-                            ):
-                                import_statement = other_import_statement
-                        finally:
-                            config.multi_line_output = wrap.Modes.GRID  # type: ignore
+                        other_import_statement = wrap.import_statement(
+                            import_start=import_start,
+                            from_imports=from_import_section,
+                            comments=comments,
+                            line_separator=parsed.line_separator,
+                            config=config,
+                            multi_line_output=wrap.Modes.VERTICAL_GRID
+                        )
+                        if (
+                            max(len(x) for x in import_statement.split("\n"))
+                            > config.line_length
+                        ):
+                            import_statement = other_import_statement
                 if not do_multiline_reformat and len(import_statement) > config.line_length:
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)
 
