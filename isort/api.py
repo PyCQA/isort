@@ -40,4 +40,4 @@ def sorted_file(filename: str, config: Config=DEFAULT_CONFIG, **config_kwargs) -
     if config is DEFAULT_CONFIG and not "settings_path" in config_kwargs and not "settings_file" in config_kwargs:
         config_kwargs["settings_path"] = file_data.path.parent
 
-    return sorted_contents(file_contents=file_data.contents, extension=file_data.path.suffix, config=config, file_path=file_data.path, **config_kwargs)
+    return sorted_contents(file_contents=file_data.contents, extension=file_data.extension, config=config, file_path=file_data.path, **config_kwargs)

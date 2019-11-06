@@ -17,6 +17,10 @@ class File(NamedTuple):
         contents, encoding = _read_file_contents(file_path)
         return File(contents=contents, path=file_path, encoding=encoding)
 
+    @property
+    def extension(self):
+        return self.path.suffix.lstrip(".")
+
 
 def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
     # see https://www.python.org/dev/peps/pep-0263/

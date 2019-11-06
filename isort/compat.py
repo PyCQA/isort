@@ -44,7 +44,10 @@ class SortImports:
     ):
         file_encoding = "utf-8"
         if file_path:
-            file_contents, file_path, file_encoding = File.read(file_path)
+            file_data = File.read(file_path)
+            file_contents, file_path, file_encoding = file_data
+            if not extension:
+                extension = file_data.extension
 
         if settings_path:
             setting_overrides["settings_path"] = settings_path
