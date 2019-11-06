@@ -375,7 +375,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         dest="quiet",
         help="Shows extra quiet output, only errors are outputted.",
     )
-    parser.add_argument("-r", dest="ambiguous_r_flag", action="store_true")
     parser.add_argument(
         "--rm",
         "--remove-import",
@@ -556,14 +555,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     if arguments.get("show_version"):
         print(ASCII_ART)
         return
-
-    if arguments.get("ambiguous_r_flag"):
-        print(
-            "ERROR: Deprecated -r flag set. "
-            "This flag has been replaced with -rm to remove ambiguity between it and "
-            "-rc for recursive"
-        )
-        sys.exit(1)
 
     arguments["check_skip"] = False
     if "settings_path" in arguments:
