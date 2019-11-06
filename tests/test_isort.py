@@ -3125,7 +3125,7 @@ def test_path_finder(monkeypatch) -> None:
 def test_argument_parsing() -> None:
     from isort.main import parse_args
 
-    args = parse_args(["-dt", "-t", "foo", "--skip=bar", "baz.py"])
+    args = parse_args(["--dt", "-dt", "foo", "--skip=bar", "baz.py"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
     assert args["skip"] == ["bar"]
@@ -3170,7 +3170,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     tmpdir.join("file2.py").write("")
     arguments = ["--rc", str(tmpdir)]
     if quiet:
-        arguments.append("-q")
+        arguments.append("--q")
     main(arguments)
     out, err = capfd.readouterr()
     assert not err
