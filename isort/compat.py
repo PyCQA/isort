@@ -32,7 +32,7 @@ class SortImports:
     def __init__(
         self,
         file_path: Optional[str] = None,
-        file_contents: Optional[str] = None,
+        file_contents: str = "",
         write_to_stdout: bool = False,
         check: bool = False,
         show_diff: bool = False,
@@ -98,7 +98,7 @@ class SortImports:
 
             with file_path.open("w", encoding=file_encoding, newline="") as output_file:
                 if not config.quiet:
-                    print(f"Fixing {self.file_path}")
+                    print(f"Fixing {file_path}")
 
                 output_file.write(self.output)
 
