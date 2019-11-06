@@ -354,7 +354,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Order imports by type in addition to alphabetically",
     )
     parser.add_argument(
-        "--dot",
+        "--dt",
         "--dont-order-by-type",
         dest="dont_order_by_type",
         action="store_true",
