@@ -3045,7 +3045,7 @@ def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
     )
 
     assert (
-        SortImports(file_contents=test_input, settings_path=config_file.strpath).output
+        SortImports(file_contents=test_input, settings_file=config_file.strpath).output
         == test_input
     )
 

@@ -111,7 +111,7 @@ class _Config:
     known_standard_library: FrozenSet[str] = frozenset()
     known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
     multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
-    forced_separate: FrozenSet[str] = frozenset()
+    forced_separate: Tuple[str, ...] = ()
     indent: str = " " * 4
     comment_prefix: str = "  #"
     length_sort: bool = False
@@ -151,7 +151,7 @@ class _Config:
     ignore_comments: bool = False
     safety_excludes: bool = True
     case_sensitive: bool = False
-    sources: FrozenSet[str] = frozenset()
+    sources: Tuple[Dict[str, Any], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
@@ -201,7 +201,7 @@ class Config(_Config):
 
         config_settings: Dict[str, Any]
         if settings_file:
-            config_settings = config_data = get_config_data(
+            config_settings = config_data = _get_config_data(
                 settings_file,
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
@@ -249,7 +249,7 @@ class Config(_Config):
         for known_key in known_other.keys():
             combined_config.pop(f"known_{known_key}", None)
 
-        super().__init__(known_other=known_other, **combined_config)
+        super().__init__(known_other=known_other, sources=tuple(sources), **combined_config)
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
@@ -418,7 +418,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
             if existing_value_type == tuple:
                 settings[key] = tuple(_as_list(value))
             elif existing_value_type == frozenset:
-                settings[key] = frozenset(settings.get(key))
+                settings[key] = frozenset(_as_list(settings.get(key)))
             elif existing_value_type == bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):

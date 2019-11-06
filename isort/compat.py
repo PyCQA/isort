@@ -58,7 +58,6 @@ class SortImports:
         except FileSkipped as error:
             if config.verbose:
                 warn(error.message)
-
             return
 
         if check:
