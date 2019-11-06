@@ -320,7 +320,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "-m",
         "--multi-line",
         dest="multi_line_output",
-        type=wrap_mode_from_string,
+        choices=WrapModes.__members__,
+        type=WrapModes.__getitem__,
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
