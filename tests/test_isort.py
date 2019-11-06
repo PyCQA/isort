@@ -3170,7 +3170,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     tmpdir.join("file2.py").write("")
     arguments = ["--rc", str(tmpdir)]
     if quiet:
-        arguments.append("--q")
+        arguments.append("-q")
     main(arguments)
     out, err = capfd.readouterr()
     assert not err
