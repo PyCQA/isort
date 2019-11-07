@@ -257,7 +257,7 @@ class Config(_Config):
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
 
-        super().__init__(known_other=known_other, sources=tuple(sources), **combined_config)
+        super().__init__(sources=tuple(sources), **combined_config)
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""

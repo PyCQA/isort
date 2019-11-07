@@ -56,3 +56,10 @@ def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
         if answer in ("quit", "q"):
             sys.exit(1)
     return True
+
+
+def remove_whitespace(content: str) -> str:
+    content = (
+        content.replace(self.parsed.line_separator, "").replace(" ", "").replace("\x0c", "")
+    )
+    return content

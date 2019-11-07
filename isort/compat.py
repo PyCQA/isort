@@ -57,7 +57,12 @@ class SortImports:
         config = Config(**setting_overrides)
 
         try:
-            self.output = api.sorted_imports(file_contents, extension=extension, **setting_overrides)
+            if check:
+                self.incorrectly_sorted = not api.check_imports(file_contents, extension=extension, config=config, file_path=file_path, show_diff=show_diff)
+                self.output = ""
+                return
+            else:
+                self.output = api.sorted_imports(file_contents, extension=extension, config=config, file_path=file_path)
         except FileSkipped as error:
             if config.verbose:
                 warn(error.message)
