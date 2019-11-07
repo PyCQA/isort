@@ -596,7 +596,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         if filter_files:
             filtered_files = []
             for file_name in file_names:
-                if file_should_be_skipped(file_name, config):
+                if config.is_skipped(Path(file_name)):
                     skipped.append(file_name)
                 else:
                     filtered_files.append(file_name)
