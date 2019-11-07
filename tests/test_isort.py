@@ -3930,7 +3930,6 @@ def test_failing_file_check_916() -> None:
         "from __future__ import unicode_literals\n"
     )
     settings = {
-        "known_future_library": "future",
         "import_heading_future": "FUTURE",
         "sections": ["FUTURE", "STDLIB", "NORDIGEN", "FIRSTPARTY", "THIRDPARTY", "LOCALFOLDER"],
         "indent": "    ",

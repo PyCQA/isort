@@ -148,11 +148,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     original_line_count = len(in_lines)
 
     sections: Any = namedtuple("Sections", config.sections)(*config.sections)
-    section_comments = [
-        "# " + value
-        for key, value in vars(config).items()
-        if key.startswith("import_heading") and value
-    ]
+    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     finder = FindersManager(config=config, sections=sections)
 
     if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config.force_adds:

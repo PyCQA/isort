@@ -87,6 +87,9 @@ if appdirs:
 else:
     FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
 
+IMPORT_HEADING_PREFIX = "import_heading_"
+KNOWN_PREFIX = "known_"
+
 
 @dataclass(frozen=True)
 class _Config:
@@ -121,11 +124,7 @@ class _Config:
     reverse_relative: bool = False
     force_single_line: bool = False
     default_section: str = "FIRSTPARTY"
-    import_heading_future: str = ""
-    import_heading_stdlib: str = ""
-    import_heading_thirdparty: str = ""
-    import_heading_firstparty: str = ""
-    import_heading_localfolder: str = ""
+    import_headings: Dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False
     order_by_type: bool = True
@@ -229,10 +228,13 @@ class Config(_Config):
 
 
         known_other = {}
+        import_headings = {}
         for key, value in combined_config.items():
             # Collect all known sections beyond those that have direct entries
-            if key.startswith("known_") and key not in ("known_standard_library", "known_future_library", "known_third_party", "known_first_party"):
-                known_other[key[len("known_"):]] = frozenset(value)
+            if key.startswith(KNOWN_PREFIX) and key not in ("known_standard_library", "known_future_library", "known_third_party", "known_first_party"):
+                known_other[key[len(KNOWN_PREFIX):].lower()] = frozenset(value)
+            if key.startswith(IMPORT_HEADING_PREFIX):
+                import_headings[key[len(IMPORT_HEADING_PREFIX):].lower()] = str(value)
 
             # Coerce all provided config values into their correct type
             default_value = _DEFAULT_SETTINGS.get(key, None)
@@ -246,8 +248,14 @@ class Config(_Config):
 
         # Remove any config values that are used for creating config object but aren't defined in dataclass
         combined_config.pop("source", None)
-        for known_key in known_other.keys():
-            combined_config.pop(f"known_{known_key}", None)
+        if known_other:
+            for known_key in known_other.keys():
+                combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
+            combined_config["known_other"] = known_other
+        if import_headings:
+            for import_heading_key in import_headings.keys():
+                combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
+            combined_config["import_headings"] = import_headings
 
         super().__init__(known_other=known_other, sources=tuple(sources), **combined_config)
 
@@ -424,7 +432,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                 if not isinstance(value, bool):
                     value = bool(_as_bool(value))
                 settings[key] = value
-            elif key.startswith("known_"):
+            elif key.startswith(KNOWN_PREFIX):
                 settings[key] = _abspaths(os.path.dirname(file_path), _as_list(value))
             elif key == "force_grid_wrap":
                 try:

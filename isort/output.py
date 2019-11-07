@@ -118,7 +118,7 @@ def sorted_imports(
                 parsed.place_imports[section_name] = section_output
                 continue
 
-            section_title = getattr(config, "import_heading_" + str(section_name).lower(), "")
+            section_title = config.import_headings.get(section_name.lower(), "")
             if section_title:
                 section_comment = f"# {section_title}"
                 if (
