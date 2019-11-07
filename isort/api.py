@@ -50,8 +50,9 @@ def check_imports(file_contents: str, show_diff: bool=False, extension: str = "p
 
     sorted_output = sorted_imports(file_contents=file_contents, extension=extension, config=config, file_path=file_path, disregard_skip=disregard_skip, **config_kwargs)
     if config.ignore_whitespace:
-        compare_in = remove_whitespace(file_contents).strip()
-        compare_out = remove_whitespace(sorted_output).strip()
+        line_separator = config.line_ending or parse._infer_line_separator(file_contents)
+        compare_in = remove_whitespace(file_contents, line_separator=line_separator).strip()
+        compare_out = remove_whitespace(sorted_output, line_separator=line_separator).strip()
     else:
         compare_in = file_contents.strip()
         compare_out = sorted_output.strip()

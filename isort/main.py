@@ -588,6 +588,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         jobs = config_dict.pop("jobs", ())
         show_logo = config_dict.pop("show_logo", False)
         filter_files = config_dict.pop("filter_files", False)
+        check = config_dict.pop("check", False)
         config = Config(**config_dict)
 
         wrong_sorted_files = False
@@ -613,12 +614,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(
-                functools.partial(sort_imports, **config_dict), file_names
+                functools.partial(sort_imports, check=check, **config_dict), file_names
             )
         else:
             # https://github.com/python/typeshed/pull/2814
             attempt_iterator = (  # type: ignore
-                sort_imports(file_name, **config_dict) for file_name in file_names
+                sort_imports(file_name, check=check, **config_dict) for file_name in file_names
             )
 
         for sort_attempt in attempt_iterator:
