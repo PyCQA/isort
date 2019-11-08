@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-from isort import finders, main, settings, sections
+from isort import finders, main, sections
 from isort.main import SortImports, is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
@@ -661,10 +661,10 @@ def test_skip_with_file_name() -> None:
     test_input = "import django\nimport myproject\n"
 
     sort_imports = SortImports(
-        file_path="/baz.py", file_contents=test_input, settings_path=os.getcwd(), skip=["baz.py"]
+        filename="/baz.py", file_contents=test_input, settings_path=os.getcwd(), skip=["baz.py"]
     )
     assert sort_imports.skipped
-    assert sort_imports.output is None
+    assert sort_imports.output == ""
 
 
 def test_skip_within_file() -> None:
@@ -672,7 +672,7 @@ def test_skip_within_file() -> None:
     test_input = "# isort:skip_file\nimport django\nimport myproject\n"
     sort_imports = SortImports(file_contents=test_input, known_third_party=["django"])
     assert sort_imports.skipped
-    assert sort_imports.output is None
+    assert sort_imports.output == ""
 
 
 def test_force_to_top() -> None:
@@ -1952,7 +1952,7 @@ def test_other_file_encodings(tmpdir) -> None:
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
         assert (
-            SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+            SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
         )
 
 
@@ -1961,7 +1961,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
@@ -1969,7 +1969,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
 def test_comment_at_top_of_file() -> None:
@@ -4089,11 +4089,11 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
-    assert SortImports(file_path=str(source_py)).output.splitlines() == expected_py_output
+    assert SortImports(filename=str(source_py)).output.splitlines() == expected_py_output
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
-    assert SortImports(file_path=str(source_pyi)).output.splitlines() == expected_pyi_output
+    assert SortImports(filename=str(source_pyi)).output.splitlines() == expected_pyi_output
 
 
 def test_move_class_issue_751() -> None:

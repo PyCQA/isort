@@ -21,8 +21,8 @@ def _config(
     if path:
         if (
             config is DEFAULT_CONFIG
-            and not "settings_path" in config_kwargs
-            and not "settings_file" in config_kwargs
+            and "settings_path" not in config_kwargs
+            and "settings_file" not in config_kwargs
         ):
             config_kwargs["settings_path"] = path
 

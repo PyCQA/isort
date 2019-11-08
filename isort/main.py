@@ -525,7 +525,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
-    values = vars(parser.parse_args(argv))
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
@@ -568,8 +567,10 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             if not arguments.get("apply", False):
                 arguments["ask_to_apply"] = True
 
-        if not "settings_path" in arguments:
+        if "settings_path" not in arguments:
             arguments["settings_path"] = os.path.abspath(file_names[0]) or os.getcwd()
+            if not os.path.isdir(arguments["settings_path"]):
+                arguments["settings_path"] = os.path.basename(arguments["settings_path"])
 
         config_dict = arguments.copy()
         config_dict.pop("recursive", False)

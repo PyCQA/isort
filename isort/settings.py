@@ -32,8 +32,9 @@ from typing import (
 )
 from warnings import warn
 
-from . import sections, stdlibs
+from . import stdlibs
 from ._future import dataclass, field
+from .sections import DEFAULT as SECTION_DEFAULTS
 from .utils import difference, union
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
@@ -117,7 +118,7 @@ class _Config:
     line_length: int = 79
     wrap_length: int = 0
     line_ending: str = ""
-    sections: Tuple[str, ...] = sections.DEFAULT
+    sections: Tuple[str, ...] = SECTION_DEFAULTS
     no_sections: bool = False
     known_future_library: FrozenSet[str] = frozenset(("__future__",))
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
@@ -209,7 +210,7 @@ class Config(_Config):
 
         config_settings: Dict[str, Any]
         if settings_file:
-            config_settings = config_data = _get_config_data(
+            config_settings = _get_config_data(
                 settings_file,
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
@@ -261,7 +262,8 @@ class Config(_Config):
                 config_settings.get("source", None) or os.getcwd()
             )
 
-        # Remove any config values that are used for creating config object but aren't defined in dataclass
+        # Remove any config values that are used for creating config object but
+        # aren't defined in dataclass
         combined_config.pop("source", None)
         if known_other:
             for known_key in known_other.keys():
@@ -278,10 +280,8 @@ class Config(_Config):
         """Returns True if the file and/or folder should be skipped based on current settings."""
         if self.directory and Path(self.directory) in file_path.parents:
             file_name = os.path.relpath(file_path, self.directory)
-            path = self.directory
         else:
             file_name = str(file_path)
-            path = ""
 
         os_path = str(file_path)
 

@@ -54,7 +54,7 @@ class SortImports:
 
         if settings_path:
             setting_overrides["settings_path"] = settings_path
-        elif file_path and not "settings_file" in setting_overrides:
+        elif file_path and "settings_file" not in setting_overrides:
             setting_overrides["settings_path"] = file_path.parent
 
         config = Config(**setting_overrides)
