@@ -917,7 +917,7 @@ def test_known_pattern_path_expansion() -> None:
     test_output = SortImports(
         file_contents=test_input,
         default_section="THIRDPARTY",
-        known_first_party=["./", "this", "kate_plugin"],
+        known_first_party=["./", "this", "kate_plugin", "isort"],
     ).output
     assert test_output == (
         "import os\n"
@@ -1215,15 +1215,10 @@ def test_smart_lines_after_import_section() -> None:
     )
 
 
-def test_settings_combine_instead_of_overwrite() -> None:
-    """Test to ensure settings combine logically, instead of fully overwriting."""
-    assert set(
-        SortImports(known_standard_library=["not_std_library"]).config["known_standard_library"]
-    ) == set(SortImports().config["known_standard_library"]) | {"not_std_library"}
-
-    assert set(
-        SortImports(not_known_standard_library=["thread"]).config["known_standard_library"]
-    ) == {item for item in SortImports().config["known_standard_library"] if item != "thread"}
+def test_settings_overwrite() -> None:
+    """Test to ensure settings overwrite instead of trying to combine."""
+    assert Config(known_standard_library=["not_std_library"]).known_standard_library == frozenset({"not_std_library"})
+    assert Config(known_first_party=["thread"]).known_first_party == frozenset({"thread"})
 
 
 def test_combined_from_and_as_imports() -> None:
@@ -1656,7 +1651,7 @@ def test_placement_control() -> None:
     test_output = SortImports(
         file_contents=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
-        known_standard_library=["p24.imports"],
+        known_standard_library=["p24.imports", "os", "sys"],
         known_third_party=["bottle"],
         default_section="THIRDPARTY",
     ).output
@@ -1697,7 +1692,7 @@ def test_custom_sections() -> None:
         import_heading_firstparty="First Party",
         import_heading_django="Django",
         import_heading_pandas="Pandas",
-        known_standard_library=["p24.imports"],
+        known_standard_library=["p24.imports", "os", "sys"],
         known_third_party=["bottle"],
         known_django=["django"],
         known_pandas=["pandas", "numpy"],

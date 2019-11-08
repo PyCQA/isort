@@ -177,11 +177,12 @@ class _Config:
         if py_version != "all":
             object.__setattr__(self, "py_version", f"py{py_version}")
 
-        object.__setattr__(
-            self,
-            "known_standard_library",
-            list(getattr(stdlibs, self.py_version).stdlib | set(self.known_standard_library)),
-        )
+        if not self.known_standard_library:
+            object.__setattr__(
+                self,
+                "known_standard_library",
+                frozenset(getattr(stdlibs, self.py_version).stdlib),
+            )
 
         if self.force_alphabetical_sort:
             object.__setattr__(self, "force_alphabetical_sort_within_sections", True)

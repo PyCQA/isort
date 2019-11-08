@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, NamedTuple, Optional, Tuple
 
 from . import output, parse
-from .exceptions import FileSkipComment, IntroducedSyntaxErrors, UnableToDetermineEncoding
+from .exceptions import FileSkipComment, IntroducedSyntaxErrors, UnableToDetermineEncoding, ExistingSyntaxErrors
 from .io import File
 from .format import remove_whitespace
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
@@ -37,7 +37,7 @@ def sorted_imports(file_contents: str, extension: str = "py", config: Config=DEF
         try:
             compile(file_contents, content_source, "exec", 0, 1)
         except SyntaxError:
-            raise ExistingSyntaxError(content_source)
+            raise ExistingSyntaxErrors(content_source)
 
     parsed_output = output.sorted_imports(parse.file_contents(file_contents, config=config), config, extension)
     if config.atomic:
