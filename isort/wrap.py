@@ -12,8 +12,8 @@ def import_statement(
     from_imports: List[str],
     comments: Sequence[str],
     line_separator: str,
-    config: Config=DEFAULT_CONFIG,
-    multi_line_output: Optional[Modes]=None
+    config: Config = DEFAULT_CONFIG,
+    multi_line_output: Optional[Modes] = None,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
     formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
@@ -61,7 +61,7 @@ def import_statement(
     return import_statement
 
 
-def line(line: str, line_separator: str, config: Config=DEFAULT_CONFIG) -> str:
+def line(line: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     wrap_mode = config.multi_line_output
     if len(line) > config.line_length and wrap_mode != Modes.NOQA:  # type: ignore
@@ -79,9 +79,7 @@ def line(line: str, line_separator: str, config: Config=DEFAULT_CONFIG) -> str:
                     _comma_maybe = "," if config.include_trailing_comma else ""
                     line_parts[-1] = f"{line_parts[-1].strip()}{_comma_maybe}  #{comment}"
                 next_line = []
-                while (len(line) + 2) > (
-                    config.wrap_length or config.line_length
-                ) and line_parts:
+                while (len(line) + 2) > (config.wrap_length or config.line_length) and line_parts:
                     next_line.append(line_parts.pop())
                     line = splitter.join(line_parts)
                 if not line:

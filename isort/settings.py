@@ -13,7 +13,6 @@ import posixpath
 import re
 import sys
 import warnings
-from pathlib import Path
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
@@ -21,18 +20,19 @@ from typing import (
     Any,
     Callable,
     Dict,
+    FrozenSet,
     Iterable,
     List,
     Mapping,
     MutableMapping,
     Optional,
+    Set,
     Tuple,
     Union,
-    FrozenSet,
 )
 from warnings import warn
 
-from . import stdlibs, sections
+from . import sections, stdlibs
 from ._future import dataclass, field
 from .utils import difference, union
 from .wrap_modes import WrapModes
@@ -51,7 +51,7 @@ try:
 except ImportError:
     appdirs = None
 
-FILE_SKIP_COMMENT: str = ("isort:" + "skip_file") # Concatenated to avoid this file being skipped
+FILE_SKIP_COMMENT: str = ("isort:" + "skip_file")  # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(
@@ -92,9 +92,27 @@ class _Config:
     NOTE: known lists, such as known_standard_library, are intentionally not complete as they are
     dynamically determined later on.
     """
+
     py_version: str = "3"
     force_to_top: FrozenSet[str] = frozenset()
-    skip: FrozenSet[str] = frozenset({".venv", "venv", ".tox", ".eggs", ".git", ".hg", ".mypy_cache", ".nox", "_build", "buck-out", "build", "dist", ".pants.d", "node_modules"})
+    skip: FrozenSet[str] = frozenset(
+        {
+            ".venv",
+            "venv",
+            ".tox",
+            ".eggs",
+            ".git",
+            ".hg",
+            ".mypy_cache",
+            ".nox",
+            "_build",
+            "buck-out",
+            "build",
+            "dist",
+            ".pants.d",
+            "node_modules",
+        }
+    )
     skip_glob: FrozenSet[str] = frozenset()
     line_length: int = 79
     wrap_length: int = 0
@@ -172,9 +190,7 @@ class _Config:
 
         if not self.known_standard_library:
             object.__setattr__(
-                self,
-                "known_standard_library",
-                frozenset(getattr(stdlibs, self.py_version).stdlib),
+                self, "known_standard_library", frozenset(getattr(stdlibs, self.py_version).stdlib)
             )
 
         if self.force_alphabetical_sort:
@@ -219,15 +235,19 @@ class Config(_Config):
                     indent = "\t"
             combined_config["indent"] = indent
 
-
         known_other = {}
         import_headings = {}
         for key, value in combined_config.items():
             # Collect all known sections beyond those that have direct entries
-            if key.startswith(KNOWN_PREFIX) and key not in ("known_standard_library", "known_future_library", "known_third_party", "known_first_party"):
-                known_other[key[len(KNOWN_PREFIX):].lower()] = frozenset(value)
+            if key.startswith(KNOWN_PREFIX) and key not in (
+                "known_standard_library",
+                "known_future_library",
+                "known_third_party",
+                "known_first_party",
+            ):
+                known_other[key[len(KNOWN_PREFIX) :].lower()] = frozenset(value)
             if key.startswith(IMPORT_HEADING_PREFIX):
-                import_headings[key[len(IMPORT_HEADING_PREFIX):].lower()] = str(value)
+                import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
             # Coerce all provided config values into their correct type
             default_value = _DEFAULT_SETTINGS.get(key, None)
@@ -237,7 +257,9 @@ class Config(_Config):
             combined_config[key] = type(default_value)(value)
 
         if "directory" not in combined_config:
-            combined_config["directory"] = os.path.basename(config_settings.get("source", None) or os.getcwd())
+            combined_config["directory"] = os.path.basename(
+                config_settings.get("source", None) or os.getcwd()
+            )
 
         # Remove any config values that are used for creating config object but aren't defined in dataclass
         combined_config.pop("source", None)
@@ -250,7 +272,7 @@ class Config(_Config):
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
 
-        super().__init__(sources=tuple(sources), **combined_config)
+        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
@@ -303,7 +325,7 @@ def _as_list(value: str) -> List[str]:
     return filtered
 
 
-def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
+def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = set(
         [
             os.path.join(cwd, value)
@@ -405,14 +427,16 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                 settings["line_length"] = (
                     float("inf") if max_line_length == "off" else int(max_line_length)
                 )
-            settings = {key: value for key, value in settings.items() if key in _DEFAULT_SETTINGS.keys()}
+            settings = {
+                key: value for key, value in settings.items() if key in _DEFAULT_SETTINGS.keys()
+            }
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)
             if existing_value_type == tuple:
                 settings[key] = tuple(_as_list(value))
             elif existing_value_type == frozenset:
-                settings[key] = frozenset(_as_list(settings.get(key)))
+                settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
             elif existing_value_type == bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):

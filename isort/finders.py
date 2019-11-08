@@ -10,12 +10,23 @@ from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
-from typing import (Any, Dict, Iterable, Iterator, List, Mapping,
-                    Optional, Pattern, Sequence, Tuple, Type)
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Pattern,
+    Sequence,
+    Tuple,
+    Type,
+)
 
+from . import sections
 from .settings import DEFAULT_CONFIG, Config
 from .utils import chdir, exists_case_sensitive
-from . import sections
 
 try:
     from pipreqs import pipreqs
@@ -77,7 +88,9 @@ class KnownPatternFinder(BaseFinder):
         for placement in reversed(config.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"known_{known_placement}"
-            known_patterns = list(getattr(self.config, config_key, self.config.known_other.get(known_placement, [])))
+            known_patterns = list(
+                getattr(self.config, config_key, self.config.known_other.get(known_placement, []))
+            )
             known_patterns = [
                 pattern
                 for known_pattern in known_patterns
@@ -361,9 +374,7 @@ class FindersManager:
     )
 
     def __init__(
-        self,
-        config: Config,
-        finder_classes: Optional[Iterable[Type[BaseFinder]]] = None,
+        self, config: Config, finder_classes: Optional[Iterable[Type[BaseFinder]]] = None
     ) -> None:
         self.verbose: bool = config.verbose
 

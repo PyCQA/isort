@@ -7,10 +7,9 @@ from typing import Any, Optional, Tuple
 from warnings import warn
 
 from . import api, settings
-from .exceptions import FileSkipped, ExistingSyntaxErrors, IntroducedSyntaxErrors
+from .exceptions import ExistingSyntaxErrors, FileSkipped, IntroducedSyntaxErrors
 from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from .io import File
-from .isort import _SortImports
 from .settings import Config
 
 
@@ -30,7 +29,7 @@ class SortImports:
 
     def __init__(
         self,
-        file_path: Optional[str] = None,
+        filename: Optional[str] = None,
         file_contents: str = "",
         write_to_stdout: bool = False,
         check: bool = False,
@@ -39,15 +38,16 @@ class SortImports:
         ask_to_apply: bool = False,
         run_path: str = "",
         check_skip: bool = True,
-        extension: Optional[str] = None,
+        extension: str = "",
         **setting_overrides: Any,
     ):
         file_encoding = "utf-8"
-        if file_path:
+        file_path: Optional[Path] = None
+        if filename:
             if file_contents:
-                file_data = File.from_contents(file_contents, filename=file_path)
+                file_data = File.from_contents(file_contents, filename=filename)
             else:
-                file_data = File.read(file_path)
+                file_data = File.read(filename)
             file_contents, file_path, file_encoding = file_data
             if not extension:
                 extension = file_data.extension
@@ -61,16 +61,24 @@ class SortImports:
 
         try:
             if check:
-                self.incorrectly_sorted = not api.check_imports(file_contents, extension=extension, config=config, file_path=file_path, show_diff=show_diff)
+                self.incorrectly_sorted = not api.check_imports(
+                    file_contents,
+                    extension=extension,
+                    config=config,
+                    file_path=file_path,
+                    show_diff=show_diff,
+                )
                 self.output = ""
                 return
             else:
-                self.output = api.sorted_imports(file_contents, extension=extension, config=config, file_path=file_path)
+                self.output = api.sorted_imports(
+                    file_contents, extension=extension, config=config, file_path=file_path
+                )
         except FileSkipped as error:
             self.skipped = True
-            self.output = None
+            self.output = ""
             if config.verbose:
-                warn(error.message)
+                warn(str(error))
             return
         except ExistingSyntaxErrors:
             warn("{file_path} unable to sort due to existing syntax errors")
@@ -80,21 +88,6 @@ class SortImports:
             warn("{file_path} unable to sort as isort introduces new syntax errors")
             self.output = file_contents
             return
-
-        if check:
-            check_output = self.output
-            check_against = file_contents
-            if config.ignore_whitespace:
-                check_output = self.sorted_imports.remove_whitespaces(check_output)
-                check_against = self.sorted_imports.remove_whitespaces(check_against)
-
-            current_input_sorted_correctly = self.sorted_imports.check_if_input_already_sorted(
-                check_output, check_against, logging_file_path=str(file_path or "")
-            )
-            if current_input_sorted_correctly:
-                return
-            else:
-                self.incorrectly_sorted = True
 
         if show_diff:
             show_unified_diff(
@@ -122,11 +115,3 @@ class SortImports:
                     print(f"Fixing {file_path}")
 
                 output_file.write(self.output)
-
-    @property
-    def sections(self):
-        return self.sorted_imports.parsed.sections
-
-    @property
-    def length_change(self) -> int:
-        return self.sorted_imports.parsed.change_count

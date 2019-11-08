@@ -1,7 +1,10 @@
 """Defines any IO utilities used by isort"""
+import locale
 import re
 from pathlib import Path
 from typing import NamedTuple, Optional, Tuple
+
+from .exceptions import UnableToDetermineEncoding
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
@@ -19,7 +22,9 @@ class File(NamedTuple):
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        return File(contents, path=Path(filename).resolve(), encoding=_determine_content_encoding(contents))
+        return File(
+            contents, path=Path(filename).resolve(), encoding=_determine_content_encoding(contents)
+        )
 
     @property
     def extension(self):
@@ -47,9 +52,7 @@ def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
         return _determine_stream_encoding(open_file, default=default)
 
 
-def _read_file_contents(
-    file_path: Path
-) -> Tuple[Optional[str], Optional[str]]:
+def _read_file_contents(file_path: Path) -> Tuple[str, str]:
     encoding = _determine_file_encoding(file_path)
     with file_path.open(encoding=encoding, newline="") as file_to_import_sort:
         try:
@@ -59,7 +62,7 @@ def _read_file_contents(
             pass
 
     # Try default encoding for open(mode='r') on the system
-    fallback_encoding = _locale.getpreferredencoding(False)
+    fallback_encoding = locale.getpreferredencoding(False)
     with file_path.open(encoding=fallback_encoding, newline="") as file_to_import_sort:
         try:
             file_contents = file_to_import_sort.read()

@@ -486,7 +486,7 @@ def test_length_sort_section() -> None:
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"
     )
-    test_output = SortImports(file_contents=test_input, length_sort_sections=("stdlib", )).output
+    test_output = SortImports(file_contents=test_input, length_sort_sections=("stdlib",)).output
     assert test_output == (
         "import os\n"
         "import sys\n"
@@ -1217,7 +1217,9 @@ def test_smart_lines_after_import_section() -> None:
 
 def test_settings_overwrite() -> None:
     """Test to ensure settings overwrite instead of trying to combine."""
-    assert Config(known_standard_library=["not_std_library"]).known_standard_library == frozenset({"not_std_library"})
+    assert Config(known_standard_library=["not_std_library"]).known_standard_library == frozenset(
+        {"not_std_library"}
+    )
     assert Config(known_first_party=["thread"]).known_first_party == frozenset({"thread"})
 
 
@@ -1574,7 +1576,9 @@ def test_long_line_comments() -> None:
         "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
-    assert SortImports(file_contents=test_input, line_length=100, balanced_wrapping=True).output == (
+    assert SortImports(
+        file_contents=test_input, line_length=100, balanced_wrapping=True
+    ).output == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
         "                                         sync_live_envdir, update_live_app, "
         "update_live_cron)\n"
@@ -2681,7 +2685,10 @@ def test_no_extra_lines_issue_557() -> None:
     )
     assert (
         SortImports(
-            file_contents=test_input, force_alphabetical_sort=True, force_sort_within_sections=True, line_length=100
+            file_contents=test_input,
+            force_alphabetical_sort=True,
+            force_sort_within_sections=True,
+            line_length=100,
         ).output
         == expected_output
     )
@@ -3087,7 +3094,7 @@ def test_monkey_patched_urllib() -> None:
 
 
 def test_path_finder(monkeypatch) -> None:
-    config = config=Config()
+    config = config = Config()
     finder = finders.PathFinder(config=config)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES

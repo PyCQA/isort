@@ -13,15 +13,8 @@ import setuptools
 
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
-from isort.settings import (
-    VALID_PY_TARGETS,
-    WrapModes,
-    Config
-    # default,
-    # file_should_be_skipped,
-    # from_path,
-    # wrap_mode_from_string,
-)
+from isort.settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
+
 from . import sections
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
@@ -62,9 +55,7 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
         return None
 
 
-def iter_source_code(
-    paths: Iterable[str], config: Config, skipped: List[str]
-) -> Iterator[str]:
+def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
@@ -94,14 +85,14 @@ class ISortCommand(setuptools.Command):
     user_options: List[Any] = []
 
     def initialize_options(self) -> None:
-        default_settings = default.copy()
+        default_settings = vars(DEFAULT_CONFIG).copy()
         for key, value in default_settings.items():
             setattr(self, key, value)
 
     def finalize_options(self) -> None:
         "Get options from config files."
         self.arguments: Dict[str, Any] = {}
-        computed_settings = from_path(os.getcwd())
+        computed_settings = vars(Config(directory=os.getcwd()))
         for key, value in computed_settings.items():
             self.arguments[key] = value
 
@@ -319,8 +310,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "-m",
         "--multi-line",
         dest="multi_line_output",
-        choices=WrapModes.__members__,
-        type=WrapModes.__getitem__,
+        choices=list(WrapModes.__members__.keys())
+        + [str(mode.value) for mode in WrapModes.__members__.values()],
+        type=str,
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
@@ -537,6 +529,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
+    multi_line_output = arguments.get("multi_line_output", None)
+    if multi_line_output:
+        if multi_line_output.isdigit():
+            arguments["multi_line_output"] = WrapModes(int(multi_line_output))
+        else:
+            arguments["multi_line_output"] = WrapModes[multi_line_output]
     return arguments
 
 

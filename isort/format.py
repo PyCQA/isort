@@ -58,8 +58,6 @@ def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     return True
 
 
-def remove_whitespace(content: str, line_separator: str="\n") -> str:
-    content = (
-        content.replace(line_separator, "").replace(" ", "").replace("\x0c", "")
-    )
+def remove_whitespace(content: str, line_separator: str = "\n") -> str:
+    content = content.replace(line_separator, "").replace(" ", "").replace("\x0c", "")
     return content
