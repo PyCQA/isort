@@ -7,7 +7,7 @@ from typing import Any, Optional, Tuple
 from warnings import warn
 
 from . import api, settings
-from .exceptions import FileSkipped
+from .exceptions import FileSkipped, ExistingSyntaxErrors, IntroducedSyntaxErrors
 from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from .io import File
 from .isort import _SortImports
@@ -66,6 +66,14 @@ class SortImports:
         except FileSkipped as error:
             if config.verbose:
                 warn(error.message)
+            return
+        except ExistingSyntaxErrors:
+            warn("{file_path} unable to sort due to existing syntax errors")
+            self.output = file_contents
+            return
+        except IntroducedSyntaxErrors:
+            warn("{file_path} unable to sort as isort introduces new syntax errors")
+            self.output = file_contents
             return
 
         if check:
