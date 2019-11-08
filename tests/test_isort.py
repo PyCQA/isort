@@ -3228,7 +3228,7 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
 
-    config = dict(settings.default.copy(), skip_glob=skip_glob)
+    config = Config(skip_glob=skip_glob)
     skipped = []  # type: List[str]
     file_names = {
         os.path.relpath(f, str(base_dir))
