@@ -16,7 +16,7 @@ import py
 import pytest
 from isort import finders, main, settings
 from isort.main import SortImports, is_python_file
-from isort.settings import WrapModes
+from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 
 try:
@@ -3785,8 +3785,8 @@ def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.pat
     config_file = tmpdir.join(".editorconfig")
     config_file.write("\n".join(editorconfig_contents))
 
-    config = settings.from_path(str(tmpdir))
-    assert config["multi_line_output"] == WrapModes.VERTICAL_GRID_GROUPED
+    config = Config(settings_path=str(tmpdir))
+    assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
 def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> None:
