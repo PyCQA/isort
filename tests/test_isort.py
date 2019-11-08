@@ -2998,18 +2998,18 @@ def test_requirements_finder(tmpdir) -> None:
     subdir.write("flask")
     req_file = tmpdir.join("requirements.txt")
     req_file.write("Django==1.11\n-e git+https://github.com/orsinium/deal.git#egg=deal\n")
-    si = SortImports(file_contents="")
     for path in (str(tmpdir), str(subdir)):
-        finder = finders.RequirementsFinder(config=si.config, sections=si.sections, path=path)
+
+        finder = finders.RequirementsFinder(config=Config(), path=path)
 
         files = list(finder._get_files())
         assert len(files) == 1  # file finding
         assert files[0].endswith("requirements.txt")  # file finding
         assert set(finder._get_names(str(req_file))) == {"Django", "deal"}  # file parsing
 
-        assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+        assert finder.find("django") == sections.THIRDPARTY  # package in reqs
         assert finder.find("flask") is None  # package not in reqs
-        assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+        assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
         assert len(finder.mapping) > 100
         assert finder._normalize_name("deal") == "deal"
@@ -3070,14 +3070,13 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 def test_pipfile_finder(tmpdir) -> None:
     pipfile = tmpdir.join("Pipfile")
     pipfile.write(PIPFILE)
-    si = SortImports(file_contents="")
-    finder = finders.PipfileFinder(config=si.config, sections=si.sections, path=str(tmpdir))
+    finder = finders.PipfileFinder(config=Config(), path=str(tmpdir))
 
     assert set(finder._get_names(str(tmpdir))) == {"Django", "deal"}  # file parsing
 
-    assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+    assert finder.find("django") == sections.THIRDPARTY  # package in reqs
     assert finder.find("flask") is None  # package not in reqs
-    assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+    assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
     assert len(finder.mapping) > 100
     assert finder._normalize_name("deal") == "deal"
@@ -3097,7 +3096,7 @@ def test_monkey_patched_urllib() -> None:
 
 def test_path_finder(monkeypatch) -> None:
     config = config=Config()
-    finder = finders.PathFinder(config=config, sections=config.sections)
+    finder = finders.PathFinder(config=config)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
     imaginary_paths = set(

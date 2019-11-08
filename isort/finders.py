@@ -41,9 +41,8 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
 
 
 class BaseFinder(metaclass=ABCMeta):
-    def __init__(self, config: Config, sections: Any) -> None:
+    def __init__(self, config: Config) -> None:
         self.config = config
-        self.sections = sections
 
     @abstractmethod
     def find(self, module_name: str) -> Optional[str]:
@@ -71,11 +70,11 @@ class LocalFinder(BaseFinder):
 
 
 class KnownPatternFinder(BaseFinder):
-    def __init__(self, config: Config, sections: Any) -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
 
         self.known_patterns: List[Tuple[Pattern[str], str]] = []
-        for placement in reversed(self.sections):
+        for placement in reversed(config.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"known_{known_placement}"
             known_patterns = list(getattr(self.config, config_key, self.config.known_other.get(known_placement, [])))
@@ -113,8 +112,8 @@ class KnownPatternFinder(BaseFinder):
 
 
 class PathFinder(BaseFinder):
-    def __init__(self, config: Config, sections: Any) -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
 
         # restore the original import path (i.e. not the path to bin/isort)
         root_dir = os.getcwd()
@@ -191,8 +190,8 @@ class PathFinder(BaseFinder):
 class ReqsBaseFinder(BaseFinder):
     enabled = False
 
-    def __init__(self, config: Config, sections: Any, path: str = ".") -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config, path: str = ".") -> None:
+        super().__init__(config)
         self.path = path
         if self.enabled:
             self.mapping = self._load_mapping()
@@ -274,7 +273,7 @@ class ReqsBaseFinder(BaseFinder):
 
         for name in self.names:
             if module_name == name:
-                return self.sections.THIRDPARTY
+                return sections.THIRDPARTY
         return None
 
 
@@ -364,7 +363,6 @@ class FindersManager:
     def __init__(
         self,
         config: Config,
-        sections: Any,
         finder_classes: Optional[Iterable[Type[BaseFinder]]] = None,
     ) -> None:
         self.verbose: bool = config.verbose
@@ -374,7 +372,7 @@ class FindersManager:
         finders: List[BaseFinder] = []
         for finder_cls in finder_classes:
             try:
-                finders.append(finder_cls(config, sections))
+                finders.append(finder_cls(config))
             except Exception as exception:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
