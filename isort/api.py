@@ -62,10 +62,10 @@ def check_imports(file_contents: str, show_diff: bool=False, extension: str = "p
 
     if compare_out == compare_in:
         if config.verbose:
-            print(f"SUCCESS: {logging_file_path} Everything Looks Good!")
+            print(f"SUCCESS: {file_path} Everything Looks Good!")
         return True
     else:
-        print(f"ERROR: {logging_file_path} Imports are incorrectly sorted.")
+        print(f"ERROR: {file_path} Imports are incorrectly sorted.")
         if show_diff:
             show_unified_diff(
                 file_input=file_contents, file_output=sorted_output, file_path=file_path
