@@ -146,10 +146,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
-
-    sections: Any = namedtuple("Sections", config.sections)(*config.sections)
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
-    finder = FindersManager(config=config, sections=sections)
+    finder = FindersManager(config=config, sections=config.sections)
 
     if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config.force_adds:
         in_lines.extend(add_imports)
@@ -160,7 +158,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     import_placements: Dict[str, str] = {}
     as_map: Dict[str, List[str]] = defaultdict(list)
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
-    for section in chain(sections, config.forced_separate):
+    for section in chain(config.sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments: CommentsDict = {
         "from": {},
@@ -442,6 +440,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         change_count=change_count,
         original_line_count=original_line_count,
         line_separator=line_separator,
-        sections=sections,
+        sections=config.sections,
         section_comments=section_comments,
     )

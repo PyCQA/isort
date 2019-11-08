@@ -3096,8 +3096,8 @@ def test_monkey_patched_urllib() -> None:
 
 
 def test_path_finder(monkeypatch) -> None:
-    si = SortImports(file_contents="")
-    finder = finders.PathFinder(config=si.config, sections=si.sections)
+    config = config=Config()
+    finder = finders.PathFinder(config=config, sections=config.sections)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
     imaginary_paths = set(
@@ -3115,11 +3115,11 @@ def test_path_finder(monkeypatch) -> None:
     )
 
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
-    assert finder.find("example_1") == finder.sections.STDLIB
-    assert finder.find("example_2") == finder.sections.THIRDPARTY
-    assert finder.find("example_3") == finder.sections.FIRSTPARTY
+    assert finder.find("example_1") == "STDLIB"
+    assert finder.find("example_2") == "THIRDPARTY"
+    assert finder.find("example_3") == "FIRSTPARTY"
     for i, _ in enumerate(ext_suffixes, 4):
-        assert finder.find("example_" + str(i)) == finder.sections.THIRDPARTY
+        assert finder.find("example_" + str(i)) == "THIRDPARTY"
 
 
 def test_argument_parsing() -> None:

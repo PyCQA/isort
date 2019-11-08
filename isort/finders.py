@@ -65,7 +65,7 @@ class ForcedSeparateFinder(BaseFinder):
 class LocalFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         if module_name.startswith("."):
-            return self.sections.LOCALFOLDER
+            return "LOCALFOLDER"
         return None
 
 
@@ -172,17 +172,17 @@ class PathFinder(BaseFinder):
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if "site-packages" in prefix:
-                    return self.sections.THIRDPARTY
+                    return "THIRDPARTY"
                 if "dist-packages" in prefix:
-                    return self.sections.THIRDPARTY
+                    return "THIRDPARTY"
                 if self.virtual_env and self.virtual_env_src in prefix:
-                    return self.sections.THIRDPARTY
+                    return "THIRDPARTY"
                 if os.path.normcase(prefix) == self.stdlib_lib_prefix:
-                    return self.sections.STDLIB
+                    return "STDLIB"
                 if self.conda_env and self.conda_env in prefix:
-                    return self.sections.THIRDPARTY
+                    return "THIRDPARTY"
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
-                    return self.sections.STDLIB
+                    return "STDLIB"
                 return self.config.default_section
         return None
 
