@@ -3179,9 +3179,9 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.mkdir("_build").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
     if enabled:
-        config = Config()
+        config = Config(directory=str(tmpdir))
     else:
-        config = Config(skip=[])
+        config = Config(skip=[], directory=str(tmpdir))
     skipped = []  # type: List[str]
     codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped)
@@ -3197,7 +3197,7 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     else:
         assert file_names == {
             os.sep.join((".tox", "verysafe.py")),
-            os.sep.join(("lib", "python3.7", "importantsystemlibrary.py")),
+            os.sep.join(("_build", "python3.7", "importantsystemlibrary.py")),
             os.sep.join((".pants.d", "pants.py")),
             "victim.py",
         }
@@ -3206,7 +3206,7 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     # directly pointing to files within unsafe directories shouldn't skip them either way
     file_names = {
         os.path.relpath(f, str(toxdir))
-        for f in main.iter_source_code([str(toxdir)], config, skipped)
+        for f in main.iter_source_code([str(toxdir)], Config(directory=str(toxdir)), skipped)
     }
     assert file_names == {"verysafe.py"}
 
