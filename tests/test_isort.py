@@ -1574,7 +1574,7 @@ def test_long_line_comments() -> None:
         "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
-    assert SortImports(file_contents=test_input).output == (
+    assert SortImports(file_contents=test_input, line_length=100, balanced_wrapping=True).output == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
         "                                         sync_live_envdir, update_live_app, "
         "update_live_cron)\n"
@@ -2506,7 +2506,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2524,7 +2523,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2544,7 +2542,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2602,7 +2599,7 @@ def test_import_case_produces_inconsistent_results_issue_472() -> None:
         "from scrapy.core.downloader.handlers.http import "
         "HttpDownloadHandler, HTTPDownloadHandler\n"
     )
-    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, line_length=100).output == test_input
 
 
 def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
@@ -2684,7 +2681,7 @@ def test_no_extra_lines_issue_557() -> None:
     )
     assert (
         SortImports(
-            file_contents=test_input, force_alphabetical_sort=True, force_sort_within_sections=True
+            file_contents=test_input, force_alphabetical_sort=True, force_sort_within_sections=True, line_length=100
         ).output
         == expected_output
     )

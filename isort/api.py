@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, NamedTuple, Optional, Tuple
 
 from . import output, parse
-from .exceptions import FileSkipComment, IntroducedSyntaxErrors, UnableToDetermineEncoding, ExistingSyntaxErrors
+from .exceptions import FileSkipComment, IntroducedSyntaxErrors, UnableToDetermineEncoding, ExistingSyntaxErrors, FileSkipSetting
 from .io import File
 from .format import remove_whitespace
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
@@ -62,10 +62,10 @@ def check_imports(file_contents: str, show_diff: bool=False, extension: str = "p
 
     if compare_out == compare_in:
         if config.verbose:
-            print(f"SUCCESS: {file_path} Everything Looks Good!")
+            print(f"SUCCESS: {file_path or ''} Everything Looks Good!")
         return True
     else:
-        print(f"ERROR: {file_path} Imports are incorrectly sorted.")
+        print(f"ERROR: {file_path or ''} Imports are incorrectly sorted.")
         if show_diff:
             show_unified_diff(
                 file_input=file_contents, file_output=sorted_output, file_path=file_path

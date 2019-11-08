@@ -17,24 +17,34 @@ class File(NamedTuple):
         contents, encoding = _read_file_contents(file_path)
         return File(contents=contents, path=file_path, encoding=encoding)
 
+    @staticmethod
+    def from_contents(contents: str, filename: str) -> "File":
+        return File(contents, path=Path(filename).resolve(), encoding=_determine_content_encoding(contents))
+
     @property
     def extension(self):
         return self.path.suffix.lstrip(".")
 
 
+def _determine_stream_encoding(stream, default: str = "utf-8") -> str:
+    for line_number, line in enumerate(stream, 1):
+        if line_number > 2:
+            break
+        groups = re.findall(_ENCODING_PATTERN, line)
+        if groups:
+            return groups[0].decode("ascii")
+
+    return default
+
+
+def _determine_content_encoding(content: str, default: str = "utf-8"):
+    return _determine_stream_encoding(content.encode(default).split(b"\n"), default=default)
+
+
 def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
     # see https://www.python.org/dev/peps/pep-0263/
-    coding = default
-    with file_path.open("rb") as f:
-        for line_number, line in enumerate(f, 1):
-            if line_number > 2:
-                break
-            groups = re.findall(_ENCODING_PATTERN, line)
-            if groups:
-                coding = groups[0].decode("ascii")
-                break
-
-    return coding
+    with file_path.open("rb") as open_file:
+        return _determine_stream_encoding(open_file, default=default)
 
 
 def _read_file_contents(

@@ -44,7 +44,10 @@ class SortImports:
     ):
         file_encoding = "utf-8"
         if file_path:
-            file_data = File.read(file_path)
+            if file_contents:
+                file_data = File.from_contents(file_contents, filename=file_path)
+            else:
+                file_data = File.read(file_path)
             file_contents, file_path, file_encoding = file_data
             if not extension:
                 extension = file_data.extension
@@ -64,6 +67,8 @@ class SortImports:
             else:
                 self.output = api.sorted_imports(file_contents, extension=extension, config=config, file_path=file_path)
         except FileSkipped as error:
+            self.skipped = True
+            self.output = None
             if config.verbose:
                 warn(error.message)
             return
