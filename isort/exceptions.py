@@ -21,6 +21,16 @@ class UnableToDetermineEncoding(ISortError):
         self.fallback_encoding = fallback_encoding
 
 
+class ExistingSyntaxErrors(ISortError):
+    """Raised when isort is told to sort imports within code that has existing syntax errors"""
+
+    def __init__(self, file_path: Path):
+        super().__init__(
+            f"isort was told to sort imports within code that contains syntax errors: "
+            f"{file_path}."
+        )
+
+
 class IntroducedSyntaxErrors(ISortError):
     """Raised when isort has introduced a syntax error in the process of sorting imports"""
 

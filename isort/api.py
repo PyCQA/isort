@@ -34,7 +34,10 @@ def sorted_imports(file_contents: str, extension: str = "py", config: Config=DEF
             raise FileSkipSetting(file_path)
 
     if config.atomic:
-        compile(file_contents, content_source, "exec", 0, 1)
+        try:
+            compile(file_contents, content_source, "exec", 0, 1)
+        except SyntaxError:
+            raise ExistingSyntaxError(content_source)
 
     parsed_output = output.sorted_imports(parse.file_contents(file_contents, config=config), config, extension)
     if config.atomic:
