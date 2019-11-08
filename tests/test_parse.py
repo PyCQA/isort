@@ -1,7 +1,7 @@
 from hypothesis_auto import auto_pytest_magic
 
 from isort import parse
-from isort.settings import default
+from isort.settings import Config
 
 TEST_CONTENTS = """
 import xyz
@@ -30,7 +30,7 @@ def test_file_contents():
         line_separator,
         sections,
         section_comments,
-    ) = parse.file_contents(TEST_CONTENTS, config=default)
+    ) = parse.file_contents(TEST_CONTENTS, config=Config())
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)
     assert import_index == 1
