@@ -51,11 +51,6 @@ try:
 except ImportError:
     appdirs = None
 
-safety_exclude_re = re.compile(
-    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
-    r"|lib/python[0-9].[0-9]+|node_modules)/"
-)
-
 FILE_SKIP_COMMENT: str = ("isort:" + "skip_file") # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
@@ -97,10 +92,9 @@ class _Config:
     NOTE: known lists, such as known_standard_library, are intentionally not complete as they are
     dynamically determined later on.
     """
-
     py_version: str = "3"
     force_to_top: FrozenSet[str] = frozenset()
-    skip: FrozenSet[str] = frozenset()
+    skip: FrozenSet[str] = frozenset({".venv", "venv", ".tox", ".eggs", ".git", ".hg", ".mypy_cache", ".nox", "_build", "buck-out", "build", "dist", ".pants.d", "node_modules"})
     skip_glob: FrozenSet[str] = frozenset()
     line_length: int = 79
     wrap_length: int = 0
@@ -147,7 +141,6 @@ class _Config:
     no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False
     ignore_comments: bool = False
-    safety_excludes: bool = True
     case_sensitive: bool = False
     sources: Tuple[Dict[str, Any], ...] = ()
     virtual_env: str = ""
@@ -261,7 +254,7 @@ class Config(_Config):
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
-        if self.directory and self.directory in file_path.parents:
+        if self.directory and Path(self.directory) in file_path.parents:
             file_name = os.path.relpath(file_path, self.directory)
             path = self.directory
         else:
@@ -273,13 +266,6 @@ class Config(_Config):
         normalized_path = os_path.replace("\\", "/")
         if normalized_path[1:2] == ":":
             normalized_path = normalized_path[2:]
-
-        if path and self.safety_excludes:
-            check_exclude = "/" + file_name.replace("\\", "/") + "/"
-            if path and os.path.basename(path) in ("lib",):
-                check_exclude = "/" + os.path.basename(path) + check_exclude
-            if safety_exclude_re.search(check_exclude):
-                return True
 
         for skip_path in self.skip:
             if posixpath.abspath(normalized_path) == posixpath.abspath(

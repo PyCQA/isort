@@ -3172,13 +3172,16 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
 
 @pytest.mark.parametrize("enabled", (False, True))
-def test_safety_excludes(tmpdir, enabled: bool) -> None:
+def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
     toxdir.join("verysafe.py").write("# ...")
-    tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    tmpdir.mkdir("_build").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
-    config = Config(safety_excludes=enabled)
+    if enabled:
+        config = Config()
+    else:
+        config = Config(skip=[])
     skipped = []  # type: List[str]
     codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped)
@@ -3222,7 +3225,7 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
 
-    config = Config(skip_glob=skip_glob)
+    config = Config(skip_glob=skip_glob, directory=str(base_dir))
     skipped = []  # type: List[str]
     file_names = {
         os.path.relpath(f, str(base_dir))
