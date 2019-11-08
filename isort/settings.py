@@ -13,12 +13,28 @@ import posixpath
 import re
 import sys
 import warnings
-from distutils.util import strtobool
+from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    FrozenSet,
+    Iterable,
+    List,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
+from warnings import warn
 
-from .stdlibs import py3, py27
+from . import stdlibs
+from ._future import dataclass, field
+from .sections import DEFAULT as SECTION_DEFAULTS
 from .utils import difference, union
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
@@ -36,275 +52,270 @@ try:
 except ImportError:
     appdirs = None
 
-MAX_CONFIG_SEARCH_DEPTH = (
-    25
-)  # The number of parent directories isort will look for a config file within
-DEFAULT_SECTIONS = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
-
-safety_exclude_re = re.compile(
-    r"/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|\.pants\.d"
-    r"|lib/python[0-9].[0-9]+|node_modules)/"
+FILE_SKIP_COMMENT: str = ("isort:" + "skip_file")  # Concatenated to avoid this file being skipped
+MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
+STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
+VALID_PY_TARGETS: Tuple[str, ...] = tuple(
+    target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
-
-
-def _get_default(py_version: Optional[str]) -> Dict[str, Any]:
-    """
-    Returns the correct standard library based on either the passed py_version flag or the python
-    interpreter. Additionaly users have the option to pass all as value instead of an
-    version. As an result code will be checked against both standard libraries - python2 & python3
-
-    See Issue 889 and 778 for more information
-    """
-
-    if py_version is None:
-        major, minor = sys.version_info[0:2]
-    elif py_version != "all":
-        minor = 0
-
-        # we have a minor
-        if "." in py_version:
-            # we do not care about patches just major and minor
-            splits = py_version.split(".")[0:2]
-            major = int(splits[0])
-            minor = int(splits[1])
-        else:
-            major = int(py_version)
-
-    _default = default.copy()
-
-    if py_version == "all":
-        standard_library = list(set(py3.stdlib + py27.stdlib))
-    elif major == 3:
-        standard_library = py3.stdlib
-    elif major == 2 and minor == 7:
-        standard_library = py27.stdlib
-    else:
-        raise ValueError(
-            "The python version %s is not supported. "
-            "You can set a python version with the -py or --python-version flag " % py_version
-        )
-
-    _default["known_standard_library"] = standard_library
-
-    return _default
-
-
-# Note that none of these lists must be complete as they are simply
-# fallbacks for when included auto-detection fails.
-default = {
-    "force_to_top": [],
-    "skip": [],
-    "skip_glob": [],
-    "line_length": 79,
-    "wrap_length": 0,
-    "line_ending": None,
-    "sections": DEFAULT_SECTIONS,
-    "no_sections": False,
-    "known_future_library": ["__future__"],
-    "known_third_party": ["google.appengine.api"],
-    "known_first_party": [],
-    "multi_line_output": WrapModes.GRID,  # type: ignore
-    "forced_separate": [],
-    "indent": " " * 4,
-    "comment_prefix": "  #",
-    "length_sort": False,
-    "add_imports": [],
-    "remove_imports": [],
-    "reverse_relative": False,
-    "force_single_line": False,
-    "default_section": "FIRSTPARTY",
-    "import_heading_future": "",
-    "import_heading_stdlib": "",
-    "import_heading_thirdparty": "",
-    "import_heading_firstparty": "",
-    "import_heading_localfolder": "",
-    "balanced_wrapping": False,
-    "use_parentheses": False,
-    "order_by_type": True,
-    "atomic": False,
-    "lines_after_imports": -1,
-    "lines_between_sections": 1,
-    "lines_between_types": 0,
-    "combine_as_imports": False,
-    "combine_star": False,
-    "keep_direct_and_as_imports": False,
-    "include_trailing_comma": False,
-    "from_first": False,
-    "verbose": False,
-    "quiet": False,
-    "force_adds": False,
-    "force_alphabetical_sort_within_sections": False,
-    "force_alphabetical_sort": False,
-    "force_grid_wrap": 0,
-    "force_sort_within_sections": False,
-    "show_diff": False,
-    "ignore_whitespace": False,
-    "no_lines_before": [],
-    "no_inline_sort": False,
-    "ignore_comments": False,
-    "safety_excludes": True,
-    "case_sensitive": False,
+CONFIG_SOURCES: Tuple[str, ...] = (
+    ".isort.cfg",
+    "pyproject.toml",
+    "setup.cfg",
+    "tox.ini",
+    ".editorconfig",
+)
+CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
+    ".isort.cfg": ("settings", "isort"),
+    "pyproject.toml": ("tool.isort",),
+    "setup.cfg": ("isort", "tool:isort"),
+    "tox.ini": ("isort", "tool:isort"),
+    ".editorconfig": ("*", "*.py", "**.py"),
 }
-
-
-@lru_cache()
-def from_path(path: Union[str, Path], py_version: Optional[str] = None) -> Dict[str, Any]:
-    computed_settings = _get_default(py_version)
-    isort_defaults = ["~/.isort.cfg"]
-    if appdirs:
-        isort_defaults = [appdirs.user_config_dir("isort.cfg")] + isort_defaults
-
-    if isinstance(path, Path):
-        path = str(path)
-
-    _update_settings_with_config(
-        path, ".editorconfig", ["~/.editorconfig"], ("*", "*.py", "**.py"), computed_settings
+FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
+FALLBACK_CONFIGS: Tuple[str, ...]
+if appdirs:
+    FALLBACK_CONFIGS = (
+        appdirs.user_config_dir(".isort.cfg"),
+        appdirs.user_config_dir(".editorconfig"),
     )
-    _update_settings_with_config(path, "pyproject.toml", [], ("tool.isort",), computed_settings)
-    _update_settings_with_config(
-        path, ".isort.cfg", isort_defaults, ("settings", "isort"), computed_settings
+else:
+    FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
+
+IMPORT_HEADING_PREFIX = "import_heading_"
+KNOWN_PREFIX = "known_"
+
+
+@dataclass(frozen=True)
+class _Config:
+    """Defines the data schema and defaults used for isort configuration.
+
+    NOTE: known lists, such as known_standard_library, are intentionally not complete as they are
+    dynamically determined later on.
+    """
+
+    py_version: str = "3"
+    force_to_top: FrozenSet[str] = frozenset()
+    skip: FrozenSet[str] = frozenset(
+        {
+            ".venv",
+            "venv",
+            ".tox",
+            ".eggs",
+            ".git",
+            ".hg",
+            ".mypy_cache",
+            ".nox",
+            "_build",
+            "buck-out",
+            "build",
+            "dist",
+            ".pants.d",
+            "node_modules",
+        }
     )
-    _update_settings_with_config(path, "setup.cfg", [], ("isort", "tool:isort"), computed_settings)
-    _update_settings_with_config(path, "tox.ini", [], ("isort", "tool:isort"), computed_settings)
-    return computed_settings
+    skip_glob: FrozenSet[str] = frozenset()
+    line_length: int = 79
+    wrap_length: int = 0
+    line_ending: str = ""
+    sections: Tuple[str, ...] = SECTION_DEFAULTS
+    no_sections: bool = False
+    known_future_library: FrozenSet[str] = frozenset(("__future__",))
+    known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
+    known_first_party: FrozenSet[str] = frozenset()
+    known_standard_library: FrozenSet[str] = frozenset()
+    known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
+    multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
+    forced_separate: Tuple[str, ...] = ()
+    indent: str = " " * 4
+    comment_prefix: str = "  #"
+    length_sort: bool = False
+    length_sort_sections: FrozenSet[str] = frozenset()
+    add_imports: FrozenSet[str] = frozenset()
+    remove_imports: FrozenSet[str] = frozenset()
+    reverse_relative: bool = False
+    force_single_line: bool = False
+    default_section: str = "FIRSTPARTY"
+    import_headings: Dict[str, str] = field(default_factory=dict)
+    balanced_wrapping: bool = False
+    use_parentheses: bool = False
+    order_by_type: bool = True
+    atomic: bool = False
+    lines_after_imports: int = -1
+    lines_between_sections: int = 1
+    lines_between_types: int = 0
+    combine_as_imports: bool = False
+    combine_star: bool = False
+    keep_direct_and_as_imports: bool = False
+    include_trailing_comma: bool = False
+    from_first: bool = False
+    verbose: bool = False
+    quiet: bool = False
+    force_adds: bool = False
+    force_alphabetical_sort_within_sections: bool = False
+    force_alphabetical_sort: bool = False
+    force_grid_wrap: int = 0
+    force_sort_within_sections: bool = False
+    ignore_whitespace: bool = False
+    no_lines_before: FrozenSet[str] = frozenset()
+    no_inline_sort: bool = False
+    ignore_comments: bool = False
+    case_sensitive: bool = False
+    sources: Tuple[Dict[str, Any], ...] = ()
+    virtual_env: str = ""
+    conda_env: str = ""
+    ensure_newline_before_comments: bool = False
+    directory: str = ""
 
-
-def prepare_config(settings_path: Path, **setting_overrides: Any) -> Dict[str, Any]:
-    py_version = setting_overrides.pop("py_version", None)
-    config = from_path(settings_path, py_version).copy()
-    for key, value in setting_overrides.items():
-        access_key = key.replace("not_", "").lower()
-        # The sections config needs to retain order and can't be converted to a set.
-        if access_key != "sections" and type(config.get(access_key)) in (list, tuple):
-            if key.startswith("not_"):
-                config[access_key] = list(set(config[access_key]).difference(value))
+    def __post_init__(self):
+        py_version = self.py_version
+        if py_version == "auto":
+            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
+                py_version = "2"
+            elif sys.version_info.major == 3 and (
+                sys.version_info.minor <= 5 or sys.version_info.minor >= 8
+            ):
+                py_version = "3"
             else:
-                config[access_key] = list(set(config[access_key]).union(value))
+                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+
+        if py_version not in VALID_PY_TARGETS:
+            raise ValueError(
+                f"The python version {py_version} is not supported. "
+                "You can set a python version with the -py or --python-version flag. "
+                f"The following versions are supported: {VALID_PY_TARGETS}"
+            )
+
+        if py_version != "all":
+            object.__setattr__(self, "py_version", f"py{py_version}")
+
+        if not self.known_standard_library:
+            object.__setattr__(
+                self, "known_standard_library", frozenset(getattr(stdlibs, self.py_version).stdlib)
+            )
+
+        if self.force_alphabetical_sort:
+            object.__setattr__(self, "force_alphabetical_sort_within_sections", True)
+            object.__setattr__(self, "no_sections", True)
+            object.__setattr__(self, "lines_between_types", 1)
+            object.__setattr__(self, "from_first", True)
+
+
+_DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
+
+
+class Config(_Config):
+    def __init__(self, settings_file: str = "", settings_path: str = "", **config_overrides):
+        sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
+
+        config_settings: Dict[str, Any]
+        if settings_file:
+            config_settings = _get_config_data(
+                settings_file,
+                CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
+            )
+        elif settings_path:
+            config_settings = _find_config(settings_path)
         else:
-            config[key] = value
+            config_settings = {}
 
-    if config["force_alphabetical_sort"]:
-        config.update(
-            {
-                "force_alphabetical_sort_within_sections": True,
-                "no_sections": True,
-                "lines_between_types": 1,
-                "from_first": True,
-            }
-        )
+        if config_settings:
+            sources.append(config_settings)
+        if config_overrides:
+            config_overrides["source"] = "runtime"
+            sources.append(config_overrides)
 
-    indent = str(config["indent"])
-    if indent.isdigit():
-        indent = " " * int(indent)
-    else:
-        indent = indent.strip("'").strip('"')
-        if indent.lower() == "tab":
-            indent = "\t"
-    config["indent"] = indent
+        combined_config = {**config_settings, **config_overrides}
+        if "indent" in combined_config:
+            indent = str(combined_config["indent"])
+            if indent.isdigit():
+                indent = " " * int(indent)
+            else:
+                indent = indent.strip("'").strip('"')
+                if indent.lower() == "tab":
+                    indent = "\t"
+            combined_config["indent"] = indent
 
-    config["comment_prefix"] = config["comment_prefix"].strip("'").strip('"')
-    return config
+        known_other = {}
+        import_headings = {}
+        for key, value in combined_config.items():
+            # Collect all known sections beyond those that have direct entries
+            if key.startswith(KNOWN_PREFIX) and key not in (
+                "known_standard_library",
+                "known_future_library",
+                "known_third_party",
+                "known_first_party",
+            ):
+                known_other[key[len(KNOWN_PREFIX) :].lower()] = frozenset(value)
+            if key.startswith(IMPORT_HEADING_PREFIX):
+                import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
+            # Coerce all provided config values into their correct type
+            default_value = _DEFAULT_SETTINGS.get(key, None)
+            if default_value is None:
+                continue
 
-def _update_settings_with_config(
-    path: str,
-    name: str,
-    default: Iterable[str],
-    sections: Iterable[str],
-    computed_settings: MutableMapping[str, Any],
-) -> None:
-    editor_config_file = None
-    for potential_settings_path in default:
-        expanded = os.path.expanduser(potential_settings_path)
-        if os.path.exists(expanded):
-            editor_config_file = expanded
-            break
+            combined_config[key] = type(default_value)(value)
 
-    tries = 0
-    current_directory = path
-    while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
-        potential_path = os.path.join(current_directory, name)
-        if os.path.exists(potential_path):
-            editor_config_file = potential_path
-            break
+        if "directory" not in combined_config:
+            combined_config["directory"] = os.path.basename(
+                config_settings.get("source", None) or os.getcwd()
+            )
 
-        new_directory = os.path.split(current_directory)[0]
-        if current_directory == new_directory:
-            break
-        current_directory = new_directory
-        tries += 1
+        # Remove any config values that are used for creating config object but
+        # aren't defined in dataclass
+        combined_config.pop("source", None)
+        if known_other:
+            for known_key in known_other.keys():
+                combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
+            combined_config["known_other"] = known_other
+        if import_headings:
+            for import_heading_key in import_headings.keys():
+                combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
+            combined_config["import_headings"] = import_headings
 
-    if editor_config_file and os.path.exists(editor_config_file):
-        _update_with_config_file(editor_config_file, sections, computed_settings)
+        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
+
+    def is_skipped(self, file_path: Path) -> bool:
+        """Returns True if the file and/or folder should be skipped based on current settings."""
+        if self.directory and Path(self.directory) in file_path.parents:
+            file_name = os.path.relpath(file_path, self.directory)
+        else:
+            file_name = str(file_path)
+
+        os_path = str(file_path)
+
+        normalized_path = os_path.replace("\\", "/")
+        if normalized_path[1:2] == ":":
+            normalized_path = normalized_path[2:]
+
+        for skip_path in self.skip:
+            if posixpath.abspath(normalized_path) == posixpath.abspath(
+                skip_path.replace("\\", "/")
+            ):
+                return True
+
+        position = os.path.split(file_name)
+        while position[1]:
+            if position[1] in self.skip:
+                return True
+            position = os.path.split(position[0])
+
+        for glob in self.skip_glob:
+            if fnmatch.fnmatch(file_name, glob) or fnmatch.fnmatch("/" + file_name, glob):
+                return True
+
+        if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
+            return True
+
+        return False
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
-    type_converter: Callable[[str], Any] = type(default.get(setting_name, ""))
+    type_converter: Callable[[str], Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
-
-
-def _update_with_config_file(
-    file_path: str, sections: Iterable[str], computed_settings: MutableMapping[str, Any]
-) -> None:
-    cwd = os.path.dirname(file_path)
-    settings = _get_config_data(file_path, sections).copy()
-    if not settings:
-        return
-
-    if file_path.endswith(".editorconfig"):
-        indent_style = settings.pop("indent_style", "").strip()
-        indent_size = settings.pop("indent_size", "").strip()
-        if indent_size == "tab":
-            indent_size = settings.pop("tab_width", "").strip()
-
-        if indent_style == "space":
-            computed_settings["indent"] = " " * (indent_size and int(indent_size) or 4)
-        elif indent_style == "tab":
-            computed_settings["indent"] = "\t" * (indent_size and int(indent_size) or 1)
-
-        max_line_length = settings.pop("max_line_length", "").strip()
-        if max_line_length:
-            computed_settings["line_length"] = (
-                float("inf") if max_line_length == "off" else int(max_line_length)
-            )
-
-    for key, value in settings.items():
-        access_key = key.replace("not_", "").lower()
-        existing_value_type = _get_str_to_type_converter(access_key)
-        if existing_value_type in (list, tuple):
-            # sections has fixed order values; no adding or substraction from any set
-            if access_key == "sections":
-                computed_settings[access_key] = tuple(_as_list(value))
-            else:
-                existing_data = set(computed_settings.get(access_key, default.get(access_key)))
-                if key.startswith("not_"):
-                    computed_settings[access_key] = difference(existing_data, _as_list(value))
-                elif key.startswith("known_"):
-                    computed_settings[access_key] = union(
-                        existing_data, _abspaths(cwd, _as_list(value))
-                    )
-                else:
-                    computed_settings[access_key] = union(existing_data, _as_list(value))
-        elif existing_value_type == bool:
-            # Only some configuration formats support native boolean values.
-            if not isinstance(value, bool):
-                value = bool(strtobool(value))
-            computed_settings[access_key] = value
-        elif key.startswith("known_"):
-            computed_settings[access_key] = _abspaths(cwd, _as_list(value))
-        elif key == "force_grid_wrap":
-            try:
-                result = existing_value_type(value)
-            except ValueError:
-                # backwards compat
-                result = default.get(access_key) if value.lower().strip() == "false" else 2
-            computed_settings[access_key] = result
-        else:
-            computed_settings[access_key] = getattr(
-                existing_value_type, str(value), None
-            ) or existing_value_type(value)
 
 
 def _as_list(value: str) -> List[str]:
@@ -314,14 +325,49 @@ def _as_list(value: str) -> List[str]:
     return filtered
 
 
-def _abspaths(cwd: str, values: Iterable[str]) -> List[str]:
-    paths = [
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
-        for value in values
-    ]
+def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
+    paths = set(
+        [
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+            for value in values
+        ]
+    )
     return paths
+
+
+@lru_cache()
+def _find_config(path: str) -> Dict[str, Any]:
+    current_directory = path
+    tries = 0
+    while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
+        for config_file_name in CONFIG_SOURCES:
+            potential_config_file = os.path.join(current_directory, config_file_name)
+            if os.path.isfile(potential_config_file):
+                config_data: Dict[str, Any]
+                try:
+                    config_data = _get_config_data(
+                        potential_config_file, CONFIG_SECTIONS[config_file_name]
+                    )
+                except Exception:
+                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    config_data = {}
+                if config_data:
+                    return config_data
+
+        for stop_dir in STOP_CONFIG_SEARCH_ON_DIRS:
+            if os.path.isdir(stop_dir):
+                break
+
+        new_directory = os.path.split(current_directory)[0]
+        if new_directory == current_directory:
+            break
+
+        current_directory = new_directory
+        tries += 1
+
+    return {}
 
 
 @lru_cache()
@@ -361,39 +407,55 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                 if config.has_section(section):
                     settings.update(config.items(section))
 
+    if settings:
+        settings["source"] = file_path
+
+        if file_path.endswith(".editorconfig"):
+            indent_style = settings.pop("indent_style", "").strip()
+            indent_size = settings.pop("indent_size", "").strip()
+            if indent_size == "tab":
+                indent_size = settings.pop("tab_width", "").strip()
+
+            if indent_style == "space":
+                settings["indent"] = " " * (indent_size and int(indent_size) or 4)
+
+            elif indent_style == "tab":
+                settings["indent"] = "\t" * (indent_size and int(indent_size) or 1)
+
+            max_line_length = settings.pop("max_line_length", "").strip()
+            if max_line_length:
+                settings["line_length"] = (
+                    float("inf") if max_line_length == "off" else int(max_line_length)
+                )
+            settings = {
+                key: value for key, value in settings.items() if key in _DEFAULT_SETTINGS.keys()
+            }
+
+        for key, value in settings.items():
+            existing_value_type = _get_str_to_type_converter(key)
+            if existing_value_type == tuple:
+                settings[key] = tuple(_as_list(value))
+            elif existing_value_type == frozenset:
+                settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
+            elif existing_value_type == bool:
+                # Only some configuration formats support native boolean values.
+                if not isinstance(value, bool):
+                    value = bool(_as_bool(value))
+                settings[key] = value
+            elif key.startswith(KNOWN_PREFIX):
+                settings[key] = _abspaths(os.path.dirname(file_path), _as_list(value))
+            elif key == "force_grid_wrap":
+                try:
+                    result = existing_value_type(value)
+                except ValueError:  # backwards compatibility for true / false force grid wrap
+                    result = 0 if value.lower().strip() == "false" else 2
+                settings[key] = result
+            elif key == "comment_prefix":
+                settings[key] = str(value).strip("'").strip('"')
+            else:
+                settings[key] = existing_value_type(value)
+
     return settings
 
 
-def file_should_be_skipped(filename: str, config: Mapping[str, Any], path: str = "") -> bool:
-    """Returns True if the file and/or folder should be skipped based on the passed in settings."""
-    os_path = os.path.join(path, filename)
-
-    normalized_path = os_path.replace("\\", "/")
-    if normalized_path[1:2] == ":":
-        normalized_path = normalized_path[2:]
-
-    if path and config["safety_excludes"]:
-        check_exclude = "/" + filename.replace("\\", "/") + "/"
-        if path and os.path.basename(path) in ("lib",):
-            check_exclude = "/" + os.path.basename(path) + check_exclude
-        if safety_exclude_re.search(check_exclude):
-            return True
-
-    for skip_path in config["skip"]:
-        if posixpath.abspath(normalized_path) == posixpath.abspath(skip_path.replace("\\", "/")):
-            return True
-
-    position = os.path.split(filename)
-    while position[1]:
-        if position[1] in config["skip"]:
-            return True
-        position = os.path.split(position[0])
-
-    for glob in config["skip_glob"]:
-        if fnmatch.fnmatch(filename, glob) or fnmatch.fnmatch("/" + filename, glob):
-            return True
-
-    if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
-        return True
-
-    return False
+DEFAULT_CONFIG = Config()

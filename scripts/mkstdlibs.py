@@ -4,7 +4,7 @@ from sphinx.ext.intersphinx import fetch_inventory
 
 URL = "https://docs.python.org/{}/objects.inv"
 PATH = "isort/stdlibs/py{}.py"
-VERSIONS = [("2", "7"), ("3",)]
+VERSIONS = [("2", "7"), ("3", "5"), ("3", "6"), ("3", "7"), ("3", "8")]
 
 DOCSTRING = """
 File contains the standard library of Python {}.
@@ -39,7 +39,7 @@ for version_info in VERSIONS:
     with open(path, "w") as stdlib_file:
         docstring = DOCSTRING.format(version)
         stdlib_file.write(f'"""{docstring}"""\n\n')
-        stdlib_file.write("stdlib = [\n")
+        stdlib_file.write("stdlib = {\n")
         for module in sorted(modules):
             stdlib_file.write(f'    "{module}",\n')
-        stdlib_file.write("]\n")
+        stdlib_file.write("}\n")

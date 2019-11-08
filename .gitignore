@@ -26,6 +26,7 @@ npm-debug.log
 
 # Unit test / coverage reports
 .coverage
+.coverage.*
 .pytest_cache
 .tox
 nosetests.xml

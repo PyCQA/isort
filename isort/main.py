@@ -5,6 +5,7 @@ import glob
 import os
 import re
 import sys
+from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
 from warnings import warn
 
@@ -12,14 +13,9 @@ import setuptools
 
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
-from isort.settings import (
-    DEFAULT_SECTIONS,
-    WrapModes,
-    default,
-    file_should_be_skipped,
-    from_path,
-    wrap_mode_from_string,
-)
+from isort.settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
+
+from . import sections
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 
@@ -59,25 +55,20 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
         return None
 
 
-def iter_source_code(
-    paths: Iterable[str], config: MutableMapping[str, Any], skipped: List[str]
-) -> Iterator[str]:
+def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
-    if "not_skip" in config:
-        config["skip"] = list(set(config["skip"]).difference(config["not_skip"]))
-
     for path in paths:
         if os.path.isdir(path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
+                base_path = Path(dirpath)
                 for dirname in list(dirnames):
-                    if file_should_be_skipped(dirname, config, dirpath):
+                    if config.is_skipped(base_path / dirname):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):
-                        relative_file = os.path.relpath(filepath, path)
-                        if file_should_be_skipped(relative_file, config, path):
+                        if config.is_skipped(Path(filepath)):
                             skipped.append(filename)
                         else:
                             yield filepath
@@ -94,14 +85,14 @@ class ISortCommand(setuptools.Command):
     user_options: List[Any] = []
 
     def initialize_options(self) -> None:
-        default_settings = default.copy()
+        default_settings = vars(DEFAULT_CONFIG).copy()
         for key, value in default_settings.items():
             setattr(self, key, value)
 
     def finalize_options(self) -> None:
         "Get options from config files."
         self.arguments: Dict[str, Any] = {}
-        computed_settings = from_path(os.getcwd())
+        computed_settings = vars(Config(directory=os.getcwd()))
         for key, value in computed_settings.items():
             self.arguments[key] = value
 
@@ -157,14 +148,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "automatically determining correct placement.",
     )
     parser.add_argument(
-        "-ac",
+        "--ac",
         "--atomic",
         dest="atomic",
         action="store_true",
         help="Ensures the output doesn't save if the resulting file contains syntax errors.",
     )
     parser.add_argument(
-        "-af",
+        "--af",
         "--force-adds",
         dest="force_adds",
         action="store_true",
@@ -186,14 +177,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "command line without modifying the file.",
     )
     parser.add_argument(
-        "-ca",
+        "--ca",
         "--combine-as",
         dest="combine_as_imports",
         action="store_true",
         help="Combines as imports on the same line.",
     )
     parser.add_argument(
-        "-cs",
+        "--cs",
         "--combine-star",
         dest="combine_star",
         action="store_true",
@@ -208,7 +199,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
     )
     parser.add_argument(
-        "-df",
+        "--df",
         "--diff",
         dest="show_diff",
         action="store_true",
@@ -216,18 +207,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "changing it in place",
     )
     parser.add_argument(
-        "-ds",
+        "--ds",
         "--no-sections",
         help="Put all imports into the same section bucket",
         dest="no_sections",
         action="store_true",
-    )
-    parser.add_argument(
-        "-dt",
-        "--dont-order-by-type",
-        dest="dont_order_by_type",
-        action="store_true",
-        help="Only order imports alphabetically, do not attempt type ordering",
     )
     parser.add_argument(
         "-e",
@@ -245,28 +229,28 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "of the future compatibility libraries.",
     )
     parser.add_argument(
-        "-fas",
+        "--fas",
         "--force-alphabetical-sort",
         action="store_true",
         dest="force_alphabetical_sort",
         help="Force all imports to be sorted as a single section",
     )
     parser.add_argument(
-        "-fass",
+        "--fass",
         "--force-alphabetical-sort-within-sections",
         action="store_true",
         dest="force_alphabetical_sort",
         help="Force all imports to be sorted alphabetically within a section",
     )
     parser.add_argument(
-        "-ff",
+        "--ff",
         "--from-first",
         dest="from_first",
         help="Switches the typical ordering preference, "
         "showing from imports first then straight ones.",
     )
     parser.add_argument(
-        "-fgw",
+        "--fgw",
         "--force-grid-wrap",
         nargs="?",
         const=2,
@@ -276,7 +260,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "length",
     )
     parser.add_argument(
-        "-fss",
+        "--fss",
         "--force-sort-within-sections",
         action="store_true",
         dest="force_sort_within_sections",
@@ -309,14 +293,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument("-lai", "--lines-after-imports", dest="lines_after_imports", type=int)
     parser.add_argument("-lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
-        "-le",
+        "--le",
         "--line-ending",
         dest="line_ending",
         help="Forces line endings to the specified value. "
         "If not set, values will be guessed per-file.",
     )
     parser.add_argument(
-        "-ls",
+        "--ls",
         "--length-sort",
         help="Sort imports by their string length.",
         dest="length_sort",
@@ -326,12 +310,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "-m",
         "--multi-line",
         dest="multi_line_output",
-        type=wrap_mode_from_string,
+        choices=list(WrapModes.__members__.keys())
+        + [str(mode.value) for mode in WrapModes.__members__.values()],
+        type=str,
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
     inline_args_group.add_argument(
-        "-nis",
+        "--nis",
         "--no-inline-sort",
         dest="no_inline_sort",
         action="store_true",
@@ -339,17 +325,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "(e.g. `from foo import a, c ,b`).",
     )
     parser.add_argument(
-        "-nlb",
+        "--nlb",
         "--no-lines-before",
         help="Sections which should not be split with previous by empty lines",
         dest="no_lines_before",
-        action="append",
-    )
-    parser.add_argument(
-        "-ns",
-        "--dont-skip",
-        help="Files that sort imports should never skip over.",
-        dest="not_skip",
         action="append",
     )
     parser.add_argument(
@@ -360,11 +339,18 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Force sortImports to recognize a module as being part of a third party library.",
     )
     parser.add_argument(
-        "-ot",
+        "--ot",
         "--order-by-type",
         dest="order_by_type",
         action="store_true",
         help="Order imports by type in addition to alphabetically",
+    )
+    parser.add_argument(
+        "--dt",
+        "--dont-order-by-type",
+        dest="dont_order_by_type",
+        action="store_true",
+        help="Don't order imports by type in addition to alphabetically",
     )
     parser.add_argument(
         "-p",
@@ -380,23 +366,22 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         dest="quiet",
         help="Shows extra quiet output, only errors are outputted.",
     )
-    parser.add_argument("-r", dest="ambiguous_r_flag", action="store_true")
     parser.add_argument(
-        "-rm",
+        "--rm",
         "--remove-import",
         dest="remove_imports",
         action="append",
         help="Removes the specified import from all files.",
     )
     parser.add_argument(
-        "-rr",
+        "--rr",
         "--reverse-relative",
         dest="reverse_relative",
         action="store_true",
         help="Reverse order of relative imports.",
     )
     parser.add_argument(
-        "-rc",
+        "--rc",
         "--recursive",
         dest="recursive",
         action="store_true",
@@ -411,28 +396,28 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="append",
     )
     parser.add_argument(
-        "-sd",
+        "--sd",
         "--section-default",
         dest="default_section",
         help="Sets the default section for imports (by default FIRSTPARTY) options: "
-        + str(DEFAULT_SECTIONS),
+        + str(sections.DEFAULT),
     )
     parser.add_argument(
-        "-sg",
+        "--sg",
         "--skip-glob",
         help="Files that sort imports should skip over.",
         dest="skip_glob",
         action="append",
     )
     inline_args_group.add_argument(
-        "-sl",
+        "--sl",
         "--force-single-line-imports",
         dest="force_single_line",
         action="store_true",
         help="Forces all from imports to appear on their own line",
     )
     parser.add_argument(
-        "-sp",
+        "--sp",
         "--settings-path",
         dest="settings_path",
         help="Explicitly set the settings path instead of auto determining based on file location.",
@@ -445,14 +430,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="append",
     )
     parser.add_argument(
-        "-tc",
+        "--tc",
         "--trailing-comma",
         dest="include_trailing_comma",
         action="store_true",
         help="Includes a trailing comma on multi line imports that include parentheses.",
     )
     parser.add_argument(
-        "-up",
+        "--up",
         "--use-parentheses",
         dest="use_parentheses",
         action="store_true",
@@ -460,7 +445,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     )
     parser.add_argument("-v", "--version", action="store_true", dest="show_version")
     parser.add_argument(
-        "-vb",
+        "--vb",
         "--verbose",
         action="store_true",
         dest="verbose",
@@ -477,7 +462,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Conda environment to use for determining whether a package is third-party",
     )
     parser.add_argument(
-        "-vn",
+        "--vn",
         "--version-number",
         action="version",
         version=__version__,
@@ -491,14 +476,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         type=int,
     )
     parser.add_argument(
-        "-wl",
+        "--wl",
         "--wrap-length",
         dest="wrap_length",
         type=int,
         help="Specifies how long lines that are wrapped should be, if not set line_length is used.",
     )
     parser.add_argument(
-        "-ws",
+        "--ws",
         "--ignore-whitespace",
         action="store_true",
         dest="ignore_whitespace",
@@ -510,13 +495,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         dest="apply",
         action="store_true",
         help="Tells isort to apply changes recursively without asking",
-    )
-    parser.add_argument(
-        "--unsafe",
-        dest="unsafe",
-        action="store_true",
-        help="Tells isort to look for files in standard library directories, etc. "
-        "where it may not be safe to operate in",
     )
     parser.add_argument(
         "--case-sensitive",
@@ -535,19 +513,27 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
     parser.add_argument(
-        "-py",
+        "--py",
         "--python-version",
         action="store",
         dest="py_version",
-        help="Tells isort to sort the standard library based on the python version. "
-        "Default is the version of the running interpreter, for instance: -py 3, -py 2.7",
+        choices=tuple(VALID_PY_TARGETS) + ("auto",),
+        help="Tells isort to set the known standard library based on the the specified Python "
+        "version. Default is to assume any Python 3 version could be the target, and use a union "
+        "off all stdlib modules across versions. If auto is specified, the version of the "
+        "interpreter used to run isort "
+        f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
-    if arguments.pop("unsafe", False):
-        arguments["safety_excludes"] = False
+    multi_line_output = arguments.get("multi_line_output", None)
+    if multi_line_output:
+        if multi_line_output.isdigit():
+            arguments["multi_line_output"] = WrapModes(int(multi_line_output))
+        else:
+            arguments["multi_line_output"] = WrapModes[multi_line_output]
     return arguments
 
 
@@ -557,15 +543,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(ASCII_ART)
         return
 
-    if arguments.get("ambiguous_r_flag"):
-        print(
-            "ERROR: Deprecated -r flag set. "
-            "This flag has been replaced with -rm to remove ambiguity between it and "
-            "-rc for recursive"
-        )
-        sys.exit(1)
-
-    arguments["check_skip"] = False
     if "settings_path" in arguments:
         sp = arguments["settings_path"]
         arguments["settings_path"] = (
@@ -590,17 +567,27 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             if not arguments.get("apply", False):
                 arguments["ask_to_apply"] = True
 
-        config = from_path(
-            arguments.get("settings_path", "") or os.path.abspath(file_names[0]) or os.getcwd()
-        ).copy()
-        config.update(arguments)
+        if "settings_path" not in arguments:
+            arguments["settings_path"] = os.path.abspath(file_names[0]) or os.getcwd()
+            if not os.path.isdir(arguments["settings_path"]):
+                arguments["settings_path"] = os.path.basename(arguments["settings_path"])
+
+        config_dict = arguments.copy()
+        config_dict.pop("recursive", False)
+        config_dict.pop("ask_to_apply", False)
+        jobs = config_dict.pop("jobs", ())
+        show_logo = config_dict.pop("show_logo", False)
+        filter_files = config_dict.pop("filter_files", False)
+        check = config_dict.pop("check", False)
+        config = Config(**config_dict)
+
         wrong_sorted_files = False
         skipped: List[str] = []
 
-        if config.get("filter_files"):
+        if filter_files:
             filtered_files = []
             for file_name in file_names:
-                if file_should_be_skipped(file_name, config):
+                if config.is_skipped(Path(file_name)):
                     skipped.append(file_name)
                 else:
                     filtered_files.append(file_name)
@@ -609,21 +596,20 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         if arguments.get("recursive", False):
             file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
-        if config["verbose"] or config.get("show_logo", False):
+        if config.verbose or show_logo:
             print(ASCII_ART)
 
-        jobs = arguments.get("jobs")
         if jobs:
             import multiprocessing
 
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(
-                functools.partial(sort_imports, **arguments), file_names
+                functools.partial(sort_imports, check=check, **config_dict), file_names
             )
         else:
             # https://github.com/python/typeshed/pull/2814
             attempt_iterator = (  # type: ignore
-                sort_imports(file_name, **arguments) for file_name in file_names
+                sort_imports(file_name, check=check, **config_dict) for file_name in file_names
             )
 
         for sort_attempt in attempt_iterator:
@@ -640,7 +626,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get("quiet", False):
-            if config["verbose"]:
+            if config.verbose:
                 for was_skipped in skipped:
                     warn(
                         f"{was_skipped} was skipped as it's listed in 'skip' setting"

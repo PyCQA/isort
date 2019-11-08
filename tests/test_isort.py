@@ -14,9 +14,9 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-from isort import finders, main, settings
+from isort import finders, main, sections
 from isort.main import SortImports, is_python_file
-from isort.settings import WrapModes
+from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 
 try:
@@ -486,7 +486,7 @@ def test_length_sort_section() -> None:
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"
     )
-    test_output = SortImports(file_contents=test_input, length_sort_stdlib=True).output
+    test_output = SortImports(file_contents=test_input, length_sort_sections=("stdlib",)).output
     assert test_output == (
         "import os\n"
         "import sys\n"
@@ -661,10 +661,10 @@ def test_skip_with_file_name() -> None:
     test_input = "import django\nimport myproject\n"
 
     sort_imports = SortImports(
-        file_path="/baz.py", file_contents=test_input, settings_path=os.getcwd(), skip=["baz.py"]
+        filename="/baz.py", file_contents=test_input, settings_path=os.getcwd(), skip=["baz.py"]
     )
     assert sort_imports.skipped
-    assert sort_imports.output is None
+    assert sort_imports.output == ""
 
 
 def test_skip_within_file() -> None:
@@ -672,7 +672,7 @@ def test_skip_within_file() -> None:
     test_input = "# isort:skip_file\nimport django\nimport myproject\n"
     sort_imports = SortImports(file_contents=test_input, known_third_party=["django"])
     assert sort_imports.skipped
-    assert sort_imports.output is None
+    assert sort_imports.output == ""
 
 
 def test_force_to_top() -> None:
@@ -885,7 +885,7 @@ def test_first_party_overrides_standard_section() -> None:
         "import profile.test\n"
     )
     test_output = SortImports(
-        file_contents=test_input, known_first_party=["profile"], py_version="2.7"
+        file_contents=test_input, known_first_party=["profile"], py_version="27"
     ).output
     assert test_output == (
         "import os\n"
@@ -917,7 +917,7 @@ def test_known_pattern_path_expansion() -> None:
     test_output = SortImports(
         file_contents=test_input,
         default_section="THIRDPARTY",
-        known_first_party=["./", "this", "kate_plugin"],
+        known_first_party=["./", "this", "kate_plugin", "isort"],
     ).output
     assert test_output == (
         "import os\n"
@@ -1133,7 +1133,7 @@ def test_order_by_type() -> None:
         "from subprocess import PIPE, Popen, STDOUT\n"
     )
 
-    assert SortImports(file_contents=test_input, order_by_type=True, py_version="2.7").output == (
+    assert SortImports(file_contents=test_input, order_by_type=True, py_version="27").output == (
         "import glob\n"
         "import os\n"
         "import shutil\n"
@@ -1215,15 +1215,12 @@ def test_smart_lines_after_import_section() -> None:
     )
 
 
-def test_settings_combine_instead_of_overwrite() -> None:
-    """Test to ensure settings combine logically, instead of fully overwriting."""
-    assert set(
-        SortImports(known_standard_library=["not_std_library"]).config["known_standard_library"]
-    ) == set(SortImports().config["known_standard_library"] + ["not_std_library"])
-
-    assert set(
-        SortImports(not_known_standard_library=["thread"]).config["known_standard_library"]
-    ) == {item for item in SortImports().config["known_standard_library"] if item != "thread"}
+def test_settings_overwrite() -> None:
+    """Test to ensure settings overwrite instead of trying to combine."""
+    assert Config(known_standard_library=["not_std_library"]).known_standard_library == frozenset(
+        {"not_std_library"}
+    )
+    assert Config(known_first_party=["thread"]).known_first_party == frozenset({"thread"})
 
 
 def test_combined_from_and_as_imports() -> None:
@@ -1579,7 +1576,9 @@ def test_long_line_comments() -> None:
         "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
-    assert SortImports(file_contents=test_input).output == (
+    assert SortImports(
+        file_contents=test_input, line_length=100, balanced_wrapping=True
+    ).output == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
         "                                         sync_live_envdir, update_live_app, "
         "update_live_cron)\n"
@@ -1656,7 +1655,7 @@ def test_placement_control() -> None:
     test_output = SortImports(
         file_contents=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
-        known_standard_library=["p24.imports"],
+        known_standard_library=["p24.imports", "os", "sys"],
         known_third_party=["bottle"],
         default_section="THIRDPARTY",
     ).output
@@ -1697,7 +1696,7 @@ def test_custom_sections() -> None:
         import_heading_firstparty="First Party",
         import_heading_django="Django",
         import_heading_pandas="Pandas",
-        known_standard_library=["p24.imports"],
+        known_standard_library=["p24.imports", "os", "sys"],
         known_third_party=["bottle"],
         known_django=["django"],
         known_pandas=["pandas", "numpy"],
@@ -1953,7 +1952,7 @@ def test_other_file_encodings(tmpdir) -> None:
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
         assert (
-            SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+            SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
         )
 
 
@@ -1962,7 +1961,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
@@ -1970,7 +1969,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(file_path=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
+    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()).output == file_contents
 
 
 def test_comment_at_top_of_file() -> None:
@@ -2511,7 +2510,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2529,7 +2527,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2549,7 +2546,6 @@ def test_long_alias_using_paren_issue_957() -> None:
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
-        check=True,
     ).output
     assert out == expected_output
 
@@ -2607,7 +2603,7 @@ def test_import_case_produces_inconsistent_results_issue_472() -> None:
         "from scrapy.core.downloader.handlers.http import "
         "HttpDownloadHandler, HTTPDownloadHandler\n"
     )
-    assert SortImports(file_contents=test_input).output == test_input
+    assert SortImports(file_contents=test_input, line_length=100).output == test_input
 
 
 def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
@@ -2689,7 +2685,10 @@ def test_no_extra_lines_issue_557() -> None:
     )
     assert (
         SortImports(
-            file_contents=test_input, force_alphabetical_sort=True, force_sort_within_sections=True
+            file_contents=test_input,
+            force_alphabetical_sort=True,
+            force_sort_within_sections=True,
+            line_length=100,
         ).output
         == expected_output
     )
@@ -2998,18 +2997,18 @@ def test_requirements_finder(tmpdir) -> None:
     subdir.write("flask")
     req_file = tmpdir.join("requirements.txt")
     req_file.write("Django==1.11\n-e git+https://github.com/orsinium/deal.git#egg=deal\n")
-    si = SortImports(file_contents="")
     for path in (str(tmpdir), str(subdir)):
-        finder = finders.RequirementsFinder(config=si.config, sections=si.sections, path=path)
+
+        finder = finders.RequirementsFinder(config=Config(), path=path)
 
         files = list(finder._get_files())
         assert len(files) == 1  # file finding
         assert files[0].endswith("requirements.txt")  # file finding
         assert set(finder._get_names(str(req_file))) == {"Django", "deal"}  # file parsing
 
-        assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+        assert finder.find("django") == sections.THIRDPARTY  # package in reqs
         assert finder.find("flask") is None  # package not in reqs
-        assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+        assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
         assert len(finder.mapping) > 100
         assert finder._normalize_name("deal") == "deal"
@@ -3045,7 +3044,7 @@ def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
     )
 
     assert (
-        SortImports(file_contents=test_input, settings_path=config_file.strpath).output
+        SortImports(file_contents=test_input, settings_file=config_file.strpath).output
         == test_input
     )
 
@@ -3070,14 +3069,13 @@ deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
 def test_pipfile_finder(tmpdir) -> None:
     pipfile = tmpdir.join("Pipfile")
     pipfile.write(PIPFILE)
-    si = SortImports(file_contents="")
-    finder = finders.PipfileFinder(config=si.config, sections=si.sections, path=str(tmpdir))
+    finder = finders.PipfileFinder(config=Config(), path=str(tmpdir))
 
     assert set(finder._get_names(str(tmpdir))) == {"Django", "deal"}  # file parsing
 
-    assert finder.find("django") == si.sections.THIRDPARTY  # package in reqs
+    assert finder.find("django") == sections.THIRDPARTY  # package in reqs
     assert finder.find("flask") is None  # package not in reqs
-    assert finder.find("deal") == si.sections.THIRDPARTY  # vcs
+    assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
     assert len(finder.mapping) > 100
     assert finder._normalize_name("deal") == "deal"
@@ -3096,8 +3094,8 @@ def test_monkey_patched_urllib() -> None:
 
 
 def test_path_finder(monkeypatch) -> None:
-    si = SortImports(file_contents="")
-    finder = finders.PathFinder(config=si.config, sections=si.sections)
+    config = config = Config()
+    finder = finders.PathFinder(config=config)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
     imaginary_paths = set(
@@ -3115,17 +3113,17 @@ def test_path_finder(monkeypatch) -> None:
     )
 
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
-    assert finder.find("example_1") == finder.sections.STDLIB
-    assert finder.find("example_2") == finder.sections.THIRDPARTY
-    assert finder.find("example_3") == finder.sections.FIRSTPARTY
+    assert finder.find("example_1") == sections.STDLIB
+    assert finder.find("example_2") == sections.THIRDPARTY
+    assert finder.find("example_3") == sections.FIRSTPARTY
     for i, _ in enumerate(ext_suffixes, 4):
-        assert finder.find("example_" + str(i)) == finder.sections.THIRDPARTY
+        assert finder.find("example_" + str(i)) == sections.THIRDPARTY
 
 
 def test_argument_parsing() -> None:
     from isort.main import parse_args
 
-    args = parse_args(["-dt", "-t", "foo", "--skip=bar", "baz.py"])
+    args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
     assert args["skip"] == ["bar"]
@@ -3140,7 +3138,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     tmpdir.join("file2.py").write(
         ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
     )
-    arguments = ["-rc", str(tmpdir), "--settings-path", os.getcwd()]
+    arguments = ["--rc", str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
     main(arguments)
@@ -3168,7 +3166,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
     tmpdir.join("file1.py").write("import re\nimport os")
     tmpdir.join("file2.py").write("")
-    arguments = ["-rc", str(tmpdir)]
+    arguments = ["--rc", str(tmpdir)]
     if quiet:
         arguments.append("-q")
     main(arguments)
@@ -3178,13 +3176,16 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
 
 @pytest.mark.parametrize("enabled", (False, True))
-def test_safety_excludes(tmpdir, enabled: bool) -> None:
+def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
     toxdir.join("verysafe.py").write("# ...")
-    tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
+    tmpdir.mkdir("_build").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
-    config = dict(settings.default.copy(), safety_excludes=enabled)
+    if enabled:
+        config = Config(directory=str(tmpdir))
+    else:
+        config = Config(skip=[], directory=str(tmpdir))
     skipped = []  # type: List[str]
     codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped)
@@ -3200,7 +3201,7 @@ def test_safety_excludes(tmpdir, enabled: bool) -> None:
     else:
         assert file_names == {
             os.sep.join((".tox", "verysafe.py")),
-            os.sep.join(("lib", "python3.7", "importantsystemlibrary.py")),
+            os.sep.join(("_build", "python3.7", "importantsystemlibrary.py")),
             os.sep.join((".pants.d", "pants.py")),
             "victim.py",
         }
@@ -3209,7 +3210,7 @@ def test_safety_excludes(tmpdir, enabled: bool) -> None:
     # directly pointing to files within unsafe directories shouldn't skip them either way
     file_names = {
         os.path.relpath(f, str(toxdir))
-        for f in main.iter_source_code([str(toxdir)], config, skipped)
+        for f in main.iter_source_code([str(toxdir)], Config(directory=str(toxdir)), skipped)
     }
     assert file_names == {"verysafe.py"}
 
@@ -3228,7 +3229,7 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
 
-    config = dict(settings.default.copy(), skip_glob=skip_glob)
+    config = Config(skip_glob=skip_glob, directory=str(base_dir))
     skipped = []  # type: List[str]
     file_names = {
         os.path.relpath(f, str(base_dir))
@@ -3785,8 +3786,8 @@ def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.pat
     config_file = tmpdir.join(".editorconfig")
     config_file.write("\n".join(editorconfig_contents))
 
-    config = settings.from_path(str(tmpdir))
-    assert config["multi_line_output"] == WrapModes.VERTICAL_GRID_GROUPED
+    config = Config(settings_path=str(tmpdir))
+    assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
 def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> None:
@@ -3930,7 +3931,6 @@ def test_failing_file_check_916() -> None:
         "from __future__ import unicode_literals\n"
     )
     settings = {
-        "known_future_library": "future",
         "import_heading_future": "FUTURE",
         "sections": ["FUTURE", "STDLIB", "NORDIGEN", "FIRSTPARTY", "THIRDPARTY", "LOCALFOLDER"],
         "indent": "    ",
@@ -4089,11 +4089,11 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
-    assert SortImports(file_path=str(source_py)).output.splitlines() == expected_py_output
+    assert SortImports(filename=str(source_py)).output.splitlines() == expected_py_output
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
-    assert SortImports(file_path=str(source_pyi)).output.splitlines() == expected_pyi_output
+    assert SortImports(filename=str(source_pyi)).output.splitlines() == expected_pyi_output
 
 
 def test_move_class_issue_751() -> None:
@@ -4125,8 +4125,8 @@ def test_python_version() -> None:
     from isort.main import parse_args
 
     # test that the py_version can be added as flag
-    args = parse_args(["-py=2.7"])
-    assert args["py_version"] == "2.7"
+    args = parse_args(["--py=27"])
+    assert args["py_version"] == "27"
 
     args = parse_args(["--python-version=3"])
     assert args["py_version"] == "3"
@@ -4136,7 +4136,7 @@ def test_python_version() -> None:
 
     # user is part of the standard library in python 2
     output_python_2 = "import os\nimport user\n"
-    assert SortImports(file_contents=test_input, py_version="2.7").output == output_python_2
+    assert SortImports(file_contents=test_input, py_version="27").output == output_python_2
 
     test_input = "import os\nimport xml"
 

@@ -24,6 +24,8 @@ from typing import (
     Type,
 )
 
+from . import sections
+from .settings import DEFAULT_CONFIG, Config
 from .utils import chdir, exists_case_sensitive
 
 try:
@@ -41,18 +43,17 @@ try:
 except ImportError:
     Pipfile = None
 
-KNOWN_SECTION_MAPPING = {
-    "STDLIB": "STANDARD_LIBRARY",
-    "FUTURE": "FUTURE_LIBRARY",
-    "FIRSTPARTY": "FIRST_PARTY",
-    "THIRDPARTY": "THIRD_PARTY",
+KNOWN_SECTION_MAPPING: Dict[str, str] = {
+    sections.STDLIB: "STANDARD_LIBRARY",
+    sections.FUTURE: "FUTURE_LIBRARY",
+    sections.FIRSTPARTY: "FIRST_PARTY",
+    sections.THIRDPARTY: "THIRD_PARTY",
 }
 
 
 class BaseFinder(metaclass=ABCMeta):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
+    def __init__(self, config: Config) -> None:
         self.config = config
-        self.sections = sections
 
     @abstractmethod
     def find(self, module_name: str) -> Optional[str]:
@@ -61,7 +62,7 @@ class BaseFinder(metaclass=ABCMeta):
 
 class ForcedSeparateFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
-        for forced_separate in self.config["forced_separate"]:
+        for forced_separate in self.config.forced_separate:
             # Ensure all forced_separate patterns will match to end of string
             path_glob = forced_separate
             if not forced_separate.endswith("*"):
@@ -75,19 +76,21 @@ class ForcedSeparateFinder(BaseFinder):
 class LocalFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         if module_name.startswith("."):
-            return self.sections.LOCALFOLDER
+            return "LOCALFOLDER"
         return None
 
 
 class KnownPatternFinder(BaseFinder):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
 
         self.known_patterns: List[Tuple[Pattern[str], str]] = []
-        for placement in reversed(self.sections):
-            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement)
-            config_key = f"known_{known_placement.lower()}"
-            known_patterns = self.config.get(config_key, [])
+        for placement in reversed(config.sections):
+            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
+            config_key = f"known_{known_placement}"
+            known_patterns = list(
+                getattr(self.config, config_key, self.config.known_other.get(known_placement, []))
+            )
             known_patterns = [
                 pattern
                 for known_pattern in known_patterns
@@ -122,8 +125,8 @@ class KnownPatternFinder(BaseFinder):
 
 
 class PathFinder(BaseFinder):
-    def __init__(self, config: Mapping[str, Any], sections: Any) -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
 
         # restore the original import path (i.e. not the path to bin/isort)
         root_dir = os.getcwd()
@@ -131,7 +134,7 @@ class PathFinder(BaseFinder):
         self.paths = [root_dir, src_dir]
 
         # virtual env
-        self.virtual_env = self.config.get("virtual_env") or os.environ.get("VIRTUAL_ENV")
+        self.virtual_env = self.config.virtual_env or os.environ.get("VIRTUAL_ENV")
         if self.virtual_env:
             self.virtual_env = os.path.realpath(self.virtual_env)
         self.virtual_env_src = ""
@@ -148,7 +151,7 @@ class PathFinder(BaseFinder):
                     self.paths.append(path)
 
         # conda
-        self.conda_env = self.config.get("conda_env") or os.environ.get("CONDA_PREFIX") or ""
+        self.conda_env = self.config.conda_env or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
             for path in glob(f"{self.conda_env}/lib/python*/site-packages"):
@@ -182,26 +185,26 @@ class PathFinder(BaseFinder):
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if "site-packages" in prefix:
-                    return self.sections.THIRDPARTY
+                    return sections.THIRDPARTY
                 if "dist-packages" in prefix:
-                    return self.sections.THIRDPARTY
+                    return sections.THIRDPARTY
                 if self.virtual_env and self.virtual_env_src in prefix:
-                    return self.sections.THIRDPARTY
+                    return sections.THIRDPARTY
                 if os.path.normcase(prefix) == self.stdlib_lib_prefix:
-                    return self.sections.STDLIB
+                    return sections.STDLIB
                 if self.conda_env and self.conda_env in prefix:
-                    return self.sections.THIRDPARTY
+                    return sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
-                    return self.sections.STDLIB
-                return self.config["default_section"]
+                    return sections.STDLIB
+                return self.config.default_section
         return None
 
 
 class ReqsBaseFinder(BaseFinder):
     enabled = False
 
-    def __init__(self, config: Mapping[str, Any], sections: Any, path: str = ".") -> None:
-        super().__init__(config, sections)
+    def __init__(self, config: Config, path: str = ".") -> None:
+        super().__init__(config)
         self.path = path
         if self.enabled:
             self.mapping = self._load_mapping()
@@ -283,7 +286,7 @@ class ReqsBaseFinder(BaseFinder):
 
         for name in self.names:
             if module_name == name:
-                return self.sections.THIRDPARTY
+                return sections.THIRDPARTY
         return None
 
 
@@ -356,7 +359,7 @@ class PipfileFinder(ReqsBaseFinder):
 
 class DefaultFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
-        return self.config["default_section"]
+        return self.config.default_section
 
 
 class FindersManager:
@@ -371,19 +374,16 @@ class FindersManager:
     )
 
     def __init__(
-        self,
-        config: Mapping[str, Any],
-        sections: Any,
-        finder_classes: Optional[Iterable[Type[BaseFinder]]] = None,
+        self, config: Config, finder_classes: Optional[Iterable[Type[BaseFinder]]] = None
     ) -> None:
-        self.verbose: bool = config.get("verbose", False)
+        self.verbose: bool = config.verbose
 
         if finder_classes is None:
             finder_classes = self._default_finders_classes
         finders: List[BaseFinder] = []
         for finder_cls in finder_classes:
             try:
-                finders.append(finder_cls(config, sections))
+                finders.append(finder_cls(config))
             except Exception as exception:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
