@@ -3184,7 +3184,7 @@ def test_safety_excludes(tmpdir, enabled: bool) -> None:
     toxdir.join("verysafe.py").write("# ...")
     tmpdir.mkdir("lib").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
     tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
-    config = dict(settings.default.copy(), safety_excludes=enabled)
+    config = Config(safety_excludes=enabled)
     skipped = []  # type: List[str]
     codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped)
