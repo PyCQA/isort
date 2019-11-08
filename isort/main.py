@@ -14,7 +14,6 @@ import setuptools
 from isort import SortImports, __version__
 from isort.logo import ASCII_ART
 from isort.settings import (
-    DEFAULT_SECTIONS,
     VALID_PY_TARGETS,
     WrapModes,
     Config
@@ -23,6 +22,7 @@ from isort.settings import (
     # from_path,
     # wrap_mode_from_string,
 )
+from . import sections
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 
@@ -408,7 +408,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--section-default",
         dest="default_section",
         help="Sets the default section for imports (by default FIRSTPARTY) options: "
-        + str(DEFAULT_SECTIONS),
+        + str(sections.DEFAULT),
     )
     parser.add_argument(
         "--sg",

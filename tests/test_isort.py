@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-from isort import finders, main, settings
+from isort import finders, main, settings, sections
 from isort.main import SortImports, is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
@@ -3115,11 +3115,11 @@ def test_path_finder(monkeypatch) -> None:
     )
 
     monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
-    assert finder.find("example_1") == "STDLIB"
-    assert finder.find("example_2") == "THIRDPARTY"
-    assert finder.find("example_3") == "FIRSTPARTY"
+    assert finder.find("example_1") == sections.STDLIB
+    assert finder.find("example_2") == sections.THIRDPARTY
+    assert finder.find("example_3") == sections.FIRSTPARTY
     for i, _ in enumerate(ext_suffixes, 4):
-        assert finder.find("example_" + str(i)) == "THIRDPARTY"
+        assert finder.find("example_" + str(i)) == sections.THIRDPARTY
 
 
 def test_argument_parsing() -> None:

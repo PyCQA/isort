@@ -15,6 +15,7 @@ from typing import (Any, Dict, Iterable, Iterator, List, Mapping,
 
 from .settings import DEFAULT_CONFIG, Config
 from .utils import chdir, exists_case_sensitive
+from . import sections
 
 try:
     from pipreqs import pipreqs
@@ -31,11 +32,11 @@ try:
 except ImportError:
     Pipfile = None
 
-KNOWN_SECTION_MAPPING = {
-    "STDLIB": "STANDARD_LIBRARY",
-    "FUTURE": "FUTURE_LIBRARY",
-    "FIRSTPARTY": "FIRST_PARTY",
-    "THIRDPARTY": "THIRD_PARTY",
+KNOWN_SECTION_MAPPING: Dict[str, str] = {
+    sections.STDLIB: "STANDARD_LIBRARY",
+    sections.FUTURE: "FUTURE_LIBRARY",
+    sections.FIRSTPARTY: "FIRST_PARTY",
+    sections.THIRDPARTY: "THIRD_PARTY",
 }
 
 
@@ -172,17 +173,17 @@ class PathFinder(BaseFinder):
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
                 if "site-packages" in prefix:
-                    return "THIRDPARTY"
+                    return sections.THIRDPARTY
                 if "dist-packages" in prefix:
-                    return "THIRDPARTY"
+                    return sections.THIRDPARTY
                 if self.virtual_env and self.virtual_env_src in prefix:
-                    return "THIRDPARTY"
+                    return sections.THIRDPARTY
                 if os.path.normcase(prefix) == self.stdlib_lib_prefix:
-                    return "STDLIB"
+                    return sections.STDLIB
                 if self.conda_env and self.conda_env in prefix:
-                    return "THIRDPARTY"
+                    return sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
-                    return "STDLIB"
+                    return sections.STDLIB
                 return self.config.default_section
         return None
 

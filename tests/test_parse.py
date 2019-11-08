@@ -1,7 +1,7 @@
 from hypothesis_auto import auto_pytest_magic
 
 from isort import parse
-from isort.settings import DEFAULT_SECTIONS, default
+from isort.settings import default
 
 TEST_CONTENTS = """
 import xyz

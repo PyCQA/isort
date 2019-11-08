@@ -32,7 +32,7 @@ from typing import (
 )
 from warnings import warn
 
-from . import stdlibs
+from . import stdlibs, sections
 from ._future import dataclass, field
 from .utils import difference, union
 from .wrap_modes import WrapModes
@@ -59,7 +59,6 @@ safety_exclude_re = re.compile(
 FILE_SKIP_COMMENT: str = ("isort:" + "skip_file") # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
-DEFAULT_SECTIONS: Tuple[str, ...] = ("FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER")
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
@@ -106,7 +105,7 @@ class _Config:
     line_length: int = 79
     wrap_length: int = 0
     line_ending: str = ""
-    sections: Tuple[str, ...] = DEFAULT_SECTIONS
+    sections: Tuple[str, ...] = sections.DEFAULT
     no_sections: bool = False
     known_future_library: FrozenSet[str] = frozenset(("__future__",))
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
