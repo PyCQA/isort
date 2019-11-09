@@ -40,10 +40,16 @@ def module_key(
     return f"{module_name in config.force_to_top and 'A' or 'B'}{prefix}{_length_sort_maybe}"
 
 
-def section_key(line: str, order_by_type: bool, force_to_top: List[str]) -> str:
+def section_key(
+    line: str, order_by_type: bool, force_to_top: List[str], lexicographical: bool = False
+) -> str:
     section = "B"
 
-    line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
+    if lexicographical:
+        line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
+    else:
+        line = re.sub("^from ", "", line)
+        line = re.sub("^import ", "", line)
     if line.split(" ")[0] in force_to_top:
         section = "A"
     if not order_by_type:

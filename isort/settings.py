@@ -34,6 +34,8 @@ from warnings import warn
 
 from . import stdlibs
 from ._future import dataclass, field
+from .exceptions import ProfileDoesNotExist
+from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .utils import difference, union
 from .wrap_modes import WrapModes
@@ -156,6 +158,7 @@ class _Config:
     force_alphabetical_sort: bool = False
     force_grid_wrap: int = 0
     force_sort_within_sections: bool = False
+    lexicographical: bool = False
     ignore_whitespace: bool = False
     no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False
@@ -166,6 +169,7 @@ class _Config:
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
     directory: str = ""
+    profile: str = ""
 
     def __post_init__(self):
         py_version = self.py_version
@@ -219,13 +223,23 @@ class Config(_Config):
         else:
             config_settings = {}
 
+        profile_name = config_overrides.get("profile", config_settings.get("profile", ""))
+        profile: Dict[str, Any] = {}
+        if profile_name:
+            if profile_name not in profiles:
+                raise ProfileDoesNotExist(profile_name)
+
+            profile = profiles[profile_name].copy()
+            profile["source"] = f"{profile_name} profile"
+            sources.append(profile)
+
         if config_settings:
             sources.append(config_settings)
         if config_overrides:
             config_overrides["source"] = "runtime"
             sources.append(config_overrides)
 
-        combined_config = {**config_settings, **config_overrides}
+        combined_config = {**profile, **config_settings, **config_overrides}
         if "indent" in combined_config:
             indent = str(combined_config["indent"])
             if indent.isdigit():
