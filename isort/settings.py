@@ -224,15 +224,14 @@ class Config(_Config):
             config_settings = {}
 
         profile_name = config_overrides.get("profile", config_settings.get("profile", ""))
+        profile: Dict[str, Any] = {}
         if profile_name:
             if profile_name not in profiles:
-                raise ProfileDoesNotExist(profile)
+                raise ProfileDoesNotExist(profile_name)
 
             profile = profiles[profile_name].copy()
             profile["source"] = f"{profile_name} profile"
             sources.append(profile)
-        else:
-            profile = {}
 
         if config_settings:
             sources.append(config_settings)

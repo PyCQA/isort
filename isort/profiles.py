@@ -1,4 +1,5 @@
 """Common profiles are defined here to be easily used within a project using --profile {name}"""
+from typing import Any, Dict
 
 black = {
     "multi_line_output": 3,
@@ -43,7 +44,7 @@ hug = {
     "line_length": 100,
 }
 
-profiles = {
+profiles: Dict[str, Dict[str, Any]] = {
     "black": black,
     "django": django,
     "pycharm": pycharm,
