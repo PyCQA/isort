@@ -34,6 +34,8 @@ from warnings import warn
 
 from . import stdlibs
 from ._future import dataclass, field
+from .exceptions import ProfileDoesNotExist
+from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .utils import difference, union
 from .wrap_modes import WrapModes
@@ -167,6 +169,7 @@ class _Config:
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
     directory: str = ""
+    profile: str = ""
 
     def __post_init__(self):
         py_version = self.py_version
@@ -220,13 +223,24 @@ class Config(_Config):
         else:
             config_settings = {}
 
+        profile_name = config_overrides.get("profile", config_settings.get("profile", ""))
+        if profile_name:
+            if profile_name not in profiles:
+                raise ProfileDoesNotExist(profile)
+
+            profile = profiles[profile_name].copy()
+            profile["source"] = f"{profile_name} profile"
+            sources.append(profile)
+        else:
+            profile = {}
+
         if config_settings:
             sources.append(config_settings)
         if config_overrides:
             config_overrides["source"] = "runtime"
             sources.append(config_overrides)
 
-        combined_config = {**config_settings, **config_overrides}
+        combined_config = {**profile, **config_settings, **config_overrides}
         if "indent" in combined_config:
             indent = str(combined_config["indent"])
             if indent.isdigit():

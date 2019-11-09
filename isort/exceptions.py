@@ -1,7 +1,7 @@
 """All isort specific exception classes should be defined here"""
 from pathlib import Path
 
-from .settings import FILE_SKIP_COMMENT
+from .profiles import profiles
 
 
 class ISortError(Exception):
@@ -54,8 +54,7 @@ class FileSkipComment(FileSkipped):
 
     def __init__(self, file_path: str):
         super().__init__(
-            f"{file_path} contains an {FILE_SKIP_COMMENT} comment and was skipped.",
-            file_path=file_path,
+            f"{file_path} contains an file skip comment and was skipped.", file_path=file_path
         )
 
 
@@ -67,4 +66,14 @@ class FileSkipSetting(FileSkipped):
             f"{file_path} was skipped as it's listed in 'skip' setting"
             " or matches a glob in 'skip_glob' setting",
             file_path=file_path,
+        )
+
+
+class ProfileDoesNotExist(ISortError):
+    """Raised when a profile is set by the user that doesn't exist"""
+
+    def __init__(self, profile: str):
+        super().__init__(
+            f"Specified profile of {profile} does not exist. "
+            f"Available profiles: {','.join(profiles)}."
         )

@@ -11,11 +11,10 @@ from warnings import warn
 
 import setuptools
 
-from isort import SortImports, __version__
-from isort.logo import ASCII_ART
-from isort.settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
-
-from . import sections
+from . import SortImports, __version__, sections
+from .logo import ASCII_ART
+from .profiles import profiles
+from .settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 
@@ -523,6 +522,13 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "off all stdlib modules across versions. If auto is specified, the version of the "
         "interpreter used to run isort "
         f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
+    )
+    parser.add_argument(
+        "--profile",
+        dest="profile",
+        choices=list(profiles.keys()),
+        type=str,
+        help="Base profile type to use for configuration.",
     )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
