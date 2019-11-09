@@ -997,6 +997,20 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
     assert test_output == (
         "from third_party import lib_a\n"
         "from third_party import lib_b\n"
+        "from third_party import lib_d\n"
+        "from third_party.lib_c import lib1\n"
+    )
+    test_output = SortImports(
+        file_contents=test_input,
+        multi_line_output=WrapModes.GRID,
+        line_length=40,
+        force_single_line=True,
+        force_sort_within_sections=True,
+        lexicographical=True,
+    ).output
+    assert test_output == (
+        "from third_party import lib_a\n"
+        "from third_party import lib_b\n"
         "from third_party.lib_c import lib1\n"
         "from third_party import lib_d\n"
     )

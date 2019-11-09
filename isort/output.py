@@ -93,6 +93,7 @@ def sorted_imports(
                     sorting.section_key,
                     order_by_type=config.order_by_type,
                     force_to_top=config.force_to_top,
+                    lexicographical=config.lexicographical,
                 ),
             )
 

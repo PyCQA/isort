@@ -156,6 +156,7 @@ class _Config:
     force_alphabetical_sort: bool = False
     force_grid_wrap: int = 0
     force_sort_within_sections: bool = False
+    lexicographical: bool = False
     ignore_whitespace: bool = False
     no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False
