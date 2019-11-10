@@ -77,6 +77,8 @@ isort = "isort = isort.pylama_isort:Linter"
 
 [tool.portray.mkdocs.theme]
 name = "material"
+favicon = "art/logo.png"
+logo = "art/logo.png"
 palette = {primary = "orange", accent = "indigo"}
 
 [build-system]
