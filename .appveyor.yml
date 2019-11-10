@@ -1,5 +1,5 @@
 init:
-  - "SET PATH=C:\\Python37\\Scripts;%PATH%"
+  - "SET PATH=C:\\Python38\\Scripts;%PATH%"
   - "SET PYTEST_ADDOPTS=-vv"
   - "ECHO PATH=%PATH%"
 
