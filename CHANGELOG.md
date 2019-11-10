@@ -13,6 +13,10 @@ Changelog
   - `length_sort_{section_name}` config usage has been deprecated. Instead `length_sort_sections` list can be used to specify a list of sections that need to be length sorted.
   - `safety_excludes` and `unsafe` have been deprecated
   - Config now includes as default full set of safety directories defined by safety excludes.
+  - `--recursive` option has been removed. Directories passed in are now automatically sorted recursive.
+  - `--apply` option has been removed as it is the default behaviour.
+  - isort now does nothing, beyond giving instructions and exiting status code 0, when ran with no arguments.
+    - a new `--interactive` flag has been added to enable the old style behaviour.
 
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.

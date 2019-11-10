@@ -17,7 +17,20 @@ from .profiles import profiles
 from .settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
+QUICK_GUIDE = f"""
+{ASCII_ART}
 
+Nothing to do: no files or paths have have been passed in!
+
+Try one of the following:
+
+    `isort .` - sort all Python files, starting from the current directory, recursively.
+    `isort . --interactive` - Do the same, but ask before making any changes.
+    `isort . --check --diff` - Check to see if imports are correctly sorted within this project.
+    `isort --help` - In-depth information about isort's available command-line options.
+
+Visit https://timothycrosley.github.io/isort/ for complete information about how to use isort.
+"""
 
 def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
@@ -380,13 +393,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Reverse order of relative imports.",
     )
     parser.add_argument(
-        "--rc",
-        "--recursive",
-        dest="recursive",
-        action="store_true",
-        help="Recursively look for Python files of which to sort imports",
-    )
-    parser.add_argument(
         "-s",
         "--skip",
         help="Files that sort imports should skip over. If you want to skip multiple "
@@ -489,13 +495,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Tells isort to ignore whitespace differences when --check-only is being used.",
     )
     parser.add_argument(
-        "-y",
-        "--apply",
-        dest="apply",
-        action="store_true",
-        help="Tells isort to apply changes recursively without asking",
-    )
-    parser.add_argument(
         "--case-sensitive",
         dest="case_sensitive",
         action="store_true",
@@ -529,6 +528,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         choices=list(profiles.keys()),
         type=str,
         help="Base profile type to use for configuration.",
+    )
+    parser.add_argument(
+        "--interactive",
+        dest="ask_to_apply",
+        action="store_true",
+        help="Tells isort to apply changes interactively.",
     )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
@@ -564,19 +569,16 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             warn(f"virtual_env dir does not exist: {arguments['virtual_env']}")
 
     file_names = arguments.pop("files", [])
-    if file_names == ["-"]:
+    if not file_names:
+        print(QUICK_GUIDE)
+        return
+    elif file_names == ["-"]:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
-        if not file_names:
-            file_names = ["."]
-            arguments["recursive"] = True
-            if not arguments.get("apply", False):
-                arguments["ask_to_apply"] = True
-
         if "settings_path" not in arguments:
             arguments["settings_path"] = os.path.abspath(file_names[0]) or os.getcwd()
             if not os.path.isdir(arguments["settings_path"]):
-                arguments["settings_path"] = os.path.basename(arguments["settings_path"])
+                arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
         config_dict = arguments.copy()
         config_dict.pop("recursive", False)
@@ -599,8 +601,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                     filtered_files.append(file_name)
             file_names = filtered_files
 
-        if arguments.get("recursive", False):
-            file_names = iter_source_code(file_names, config, skipped)
+        file_names = iter_source_code(file_names, config, skipped)
         num_skipped = 0
         if config.verbose or show_logo:
             print(ASCII_ART)
@@ -610,12 +611,16 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(
-                functools.partial(sort_imports, check=check, ask_to_apply=ask_to_apply, **config_dict), file_names
+                functools.partial(
+                    sort_imports, check=check, ask_to_apply=ask_to_apply, **config_dict
+                ),
+                file_names,
             )
         else:
             # https://github.com/python/typeshed/pull/2814
             attempt_iterator = (  # type: ignore
-                sort_imports(file_name, check=check, ask_to_apply=ask_to_apply, **config_dict) for file_name in file_names
+                sort_imports(file_name, check=check, ask_to_apply=ask_to_apply, **config_dict)
+                for file_name in file_names
             )
 
         for sort_attempt in attempt_iterator:
