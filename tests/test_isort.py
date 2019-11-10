@@ -3152,7 +3152,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     tmpdir.join("file2.py").write(
         ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
     )
-    arguments = ["--rc", str(tmpdir), "--settings-path", os.getcwd()]
+    arguments = [str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
     main(arguments)
@@ -3180,7 +3180,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
     tmpdir.join("file1.py").write("import re\nimport os")
     tmpdir.join("file2.py").write("")
-    arguments = ["--rc", str(tmpdir)]
+    arguments = [str(tmpdir)]
     if quiet:
         arguments.append("-q")
     main(arguments)
@@ -3875,9 +3875,9 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
     with pytest.raises(
         Exception
     ):  # without the settings path provided: the command should not skip & identify errors
-        subprocess.run(["isort", "--check-only"], check=True)
+        subprocess.run(["isort", ".", "--check-only"], check=True)
     result = subprocess.run(
-        ["isort", "--check-only", "--settings-path=conf/.isort.cfg"],
+        ["isort", ".", "--check-only", "--settings-path=conf/.isort.cfg"],
         stdout=subprocess.PIPE,
         check=True,
     )
