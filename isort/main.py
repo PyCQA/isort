@@ -32,6 +32,7 @@ Try one of the following:
 Visit https://timothycrosley.github.io/isort/ for complete information about how to use isort.
 """
 
+
 def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
     if ext in (".py", ".pyi"):
@@ -581,12 +582,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
         config_dict = arguments.copy()
-        config_dict.pop("recursive", False)
         ask_to_apply = config_dict.pop("ask_to_apply", False)
         jobs = config_dict.pop("jobs", ())
         show_logo = config_dict.pop("show_logo", False)
         filter_files = config_dict.pop("filter_files", False)
         check = config_dict.pop("check", False)
+        show_diff = config_dict.pop("show_diff", False)
         config = Config(**config_dict)
 
         wrong_sorted_files = False
@@ -612,14 +613,24 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             executor = multiprocessing.Pool(jobs)
             attempt_iterator = executor.imap(
                 functools.partial(
-                    sort_imports, check=check, ask_to_apply=ask_to_apply, **config_dict
+                    sort_imports,
+                    check=check,
+                    ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
+                    **config_dict,
                 ),
                 file_names,
             )
         else:
             # https://github.com/python/typeshed/pull/2814
             attempt_iterator = (  # type: ignore
-                sort_imports(file_name, check=check, ask_to_apply=ask_to_apply, **config_dict)
+                sort_imports(
+                    file_name,
+                    check=check,
+                    ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
+                    **config_dict,
+                )
                 for file_name in file_names
             )
 
