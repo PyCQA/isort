@@ -1,7 +1,7 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import OrderedDict, defaultdict, namedtuple
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple, TextIO
 from warnings import warn
 
 from isort.format import format_natural
@@ -443,3 +443,32 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         sections=config.sections,
         section_comments=section_comments,
     )
+
+
+def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG):
+    """Parses stream identifying sections of contiguous imports"""
+    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
+
+    in_quote = ""
+    in_top_comment = False
+    first_comment_index_start = -1
+    first_comment_index_end = -1
+
+    import_lines = []
+    for index, line in enumerate(input_stream):
+        (
+            skipping_line,
+            in_quote,
+            in_top_comment,
+            first_comment_index_start,
+            first_comment_index_end,
+        ) = skip_line(
+            line,
+            in_quote=in_quote,
+            in_top_comment=in_top_comment,
+            index=index,
+            section_comments=section_comments,
+            first_comment_index_start=first_comment_index_start,
+            first_comment_index_end=first_comment_index_end,
+        )
+
