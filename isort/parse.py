@@ -1,7 +1,18 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import OrderedDict, defaultdict, namedtuple
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple, TextIO
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generator,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    TextIO,
+    Tuple,
+)
 from warnings import warn
 
 from isort.format import format_natural
@@ -454,7 +465,7 @@ def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_C
     first_comment_index_start = -1
     first_comment_index_end = -1
 
-    import_lines = []
+    # import_lines: List[str] = []
     for index, line in enumerate(input_stream):
         (
             skipping_line,
@@ -471,4 +482,3 @@ def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_C
             first_comment_index_start=first_comment_index_start,
             first_comment_index_end=first_comment_index_end,
         )
-
