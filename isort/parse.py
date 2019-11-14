@@ -456,7 +456,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     )
 
 
-def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG):
+def identify_contiguous_imports(input_stream: TextIO, output_stream: TextIO=None, config: Config = DEFAULT_CONFIG):
     """Parses stream identifying sections of contiguous imports"""
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
 
@@ -465,7 +465,7 @@ def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_C
     first_comment_index_start = -1
     first_comment_index_end = -1
 
-    # import_lines: List[str] = []
+    import_lines: List[str] = []
     for index, line in enumerate(input_stream):
         (
             skipping_line,
@@ -482,3 +482,16 @@ def identify_contiguous_imports(input_stream: TextIO, config: Config = DEFAULT_C
             first_comment_index_start=first_comment_index_start,
             first_comment_index_end=first_comment_index_end,
         )
+        if skipping_line:
+            if input_lines:
+                # sort_imports_here
+            output_stream.write(line)
+            continue
+
+        else
+
+
+
+
+
+
