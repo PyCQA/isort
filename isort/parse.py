@@ -123,6 +123,11 @@ def skip_line(
                 break
             char_index += 1
 
+    if ";" in line:
+        for part in (part.strip() for part in line.split(";")):
+            if part and not part.startswith("from ") and not part.startswith("import "):
+                skip_line = True
+
     return (
         bool(skip_line or in_quote or in_top_comment),
         in_quote,
@@ -218,10 +223,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             place_imports[section] = []
             import_placements[line] = section
 
-        if ";" in line:
-            for part in (part.strip() for part in line.split(";")):
-                if part and not part.startswith("from ") and not part.startswith("import "):
-                    skipping_line = True
+
 
         type_of_import: str = import_type(line) or ""
         if not type_of_import or skipping_line:
@@ -483,7 +485,7 @@ def identify_contiguous_imports(input_stream: TextIO, output_stream: TextIO=None
             first_comment_index_end=first_comment_index_end,
         )
         if skipping_line:
-            if input_lines:
+            if import_lines:
                 # sort_imports_here
             output_stream.write(line)
             continue
