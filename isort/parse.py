@@ -1,5 +1,6 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import OrderedDict, defaultdict, namedtuple
+from io import StringIO
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
@@ -46,6 +47,18 @@ def _infer_line_separator(file_contents: str) -> str:
         return "\r"
     else:
         return "\n"
+
+
+def _normalize_line(raw_line: str) -> Tuple[str, str]:
+    """Normalizes import related statements in the provided line.
+
+    Returns (normalized_line: str, raw_line: str)
+    """
+    line = raw_line.replace("from.import ", "from . import ")
+    line = line.replace("import*", "import *")
+    line = line.replace(" .import ", " . import ")
+    line = line.replace("\t", " ")
+    return (line, raw_line)
 
 
 def import_type(line: str) -> Optional[str]:
@@ -190,13 +203,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     first_comment_index_start = -1
     first_comment_index_end = -1
     while index < line_count:
-        raw_line = line = in_lines[index]
-        line = line.replace("from.import ", "from . import ")
-        line = line.replace("\t", " ").replace("import*", "import *")
-        line = line.replace(" .import ", " . import ")
+        line = in_lines[index]
         index += 1
         statement_index = index
-
         (
             skipping_line,
             in_quote,
@@ -223,17 +232,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             place_imports[section] = []
             import_placements[line] = section
 
-
-
-        type_of_import: str = import_type(line) or ""
-        if not type_of_import or skipping_line:
-            out_lines.append(raw_line)
+        if skipping_line:
+            out_lines.append(line)
             continue
 
-        for line in (line.strip() for line in line.split(";")):
+        for line in (
+            (line.strip() for line in line.split(";")) if ";" in line else (line,)  # type: ignore
+        ):
+            line, raw_line = _normalize_line(line)
             type_of_import = import_type(line) or ""
             if not type_of_import:
-                out_lines.append(line)
+                out_lines.append(raw_line)
                 continue
 
             if import_index == -1:
@@ -458,9 +467,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     )
 
 
-def identify_contiguous_imports(input_stream: TextIO, output_stream: TextIO=None, config: Config = DEFAULT_CONFIG):
+def identify_contiguous_imports(
+    input_stream: TextIO, output_stream: TextIO = None, config: Config = DEFAULT_CONFIG
+):
     """Parses stream identifying sections of contiguous imports"""
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
+    output_stream = StringIO() if output_stream is None else output_stream
 
     in_quote = ""
     in_top_comment = False
@@ -487,13 +499,6 @@ def identify_contiguous_imports(input_stream: TextIO, output_stream: TextIO=None
         if skipping_line:
             if import_lines:
                 # sort_imports_here
+                pass
             output_stream.write(line)
             continue
-
-        else
-
-
-
-
-
-
