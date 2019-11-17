@@ -496,6 +496,92 @@ def identify_contiguous_imports(
             first_comment_index_start=first_comment_index_start,
             first_comment_index_end=first_comment_index_end,
         )
+        type_of_import = import_type(line) or ""
+        if not type_of_import:
+            out_lines.append(raw_line)
+            continue
+
+        if import_index == -1:
+            import_index = index - 1
+        nested_comments = {}
+        import_string, comment = parse_comments(line)
+        comments = [comment] if comment else []
+        line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
+        if (
+            type_of_import == "from"
+            and len(line_parts) == 2
+            and line_parts[1] != "*"
+            and comments
+        ):
+            nested_comments[line_parts[-1]] = comments[0]
+
+        if "(" in line.split("#")[0] and index < line_count:
+            while not line.strip().endswith(")") and index < line_count:
+                line, new_comment = parse_comments(in_lines[index])
+                index += 1
+                if new_comment:
+                    comments.append(new_comment)
+                stripped_line = _strip_syntax(line).strip()
+                if (
+                    type_of_import == "from"
+                    and stripped_line
+                    and " " not in stripped_line
+                    and new_comment
+                ):
+                    nested_comments[stripped_line] = comments[-1]
+                import_string += line_separator + line
+        else:
+            while line.strip().endswith("\\"):
+                line, new_comment = parse_comments(in_lines[index])
+                index += 1
+                if new_comment:
+                    comments.append(new_comment)
+
+                # Still need to check for parentheses after an escaped line
+                if (
+                    "(" in line.split("#")[0]
+                    and ")" not in line.split("#")[0]
+                    and index < line_count
+                ):
+                    stripped_line = _strip_syntax(line).strip()
+                    if (
+                        type_of_import == "from"
+                        and stripped_line
+                        and " " not in stripped_line
+                        and new_comment
+                    ):
+                        nested_comments[stripped_line] = comments[-1]
+                    import_string += line_separator + line
+
+                    while not line.strip().endswith(")") and index < line_count:
+                        line, new_comment = parse_comments(in_lines[index])
+                        index += 1
+                        if new_comment:
+                            comments.append(new_comment)
+                        stripped_line = _strip_syntax(line).strip()
+                        if (
+                            type_of_import == "from"
+                            and stripped_line
+                            and " " not in stripped_line
+                            and new_comment
+                        ):
+                            nested_comments[stripped_line] = comments[-1]
+                        import_string += line_separator + line
+
+                stripped_line = _strip_syntax(line).strip()
+                if (
+                    type_of_import == "from"
+                    and stripped_line
+                    and " " not in stripped_line
+                    and new_comment
+                ):
+                    nested_comments[stripped_line] = comments[-1]
+                if import_string.strip().endswith(" import") or line.strip().startswith(
+                    "import "
+                ):
+                    import_string += line_separator + line
+                else:
+                    import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
         if skipping_line:
             if import_lines:
                 # sort_imports_here
