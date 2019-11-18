@@ -582,6 +582,7 @@ def identify_contiguous_imports(
                     import_string += line_separator + line
                 else:
                     import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+
         if skipping_line:
             if import_lines:
                 # sort_imports_here
