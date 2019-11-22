@@ -507,17 +507,17 @@ def identify_contiguous_imports(
         import_string, comment = parse_comments(line)
         comments = [comment] if comment else []
         line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
-        if "(" in line.split("#")[0] and index < line_count:
-            while not line.strip().endswith(")") and index < line_count:
-                line, new_comment = parse_comments(in_lines[index])
-                index += 1
+        if "(" in line.split("#")[0]:
+            while not line.strip().endswith(")"):
+                line, new_comment = parse_comments(line)
                 if new_comment:
                     comments.append(new_comment)
                 stripped_line = _strip_syntax(line).strip()
                 import_string += line_separator + line
+                line = input_stream.readline()
         else:
             while line.strip().endswith("\\"):
-                line, new_comment = parse_comments(in_lines[index])
+                line, new_comment = parse_comments(line)
                 index += 1
                 if new_comment:
                     comments.append(new_comment)
@@ -531,9 +531,8 @@ def identify_contiguous_imports(
                     stripped_line = _strip_syntax(line).strip()
                     import_string += line_separator + line
 
-                    while not line.strip().endswith(")") and index < line_count:
-                        line, new_comment = parse_comments(in_lines[index])
-                        index += 1
+                    while not line.strip().endswith(")"):
+                        line, new_comment = parse_comments()
                         if new_comment:
                             comments.append(new_comment)
                         stripped_line = _strip_syntax(line).strip()
