@@ -22,6 +22,8 @@ from isort.settings import DEFAULT_CONFIG, Config
 from .comments import parse as parse_comments
 from .finders import FindersManager
 
+IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
+
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
 
@@ -471,84 +473,52 @@ def identify_contiguous_imports(
     input_stream: TextIO, output_stream: TextIO = None, config: Config = DEFAULT_CONFIG
 ):
     """Parses stream identifying sections of contiguous imports"""
-    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     output_stream = StringIO() if output_stream is None else output_stream
-
-    in_quote = ""
-    in_top_comment = False
-    first_comment_index_start = -1
-    first_comment_index_end = -1
-
-    import_lines: List[str] = []
+    import_section = []
+    in_quote: str = ""
+    first_comment_index_start: int = -1
+    first_comment_index_end: int = -1
     for index, line in enumerate(input_stream):
-        (
-            skipping_line,
-            in_quote,
-            in_top_comment,
-            first_comment_index_start,
-            first_comment_index_end,
-        ) = skip_line(
-            line,
-            in_quote=in_quote,
-            in_top_comment=in_top_comment,
-            index=index,
-            section_comments=section_comments,
-            first_comment_index_start=first_comment_index_start,
-            first_comment_index_end=first_comment_index_end,
-        )
-        type_of_import = import_type(line) or ""
-        if not type_of_import:
-            out_lines.append(raw_line)
-            continue
+        if '"' in line or "'" in line:
+            char_index = 0
+            if first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
+                first_comment_index_start = index
+            while char_index < len(line):
+                if line[char_index] == "\\":
+                    char_index += 1
+                elif in_quote:
+                    if line[char_index : char_index + len(in_quote)] == in_quote:
+                        in_quote = ""
+                        if first_comment_index_end < first_comment_index_start:
+                            first_comment_index_end = index
+                elif line[char_index] in ("'", '"'):
+                    long_quote = line[char_index : char_index + 3]
+                    if long_quote in ('"""', "'''"):
+                        in_quote = long_quote
+                        char_index += 2
+                    else:
+                        in_quote = line[char_index]
+                elif line[char_index] == "#":
+                    break
+                char_index += 1
 
-        if import_index == -1:
-            import_index = index - 1
+        not_imports = in_quote
+        if not in_quote:
+            stripped_line = line.strip()
+            if not stripped_line or stripped_line.startswith("#"):
+                import_section.append(line)
+            elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                import_section.append(line)
+            else:
+                not_imports = True
 
-        import_string, comment = parse_comments(line)
-        comments = [comment] if comment else []
-        line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
-        if "(" in line.split("#")[0]:
-            while not line.strip().endswith(")"):
-                line, new_comment = parse_comments(line)
-                if new_comment:
-                    comments.append(new_comment)
-                stripped_line = _strip_syntax(line).strip()
-                import_string += line_separator + line
-                line = input_stream.readline()
-        else:
-            while line.strip().endswith("\\"):
-                line, new_comment = parse_comments(line)
-                index += 1
-                if new_comment:
-                    comments.append(new_comment)
+        if not_imports:
+            for import_line in import_section:
+                output_stream.write("AN IMPORT")
+                output_stream.write(config.line_ending or '\n')
 
-                # Still need to check for parentheses after an escaped line
-                if (
-                    "(" in line.split("#")[0]
-                    and ")" not in line.split("#")[0]
-                    and index < line_count
-                ):
-                    stripped_line = _strip_syntax(line).strip()
-                    import_string += line_separator + line
-
-                    while not line.strip().endswith(")"):
-                        line, new_comment = parse_comments()
-                        if new_comment:
-                            comments.append(new_comment)
-                        stripped_line = _strip_syntax(line).strip()
-                        import_string += line_separator + line
-
-                stripped_line = _strip_syntax(line).strip()
-                if import_string.strip().endswith(" import") or line.strip().startswith(
-                    "import "
-                ):
-                    import_string += line_separator + line
-                else:
-                    import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
-
-        if skipping_line:
-            if import_lines:
-                # sort_imports_here
-                pass
             output_stream.write(line)
-            continue
+            not_imports = False
+
+    output_stream.seek(0)
+    return output_stream
