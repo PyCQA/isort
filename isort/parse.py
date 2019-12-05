@@ -474,7 +474,7 @@ def identify_contiguous_imports(
 ):
     """Parses stream identifying sections of contiguous imports"""
     output_stream = StringIO() if output_stream is None else output_stream
-    import_section = []
+    import_section: str = ""
     in_quote: str = ""
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
@@ -506,16 +506,21 @@ def identify_contiguous_imports(
         if not in_quote:
             stripped_line = line.strip()
             if not stripped_line or stripped_line.startswith("#"):
-                import_section.append(line)
+                import_section += line
             elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
-                import_section.append(line)
+                import_section += line
             else:
                 not_imports = True
 
         if not_imports:
-            for import_line in import_section:
-                output_stream.write("AN IMPORT")
-                output_stream.write(config.line_ending or '\n')
+            if import_section:
+                if not import_section.strip() or not ("from" in import_section or "import" in import_section):
+                    output_stream.write(import_section)
+                else:
+                    for line in import_section.split(config.line_ending or '\n'):
+                        output_stream.write("AN IMPORT")
+                        output_stream.write(config.line_ending or '\n')
+                import_section = ""
 
             output_stream.write(line)
             not_imports = False
