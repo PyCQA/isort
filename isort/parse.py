@@ -478,6 +478,7 @@ def identify_contiguous_imports(
     in_quote: str = ""
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
+    contains_imports: bool = False
     for index, line in enumerate(input_stream):
         if '"' in line or "'" in line:
             char_index = 0
@@ -509,18 +510,20 @@ def identify_contiguous_imports(
                 import_section += line
             elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                 import_section += line
+                contains_imports = True
             else:
                 not_imports = True
 
         if not_imports:
             if import_section:
-                if not import_section.strip() or not ("from" in import_section or "import" in import_section):
+                if not contains_imports:
                     output_stream.write(import_section)
                 else:
                     for line in import_section.split(config.line_ending or '\n'):
                         output_stream.write("AN IMPORT")
                         output_stream.write(config.line_ending or '\n')
                 import_section = ""
+                contains_imports = False
 
             output_stream.write(line)
             not_imports = False
