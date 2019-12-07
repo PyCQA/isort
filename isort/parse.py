@@ -510,6 +510,22 @@ def identify_contiguous_imports(
                 import_section += line
             elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                 import_section += line
+                if "(" in stripped_line and not ")" in stripped_line:
+                    nested_line = line
+                    nested_stripped_line = nested_line.strip()
+                    while not ")" in nested_stripped_line:
+                        nested_line = input_stream.readline()
+                        nested_stripped_line = nested_line.strip()
+                        import_section += nested_line
+
+                if stripped_line.endswith("\\"):
+                    nested_line = line
+                    nested_stripped_line = nested_line.strip()
+                    while nested_line and nested_stripped_line.endswith("\\"):
+                        nested_line = input_stream.readline()
+                        nested_stripped_line = nested_line.strip()
+                        import_section += nested_line
+
                 contains_imports = True
             else:
                 not_imports = True
