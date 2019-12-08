@@ -512,7 +512,7 @@ def identify_contiguous_imports(
                 import_section += line
                 if "(" in stripped_line and not ")" in stripped_line:
                     nested_line = line
-                    nested_stripped_line = nested_line.strip()
+                    nested_stripped_line = nested_line.strip().split("#")[0]
                     while not ")" in nested_stripped_line:
                         nested_line = input_stream.readline()
                         nested_stripped_line = nested_line.strip()
