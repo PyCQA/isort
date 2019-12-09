@@ -470,10 +470,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
 
 def identify_contiguous_imports(
-    input_stream: TextIO, output_stream: TextIO = None, config: Config = DEFAULT_CONFIG
-):
+    input_stream: TextIO, output_stream: TextIO, config: Config = DEFAULT_CONFIG
+) -> None:
     """Parses stream identifying sections of contiguous imports"""
-    output_stream = StringIO() if output_stream is None else output_stream
     import_section: str = ""
     in_quote: str = ""
     first_comment_index_start: int = -1
@@ -543,6 +542,3 @@ def identify_contiguous_imports(
 
             output_stream.write(line)
             not_imports = False
-
-    output_stream.seek(0)
-    return output_stream
