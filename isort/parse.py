@@ -469,10 +469,18 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     )
 
 
-def identify_contiguous_imports(
+def sort_imports(
     input_stream: TextIO, output_stream: TextIO, config: Config = DEFAULT_CONFIG
 ) -> None:
-    """Parses stream identifying sections of contiguous imports"""
+    """Parses stream identifying sections of contiguous imports and sorting them
+
+    Code with unsorted imports is read from the provided `input_stream`, sorted and then
+    outputted to the specified output_stream.
+
+    - `input_stream`: Text stream with unsorted import sections.
+    - `output_stream`: Text stream to output sorted inputs into.
+    - `config`: Config settings to use when sorting imports. Defaults settings.DEFAULT_CONFIG.
+    """
     import_section: str = ""
     in_quote: str = ""
     first_comment_index_start: int = -1
