@@ -121,3 +121,86 @@ def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs)
         file_path=file_data.path,
         **config_kwargs,
     )
+
+
+def sort_imports(
+    input_stream: TextIO, output_stream: TextIO, config: Config = DEFAULT_CONFIG
+) -> None:
+    """Parses stream identifying sections of contiguous imports and sorting them
+
+    Code with unsorted imports is read from the provided `input_stream`, sorted and then
+    outputted to the specified output_stream.
+
+    - `input_stream`: Text stream with unsorted import sections.
+    - `output_stream`: Text stream to output sorted inputs into.
+    - `config`: Config settings to use when sorting imports. Defaults settings.DEFAULT_CONFIG.
+    """
+    import_section: str = ""
+    in_quote: str = ""
+    first_comment_index_start: int = -1
+    first_comment_index_end: int = -1
+    contains_imports: bool = False
+    for index, line in enumerate(input_stream):
+        if '"' in line or "'" in line:
+            char_index = 0
+            if first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
+                first_comment_index_start = index
+            while char_index < len(line):
+                if line[char_index] == "\\":
+                    char_index += 1
+                elif in_quote:
+                    if line[char_index : char_index + len(in_quote)] == in_quote:
+                        in_quote = ""
+                        if first_comment_index_end < first_comment_index_start:
+                            first_comment_index_end = index
+                elif line[char_index] in ("'", '"'):
+                    long_quote = line[char_index : char_index + 3]
+                    if long_quote in ('"""', "'''"):
+                        in_quote = long_quote
+                        char_index += 2
+                    else:
+                        in_quote = line[char_index]
+                elif line[char_index] == "#":
+                    break
+                char_index += 1
+
+        not_imports = in_quote
+        if not in_quote:
+            stripped_line = line.strip()
+            if not stripped_line or stripped_line.startswith("#"):
+                import_section += line
+            elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                import_section += line
+                if "(" in stripped_line and not ")" in stripped_line:
+                    nested_line = line
+                    nested_stripped_line = nested_line.strip().split("#")[0]
+                    while not ")" in nested_stripped_line:
+                        nested_line = input_stream.readline()
+                        nested_stripped_line = nested_line.strip()
+                        import_section += nested_line
+
+                if stripped_line.endswith("\\"):
+                    nested_line = line
+                    nested_stripped_line = nested_line.strip()
+                    while nested_line and nested_stripped_line.endswith("\\"):
+                        nested_line = input_stream.readline()
+                        nested_stripped_line = nested_line.strip()
+                        import_section += nested_line
+
+                contains_imports = True
+            else:
+                not_imports = True
+
+        if not_imports:
+            if import_section:
+                if not contains_imports:
+                    output_stream.write(import_section)
+                else:
+                    for line in import_section.split(config.line_ending or '\n'):
+                        output_stream.write("AN IMPORT")
+                        output_stream.write(config.line_ending or '\n')
+                import_section = ""
+                contains_imports = False
+
+            output_stream.write(line)
+            not_imports = False
