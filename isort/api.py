@@ -193,14 +193,14 @@ def sort_imports(
 
         if not_imports:
             if import_section:
+                import_section += line
                 if not contains_imports:
                     output_stream.write(import_section)
                 else:
-                    for line in import_section.split(config.line_ending or '\n'):
-                        output_stream.write("AN IMPORT")
-                        output_stream.write(config.line_ending or '\n')
-                import_section = ""
+                    output_stream.write(output.sorted_imports(
+                        parse.file_contents(import_section, config=config), config, extension
+                    ))
                 contains_imports = False
-
-            output_stream.write(line)
-            not_imports = False
+            else:
+                output_stream.write(line)
+                not_imports = False
