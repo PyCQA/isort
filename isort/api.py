@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import Any, NamedTuple, Optional, Tuple
+from typing import Any, NamedTuple, Optional, Tuple, TextIO
 
 from . import output, parse
 from .exceptions import (

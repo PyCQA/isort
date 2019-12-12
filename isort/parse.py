@@ -11,7 +11,6 @@ from typing import (
     List,
     NamedTuple,
     Optional,
-    TextIO,
     Tuple,
 )
 from warnings import warn
