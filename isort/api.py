@@ -126,7 +126,7 @@ def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs)
 
 
 def sort_imports(
-    input_stream: TextIO, output_stream: TextIO, config: Config = DEFAULT_CONFIG
+    input_stream: TextIO, output_stream: TextIO, extension: str = "py", config: Config = DEFAULT_CONFIG,
 ) -> None:
     """Parses stream identifying sections of contiguous imports and sorting them
 
