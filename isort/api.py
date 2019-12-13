@@ -14,6 +14,8 @@ from .format import remove_whitespace, show_unified_diff
 from .io import File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
 
+IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
+
 
 def _config(
     path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
@@ -164,7 +166,7 @@ def sort_imports(
                     break
                 char_index += 1
 
-        not_imports = in_quote
+        not_imports = bool(in_quote)
         if not in_quote:
             stripped_line = line.strip()
             if not stripped_line or stripped_line.startswith("#"):
