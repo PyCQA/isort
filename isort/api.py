@@ -203,6 +203,7 @@ def sort_imports(
                         parse.file_contents(import_section, config=config), config, extension
                     ))
                 contains_imports = False
+                import_section = ""
             else:
                 output_stream.write(line)
                 not_imports = False
