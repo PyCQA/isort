@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import Any, NamedTuple, Optional, Tuple, TextIO
+from typing import Any, NamedTuple, Optional, TextIO, Tuple
 
 from . import output, parse
 from .exceptions import (
@@ -126,7 +126,10 @@ def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs)
 
 
 def sort_imports(
-    input_stream: TextIO, output_stream: TextIO, extension: str = "py", config: Config = DEFAULT_CONFIG,
+    input_stream: TextIO,
+    output_stream: TextIO,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
 ) -> None:
     """Parses stream identifying sections of contiguous imports and sorting them
 
@@ -173,10 +176,10 @@ def sort_imports(
                 import_section += line
             elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                 import_section += line
-                if "(" in stripped_line and not ")" in stripped_line:
+                if "(" in stripped_line and ")" not in stripped_line:
                     nested_line = line
                     nested_stripped_line = nested_line.strip().split("#")[0]
-                    while not ")" in nested_stripped_line:
+                    while ")" not in nested_stripped_line:
                         nested_line = input_stream.readline()
                         nested_stripped_line = nested_line.strip()
                         import_section += nested_line
@@ -199,9 +202,11 @@ def sort_imports(
                 if not contains_imports:
                     output_stream.write(import_section)
                 else:
-                    output_stream.write(output.sorted_imports(
-                        parse.file_contents(import_section, config=config), config, extension
-                    ))
+                    output_stream.write(
+                        output.sorted_imports(
+                            parse.file_contents(import_section, config=config), config, extension
+                        )
+                    )
                 contains_imports = False
                 import_section = ""
             else:

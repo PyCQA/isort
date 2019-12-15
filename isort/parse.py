@@ -2,17 +2,7 @@
 from collections import OrderedDict, defaultdict, namedtuple
 from io import StringIO
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Tuple,
-)
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple
 from warnings import warn
 
 from isort.format import format_natural
