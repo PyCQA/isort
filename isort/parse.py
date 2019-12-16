@@ -91,9 +91,7 @@ def skip_line(
 
     (skip_line: bool,
      in_quote: str,
-     in_top_comment: bool,
-     first_comment_index_start: int,
-     first_comment_index_end: int)
+     in_top_comment: bool)
     """
     skip_line = bool(in_quote)
     if index == 1 and line.startswith("#"):
@@ -150,8 +148,6 @@ class ParsedContent(NamedTuple):
     as_map: Dict[str, List[str]]
     imports: Dict[str, Dict[str, Any]]
     categorized_comments: "CommentsDict"
-    first_comment_index_start: int
-    first_comment_index_end: int
     change_count: int
     original_line_count: int
     line_separator: str
@@ -448,8 +444,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         as_map=as_map,
         imports=imports,
         categorized_comments=categorized_comments,
-        first_comment_index_start=first_comment_index_start,
-        first_comment_index_end=first_comment_index_end,
         change_count=change_count,
         original_line_count=original_line_count,
         line_separator=line_separator,

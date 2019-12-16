@@ -145,8 +145,6 @@ def sorted_imports(
     output_at = 0
     if parsed.import_index < parsed.original_line_count:
         output_at = parsed.import_index
-    elif parsed.first_comment_index_end != -1 and parsed.first_comment_index_start <= 2:
-        output_at = parsed.first_comment_index_end
     formatted_output[output_at:0] = output
 
     imports_tail = output_at + len(output)
@@ -168,8 +166,6 @@ def sorted_imports(
                 in_top_comment=False,
                 index=len(formatted_output),
                 section_comments=parsed.section_comments,
-                first_comment_index_start=parsed.first_comment_index_start,
-                first_comment_index_end=parsed.first_comment_index_end,
             )
             if not should_skip and line.strip():
                 if (
