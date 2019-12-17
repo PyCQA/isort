@@ -79,41 +79,25 @@ def _strip_syntax(import_string: str) -> str:
 def skip_line(
     line: str,
     in_quote: str,
-    in_top_comment: bool,
     index: int,
     section_comments: List[str],
-    first_comment_index_start: int,
-    first_comment_index_end: int,
 ) -> Tuple[bool, str, bool, int, int]:
     """Determine if a given line should be skipped.
 
     Returns back a tuple containing:
 
     (skip_line: bool,
-     in_quote: str,
-     in_top_comment: bool)
+     in_quote: str,)
     """
     skip_line = bool(in_quote)
-    if index == 1 and line.startswith("#"):
-        in_top_comment = True
-        return (True, in_quote, in_top_comment, first_comment_index_start, first_comment_index_end)
-    elif in_top_comment:
-        if not line.startswith("#") or line in section_comments:
-            in_top_comment = False
-            first_comment_index_end = index - 1
-
     if '"' in line or "'" in line:
         char_index = 0
-        if first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
-            first_comment_index_start = index
         while char_index < len(line):
             if line[char_index] == "\\":
                 char_index += 1
             elif in_quote:
                 if line[char_index : char_index + len(in_quote)] == in_quote:
                     in_quote = ""
-                    if first_comment_index_end < first_comment_index_start:
-                        first_comment_index_end = index
             elif line[char_index] in ("'", '"'):
                 long_quote = line[char_index : char_index + 3]
                 if long_quote in ('"""', "'''"):
@@ -131,11 +115,8 @@ def skip_line(
                 skip_line = True
 
     return (
-        bool(skip_line or in_quote or in_top_comment),
-        in_quote,
-        in_top_comment,
-        first_comment_index_start,
-        first_comment_index_end,
+        bool(skip_line or in_quote),
+        in_quote
     )
 
 
@@ -186,9 +167,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     index = 0
     import_index = -1
     in_quote = ""
-    in_top_comment = False
-    first_comment_index_start = -1
-    first_comment_index_end = -1
     while index < line_count:
         line = in_lines[index]
         index += 1
@@ -196,17 +174,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         (
             skipping_line,
             in_quote,
-            in_top_comment,
-            first_comment_index_start,
-            first_comment_index_end,
         ) = skip_line(
             line,
             in_quote=in_quote,
-            in_top_comment=in_top_comment,
             index=index,
             section_comments=section_comments,
-            first_comment_index_start=first_comment_index_start,
-            first_comment_index_end=first_comment_index_end,
         )
 
         if line in section_comments and not skipping_line:
@@ -362,7 +334,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if comments:
                     categorized_comments["from"].setdefault(import_from, []).extend(comments)
 
-                if len(out_lines) > max(import_index, first_comment_index_end + 1, 1) - 1:
+                if len(out_lines) > max(import_index, 1) - 1:
                     last = out_lines and out_lines[-1].rstrip() or ""
                     while (
                         last.startswith("#")
@@ -375,7 +347,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         )
                         if (
                             len(out_lines)
-                            > max(import_index - 1, first_comment_index_end + 1, 1) - 1
+                            > max(import_index - 1, 1) - 1
                         ):
                             last = out_lines[-1].rstrip()
                         else:
@@ -400,7 +372,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["straight"][module] = comments
                         comments = []
 
-                    if len(out_lines) > max(import_index, first_comment_index_end + 1, 1) - 1:
+                    if len(out_lines) > max(import_index,  + 1, 1) - 1:
 
                         last = out_lines and out_lines[-1].rstrip() or ""
                         while (
@@ -412,7 +384,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             categorized_comments["above"]["straight"].setdefault(module, []).insert(
                                 0, out_lines.pop(-1)
                             )
-                            if len(out_lines) > 0 and len(out_lines) != first_comment_index_end:
+                            if len(out_lines) > 0 and len(out_lines):
                                 last = out_lines[-1].rstrip()
                             else:
                                 last = ""

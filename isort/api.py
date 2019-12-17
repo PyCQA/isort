@@ -145,8 +145,15 @@ def sort_imports(
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
     contains_imports: bool = False
+    in_top_comment: bool = False
     for index, line in enumerate(input_stream):
-        if '"' in line or "'" in line:
+        if index == 1 and line.startswith("#"):
+            in_top_comment = True
+        elif in_top_comment:
+            if not line.startswith("#") or line in section_comments:
+                in_top_comment = False
+                first_comment_index_end = index - 1
+        elif '"' in line or "'" in line:
             char_index = 0
             if first_comment_index_start == -1 and (line.startswith('"') or line.startswith("'")):
                 first_comment_index_start = index
@@ -169,7 +176,7 @@ def sort_imports(
                     break
                 char_index += 1
 
-        not_imports = bool(in_quote)
+        not_imports = bool(in_quote) or in_top_comment
         if not in_quote:
             stripped_line = line.strip()
             if not stripped_line or stripped_line.startswith("#"):
