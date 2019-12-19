@@ -187,6 +187,8 @@ class PathFinder(BaseFinder):
                     return sections.THIRDPARTY
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return sections.STDLIB
+                if os.getcwd() in package_path:
+                    return sections.FIRSTPARTY
                 return self.config.default_section
         return None
 
