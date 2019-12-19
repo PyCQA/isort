@@ -81,7 +81,7 @@ def skip_line(
     in_quote: str,
     index: int,
     section_comments: List[str],
-) -> Tuple[bool, str, bool, int, int]:
+) -> Tuple[bool, str]:
     """Determine if a given line should be skipped.
 
     Returns back a tuple containing:
