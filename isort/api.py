@@ -146,6 +146,7 @@ def sort_imports(
     first_comment_index_end: int = -1
     contains_imports: bool = False
     in_top_comment: bool = False
+    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     for index, line in enumerate(input_stream):
         if index == 1 and line.startswith("#"):
             in_top_comment = True

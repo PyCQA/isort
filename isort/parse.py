@@ -77,10 +77,7 @@ def _strip_syntax(import_string: str) -> str:
 
 
 def skip_line(
-    line: str,
-    in_quote: str,
-    index: int,
-    section_comments: List[str],
+    line: str, in_quote: str, index: int, section_comments: List[str]
 ) -> Tuple[bool, str]:
     """Determine if a given line should be skipped.
 
@@ -114,10 +111,7 @@ def skip_line(
             if part and not part.startswith("from ") and not part.startswith("import "):
                 skip_line = True
 
-    return (
-        bool(skip_line or in_quote),
-        in_quote
-    )
+    return (bool(skip_line or in_quote), in_quote)
 
 
 class ParsedContent(NamedTuple):
@@ -171,14 +165,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line = in_lines[index]
         index += 1
         statement_index = index
-        (
-            skipping_line,
-            in_quote,
-        ) = skip_line(
-            line,
-            in_quote=in_quote,
-            index=index,
-            section_comments=section_comments,
+        (skipping_line, in_quote) = skip_line(
+            line, in_quote=in_quote, index=index, section_comments=section_comments
         )
 
         if line in section_comments and not skipping_line:
@@ -345,10 +333,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["above"]["from"].setdefault(import_from, []).insert(
                             0, out_lines.pop(-1)
                         )
-                        if (
-                            len(out_lines)
-                            > max(import_index - 1, 1) - 1
-                        ):
+                        if len(out_lines) > max(import_index - 1, 1) - 1:
                             last = out_lines[-1].rstrip()
                         else:
                             last = ""
@@ -372,7 +357,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["straight"][module] = comments
                         comments = []
 
-                    if len(out_lines) > max(import_index,  + 1, 1) - 1:
+                    if len(out_lines) > max(import_index, +1, 1) - 1:
 
                         last = out_lines and out_lines[-1].rstrip() or ""
                         while (

@@ -163,7 +163,6 @@ def sorted_imports(
             should_skip, _in_quote, *_ = parse.skip_line(
                 line,
                 in_quote=_in_quote,
-                in_top_comment=False,
                 index=len(formatted_output),
                 section_comments=parsed.section_comments,
             )
