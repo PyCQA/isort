@@ -1,4 +1,5 @@
 import re
+from io import StringIO
 from pathlib import Path
 from typing import Any, NamedTuple, Optional, TextIO, Tuple
 
@@ -62,9 +63,10 @@ def sorted_imports(
         except SyntaxError:
             raise ExistingSyntaxErrors(content_source)
 
-    parsed_output = output.sorted_imports(
-        parse.file_contents(file_contents, config=config), config, extension
-    )
+    parsed_output = StringIO()
+    sort_imports(StringIO(file_contents), parsed_output, extension=extension, config=config)
+    parsed_output.seek(0)
+    parsed_output = parsed_output.read()
     if config.atomic:
         try:
             compile(file_contents, content_source, "exec", 0, 1)
