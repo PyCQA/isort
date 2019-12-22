@@ -222,3 +222,16 @@ def sort_imports(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+    if import_section:
+        import_section += line
+        if not contains_imports:
+            output_stream.write(import_section)
+        else:
+            output_stream.write(
+                output.sorted_imports(
+                    parse.file_contents(import_section, config=config), config, extension
+                )
+            )
+        contains_imports = False
+        import_section = ""
