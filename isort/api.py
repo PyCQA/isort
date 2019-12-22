@@ -180,7 +180,7 @@ def sort_imports(
                 char_index += 1
 
         not_imports = bool(in_quote) or in_top_comment
-        if not in_quote:
+        if not (in_quote or in_top_comment):
             stripped_line = line.strip()
             if not stripped_line or stripped_line.startswith("#"):
                 import_section += line
@@ -224,7 +224,6 @@ def sort_imports(
                 not_imports = False
 
     if import_section:
-        import_section += line
         if not contains_imports:
             output_stream.write(import_section)
         else:
@@ -233,5 +232,3 @@ def sort_imports(
                     parse.file_contents(import_section, config=config), config, extension
                 )
             )
-        contains_imports = False
-        import_section = ""
