@@ -176,7 +176,11 @@ def sort_imports(
             line_separator = line[-1]
 
         stripped_line = line.strip()
-        if index == 0 and line.startswith("#") and stripped_line not in section_comments:
+        if (
+            (index == 0 or (index == 1 and not contains_imports))
+            and line.startswith("#")
+            and stripped_line not in section_comments
+        ):
             in_top_comment = True
         elif in_top_comment:
             if not line.startswith("#") or stripped_line in section_comments:

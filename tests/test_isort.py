@@ -778,14 +778,10 @@ def test_quotes_in_file() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
     test_input = "import os\n\n" '\'"""\'\n' "import foo\n"
-    assert SortImports(file_contents=test_input).output == (
-        "import os\n\nimport foo\n\n" '\'"""\'\n'
-    )
+    assert SortImports(file_contents=test_input).output == test_input
 
-    test_input = "import os\n\n" '"""Let us"""\n' "import foo\n" '"""okay?"""\n'
-    assert SortImports(file_contents=test_input).output == (
-        'import os\n\nimport foo\n\n"""Let us"""\n"""okay?"""\n'
-    )
+    test_input = "import os\n\n" '"""Let us"""\n' "import foo\n\n" '"""okay?"""\n'
+    assert SortImports(file_contents=test_input).output == test_input
 
     test_input = "import os\n\n" '#"""\n' "import foo\n" '#"""'
     assert SortImports(file_contents=test_input).output == (
@@ -1201,7 +1197,7 @@ def test_smart_lines_after_import_section() -> None:
         "    pass\n"
     )
 
-    # ensure logic works with both style comments
+    # the same logic does not apply to doc strings
     test_input = (
         "from a import b\n"
         '"""\n'
@@ -1212,7 +1208,6 @@ def test_smart_lines_after_import_section() -> None:
     )
     assert SortImports(file_contents=test_input).output == (
         "from a import b\n"
-        "\n"
         "\n"
         '"""\n'
         "    comment should be ignored\n"
@@ -1631,9 +1626,8 @@ def test_place_comments() -> None:
         "\n"
         "# isort:imports-thirdparty\n"
         "# isort:imports-firstparty\n"
-        "print('code')\n"
-        "\n"
         "# isort:imports-stdlib\n"
+        "\n"
     )
     expected_output = (
         "\n# isort:imports-thirdparty\n"
@@ -1641,8 +1635,6 @@ def test_place_comments() -> None:
         "\n"
         "# isort:imports-firstparty\n"
         "import myproject.test\n"
-        "\n"
-        "print('code')\n"
         "\n"
         "# isort:imports-stdlib\n"
         "import os\n"
