@@ -133,15 +133,11 @@ class ParsedContent(NamedTuple):
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
-    add_imports = (format_natural(addition) for addition in config.add_imports)
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     finder = FindersManager(config=config)
-
-    if original_line_count > 1 or in_lines[:1] not in ([], [""]) or config.force_adds:
-        in_lines.extend(add_imports)
 
     line_count = len(in_lines)
 

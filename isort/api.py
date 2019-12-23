@@ -11,7 +11,7 @@ from .exceptions import (
     IntroducedSyntaxErrors,
     UnableToDetermineEncoding,
 )
-from .format import remove_whitespace, show_unified_diff
+from .format import remove_whitespace, show_unified_diff, format_natural
 from .io import File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
 
@@ -142,6 +142,7 @@ def sort_imports(
     - `output_stream`: Text stream to output sorted inputs into.
     - `config`: Config settings to use when sorting imports. Defaults settings.DEFAULT_CONFIG.
     """
+    add_imports = (format_natural(addition) for addition in config.add_imports)
     import_section: str = ""
     in_quote: str = ""
     first_comment_index_start: int = -1
@@ -208,6 +209,7 @@ def sort_imports(
 
         if not_imports:
             if import_section:
+                import_section += config.line_ending.join(add_imports)
                 import_section += line
                 if not contains_imports:
                     output_stream.write(import_section)
@@ -227,8 +229,10 @@ def sort_imports(
         if not contains_imports:
             output_stream.write(import_section)
         else:
+            import_section += config.line_ending.join(add_imports)
             output_stream.write(
                 output.sorted_imports(
                     parse.file_contents(import_section, config=config), config, extension
                 )
             )
+    output_stream.write(config.line_ending.join(add_imports))
