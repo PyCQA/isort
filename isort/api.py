@@ -175,7 +175,7 @@ def sort_imports(
         if not line_separator:
             line_separator = line[-1]
 
-        if index == 1 and line.startswith("#"):
+        if index == 0 and line.startswith("#"):
             in_top_comment = True
         elif in_top_comment:
             if not line.startswith("#") or line in section_comments:
