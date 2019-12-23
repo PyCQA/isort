@@ -232,7 +232,12 @@ def sort_imports(
                 not_imports = True
 
         if not_imports:
-            if not in_top_comment and not in_quote and not import_section and not line.lstrip().startswith(COMMENT_INDICATORS):
+            if (
+                not in_top_comment
+                and not in_quote
+                and not import_section
+                and not line.lstrip().startswith(COMMENT_INDICATORS)
+            ):
                 import_section = additional_imports()
 
             if import_section:
