@@ -87,10 +87,9 @@ def test_code_intermixed() -> None:
     assert test_output == (
         "import sys\n"
         "\n"
-        "import myproject.test\n"
-        "\n"
         "print('yo')\n"
         "print('I like to put code between imports cause I want stuff to break')\n"
+        "import myproject.test\n"
     )
 
 
