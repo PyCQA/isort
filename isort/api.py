@@ -175,10 +175,11 @@ def sort_imports(
         if not line_separator:
             line_separator = line[-1]
 
-        if index == 0 and line.startswith("#"):
+        stripped_line = line.strip()
+        if index == 0 and line.startswith("#") and stripped_line not in section_comments:
             in_top_comment = True
         elif in_top_comment:
-            if not line.startswith("#") or line in section_comments:
+            if not line.startswith("#") or stripped_line in section_comments:
                 in_top_comment = False
                 first_comment_index_end = index - 1
         elif '"' in line or "'" in line:

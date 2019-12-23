@@ -122,10 +122,7 @@ def sorted_imports(
             section_title = config.import_headings.get(section_name.lower(), "")
             if section_title:
                 section_comment = f"# {section_title}"
-                if (
-                    section_comment not in parsed.lines_without_imports[0:1]
-                    and section_comment not in parsed.in_lines[0:1]
-                ):
+                if section_comment not in parsed.lines_without_imports[0:1]:
                     section_output.insert(0, section_comment)
 
             if pending_lines_before or not no_lines_before:
