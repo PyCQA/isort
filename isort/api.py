@@ -216,7 +216,9 @@ def sort_imports(
                 import_section += line
             elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                 import_section += line
-                while stripped_line.endswith("\\") or ("(" in stripped_line and ")" not in stripped_line):
+                while stripped_line.endswith("\\") or (
+                    "(" in stripped_line and ")" not in stripped_line
+                ):
                     if stripped_line.endswith("\\"):
                         while stripped_line and stripped_line.endswith("\\"):
                             line = input_stream.readline()
