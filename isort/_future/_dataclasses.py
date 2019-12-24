@@ -1,5 +1,6 @@
 # type: ignore
 # flake8: noqa
+# flake8: noqa
 """Backport of Python3.7 dataclasses Library
 
 Taken directly from here: https://github.com/ericvsmith/dataclasses

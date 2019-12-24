@@ -122,10 +122,7 @@ def sorted_imports(
             section_title = config.import_headings.get(section_name.lower(), "")
             if section_title:
                 section_comment = f"# {section_title}"
-                if (
-                    section_comment not in parsed.lines_without_imports[0:1]
-                    and section_comment not in parsed.in_lines[0:1]
-                ):
+                if section_comment not in parsed.lines_without_imports[0:1]:
                     section_output.insert(0, section_comment)
 
             if pending_lines_before or not no_lines_before:
@@ -145,8 +142,6 @@ def sorted_imports(
     output_at = 0
     if parsed.import_index < parsed.original_line_count:
         output_at = parsed.import_index
-    elif parsed.first_comment_index_end != -1 and parsed.first_comment_index_start <= 2:
-        output_at = parsed.first_comment_index_end
     formatted_output[output_at:0] = output
 
     imports_tail = output_at + len(output)
@@ -165,11 +160,8 @@ def sorted_imports(
             should_skip, _in_quote, *_ = parse.skip_line(
                 line,
                 in_quote=_in_quote,
-                in_top_comment=False,
                 index=len(formatted_output),
                 section_comments=parsed.section_comments,
-                first_comment_index_start=parsed.first_comment_index_start,
-                first_comment_index_end=parsed.first_comment_index_end,
             )
             if not should_skip and line.strip():
                 if (

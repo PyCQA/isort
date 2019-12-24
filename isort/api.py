@@ -1,6 +1,8 @@
 import re
+from io import StringIO
+from itertools import chain
 from pathlib import Path
-from typing import Any, NamedTuple, Optional, Tuple
+from typing import Any, List, NamedTuple, Optional, TextIO, Tuple
 
 from . import output, parse
 from .exceptions import (
@@ -10,9 +12,12 @@ from .exceptions import (
     IntroducedSyntaxErrors,
     UnableToDetermineEncoding,
 )
-from .format import remove_whitespace, show_unified_diff
+from .format import format_natural, remove_whitespace, show_unified_diff
 from .io import File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
+
+IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
+COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
 
 
 def _config(
@@ -60,9 +65,10 @@ def sorted_imports(
         except SyntaxError:
             raise ExistingSyntaxErrors(content_source)
 
-    parsed_output = output.sorted_imports(
-        parse.file_contents(file_contents, config=config), config, extension
-    )
+    parsed_output = StringIO()
+    sort_imports(StringIO(file_contents), parsed_output, extension=extension, config=config)
+    parsed_output.seek(0)
+    parsed_output = parsed_output.read()
     if config.atomic:
         try:
             compile(file_contents, content_source, "exec", 0, 1)
@@ -121,3 +127,143 @@ def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs)
         file_path=file_data.path,
         **config_kwargs,
     )
+
+
+def sort_imports(
+    input_stream: TextIO,
+    output_stream: TextIO,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+) -> None:
+    """Parses stream identifying sections of contiguous imports and sorting them
+
+    Code with unsorted imports is read from the provided `input_stream`, sorted and then
+    outputted to the specified output_stream.
+
+    - `input_stream`: Text stream with unsorted import sections.
+    - `output_stream`: Text stream to output sorted inputs into.
+    - `config`: Config settings to use when sorting imports. Defaults settings.DEFAULT_CONFIG.
+    """
+    line_separator: str = config.line_ending
+    add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
+    import_section: str = ""
+    in_quote: str = ""
+    first_comment_index_start: int = -1
+    first_comment_index_end: int = -1
+    contains_imports: bool = False
+    in_top_comment: bool = False
+    first_import_section: bool = True
+    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
+
+    for index, line in enumerate(chain(input_stream, (None,))):
+        if line is None:
+            if index == 0 and not config.force_adds:
+                return
+
+            not_imports = True
+            line = ""
+            if not line_separator:
+                line_separator = "\n"
+        else:
+            if not line_separator:
+                line_separator = line[-1]
+
+            stripped_line = line.strip()
+            if (
+                (index == 0 or (index == 1 and not contains_imports))
+                and line.startswith("#")
+                and stripped_line not in section_comments
+            ):
+                in_top_comment = True
+            elif in_top_comment:
+                if not line.startswith("#") or stripped_line in section_comments:
+                    in_top_comment = False
+                    first_comment_index_end = index - 1
+
+            if not line.startswith("#") and '"' in line or "'" in line:
+                char_index = 0
+                if first_comment_index_start == -1 and (
+                    line.startswith('"') or line.startswith("'")
+                ):
+                    first_comment_index_start = index
+                while char_index < len(line):
+                    if line[char_index] == "\\":
+                        char_index += 1
+                    elif in_quote:
+                        if line[char_index : char_index + len(in_quote)] == in_quote:
+                            in_quote = ""
+                            if first_comment_index_end < first_comment_index_start:
+                                first_comment_index_end = index
+                    elif line[char_index] in ("'", '"'):
+                        long_quote = line[char_index : char_index + 3]
+                        if long_quote in ('"""', "'''"):
+                            in_quote = long_quote
+                            char_index += 2
+                        else:
+                            in_quote = line[char_index]
+                    elif line[char_index] == "#":
+                        break
+                    char_index += 1
+
+            not_imports = bool(in_quote) or in_top_comment
+            if not (in_quote or in_top_comment):
+                stripped_line = line.strip()
+                if not stripped_line or stripped_line.startswith("#"):
+                    import_section += line
+                elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                    import_section += line
+                    while stripped_line.endswith("\\") or (
+                        "(" in stripped_line and ")" not in stripped_line
+                    ):
+                        if stripped_line.endswith("\\"):
+                            while stripped_line and stripped_line.endswith("\\"):
+                                line = input_stream.readline()
+                                stripped_line = line.strip().split("#")[0]
+                                import_section += line
+                        else:
+                            while ")" not in stripped_line:
+                                line = input_stream.readline()
+                                stripped_line = line.strip().split("#")[0]
+                                import_section += line
+
+                    contains_imports = True
+                else:
+                    not_imports = True
+
+        if not_imports:
+            if (
+                add_imports
+                and not in_top_comment
+                and not in_quote
+                and not import_section
+                and not line.lstrip().startswith(COMMENT_INDICATORS)
+            ):
+                import_section = line_separator.join(add_imports) + line_separator
+                contains_imports = True
+                add_imports = []
+
+            if import_section:
+                if add_imports:
+                    import_section += line_separator.join(add_imports) + line_separator
+                    contains_imports = True
+                    add_imports = []
+
+                import_section += line
+                if not contains_imports:
+                    output_stream.write(import_section)
+                else:
+                    if first_import_section and not import_section.lstrip(
+                        line_separator
+                    ).startswith(COMMENT_INDICATORS):
+                        import_section = import_section.lstrip(line_separator)
+                        first_import_section = False
+                    output_stream.write(
+                        output.sorted_imports(
+                            parse.file_contents(import_section, config=config), config, extension
+                        )
+                    )
+                contains_imports = False
+                import_section = ""
+            else:
+                output_stream.write(line)
+                not_imports = False

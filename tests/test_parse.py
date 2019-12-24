@@ -23,8 +23,6 @@ def test_file_contents():
         as_map,
         imports,
         categorized_comments,
-        first_comment_index_start,
-        first_comment_index_end,
         change_count,
         original_line_count,
         line_separator,
