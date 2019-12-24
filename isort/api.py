@@ -249,7 +249,9 @@ def sort_imports(
                 if not contains_imports:
                     output_stream.write(import_section)
                 else:
-                    if first_import_section:
+                    if first_import_section and not import_section.lstrip(
+                        line_separator
+                    ).startswith(COMMENT_INDICATORS):
                         import_section = import_section.lstrip(line_separator)
                         first_import_section = False
                     output_stream.write(
@@ -268,7 +270,9 @@ def sort_imports(
         if not contains_imports:
             output_stream.write(import_section)
         else:
-            if first_import_section:
+            if first_import_section and not import_section.lstrip(line_separator).startswith(
+                COMMENT_INDICATORS
+            ):
                 import_section = import_section.lstrip(line_separator)
             output_stream.write(
                 output.sorted_imports(
