@@ -43,8 +43,6 @@ Before isort:
 ```python
 from my_lib import Object
 
-print("Hey")
-
 import os
 
 from my_lib import Object3
@@ -61,6 +59,7 @@ from __future__ import absolute_import
 
 from third_party import lib3
 
+print("Hey")
 print("yo")
 ```
 
