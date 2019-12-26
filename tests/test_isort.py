@@ -3848,7 +3848,6 @@ def test_standard_library_deprecates_user_issue_778() -> None:
     assert SortImports(file_contents=test_input).output == test_input
 
 
-@pytest.mark.skip(reason="TODO: Failing for unknown reason.")
 def test_settings_path_skip_issue_909(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
@@ -3857,10 +3856,10 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
     )
 
     base_dir.join("file_glob_skip.py").write(
-        "import os\n\n" 'print("Hello World")\n' "\nimport sys\n"
+        "import os\n\n" 'print("Hello World")\n' "\nimport sys\nimport os\n"
     )
     base_dir.join("file_to_be_skipped.py").write(
-        "import os\n\n" 'print("Hello World")' "\nimport sys\n"
+        "import os\n\n" 'print("Hello World")' "\nimport sys\nimport os\n"
     )
 
     test_run_directory = os.getcwd()
