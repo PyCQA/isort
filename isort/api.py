@@ -215,7 +215,7 @@ def sort_imports(
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     contains_imports = True
 
-                    indent = line[:-len(line.lstrip())]
+                    indent = line[: -len(line.lstrip())]
                     import_section += line
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
@@ -263,12 +263,16 @@ def sort_imports(
                         first_import_section = False
 
                     if indent:
-                        import_section = line_separator.join(line.lstrip() for line in import_section.split(line_separator))
+                        import_section = line_separator.join(
+                            line.lstrip() for line in import_section.split(line_separator)
+                        )
                     sorted_import_section = output.sorted_imports(
                         parse.file_contents(import_section, config=config), config, extension
                     )
                     if indent:
-                        sorted_import_section = textwrap.indent(sorted_import_section, indent) + line_separator
+                        sorted_import_section = (
+                            textwrap.indent(sorted_import_section, indent) + line_separator
+                        )
 
                     output_stream.write(sorted_import_section)
 
