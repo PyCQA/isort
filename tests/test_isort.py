@@ -2922,6 +2922,7 @@ def test_to_ensure_importing_from_imports_module_works_issue_662() -> None:
         "@wraps(fun)\n"
         "def __inner(*args, **kwargs):\n"
         "    from .imports import qualname\n"
+        "\n"
         "    warn(description=description or qualname(fun), deprecation=deprecation, "
         "removal=removal)\n"
     )
@@ -4157,3 +4158,31 @@ def test_isort_with_single_character_import() -> None:
     """
     test_input = "from django.db.models import CASCADE, SET_NULL, Q\n"
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_isort_nested_imports() -> None:
+    """Ensure imports in a nested block get sorted correctly"""
+    test_input = """
+    def import_test():
+        import sys
+        import os
+
+        # my imports
+        from . import def
+        from . import abc
+
+        return True
+    """
+    assert (
+        SortImports(file_contents=test_input).output
+        == """
+    def import_test():
+        import os
+        import sys
+
+        # my imports
+        from . import abc, def
+
+        return True
+    """
+    )

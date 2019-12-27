@@ -30,16 +30,19 @@ from .utils import chdir, exists_case_sensitive
 
 try:
     from pipreqs import pipreqs
+
 except ImportError:
     pipreqs = None
 
 try:
     from pip_api import parse_requirements
+
 except ImportError:
     parse_requirements = None
 
 try:
     from requirementslib import Pipfile
+
 except ImportError:
     Pipfile = None
 

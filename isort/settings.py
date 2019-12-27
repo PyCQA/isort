@@ -43,6 +43,7 @@ from .wrap_modes import from_string as wrap_mode_from_string
 
 try:
     import toml
+
 except ImportError:
     toml = None  # type: ignore
 
