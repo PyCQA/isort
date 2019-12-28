@@ -4186,3 +4186,16 @@ def test_isort_nested_imports() -> None:
         return True
     """
     )
+
+
+def test_isort_off() -> None:
+    """Test that isort can be turned on and off at will using comments"""
+    test_input = """
+import os
+# isort: off
+import os
+import sys
+# isort: on
+import sys
+    """
+    assert SortImports(file_contents=test_input).output == test_input
