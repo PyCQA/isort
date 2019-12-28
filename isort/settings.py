@@ -55,7 +55,10 @@ try:
 except ImportError:
     appdirs = None
 
-FILE_SKIP_COMMENT: str = ("isort:" + "skip_file")  # Concatenated to avoid this file being skipped
+FILE_SKIP_COMMENTS: Tuple[str, ...] = (
+    "isort:" + "skip_file",
+    "isort: " + "skip_file",
+)  # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(

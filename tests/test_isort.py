@@ -641,7 +641,7 @@ def test_skip() -> None:
         "import myproject\n"
         "import django\n"
         "print('hey')\n"
-        "import sys  # isort:skip this import needs to be placed here\n\n\n\n\n\n\n"
+        "import sys  # isort: skip this import needs to be placed here\n\n\n\n\n\n\n"
     )
 
     test_output = SortImports(file_contents=test_input, known_third_party=["django"]).output
@@ -651,7 +651,7 @@ def test_skip() -> None:
         "import myproject\n"
         "\n"
         "print('hey')\n"
-        "import sys  # isort:skip this import needs to be placed here\n"
+        "import sys  # isort: skip this import needs to be placed here\n"
     )
 
 
@@ -668,7 +668,7 @@ def test_skip_with_file_name() -> None:
 
 def test_skip_within_file() -> None:
     """Ensure skipping a whole file works."""
-    test_input = "# isort:skip_file\nimport django\nimport myproject\n"
+    test_input = "# isort: skip_file\nimport django\nimport myproject\n"
     sort_imports = SortImports(file_contents=test_input, known_third_party=["django"])
     assert sort_imports.skipped
     assert sort_imports.output == ""
@@ -1624,19 +1624,19 @@ def test_place_comments() -> None:
         "import myproject.test\n"
         "import django.settings\n"
         "\n"
-        "# isort:imports-thirdparty\n"
-        "# isort:imports-firstparty\n"
-        "# isort:imports-stdlib\n"
+        "# isort: imports-thirdparty\n"
+        "# isort: imports-firstparty\n"
+        "# isort: imports-stdlib\n"
         "\n"
     )
     expected_output = (
-        "\n# isort:imports-thirdparty\n"
+        "\n# isort: imports-thirdparty\n"
         "import django.settings\n"
         "\n"
-        "# isort:imports-firstparty\n"
+        "# isort: imports-firstparty\n"
         "import myproject.test\n"
         "\n"
-        "# isort:imports-stdlib\n"
+        "# isort: imports-stdlib\n"
         "import os\n"
         "import sys\n"
     )
@@ -4190,12 +4190,13 @@ def test_isort_nested_imports() -> None:
 
 def test_isort_off() -> None:
     """Test that isort can be turned on and off at will using comments"""
-    test_input = """
-import os
+    test_input = """import os
+
 # isort: off
+import sys
 import os
-import sys
 # isort: on
-import sys
-    """
+
+from . import local
+"""
     assert SortImports(file_contents=test_input).output == test_input
