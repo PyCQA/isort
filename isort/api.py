@@ -15,7 +15,7 @@ from .exceptions import (
 )
 from .format import format_natural, remove_whitespace, show_unified_diff
 from .io import File
-from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENT, Config
+from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
 COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
@@ -54,11 +54,12 @@ def sorted_imports(
     config = _config(config=config, **config_kwargs)
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
-        if FILE_SKIP_COMMENT in file_contents:
-            raise FileSkipComment(content_source)
-
-        elif file_path and config.is_skipped(file_path):
+        if file_path and config.is_skipped(file_path):
             raise FileSkipSetting(content_source)
+
+        for file_skip_comment in FILE_SKIP_COMMENTS:
+            if file_skip_comment in file_contents:
+                raise FileSkipComment(content_source)
 
     if config.atomic:
         try:
@@ -156,6 +157,7 @@ def sort_imports(
     first_import_section: bool = True
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     indent: str = ""
+    isort_off: bool = False
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
@@ -207,10 +209,18 @@ def sort_imports(
                         break
                     char_index += 1
 
-            not_imports = bool(in_quote) or in_top_comment
+            not_imports = bool(in_quote) or in_top_comment or isort_off
             if not (in_quote or in_top_comment):
                 stripped_line = line.strip()
-                if not stripped_line or stripped_line.startswith("#"):
+                if isort_off:
+                    if stripped_line == "# isort: on":
+                        isort_off = False
+                elif stripped_line == "# isort: off":
+                    not_imports = True
+                    isort_off = True
+                elif stripped_line == "# isort: split":
+                    not_imports = True
+                elif not stripped_line or stripped_line.startswith("#"):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     contains_imports = True

@@ -54,7 +54,7 @@ def _normalize_line(raw_line: str) -> Tuple[str, str]:
 
 def import_type(line: str) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
-    if "isort:skip" in line or "NOQA" in line:
+    if "isort:skip" in line or "isort: skip" in line or "NOQA" in line:
         return None
     elif line.startswith("import "):
         return "straight"
@@ -172,6 +172,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
         if "isort:imports-" in line and line.startswith("#"):
             section = line.split("isort:imports-")[-1].split()[0].upper()
+            place_imports[section] = []
+            import_placements[line] = section
+        elif "isort: imports-" in line and line.startswith("#"):
+            section = line.split("isort: imports-")[-1].split()[0].upper()
             place_imports[section] = []
             import_placements[line] = section
 
@@ -325,6 +329,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and not last.endswith('"""')
                         and not last.endswith("'''")
                         and "isort:imports-" not in last
+                        and "isort: imports-" not in last
                     ):
                         categorized_comments["above"]["from"].setdefault(import_from, []).insert(
                             0, out_lines.pop(-1)
@@ -361,6 +366,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and not last.endswith('"""')
                             and not last.endswith("'''")
                             and "isort:imports-" not in last
+                            and "isort: imports-" not in last
                         ):
                             categorized_comments["above"]["straight"].setdefault(module, []).insert(
                                 0, out_lines.pop(-1)
