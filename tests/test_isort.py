@@ -4200,3 +4200,16 @@ import os
 from . import local
 """
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_isort_split() -> None:
+    """Test the ability to split isort import sections"""
+    test_input = """import os
+import sys
+
+# isort: split
+
+import os
+import sys
+"""
+    assert SortImports(file_contents=test_input).output == test_input

@@ -218,6 +218,8 @@ def sort_imports(
                 elif stripped_line == "# isort: off":
                     not_imports = True
                     isort_off = True
+                elif stripped_line == "# isort: split":
+                    not_imports = True
                 elif not stripped_line or stripped_line.startswith("#"):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
