@@ -184,7 +184,7 @@ def sort_imports(
                     in_top_comment = False
                     first_comment_index_end = index - 1
 
-            if not stripped_line.startswith("#") and '"' in line or "'" in line:
+            if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
                 char_index = 0
                 if first_comment_index_start == -1 and (
                     line.startswith('"') or line.startswith("'")

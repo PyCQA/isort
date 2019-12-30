@@ -4213,3 +4213,28 @@ import os
 import sys
 """
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_comment_look_alike():
+    """Test to ensure isort will handle what looks like a single line comment
+    at the end of a multi-line comment.
+    """
+    test_input = '''
+"""This is a multi-line comment
+
+ending with what appears to be a single line comment
+# Single Line Comment"""
+import sys
+import os
+'''
+    assert (
+        SortImports(file_contents=test_input).output
+        == '''
+"""This is a multi-line comment
+
+ending with what appears to be a single line comment
+# Single Line Comment"""
+import os
+import sys
+'''
+    )
