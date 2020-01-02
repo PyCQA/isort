@@ -626,7 +626,19 @@ project.
 Git hook
 --------
 
-isort provides a hook function that can be integrated into your Git
+isort provides [pre-commit](https://pre-commit.com/) hook definition
+so you easily set up a hook to ensure that your imports remain
+sorted. To use it, add something like this to your
+`.pre-commit-config.yaml`.
+
+```yaml
+- repo: https://github.com/timothycrosley/isort
+  rev: 4.3.21-2
+  hooks:
+    - id: isort
+```
+
+isort also ships with a hook function that can be integrated into your Git
 pre-commit script to check Python code before committing.
 
 To cause the commit to fail if there are isort errors (strict mode),
