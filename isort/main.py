@@ -14,7 +14,7 @@ import setuptools
 from . import SortImports, __version__, sections
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
+from .settings import DEFAULT_CONFIG, SUPPORTED_EXTENSIONS, VALID_PY_TARGETS, Config, WrapModes
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 QUICK_GUIDE = f"""
@@ -35,7 +35,7 @@ Visit https://timothycrosley.github.io/isort/ for complete information about how
 
 def is_python_file(path: str) -> bool:
     _root, ext = os.path.splitext(path)
-    if ext in (".py", ".pyi"):
+    if ext in SUPPORTED_EXTENSIONS:
         return True
     if ext in (".pex",):
         return False

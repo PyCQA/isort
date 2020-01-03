@@ -55,6 +55,7 @@ try:
 except ImportError:
     appdirs = None
 
+SUPPORTED_EXTENSIONS = (".py", ".pyi", ".pyx")
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",
     "isort: " + "skip_file",
