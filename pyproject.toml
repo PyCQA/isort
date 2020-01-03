@@ -47,7 +47,7 @@ vulture = "^1.0"
 bandit = "^1.6"
 safety = "^1.8"
 flake8-bugbear = "^19.8"
-black = {version = "^18.3-alpha.0", allows-prereleases = true}
+black = {version = "^18.3-alpha.0", allow-prereleases = true}
 mypy = "^0.730.0"
 ipython = "^7.7"
 pytest = "^5.0"
