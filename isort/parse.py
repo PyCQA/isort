@@ -11,8 +11,6 @@ from isort.settings import DEFAULT_CONFIG, Config
 from .comments import parse as parse_comments
 from .finders import FindersManager
 
-IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
-
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
 
@@ -46,8 +44,10 @@ def _normalize_line(raw_line: str) -> Tuple[str, str]:
     Returns (normalized_line: str, raw_line: str)
     """
     line = raw_line.replace("from.import ", "from . import ")
+    line = raw_line.replace("from.cimport ", "from . cimport ")
     line = line.replace("import*", "import *")
     line = line.replace(" .import ", " . import ")
+    line = line.replace(" .cimport ", " . cimport ")
     line = line.replace("\t", " ")
     return (line, raw_line)
 
@@ -56,7 +56,7 @@ def import_type(line: str) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
     if "isort:skip" in line or "isort: skip" in line or "NOQA" in line:
         return None
-    elif line.startswith("import "):
+    elif line.startswith(("import ", "cimport ")):
         return "straight"
     elif line.startswith("from "):
         return "from"
@@ -68,7 +68,7 @@ def _strip_syntax(import_string: str) -> str:
     for remove_syntax in ["\\", "(", ")", ","]:
         import_string = import_string.replace(remove_syntax, " ")
     import_list = import_string.split()
-    for key in ("from", "import"):
+    for key in ("from", "import", "cimport"):
         if key in import_list:
             import_list.remove(key)
     import_string = " ".join(import_list)
@@ -108,7 +108,7 @@ def skip_line(
 
     if ";" in line:
         for part in (part.strip() for part in line.split(";")):
-            if part and not part.startswith("from ") and not part.startswith("import "):
+            if part and not part.startswith("from ") and not part.startswith(("import ", "cimport ")):
                 skip_line = True
 
     return (bool(skip_line or in_quote), in_quote)
@@ -267,18 +267,22 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and new_comment
                     ):
                         nested_comments[stripped_line] = comments[-1]
-                    if import_string.strip().endswith(" import") or line.strip().startswith(
-                        "import "
-                    ):
+                    if import_string.strip().endswith((" import", " cimport")) or line.strip().startswith(("import ", "cimport ")):
                         import_string += line_separator + line
                     else:
                         import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
             if type_of_import == "from":
+                cimport: bool
                 import_string = import_string.replace("import(", "import (")
-                parts = import_string.split(" import ")
+                if " cimport " in import_string:
+                    parts = import_string.split(" cimport ")
+                    cimport = True
+                else:
+                    parts = import_string.split(" import ")
+                    cimport = False
                 from_import = parts[0].split(" ")
-                import_string = " import ".join(
+                import_string = " cimport " if cimport else " import ".join(
                     [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
                 )
 
