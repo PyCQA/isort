@@ -17,8 +17,6 @@ from .format import format_natural, remove_whitespace, show_unified_diff
 from .io import File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
-IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
-
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
 IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
 COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
@@ -249,9 +247,10 @@ def sort_imports(
                     cimport_statement: bool = False
                     if (
                         import_statement.lstrip().startswith(CIMPORT_IDENTIFIERS)
-                        or "cimport " in import_statement
-                        or "cimport*" in import_statement
-                        or "cimport(" in import_statement
+                        or " cimport " in import_statement
+                        or " cimport*" in import_statement
+                        or " cimport(" in import_statement
+                        or ".cimport" in import_statement
                     ):
                         cimport_statement = True
 
@@ -264,7 +263,7 @@ def sort_imports(
                         else:
                             cimports = cimport_statement
 
-                    import_section + import_statement
+                    import_section += import_statement
                 else:
                     not_imports = True
 
@@ -279,6 +278,10 @@ def sort_imports(
                 import_section = line_separator.join(add_imports) + line_separator
                 contains_imports = True
                 add_imports = []
+
+            if next_import_section and not import_section:
+                import_section = next_import_section
+                next_import_section = ""
 
             if import_section:
                 if add_imports and not indent:
@@ -313,6 +316,8 @@ def sort_imports(
                         )
 
                     output_stream.write(sorted_import_section)
+                    if not line and next_import_section:
+                        output_stream.write(line_separator)
 
                 if indent:
                     output_stream.write(line)

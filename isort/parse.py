@@ -65,6 +65,7 @@ def import_type(line: str) -> Optional[str]:
 
 def _strip_syntax(import_string: str) -> str:
     import_string = import_string.replace("_import", "[[i]]")
+    import_string = import_string.replace("_cimport", "[[ci]]")
     for remove_syntax in ["\\", "(", ")", ","]:
         import_string = import_string.replace(remove_syntax, " ")
     import_list = import_string.split()
@@ -73,6 +74,7 @@ def _strip_syntax(import_string: str) -> str:
             import_list.remove(key)
     import_string = " ".join(import_list)
     import_string = import_string.replace("[[i]]", "_import")
+    import_string = import_string.replace("[[ci]]", "_cimport")
     return import_string.replace("{ ", "{|").replace(" }", "|}")
 
 
@@ -108,7 +110,11 @@ def skip_line(
 
     if ";" in line:
         for part in (part.strip() for part in line.split(";")):
-            if part and not part.startswith("from ") and not part.startswith(("import ", "cimport ")):
+            if (
+                part
+                and not part.startswith("from ")
+                and not part.startswith(("import ", "cimport "))
+            ):
                 skip_line = True
 
     return (bool(skip_line or in_quote), in_quote)
@@ -267,22 +273,26 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and new_comment
                     ):
                         nested_comments[stripped_line] = comments[-1]
-                    if import_string.strip().endswith((" import", " cimport")) or line.strip().startswith(("import ", "cimport ")):
+                    if import_string.strip().endswith(
+                        (" import", " cimport")
+                    ) or line.strip().startswith(("import ", "cimport ")):
                         import_string += line_separator + line
                     else:
                         import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
             if type_of_import == "from":
-                cimport: bool
+                cimports: bool
                 import_string = import_string.replace("import(", "import (")
                 if " cimport " in import_string:
                     parts = import_string.split(" cimport ")
-                    cimport = True
+                    cimports = True
+
                 else:
                     parts = import_string.split(" import ")
-                    cimport = False
+                    cimports = False
+
                 from_import = parts[0].split(" ")
-                import_string = " cimport " if cimport else " import ".join(
+                import_string = (" cimport " if cimports else " import ").join(
                     [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
                 )
 

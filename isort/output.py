@@ -11,7 +11,10 @@ from .settings import DEFAULT_CONFIG, Config
 
 
 def sorted_imports(
-    parsed: parse.ParsedContent, config: Config = DEFAULT_CONFIG, extension: str = "py", import_type: str="import"
+    parsed: parse.ParsedContent,
+    config: Config = DEFAULT_CONFIG,
+    extension: str = "py",
+    import_type: str = "import",
 ) -> str:
     """Adds the imports back to the file.
 
@@ -66,11 +69,23 @@ def sorted_imports(
             if config.lines_between_types and from_modules and straight_modules:
                 section_output.extend([""] * config.lines_between_types)
             section_output = _with_straight_imports(
-                parsed, config, straight_modules, section, section_output, remove_imports, import_type
+                parsed,
+                config,
+                straight_modules,
+                section,
+                section_output,
+                remove_imports,
+                import_type,
             )
         else:
             section_output = _with_straight_imports(
-                parsed, config, straight_modules, section, section_output, remove_imports, import_type
+                parsed,
+                config,
+                straight_modules,
+                section,
+                section_output,
+                remove_imports,
+                import_type,
             )
             if config.lines_between_types and from_modules and straight_modules:
                 section_output.extend([""] * config.lines_between_types)
