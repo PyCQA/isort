@@ -17,7 +17,8 @@ from .format import format_natural, remove_whitespace, show_unified_diff
 from .io import File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
-IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
+CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
+IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
 COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
 
 
@@ -149,6 +150,7 @@ def sort_imports(
     line_separator: str = config.line_ending
     add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
     import_section: str = ""
+    next_import_section: str = ""
     in_quote: str = ""
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
@@ -158,6 +160,7 @@ def sort_imports(
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     indent: str = ""
     isort_off: bool = False
+    cimports: bool = False
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
@@ -226,7 +229,7 @@ def sort_imports(
                     contains_imports = True
 
                     indent = line[: -len(line.lstrip())]
-                    import_section += line
+                    import_statement = line
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
                     ):
@@ -234,12 +237,33 @@ def sort_imports(
                             while stripped_line and stripped_line.endswith("\\"):
                                 line = input_stream.readline()
                                 stripped_line = line.strip().split("#")[0]
-                                import_section += line
+                                import_statement += line
                         else:
                             while ")" not in stripped_line:
                                 line = input_stream.readline()
                                 stripped_line = line.strip().split("#")[0]
-                                import_section += line
+                                import_statement += line
+
+                    cimport_statement: bool = False
+                    if (
+                        import_statement.lstrip().startswith(CIMPORT_IDENTIFIERS)
+                        or " cimport " in import_statement
+                        or " cimport*" in import_statement
+                        or " cimport(" in import_statement
+                        or ".cimport" in import_statement
+                    ):
+                        cimport_statement = True
+
+                    if cimport_statement != cimports:
+                        if import_section:
+                            next_import_section = import_statement
+                            import_statement = ""
+                            not_imports = True
+                            line = ""
+                        else:
+                            cimports = cimport_statement
+
+                    import_section += import_statement
                 else:
                     not_imports = True
 
@@ -254,6 +278,10 @@ def sort_imports(
                 import_section = line_separator.join(add_imports) + line_separator
                 contains_imports = True
                 add_imports = []
+
+            if next_import_section and not import_section:
+                import_section = next_import_section
+                next_import_section = ""
 
             if import_section:
                 if add_imports and not indent:
@@ -277,7 +305,10 @@ def sort_imports(
                             line.lstrip() for line in import_section.split(line_separator)
                         )
                     sorted_import_section = output.sorted_imports(
-                        parse.file_contents(import_section, config=config), config, extension
+                        parse.file_contents(import_section, config=config),
+                        config,
+                        extension,
+                        import_type="cimport" if cimports else "import",
                     )
                     if indent:
                         sorted_import_section = (
@@ -285,13 +316,18 @@ def sort_imports(
                         )
 
                     output_stream.write(sorted_import_section)
+                    if not line and next_import_section:
+                        output_stream.write(line_separator)
 
                 if indent:
                     output_stream.write(line)
                     indent = ""
 
                 contains_imports = False
-                import_section = ""
+                if next_import_section:
+                    cimports = not cimports
+                import_section = next_import_section
+                next_import_section = ""
             else:
                 output_stream.write(line)
                 not_imports = False

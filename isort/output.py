@@ -11,7 +11,10 @@ from .settings import DEFAULT_CONFIG, Config
 
 
 def sorted_imports(
-    parsed: parse.ParsedContent, config: Config = DEFAULT_CONFIG, extension: str = "py"
+    parsed: parse.ParsedContent,
+    config: Config = DEFAULT_CONFIG,
+    extension: str = "py",
+    import_type: str = "import",
 ) -> str:
     """Adds the imports back to the file.
 
@@ -61,15 +64,28 @@ def sorted_imports(
                 section_output,
                 sort_ignore_case,
                 remove_imports,
+                import_type,
             )
             if config.lines_between_types and from_modules and straight_modules:
                 section_output.extend([""] * config.lines_between_types)
             section_output = _with_straight_imports(
-                parsed, config, straight_modules, section, section_output, remove_imports
+                parsed,
+                config,
+                straight_modules,
+                section,
+                section_output,
+                remove_imports,
+                import_type,
             )
         else:
             section_output = _with_straight_imports(
-                parsed, config, straight_modules, section, section_output, remove_imports
+                parsed,
+                config,
+                straight_modules,
+                section,
+                section_output,
+                remove_imports,
+                import_type,
             )
             if config.lines_between_types and from_modules and straight_modules:
                 section_output.extend([""] * config.lines_between_types)
@@ -81,6 +97,7 @@ def sorted_imports(
                 section_output,
                 sort_ignore_case,
                 remove_imports,
+                import_type,
             )
 
         if config.force_sort_within_sections:
@@ -216,13 +233,14 @@ def _with_from_imports(
     section_output: List[str],
     ignore_case: bool,
     remove_imports: List[str],
+    import_type: str,
 ) -> List[str]:
     new_section_output = section_output.copy()
     for module in from_modules:
         if module in remove_imports:
             continue
 
-        import_start = f"from {module} import "
+        import_start = f"from {module} {import_type} "
         from_imports = list(parsed.imports[section]["from"][module])
         if not config.no_inline_sort or config.force_single_line:
             from_imports = sorting.naturally(
@@ -475,6 +493,7 @@ def _with_straight_imports(
     section: str,
     section_output: List[str],
     remove_imports: List[str],
+    import_type: str,
 ) -> List[str]:
     new_section_output = section_output.copy()
     for module in straight_modules:
@@ -484,12 +503,12 @@ def _with_straight_imports(
         import_definition = []
         if module in parsed.as_map:
             if config.keep_direct_and_as_imports and parsed.imports[section]["straight"][module]:
-                import_definition.append(f"import {module}")
+                import_definition.append(f"{import_type} {module}")
             import_definition.extend(
-                f"import {module} as {as_import}" for as_import in parsed.as_map[module]
+                f"{import_type} {module} as {as_import}" for as_import in parsed.as_map[module]
             )
         else:
-            import_definition.append(f"import {module}")
+            import_definition.append(f"{import_type} {module}")
 
         comments_above = parsed.categorized_comments["above"]["straight"].pop(module, None)
         if comments_above:
