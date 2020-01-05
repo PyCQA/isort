@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "isort"
-version = "4.3.21"
+version = "5.0.0"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
