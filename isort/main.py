@@ -296,13 +296,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
         help="Turns off default behavior that removes direct imports when as imports exist.",
     )
-    parser.add_argument(
-        "-l",
-        "--lines",
-        help="[Deprecated] The max length of an import line (used for wrapping " "long imports).",
-        dest="line_length",
-        type=int,
-    )
     parser.add_argument("-lai", "--lines-after-imports", dest="lines_after_imports", type=int)
     parser.add_argument("-lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
@@ -481,7 +474,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Returns just the current version number without the logo",
     )
     parser.add_argument(
+        "-l",
         "-w",
+        "--line-length",
         "--line-width",
         help="The max length of an import line (used for wrapping long imports).",
         dest="line_length",
@@ -492,7 +487,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--wrap-length",
         dest="wrap_length",
         type=int,
-        help="Specifies how long lines that are wrapped should be, if not set line_length is used.",
+        help="Specifies how long lines that are wrapped should be, if not set line_length is used."
+        "\nNOTE: wrap_length must be LOWER than or equal to line_length.",
     )
     parser.add_argument(
         "--ws",

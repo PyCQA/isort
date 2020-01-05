@@ -208,6 +208,11 @@ class _Config:
             object.__setattr__(self, "no_sections", True)
             object.__setattr__(self, "lines_between_types", 1)
             object.__setattr__(self, "from_first", True)
+        if self.wrap_length > self.line_length:
+            raise ValueError(
+                "wrap_length must be set lower than or equal to line_length: "
+                f"{self.wrap_length} > {self.line_length}."
+            )
 
 
 _DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}

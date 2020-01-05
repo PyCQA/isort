@@ -196,6 +196,18 @@ def test_line_length() -> None:
         "                         lib22)\n"
     )
 
+    test_input = (
+        "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
+    )
+    with pytest.raises(ValueError):
+        test_output = SortImports(
+            file_contents=REALLY_LONG_IMPORT, line_length=80, wrap_length=99
+        ).output
+    test_output = (
+        SortImports(file_contents=REALLY_LONG_IMPORT, line_length=100, wrap_length=99).output
+        == test_input
+    )
+
 
 def test_output_modes() -> None:
     """Test setting isort to use various output modes works as expected"""
