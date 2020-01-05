@@ -963,6 +963,23 @@ def test_force_single_line_imports() -> None:
         "from third_party import lib22\n"
     )
 
+    test_input = (
+        "from third_party import lib_a, lib_b, lib_d\n"
+        "from third_party.lib_c import lib1\n"
+    )
+    test_output = SortImports(
+        file_contents=test_input,
+        multi_line_output=WrapModes.GRID,
+        line_length=40,
+        force_single_line=True,
+    ).output
+    assert test_output == (
+        "from third_party import lib_a\n"
+        "from third_party import lib_b\n"
+        "from third_party import lib_d\n"
+        "from third_party.lib_c import lib1\n"
+    )
+
 
 def test_force_single_line_long_imports() -> None:
     test_input = "from veryveryveryveryveryvery import small, big\n"
@@ -4597,3 +4614,12 @@ IF CEF_VERSION == 3:
     from web_request_client_cef3 cimport *
 """
     SortImports(file_contents=test_input).output == expected_output
+
+
+def test_top_level_import_order() -> None:
+    config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
+    test_input = (
+        "from rest_framework import throttling, viewsets\n"
+        "from rest_framework.authentication import TokenAuthentication\n"
+    )
+    assert SortImports(file_contents=test_input, **config).output == test_input
