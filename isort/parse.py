@@ -332,7 +332,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["nested"].setdefault(import_from, {})[
                             import_name
                         ] = associated_comment
-                        comments.pop(comments.index(associated_comment))
+                        if associated_comment in comments:
+                            comments.pop(comments.index(associated_comment))
                 if comments:
                     categorized_comments["from"].setdefault(import_from, []).extend(comments)
 
