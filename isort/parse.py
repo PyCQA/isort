@@ -44,7 +44,7 @@ def _normalize_line(raw_line: str) -> Tuple[str, str]:
     Returns (normalized_line: str, raw_line: str)
     """
     line = raw_line.replace("from.import ", "from . import ")
-    line = raw_line.replace("from.cimport ", "from . cimport ")
+    line = line.replace("from.cimport ", "from . cimport ")
     line = line.replace("import*", "import *")
     line = line.replace(" .import ", " . import ")
     line = line.replace(" .cimport ", " . cimport ")
