@@ -964,8 +964,7 @@ def test_force_single_line_imports() -> None:
     )
 
     test_input = (
-        "from third_party import lib_a, lib_b, lib_d\n"
-        "from third_party.lib_c import lib1\n"
+        "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
     test_output = SortImports(
         file_contents=test_input,
@@ -4617,9 +4616,39 @@ IF CEF_VERSION == 3:
 
 
 def test_top_level_import_order() -> None:
-    config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
     test_input = (
         "from rest_framework import throttling, viewsets\n"
         "from rest_framework.authentication import TokenAuthentication\n"
     )
-    assert SortImports(file_contents=test_input, **config).output == test_input
+    assert (
+        SortImports(file_contents=test_input, force_sort_within_sections=True).output == test_input
+    )
+
+
+def test_noqa_issue_1065() -> None:
+    test_input = """
+#
+# USER SIGNALS
+#
+
+from flask_login import user_logged_in, user_logged_out  # noqa
+
+from flask_security.signals import (  # noqa
+    password_changed as user_reset_password,  # noqa
+    user_confirmed,  # noqa
+    user_registered,  # noqa
+)  # noqa
+
+from flask_principal import identity_changed as user_identity_changed  # noqa
+"""
+    expected_output = """
+#
+# USER SIGNALS
+#
+from flask_login import user_logged_in, user_logged_out  # noqa
+from flask_principal import identity_changed as user_identity_changed  # noqa
+from flask_security.signals import password_changed as user_reset_password  # noqa
+from flask_security.signals import user_confirmed  # noqa
+from flask_security.signals import user_registered  # noqa
+"""
+    assert SortImports(file_contents=test_input).output == expected_output

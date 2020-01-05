@@ -25,4 +25,8 @@ def add_to_line(
     if not comments:
         return original_string
     else:
-        return f"{parse(original_string)[0]}{comment_prefix} {'; '.join(comments)}"
+        unique_comments: List[str] = []
+        for comment in comments:
+            if comment not in unique_comments:
+                unique_comments.append(comment)
+        return f"{parse(original_string)[0]}{comment_prefix} {'; '.join(unique_comments)}"
