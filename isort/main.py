@@ -449,9 +449,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
         help="Use parenthesis for line continuation on length limit instead of slashes.",
     )
-    parser.add_argument("-v", "--version", action="store_true", dest="show_version")
+    parser.add_argument("-V", "--version", action="store_true", dest="show_version",
+                        help="Displays the currently installed version of isort.")
     parser.add_argument(
-        "--vb",
+        "-v",
         "--verbose",
         action="store_true",
         dest="verbose",
