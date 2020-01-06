@@ -6,7 +6,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
 
 import setuptools

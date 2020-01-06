@@ -2,7 +2,7 @@
 import locale
 import re
 from pathlib import Path
-from typing import NamedTuple, Optional, Tuple
+from typing import NamedTuple, Tuple
 
 from .exceptions import UnableToDetermineEncoding
 

@@ -11,12 +11,10 @@ from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
 from typing import (
-    Any,
     Dict,
     Iterable,
     Iterator,
     List,
-    Mapping,
     Optional,
     Pattern,
     Sequence,
@@ -25,7 +23,7 @@ from typing import (
 )
 
 from . import sections
-from .settings import DEFAULT_CONFIG, Config
+from .settings import Config
 from .utils import chdir, exists_case_sensitive
 
 try:

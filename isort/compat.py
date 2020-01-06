@@ -1,12 +1,9 @@
-import locale
-import os
-import re
 import sys
 from pathlib import Path
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 from warnings import warn
 
-from . import api, settings
+from . import api
 from .exceptions import ExistingSyntaxErrors, FileSkipped, IntroducedSyntaxErrors
 from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
 from .io import File

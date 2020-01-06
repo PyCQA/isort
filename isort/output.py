@@ -1,7 +1,7 @@
 import copy
 import itertools
 from functools import partial
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Iterable, List
 
 from isort.format import format_simplified
 
