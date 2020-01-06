@@ -4627,6 +4627,44 @@ IF CEF_VERSION == 3:
     SortImports(file_contents=test_input).output == expected_output
 
 
+def test_cdef_support():
+    assert (
+        SortImports(
+            file_contents="""
+from cpython.version cimport PY_MAJOR_VERSION
+
+cdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+        ).output
+        == """
+from cpython.version cimport PY_MAJOR_VERSION
+
+
+cdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+    )
+
+    assert (
+        SortImports(
+            file_contents="""
+from cpython.version cimport PY_MAJOR_VERSION
+
+cpdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+        ).output
+        == """
+from cpython.version cimport PY_MAJOR_VERSION
+
+
+cpdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+    )
+
+
 def test_top_level_import_order() -> None:
     test_input = (
         "from rest_framework import throttling, viewsets\n"

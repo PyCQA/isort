@@ -323,9 +323,11 @@ def sort_imports(
                     output_stream.write(line)
                     indent = ""
 
-                contains_imports = False
                 if next_import_section:
                     cimports = not cimports
+                    contains_imports = True
+                else:
+                    contains_imports = False
                 import_section = next_import_section
                 next_import_section = ""
             else:
