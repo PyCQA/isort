@@ -112,7 +112,7 @@ def check_imports(
             print(f"SUCCESS: {file_path or ''} Everything Looks Good!")
         return True
     else:
-        print(f"ERROR: {file_path or ''} Imports are incorrectly sorted.")
+        print(f"ERROR: {file_path or ''} Imports are incorrectly sorted and/or formatted.")
         if show_diff:
             show_unified_diff(
                 file_input=file_contents, file_output=sorted_output, file_path=file_path

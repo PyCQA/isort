@@ -296,8 +296,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
         help="Turns off default behavior that removes direct imports when as imports exist.",
     )
-    parser.add_argument("-lai", "--lines-after-imports", dest="lines_after_imports", type=int)
-    parser.add_argument("-lbt", "--lines-between-types", dest="lines_between_types", type=int)
+    parser.add_argument("--lai", "--lines-after-imports", dest="lines_after_imports", type=int)
+    parser.add_argument("--lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
         "--le",
         "--line-ending",

@@ -2587,7 +2587,7 @@ def test_strict_whitespace_by_default(capsys) -> None:
     test_input = "import os\nfrom django.conf import settings\n"
     SortImports(file_contents=test_input, check=True)
     out, err = capsys.readouterr()
-    assert out == "ERROR:  Imports are incorrectly sorted.\n"
+    assert out == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
 
 
 def test_strict_whitespace_no_closing_newline_issue_676(capsys) -> None:
