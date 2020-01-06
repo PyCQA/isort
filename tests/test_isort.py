@@ -3259,7 +3259,7 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     ),
 )
 def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
-    skip_glob, skipped_count, file_names = skip_glob_assert
+    skip_glob, skipped_count, file_names_expected = skip_glob_assert
     base_dir = tmpdir.mkdir("build")
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
@@ -3271,7 +3271,7 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
         for f in main.iter_source_code([str(base_dir)], config, skipped)
     }
     assert len(skipped) == skipped_count
-    assert file_names == file_names
+    assert file_names == file_names_expected
 
 
 def test_comments_not_removed_issue_576() -> None:
