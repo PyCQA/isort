@@ -10,17 +10,7 @@ from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
-from typing import (
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Pattern,
-    Sequence,
-    Tuple,
-    Type,
-)
+from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, Tuple, Type
 
 from . import sections
 from .settings import Config

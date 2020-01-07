@@ -2,6 +2,7 @@ import copy
 import itertools
 from functools import partial
 from typing import Iterable, List, Tuple
+
 from isort.format import format_simplified
 
 from . import parse, sorting, wrap

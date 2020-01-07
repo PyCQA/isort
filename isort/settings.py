@@ -14,16 +14,7 @@ import warnings
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    FrozenSet,
-    Iterable,
-    List,
-    Set,
-    Tuple,
-)
+from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Set, Tuple
 from warnings import warn
 
 from . import stdlibs

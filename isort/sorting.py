@@ -1,5 +1,5 @@
 import re
-from typing import Any, Callable, Iterable, List,  Optional
+from typing import Any, Callable, Iterable, List, Optional
 
 from .settings import Config
 
