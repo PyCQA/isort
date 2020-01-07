@@ -4,6 +4,7 @@ import functools
 import glob
 import os
 import re
+import stat
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Sequence
@@ -43,6 +44,12 @@ def is_python_file(path: str) -> bool:
     # Skip editor backup files.
     if path.endswith("~"):
         return False
+
+    try:
+        if stat.S_ISFIFO(os.stat(path).st_mode):
+            return False
+    except OSError:
+        pass
 
     try:
         with open(path, "rb") as fp:
