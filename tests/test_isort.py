@@ -4627,6 +4627,44 @@ IF CEF_VERSION == 3:
     SortImports(file_contents=test_input).output == expected_output
 
 
+def test_cdef_support():
+    assert (
+        SortImports(
+            file_contents="""
+from cpython.version cimport PY_MAJOR_VERSION
+
+cdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+        ).output
+        == """
+from cpython.version cimport PY_MAJOR_VERSION
+
+
+cdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+    )
+
+    assert (
+        SortImports(
+            file_contents="""
+from cpython.version cimport PY_MAJOR_VERSION
+
+cpdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+        ).output
+        == """
+from cpython.version cimport PY_MAJOR_VERSION
+
+
+cpdef extern from *:
+    ctypedef CefString ConstCefString "const CefString"
+"""
+    )
+
+
 def test_top_level_import_order() -> None:
     test_input = (
         "from rest_framework import throttling, viewsets\n"
@@ -4664,3 +4702,23 @@ from flask_security.signals import user_confirmed  # noqa
 from flask_security.signals import user_registered  # noqa
 """
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_single_line_exclusions():
+    test_input = """
+# start comment
+from os import path, system
+from typing import List, TypeVar
+"""
+    expected_output = """
+# start comment
+from os import path
+from os import system
+from typing import List, TypeVar
+"""
+    assert (
+        SortImports(
+            file_contents=test_input, force_single_line=True, single_line_exclusions=("typing",)
+        ).output
+        == expected_output
+    )

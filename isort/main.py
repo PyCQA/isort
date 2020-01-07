@@ -4,6 +4,7 @@ import functools
 import glob
 import os
 import re
+import stat
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
@@ -43,6 +44,12 @@ def is_python_file(path: str) -> bool:
     # Skip editor backup files.
     if path.endswith("~"):
         return False
+
+    try:
+        if stat.S_ISFIFO(os.stat(path).st_mode):
+            return False
+    except OSError:
+        pass
 
     try:
         with open(path, "rb") as fp:
@@ -414,6 +421,13 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         dest="force_single_line",
         action="store_true",
         help="Forces all from imports to appear on their own line",
+    )
+    parser.add_argument(
+        "--nsl",
+        "--single-line-exclusions",
+        help="One or more modules to exclude from the single line rule.",
+        dest="single_line_exclusions",
+        action="append",
     )
     parser.add_argument(
         "--sp",

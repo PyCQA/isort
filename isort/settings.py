@@ -135,6 +135,7 @@ class _Config:
     remove_imports: FrozenSet[str] = frozenset()
     reverse_relative: bool = False
     force_single_line: bool = False
+    single_line_exclusions: Tuple[str, ...] = ()
     default_section: str = "FIRSTPARTY"
     import_headings: Dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False

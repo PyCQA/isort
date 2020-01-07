@@ -1,13 +1,14 @@
 import copy
 import itertools
 from functools import partial
-from typing import Iterable, List
-
+from typing import Iterable, List, Tuple
 from isort.format import format_simplified
 
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
 from .settings import DEFAULT_CONFIG, Config
+
+STATEMENT_DECLERATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 def sorted_imports(
@@ -202,12 +203,7 @@ def sorted_imports(
 
         if config.lines_after_imports != -1:
             formatted_output[imports_tail:0] = ["" for line in range(config.lines_after_imports)]
-        elif extension != "pyi" and (
-            next_construct.startswith("def ")
-            or next_construct.startswith("class ")
-            or next_construct.startswith("@")
-            or next_construct.startswith("async def")
-        ):
+        elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLERATIONS):
             formatted_output[imports_tail:0] = ["", ""]
         else:
             formatted_output[imports_tail:0] = [""]
@@ -242,7 +238,9 @@ def _with_from_imports(
 
         import_start = f"from {module} {import_type} "
         from_imports = list(parsed.imports[section]["from"][module])
-        if not config.no_inline_sort or config.force_single_line:
+        if not config.no_inline_sort or (
+            config.force_single_line and module not in config.single_line_exclusions
+        ):
             from_imports = sorting.naturally(
                 from_imports,
                 key=lambda key: sorting.module_key(
@@ -291,7 +289,7 @@ def _with_from_imports(
                     config,
                 )
                 from_imports = []
-            elif config.force_single_line:
+            elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
                 while from_imports:
                     from_import = from_imports.pop(0)
