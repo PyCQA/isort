@@ -1,9 +1,9 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
 import enum
 from inspect import signature
-from typing import Any, Callable, Dict, List, Sequence
+from typing import Any, Callable, Dict, List
 
-from . import comments, settings
+from . import comments
 
 _wrap_modes: Dict[str, Callable[[Any], str]] = {}
 

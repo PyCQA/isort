@@ -1,11 +1,9 @@
 """Defines parsing functions used by isort for parsing import definitions"""
-from collections import OrderedDict, defaultdict, namedtuple
-from io import StringIO
+from collections import OrderedDict, defaultdict
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator, List, NamedTuple, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
 from warnings import warn
 
-from isort.format import format_natural
 from isort.settings import DEFAULT_CONFIG, Config
 
 from .comments import parse as parse_comments

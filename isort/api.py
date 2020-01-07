@@ -1,9 +1,8 @@
-import re
 import textwrap
 from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import Any, List, NamedTuple, Optional, TextIO, Tuple
+from typing import List, Optional, TextIO
 
 from . import output, parse
 from .exceptions import (
@@ -11,7 +10,6 @@ from .exceptions import (
     FileSkipComment,
     FileSkipSetting,
     IntroducedSyntaxErrors,
-    UnableToDetermineEncoding,
 )
 from .format import format_natural, remove_whitespace, show_unified_diff
 from .io import File

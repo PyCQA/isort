@@ -6,30 +6,15 @@ Defines how the default settings for isort should be loaded
  in ~/.isort.cfg or $XDG_CONFIG_HOME/isort.cfg if there are any)
 """
 import configparser
-import enum
 import fnmatch
 import os
 import posixpath
-import re
 import sys
 import warnings
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    FrozenSet,
-    Iterable,
-    List,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Set, Tuple
 from warnings import warn
 
 from . import stdlibs
@@ -37,7 +22,6 @@ from ._future import dataclass, field
 from .exceptions import ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
-from .utils import difference, union
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
