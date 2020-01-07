@@ -6,8 +6,8 @@ import os
 import re
 import stat
 import sys
-from pprint import pprint
 from pathlib import Path
+from pprint import pprint
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
 
@@ -557,7 +557,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         "--show-config",
         dest="show_config",
         action="store_true",
-        help="See isort's determined config, as well as sources of config options.")
+        help="See isort's determined config, as well as sources of config options.",
+    )
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
@@ -601,7 +602,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
         if "settings_path" not in arguments:
-            arguments["settings_path"] = os.path.abspath(file_names[0] if file_names else '.') or os.getcwd()
+            arguments["settings_path"] = (
+                os.path.abspath(file_names[0] if file_names else ".") or os.getcwd()
+            )
             if not os.path.isdir(arguments["settings_path"]):
                 arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
