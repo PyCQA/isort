@@ -6,6 +6,7 @@ import os
 import re
 import stat
 import sys
+from pprint import pprint
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
@@ -552,6 +553,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
         help="Tells isort to apply changes interactively.",
     )
+    parser.add_argument(
+        "--show-config",
+        dest="show_config",
+        action="store_true",
+        help="See isort's determined config, as well as sources of config options.")
 
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
@@ -571,6 +577,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(ASCII_ART)
         return
 
+    show_config: bool = arguments.pop("show_config", False)
+
     if "settings_path" in arguments:
         sp = arguments["settings_path"]
         arguments["settings_path"] = (
@@ -586,14 +594,14 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             warn(f"virtual_env dir does not exist: {arguments['virtual_env']}")
 
     file_names = arguments.pop("files", [])
-    if not file_names:
+    if not file_names and not show_config:
         print(QUICK_GUIDE)
         return
-    elif file_names == ["-"]:
+    elif file_names == ["-"] and not show_config:
         SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
     else:
         if "settings_path" not in arguments:
-            arguments["settings_path"] = os.path.abspath(file_names[0]) or os.getcwd()
+            arguments["settings_path"] = os.path.abspath(file_names[0] if file_names else '.') or os.getcwd()
             if not os.path.isdir(arguments["settings_path"]):
                 arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
@@ -605,6 +613,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         check = config_dict.pop("check", False)
         show_diff = config_dict.pop("show_diff", False)
         config = Config(**config_dict)
+        if show_config:
+            pprint(config.__dict__)
+            return
 
         wrong_sorted_files = False
         skipped: List[str] = []
