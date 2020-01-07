@@ -15,7 +15,12 @@ django = {
     "line_length": 79,
 }
 pycharm = {"multi_line_output": 3, "force_grid_wrap": 2}
-google = {"force_single_line": True, "force_sort_within_sections": True, "lexicographical": True}
+google = {
+    "force_single_line": True,
+    "force_sort_within_sections": True,
+    "lexicographical": True,
+    "single_line_exclusions": ("typing",),
+}
 open_stack = {
     "force_single_line": True,
     "force_sort_within_sections": True,
