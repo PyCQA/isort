@@ -239,7 +239,9 @@ def _with_from_imports(
 
         import_start = f"from {module} {import_type} "
         from_imports = list(parsed.imports[section]["from"][module])
-        if not config.no_inline_sort or config.force_single_line:
+        if not config.no_inline_sort or (
+            config.force_single_line and module not in config.single_line_exclusions
+        ):
             from_imports = sorting.naturally(
                 from_imports,
                 key=lambda key: sorting.module_key(
@@ -288,7 +290,7 @@ def _with_from_imports(
                     config,
                 )
                 from_imports = []
-            elif config.force_single_line:
+            elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
                 while from_imports:
                     from_import = from_imports.pop(0)

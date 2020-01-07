@@ -423,6 +423,13 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Forces all from imports to appear on their own line",
     )
     parser.add_argument(
+        "--nsl",
+        "--single-line-exclusions",
+        help="One or more modules to exclude from the single line rule.",
+        dest="single_line_exclusions",
+        action="append",
+    )
+    parser.add_argument(
         "--sp",
         "--settings-path",
         dest="settings_path",
