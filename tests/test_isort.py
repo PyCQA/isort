@@ -4722,3 +4722,52 @@ from typing import List, TypeVar
         ).output
         == expected_output
     )
+
+
+def test_nested_comment_handling():
+    test_input = """
+if True:
+    import foo
+
+# comment for bar
+"""
+    assert SortImports(file_contents=test_input).output == test_input
+
+    # If comments appear inside import sections at same indentation they can be re-arranged.
+    test_input = """
+if True:
+    import sys
+
+    # os import
+    import os
+"""
+    expected_output = """
+if True:
+    # os import
+    import os
+    import sys
+"""
+    assert SortImports(file_contents=test_input).output == expected_output
+
+    # Comments shouldn't be unexpectedly rearranged. See issue #1090.
+    test_input = """
+def f():
+    # comment 1
+    # comment 2
+
+    # comment 3
+    # comment 4
+    from a import a
+    from b import b
+
+"""
+    assert SortImports(file_contents=test_input).output == test_input
+
+    # Whitespace shouldn't be adjusted for nested imports. See issue #1090.
+    test_input = """
+try:
+     import foo
+ except ImportError:
+     import bar
+"""
+    assert SortImports(file_contents=test_input).output == test_input
