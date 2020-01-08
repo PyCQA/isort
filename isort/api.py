@@ -149,6 +149,7 @@ def sort_imports(
     add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
     import_section: str = ""
     next_import_section: str = ""
+    next_cimports: bool = False
     in_quote: str = ""
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
@@ -221,12 +222,16 @@ def sort_imports(
                     isort_off = True
                 elif stripped_line == "# isort: split":
                     not_imports = True
-                elif not stripped_line or stripped_line.startswith("#"):
+                elif (
+                    not stripped_line
+                    or stripped_line.startswith("#")
+                    and (not indent or indent + line.lstrip() == line)
+                ):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     contains_imports = True
 
-                    indent = line[: -len(line.lstrip())]
+                    new_indent = line[: -len(line.lstrip())]
                     import_statement = line
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
@@ -252,8 +257,9 @@ def sort_imports(
                     ):
                         cimport_statement = True
 
-                    if cimport_statement != cimports:
+                    if cimport_statement != cimports or (new_indent != indent and import_section):
                         if import_section:
+                            next_cimports = cimport_statement
                             next_import_section = import_statement
                             import_statement = ""
                             not_imports = True
@@ -261,6 +267,7 @@ def sort_imports(
                         else:
                             cimports = cimport_statement
 
+                    indent = new_indent
                     import_section += import_statement
                 else:
                     not_imports = True
@@ -292,6 +299,8 @@ def sort_imports(
                 if not contains_imports:
                     output_stream.write(import_section)
                 else:
+                    leading_whitespace = import_section[: -len(import_section.lstrip())]
+                    trailing_whitespace = import_section[len(import_section.rstrip()) :]
                     if first_import_section and not import_section.lstrip(
                         line_separator
                     ).startswith(COMMENT_INDICATORS):
@@ -310,19 +319,22 @@ def sort_imports(
                     )
                     if indent:
                         sorted_import_section = (
-                            textwrap.indent(sorted_import_section, indent) + line_separator
+                            leading_whitespace
+                            + textwrap.indent(sorted_import_section, indent).strip()
+                            + trailing_whitespace
                         )
 
                     output_stream.write(sorted_import_section)
-                    if not line and next_import_section:
+                    if not line and not indent and next_import_section:
                         output_stream.write(line_separator)
 
                 if indent:
                     output_stream.write(line)
-                    indent = ""
+                    if not next_import_section:
+                        indent = ""
 
                 if next_import_section:
-                    cimports = not cimports
+                    cimports = next_cimports
                     contains_imports = True
                 else:
                     contains_imports = False
