@@ -19,3 +19,8 @@ def test_is_python_file_fifo(tmpdir):
     fifo_file = os.path.join(tmpdir, "fifo_file")
     os.mkfifo(fifo_file)
     assert not main.is_python_file(fifo_file)
+
+
+def test_isort_command():
+    """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
+    assert main.ISortCommand
