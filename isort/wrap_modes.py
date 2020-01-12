@@ -273,6 +273,14 @@ def noqa(**interface):
         return f"{retval}{interface['comment_prefix']} NOQA"
 
 
+@_wrap_mode
+def vertical_hanging_indent_bracket(**interface):
+    if not interface["imports"]:
+        return ""
+    statement = vertical_hanging_indent(**interface)
+    return f'{statement[:-1]}{interface["indent"]})'
+
+
 WrapModes = enum.Enum(  # type: ignore
     "WrapModes", {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
 )
