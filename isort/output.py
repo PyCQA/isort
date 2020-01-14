@@ -333,18 +333,18 @@ def _with_from_imports(
                         )
                     comments = None
             else:
+                above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+                if above_comments:
+                    if new_section_output and config.ensure_newline_before_comments:
+                        new_section_output.append("")
+                    new_section_output.extend(above_comments)
+
                 while from_imports and from_imports[0] in as_imports:
                     from_import = from_imports.pop(0)
                     as_imports[from_import] = sorting.naturally(as_imports[from_import])
                     from_comments = parsed.categorized_comments["straight"].get(
                         f"{module}.{from_import}"
                     )
-                    above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-                    if above_comments:
-                        if new_section_output and config.ensure_newline_before_comments:
-                            new_section_output.append("")
-                        new_section_output.extend(above_comments)
-
                     if (
                         config.keep_direct_and_as_imports
                         and parsed.imports[section]["from"][module][from_import]
@@ -399,13 +399,6 @@ def _with_from_imports(
                         single_import_line += (
                             f"{comments and ';' or config.comment_prefix} " f"{comment}"
                         )
-                        above_comments = parsed.categorized_comments["above"]["from"].pop(
-                            module, None
-                        )
-                        if above_comments:
-                            if new_section_output and config.ensure_newline_before_comments:
-                                new_section_output.append("")
-                            new_section_output.extend(above_comments)
                         new_section_output.append(
                             wrap.line(single_import_line, parsed.line_separator, config)
                         )
