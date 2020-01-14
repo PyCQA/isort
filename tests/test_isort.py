@@ -4771,3 +4771,15 @@ try:
      import bar
 """
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_comments_top_of_file():
+    """Test to ensure comments at top of file are correctly handled. See issue #1091."""
+    test_input = """# comment 1
+
+# comment 2
+# comment 3
+# comment 4
+from foo import *
+"""
+    assert SortImports(file_contents=test_input).output == test_input
