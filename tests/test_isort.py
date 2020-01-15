@@ -4783,3 +4783,26 @@ def test_comments_top_of_file():
 from foo import *
 """
     assert SortImports(file_contents=test_input).output == test_input
+
+    test_input = """# -*- coding: utf-8 -*-
+
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+from datetime import datetime
+
+from .items import WeiboMblogItem
+
+
+class WeiboMblogPipeline(object):
+    def process_item(self, item, spider):
+        if isinstance(item, WeiboMblogItem):
+            item = self._process_item(item, spider)
+        return item
+
+    def _process_item(self, item, spider):
+        item['inserted_at'] = datetime.now()
+        return item
+"""
+    assert SortImports(file_contents=test_input).output == test_input
