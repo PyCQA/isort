@@ -277,6 +277,13 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
         "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
     )
+    parser.add_argument(
+        "-n",
+        "--ensure-newline-before-comments",
+        dest="ensure_newline_before_comments",
+        action="store_true",
+        help="Inserts a blank line before a comment following an import.",
+    )
     inline_args_group.add_argument(
         "--nis",
         "--no-inline-sort",
