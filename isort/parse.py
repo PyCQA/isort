@@ -211,7 +211,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 nested_comments[line_parts[-1]] = comments[0]
 
             if "(" in line.split("#")[0] and index < line_count:
-                while not line.strip().endswith(")") and index < line_count:
+                while not line.split("#")[0].strip().endswith(")") and index < line_count:
                     line, new_comment = parse_comments(in_lines[index])
                     index += 1
                     if new_comment:
@@ -248,7 +248,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             nested_comments[stripped_line] = comments[-1]
                         import_string += line_separator + line
 
-                        while not line.strip().endswith(")") and index < line_count:
+                        while not line.split("#")[0].strip().endswith(")") and index < line_count:
                             line, new_comment = parse_comments(in_lines[index])
                             index += 1
                             if new_comment:

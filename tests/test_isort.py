@@ -4818,3 +4818,13 @@ import datetime as dt2
     assert (
         SortImports(keep_direct_and_as_imports=True, file_contents=test_input).output == test_input
     )
+
+
+def test_parens_in_comment():
+    """Test to ensure isort can handle parens placed in comments. See issue #1103"""
+    test_input = """from foo import ( # (some text in brackets)
+    bar,
+)
+"""
+    expected_output = "from foo import bar  # (some text in brackets)\n"
+    assert SortImports(file_contents=test_input).output == expected_output
