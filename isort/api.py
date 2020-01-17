@@ -233,6 +233,7 @@ def sort_imports(
 
                     new_indent = line[: -len(line.lstrip())]
                     import_statement = line
+                    stripped_line = line.strip().split("#")[0]
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
                     ):
