@@ -4806,3 +4806,15 @@ class WeiboMblogPipeline(object):
         return item
 """
     assert SortImports(file_contents=test_input).output == test_input
+
+
+def test_multiple_aliases():
+    """Test to ensure isort will retain multiple aliases. See issue #1037"""
+    test_input = """import datetime
+import datetime as datetime
+import datetime as dt
+import datetime as dt2
+"""
+    assert (
+        SortImports(keep_direct_and_as_imports=True, file_contents=test_input).output == test_input
+    )
