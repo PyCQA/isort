@@ -4828,3 +4828,13 @@ def test_parens_in_comment():
 """
     expected_output = "from foo import bar  # (some text in brackets)\n"
     assert SortImports(file_contents=test_input).output == expected_output
+
+
+def test_as_imports_mixed():
+    """Test to ensure as imports can be mixed with non as. See issue #908"""
+    test_input = """from datetime import datetime
+import datetime.datetime as dt
+"""
+    assert (
+        SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == test_input
+    )
