@@ -4837,4 +4837,7 @@ import datetime.datetime as dt
     expected_output = """from datetime import datetime
 from datetime import datetime as dt
 """
-    assert SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == expected_output
+    assert (
+        SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
+        == expected_output
+    )
