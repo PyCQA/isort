@@ -305,10 +305,18 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     as_index = just_imports.index("as")
                     if type_of_import == "from":
                         module = just_imports[0] + "." + just_imports[as_index - 1]
-                        as_map[module].append(just_imports[as_index + 1])
+                        as_name = just_imports[as_index + 1]
+                        if as_name not in as_map[module]:
+                            as_map[module].append(as_name)
                     else:
                         module = just_imports[as_index - 1]
-                        as_map[module].append(just_imports[as_index + 1])
+                        as_name = just_imports[as_index + 1]
+                        if as_name not in as_map[module]:
+                            as_map[module].append(as_name)
+                        if "." in module:
+                            type_of_import = "from"
+                            just_imports[:as_index] = module.rsplit(".", 1)
+                            as_index = just_imports.index("as")
                     if not config.combine_as_imports:
                         categorized_comments["straight"][module] = comments
                         comments = []
