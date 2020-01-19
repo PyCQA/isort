@@ -20,6 +20,7 @@ Changelog
     - a new `--interactive` flag has been added to enable the old style behaviour.
   - isort now works on contiguous sections of imports, instead of one whole file at a time.
   - isort now formats all nested "as" imports in the "from" form. `import x.y as a` becomes `from x import y as a`.
+  - `keep_direct_and_as_imports` option now defaults to `True`.
 
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.

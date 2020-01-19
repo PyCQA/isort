@@ -138,7 +138,7 @@ class _Config:
     lines_between_types: int = 0
     combine_as_imports: bool = False
     combine_star: bool = False
-    keep_direct_and_as_imports: bool = False
+    keep_direct_and_as_imports: bool = True
     include_trailing_comma: bool = False
     from_first: bool = False
     verbose: bool = False

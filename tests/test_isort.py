@@ -3349,9 +3349,11 @@ def test_multiple_as_imports() -> None:
         "from a import b as bb\n"
         "from a import b as bb_\n"
     )
-    test_output = SortImports(file_contents=test_input).output
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=False).output
     assert test_output == "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
-    test_output = SortImports(file_contents=test_input, combine_as_imports=True).output
+    test_output = SortImports(
+        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
+    ).output
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
     test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
     assert test_output == test_input
@@ -3366,16 +3368,20 @@ def test_multiple_as_imports() -> None:
         "from a import b\n"
         "from a import b as f\n"
     )
-    test_output = SortImports(file_contents=test_input).output
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=False).output
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = SortImports(file_contents=test_input, combine_as_imports=True).output
+    test_output = SortImports(
+        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
+    ).output
     assert test_output == "from a import b as c, b as e, b as f\n"
     test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = SortImports(file_contents=test_input, no_inline_sort=True).output
+    test_output = SortImports(
+        file_contents=test_input, no_inline_sort=True, keep_direct_and_as_imports=False
+    ).output
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     test_output = SortImports(
         file_contents=test_input, keep_direct_and_as_imports=True, no_inline_sort=True
@@ -3389,7 +3395,10 @@ def test_multiple_as_imports() -> None:
     ).output
     assert test_output == "from a import b, b as c, b as e, b as f\n"
     test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, no_inline_sort=True
+        file_contents=test_input,
+        combine_as_imports=True,
+        no_inline_sort=True,
+        keep_direct_and_as_imports=False,
     ).output
     assert test_output == "from a import b as e, b as c, b as f\n"
     test_output = SortImports(
@@ -3401,7 +3410,7 @@ def test_multiple_as_imports() -> None:
     assert test_output == "from a import b, b as e, b as c, b as f\n"
 
     test_input = "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = SortImports(file_contents=test_input).output
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=False).output
     assert test_output == test_input
     test_output = SortImports(
         file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
@@ -3409,7 +3418,7 @@ def test_multiple_as_imports() -> None:
     assert test_output == test_input
 
     test_input = "import a\nimport a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = SortImports(file_contents=test_input).output
+    test_output = SortImports(file_contents=test_input, keep_direct_and_as_imports=False).output
     assert test_output == "import a as a\nimport a as aa\nimport a as aa_\n"
     test_output = SortImports(
         file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
