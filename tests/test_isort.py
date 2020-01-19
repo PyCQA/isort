@@ -1695,14 +1695,14 @@ def test_placement_control() -> None:
 
     assert test_output == (
         "import os\n"
-        "import p24.imports._argparse as argparse\n"
-        "import p24.imports._subprocess as subprocess\n"
         "import sys\n"
+        "from p24.imports import _VERSION as VERSION\n"
+        "from p24.imports import _argparse as argparse\n"
+        "from p24.imports import _subprocess as subprocess\n"
         "\n"
         "from bottle import Bottle, redirect, response, run\n"
         "\n"
-        "import p24.imports._VERSION as VERSION\n"
-        "import p24.shared.media_wiki_syntax as syntax\n"
+        "from p24.shared import media_wiki_syntax as syntax\n"
     )
 
 
@@ -1747,9 +1747,10 @@ def test_custom_sections() -> None:
     assert test_output == (
         "# Standard Library\n"
         "import os\n"
-        "import p24.imports._argparse as argparse\n"
-        "import p24.imports._subprocess as subprocess\n"
         "import sys\n"
+        "from p24.imports import _VERSION as VERSION\n"
+        "from p24.imports import _argparse as argparse\n"
+        "from p24.imports import _subprocess as subprocess\n"
         "\n"
         "# Django\n"
         "from django.conf import settings\n"
@@ -1763,8 +1764,7 @@ def test_custom_sections() -> None:
         "import pandas as pd\n"
         "\n"
         "# First Party\n"
-        "import p24.imports._VERSION as VERSION\n"
-        "import p24.shared.media_wiki_syntax as syntax\n"
+        "from p24.shared import media_wiki_syntax as syntax\n"
     )
 
 
@@ -3987,7 +3987,7 @@ def test_import_heading_issue_905() -> None:
     }  # type: Dict[str, Any]
     test_input = (
         "# Standard library imports\n"
-        "import os.path as osp\n"
+        "from os import path as osp\n"
         "\n"
         "# Third party imports\n"
         "import numpy as np\n"
@@ -4073,10 +4073,9 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
         "import one.b\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import two.a as aa\n"
-        "\n"
         "# noinspection PyUnresolvedReferences\n"
-        "import two.b as bb\n"
+        "from two import a as aa\n"
+        "from two import b as bb\n"
         "\n"
         "# noinspection PyUnresolvedReferences\n"
         "from three.a import a\n"
@@ -4096,7 +4095,7 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
 def test_moving_comments_issue_726():
     config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
     test_input = (
-        "import Blue.models as BlueModels\n"
+        "from Blue import models as BlueModels\n"
         "# comment for PlaidModel\n"
         "from Plaid.models import PlaidModel\n"
     )
@@ -4104,7 +4103,7 @@ def test_moving_comments_issue_726():
 
     test_input = (
         "# comment for BlueModels\n"
-        "import Blue.models as BlueModels\n"
+        "from Blue import models as BlueModels\n"
         "# comment for PlaidModel\n"
         "# another comment for PlaidModel\n"
         "from Plaid.models import PlaidModel\n"
@@ -4835,6 +4834,7 @@ def test_as_imports_mixed():
     test_input = """from datetime import datetime
 import datetime.datetime as dt
 """
-    assert (
-        SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == test_input
-    )
+    expected_output = """from datetime import datetime
+from datetime import datetime as dt
+"""
+    assert SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output == expected_output
