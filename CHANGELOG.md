@@ -19,6 +19,7 @@ Changelog
   - isort now does nothing, beyond giving instructions and exiting status code 0, when ran with no arguments.
     - a new `--interactive` flag has been added to enable the old style behaviour.
   - isort now works on contiguous sections of imports, instead of one whole file at a time.
+  - isort now formats all nested "as" imports in the "from" form. `import x.y as a` becomes `from x import y as a`.
 
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.
