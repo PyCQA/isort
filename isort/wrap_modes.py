@@ -282,7 +282,7 @@ def vertical_hanging_indent_bracket(**interface):
 
 
 @_wrap_mode
-def veritcal_prefix_from_module_import(**interface):
+def vertical_prefix_from_module_import(**interface):
     if not interface["imports"]:
         return ""
     prefix_statement = interface["statement"]
