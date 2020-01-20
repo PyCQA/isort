@@ -4850,3 +4850,15 @@ from datetime import datetime as dt
         SortImports(file_contents=test_input, keep_direct_and_as_imports=True).output
         == expected_output
     )
+
+
+def test_no_sections_with_future():
+    """Test to ensure no_sections works with future. See issue #807"""
+    test_input = """from __future__ import print_function
+import os
+    """
+    expected_output = """from __future__ import print_function
+
+import os
+"""
+    assert SortImports(file_contents=test_input, no_sections=True).output == expected_output
