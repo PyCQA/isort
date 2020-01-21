@@ -456,9 +456,9 @@ def test_output_modes() -> None:
     )
 
     test_output_prefix_from_module = SortImports(
-    file_contents=REALLY_LONG_IMPORT,
-    multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
-    line_length=40,
+        file_contents=REALLY_LONG_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
+        line_length=40,
     ).output
     assert test_output_prefix_from_module == (
         "from third_party import lib1, lib2\n"
