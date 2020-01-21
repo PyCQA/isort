@@ -455,6 +455,45 @@ def test_output_modes() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4, lib5, lib5ab\n)\n"
     )
 
+    test_output_prefix_from_module = SortImports(
+        file_contents=REALLY_LONG_IMPORT,
+        multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
+        line_length=40,
+    ).output
+    assert test_output_prefix_from_module == (
+        "from third_party import lib1, lib2\n"
+        "from third_party import lib3, lib4\n"
+        "from third_party import lib5, lib6\n"
+        "from third_party import lib7, lib8\n"
+        "from third_party import lib9, lib10\n"
+        "from third_party import lib11, lib12\n"
+        "from third_party import lib13, lib14\n"
+        "from third_party import lib15, lib16\n"
+        "from third_party import lib17, lib18\n"
+        "from third_party import lib20, lib21\n"
+        "from third_party import lib22\n"
+    )
+
+    test_output_prefix_from_module_with_comment = SortImports(
+        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+        multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
+        line_length=40,
+        indent="    ",
+    ).output
+    assert test_output_prefix_from_module_with_comment == (
+        "from third_party import lib1  # comment\n"
+        "from third_party import lib2, lib3\n"
+        "from third_party import lib4, lib5\n"
+        "from third_party import lib6, lib7\n"
+        "from third_party import lib8, lib9\n"
+        "from third_party import lib10, lib11\n"
+        "from third_party import lib12, lib13\n"
+        "from third_party import lib14, lib15\n"
+        "from third_party import lib16, lib17\n"
+        "from third_party import lib18, lib20\n"
+        "from third_party import lib21, lib22\n"
+    )
+
 
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"

@@ -281,6 +281,38 @@ def vertical_hanging_indent_bracket(**interface):
     return f'{statement[:-1]}{interface["indent"]})'
 
 
+@_wrap_mode
+def vertical_prefix_from_module_import(**interface):
+    if not interface["imports"]:
+        return ""
+    prefix_statement = interface["statement"]
+    interface["statement"] += interface["imports"].pop(0)
+    while interface["imports"]:
+        next_import = interface["imports"].pop(0)
+        next_statement = comments.add_to_line(
+            interface["comments"],
+            interface["statement"] + ", " + next_import,
+            removed=interface["remove_comments"],
+            comment_prefix=interface["comment_prefix"],
+        )
+        if (
+            len(next_statement.split(interface["line_separator"])[-1]) + 1
+            > interface["line_length"]
+        ):
+            next_statement = (
+                comments.add_to_line(
+                    interface["comments"],
+                    f"{interface['statement']}",
+                    removed=interface["remove_comments"],
+                    comment_prefix=interface["comment_prefix"],
+                )
+                + f"{interface['line_separator']}{prefix_statement}{next_import}"
+            )
+            interface["comments"] = []
+        interface["statement"] = next_statement
+    return interface["statement"]
+
+
 WrapModes = enum.Enum(  # type: ignore
     "WrapModes", {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
 )
