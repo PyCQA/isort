@@ -1,4 +1,5 @@
 [run]
+omit = isort/_future/*
 include =
   isort/*
   test_*.py
