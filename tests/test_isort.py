@@ -208,6 +208,23 @@ def test_line_length() -> None:
         == test_input
     )
 
+    # Test Case described in issue #1015
+    test_output = SortImports(
+        file_contents=REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
+    ).output
+    assert test_output == (
+        "from third_party import \\\n"
+        "    lib1, lib2, lib3, \\\n"
+        "    lib4, lib5, lib6, \\\n"
+        "    lib7, lib8, lib9, \\\n"
+        "    lib10, lib11, \\\n"
+        "    lib12, lib13, \\\n"
+        "    lib14, lib15, \\\n"
+        "    lib16, lib17, \\\n"
+        "    lib18, lib20, \\\n"
+        "    lib21, lib22\n"
+    )
+
 
 def test_output_modes() -> None:
     """Test setting isort to use various output modes works as expected"""

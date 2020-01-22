@@ -110,8 +110,21 @@ def vertical(**interface):
 def hanging_indent(**interface):
     if not interface["imports"]:
         return ""
-
-    interface["statement"] += interface["imports"].pop(0)
+    next_import = interface["imports"].pop(0)
+    next_statement = interface["statement"] + next_import
+    # Check for first import
+    if len(next_statement) + 3 > interface["line_length"]:
+        next_statement = (
+            comments.add_to_line(
+                interface["comments"],
+                f"{interface['statement']}\\",
+                removed=interface["remove_comments"],
+                comment_prefix=interface["comment_prefix"],
+            )
+            + f"{interface['line_separator']}{interface['indent']}{next_import}"
+        )
+        interface["comments"] = []
+    interface["statement"] = next_statement
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
         next_statement = comments.add_to_line(
