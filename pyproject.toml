@@ -65,6 +65,7 @@ pipreqs = "^0.4.9"
 tomlkit = "0.5.3"
 pip_api = "^0.0.12"
 numpy = "^1.16.0"
+pylama = "^7.7"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
