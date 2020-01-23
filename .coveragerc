@@ -5,7 +5,6 @@ include =
   test_*.py
   .tox/*/lib/python*/site-packages/isort/*
   .tox\*\Lib\site-packages\isort\*
-branch = 1
 
 [paths]
 source = isort/
