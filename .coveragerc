@@ -1,10 +1,18 @@
 [run]
-omit = isort/_future/*
+omit =
+  isort/_future/*
+  except ImportError:
+
 include =
   isort/*
   test_*.py
   .tox/*/lib/python*/site-packages/isort/*
   .tox\*\Lib\site-packages\isort\*
+
+[report]
+exclude_lines =
+  pragma: no cover
+  except ImportError:
 
 [paths]
 source = isort/
