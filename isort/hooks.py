@@ -56,11 +56,11 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
             staged_cmd = ["git", "show", ":%s" % filename]
             staged_contents = get_output(staged_cmd)
 
-            sort = SortImports(file_path=filename, file_contents=staged_contents, check=True)
+            sort = SortImports(filename=filename, file_contents=staged_contents, check=True)
 
             if sort.incorrectly_sorted:
                 errors += 1
                 if modify:
-                    SortImports(file_path=filename, file_contents=staged_contents, check=False)
+                    SortImports(filename=filename, file_contents=staged_contents, check=False)
 
     return errors if strict else 0
