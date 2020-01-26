@@ -13,3 +13,10 @@ auto_pytest_magic(wrap_modes.noqa, auto_allow_exceptions_=(ValueError,))
 auto_pytest_magic(
     wrap_modes.vertical_prefix_from_module_import, auto_allow_exceptions_=(ValueError,)
 )
+auto_pytest_magic(wrap_modes.vertical_hanging_indent_bracket, auto_allow_exceptions_=(ValueError,))
+
+
+def test_wrap_mode_interface():
+    assert (
+        wrap_modes._wrap_mode_interface("statement", [], "", "", 80, [], "", "", True, True) == ""
+    )
