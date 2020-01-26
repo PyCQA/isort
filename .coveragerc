@@ -13,6 +13,7 @@ include =
 exclude_lines =
   pragma: no cover
   except ImportError:
+  if TYPE_CHECKING:
 
 [paths]
 source = isort/
