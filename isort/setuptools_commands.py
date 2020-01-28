@@ -26,9 +26,7 @@ class ISortCommand(setuptools.Command):
     def finalize_options(self) -> None:
         "Get options from config files."
         self.arguments: Dict[str, Any] = {}
-        computed_settings = vars(Config(directory=os.getcwd()))
-        for key, value in computed_settings.items():
-            self.arguments[key] = value
+        self.arguments["settings_path"] = os.getcwd()
 
     def distribution_files(self) -> Iterator[str]:
         """Find distribution packages."""
@@ -55,11 +53,12 @@ class ISortCommand(setuptools.Command):
         arguments["check"] = True
         for path in self.distribution_files():
             for python_file in glob.iglob(os.path.join(path, "*.py")):
+
                 try:
                     incorrectly_sorted = SortImports(python_file, **arguments).incorrectly_sorted
                     if incorrectly_sorted:
                         wrong_sorted_files = True
-                except OSError as error:
+                except OSError as error:  # pragma: no cover
                     warn(f"Unable to parse file {python_file} due to {error}")
         if wrong_sorted_files:
             sys.exit(1)

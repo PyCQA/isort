@@ -1,10 +1,20 @@
 import os
 import sys
+from contextlib import contextmanager
 from typing import Any, Dict, List
 
 from pylama.lint import Linter as BaseLinter
 
 from . import SortImports
+
+
+@contextmanager
+def supress_stdout():
+    stdout = sys.stdout
+    with open(os.devnull, "w") as devnull:
+        sys.stdout = devnull
+        yield
+        sys.stdout = stdout
 
 
 class Linter(BaseLinter):
@@ -14,10 +24,7 @@ class Linter(BaseLinter):
 
     def run(self, path: str, **meta: Any) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
-        with open(os.devnull, "w") as devnull:
-            # Suppress isort messages
-            sys.stdout = devnull
-
+        with supress_stdout():
             if SortImports(path, check=True).incorrectly_sorted:
                 return [
                     {"lnum": 0, "col": 0, "text": "Incorrectly sorted imports.", "type": "ISORT"}
