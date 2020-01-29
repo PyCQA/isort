@@ -29,6 +29,7 @@ class ExistingSyntaxErrors(ISortError):
             f"isort was told to sort imports within code that contains syntax errors: "
             f"{file_path}."
         )
+        self.file_path = file_path
 
 
 class IntroducedSyntaxErrors(ISortError):
@@ -39,6 +40,7 @@ class IntroducedSyntaxErrors(ISortError):
             f"isort introduced syntax errors when attempting to sort the imports contained within "
             f"{file_path}."
         )
+        self.file_path = file_path
 
 
 class FileSkipped(ISortError):
@@ -77,3 +79,4 @@ class ProfileDoesNotExist(ISortError):
             f"Specified profile of {profile} does not exist. "
             f"Available profiles: {','.join(profiles)}."
         )
+        self.profile = profile
