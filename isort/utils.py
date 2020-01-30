@@ -12,7 +12,7 @@ def exists_case_sensitive(path: str) -> bool:
     Python can only import using the case of the real file.
     """
     result = os.path.exists(path)
-    if (sys.platform.startswith("win") or sys.platform == "darwin") and result:
+    if (sys.platform.startswith("win") or sys.platform == "darwin") and result:  # pragma: no cover
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result
