@@ -17,7 +17,7 @@ def test_isort_command_smoke(src_dir):
     command.finalize_options()
     try:
         command.run()
-    except Exception:
+    except BaseException:
         pass
 
     command.distribution.package_dir = {"": "isort"}
@@ -32,5 +32,5 @@ def test_isort_command_smoke(src_dir):
     command.finalize_options()
     try:
         command.run()
-    except Exception:
+    except BaseException:
         pass
