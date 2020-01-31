@@ -4918,3 +4918,22 @@ import os
 import os
 """
     assert SortImports(file_contents=test_input, no_sections=True).output == expected_output
+
+
+def test_no_lines_too_long():
+    """Test to ensure no lines end up too long. See issue: #1015"""
+    test_input = """from package1 import first_package, \
+second_package
+from package2 import \\
+    first_package
+    """
+    expected_output = """from package1 import \\
+    first_package, \\
+    second_package
+from package2 import \\
+    first_package
+"""
+    assert (
+        SortImports(file_contents=test_input, line_length=25, multi_line_output=2).output
+        == expected_output
+    )
