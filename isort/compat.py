@@ -10,16 +10,6 @@ from .io import File
 from .settings import Config
 
 
-def get_settings_path(settings_path: Optional[Path], current_file_path: Optional[Path]) -> Path:
-    if settings_path:
-        return settings_path
-
-    if current_file_path:
-        return current_file_path.resolve().parent
-    else:
-        return Path.cwd()
-
-
 class SortImports:
     incorrectly_sorted = False
     skipped = False
