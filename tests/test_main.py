@@ -5,8 +5,15 @@ import pytest
 from hypothesis_auto import auto_pytest_magic
 
 from isort import main
+from isort.settings import DEFAULT_CONFIG
 
 auto_pytest_magic(main.sort_imports)
+
+
+def test_iter_source_code(tmpdir):
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import os, sys\n")
+    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [])) == (tmp_file,)
 
 
 def test_is_python_file():
