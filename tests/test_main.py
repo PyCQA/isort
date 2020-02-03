@@ -2,8 +2,11 @@ import os
 import sys
 
 import pytest
+from hypothesis_auto import auto_pytest_magic
 
 from isort import main
+
+auto_pytest_magic(main.sort_imports)
 
 
 def test_is_python_file():
@@ -12,6 +15,7 @@ def test_is_python_file():
     assert main.is_python_file("file.pyx")
     assert not main.is_python_file("file.pyc")
     assert not main.is_python_file("file.txt")
+    assert not main.is_python_file("file.pex")
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="cannot create fifo file on Windows platform")

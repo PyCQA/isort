@@ -73,7 +73,7 @@ def sort_imports(file_name: str, **arguments: Any) -> Optional[SortAttempt]:
     try:
         result = SortImports(file_name, **arguments)
         return SortAttempt(result.incorrectly_sorted, result.skipped)
-    except OSError as error:  # pragma: no cover
+    except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
 
