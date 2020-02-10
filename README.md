@@ -119,7 +119,7 @@ isort mypythonfile.py mypythonfile2.py
 or recursively:
 
 ```bash
-isort -rc .
+isort
 ```
 
 *which is equivalent to:*
@@ -138,7 +138,7 @@ Finally, to atomically run isort against a project, only applying
 changes if they don't introduce syntax errors do:
 
 ```bash
-isort -rc --atomic .
+isort --atomic .
 ```
 
 (Note: this is disabled by default as it keeps isort from being able to
@@ -609,7 +609,7 @@ formatted by running it with `-c`. Any files that contain incorrectly
 sorted and/or formatted imports will be outputted to `stderr`.
 
 ```bash
-isort **/*.py -c -vb
+isort **/*.py -c -v
 
 SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good!
 ERROR: /home/timothy/Projects/Open_Source/isort/isort/isort.py Imports are incorrectly sorted.
