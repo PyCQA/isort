@@ -1,8 +1,9 @@
 from unittest.mock import MagicMock, patch
 
-import isort.format
 import pytest
 from hypothesis_auto import auto_pytest_magic
+
+import isort.format
 
 auto_pytest_magic(isort.format.show_unified_diff)
 
