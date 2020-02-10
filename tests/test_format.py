@@ -5,7 +5,7 @@ from hypothesis_auto import auto_pytest_magic
 
 import isort.format
 
-auto_pytest_magic(isort.format.show_unified_diff)
+auto_pytest_magic(isort.format.show_unified_diff, auto_allow_exceptions_=(UnicodeEncodeError,))
 
 
 def test_ask_whether_to_apply_changes_to_file():
