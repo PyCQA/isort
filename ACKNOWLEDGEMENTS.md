@@ -88,6 +88,7 @@ Documenters
 - Brian Peiris (@brianpeiris)
 - Tim Graham (@timgraham)
 - Josh Soref (@jsoref)
+- Aaron Brown (@aaronvbrown)
 
 --------------------------------------------
 
