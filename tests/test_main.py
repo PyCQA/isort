@@ -3,6 +3,7 @@ import sys
 
 import pytest
 from hypothesis_auto import auto_pytest_magic
+
 from isort import main
 from isort.settings import DEFAULT_CONFIG
 
