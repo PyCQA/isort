@@ -33,14 +33,14 @@ def sorted_imports(
     sections: Iterable[str] = itertools.chain(parsed.sections, config.forced_separate)
 
     if config.no_sections:
-        parsed.imports["no_sections"] = {"straight": [], "from": {}}
+        parsed.imports["no_sections"] = {"straight": {}, "from": {}}
         base_sections: Tuple[str, ...] = ()
         for section in sections:
             if section == "FUTURE":
                 base_sections = ("FUTURE",)
                 continue
-            parsed.imports["no_sections"]["straight"].extend(
-                parsed.imports[section].get("straight", [])
+            parsed.imports["no_sections"]["straight"].update(
+                parsed.imports[section].get("straight", {})
             )
             parsed.imports["no_sections"]["from"].update(parsed.imports[section].get("from", {}))
         sections = base_sections + ("no_sections",)

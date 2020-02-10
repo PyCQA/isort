@@ -4920,6 +4920,13 @@ import os
     assert SortImports(file_contents=test_input, no_sections=True).output == expected_output
 
 
+def test_no_sections_with_as_import():
+    """Test to ensure no_sections work with as import."""
+    test_input = """import oumpy as np
+import sympy
+"""
+    assert SortImports(file_contents=test_input, no_sections=True).output == test_input
+
 def test_no_lines_too_long():
     """Test to ensure no lines end up too long. See issue: #1015"""
     test_input = """from package1 import first_package, \
