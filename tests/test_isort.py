@@ -4927,6 +4927,7 @@ import sympy
 """
     assert SortImports(file_contents=test_input, no_sections=True).output == test_input
 
+
 def test_no_lines_too_long():
     """Test to ensure no lines end up too long. See issue: #1015"""
     test_input = """from package1 import first_package, \
