@@ -611,8 +611,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             )
         else:
             # https://github.com/python/typeshed/pull/2814
-            attempt_iterator = (  # type: ignore
-                sort_imports(
+            attempt_iterator = (
+                sort_imports(  # type: ignore
                     file_name,
                     check=check,
                     ask_to_apply=ask_to_apply,
