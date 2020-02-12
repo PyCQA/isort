@@ -523,6 +523,20 @@ def test_output_modes() -> None:
         "        BasicTextFieldEmbedder"
     )
 
+    test_input = (
+        "class A:\n"
+        "    def a():\n"
+        "        from allennlp.common.registrable import Registrable"
+        "  # import here to avoid circular imports\n"
+        "\n\n"
+        "class B:\n"
+        "    def b():\n"
+        "        from allennlp.common.registrable import Registrable"
+        "  # import here to avoid circular imports\n"
+    )
+    test_output = SortImports(file_contents=test_input, line_length=100).output
+    assert test_output == test_input
+
 
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
