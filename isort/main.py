@@ -387,8 +387,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument(
         "--sp",
         "--settings-path",
+        "--settings-file",
+        "--settings",
         dest="settings_path",
-        help="Explicitly set the settings path instead of auto determining based on file location.",
+        help="Explicitly set the settings path or file instead of auto determining "
+        "based on file location.",
     )
     parser.add_argument(
         "-t",
@@ -535,12 +538,13 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     show_config: bool = arguments.pop("show_config", False)
 
     if "settings_path" in arguments:
-        sp = arguments["settings_path"]
-        arguments["settings_path"] = (
-            os.path.abspath(sp) if os.path.isdir(sp) else os.path.dirname(os.path.abspath(sp))
-        )
-        if not os.path.isdir(arguments["settings_path"]):
+        if os.path.isfile(arguments["settings_path"]):
+            arguments["settings_file"] = os.path.abspath(arguments["settings_path"])
+            arguments["settings_path"] = os.path.dirname(arguments["settings_file"])
+        elif not os.path.isdir(arguments["settings_path"]):
             warn(f"settings_path dir does not exist: {arguments['settings_path']}")
+        else:
+            arguments["settings_path"] = os.path.abspath(arguments["settings_path"])
 
     if "virtual_env" in arguments:
         venv = arguments["virtual_env"]
