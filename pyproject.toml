@@ -37,7 +37,7 @@ toml = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
 
 [tool.poetry.extras]
-pipfile = ["pipreqs", "tomlkit", "requirementslib"]
+pipfile = ["pipreqs", "tomlkit", "requirementslib", "pip-shims<=0.3.4"]
 pyproject = ["toml"]
 requirements = ["pipreqs", "pip-api"]
 xdg_home = ["appdirs"]
@@ -67,6 +67,7 @@ pip_api = "^0.0.12"
 numpy = "^1.16.0"
 pylama = "^7.7"
 pip = "^20.0.2"
+pip-shims = "<=0.3.4"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
