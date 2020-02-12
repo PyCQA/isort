@@ -537,6 +537,7 @@ def test_output_modes() -> None:
     test_output = SortImports(file_contents=test_input, line_length=100).output
     assert test_output == test_input
 
+
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
     test_output = SortImports(
