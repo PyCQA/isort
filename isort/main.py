@@ -573,6 +573,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         filter_files = config_dict.pop("filter_files", False)
         check = config_dict.pop("check", False)
         show_diff = config_dict.pop("show_diff", False)
+        write_to_stdout = config_dict.pop("write_to_stdout", False)
         config = Config(**config_dict)
         if show_config:
             pprint(config.__dict__)
@@ -604,7 +605,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                     sort_imports,
                     check=check,
                     ask_to_apply=ask_to_apply,
-                    show_diff=show_diff,
+                    write_to_stdout=write_to_stdout,
                     **config_dict,
                 ),
                 file_names,
@@ -617,6 +618,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                     check=check,
                     ask_to_apply=ask_to_apply,
                     show_diff=show_diff,
+                    write_to_stdout=write_to_stdout,
                     **config_dict,
                 )
                 for file_name in file_names
