@@ -511,6 +511,18 @@ def test_output_modes() -> None:
         "from third_party import lib21, lib22\n"
     )
 
+    test_input = (
+        "def a():\n"
+        "    from allennlp.modules.text_field_embedders.basic_text_field_embedder"
+        " import BasicTextFieldEmbedder"
+    )
+    test_output = SortImports(file_contents=test_input, line_length=100).output
+    assert test_output == (
+        "def a():\n"
+        "    from allennlp.modules.text_field_embedders.basic_text_field_embedder import \\\n"
+        "        BasicTextFieldEmbedder"
+    )
+
 
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
