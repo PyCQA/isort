@@ -14,7 +14,7 @@ import warnings
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Set, Tuple
+from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Set, Tuple
 from warnings import warn
 
 from . import stdlibs
@@ -204,7 +204,19 @@ _DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
 
 
 class Config(_Config):
-    def __init__(self, settings_file: str = "", settings_path: str = "", **config_overrides):
+    def __init__(
+        self,
+        settings_file: str = "",
+        settings_path: str = "",
+        config: Optional[_Config] = None,
+        **config_overrides,
+    ):
+        if config:
+            config_vars = vars(config)
+            config_vars.update(config_overrides)
+            config_vars["py_version"] = config_vars["py_version"].replace("py", "")
+            return super().__init__(**config_vars)  # type: ignore
+
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
         config_settings: Dict[str, Any]
@@ -274,6 +286,7 @@ class Config(_Config):
         # Remove any config values that are used for creating config object but
         # aren't defined in dataclass
         combined_config.pop("source", None)
+        combined_config.pop("sources", None)
         if known_other:
             for known_key in known_other.keys():
                 combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)

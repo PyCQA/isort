@@ -70,7 +70,6 @@ pip-selfcheck.json
 # Python3 Venv Files
 .venv/
 pyvenv.cfg
-poetry.lock
 
 # mypy
 .mypy_cache

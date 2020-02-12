@@ -312,9 +312,15 @@ def sort_imports(
                         import_section = line_separator.join(
                             line.lstrip() for line in import_section.split(line_separator)
                         )
+                        out_config = Config(
+                            config=config, line_length=max(config.line_length - len(indent), 0)
+                        )
+                    else:
+                        out_config = config
+
                     sorted_import_section = output.sorted_imports(
                         parse.file_contents(import_section, config=config),
-                        config,
+                        out_config,
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
