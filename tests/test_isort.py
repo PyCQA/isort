@@ -4971,3 +4971,74 @@ from package2 import \\
         SortImports(file_contents=test_input, line_length=25, multi_line_output=2).output
         == expected_output
     )
+
+
+def test_python_future_category():
+    """Test to ensure a manual python future category will work as needed to install aliases
+
+    see: Issue #1005
+    """
+    test_input = """from __future__ import absolute_import
+
+from future import standard_library
+
+standard_library.install_aliases()
+
+import os
+import re
+import time
+
+from logging.handlers import SysLogHandler
+
+from builtins import len, object, str
+
+from katlogger import log_formatter, log_rollover
+
+from .query_elastic import QueryElastic
+"""
+    expected_output = """from __future__ import absolute_import
+
+from future import standard_library
+
+standard_library.install_aliases()
+
+# Python Standard Library
+import os
+import re
+import time
+
+from builtins import len, object, str
+from logging.handlers import SysLogHandler
+
+# CAM Packages
+from katlogger import log_formatter, log_rollover
+
+# Explicitly Local
+from .query_elastic import QueryElastic
+"""
+    assert (
+        SortImports(
+            file_contents=test_input,
+            force_grid_wrap=False,
+            include_trailing_comma=True,
+            indent=4,
+            line_length=90,
+            multi_line_output=3,
+            lines_between_types=1,
+            sections=[
+                "FUTURE_LIBRARY",
+                "FUTURE_THIRDPARTY",
+                "STDLIB",
+                "THIRDPARTY",
+                "FIRSTPARTY",
+                "LOCALFOLDER",
+            ],
+            import_heading_stdlib="Python Standard Library",
+            import_heading_thirdparty="Third Library",
+            import_heading_firstparty="CAM Packages",
+            import_heading_localfolder="Explicitly Local",
+            known_first_party=["katlogger"],
+            known_future_thirdparty=["future"],
+        ).output
+        == expected_output
+    )
