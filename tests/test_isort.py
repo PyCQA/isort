@@ -2220,17 +2220,20 @@ def test_pyproject_conf_file(tmpdir) -> None:
         "[tool.isort]\n"
         "lines_between_types=1\n"
         'known_common="nose"\n'
+        'known_first_party="foo"\n'
         'import_heading_common="Common Library"\n'
         'import_heading_stdlib="Standard Library"\n'
         'sections="FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER,COMMON"\n'
         "include_trailing_comma = true\n"
     )
-    test_input = "import os\nfrom nose import *\nimport nose\nfrom os import path"
+    test_input = "import os\nfrom nose import *\nimport nose\nfrom os import path\nimport foo"
     correct_output = (
         "# Standard Library\n"
         "import os\n"
         "\n"
         "from os import path\n"
+        "\n"
+        "import foo\n"
         "\n"
         "# Common Library\n"
         "import nose\n"
