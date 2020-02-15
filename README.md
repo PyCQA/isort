@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
-[![Build Status](https://travis-ci.org/timothycrosley/isort.svg?branch=master)](https://travis-ci.org/timothycrosley/isort)
+[![Build Status](https://travis-ci.org/timothycrosley/isort.svg?branch=develop)](https://travis-ci.org/timothycrosley/isort)
 [![Code coverage Status](https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/timothycrosley/isort)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/hug/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
