@@ -7,7 +7,7 @@ ASCII_ART = rf"""
                 | |\__ \/\_\/| |  | |_
                 |_|\___/\___/\_/   \_/
 
- isort your Python imports for you so you don't have to.
+      isort your imports, so you don't have to.
 
                     VERSION {__version__}
 """

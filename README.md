@@ -1,4 +1,4 @@
-[![isort - isort your imports for you, so you don't have to](https://raw.githubusercontent.com/timothycrosley/isort/develop/art/logo_large.png)](https://timothycrosley.github.io/isort/)
+[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/timothycrosley/isort/develop/art/logo_large.png)](https://timothycrosley.github.io/isort/)
 
 ------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ _________________
 [Read Latest Documentation](https://timothycrosley.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/timothycrosley/isort/)
 _________________
 
-isort your imports for you, so you don't have to.
+isort your imports, so you don't have to.
 
 isort is a Python utility / library to sort imports alphabetically, and
 automatically separated into sections and by type. It provides a command line
