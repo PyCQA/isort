@@ -1,4 +1,4 @@
-[![isort - isort your imports for you, so you don't have to](https://raw.githubusercontent.com/timothycrosley/isort/develop/art/logo_large.png)](https://timothycrosley.github.io/isort/)
+[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/timothycrosley/isort/develop/art/logo_large.png)](https://timothycrosley.github.io/isort/)
 
 ------------------------------------------------------------------------
 
