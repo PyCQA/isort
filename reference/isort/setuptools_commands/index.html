@@ -1,0 +1,2476 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../art/logo.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+    
+    
+      
+        <title>Setuptools Commands - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#fb8c00">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="orange" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-isortsetuptools_commands" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="isort" class="md-header-nav__button md-logo">
+          
+            <img src="../../../art/logo.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              isort
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Setuptools Commands
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="isort" class="md-nav__button md-logo">
+      
+        <img src="../../../art/logo.png" width="48" height="48">
+      
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Contributing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Contributing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+      1. Contributing Guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+      2. Coding Standard
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+      3. Code Of Conduct
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+      4. Acknowledgements
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
+    
+    <label class="md-nav__link" for="nav-4-1">
+      Isort
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-1">
+        Isort
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../compat/" title="Compat" class="md-nav__link">
+      Compat
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../format/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hooks/" title="Hooks" class="md-nav__link">
+      Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../io/" title="Io" class="md-nav__link">
+      Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../isort/" title="Isort" class="md-nav__link">
+      Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../logo/" title="Logo" class="md-nav__link">
+      Logo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../main/" title="Main" class="md-nav__link">
+      Main
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../output/" title="Output" class="md-nav__link">
+      Output
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../parse/" title="Parse" class="md-nav__link">
+      Parse
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../profiles/" title="Profiles" class="md-nav__link">
+      Profiles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pylama_isort/" title="Pylama Isort" class="md-nav__link">
+      Pylama Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sections/" title="Sections" class="md-nav__link">
+      Sections
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Setuptools Commands
+      </label>
+    
+    <a href="./" title="Setuptools Commands" class="md-nav__link md-nav__link--active">
+      Setuptools Commands
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#isortcommand" class="md-nav__link">
+    ISortCommand
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#announce" class="md-nav__link">
+    announce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy_file" class="md-nav__link">
+    copy_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy_tree" class="md-nav__link">
+    copy_tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug_print" class="md-nav__link">
+    debug_print
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distribution_files" class="md-nav__link">
+    distribution_files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump_options" class="md-nav__link">
+    dump_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_dirname" class="md-nav__link">
+    ensure_dirname
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_filename" class="md-nav__link">
+    ensure_filename
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_finalized" class="md-nav__link">
+    ensure_finalized
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_string" class="md-nav__link">
+    ensure_string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_string_list" class="md-nav__link">
+    ensure_string_list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute" class="md-nav__link">
+    execute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finalize_options" class="md-nav__link">
+    finalize_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_command_name" class="md-nav__link">
+    get_command_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_finalized_command" class="md-nav__link">
+    get_finalized_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_sub_commands" class="md-nav__link">
+    get_sub_commands
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize_options" class="md-nav__link">
+    initialize_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_archive" class="md-nav__link">
+    make_archive
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_file" class="md-nav__link">
+    make_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mkpath" class="md-nav__link">
+    mkpath
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#move_file" class="md-nav__link">
+    move_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reinitialize_command" class="md-nav__link">
+    reinitialize_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_command" class="md-nav__link">
+    run_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_undefined_options" class="md-nav__link">
+    set_undefined_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn" class="md-nav__link">
+    spawn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn" class="md-nav__link">
+    warn
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sorting/" title="Sorting" class="md-nav__link">
+      Sorting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../wrap/" title="Wrap" class="md-nav__link">
+      Wrap
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../wrap_modes/" title="Wrap Modes" class="md-nav__link">
+      Wrap Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1-24" type="checkbox" id="nav-4-1-24">
+    
+    <label class="md-nav__link" for="nav-4-1-24">
+      Stdlibs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-4-1-24">
+        Stdlibs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/all/" title="All" class="md-nav__link">
+      All
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py2/" title="Py2" class="md-nav__link">
+      Py2
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py27/" title="Py27" class="md-nav__link">
+      Py27
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py3/" title="Py3" class="md-nav__link">
+      Py3
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py35/" title="Py35" class="md-nav__link">
+      Py35
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py36/" title="Py36" class="md-nav__link">
+      Py36
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py37/" title="Py37" class="md-nav__link">
+      Py37
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py38/" title="Py38" class="md-nav__link">
+      Py38
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#isortcommand" class="md-nav__link">
+    ISortCommand
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#announce" class="md-nav__link">
+    announce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy_file" class="md-nav__link">
+    copy_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy_tree" class="md-nav__link">
+    copy_tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug_print" class="md-nav__link">
+    debug_print
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distribution_files" class="md-nav__link">
+    distribution_files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump_options" class="md-nav__link">
+    dump_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_dirname" class="md-nav__link">
+    ensure_dirname
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_filename" class="md-nav__link">
+    ensure_filename
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_finalized" class="md-nav__link">
+    ensure_finalized
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_string" class="md-nav__link">
+    ensure_string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure_string_list" class="md-nav__link">
+    ensure_string_list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute" class="md-nav__link">
+    execute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finalize_options" class="md-nav__link">
+    finalize_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_command_name" class="md-nav__link">
+    get_command_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_finalized_command" class="md-nav__link">
+    get_finalized_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_sub_commands" class="md-nav__link">
+    get_sub_commands
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize_options" class="md-nav__link">
+    initialize_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_archive" class="md-nav__link">
+    make_archive
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make_file" class="md-nav__link">
+    make_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mkpath" class="md-nav__link">
+    mkpath
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#move_file" class="md-nav__link">
+    move_file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reinitialize_command" class="md-nav__link">
+    reinitialize_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_command" class="md-nav__link">
+    run_command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_undefined_options" class="md-nav__link">
+    set_undefined_options
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spawn" class="md-nav__link">
+    spawn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn" class="md-nav__link">
+    warn
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/timothycrosley/isort/edit/master/reference/isort/setuptools_commands.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-isortsetuptools_commands">Module isort.setuptools_commands</h1>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span> <span class="nn">setuptools</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SortImports</span>
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span> <span class="n">Config</span>
+
+<span class="k">class</span> <span class="nc">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;The :class:`ISortCommand` class is used by setuptools to perform</span>
+
+<span class="sd">    imports checks on registered modules.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Run isort on modules registered in setuptools&quot;</span>
+
+    <span class="n">user_options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">initialize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">default_settings</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">DEFAULT_CONFIG</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">default_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">finalize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="s2">&quot;Get options from config files.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">distribution_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+        <span class="sd">&quot;&quot;&quot;Find distribution packages.&quot;&quot;&quot;</span>
+
+        <span class="c1"># This is verbatim from flake8</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="o">.</span><span class="n">packages</span><span class="p">:</span>
+
+            <span class="n">package_dirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="o">.</span><span class="n">package_dir</span> <span class="ow">or</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">package</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="o">.</span><span class="n">packages</span><span class="p">:</span>
+
+                <span class="n">pkg_dir</span> <span class="o">=</span> <span class="n">package</span>
+
+                <span class="k">if</span> <span class="n">package</span> <span class="ow">in</span> <span class="n">package_dirs</span><span class="p">:</span>
+
+                    <span class="n">pkg_dir</span> <span class="o">=</span> <span class="n">package_dirs</span><span class="p">[</span><span class="n">package</span><span class="p">]</span>
+
+                <span class="k">elif</span> <span class="s2">&quot;&quot;</span> <span class="ow">in</span> <span class="n">package_dirs</span><span class="p">:</span>
+
+                    <span class="n">pkg_dir</span> <span class="o">=</span> <span class="n">package_dirs</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">pkg_dir</span>
+
+                <span class="k">yield</span> <span class="n">pkg_dir</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="o">.</span><span class="n">py_modules</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="o">.</span><span class="n">py_modules</span><span class="p">:</span>
+
+                <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.py&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+
+        <span class="c1"># Don&#39;t miss the setup.py file itself</span>
+
+        <span class="k">yield</span> <span class="s2">&quot;setup.py&quot;</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">arguments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span>
+
+        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_files</span><span class="p">():</span>
+
+            <span class="k">for</span> <span class="n">python_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;*.py&quot;</span><span class="p">)):</span>
+
+                <span class="k">try</span><span class="p">:</span>
+
+                    <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="n">SortImports</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="o">**</span><span class="n">arguments</span><span class="p">)</span><span class="o">.</span><span class="n">incorrectly_sorted</span>
+
+                    <span class="k">if</span> <span class="n">incorrectly_sorted</span><span class="p">:</span>
+
+                        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">True</span>
+
+                <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                    <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to parse file {python_file} due to {error}&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">wrong_sorted_files</span><span class="p">:</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h2 id="classes">Classes</h2>
+<h3 id="isortcommand">ISortCommand</h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ISortCommand</span><span class="p">(</span>
+    <span class="n">dist</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kw</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>The :class:<code>ISortCommand</code> class is used by setuptools to perform
+imports checks on registered modules.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">class</span> <span class="nv">ISortCommand</span><span class="ss">(</span><span class="nv">setuptools</span>.<span class="nv">Command</span><span class="ss">)</span>:
+
+    <span class="s2">&quot;&quot;&quot;</span><span class="s">The :class:`ISortCommand` class is used by setuptools to perform</span>
+
+    <span class="nv">imports</span> <span class="nv">checks</span> <span class="nv">on</span> <span class="nv">registered</span> <span class="nv">modules</span>.
+
+    <span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="nv">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Run isort on modules registered in setuptools</span><span class="s2">&quot;</span>
+
+    <span class="nv">user_options</span>: <span class="nv">List</span>[<span class="nv">Any</span>] <span class="o">=</span> []
+
+    <span class="nv">def</span> <span class="nv">initialize_options</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">None</span>:
+
+        <span class="nv">default_settings</span> <span class="o">=</span> <span class="nv">vars</span><span class="ss">(</span><span class="nv">DEFAULT_CONFIG</span><span class="ss">)</span>.<span class="nv">copy</span><span class="ss">()</span>
+
+        <span class="k">for</span> <span class="nv">key</span>, <span class="nv">value</span> <span class="nv">in</span> <span class="nv">default_settings</span>.<span class="nv">items</span><span class="ss">()</span>:
+
+            <span class="nv">setattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">key</span>, <span class="nv">value</span><span class="ss">)</span>
+
+    <span class="nv">def</span> <span class="nv">finalize_options</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">None</span>:
+
+        <span class="s2">&quot;</span><span class="s">Get options from config files.</span><span class="s2">&quot;</span>
+
+        <span class="nv">self</span>.<span class="nv">arguments</span>: <span class="nv">Dict</span>[<span class="nv">str</span>, <span class="nv">Any</span>] <span class="o">=</span> {}
+
+        <span class="nv">self</span>.<span class="nv">arguments</span>[<span class="s2">&quot;</span><span class="s">settings_path</span><span class="s2">&quot;</span>] <span class="o">=</span> <span class="nv">os</span>.<span class="nv">getcwd</span><span class="ss">()</span>
+
+    <span class="nv">def</span> <span class="nv">distribution_files</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Iterator</span>[<span class="nv">str</span>]:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Find distribution packages.</span><span class="s2">&quot;&quot;&quot;</span>
+
+        # <span class="nv">This</span> <span class="nv">is</span> <span class="nv">verbatim</span> <span class="nv">from</span> <span class="nv">flake8</span>
+
+        <span class="k">if</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">packages</span>:
+
+            <span class="nv">package_dirs</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">package_dir</span> <span class="nv">or</span> {}
+
+            <span class="k">for</span> <span class="nv">package</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">packages</span>:
+
+                <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package</span>
+
+                <span class="k">if</span> <span class="nv">package</span> <span class="nv">in</span> <span class="nv">package_dirs</span>:
+
+                    <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package_dirs</span>[<span class="nv">package</span>]
+
+                <span class="nv">elif</span> <span class="s2">&quot;&quot;</span> <span class="nv">in</span> <span class="nv">package_dirs</span>:
+
+                    <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package_dirs</span>[<span class="s2">&quot;&quot;</span>] <span class="o">+</span> <span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">sep</span> <span class="o">+</span> <span class="nv">pkg_dir</span>
+
+                <span class="nv">yield</span> <span class="nv">pkg_dir</span>.<span class="nv">replace</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">.</span><span class="s2">&quot;</span>, <span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">sep</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">py_modules</span>:
+
+            <span class="k">for</span> <span class="nv">filename</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">py_modules</span>:
+
+                <span class="nv">yield</span> <span class="s2">&quot;</span><span class="s">%s.py</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nv">filename</span>
+
+        # <span class="nv">Don</span><span class="s1">&#39;</span><span class="s">t miss the setup.py file itself</span>
+
+        <span class="nv">yield</span> <span class="s2">&quot;</span><span class="s">setup.py</span><span class="s2">&quot;</span>
+
+    <span class="nv">def</span> <span class="nv">run</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">None</span>:
+
+        <span class="nv">arguments</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">arguments</span>
+
+        <span class="nv">wrong_sorted_files</span> <span class="o">=</span> <span class="nv">False</span>
+
+        <span class="nv">arguments</span>[<span class="s2">&quot;</span><span class="s">check</span><span class="s2">&quot;</span>] <span class="o">=</span> <span class="nv">True</span>
+
+        <span class="k">for</span> <span class="nv">path</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution_files</span><span class="ss">()</span>:
+
+            <span class="k">for</span> <span class="nv">python_file</span> <span class="nv">in</span> <span class="nv">glob</span>.<span class="nv">iglob</span><span class="ss">(</span><span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">join</span><span class="ss">(</span><span class="nv">path</span>, <span class="s2">&quot;</span><span class="s">*.py</span><span class="s2">&quot;</span><span class="ss">))</span>:
+
+                <span class="nv">try</span>:
+
+                    <span class="nv">incorrectly_sorted</span> <span class="o">=</span> <span class="nv">SortImports</span><span class="ss">(</span><span class="nv">python_file</span>, <span class="o">**</span><span class="nv">arguments</span><span class="ss">)</span>.<span class="nv">incorrectly_sorted</span>
+
+                    <span class="k">if</span> <span class="nv">incorrectly_sorted</span>:
+
+                        <span class="nv">wrong_sorted_files</span> <span class="o">=</span> <span class="nv">True</span>
+
+                <span class="nv">except</span> <span class="nv">OSError</span> <span class="nv">as</span> <span class="nv">error</span>:  # <span class="nv">pragma</span>: <span class="nv">no</span> <span class="nv">cover</span>
+
+                    <span class="nv">warn</span><span class="ss">(</span><span class="nv">f</span><span class="s2">&quot;</span><span class="s">Unable to parse file {python_file} due to {error}</span><span class="s2">&quot;</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">wrong_sorted_files</span>:
+
+            <span class="nv">sys</span>.<span class="k">exit</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li>setuptools.Command</li>
+<li>distutils.cmd.Command</li>
+</ul>
+<h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><span class="n">command_consumes_arguments</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">description</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">sub_commands</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="n">user_options</span>
+</pre></div>
+
+
+<h4 id="methods">Methods</h4>
+<h5 id="announce">announce</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">announce</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">msg</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>If the current verbosity level is of greater than or equal to
+'level' print 'msg' to stdout.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">announce</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">msg</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">If the current verbosity level is of greater than or equal to</span>
+
+        <span class="s1">&#39;</span><span class="s">level</span><span class="s1">&#39;</span> <span class="nv">print</span> <span class="s1">&#39;</span><span class="s">msg</span><span class="s1">&#39;</span> <span class="nv">to</span> <span class="nv">stdout</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">log</span>.<span class="nv">log</span><span class="ss">(</span><span class="nv">level</span>, <span class="nv">msg</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="copy_file">copy_file</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">copy_file</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">infile</span><span class="p">,</span>
+    <span class="n">outfile</span><span class="p">,</span>
+    <span class="n">preserve_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">preserve_times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">link</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Copy a file respecting verbose, dry-run and force flags.  (The
+former two default to whatever is in the Distribution object, and
+the latter defaults to false for commands that don't define it.)</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">copy_file</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span><span class="o">=</span><span class="mi">1</span>, <span class="nv">preserve_times</span><span class="o">=</span><span class="mi">1</span>,
+
+                  <span class="nv">link</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Copy a file respecting verbose, dry-run and force flags.  (The</span>
+
+        <span class="nv">former</span> <span class="nv">two</span> <span class="nv">default</span> <span class="nv">to</span> <span class="nv">whatever</span> <span class="nv">is</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">Distribution</span> <span class="nv">object</span>, <span class="nv">and</span>
+
+        <span class="nv">the</span> <span class="nv">latter</span> <span class="nv">defaults</span> <span class="nv">to</span> <span class="nv">false</span> <span class="k">for</span> <span class="nv">commands</span> <span class="nv">that</span> <span class="nv">don</span><span class="s1">&#39;</span><span class="s">t define it.)&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nv">file_util</span>.<span class="nv">copy_file</span><span class="ss">(</span><span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span>,
+
+                                   <span class="nv">preserve_times</span>, <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">force</span>, <span class="nv">link</span>,
+
+                                   <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="copy_tree">copy_tree</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">copy_tree</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">infile</span><span class="p">,</span>
+    <span class="n">outfile</span><span class="p">,</span>
+    <span class="n">preserve_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">preserve_times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">preserve_symlinks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Copy an entire directory tree respecting verbose, dry-run,
+and force flags.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">copy_tree</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span><span class="o">=</span><span class="mi">1</span>, <span class="nv">preserve_times</span><span class="o">=</span><span class="mi">1</span>,
+
+                   <span class="nv">preserve_symlinks</span><span class="o">=</span><span class="mi">0</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Copy an entire directory tree respecting verbose, dry-run,</span>
+
+        <span class="nv">and</span> <span class="nv">force</span> <span class="nv">flags</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nv">dir_util</span>.<span class="nv">copy_tree</span><span class="ss">(</span><span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span>,
+
+                                  <span class="nv">preserve_times</span>, <span class="nv">preserve_symlinks</span>,
+
+                                  <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">force</span>, <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="debug_print">debug_print</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">debug_print</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">msg</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Print 'msg' to stdout if the global DEBUG (taken from the
+DISTUTILS_DEBUG environment variable) flag is true.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">debug_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;Print &#39;msg&#39; to stdout if the global DEBUG (taken from the</span>
+
+<span class="sd">        DISTUTILS_DEBUG environment variable) flag is true.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">distutils.debug</span> <span class="kn">import</span> <span class="n">DEBUG</span>
+
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+
+            <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+
+
+</details>
+<h5 id="distribution_files">distribution_files</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">distribution_files</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Find distribution packages.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">distribution_files</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">Iterator</span>[<span class="nv">str</span>]:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Find distribution packages.</span><span class="s2">&quot;&quot;&quot;</span>
+
+        # <span class="nv">This</span> <span class="nv">is</span> <span class="nv">verbatim</span> <span class="nv">from</span> <span class="nv">flake8</span>
+
+        <span class="k">if</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">packages</span>:
+
+            <span class="nv">package_dirs</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">package_dir</span> <span class="nv">or</span> {}
+
+            <span class="k">for</span> <span class="nv">package</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">packages</span>:
+
+                <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package</span>
+
+                <span class="k">if</span> <span class="nv">package</span> <span class="nv">in</span> <span class="nv">package_dirs</span>:
+
+                    <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package_dirs</span>[<span class="nv">package</span>]
+
+                <span class="nv">elif</span> <span class="s2">&quot;&quot;</span> <span class="nv">in</span> <span class="nv">package_dirs</span>:
+
+                    <span class="nv">pkg_dir</span> <span class="o">=</span> <span class="nv">package_dirs</span>[<span class="s2">&quot;&quot;</span>] <span class="o">+</span> <span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">sep</span> <span class="o">+</span> <span class="nv">pkg_dir</span>
+
+                <span class="nv">yield</span> <span class="nv">pkg_dir</span>.<span class="nv">replace</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">.</span><span class="s2">&quot;</span>, <span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">sep</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">py_modules</span>:
+
+            <span class="k">for</span> <span class="nv">filename</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">py_modules</span>:
+
+                <span class="nv">yield</span> <span class="s2">&quot;</span><span class="s">%s.py</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nv">filename</span>
+
+        # <span class="nv">Don</span><span class="s1">&#39;</span><span class="s">t miss the setup.py file itself</span>
+
+        <span class="nv">yield</span> <span class="s2">&quot;</span><span class="s">setup.py</span><span class="s2">&quot;</span>
+</pre></div>
+
+
+</details>
+<h5 id="dump_options">dump_options</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">dump_options</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="s s-Atom">def</span> <span class="nf">dump_options</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">header</span><span class="o">=</span><span class="nv">None</span><span class="p">,</span> <span class="s s-Atom">indent=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="s s-Atom">:</span>
+
+        <span class="s s-Atom">from</span> <span class="s s-Atom">distutils</span><span class="p">.</span><span class="s s-Atom">fancy_getopt</span> <span class="s s-Atom">import</span> <span class="s s-Atom">longopt_xlate</span>
+
+        <span class="s s-Atom">if</span> <span class="s s-Atom">header</span> <span class="o">is</span> <span class="nv">None</span><span class="s s-Atom">:</span>
+
+            <span class="s s-Atom">header</span> <span class="o">=</span> <span class="s2">&quot;command options for &#39;%s&#39;:&quot;</span> <span class="c1">% self.get_command_name()</span>
+
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="nf">announce</span><span class="p">(</span><span class="s s-Atom">indent</span> <span class="o">+</span> <span class="s s-Atom">header</span><span class="p">,</span> <span class="s s-Atom">level</span><span class="o">=</span><span class="s s-Atom">log</span><span class="p">.</span><span class="nv">INFO</span><span class="p">)</span>
+
+        <span class="s s-Atom">indent</span> <span class="o">=</span> <span class="s s-Atom">indent</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span>
+
+        <span class="nf">for</span> <span class="p">(</span><span class="s s-Atom">option</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">)</span> <span class="s s-Atom">in</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">user_options:</span>
+
+            <span class="s s-Atom">option</span> <span class="o">=</span> <span class="s s-Atom">option</span><span class="p">.</span><span class="nf">translate</span><span class="p">(</span><span class="s s-Atom">longopt_xlate</span><span class="p">)</span>
+
+            <span class="s s-Atom">if</span> <span class="s s-Atom">option</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="s s-Atom">:</span>
+
+                <span class="s s-Atom">option</span> <span class="o">=</span> <span class="s s-Atom">option</span><span class="p">[:-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="s s-Atom">value</span> <span class="o">=</span> <span class="nf">getattr</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">option</span><span class="p">)</span>
+
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="nf">announce</span><span class="p">(</span><span class="s s-Atom">indent</span> <span class="o">+</span> <span class="s2">&quot;%s = %s&quot;</span> <span class="c1">% (option, value),</span>
+
+                          <span class="s s-Atom">level</span><span class="o">=</span><span class="s s-Atom">log</span><span class="p">.</span><span class="nv">INFO</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="ensure_dirname">ensure_dirname</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ensure_dirname</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">option</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">ensure_dirname</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">option</span><span class="p">):</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">_ensure_tested_string</span><span class="p">(</span><span class="k">option</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">,</span>
+
+                                   <span class="ss">&quot;directory name&quot;</span><span class="p">,</span>
+
+                                   <span class="ss">&quot;&#39;%s&#39; does not exist or is not a directory&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="ensure_filename">ensure_filename</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ensure_filename</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">option</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Ensure that 'option' is the name of an existing file.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">ensure_filename</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">option</span><span class="p">):</span>
+
+        <span class="ss">&quot;&quot;&quot;Ensure that &#39;option&#39; is the name of an existing file.&quot;&quot;&quot;</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">_ensure_tested_string</span><span class="p">(</span><span class="k">option</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isfile</span><span class="p">,</span>
+
+                                   <span class="ss">&quot;filename&quot;</span><span class="p">,</span>
+
+                                   <span class="ss">&quot;&#39;%s&#39; does not exist or is not a file&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="ensure_finalized">ensure_finalized</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ensure_finalized</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">ensure_finalized</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
+
+        <span class="k">if</span> <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">finalized</span>:
+
+            <span class="nv">self</span>.<span class="nv">finalize_options</span><span class="ss">()</span>
+
+        <span class="nv">self</span>.<span class="nv">finalized</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+
+
+</details>
+<h5 id="ensure_string">ensure_string</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ensure_string</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">option</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Ensure that 'option' is a string; if not defined, set it to
+'default'.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">ensure_string</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">option</span>, <span class="nv">default</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Ensure that &#39;option&#39; is a string; if not defined, set it to</span>
+
+        <span class="s1">&#39;</span><span class="s">default</span><span class="s1">&#39;</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">self</span>.<span class="nv">_ensure_stringlike</span><span class="ss">(</span><span class="nv">option</span>, <span class="s2">&quot;</span><span class="s">string</span><span class="s2">&quot;</span>, <span class="nv">default</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="ensure_string_list">ensure_string_list</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">ensure_string_list</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">option</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Ensure that 'option' is a list of strings.  If 'option' is
+currently a string, we split it either on /,\s*/ or /\s+/, so
+"foo bar baz", "foo,bar,baz", and "foo,   bar baz" all become
+["foo", "bar", "baz"].</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">ensure_string_list</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">option</span><span class="ss">)</span>:
+
+        <span class="nv">r</span><span class="s2">&quot;&quot;&quot;</span><span class="s">Ensure that &#39;option&#39; is a list of strings.  If &#39;option&#39; is</span>
+
+        <span class="nv">currently</span> <span class="nv">a</span> <span class="nv">string</span>, <span class="nv">we</span> <span class="nv">split</span> <span class="nv">it</span> <span class="nv">either</span> <span class="nv">on</span> <span class="o">/</span>,\<span class="nv">s</span><span class="o">*/</span> <span class="nv">or</span> <span class="o">/</span>\<span class="nv">s</span><span class="o">+/</span>, <span class="nv">so</span>
+
+        <span class="s2">&quot;</span><span class="s">foo bar baz</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">foo,bar,baz</span><span class="s2">&quot;</span>, <span class="nv">and</span> <span class="s2">&quot;</span><span class="s">foo,   bar baz</span><span class="s2">&quot;</span> <span class="nv">all</span> <span class="nv">become</span>
+
+        [<span class="s2">&quot;</span><span class="s">foo</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">bar</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">baz</span><span class="s2">&quot;</span>].
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">val</span> <span class="o">=</span> <span class="nv">getattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">option</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">val</span> <span class="nv">is</span> <span class="nv">None</span>:
+
+            <span class="k">return</span>
+
+        <span class="nv">elif</span> <span class="nv">isinstance</span><span class="ss">(</span><span class="nv">val</span>, <span class="nv">string_types</span><span class="ss">)</span>:
+
+            <span class="nv">setattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">option</span>, <span class="nv">re</span>.<span class="nv">split</span><span class="ss">(</span><span class="nv">r</span><span class="s1">&#39;</span><span class="s">,\s*|\s+</span><span class="s1">&#39;</span>, <span class="nv">val</span><span class="ss">))</span>
+
+        <span class="k">else</span>:
+
+            <span class="k">if</span> <span class="nv">isinstance</span><span class="ss">(</span><span class="nv">val</span>, <span class="nv">list</span><span class="ss">)</span>:
+
+                <span class="nv">ok</span> <span class="o">=</span> <span class="nv">all</span><span class="ss">(</span><span class="nv">isinstance</span><span class="ss">(</span><span class="nv">v</span>, <span class="nv">string_types</span><span class="ss">)</span> <span class="k">for</span> <span class="nv">v</span> <span class="nv">in</span> <span class="nv">val</span><span class="ss">)</span>
+
+            <span class="k">else</span>:
+
+                <span class="nv">ok</span> <span class="o">=</span> <span class="nv">False</span>
+
+            <span class="k">if</span> <span class="nv">not</span> <span class="nv">ok</span>:
+
+                <span class="nv">raise</span> <span class="nv">DistutilsOptionError</span><span class="ss">(</span>
+
+                      <span class="s2">&quot;</span><span class="s">&#39;%s&#39; must be a list of strings (got %r)</span><span class="s2">&quot;</span>
+
+                      <span class="o">%</span> <span class="ss">(</span><span class="nv">option</span>, <span class="nv">val</span><span class="ss">))</span>
+</pre></div>
+
+
+</details>
+<h5 id="execute">execute</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">,</span>
+    <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="k">execute</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="n">util</span><span class="p">.</span><span class="k">execute</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="finalize_options">finalize_options</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">finalize_options</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+
+
+<p>Get options from config files.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">finalize_options</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
+
+        <span class="ss">&quot;Get options from config files.&quot;</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">arguments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="k">Any</span><span class="p">]</span> <span class="o">=</span> <span class="err">{}</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">arguments</span><span class="p">[</span><span class="ss">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">()</span>
+</pre></div>
+
+
+</details>
+<h5 id="get_command_name">get_command_name</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">get_command_name</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">get_command_name</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
+
+        <span class="k">if</span> <span class="nv">hasattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="s1">&#39;</span><span class="s">command_name</span><span class="s1">&#39;</span><span class="ss">)</span>:
+
+            <span class="k">return</span> <span class="nv">self</span>.<span class="nv">command_name</span>
+
+        <span class="k">else</span>:
+
+            <span class="k">return</span> <span class="nv">self</span>.<span class="nv">__class__</span>.<span class="nv">__name__</span>
+</pre></div>
+
+
+</details>
+<h5 id="get_finalized_command">get_finalized_command</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">get_finalized_command</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">command</span><span class="p">,</span>
+    <span class="n">create</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Wrapper around Distribution's 'get_command_obj()' method: find
+(create if necessary and 'create' is true) the command object for
+'command', call its 'ensure_finalized()' method, and return the
+finalized command object.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">get_finalized_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span>, <span class="nv">create</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Wrapper around Distribution&#39;s &#39;get_command_obj()&#39; method: find</span>
+
+        <span class="ss">(</span><span class="nv">create</span> <span class="k">if</span> <span class="nv">necessary</span> <span class="nv">and</span> <span class="s1">&#39;</span><span class="s">create</span><span class="s1">&#39;</span> <span class="nv">is</span> <span class="nv">true</span><span class="ss">)</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">object</span> <span class="k">for</span>
+
+        <span class="s1">&#39;</span><span class="s">command</span><span class="s1">&#39;</span>, <span class="k">call</span> <span class="nl">its</span> <span class="s1">&#39;</span><span class="s">ensure_finalized()</span><span class="s1">&#39;</span> <span class="nv">method</span>, <span class="nv">and</span> <span class="k">return</span> <span class="nv">the</span>
+
+        <span class="nv">finalized</span> <span class="nv">command</span> <span class="nv">object</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">cmd_obj</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">get_command_obj</span><span class="ss">(</span><span class="nv">command</span>, <span class="nv">create</span><span class="ss">)</span>
+
+        <span class="nv">cmd_obj</span>.<span class="nv">ensure_finalized</span><span class="ss">()</span>
+
+        <span class="k">return</span> <span class="nv">cmd_obj</span>
+</pre></div>
+
+
+</details>
+<h5 id="get_sub_commands">get_sub_commands</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">get_sub_commands</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Determine the sub-commands that are relevant in the current
+distribution (ie., that need to be run).  This is based on the
+'sub_commands' class attribute: each tuple in that list may include
+a method that we call to determine if the subcommand needs to be
+run for the current distribution.  Return a list of command names.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">get_sub_commands</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Determine the sub-commands that are relevant in the current</span>
+
+        <span class="nv">distribution</span> <span class="ss">(</span><span class="nv">ie</span>., <span class="nv">that</span> <span class="nv">need</span> <span class="nv">to</span> <span class="nv">be</span> <span class="nv">run</span><span class="ss">)</span>.  <span class="nv">This</span> <span class="nv">is</span> <span class="nv">based</span> <span class="nv">on</span> <span class="nv">the</span>
+
+        <span class="s1">&#39;</span><span class="s">sub_commands</span><span class="s1">&#39;</span> <span class="nv">class</span> <span class="nv">attribute</span>: <span class="nv">each</span> <span class="nv">tuple</span> <span class="nv">in</span> <span class="nv">that</span> <span class="nv">list</span> <span class="nv">may</span> <span class="k">include</span>
+
+        <span class="nv">a</span> <span class="nv">method</span> <span class="nv">that</span> <span class="nv">we</span> <span class="k">call</span> <span class="nl">to</span> <span class="nv">determine</span> <span class="k">if</span> <span class="nv">the</span> <span class="nv">subcommand</span> <span class="nv">needs</span> <span class="nv">to</span> <span class="nv">be</span>
+
+        <span class="nv">run</span> <span class="k">for</span> <span class="nv">the</span> <span class="nv">current</span> <span class="nv">distribution</span>.  <span class="k">Return</span> <span class="nv">a</span> <span class="nv">list</span> <span class="nv">of</span> <span class="nv">command</span> <span class="nv">names</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">commands</span> <span class="o">=</span> []
+
+        <span class="k">for</span> <span class="ss">(</span><span class="nv">cmd_name</span>, <span class="nv">method</span><span class="ss">)</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">sub_commands</span>:
+
+            <span class="k">if</span> <span class="nv">method</span> <span class="nv">is</span> <span class="nv">None</span> <span class="nv">or</span> <span class="nv">method</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
+
+                <span class="nv">commands</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">cmd_name</span><span class="ss">)</span>
+
+        <span class="k">return</span> <span class="nv">commands</span>
+</pre></div>
+
+
+</details>
+<h5 id="initialize_options">initialize_options</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">initialize_options</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+
+
+<p>Set default values for all the options that this command
+supports.  Note that these defaults may be overridden by other
+commands, by the setup script, by config files, or by the
+command-line.  Thus, this is not the place to code dependencies
+between options; generally, 'initialize_options()' implementations
+are just a bunch of "self.foo = None" assignments.</p>
+<p>This method must be implemented by all command classes.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">initialize_options</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">None</span>:
+
+        <span class="nv">default_settings</span> <span class="o">=</span> <span class="nv">vars</span><span class="ss">(</span><span class="nv">DEFAULT_CONFIG</span><span class="ss">)</span>.<span class="nv">copy</span><span class="ss">()</span>
+
+        <span class="k">for</span> <span class="nv">key</span>, <span class="nv">value</span> <span class="nv">in</span> <span class="nv">default_settings</span>.<span class="nv">items</span><span class="ss">()</span>:
+
+            <span class="nv">setattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">key</span>, <span class="nv">value</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="make_archive">make_archive</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_archive</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">base_name</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">,</span>
+    <span class="n">root_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">make_archive</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">base_name</span>, <span class="nv">format</span>, <span class="nv">root_dir</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">base_dir</span><span class="o">=</span><span class="nv">None</span>,
+
+                     <span class="nv">owner</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">group</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
+
+        <span class="k">return</span> <span class="nv">archive_util</span>.<span class="nv">make_archive</span><span class="ss">(</span><span class="nv">base_name</span>, <span class="nv">format</span>, <span class="nv">root_dir</span>, <span class="nv">base_dir</span>,
+
+                                         <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span>,
+
+                                         <span class="nv">owner</span><span class="o">=</span><span class="nv">owner</span>, <span class="nv">group</span><span class="o">=</span><span class="nv">group</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="make_file">make_file</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">make_file</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">infiles</span><span class="p">,</span>
+    <span class="n">outfile</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">,</span>
+    <span class="n">exec_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Special case of 'execute()' for operations that process one or
+more input files and generate one output file.  Works just like
+'execute()', except the operation is skipped and a different
+message printed if 'outfile' already exists and is newer than all
+files listed in 'infiles'.  If the command defined 'self.force',
+and it is true, then the command is unconditionally run -- does no
+timestamp checks.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">make_file</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">infiles</span>, <span class="nv">outfile</span>, <span class="nv">func</span>, <span class="nv">args</span>,
+
+                  <span class="nv">exec_msg</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">skip_msg</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Special case of &#39;execute()&#39; for operations that process one or</span>
+
+        <span class="nv">more</span> <span class="nv">input</span> <span class="nv">files</span> <span class="nv">and</span> <span class="nv">generate</span> <span class="nv">one</span> <span class="nv">output</span> <span class="nv">file</span>.  <span class="nv">Works</span> <span class="nv">just</span> <span class="nv">like</span>
+
+        <span class="s1">&#39;</span><span class="s">execute()</span><span class="s1">&#39;</span>, <span class="nv">except</span> <span class="nv">the</span> <span class="nv">operation</span> <span class="nv">is</span> <span class="nv">skipped</span> <span class="nv">and</span> <span class="nv">a</span> <span class="nv">different</span>
+
+        <span class="nv">message</span> <span class="nv">printed</span> <span class="k">if</span> <span class="s1">&#39;</span><span class="s">outfile</span><span class="s1">&#39;</span> <span class="nv">already</span> <span class="nv">exists</span> <span class="nv">and</span> <span class="nv">is</span> <span class="nv">newer</span> <span class="nv">than</span> <span class="nv">all</span>
+
+        <span class="nv">files</span> <span class="nv">listed</span> <span class="nv">in</span> <span class="s1">&#39;</span><span class="s">infiles</span><span class="s1">&#39;</span>.  <span class="k">If</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">defined</span> <span class="s1">&#39;</span><span class="s">self.force</span><span class="s1">&#39;</span>,
+
+        <span class="nv">and</span> <span class="nv">it</span> <span class="nv">is</span> <span class="nv">true</span>, <span class="k">then</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">is</span> <span class="nv">unconditionally</span> <span class="nv">run</span> <span class="o">--</span> <span class="nv">does</span> <span class="nv">no</span>
+
+        <span class="nv">timestamp</span> <span class="nv">checks</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nv">skip_msg</span> <span class="nv">is</span> <span class="nv">None</span>:
+
+            <span class="nv">skip_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">skipping %s (inputs unchanged)</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nv">outfile</span>
+
+        # <span class="nv">Allow</span> <span class="s1">&#39;</span><span class="s">infiles</span><span class="s1">&#39;</span> <span class="nv">to</span> <span class="nv">be</span> <span class="nv">a</span> <span class="nv">single</span> <span class="nv">string</span>
+
+        <span class="k">if</span> <span class="nv">isinstance</span><span class="ss">(</span><span class="nv">infiles</span>, <span class="nv">str</span><span class="ss">)</span>:
+
+            <span class="nv">infiles</span> <span class="o">=</span> <span class="ss">(</span><span class="nv">infiles</span>,<span class="ss">)</span>
+
+        <span class="nv">elif</span> <span class="nv">not</span> <span class="nv">isinstance</span><span class="ss">(</span><span class="nv">infiles</span>, <span class="ss">(</span><span class="nv">list</span>, <span class="nv">tuple</span><span class="ss">))</span>:
+
+            <span class="nv">raise</span> <span class="nv">TypeError</span><span class="ss">(</span>
+
+                  <span class="s2">&quot;</span><span class="s">&#39;infiles&#39; must be a string, or a list or tuple of strings</span><span class="s2">&quot;</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">exec_msg</span> <span class="nv">is</span> <span class="nv">None</span>:
+
+            <span class="nv">exec_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">generating %s from %s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="ss">(</span><span class="nv">outfile</span>, <span class="s1">&#39;</span><span class="s">, </span><span class="s1">&#39;</span>.<span class="nv">join</span><span class="ss">(</span><span class="nv">infiles</span><span class="ss">))</span>
+
+        # <span class="k">If</span> <span class="s1">&#39;</span><span class="s">outfile</span><span class="s1">&#39;</span> <span class="nv">must</span> <span class="nv">be</span> <span class="nv">regenerated</span> <span class="ss">(</span><span class="nv">either</span> <span class="nv">because</span> <span class="nv">it</span> <span class="nv">doesn</span><span class="s1">&#39;</span><span class="s">t</span>
+
+        # <span class="nv">exist</span>, <span class="nv">is</span> <span class="nv">out</span><span class="o">-</span><span class="nv">of</span><span class="o">-</span><span class="nv">date</span>, <span class="nv">or</span> <span class="nv">the</span> <span class="s1">&#39;</span><span class="s">force</span><span class="s1">&#39;</span> <span class="nv">flag</span> <span class="nv">is</span> <span class="nv">true</span><span class="ss">)</span> <span class="k">then</span>
+
+        # <span class="nv">perform</span> <span class="nv">the</span> <span class="nv">action</span> <span class="nv">that</span> <span class="nv">presumably</span> <span class="nv">regenerates</span> <span class="nv">it</span>
+
+        <span class="k">if</span> <span class="nv">self</span>.<span class="nv">force</span> <span class="nv">or</span> <span class="nv">dep_util</span>.<span class="nv">newer_group</span><span class="ss">(</span><span class="nv">infiles</span>, <span class="nv">outfile</span><span class="ss">)</span>:
+
+            <span class="nv">self</span>.<span class="nv">execute</span><span class="ss">(</span><span class="nv">func</span>, <span class="nv">args</span>, <span class="nv">exec_msg</span>, <span class="nv">level</span><span class="ss">)</span>
+
+        # <span class="nv">Otherwise</span>, <span class="nv">print</span> <span class="nv">the</span> <span class="s2">&quot;</span><span class="s">skip</span><span class="s2">&quot;</span> <span class="nv">message</span>
+
+        <span class="k">else</span>:
+
+            <span class="nv">log</span>.<span class="nv">debug</span><span class="ss">(</span><span class="nv">skip_msg</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="mkpath">mkpath</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">mkpath</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="mi">511</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">mkpath</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">mode</span><span class="o">=</span><span class="mi">0</span><span class="n">o777</span><span class="p">):</span>
+
+        <span class="n">dir_util</span><span class="p">.</span><span class="n">mkpath</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">mode</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="move_file">move_file</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">src</span><span class="p">,</span>
+    <span class="n">dst</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Move a file respecting dry-run flag.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">move_file</span> <span class="ss">(</span><span class="nv">self</span>, <span class="nv">src</span>, <span class="nv">dst</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Move a file respecting dry-run flag.</span><span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nv">file_util</span>.<span class="nv">move_file</span><span class="ss">(</span><span class="nv">src</span>, <span class="nv">dst</span>, <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="reinitialize_command">reinitialize_command</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">reinitialize_command</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">command</span><span class="p">,</span>
+    <span class="n">reinit_subcommands</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kw</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">reinitialize_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span>, <span class="nv">reinit_subcommands</span><span class="o">=</span><span class="mi">0</span>, <span class="o">**</span><span class="nv">kw</span><span class="ss">)</span>:
+
+        <span class="nv">cmd</span> <span class="o">=</span> <span class="nv">_Command</span>.<span class="nv">reinitialize_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span>, <span class="nv">reinit_subcommands</span><span class="ss">)</span>
+
+        <span class="nv">vars</span><span class="ss">(</span><span class="nv">cmd</span><span class="ss">)</span>.<span class="nv">update</span><span class="ss">(</span><span class="nv">kw</span><span class="ss">)</span>
+
+        <span class="k">return</span> <span class="nv">cmd</span>
+</pre></div>
+
+
+</details>
+<h5 id="run">run</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</pre></div>
+
+
+<p>A command's raison d'etre: carry out the action it exists to
+perform, controlled by the options initialized in
+'initialize_options()', customized by other commands, the setup
+script, the command-line, and config files, and finalized in
+'finalize_options()'.  All terminal output and filesystem
+interaction should be done by 'run()'.</p>
+<p>This method must be implemented by all command classes.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">run</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">None</span>:
+
+        <span class="nv">arguments</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">arguments</span>
+
+        <span class="nv">wrong_sorted_files</span> <span class="o">=</span> <span class="nv">False</span>
+
+        <span class="nv">arguments</span>[<span class="s2">&quot;</span><span class="s">check</span><span class="s2">&quot;</span>] <span class="o">=</span> <span class="nv">True</span>
+
+        <span class="k">for</span> <span class="nv">path</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">distribution_files</span><span class="ss">()</span>:
+
+            <span class="k">for</span> <span class="nv">python_file</span> <span class="nv">in</span> <span class="nv">glob</span>.<span class="nv">iglob</span><span class="ss">(</span><span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">join</span><span class="ss">(</span><span class="nv">path</span>, <span class="s2">&quot;</span><span class="s">*.py</span><span class="s2">&quot;</span><span class="ss">))</span>:
+
+                <span class="nv">try</span>:
+
+                    <span class="nv">incorrectly_sorted</span> <span class="o">=</span> <span class="nv">SortImports</span><span class="ss">(</span><span class="nv">python_file</span>, <span class="o">**</span><span class="nv">arguments</span><span class="ss">)</span>.<span class="nv">incorrectly_sorted</span>
+
+                    <span class="k">if</span> <span class="nv">incorrectly_sorted</span>:
+
+                        <span class="nv">wrong_sorted_files</span> <span class="o">=</span> <span class="nv">True</span>
+
+                <span class="nv">except</span> <span class="nv">OSError</span> <span class="nv">as</span> <span class="nv">error</span>:  # <span class="nv">pragma</span>: <span class="nv">no</span> <span class="nv">cover</span>
+
+                    <span class="nv">warn</span><span class="ss">(</span><span class="nv">f</span><span class="s2">&quot;</span><span class="s">Unable to parse file {python_file} due to {error}</span><span class="s2">&quot;</span><span class="ss">)</span>
+
+        <span class="k">if</span> <span class="nv">wrong_sorted_files</span>:
+
+            <span class="nv">sys</span>.<span class="k">exit</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="run_command">run_command</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">command</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Run some other command: uses the 'run_command()' method of
+Distribution, which creates and finalizes the command object if
+necessary and then invokes its 'run()' method.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">run_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Run some other command: uses the &#39;run_command()&#39; method of</span>
+
+        <span class="nv">Distribution</span>, <span class="nv">which</span> <span class="nv">creates</span> <span class="nv">and</span> <span class="nv">finalizes</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">object</span> <span class="k">if</span>
+
+        <span class="nv">necessary</span> <span class="nv">and</span> <span class="k">then</span> <span class="nv">invokes</span> <span class="nv">its</span> <span class="s1">&#39;</span><span class="s">run()</span><span class="s1">&#39;</span> <span class="nv">method</span>.
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">run_command</span><span class="ss">(</span><span class="nv">command</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="set_undefined_options">set_undefined_options</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">set_undefined_options</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">src_cmd</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">option_pairs</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Set the values of any "undefined" options from corresponding
+option values in some other command object.  "Undefined" here means
+"is None", which is the convention used to indicate that an option
+has not been changed between 'initialize_options()' and
+'finalize_options()'.  Usually called from 'finalize_options()' for
+options that depend on some other command rather than another
+option of the same command.  'src_cmd' is the other command from
+which option values will be taken (a command object will be created
+for it if necessary); the remaining arguments are
+'(src_option,dst_option)' tuples which mean "take the value of
+'src_option' in the 'src_cmd' command object, and copy it to
+'dst_option' in the current command object".</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="nv">def</span> <span class="nv">set_undefined_options</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">src_cmd</span>, <span class="o">*</span><span class="nv">option_pairs</span><span class="ss">)</span>:
+
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Set the values of any </span><span class="s2">&quot;</span><span class="nv">undefined</span><span class="s2">&quot;</span><span class="s"> options from corresponding</span>
+
+        <span class="nv">option</span> <span class="nv">values</span> <span class="nv">in</span> <span class="nv">some</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">object</span>.  <span class="s2">&quot;</span><span class="s">Undefined</span><span class="s2">&quot;</span> <span class="nv">here</span> <span class="nv">means</span>
+
+        <span class="s2">&quot;</span><span class="s">is None</span><span class="s2">&quot;</span>, <span class="nv">which</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nv">convention</span> <span class="nv">used</span> <span class="nv">to</span> <span class="nv">indicate</span> <span class="nv">that</span> <span class="nv">an</span> <span class="nv">option</span>
+
+        <span class="nv">has</span> <span class="nv">not</span> <span class="nv">been</span> <span class="nv">changed</span> <span class="nv">between</span> <span class="s1">&#39;</span><span class="s">initialize_options()</span><span class="s1">&#39;</span> <span class="nv">and</span>
+
+        <span class="s1">&#39;</span><span class="s">finalize_options()</span><span class="s1">&#39;</span>.  <span class="nv">Usually</span> <span class="nv">called</span> <span class="nv">from</span> <span class="s1">&#39;</span><span class="s">finalize_options()</span><span class="s1">&#39;</span> <span class="k">for</span>
+
+        <span class="nv">options</span> <span class="nv">that</span> <span class="nv">depend</span> <span class="nv">on</span> <span class="nv">some</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">rather</span> <span class="nv">than</span> <span class="nv">another</span>
+
+        <span class="nv">option</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">same</span> <span class="nv">command</span>.  <span class="s1">&#39;</span><span class="s">src_cmd</span><span class="s1">&#39;</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">from</span>
+
+        <span class="nv">which</span> <span class="nv">option</span> <span class="nv">values</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">taken</span> <span class="ss">(</span><span class="nv">a</span> <span class="nv">command</span> <span class="nv">object</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">created</span>
+
+        <span class="k">for</span> <span class="nv">it</span> <span class="k">if</span> <span class="nv">necessary</span><span class="ss">)</span><span class="c1">; the remaining arguments are</span>
+
+        <span class="s1">&#39;</span><span class="s">(src_option,dst_option)</span><span class="s1">&#39;</span> <span class="nv">tuples</span> <span class="nv">which</span> <span class="nv">mean</span> <span class="s2">&quot;</span><span class="s">take the value of</span>
+
+        <span class="s1">&#39;</span><span class="s">src_option</span><span class="s1">&#39;</span> <span class="nv">in</span> <span class="nv">the</span> <span class="s1">&#39;</span><span class="s">src_cmd</span><span class="s1">&#39;</span> <span class="nv">command</span> <span class="nv">object</span>, <span class="nv">and</span> <span class="nv">copy</span> <span class="nv">it</span> <span class="nv">to</span>
+
+        <span class="s1">&#39;</span><span class="s">dst_option</span><span class="s1">&#39;</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">current</span> <span class="nv">command</span> <span class="nv">object</span><span class="s2">&quot;</span><span class="s">.</span>
+
+        <span class="s2">&quot;&quot;&quot;</span>
+
+        # <span class="nv">Option_pairs</span>: <span class="nv">list</span> <span class="nv">of</span> <span class="ss">(</span><span class="nv">src_option</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">tuples</span>
+
+        <span class="nv">src_cmd_obj</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">get_command_obj</span><span class="ss">(</span><span class="nv">src_cmd</span><span class="ss">)</span>
+
+        <span class="nv">src_cmd_obj</span>.<span class="nv">ensure_finalized</span><span class="ss">()</span>
+
+        <span class="k">for</span> <span class="ss">(</span><span class="nv">src_option</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">in</span> <span class="nv">option_pairs</span>:
+
+            <span class="k">if</span> <span class="nv">getattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">is</span> <span class="nv">None</span>:
+
+                <span class="nv">setattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">dst_option</span>, <span class="nv">getattr</span><span class="ss">(</span><span class="nv">src_cmd_obj</span>, <span class="nv">src_option</span><span class="ss">))</span>
+</pre></div>
+
+
+</details>
+<h5 id="spawn">spawn</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">cmd</span><span class="p">,</span>
+    <span class="n">search_path</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Spawn an external command respecting dry-run flag.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">search_path</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;Spawn an external command respecting dry-run flag.&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">distutils.spawn</span> <span class="kn">import</span> <span class="n">spawn</span>
+
+        <span class="n">spawn</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">search_path</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dry_run</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+<h5 id="warn">warn</h5>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">warn</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">msg</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span>    <span class="n">def</span> <span class="n">warn</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+
+        <span class="n">log</span><span class="p">.</span><span class="n">warn</span><span class="p">(</span><span class="ss">&quot;warning: %s: %s\n&quot;</span><span class="p">,</span> <span class="k">self</span><span class="p">.</span><span class="n">get_command_name</span><span class="p">(),</span> <span class="n">msg</span><span class="p">)</span>
+</pre></div>
+
+
+</details>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../settings/" title="Settings" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Settings
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../sorting/" title="Sorting" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Sorting
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>

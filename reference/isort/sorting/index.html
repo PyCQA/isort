@@ -1,0 +1,1251 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../art/logo.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+    
+    
+      
+        <title>Sorting - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#fb8c00">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="orange" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-isortsorting" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="isort" class="md-header-nav__button md-logo">
+          
+            <img src="../../../art/logo.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              isort
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Sorting
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="isort" class="md-nav__button md-logo">
+      
+        <img src="../../../art/logo.png" width="48" height="48">
+      
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Contributing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Contributing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+      1. Contributing Guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+      2. Coding Standard
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+      3. Code Of Conduct
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+      4. Acknowledgements
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
+    
+    <label class="md-nav__link" for="nav-4-1">
+      Isort
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-1">
+        Isort
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../compat/" title="Compat" class="md-nav__link">
+      Compat
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../format/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hooks/" title="Hooks" class="md-nav__link">
+      Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../io/" title="Io" class="md-nav__link">
+      Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../isort/" title="Isort" class="md-nav__link">
+      Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../logo/" title="Logo" class="md-nav__link">
+      Logo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../main/" title="Main" class="md-nav__link">
+      Main
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../output/" title="Output" class="md-nav__link">
+      Output
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../parse/" title="Parse" class="md-nav__link">
+      Parse
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../profiles/" title="Profiles" class="md-nav__link">
+      Profiles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pylama_isort/" title="Pylama Isort" class="md-nav__link">
+      Pylama Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sections/" title="Sections" class="md-nav__link">
+      Sections
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../setuptools_commands/" title="Setuptools Commands" class="md-nav__link">
+      Setuptools Commands
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Sorting
+      </label>
+    
+    <a href="./" title="Sorting" class="md-nav__link md-nav__link--active">
+      Sorting
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module_key" class="md-nav__link">
+    module_key
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#naturally" class="md-nav__link">
+    naturally
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#section_key" class="md-nav__link">
+    section_key
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../wrap/" title="Wrap" class="md-nav__link">
+      Wrap
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../wrap_modes/" title="Wrap Modes" class="md-nav__link">
+      Wrap Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1-24" type="checkbox" id="nav-4-1-24">
+    
+    <label class="md-nav__link" for="nav-4-1-24">
+      Stdlibs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-4-1-24">
+        Stdlibs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/all/" title="All" class="md-nav__link">
+      All
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py2/" title="Py2" class="md-nav__link">
+      Py2
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py27/" title="Py27" class="md-nav__link">
+      Py27
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py3/" title="Py3" class="md-nav__link">
+      Py3
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py35/" title="Py35" class="md-nav__link">
+      Py35
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py36/" title="Py36" class="md-nav__link">
+      Py36
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py37/" title="Py37" class="md-nav__link">
+      Py37
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py38/" title="Py38" class="md-nav__link">
+      Py38
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module_key" class="md-nav__link">
+    module_key
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#naturally" class="md-nav__link">
+    naturally
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#section_key" class="md-nav__link">
+    section_key
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/timothycrosley/isort/edit/master/reference/isort/sorting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-isortsorting">Module isort.sorting</h1>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="n">_import_line_intro_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;^(?:from|import) &quot;</span><span class="p">)</span>
+
+<span class="n">_import_line_midline_import_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot; import &quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">module_key</span><span class="p">(</span>
+
+    <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+
+    <span class="n">sub_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="n">ignore_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="n">section_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">module_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+
+        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">reverse_relative</span> <span class="k">else</span> <span class="s2">&quot;_&quot;</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">ignore_case</span><span class="p">:</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sub_imports</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">module_name</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># see issue #376</span>
+
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+
+        <span class="k">elif</span> <span class="n">module_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="n">length_sort</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort_sections</span>
+
+    <span class="n">_length_sort_maybe</span> <span class="o">=</span> <span class="n">length_sort</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">module_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">module_name</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{module_name in config.force_to_top and &#39;A&#39; or &#39;B&#39;}{prefix}{_length_sort_maybe}&quot;</span>
+
+<span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
+
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+
+    <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">_import_line_intro_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_import_line_midline_import_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^from &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^import &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">force_to_top</span><span class="p">:</span>
+
+        <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">order_by_type</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{line}&quot;</span>
+
+<span class="k">def</span> <span class="nf">naturally</span><span class="p">(</span><span class="n">to_sort</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+    <span class="sd">&quot;&quot;&quot;Returns a naturally sorted list&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">key_callback</span> <span class="o">=</span> <span class="n">_natural_keys</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">key_callback</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+
+            <span class="k">return</span> <span class="n">_natural_keys</span><span class="p">(</span><span class="n">key</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">to_sort</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key_callback</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_atoi</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">text</span>
+
+<span class="k">def</span> <span class="nf">_natural_keys</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">_atoi</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)]</span>
+</pre></div>
+
+
+</details>
+<h2 id="functions">Functions</h2>
+<h3 id="module_key">module_key</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">module_key</span><span class="p">(</span>
+    <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span>
+    <span class="n">sub_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">ignore_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">section_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">module_key</span><span class="ss">(</span>
+
+    <span class="nv">module_name</span>: <span class="nv">str</span>,
+
+    <span class="nv">config</span>: <span class="nv">Config</span>,
+
+    <span class="nv">sub_imports</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">False</span>,
+
+    <span class="nv">ignore_case</span>: <span class="nv">bool</span> <span class="o">=</span> <span class="nv">False</span>,
+
+    <span class="nv">section_name</span>: <span class="nv">Optional</span>[<span class="nv">Any</span>] <span class="o">=</span> <span class="nv">None</span>,
+
+<span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">str</span>:
+
+    <span class="nv">match</span> <span class="o">=</span> <span class="nv">re</span>.<span class="nv">match</span><span class="ss">(</span><span class="nv">r</span><span class="s2">&quot;</span><span class="s">^(\.+)\s*(.*)</span><span class="s2">&quot;</span>, <span class="nv">module_name</span><span class="ss">)</span>
+
+    <span class="k">if</span> <span class="nv">match</span>:
+
+        <span class="nv">sep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s"> </span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nv">config</span>.<span class="nv">reverse_relative</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s">_</span><span class="s2">&quot;</span>
+
+        <span class="nv">module_name</span> <span class="o">=</span> <span class="nv">sep</span>.<span class="nv">join</span><span class="ss">(</span><span class="nv">match</span>.<span class="nv">groups</span><span class="ss">())</span>
+
+    <span class="nv">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nv">ignore_case</span>:
+
+        <span class="nv">module_name</span> <span class="o">=</span> <span class="nv">str</span><span class="ss">(</span><span class="nv">module_name</span><span class="ss">)</span>.<span class="nv">lower</span><span class="ss">()</span>
+
+    <span class="k">else</span>:
+
+        <span class="nv">module_name</span> <span class="o">=</span> <span class="nv">str</span><span class="ss">(</span><span class="nv">module_name</span><span class="ss">)</span>
+
+    <span class="k">if</span> <span class="nv">sub_imports</span> <span class="nv">and</span> <span class="nv">config</span>.<span class="nv">order_by_type</span>:
+
+        <span class="k">if</span> <span class="nv">module_name</span>.<span class="nv">isupper</span><span class="ss">()</span> <span class="nv">and</span> <span class="nv">len</span><span class="ss">(</span><span class="nv">module_name</span><span class="ss">)</span> <span class="o">&gt;</span> <span class="mi">1</span>:  # <span class="nv">see</span> <span class="nv">issue</span> <span class="sc">#376</span>
+
+            <span class="nv">prefix</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">A</span><span class="s2">&quot;</span>
+
+        <span class="nv">elif</span> <span class="nv">module_name</span>[<span class="mi">0</span>:<span class="mi">1</span>].<span class="nv">isupper</span><span class="ss">()</span>:
+
+            <span class="nv">prefix</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">B</span><span class="s2">&quot;</span>
+
+        <span class="k">else</span>:
+
+            <span class="nv">prefix</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">C</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="nv">not</span> <span class="nv">config</span>.<span class="nv">case_sensitive</span>:
+
+        <span class="nv">module_name</span> <span class="o">=</span> <span class="nv">module_name</span>.<span class="nv">lower</span><span class="ss">()</span>
+
+    <span class="nv">length_sort</span> <span class="o">=</span> <span class="nv">config</span>.<span class="nv">length_sort</span> <span class="nv">or</span> <span class="nv">str</span><span class="ss">(</span><span class="nv">section_name</span><span class="ss">)</span>.<span class="nv">lower</span><span class="ss">()</span> <span class="nv">in</span> <span class="nv">config</span>.<span class="nv">length_sort_sections</span>
+
+    <span class="nv">_length_sort_maybe</span> <span class="o">=</span> <span class="nv">length_sort</span> <span class="nv">and</span> <span class="ss">(</span><span class="nv">str</span><span class="ss">(</span><span class="nv">len</span><span class="ss">(</span><span class="nv">module_name</span><span class="ss">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s">:</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nv">module_name</span><span class="ss">)</span> <span class="nv">or</span> <span class="nv">module_name</span>
+
+    <span class="k">return</span> <span class="nv">f</span><span class="s2">&quot;</span><span class="s">{module_name in config.force_to_top and &#39;A&#39; or &#39;B&#39;}{prefix}{_length_sort_maybe}</span><span class="s2">&quot;</span>
+</pre></div>
+
+
+</details>
+<h3 id="naturally">naturally</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">naturally</span><span class="p">(</span>
+    <span class="n">to_sort</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Returns a naturally sorted list</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="nv">def</span> <span class="nv">naturally</span><span class="ss">(</span><span class="nv">to_sort</span>: <span class="nv">Iterable</span>[<span class="nv">str</span>], <span class="nv">key</span>: <span class="nv">Optional</span>[<span class="nv">Callable</span>[[<span class="nv">str</span>], <span class="nv">Any</span>]] <span class="o">=</span> <span class="nv">None</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">List</span>[<span class="nv">str</span>]:
+
+    <span class="s2">&quot;&quot;&quot;</span><span class="s">Returns a naturally sorted list</span><span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nv">key</span> <span class="nv">is</span> <span class="nv">None</span>:
+
+        <span class="nv">key_callback</span> <span class="o">=</span> <span class="nv">_natural_keys</span>
+
+    <span class="k">else</span>:
+
+        <span class="nv">def</span> <span class="nv">key_callback</span><span class="ss">(</span><span class="nv">text</span>: <span class="nv">str</span><span class="ss">)</span> <span class="o">-&gt;</span> <span class="nv">List</span>[<span class="nv">Any</span>]:
+
+            <span class="k">return</span> <span class="nv">_natural_keys</span><span class="ss">(</span><span class="nv">key</span><span class="ss">(</span><span class="nv">text</span><span class="ss">))</span>  # <span class="nv">type</span>: <span class="nv">ignore</span>
+
+    <span class="k">return</span> <span class="nv">sorted</span><span class="ss">(</span><span class="nv">to_sort</span>, <span class="nv">key</span><span class="o">=</span><span class="nv">key_callback</span><span class="ss">)</span>
+</pre></div>
+
+
+</details>
+<h3 id="section_key">section_key</h3>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
+
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+
+    <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">_import_line_intro_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_import_line_midline_import_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^from &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^import &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">force_to_top</span><span class="p">:</span>
+
+        <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">order_by_type</span><span class="p">:</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{line}&quot;</span>
+</pre></div>
+
+
+</details>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../setuptools_commands/" title="Setuptools Commands" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Setuptools Commands
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../utils/" title="Utils" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Utils
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>

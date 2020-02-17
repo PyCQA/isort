@@ -1,0 +1,1375 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../../art/logo.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+    
+    
+      
+        <title>Py35 - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#fb8c00">
+      
+    
+    
+      <script src="../../../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="orange" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#module-isortstdlibspy35" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../../.." title="isort" class="md-header-nav__button md-logo">
+          
+            <img src="../../../../art/logo.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              isort
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Py35
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../../.." title="isort" class="md-nav__button md-logo">
+      
+        <img src="../../../../art/logo.png" width="48" height="48">
+      
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Contributing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Contributing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../docs/contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+      1. Contributing Guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../docs/contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+      2. Coding Standard
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../docs/contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+      3. Code Of Conduct
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../docs/contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+      4. Acknowledgements
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
+    
+    <label class="md-nav__link" for="nav-4-1">
+      Isort
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-1">
+        Isort
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../compat/" title="Compat" class="md-nav__link">
+      Compat
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../format/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../hooks/" title="Hooks" class="md-nav__link">
+      Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../io/" title="Io" class="md-nav__link">
+      Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../isort/" title="Isort" class="md-nav__link">
+      Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../logo/" title="Logo" class="md-nav__link">
+      Logo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../main/" title="Main" class="md-nav__link">
+      Main
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../output/" title="Output" class="md-nav__link">
+      Output
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../parse/" title="Parse" class="md-nav__link">
+      Parse
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../profiles/" title="Profiles" class="md-nav__link">
+      Profiles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../pylama_isort/" title="Pylama Isort" class="md-nav__link">
+      Pylama Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../sections/" title="Sections" class="md-nav__link">
+      Sections
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../setuptools_commands/" title="Setuptools Commands" class="md-nav__link">
+      Setuptools Commands
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../sorting/" title="Sorting" class="md-nav__link">
+      Sorting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../wrap/" title="Wrap" class="md-nav__link">
+      Wrap
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../wrap_modes/" title="Wrap Modes" class="md-nav__link">
+      Wrap Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1-24" type="checkbox" id="nav-4-1-24" checked>
+    
+    <label class="md-nav__link" for="nav-4-1-24">
+      Stdlibs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-4-1-24">
+        Stdlibs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../all/" title="All" class="md-nav__link">
+      All
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py2/" title="Py2" class="md-nav__link">
+      Py2
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py27/" title="Py27" class="md-nav__link">
+      Py27
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py3/" title="Py3" class="md-nav__link">
+      Py3
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Py35
+      </label>
+    
+    <a href="./" title="Py35" class="md-nav__link md-nav__link--active">
+      Py35
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py36/" title="Py36" class="md-nav__link">
+      Py36
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py37/" title="Py37" class="md-nav__link">
+      Py37
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../py38/" title="Py38" class="md-nav__link">
+      Py38
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/timothycrosley/isort/edit/master/reference/isort/stdlibs/py35.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="module-isortstdlibspy35">Module isort.stdlibs.py35</h1>
+<p>File contains the standard library of Python 3.5.</p>
+<p>DO NOT EDIT. If the standard library changes, a new list should be created
+using the mkstdlibs.py script.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="nv">File</span> <span class="nv">contains</span> <span class="nv">the</span> <span class="nv">standard</span> <span class="nv">library</span> <span class="nv">of</span> <span class="nv">Python</span> <span class="mi">3</span>.<span class="mi">5</span>.
+
+<span class="k">DO</span> <span class="nv">NOT</span> <span class="nv">EDIT</span>. <span class="k">If</span> <span class="nv">the</span> <span class="nv">standard</span> <span class="nv">library</span> <span class="nv">changes</span>, <span class="nv">a</span> <span class="nv">new</span> <span class="nv">list</span> <span class="nv">should</span> <span class="nv">be</span> <span class="nv">created</span>
+
+<span class="nv">using</span> <span class="nv">the</span> <span class="nv">mkstdlibs</span>.<span class="nv">py</span> <span class="nv">script</span>.
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="nv">stdlib</span> <span class="o">=</span> {
+
+    <span class="s2">&quot;</span><span class="s">_dummy_thread</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">_thread</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">abc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">aifc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">argparse</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">array</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ast</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">asynchat</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">asyncio</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">asyncore</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">atexit</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">audioop</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">base64</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">bdb</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">binascii</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">binhex</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">bisect</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">builtins</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">bz2</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">cProfile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">calendar</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">cgi</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">cgitb</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">chunk</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">cmath</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">cmd</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">code</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">codecs</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">codeop</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">collections</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">colorsys</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">compileall</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">concurrent</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">configparser</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">contextlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">copy</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">copyreg</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">crypt</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">csv</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ctypes</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">curses</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">datetime</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">dbm</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">decimal</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">difflib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">dis</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">distutils</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">doctest</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">dummy_threading</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">email</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">encodings</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ensurepip</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">enum</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">errno</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">faulthandler</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">fcntl</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">filecmp</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">fileinput</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">fnmatch</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">formatter</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">fpectl</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">fractions</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ftplib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">functools</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">gc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">getopt</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">getpass</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">gettext</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">glob</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">grp</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">gzip</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">hashlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">heapq</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">hmac</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">html</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">http</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">imaplib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">imghdr</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">imp</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">importlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">inspect</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">io</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ipaddress</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">itertools</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">json</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">keyword</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">lib2to3</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">linecache</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">locale</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">logging</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">lzma</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">macpath</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">mailbox</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">mailcap</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">marshal</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">math</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">mimetypes</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">mmap</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">modulefinder</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">msilib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">msvcrt</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">multiprocessing</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">netrc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">nis</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">nntplib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">numbers</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">operator</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">optparse</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">os</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ossaudiodev</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">parser</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pathlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pdb</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pickle</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pickletools</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pipes</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pkgutil</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">platform</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">plistlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">poplib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">posix</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pprint</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">profile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pstats</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pty</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pwd</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">py_compile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pyclbr</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">pydoc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">queue</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">quopri</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">random</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">re</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">readline</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">reprlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">resource</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">rlcompleter</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">runpy</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sched</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">select</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">selectors</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">shelve</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">shlex</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">shutil</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">signal</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">site</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">smtpd</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">smtplib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sndhdr</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">socket</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">socketserver</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">spwd</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sqlite3</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">ssl</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">stat</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">statistics</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">string</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">stringprep</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">struct</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">subprocess</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sunau</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">symbol</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">symtable</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sys</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">sysconfig</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">syslog</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tabnanny</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tarfile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">telnetlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tempfile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">termios</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">test</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">textwrap</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">threading</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">time</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">timeit</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tkinter</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">token</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tokenize</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">trace</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">traceback</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tracemalloc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">tty</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">turtle</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">turtledemo</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">types</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">typing</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">unicodedata</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">unittest</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">urllib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">uu</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">uuid</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">venv</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">warnings</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">wave</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">weakref</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">webbrowser</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">winreg</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">winsound</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">wsgiref</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">xdrlib</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">xml</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">xmlrpc</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">zipapp</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">zipfile</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">zipimport</span><span class="s2">&quot;</span>,
+
+    <span class="s2">&quot;</span><span class="s">zlib</span><span class="s2">&quot;</span>,
+
+}
+</pre></div>
+
+
+</details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><span class="n">stdlib</span>
+</pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../py3/" title="Py3" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Py3
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../py36/" title="Py36" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Py36
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../../assets/javascripts/application.ac79c3b0.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
+      
+    
+  </body>
+</html>
