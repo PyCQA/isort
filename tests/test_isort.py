@@ -25,7 +25,7 @@ except ImportError:
     toml = None
 
 TEST_DEFAULT_CONFIG = """
-[*.py]
+[*.{py,pyi}]
 max_line_length = 120
 indent_style = space
 indent_size = 4

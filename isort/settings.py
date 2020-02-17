@@ -56,12 +56,13 @@ CONFIG_SOURCES: Tuple[str, ...] = (
     "tox.ini",
     ".editorconfig",
 )
+
 CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
     ".isort.cfg": ("settings", "isort"),
     "pyproject.toml": ("tool.isort",),
     "setup.cfg": ("isort", "tool:isort"),
     "tox.ini": ("isort", "tool:isort"),
-    ".editorconfig": ("*", "*.py", "**.py"),
+    ".editorconfig": ("*", "*.py", "**.py", "*.{py}"),
 }
 FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
 FALLBACK_CONFIGS: Tuple[str, ...]
@@ -426,7 +427,16 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
             config = configparser.ConfigParser(strict=False)
             config.read_file(config_file)
             for section in sections:
-                if config.has_section(section):
+                if section.startswith("*.{") and section.endswith("}"):
+                    extension = section[len("*.{") : -1]
+                    for config_key in config.keys():
+                        if config_key.startswith("*.{") and config_key.endswith("}"):
+                            if extension in map(
+                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")
+                            ):
+                                settings.update(config.items(config_key))
+
+                elif config.has_section(section):
                     settings.update(config.items(section))
 
     if settings:
