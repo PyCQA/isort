@@ -117,6 +117,7 @@ def sorted_imports(
                     order_by_type=config.order_by_type,
                     force_to_top=config.force_to_top,
                     lexicographical=config.lexicographical,
+                    length_sort=config.length_sort,
                 ),
             )
 
