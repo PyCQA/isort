@@ -81,7 +81,7 @@ def sorted_imports(
 
 
 def check_imports(
-    file_contents: str,
+    input_stream: TextIO,
     show_diff: bool = False,
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
@@ -91,8 +91,10 @@ def check_imports(
 ) -> bool:
     config = _config(config=config, **config_kwargs)
 
-    sorted_output = sorted_imports(
-        file_contents=file_contents,
+    sorted_stream = StringIO()
+    sorted_imports(
+        input_stream=input_stream,
+        output_stream=output_stream,
         extension=extension,
         config=config,
         file_path=file_path,
@@ -136,6 +138,7 @@ def sort_imports(
     input_stream: TextIO,
     output_stream: TextIO,
     extension: str = "py",
+    check: bool = False,
     config: Config = DEFAULT_CONFIG,
 ) -> None:
     """Parses stream identifying sections of contiguous imports and sorting them
