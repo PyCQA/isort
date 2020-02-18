@@ -6,7 +6,8 @@ authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/timothycrosley/isort"
-homepage = "http://timothycrosley.github.io/isort/"
+homepage = "https://timothycrosley.github.io/isort/"
+documentation = "https://isort.readthedocs.io/en/stable/"
 keywords = ["Refactor", "Lint", "Imports", "Sort", "Clean"]
 classifiers = [
     "Development Status :: 6 - Mature",
