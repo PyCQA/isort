@@ -43,13 +43,14 @@ def _config(
 
 
 def sorted_imports(
-    file_contents: str,
+    input_stream: TextIO,
+    output_stream: TextIO,
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     **config_kwargs,
-) -> str:
+):
     config = _config(config=config, **config_kwargs)
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
@@ -62,20 +63,21 @@ def sorted_imports(
 
     if config.atomic:
         try:
-            compile(file_contents, content_source, "exec", 0, 1)
+            file_content = input_stream.read()
+            compile(file_content, content_source, "exec", 0, 1)
+            input_stream = StringIO(file_content)
         except SyntaxError:
             raise ExistingSyntaxErrors(content_source)
 
-    parsed_output = StringIO()
-    sort_imports(StringIO(file_contents), parsed_output, extension=extension, config=config)
-    parsed_output.seek(0)
-    parsed_output = parsed_output.read()
+    sort_imports(input_stream, output_stream, extension=extension, config=config)
+
     if config.atomic:
+        output_stream.seek(0)
         try:
-            compile(file_contents, content_source, "exec", 0, 1)
+            compile(output_stream.read(), content_source, "exec", 0, 1)
+            ouput_stream.seek(0)
         except SyntaxError:
             raise IntroducedSyntaxErrors(content_source)
-    return parsed_output
 
 
 def check_imports(
