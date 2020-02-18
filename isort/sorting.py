@@ -41,7 +41,11 @@ def module_key(
 
 
 def section_key(
-    line: str, order_by_type: bool, force_to_top: List[str], lexicographical: bool = False
+    line: str,
+    order_by_type: bool,
+    force_to_top: List[str],
+    lexicographical: bool = False,
+    length_sort: bool = False,
 ) -> str:
     section = "B"
 
@@ -54,7 +58,8 @@ def section_key(
         section = "A"
     if not order_by_type:
         line = line.lower()
-    return f"{section}{line}"
+
+    return f"{section}{len(line) if length_sort else ''}{line}"
 
 
 def naturally(to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None) -> List[str]:

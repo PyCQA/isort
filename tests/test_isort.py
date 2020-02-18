@@ -1120,6 +1120,20 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
         "from third_party import lib_d\n"
     )
 
+    # Ensure force_sort_within_sections can work with length sort
+    # See: https://github.com/timothycrosley/isort/issues/1038
+    test_input = """import sympy
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+"""
+    test_output = (
+        SortImports(
+            file_contents=test_input, force_sort_within_sections=True, length_sort=True
+        ).output
+        == test_input
+    )
+
 
 def test_titled_imports() -> None:
     """Tests setting custom titled/commented import sections."""
