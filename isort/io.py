@@ -1,4 +1,6 @@
 """Defines any IO utilities used by isort"""
+from io import StringIO
+
 import locale
 import re
 from pathlib import Path
@@ -71,3 +73,11 @@ def _read_file_contents(file_path: Path) -> Tuple[str, str]:
             pass
 
     raise UnableToDetermineEncoding(file_path, encoding, fallback_encoding)
+
+
+class _EmptyIO(StringIO):
+    def write(self, *args, **kwargs):
+        pass
+
+
+Empty = _EmptyIO()
