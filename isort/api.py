@@ -181,11 +181,6 @@ def sort_imports(
     made_changes: bool = False
 
     for index, line in enumerate(chain(input_stream, (None,))):
-
-        for file_skip_comment in FILE_SKIP_COMMENTS:
-            if file_skip_comment in line:
-                raise FileSkipComment("Passed in content")
-
         if line is None:
             if index == 0 and not config.force_adds:
                 return
@@ -197,6 +192,10 @@ def sort_imports(
         else:
             if not line_separator:
                 line_separator = line[-1]
+
+            for file_skip_comment in FILE_SKIP_COMMENTS:
+                if file_skip_comment in line:
+                    raise FileSkipComment("Passed in content")
 
             stripped_line = line.strip()
             if (
@@ -366,7 +365,7 @@ def sort_imports(
                             ).strip()
                         else:
                             compare_in = raw_import_section.strip()
-                            compare_out = sorted_output.strip()
+                            compare_out = sorted_import_section.strip()
 
                         if compare_out != compare_in:
                             made_changes = True

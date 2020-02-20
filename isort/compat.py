@@ -1,3 +1,4 @@
+from io import StringIO
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -35,7 +36,7 @@ class SortImports:
                 file_data = File.from_contents(file_contents, filename=filename)
             else:
                 file_data = File.read(filename)
-            file_contents, file_path, file_encoding = file_data
+            file_stream, file_path, file_encoding = file_data
             if not extension:
                 extension = file_data.extension
 
@@ -49,7 +50,7 @@ class SortImports:
         try:
             if check:
                 self.incorrectly_sorted = not api.check_imports(
-                    file_contents,
+                    file_stream,
                     extension=extension,
                     config=config,
                     file_path=file_path,
@@ -58,9 +59,12 @@ class SortImports:
                 self.output = ""
                 return
             else:
-                self.output = api.sorted_imports(
-                    file_contents, extension=extension, config=config, file_path=file_path
+                output_stream = StringIO()
+                api.sorted_imports(
+                    file_stream, output_stream, extension=extension, config=config, file_path=file_path
                 )
+                self.output_stream.seek(0)
+                self.output = output_stream.read()
         except FileSkipped as error:
             self.skipped = True
             self.output = ""

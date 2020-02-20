@@ -1,5 +1,6 @@
 """Defines any IO utilities used by isort"""
 from io import StringIO
+from typing import List, Optional, TextIO
 
 import locale
 import re
@@ -12,20 +13,20 @@ _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)
 
 
 class File(NamedTuple):
-    contents: str
+    contents: TextIO
     path: Path
     encoding: str
 
     @staticmethod
     def read(filename: str) -> "File":
         file_path = Path(filename).resolve()
-        contents, encoding = _read_file_contents(file_path)
-        return File(contents=contents, path=file_path, encoding=encoding)
+        encoding = _determine_file_encoding(file_path)
+        return File(contents=file_path.open(encoding=encoding, newline=""), path=file_path, encoding=encoding)
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
         return File(
-            contents, path=Path(filename).resolve(), encoding=_determine_content_encoding(contents)
+            StringIO(contents), path=Path(filename).resolve(), encoding=_determine_content_encoding(contents)
         )
 
     @property
@@ -50,8 +51,16 @@ def _determine_content_encoding(content: str, default: str = "utf-8"):
 
 def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
     # see https://www.python.org/dev/peps/pep-0263/
-    with file_path.open("rb") as open_file:
-        return _determine_stream_encoding(open_file, default=default)
+    try:
+        with file_path.open("rb") as open_file:
+            return _determine_stream_encoding(open_file, default=default)
+    except UnicodeDecodeError:
+        fallback_encoding = locale.getpreferredencoding(False)
+        try:
+            with file_path.open("rb", encoding=fallback_encoding) as open_file:
+                return _determine_stream_encoding(open_file, default=fallback_encoding)
+        except UnicodeDecodeError:
+            raise UnableToDetermineEncoding(file_path, default, fallback_encoding)
 
 
 def _read_file_contents(file_path: Path) -> Tuple[str, str]:
