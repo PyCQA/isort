@@ -1,5 +1,5 @@
-from io import StringIO
 import sys
+from io import StringIO
 from pathlib import Path
 from typing import Any, Optional
 from warnings import warn
@@ -39,6 +39,8 @@ class SortImports:
             file_stream, file_path, file_encoding = file_data
             if not extension:
                 extension = file_data.extension
+        else:
+            file_stream = StringIO(file_contents)
 
         if settings_path:
             setting_overrides["settings_path"] = settings_path
@@ -61,9 +63,13 @@ class SortImports:
             else:
                 output_stream = StringIO()
                 api.sorted_imports(
-                    file_stream, output_stream, extension=extension, config=config, file_path=file_path
+                    file_stream,
+                    output_stream,
+                    extension=extension,
+                    config=config,
+                    file_path=file_path,
                 )
-                self.output_stream.seek(0)
+                output_stream.seek(0)
                 self.output = output_stream.read()
         except FileSkipped as error:
             self.skipped = True

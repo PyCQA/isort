@@ -1,5 +1,5 @@
 import textwrap
-from io import StringIO
+from io import BytesIO, StringIO
 from itertools import chain
 from pathlib import Path
 from typing import List, Optional, TextIO
@@ -12,7 +12,7 @@ from .exceptions import (
     IntroducedSyntaxErrors,
 )
 from .format import format_natural, remove_whitespace, show_unified_diff
-from .io import File, Empty
+from .io import Empty, File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
@@ -68,7 +68,7 @@ def sorted_imports(
     try:
         changed = sort_imports(input_stream, output_stream, extension=extension, config=config)
     except FileSkipComment:
-        raise FileSkipComment(file_path)
+        raise FileSkipComment(content_source)
 
     if config.atomic:
         output_stream.seek(0)
@@ -156,7 +156,7 @@ def sort_imports(
     - `output_stream`: Text stream to output sorted inputs into.
     - `config`: Config settings to use when sorting imports. Defaults settings.
         - *Default*: `isort.settings.DEFAULT_CONFIG`.
-    - `extension`: The file extension or file extension rules that should be used. 
+    - `extension`: The file extension or file extension rules that should be used.
         - *Default*: `"py"`.
         - *Choices*: `["py", "pyi", "pyx"]`.
 
@@ -183,7 +183,7 @@ def sort_imports(
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
             if index == 0 and not config.force_adds:
-                return
+                return False
 
             not_imports = True
             line = ""

@@ -1,11 +1,10 @@
 """Defines any IO utilities used by isort"""
-from io import StringIO
-from typing import List, Optional, TextIO
-
 import locale
 import re
+import tokenize
+from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import NamedTuple, Tuple
+from typing import List, NamedTuple, Optional, TextIO, Tuple
 
 from .exceptions import UnableToDetermineEncoding
 
@@ -20,68 +19,32 @@ class File(NamedTuple):
     @staticmethod
     def read(filename: str) -> "File":
         file_path = Path(filename).resolve()
-        encoding = _determine_file_encoding(file_path)
-        return File(contents=file_path.open(encoding=encoding, newline=""), path=file_path, encoding=encoding)
+        stream = File._open(file_path)
+        return File(contents=stream, path=file_path, encoding=stream.encoding)
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        return File(
-            StringIO(contents), path=Path(filename).resolve(), encoding=_determine_content_encoding(contents)
-        )
+        encoding, lines = tokenize.detect_encoding(BytesIO(contents.encode("utf-8")).readline)
+        return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
 
     @property
     def extension(self):
         return self.path.suffix.lstrip(".")
 
-
-def _determine_stream_encoding(stream, default: str = "utf-8") -> str:
-    for line_number, line in enumerate(stream, 1):
-        if line_number > 2:
-            break
-        groups = re.findall(_ENCODING_PATTERN, line)
-        if groups:
-            return groups[0].decode("ascii")
-
-    return default
-
-
-def _determine_content_encoding(content: str, default: str = "utf-8"):
-    return _determine_stream_encoding(content.encode(default).split(b"\n"), default=default)
-
-
-def _determine_file_encoding(file_path: Path, default: str = "utf-8") -> str:
-    # see https://www.python.org/dev/peps/pep-0263/
-    try:
-        with file_path.open("rb") as open_file:
-            return _determine_stream_encoding(open_file, default=default)
-    except UnicodeDecodeError:
-        fallback_encoding = locale.getpreferredencoding(False)
+    @staticmethod
+    def _open(filename):
+        """Open a file in read only mode using the encoding detected by
+        detect_encoding().
+        """
+        buffer = open(filename, "rb")
         try:
-            with file_path.open("rb", encoding=fallback_encoding) as open_file:
-                return _determine_stream_encoding(open_file, default=fallback_encoding)
-        except UnicodeDecodeError:
-            raise UnableToDetermineEncoding(file_path, default, fallback_encoding)
-
-
-def _read_file_contents(file_path: Path) -> Tuple[str, str]:
-    encoding = _determine_file_encoding(file_path)
-    with file_path.open(encoding=encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, encoding
-        except UnicodeDecodeError:
-            pass
-
-    # Try default encoding for open(mode='r') on the system
-    fallback_encoding = locale.getpreferredencoding(False)
-    with file_path.open(encoding=fallback_encoding, newline="") as file_to_import_sort:
-        try:
-            file_contents = file_to_import_sort.read()
-            return file_contents, fallback_encoding
-        except UnicodeDecodeError:
-            pass
-
-    raise UnableToDetermineEncoding(file_path, encoding, fallback_encoding)
+            encoding, lines = tokenize.detect_encoding(buffer.readline)
+            buffer.seek(0)
+            text = TextIOWrapper(buffer, encoding, line_buffering=True, newline="")
+            return text
+        except Exception:
+            buffer.close()
+            raise
 
 
 class _EmptyIO(StringIO):
