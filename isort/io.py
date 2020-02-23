@@ -2,9 +2,10 @@
 import locale
 import re
 import tokenize
+from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import List, NamedTuple, Optional, TextIO, Tuple
+from typing import List, NamedTuple, Optional, TextIO, Tuple, Union, Iterator
 
 from .exceptions import UnableToDetermineEncoding
 
@@ -12,15 +13,9 @@ _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)
 
 
 class File(NamedTuple):
-    contents: TextIO
+    stream: TextIO
     path: Path
     encoding: str
-
-    @staticmethod
-    def read(filename: str) -> "File":
-        file_path = Path(filename).resolve()
-        stream = File._open(file_path)
-        return File(contents=stream, path=file_path, encoding=stream.encoding)
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
@@ -46,6 +41,16 @@ class File(NamedTuple):
         except Exception:
             buffer.close()
             raise
+
+
+@contextmanager
+def read_file(filename: Union[str, Path]) -> Iterator["File"]:
+    file_path = Path(filename).resolve()
+    try:
+        stream = File._open(file_path)
+        yield File(stream=stream, path=file_path, encoding=stream.encoding)
+    finally:
+        stream.close()
 
 
 class _EmptyIO(StringIO):

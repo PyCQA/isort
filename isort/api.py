@@ -1,10 +1,10 @@
 import textwrap
-from io import BytesIO, StringIO
+from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import List, Optional, TextIO
+from typing import List, Optional, TextIO, Union
 
-from . import output, parse
+from . import output, parse, io
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -32,6 +32,7 @@ def _config(
             config_kwargs["settings_path"] = path
 
     if config_kwargs and config is not DEFAULT_CONFIG:
+        breakpoint()
         raise ValueError(
             "You can either specify custom configuration options using kwargs or "
             "passing in a Config object. Not Both!"
@@ -391,3 +392,22 @@ def sort_imports(
                 not_imports = False
 
     return made_changes
+
+
+def check_file(
+    filename: Union[str, Path],
+    show_diff: bool = False,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+) -> bool:
+    with io.read_file(filename) as source_file:
+        return check_imports(
+            source_file.stream,
+            show_diff=show_diff,
+            extension=source_file.extension or "py",
+            config=config,
+            file_path=source_file.path,
+            disregard_skip=disregard_skip,
+            **config_kwargs)
