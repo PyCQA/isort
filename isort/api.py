@@ -411,3 +411,33 @@ def check_file(
             file_path=source_file.path,
             disregard_skip=disregard_skip,
             **config_kwargs)
+
+
+def sort_file(
+    filename: Union[str, Path],
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+):
+    with io.read_file(filename) as source_file:
+        tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+        with tmp_file.open("w", encoding=source_file.encoding, newline="") as output_stream:
+            try:
+                changed = sorted_imports(
+                    input_stream=source_file.stream,
+                    output_stream=output_stream,
+                    config=config,
+                    file_path=source_file.path,
+                    disregard_skip=disregard_skip,
+                    **config_kwargs
+                )
+                if changed:
+                    tmp_file.replace(source_file.path)
+
+            finally:
+                try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                    tmp_file.unlink()
+                except FileNotFoundError:
+                    pass
