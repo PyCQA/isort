@@ -11,7 +11,7 @@ from .exceptions import (
     FileSkipSetting,
     IntroducedSyntaxErrors,
 )
-from .format import format_natural, remove_whitespace, show_unified_diff
+from .format import format_natural, remove_whitespace, show_unified_diff, ask_whether_to_apply_changes_to_file
 from .io import Empty, File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
@@ -419,12 +419,14 @@ def sort_file(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
+    ask_to_apply: bool = False,
     **config_kwargs,
 ):
     with io.read_file(filename) as source_file:
         tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
-        with tmp_file.open("w", encoding=source_file.encoding, newline="") as output_stream:
-            try:
+        changed: bool = False
+        try:
+            with tmp_file.open("w", encoding=source_file.encoding, newline="") as output_stream:
                 changed = sorted_imports(
                     input_stream=source_file.stream,
                     output_stream=output_stream,
@@ -433,11 +435,21 @@ def sort_file(
                     disregard_skip=disregard_skip,
                     **config_kwargs
                 )
-                if changed:
+            if changed:
+                if ask_to_apply:
+                    source_file.stream.seek(0)
+                    show_unified_diff(
+                        file_input=source_file.stream.read(),
+                        file_output=tmp_file.read_text(encoding=source_file.encoding),
+                        file_path=source_file.path
+                    )
+                    apply_changes = ask_whether_to_apply_changes_to_file(str(source_file.path))
+                    if not apply_changes:
+                        return
                     tmp_file.replace(source_file.path)
 
-            finally:
-                try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                    tmp_file.unlink()
-                except FileNotFoundError:
-                    pass
+        finally:
+            try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                tmp_file.unlink()
+            except FileNotFoundError:
+                pass
