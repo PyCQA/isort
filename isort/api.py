@@ -3,6 +3,7 @@ from io import StringIO
 from itertools import chain
 from pathlib import Path
 from typing import List, Optional, TextIO, Union
+from warnings import warn
 
 from . import output, parse, io
 from .exceptions import (
@@ -447,7 +448,10 @@ def sort_file(
                     if not apply_changes:
                         return
                     tmp_file.replace(source_file.path)
-
+        except ExistingSyntaxErrors:
+            warn("{file_path} unable to sort due to existing syntax errors")
+        except IntroducedSyntaxErrors:
+            warn("{file_path} unable to sort as isort introduces new syntax errors")
         finally:
             try:  # Python 3.8+: use `missing_ok=True` instead of try except.
                 tmp_file.unlink()
