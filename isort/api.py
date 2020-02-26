@@ -421,6 +421,7 @@ def sort_file(
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     ask_to_apply: bool = False,
+    show_diff: bool = False,
     **config_kwargs,
 ):
     with io.read_file(filename) as source_file:
@@ -437,17 +438,16 @@ def sort_file(
                     **config_kwargs
                 )
             if changed:
-                if ask_to_apply:
+                if show_diff or ask_to_apply:
                     source_file.stream.seek(0)
                     show_unified_diff(
                         file_input=source_file.stream.read(),
                         file_output=tmp_file.read_text(encoding=source_file.encoding),
                         file_path=source_file.path
                     )
-                    apply_changes = ask_whether_to_apply_changes_to_file(str(source_file.path))
-                    if not apply_changes:
+                    if ask_to_apply and not ask_whether_to_apply_changes_to_file(str(source_file.path)):
                         return
-                    tmp_file.replace(source_file.path)
+                tmp_file.replace(source_file.path)
         except ExistingSyntaxErrors:
             warn("{file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:
