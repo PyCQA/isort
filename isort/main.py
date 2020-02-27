@@ -72,9 +72,9 @@ class SortAttempt:
 
 def sort_imports(file_name: str, config: Config, check: bool = False, **arguments: Any) -> Optional[SortAttempt]:
     try:
+        incorrectly_sorted: bool = False
+        skipped: bool = False
         if check:
-            incorrectly_sorted: bool = False
-            skipped: bool = False
             try:
                 arguments.pop("ask_to_apply")
                 arguments.pop("write_to_stdout")
@@ -84,8 +84,11 @@ def sort_imports(file_name: str, config: Config, check: bool = False, **argument
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
         else:
-            result = SortImports(file_name, **arguments)
-        return SortAttempt(result.incorrectly_sorted, result.skipped)
+            try:
+                incorrectly_sorted = not api.sort_file(file_name=file_name, config=config, **arguments)
+            except FileSkipped:
+                skipped = True
+            return SortAttempt(incorrectly_sorted, skipped)
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
