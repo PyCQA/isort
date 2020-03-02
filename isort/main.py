@@ -70,7 +70,9 @@ class SortAttempt:
         self.skipped = skipped
 
 
-def sort_imports(file_name: str, config: Config, check: bool = False, **arguments: Any) -> Optional[SortAttempt]:
+def sort_imports(
+    file_name: str, config: Config, check: bool = False, **arguments: Any
+) -> Optional[SortAttempt]:
     try:
         incorrectly_sorted: bool = False
         skipped: bool = False
@@ -85,7 +87,9 @@ def sort_imports(file_name: str, config: Config, check: bool = False, **argument
             return SortAttempt(incorrectly_sorted, skipped)
         else:
             try:
-                incorrectly_sorted = not api.sort_file(file_name=file_name, config=config, **arguments)
+                incorrectly_sorted = not api.sort_file(
+                    file_name=file_name, config=config, **arguments
+                )
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
@@ -623,7 +627,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 config=config,
                 check=check,
                 ask_to_apply=ask_to_apply,
-                write_to_stdout=write_to_stdout
+                write_to_stdout=write_to_stdout,
             ),
             file_names,
         )

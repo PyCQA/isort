@@ -13,7 +13,12 @@ from .exceptions import (
     FileSkipSetting,
     IntroducedSyntaxErrors,
 )
-from .format import format_natural, remove_whitespace, show_unified_diff, ask_whether_to_apply_changes_to_file
+from .format import (
+    format_natural,
+    remove_whitespace,
+    show_unified_diff,
+    ask_whether_to_apply_changes_to_file,
+)
 from .io import Empty, File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
@@ -412,7 +417,8 @@ def check_file(
             config=config,
             file_path=source_file.path,
             disregard_skip=disregard_skip,
-            **config_kwargs)
+            **config_kwargs,
+        )
 
 
 def sort_file(
@@ -423,8 +429,7 @@ def sort_file(
     disregard_skip: bool = False,
     ask_to_apply: bool = False,
     show_diff: bool = False,
-    output_to_stdout: bool = False
-    **config_kwargs,
+    output_to_stdout: bool = False ** config_kwargs,
 ):
     with io.read_file(filename) as source_file:
         changed: bool = False
@@ -436,19 +441,21 @@ def sort_file(
                     config=config,
                     file_path=source_file.path,
                     disregard_skip=disregard_skip,
-                    **config_kwargs
+                    **config_kwargs,
                 )
             else:
                 tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
                 try:
-                    with tmp_file.open("w", encoding=source_file.encoding, newline="") as output_stream:
+                    with tmp_file.open(
+                        "w", encoding=source_file.encoding, newline=""
+                    ) as output_stream:
                         changed = sorted_imports(
                             input_stream=source_file.stream,
                             output_stream=output_stream,
                             config=config,
                             file_path=source_file.path,
                             disregard_skip=disregard_skip,
-                            **config_kwargs
+                            **config_kwargs,
                         )
                     if changed:
                         if show_diff or ask_to_apply:
@@ -456,9 +463,11 @@ def sort_file(
                             show_unified_diff(
                                 file_input=source_file.stream.read(),
                                 file_output=tmp_file.read_text(encoding=source_file.encoding),
-                                file_path=source_file.path
+                                file_path=source_file.path,
                             )
-                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(str(source_file.path)):
+                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(
+                                str(source_file.path)
+                            ):
                                 return
                         tmp_file.replace(source_file.path)
                 finally:
