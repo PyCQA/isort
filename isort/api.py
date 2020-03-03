@@ -429,7 +429,8 @@ def sort_file(
     disregard_skip: bool = False,
     ask_to_apply: bool = False,
     show_diff: bool = False,
-    output_to_stdout: bool = False ** config_kwargs,
+    output_to_stdout: bool = False,
+    **config_kwargs,
 ):
     with io.read_file(filename) as source_file:
         changed: bool = False
