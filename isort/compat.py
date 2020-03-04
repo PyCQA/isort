@@ -7,7 +7,7 @@ from warnings import warn
 from . import api
 from .exceptions import ExistingSyntaxErrors, FileSkipped, IntroducedSyntaxErrors
 from .format import ask_whether_to_apply_changes_to_file, show_unified_diff
-from .io import File
+from .io import File, read_file
 from .settings import Config
 
 
@@ -34,11 +34,14 @@ class SortImports:
         if filename:
             if file_contents:
                 file_data = File.from_contents(file_contents, filename=filename)
+                file_stream, file_path, file_encoding = file_data
+                if not extension:
+                    extension = file_data.extension
             else:
-                file_data = File.read(filename)
-            file_stream, file_path, file_encoding = file_data
-            if not extension:
-                extension = file_data.extension
+                with read_file(filename) as file_data:
+                    file_stream, file_path, file_encoding = file_data
+                    if not extension:
+                        extension = file_data.extension
         else:
             file_stream = StringIO(file_contents)
 

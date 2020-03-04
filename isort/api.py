@@ -39,7 +39,6 @@ def _config(
             config_kwargs["settings_path"] = path
 
     if config_kwargs and config is not DEFAULT_CONFIG:
-        breakpoint()
         raise ValueError(
             "You can either specify custom configuration options using kwargs or "
             "passing in a Config object. Not Both!"
@@ -135,18 +134,6 @@ def check_imports(
                 file_input=file_contents, file_output=output_stream.read(), file_path=file_path
             )
         return False
-
-
-def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs) -> str:
-    file_data = File.read(filename)
-    config = _config(path=file_data.path.parent, config=config)
-    return sorted_imports(
-        file_contents=file_data.contents,
-        extension=file_data.extension,
-        config=config,
-        file_path=file_data.path,
-        **config_kwargs,
-    )
 
 
 def sort_imports(

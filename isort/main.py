@@ -71,7 +71,12 @@ class SortAttempt:
 
 
 def sort_imports(
-    file_name: str, config: Config, check: bool = False, ask_to_apply: bool=False, write_to_stdout:bool=False, **arguments: Any
+    file_name: str,
+    config: Config,
+    check: bool = False,
+    ask_to_apply: bool = False,
+    write_to_stdout: bool = False,
+    **arguments: Any,
 ) -> Optional[SortAttempt]:
     arguments.pop("settings_path")
     try:
@@ -86,7 +91,11 @@ def sort_imports(
         else:
             try:
                 incorrectly_sorted = not api.sort_file(
-                    file_name=file_name, config=config, ask_to_apply=ask_to_apply, write_to_stdout=write_to_stdout, **arguments
+                    file_name=file_name,
+                    config=config,
+                    ask_to_apply=ask_to_apply,
+                    write_to_stdout=write_to_stdout,
+                    **arguments,
                 )
             except FileSkipped:
                 skipped = True
