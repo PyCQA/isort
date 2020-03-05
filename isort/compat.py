@@ -40,6 +40,7 @@ class SortImports:
             else:
                 with read_file(filename) as file_data:
                     file_stream, file_path, file_encoding = file_data
+                    file_stream = StringIO(file_stream.read())
                     if not extension:
                         extension = file_data.extension
         else:
