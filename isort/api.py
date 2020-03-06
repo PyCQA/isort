@@ -416,13 +416,13 @@ def sort_file(
     disregard_skip: bool = False,
     ask_to_apply: bool = False,
     show_diff: bool = False,
-    output_to_stdout: bool = False,
+    write_to_stdout: bool = False,
     **config_kwargs,
 ):
     with io.read_file(filename) as source_file:
         changed: bool = False
         try:
-            if output_to_stdout:
+            if write_to_stdout:
                 changed = sorted_imports(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
