@@ -458,6 +458,8 @@ def sort_file(
                             ):
                                 return
                         tmp_file.replace(source_file.path)
+                        if not config.quiet:
+                            print(f"Fixing {source_file.path}")
                 finally:
                     try:  # Python 3.8+: use `missing_ok=True` instead of try except.
                         tmp_file.unlink()
