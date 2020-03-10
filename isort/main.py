@@ -584,7 +584,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(QUICK_GUIDE)
         return
     elif file_names == ["-"] and not show_config:
-        SortImports(file_contents=sys.stdin.read(), write_to_stdout=True, **arguments)
+        api.sorted_imports(input_stream=sys.stdin, output_stream=sys.stdout, **arguments)
         return
 
     if "settings_path" not in arguments:
