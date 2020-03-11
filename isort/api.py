@@ -49,6 +49,29 @@ def _config(
     return config
 
 
+def sort_code_string(
+    code: str,
+    extension="py",
+    config=DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+):
+    input_stream = StringIO(code)
+    output_stream = StringIO()
+    sorted_imports(
+        input_stream,
+        output_stream,
+        extension=extension,
+        config=config,
+        file_path=file_path,
+        disregard_skip=disregard_skip,
+        **config_kwargs,
+    )
+    output_stream.seek(0)
+    return output_stream.read()
+
+
 def sorted_imports(
     input_stream: TextIO,
     output_stream: TextIO,
