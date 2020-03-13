@@ -153,8 +153,8 @@ def test_line_length() -> None:
         ")\n"
     )  # Test case described in issue #654
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             include_trailing_comma=True,
             line_length=79,
             multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -163,7 +163,7 @@ def test_line_length() -> None:
         == test_input
     )
 
-    test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=42, wrap_length=32)
+    test_output = api.sort_code_string(code=REALLY_LONG_IMPORT, line_length=42, wrap_length=32)
     assert test_output == (
         "from third_party import (lib1,\n"
         "                         lib2,\n"
@@ -192,14 +192,14 @@ def test_line_length() -> None:
         "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
     )
     with pytest.raises(ValueError):
-        test_output = SortImports(file_contents=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
+        test_output = api.sort_code_string(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
     test_output = (
         api.sort_code_string(REALLY_LONG_IMPORT, line_length=100, wrap_length=99) == test_input
     )
 
     # Test Case described in issue #1015
-    test_output = SortImports(
-        file_contents=REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
+    test_output = api.sort_code_string(
+       REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
     )
     assert test_output == (
         "from third_party import \\\n"
@@ -217,8 +217,8 @@ def test_line_length() -> None:
 
 def test_output_modes() -> None:
     """Test setting isort to use various output modes works as expected"""
-    test_output_grid = SortImports(
-        file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.GRID, line_length=40
+    test_output_grid = api.sort_code_string(
+        code=REALLY_LONG_IMPORT, multi_line_output=WrapModes.GRID, line_length=40
     )
     assert test_output_grid == (
         "from third_party import (lib1, lib2,\n"
@@ -234,8 +234,8 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    test_output_vertical = SortImports(
-        file_contents=REALLY_LONG_IMPORT, multi_line_output=WrapModes.VERTICAL, line_length=40
+    test_output_vertical = api.sort_code_string(
+        code=REALLY_LONG_IMPORT, multi_line_output=WrapModes.VERTICAL, line_length=40
     )
     assert test_output_vertical == (
         "from third_party import (lib1,\n"
@@ -261,8 +261,8 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    comment_output_vertical = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    comment_output_vertical = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL,
         line_length=40,
     )
@@ -290,8 +290,8 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    test_output_hanging_indent = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output_hanging_indent = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent="    ",
@@ -304,8 +304,8 @@ def test_output_modes() -> None:
         "    lib18, lib20, lib21, lib22\n"
     )
 
-    comment_output_hanging_indent = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    comment_output_hanging_indent = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent="    ",
@@ -318,8 +318,8 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22\n"
     )
 
-    test_output_vertical_indent = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output_vertical_indent = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
         indent="    ",
@@ -350,8 +350,8 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    comment_output_vertical_indent = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    comment_output_vertical_indent = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
         indent="    ",
@@ -382,8 +382,8 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    test_output_vertical_grid = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output_vertical_grid = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
         indent="    ",
@@ -396,8 +396,8 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22)\n"
     )
 
-    comment_output_vertical_grid = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    comment_output_vertical_grid = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
         indent="    ",
@@ -410,8 +410,8 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22)\n"
     )
 
-    test_output_vertical_grid_grouped = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output_vertical_grid_grouped = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
         indent="    ",
@@ -425,8 +425,8 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    comment_output_vertical_grid_grouped = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    comment_output_vertical_grid_grouped = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
         indent="    ",
@@ -440,8 +440,8 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    output_noqa = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.NOQA
+    output_noqa = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.NOQA
     )
     assert output_noqa == (
         "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7,"
@@ -450,8 +450,8 @@ def test_output_modes() -> None:
         "# NOQA comment\n"
     )
 
-    test_case = SortImports(
-        file_contents=SINGLE_LINE_LONG_IMPORT,
+    test_case = api.sort_code_string(
+        code=SINGLE_LINE_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
         line_length=40,
         indent="    ",
@@ -461,8 +461,8 @@ def test_output_modes() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4, lib5, lib5ab\n)\n"
     )
 
-    test_output_prefix_from_module = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output_prefix_from_module = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
         line_length=40,
     )
@@ -480,8 +480,8 @@ def test_output_modes() -> None:
         "from third_party import lib22\n"
     )
 
-    test_output_prefix_from_module_with_comment = SortImports(
-        file_contents=REALLY_LONG_IMPORT_WITH_COMMENT,
+    test_output_prefix_from_module_with_comment = api.sort_code_string(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
         line_length=40,
         indent="    ",
@@ -529,14 +529,14 @@ def test_output_modes() -> None:
 
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
-    test_output = SortImports(
-        file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA
+    test_output = api.sort_code_string(
+        code=test_input, line_length=40, multi_line_output=WrapModes.NOQA
     )
     assert test_output == "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA\n"
 
     test_input = "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA"
-    test_output = SortImports(
-        file_contents=test_input, line_length=40, multi_line_output=WrapModes.NOQA
+    test_output = api.sort_code_string(
+        code=test_input, line_length=40, multi_line_output=WrapModes.NOQA
     )
     assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
 
@@ -590,8 +590,8 @@ def test_convert_hanging() -> None:
         "    lib13, lib14, lib15, lib16, lib17, \\\n"
         "    lib18, lib20, lib21, lib22\n"
     )
-    test_output = SortImports(
-        file_contents=test_input, multi_line_output=WrapModes.GRID, line_length=40
+    test_output = api.sort_code_string(
+        code=test_input, multi_line_output=WrapModes.GRID, line_length=40
     )
     assert test_output == (
         "from third_party import (lib1, lib2,\n"
@@ -610,8 +610,8 @@ def test_convert_hanging() -> None:
 
 def test_custom_indent() -> None:
     """Ensure setting a custom indent will work as expected."""
-    test_output = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent="   ",
@@ -625,8 +625,8 @@ def test_custom_indent() -> None:
         "   lib20, lib21, lib22\n"
     )
 
-    test_output = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent="'  '",
@@ -640,8 +640,8 @@ def test_custom_indent() -> None:
         "  lib20, lib21, lib22\n"
     )
 
-    test_output = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent="tab",
@@ -655,8 +655,8 @@ def test_custom_indent() -> None:
         "\tlib20, lib21, lib22\n"
     )
 
-    test_output = SortImports(
-        file_contents=REALLY_LONG_IMPORT,
+    test_output = api.sort_code_string(
+        code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
         indent=2,
@@ -683,8 +683,8 @@ def test_use_parentheses() -> None:
         "    my_custom_function as my_special_function)\n"
     )
 
-    test_output = SortImports(
-        file_contents=test_input, line_length=79, use_parentheses=True, include_trailing_comma=True
+    test_output = api.sort_code_string(
+        code=test_input, line_length=79, use_parentheses=True, include_trailing_comma=True
     )
 
     assert test_output == (
@@ -692,8 +692,8 @@ def test_use_parentheses() -> None:
         "    my_custom_function as my_special_function,)\n"
     )
 
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         line_length=79,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -704,8 +704,8 @@ def test_use_parentheses() -> None:
         "    my_custom_function as my_special_function\n)\n"
     )
 
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         line_length=79,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -742,8 +742,8 @@ def test_skip_with_file_name() -> None:
     """Ensure skipping a file works even when file_contents is provided."""
     test_input = "import django\nimport myproject\n"
 
-    sort_imports = SortImports(
-        filename="/baz.py", file_contents=test_input, settings_path=os.getcwd(), skip=["baz.py"]
+    sort_imports = api.sort_code_string(
+        filename="/baz.py", code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
     )
     assert sort_imports.skipped
     assert sort_imports.output == ""
@@ -767,7 +767,7 @@ def test_force_to_top() -> None:
 def test_add_imports() -> None:
     """Ensures adding imports works as expected."""
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n\n"
-    test_output = SortImports(file_contents=test_input, add_imports=["import lib4", "import lib7"])
+    test_output = api.sort_code_string(code=test_input, add_imports=["import lib4", "import lib7"])
     assert test_output == (
         "import lib1\n"
         "import lib2\n"
@@ -779,7 +779,7 @@ def test_add_imports() -> None:
 
     # Using simplified syntax
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n\n"
-    test_output = SortImports(file_contents=test_input, add_imports=["lib4", "lib7", "lib8.a"])
+    test_output = api.sort_code_string(code=test_input, add_imports=["lib4", "lib7", "lib8.a"])
     assert test_output == (
         "import lib1\n"
         "import lib2\n"
@@ -792,8 +792,8 @@ def test_add_imports() -> None:
 
     # On a file that has no pre-existing imports
     test_input = '"""Module docstring"""\n' "\nclass MyClass(object):\n    pass\n"
-    test_output = SortImports(
-        file_contents=test_input, add_imports=["from __future__ import print_function"]
+    test_output = api.sort_code_string(
+        code=test_input, add_imports=["from __future__ import print_function"]
     )
     assert test_output == (
         '"""Module docstring"""\n'
@@ -806,8 +806,8 @@ def test_add_imports() -> None:
 
     # On a file that has no pre-existing imports, and no doc-string
     test_input = "class MyClass(object):\n    pass\n"
-    test_output = SortImports(
-        file_contents=test_input, add_imports=["from __future__ import print_function"]
+    test_output = api.sort_code_string(
+        code=test_input, add_imports=["from __future__ import print_function"]
     )
     assert test_output == (
         "from __future__ import print_function\n" "\n" "\n" "class MyClass(object):\n" "    pass\n"
@@ -820,7 +820,7 @@ def test_add_imports() -> None:
 
     # On a file with no content what so ever, after force_adds is set to True
     test_input = ""
-    test_output = SortImports(file_contents=test_input, add_imports=["lib4"], force_adds=True)
+    test_output = api.sort_code_string(code=test_input, add_imports=["lib4"], force_adds=True)
     assert test_output == ("import lib4\n")
 
 
@@ -834,8 +834,8 @@ def test_remove_imports() -> None:
     test_input = (
         "import lib6\n" "import lib2\n" "import lib5\n" "import lib1\n" "from lib8 import a"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         remove_imports=["import lib2", "import lib6", "from lib8 import a"],
     )
     assert test_output == "import lib1\nimport lib5\n"
@@ -874,8 +874,8 @@ def test_check_newline_in_imports(capsys) -> None:
     """Ensure tests works correctly when new lines are in imports."""
     test_input = "from lib1 import (\n    sub1,\n    sub2,\n    sub3\n)\n"
 
-    SortImports(
-        file_contents=test_input,
+    api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
         check=True,
@@ -909,8 +909,8 @@ def test_forced_separate() -> None:
         "TO_FIELD_VAR\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             forced_separate=["django.contrib"],
             known_third_party=["django"],
             line_length=120,
@@ -921,8 +921,8 @@ def test_forced_separate() -> None:
 
     test_input = "from .foo import bar\n\nfrom .y import ca\n"
     assert (
-        SortImports(
-            file_contents=test_input, forced_separate=[".y"], line_length=120, order_by_type=False
+        api.sort_code_string(
+            code=test_input, forced_separate=[".y"], line_length=120, order_by_type=False
         )
         == test_input
     )
@@ -931,15 +931,15 @@ def test_forced_separate() -> None:
 def test_default_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = "import sys\nimport os\nimport myproject.test\nimport django.settings"
-    test_output = SortImports(
-        file_contents=test_input, known_third_party=["django"], default_section="FIRSTPARTY"
+    test_output = api.sort_code_string(
+        code=test_input, known_third_party=["django"], default_section="FIRSTPARTY"
     )
     assert test_output == (
         "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
     )
 
-    test_output_custom = SortImports(
-        file_contents=test_input, known_third_party=["django"], default_section="STDLIB"
+    test_output_custom = api.sort_code_string(
+        code=test_input, known_third_party=["django"], default_section="STDLIB"
     )
     assert test_output_custom == (
         "import myproject.test\n" "import os\n" "import sys\n" "\n" "import django.settings\n"
@@ -954,8 +954,8 @@ def test_first_party_overrides_standard_section() -> None:
         "import os\n"
         "import profile.test\n"
     )
-    test_output = SortImports(
-        file_contents=test_input, known_first_party=["profile"], py_version="27"
+    test_output = api.sort_code_string(
+        code=test_input, known_first_party=["profile"], py_version="27"
     )
     assert test_output == (
         "import os\n"
@@ -984,8 +984,8 @@ def test_known_pattern_path_expansion() -> None:
         "import this\n"
         "import os\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         default_section="THIRDPARTY",
         known_first_party=["./", "this", "kate_plugin", "isort"],
     )
@@ -1008,8 +1008,8 @@ def test_force_single_line_imports() -> None:
         "    lib13, lib14, lib15, lib16, lib17, \\\n"
         "    lib18, lib20, lib21, lib22\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
         force_single_line=True,
@@ -1041,8 +1041,8 @@ def test_force_single_line_imports() -> None:
     test_input = (
         "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
         force_single_line=True,
@@ -1057,8 +1057,8 @@ def test_force_single_line_imports() -> None:
 
 def test_force_single_line_long_imports() -> None:
     test_input = "from veryveryveryveryveryvery import small, big\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.NOQA,
         line_length=40,
         force_single_line=True,
@@ -1073,8 +1073,8 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
     test_input = (
         "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
         force_single_line=True,
@@ -1086,8 +1086,8 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
         "from third_party import lib_d\n"
         "from third_party.lib_c import lib1\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
         force_single_line=True,
@@ -1109,7 +1109,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 """
     test_output = (
-        SortImports(file_contents=test_input, force_sort_within_sections=True, length_sort=True)
+        api.sort_code_string(code=test_input, force_sort_within_sections=True, length_sort=True)
         == test_input
     )
 
@@ -1124,8 +1124,8 @@ def test_titled_imports() -> None:
         "import myproject.test\n"
         "import django.settings"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         known_third_party=["django"],
         import_heading_stdlib="Standard Library",
         import_heading_firstparty="My Stuff",
@@ -1142,8 +1142,8 @@ def test_titled_imports() -> None:
         "# My Stuff\n"
         "import myproject.test\n"
     )
-    test_second_run = SortImports(
-        file_contents=test_output,
+    test_second_run = api.sort_code_string(
+        code=test_output,
         known_third_party=["django"],
         import_heading_stdlib="Standard Library",
         import_heading_firstparty="My Stuff",
@@ -1157,7 +1157,7 @@ def test_balanced_wrapping() -> None:
         "from __future__ import (absolute_import, division, print_function,\n"
         "                        unicode_literals)"
     )
-    test_output = SortImports(file_contents=test_input, line_length=70, balanced_wrapping=True)
+    test_output = api.sort_code_string(code=test_input, line_length=70, balanced_wrapping=True)
     assert test_output == (
         "from __future__ import (absolute_import, division,\n"
         "                        print_function, unicode_literals)\n"
@@ -1347,7 +1347,7 @@ def test_as_imports_with_line_length() -> None:
         "from translate.storage import base as storage_base\n"
         "from translate.storage.placeables import general, parse as rich_parse\n"
     )
-    assert SortImports(file_contents=test_input, combine_as_imports=False, line_length=40) == (
+    assert api.sort_code_string(code=test_input, combine_as_imports=False, line_length=40) == (
         "from translate.storage import \\\n    base as storage_base\n"
         "from translate.storage.placeables import \\\n    general\n"
         "from translate.storage.placeables import \\\n    parse as rich_parse\n"
@@ -1435,8 +1435,8 @@ def test_import_star() -> None:
 
 def test_include_trailing_comma() -> None:
     """Test for the include_trailing_comma option"""
-    test_output_grid = SortImports(
-        file_contents=SHORT_IMPORT,
+    test_output_grid = api.sort_code_string(
+        code=SHORT_IMPORT,
         multi_line_output=WrapModes.GRID,
         line_length=40,
         include_trailing_comma=True,
@@ -1445,8 +1445,8 @@ def test_include_trailing_comma() -> None:
         "from third_party import (lib1, lib2,\n" "                         lib3, lib4,)\n"
     )
 
-    test_output_vertical = SortImports(
-        file_contents=SHORT_IMPORT,
+    test_output_vertical = api.sort_code_string(
+        code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL,
         line_length=40,
         include_trailing_comma=True,
@@ -1458,8 +1458,8 @@ def test_include_trailing_comma() -> None:
         "                         lib4,)\n"
     )
 
-    test_output_vertical_indent = SortImports(
-        file_contents=SHORT_IMPORT,
+    test_output_vertical_indent = api.sort_code_string(
+        code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
         include_trailing_comma=True,
@@ -1468,8 +1468,8 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n" "    lib1,\n" "    lib2,\n" "    lib3,\n" "    lib4,\n" ")\n"
     )
 
-    test_output_vertical_grid = SortImports(
-        file_contents=SHORT_IMPORT,
+    test_output_vertical_grid = api.sort_code_string(
+        code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
         include_trailing_comma=True,
@@ -1478,8 +1478,8 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4,)\n"
     )
 
-    test_output_vertical_grid_grouped = SortImports(
-        file_contents=SHORT_IMPORT,
+    test_output_vertical_grid_grouped = api.sort_code_string(
+        code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
         include_trailing_comma=True,
@@ -1488,8 +1488,8 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4,\n)\n"
     )
 
-    test_output_wrap_single_import_with_use_parentheses = SortImports(
-        file_contents=SINGLE_FROM_IMPORT,
+    test_output_wrap_single_import_with_use_parentheses = api.sort_code_string(
+        code=SINGLE_FROM_IMPORT,
         line_length=25,
         include_trailing_comma=True,
         use_parentheses=True,
@@ -1498,8 +1498,8 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1,)\n"
     )
 
-    test_output_wrap_single_import_vertical_indent = SortImports(
-        file_contents=SINGLE_FROM_IMPORT,
+    test_output_wrap_single_import_vertical_indent = api.sort_code_string(
+        code=SINGLE_FROM_IMPORT,
         line_length=25,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         include_trailing_comma=True,
@@ -1518,8 +1518,8 @@ def test_include_trailing_comma() -> None:
         "    urlencode,  # pylint: disable=no-n"
         "ame-in-module,import-error\n)\n"
     )
-    trailing_comma_with_comment = SortImports(
-        file_contents=trailing_comma_with_comment,
+    trailing_comma_with_comment = api.sort_code_string(
+        code=trailing_comma_with_comment,
         line_length=80,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         include_trailing_comma=True,
@@ -1527,8 +1527,8 @@ def test_include_trailing_comma() -> None:
     )
     assert trailing_comma_with_comment == expected_trailing_comma_with_comment
     # The next time around, it should be equal
-    trailing_comma_with_comment = SortImports(
-        file_contents=trailing_comma_with_comment,
+    trailing_comma_with_comment = api.sort_code_string(
+        code=trailing_comma_with_comment,
         line_length=80,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         include_trailing_comma=True,
@@ -1623,8 +1623,8 @@ def test_correctly_placed_imports() -> None:
         "get_right\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             force_single_line=True,
             line_length=140,
             known_third_party=["django", "model_mommy"],
@@ -1667,7 +1667,7 @@ def test_long_line_comments() -> None:
         "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
-    assert SortImports(file_contents=test_input, line_length=100, balanced_wrapping=True) == (
+    assert api.sort_code_string(code=test_input, line_length=100, balanced_wrapping=True) == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
         "                                         sync_live_envdir, update_live_app, "
         "update_live_cron)\n"
@@ -1738,8 +1738,8 @@ def test_placement_control() -> None:
         "import p24.imports._VERSION as VERSION\n"
         "import p24.shared.media_wiki_syntax as syntax\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
         known_standard_library=["p24.imports", "os", "sys"],
         known_third_party=["bottle"],
@@ -1774,8 +1774,8 @@ def test_custom_sections() -> None:
         "import numpy as np\n"
         "import p24.shared.media_wiki_syntax as syntax\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
         import_heading_stdlib="Standard Library",
         import_heading_thirdparty="Third Party",
@@ -1830,8 +1830,8 @@ def test_glob_known() -> None:
         "from django.conf import settings\n"
         "from . import another\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         import_heading_stdlib="Standard Library",
         import_heading_thirdparty="Third Party",
         import_heading_firstparty="First Party",
@@ -1939,8 +1939,8 @@ def test_consistency() -> None:
 def test_force_grid_wrap() -> None:
     """Ensures removing imports works as expected."""
     test_input = "from bar import lib2\nfrom foo import lib6, lib7\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         force_grid_wrap=2,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
     )
@@ -1953,8 +1953,8 @@ from foo import (
 )
 """
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         force_grid_wrap=3,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
     )
@@ -1968,8 +1968,8 @@ def test_force_grid_wrap_long() -> None:
         "from bar import lib2\n"
         "from babar import something_that_is_kind_of_long"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         force_grid_wrap=2,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=9999,
@@ -1991,8 +1991,8 @@ def test_uses_jinja_variables() -> None:
     test_input = (
         "import sys\n" "import os\n" "import myproject.{ test }\n" "import django.{ settings }"
     )
-    test_output = SortImports(
-        file_contents=test_input, known_third_party=["django"], known_first_party=["myproject"]
+    test_output = api.sort_code_string(
+        code=test_input, known_third_party=["django"], known_first_party=["myproject"]
     )
     assert test_output == (
         "import os\n"
@@ -2019,8 +2019,8 @@ def test_import_split_is_word_boundary_aware() -> None:
         "from mycompany.model.size_value_array_import_func import \\\n"
         "    get_size_value_array_import_func_jobs"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=79,
     )
@@ -2037,7 +2037,7 @@ def test_other_file_encodings(tmpdir) -> None:
         tmp_fname = tmpdir.join(f"test_{encoding}.py")
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
-        assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+        assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_encoding_not_in_comment(tmpdir) -> None:
@@ -2045,7 +2045,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
@@ -2053,7 +2053,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert SortImports(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_comment_at_top_of_file() -> None:
@@ -2218,14 +2218,14 @@ def test_alphabetic_sorting_no_newlines() -> None:
     erroneously introduce new lines (issue #328)
     """
     test_input = "import os\n"
-    test_output = SortImports(
-        file_contents=test_input, force_alphabetical_sort_within_sections=True
+    test_output = api.sort_code_string(
+        code=test_input, force_alphabetical_sort_within_sections=True
     )
     assert test_input == test_output
 
     test_input = "import os\n" "import unittest\n" "\n" "from a import b\n" "\n" "\n" "print(1)\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         force_alphabetical_sort_within_sections=True,
         lines_after_imports=2,
     )
@@ -2250,8 +2250,8 @@ def test_sort_within_section() -> None:
         "from foo.bar import Quux\n"
         "from Foob import ar\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         force_sort_within_sections=True,
         order_by_type=False,
         force_single_line=True,
@@ -2291,8 +2291,8 @@ def test_forced_sepatate_globs() -> None:
         "\n"
         "import sys\n"
     )
-    test_output = SortImports(
-        file_contents=test_input, forced_separate=["*.models"], line_length=120
+    test_output = api.sort_code_string(
+        code=test_input, forced_separate=["*.models"], line_length=120
     )
 
     assert test_output == (
@@ -2330,23 +2330,23 @@ def test_no_additional_lines_issue_358() -> None:
         "    unicode_literals\n"
         ")\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
     )
     assert test_output == expected_output
 
-    test_output = SortImports(
-        file_contents=test_output,
+    test_output = api.sort_code_string(
+        code=test_output,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
-        test_output = SortImports(
-            file_contents=test_output,
+        test_output = api.sort_code_string(
+            code=test_output,
             multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
             line_length=20,
         )
@@ -2374,23 +2374,23 @@ def test_no_additional_lines_issue_358() -> None:
         "    unicode_literals\n"
         ")\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
     )
     assert test_output == expected_output
 
-    test_output = SortImports(
-        file_contents=test_output,
+    test_output = api.sort_code_string(
+        code=test_output,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
-        test_output = SortImports(
-            file_contents=test_output,
+        test_output = api.sort_code_string(
+            code=test_output,
             multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
             line_length=20,
         )
@@ -2485,8 +2485,8 @@ def test_sys_path_mutation(tmpdir) -> None:
 
 def test_long_single_line() -> None:
     """Test to ensure long single lines get handled correctly"""
-    output = SortImports(
-        file_contents="from ..views import ("
+    output = api.sort_code_string(
+        code="from ..views import ("
         " _a,"
         "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
         line_length=79,
@@ -2494,8 +2494,8 @@ def test_long_single_line() -> None:
     for line in output.split("\n"):
         assert len(line) <= 79
 
-    output = SortImports(
-        file_contents="from ..views import ("
+    output = api.sort_code_string(
+        code="from ..views import ("
         " _a,"
         "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
         line_length=76,
@@ -2567,8 +2567,8 @@ def test_alias_using_paren_issue_466() -> None:
         ")\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             line_length=50,
             multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
             use_parentheses=True,
@@ -2587,8 +2587,8 @@ def test_long_alias_using_paren_issue_957() -> None:
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = SortImports(
-        file_contents=test_input,
+    out = api.sort_code_string(
+        code=test_input,
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -2604,8 +2604,8 @@ def test_long_alias_using_paren_issue_957() -> None:
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = SortImports(
-        file_contents=test_input,
+    out = api.sort_code_string(
+        code=test_input,
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -2623,8 +2623,8 @@ def test_long_alias_using_paren_issue_957() -> None:
         "_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = SortImports(
-        file_contents=test_input,
+    out = api.sort_code_string(
+        code=test_input,
         line_length=50,
         use_parentheses=True,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -2664,8 +2664,8 @@ def test_import_wraps_with_comment_issue_471() -> None:
         "    SuperLongClassName)  # @UnusedImport -- long string of comments which wrap over\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input, line_length=50, multi_line_output=1, use_parentheses=True
+        api.sort_code_string(
+            code=test_input, line_length=50, multi_line_output=1, use_parentheses=True
         )
         == expected_output
     )
@@ -2715,7 +2715,7 @@ def test_sort_within_sections_with_force_to_top_issue_473() -> None:
     """Test to ensure it's possible to sort within sections with items forced to top"""
     test_input = "import z\nimport foo\nfrom foo import bar\n"
     assert (
-        SortImports(file_contents=test_input, force_sort_within_sections=True, force_to_top=["z"])
+        api.sort_code_string(code=test_input, force_sort_within_sections=True, force_to_top=["z"])
         == test_input
     )
 
@@ -2762,8 +2762,8 @@ def test_no_extra_lines_issue_557() -> None:
         "HTTPDownloadHandler\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             force_alphabetical_sort=True,
             force_sort_within_sections=True,
             line_length=100,
@@ -2779,8 +2779,8 @@ def test_long_import_wrap_support_with_mode_2() -> None:
         "    an_even_longer_function_name_over_80_characters\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input, multi_line_output=WrapModes.HANGING_INDENT, line_length=80
+        api.sort_code_string(
+            code=test_input, multi_line_output=WrapModes.HANGING_INDENT, line_length=80
         )
         == test_input
     )
@@ -2858,8 +2858,8 @@ def test_not_splitted_sections() -> None:
     assert api.sort_code_string(test_input, no_lines_before=["FIRSTPARTY"]) == test_input
     # in case when THIRDPARTY section is excluded from sections list,
     # it's ok to merge STDLIB and FIRSTPARTY
-    assert SortImports(
-        file_contents=test_input,
+    assert api.sort_code_string(
+        code=test_input,
         sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
         no_lines_before=["FIRSTPARTY"],
     ) == (stdlib_section + firstparty_section + whiteline + local_section + whiteline + statement)
@@ -2870,8 +2870,8 @@ def test_not_splitted_sections() -> None:
 def test_no_lines_before_empty_section() -> None:
     test_input = "import first\nimport custom\n"
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             known_third_party=["first"],
             known_custom=["custom"],
             sections=["THIRDPARTY", "LOCALFOLDER", "CUSTOM"],
@@ -3023,7 +3023,7 @@ def test_new_lines_are_preserved() -> None:
         with open(rn_newline.name, mode="w", newline="") as rn_newline_input:
             rn_newline_input.write("import sys\r\nimport os\r\n")
 
-        SortImports(rn_newline.name, settings_path=os.getcwd())
+        api.sort_code_string(rn_newline.name, settings_path=os.getcwd())
         with open(rn_newline.name) as new_line_file:
             print(new_line_file.read())
         with open(rn_newline.name, newline="") as rn_newline_file:
@@ -3039,7 +3039,7 @@ def test_new_lines_are_preserved() -> None:
         with open(r_newline.name, mode="w", newline="") as r_newline_input:
             r_newline_input.write("import sys\rimport os\r")
 
-        SortImports(r_newline.name, settings_path=os.getcwd())
+        api.sort_code_string(r_newline.name, settings_path=os.getcwd())
         with open(r_newline.name, newline="") as r_newline_file:
             r_newline_contents = r_newline_file.read()
         assert r_newline_contents == "import os\rimport sys\r"
@@ -3053,7 +3053,7 @@ def test_new_lines_are_preserved() -> None:
         with open(n_newline.name, mode="w", newline="") as n_newline_input:
             n_newline_input.write("import sys\nimport os\n")
 
-        SortImports(n_newline.name, settings_path=os.getcwd())
+        api.sort_code_string(n_newline.name, settings_path=os.getcwd())
         with open(n_newline.name, newline="") as n_newline_file:
             n_newline_contents = n_newline_file.read()
         assert n_newline_contents == "import os\nimport sys\n"
@@ -3369,8 +3369,8 @@ def test_multiple_as_imports() -> None:
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
     assert test_output == test_input
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
 
@@ -3382,14 +3382,14 @@ def test_multiple_as_imports() -> None:
     )
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
     assert test_output == "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
     )
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
     assert test_output == test_input
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b, b as b, b as bb, b as bb_\n"
 
@@ -3401,8 +3401,8 @@ def test_multiple_as_imports() -> None:
     )
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
     )
     assert test_output == "from a import b as c, b as e, b as f\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
@@ -3410,30 +3410,30 @@ def test_multiple_as_imports() -> None:
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input, no_inline_sort=True, keep_direct_and_as_imports=False
+    test_output = api.sort_code_string(
+        code=test_input, no_inline_sort=True, keep_direct_and_as_imports=False
     )
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = SortImports(
-        file_contents=test_input, keep_direct_and_as_imports=True, no_inline_sort=True
+    test_output = api.sort_code_string(
+        code=test_input, keep_direct_and_as_imports=True, no_inline_sort=True
     )
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b, b as c, b as e, b as f\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_as_imports=True,
         no_inline_sort=True,
         keep_direct_and_as_imports=False,
     )
     assert test_output == "from a import b as e, b as c, b as f\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
         no_inline_sort=True,
@@ -3443,16 +3443,16 @@ def test_multiple_as_imports() -> None:
     test_input = "import a as a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
     assert test_output == test_input
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == test_input
 
     test_input = "import a\nimport a as a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
     assert test_output == "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = SortImports(
-        file_contents=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
+    test_output = api.sort_code_string(
+        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == test_input
 
@@ -3468,8 +3468,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import b as c, g as h\n"
         "from a import e as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3486,8 +3486,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import i as j\n"
         "from a import w, x, y, z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3495,8 +3495,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3508,8 +3508,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b as c, b as d, e as f, g as h, i as j, w, x, y, z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3527,8 +3527,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import i as j\n"
         "from a import w, x, y, z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3548,8 +3548,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3566,8 +3566,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import g as h\n"
         "from a import e as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3575,8 +3575,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3584,8 +3584,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3593,8 +3593,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3602,8 +3602,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3615,8 +3615,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b, b as c, b as d, e as f, g as h, i as j, w, x, y, z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3636,8 +3636,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3649,8 +3649,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b as d, b as c, z, x, y, w, i as j, g as h, e as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3671,8 +3671,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3690,8 +3690,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import g as h\n"
         "from a import e as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3711,8 +3711,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3720,8 +3720,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3729,8 +3729,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=True,
         keep_direct_and_as_imports=False,
@@ -3738,8 +3738,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3747,8 +3747,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3756,8 +3756,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=False,
         keep_direct_and_as_imports=False,
@@ -3765,8 +3765,8 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3787,8 +3787,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3800,8 +3800,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b, b as d, b as c, z, x, y, w, i as j, g as h, e as f\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=False,
         combine_as_imports=False,
         keep_direct_and_as_imports=True,
@@ -3822,8 +3822,8 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = SortImports(
-        file_contents=test_input,
+    test_output = api.sort_code_string(
+        code=test_input,
         combine_star=True,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3887,8 +3887,8 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> N
         "from pkg import recorder\n"
     )
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             case_sensitive=True,
             order_by_type=False,
             force_single_line=True,
@@ -4160,11 +4160,11 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
-    assert SortImports(filename=str(source_py)).splitlines() == expected_py_output
+    assert api.sort_code_string(filename=str(source_py)).splitlines() == expected_py_output
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
-    assert SortImports(filename=str(source_pyi)).splitlines() == expected_pyi_output
+    assert api.sort_code_string(filename=str(source_pyi)).splitlines() == expected_pyi_output
 
 
 def test_move_class_issue_751() -> None:
@@ -4665,8 +4665,8 @@ IF CEF_VERSION == 3:
 
 def test_cdef_support():
     assert (
-        SortImports(
-            file_contents="""
+        api.sort_code_string(
+            code="""
 from cpython.version cimport PY_MAJOR_VERSION
 
 cdef extern from *:
@@ -4683,8 +4683,8 @@ cdef extern from *:
     )
 
     assert (
-        SortImports(
-            file_contents="""
+        api.sort_code_string(
+            code="""
 from cpython.version cimport PY_MAJOR_VERSION
 
 cpdef extern from *:
@@ -4751,8 +4751,8 @@ from os import system
 from typing import List, TypeVar
 """
     assert (
-        SortImports(
-            file_contents=test_input, force_single_line=True, single_line_exclusions=("typing",)
+        api.sort_code_string(
+            code=test_input, force_single_line=True, single_line_exclusions=("typing",)
         )
         == expected_output
     )
@@ -4849,7 +4849,7 @@ import datetime as datetime
 import datetime as dt
 import datetime as dt2
 """
-    assert SortImports(keep_direct_and_as_imports=True, file_contents=test_input) == test_input
+    assert api.sort_code_string(keep_direct_and_as_imports=True, code=test_input) == test_input
 
 
 def test_parens_in_comment():
@@ -4953,8 +4953,8 @@ from katlogger import log_formatter, log_rollover
 from .query_elastic import QueryElastic
 """
     assert (
-        SortImports(
-            file_contents=test_input,
+        api.sort_code_string(
+            code=test_input,
             force_grid_wrap=False,
             include_trailing_comma=True,
             indent=4,
