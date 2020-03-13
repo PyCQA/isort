@@ -5,6 +5,7 @@ Should be ran using py.test by simply running py.test in the isort project direc
 import importlib.machinery
 import os
 import os.path
+from pathlib import Path
 import posixpath
 import subprocess
 import sys
@@ -743,7 +744,7 @@ def test_skip_with_file_name() -> None:
     test_input = "import django\nimport myproject\n"
 
     sort_imports = api.sort_code_string(
-        filename="/baz.py", code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
+        file_path=Path("/baz.py"), code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
     )
     assert sort_imports.skipped
     assert sort_imports.output == ""
@@ -2037,7 +2038,7 @@ def test_other_file_encodings(tmpdir) -> None:
         tmp_fname = tmpdir.join(f"test_{encoding}.py")
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
-        assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+        assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_encoding_not_in_comment(tmpdir) -> None:
@@ -2045,7 +2046,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
@@ -2053,7 +2054,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert api.sort_code_string(filename=str(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
 
 
 def test_comment_at_top_of_file() -> None:
@@ -4160,11 +4161,11 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
-    assert api.sort_code_string(filename=str(source_py)).splitlines() == expected_py_output
+    assert api.sort_code_string(file_path=Path(source_py)).splitlines() == expected_py_output
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
-    assert api.sort_code_string(filename=str(source_pyi)).splitlines() == expected_pyi_output
+    assert api.sort_code_string(file_path=Path(source_pyi)).splitlines() == expected_pyi_output
 
 
 def test_move_class_issue_751() -> None:
