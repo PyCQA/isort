@@ -200,7 +200,7 @@ def test_line_length() -> None:
 
     # Test Case described in issue #1015
     test_output = api.sort_code_string(
-       REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
+        REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
     )
     assert test_output == (
         "from third_party import \\\n"
@@ -263,9 +263,7 @@ def test_output_modes() -> None:
     )
 
     comment_output_vertical = api.sort_code_string(
-        code=REALLY_LONG_IMPORT_WITH_COMMENT,
-        multi_line_output=WrapModes.VERTICAL,
-        line_length=40,
+        code=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.VERTICAL, line_length=40
     )
     assert comment_output_vertical == (
         "from third_party import (lib1,  # comment\n"
@@ -836,8 +834,7 @@ def test_remove_imports() -> None:
         "import lib6\n" "import lib2\n" "import lib5\n" "import lib1\n" "from lib8 import a"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        remove_imports=["import lib2", "import lib6", "from lib8 import a"],
+        code=test_input, remove_imports=["import lib2", "import lib6", "from lib8 import a"]
     )
     assert test_output == "import lib1\nimport lib5\n"
 
@@ -1010,10 +1007,7 @@ def test_force_single_line_imports() -> None:
         "    lib18, lib20, lib21, lib22\n"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.GRID,
-        line_length=40,
-        force_single_line=True,
+        code=test_input, multi_line_output=WrapModes.GRID, line_length=40, force_single_line=True
     )
     assert test_output == (
         "from third_party import lib1\n"
@@ -1043,10 +1037,7 @@ def test_force_single_line_imports() -> None:
         "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.GRID,
-        line_length=40,
-        force_single_line=True,
+        code=test_input, multi_line_output=WrapModes.GRID, line_length=40, force_single_line=True
     )
     assert test_output == (
         "from third_party import lib_a\n"
@@ -1059,10 +1050,7 @@ def test_force_single_line_imports() -> None:
 def test_force_single_line_long_imports() -> None:
     test_input = "from veryveryveryveryveryvery import small, big\n"
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.NOQA,
-        line_length=40,
-        force_single_line=True,
+        code=test_input, multi_line_output=WrapModes.NOQA, line_length=40, force_single_line=True
     )
     assert test_output == (
         "from veryveryveryveryveryvery import big\n"
@@ -1490,10 +1478,7 @@ def test_include_trailing_comma() -> None:
     )
 
     test_output_wrap_single_import_with_use_parentheses = api.sort_code_string(
-        code=SINGLE_FROM_IMPORT,
-        line_length=25,
-        include_trailing_comma=True,
-        use_parentheses=True,
+        code=SINGLE_FROM_IMPORT, line_length=25, include_trailing_comma=True, use_parentheses=True
     )
     assert test_output_wrap_single_import_with_use_parentheses == (
         "from third_party import (\n    lib1,)\n"
@@ -1941,9 +1926,7 @@ def test_force_grid_wrap() -> None:
     """Ensures removing imports works as expected."""
     test_input = "from bar import lib2\nfrom foo import lib6, lib7\n"
     test_output = api.sort_code_string(
-        code=test_input,
-        force_grid_wrap=2,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        code=test_input, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
     )
     assert (
         test_output
@@ -1955,9 +1938,7 @@ from foo import (
 """
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        force_grid_wrap=3,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        code=test_input, force_grid_wrap=3, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
     )
     assert test_output == test_input
 
@@ -2021,9 +2002,7 @@ def test_import_split_is_word_boundary_aware() -> None:
         "    get_size_value_array_import_func_jobs"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-        line_length=79,
+        code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=79
     )
     assert test_output == (
         "from mycompany.model.size_value_array_import_func import (\n"
@@ -2038,7 +2017,10 @@ def test_other_file_encodings(tmpdir) -> None:
         tmp_fname = tmpdir.join(f"test_{encoding}.py")
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
-        assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+        assert (
+            api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd())
+            == file_contents
+        )
 
 
 def test_encoding_not_in_comment(tmpdir) -> None:
@@ -2046,7 +2028,9 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert (
+        api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+    )
 
 
 def test_encoding_not_in_first_two_lines(tmpdir) -> None:
@@ -2054,7 +2038,9 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname = tmpdir.join("test_encoding.py")
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
-    assert api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+    assert (
+        api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+    )
 
 
 def test_comment_at_top_of_file() -> None:
@@ -2226,9 +2212,7 @@ def test_alphabetic_sorting_no_newlines() -> None:
 
     test_input = "import os\n" "import unittest\n" "\n" "from a import b\n" "\n" "\n" "print(1)\n"
     test_output = api.sort_code_string(
-        code=test_input,
-        force_alphabetical_sort_within_sections=True,
-        lines_after_imports=2,
+        code=test_input, force_alphabetical_sort_within_sections=True, lines_after_imports=2
     )
     assert test_input == test_output
 
@@ -2332,24 +2316,18 @@ def test_no_additional_lines_issue_358() -> None:
         ")\n"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-        line_length=20,
+        code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     test_output = api.sort_code_string(
-        code=test_output,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-        line_length=20,
+        code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
         test_output = api.sort_code_string(
-            code=test_output,
-            multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-            line_length=20,
+            code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
         )
         assert test_output == expected_output
 
@@ -2376,24 +2354,18 @@ def test_no_additional_lines_issue_358() -> None:
         ")\n"
     )
     test_output = api.sort_code_string(
-        code=test_input,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-        line_length=20,
+        code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     test_output = api.sort_code_string(
-        code=test_output,
-        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-        line_length=20,
+        code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
         test_output = api.sort_code_string(
-            code=test_output,
-            multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
-            line_length=20,
+            code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
         )
         assert test_output == expected_output
 
@@ -3889,10 +3861,7 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> N
     )
     assert (
         api.sort_code_string(
-            code=test_input,
-            case_sensitive=True,
-            order_by_type=False,
-            force_single_line=True,
+            code=test_input, case_sensitive=True, order_by_type=False, force_single_line=True
         )
         == expected_output
     )
@@ -4161,11 +4130,21 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
-    assert api.sort_code_string(file_path=Path(source_py)).splitlines() == expected_py_output
+    assert (
+        api.sort_code_string(
+            code=Path(source_py).read_text(), file_path=Path(source_py)
+        ).splitlines()
+        == expected_py_output
+    )
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
-    assert api.sort_code_string(file_path=Path(source_pyi)).splitlines() == expected_pyi_output
+    assert (
+        api.sort_code_string(
+            code=Path("source.pyi").read_text(), file_path=Path(source_pyi)
+        ).splitlines()
+        == expected_pyi_output
+    )
 
 
 def test_move_class_issue_751() -> None:
