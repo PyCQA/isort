@@ -4141,7 +4141,7 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
     source_pyi.write(test_input)
     assert (
         api.sort_code_string(
-            code=Path("source.pyi").read_text(), file_path=Path(source_pyi)
+            code=Path(source_pyi).read_text(), extension="pyi", file_path=Path(source_pyi)
         ).splitlines()
         == expected_pyi_output
     )
