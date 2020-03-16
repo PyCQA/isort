@@ -2018,7 +2018,9 @@ def test_other_file_encodings(tmpdir) -> None:
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
         assert (
-            api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd())
+            api.sort_code_string(
+                Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
+            )
             == file_contents
         )
 
@@ -2029,7 +2031,10 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
-        api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+        api.sort_code_string(
+            Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
+        )
+        == file_contents
     )
 
 
@@ -2039,7 +2044,10 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
-        api.sort_code_string(file_path=Path(tmp_fname), settings_path=os.getcwd()) == file_contents
+        api.sort_code_string(
+            Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
+        )
+        == file_contents
     )
 
 
