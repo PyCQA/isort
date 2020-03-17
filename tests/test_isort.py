@@ -741,9 +741,10 @@ def test_skip_with_file_name() -> None:
     """Ensure skipping a file works even when file_contents is provided."""
     test_input = "import django\nimport myproject\n"
 
-    sort_imports = api.sort_code_string(
-        file_path=Path("/baz.py"), code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
-    )
+    with pytest.raises(Exception):
+        sort_imports = api.sort_code_string(
+            file_path=Path("/baz.py"), code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
+        )
     assert sort_imports.skipped
     assert sort_imports.output == ""
 
