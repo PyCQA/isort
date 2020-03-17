@@ -33,9 +33,6 @@ except ImportError:
 
 try:
     import appdirs
-
-    if appdirs.system == "darwin":
-        appdirs.system = "linux2"
 except ImportError:
     appdirs = None
 
