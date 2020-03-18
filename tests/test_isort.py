@@ -19,6 +19,7 @@ from isort import finders, main, sections, api
 from isort.main import SortImports, is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
+from isort.exceptions import FileSkipped
 
 try:
     import toml
@@ -740,21 +741,17 @@ def test_skip() -> None:
 def test_skip_with_file_name() -> None:
     """Ensure skipping a file works even when file_contents is provided."""
     test_input = "import django\nimport myproject\n"
-
-    with pytest.raises(Exception):
-        sort_imports = api.sort_code_string(
+    with pytest.raises(FileSkipped):
+        api.sort_code_string(
             file_path=Path("/baz.py"), code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
         )
-    assert sort_imports.skipped
-    assert sort_imports.output == ""
 
 
 def test_skip_within_file() -> None:
     """Ensure skipping a whole file works."""
     test_input = "# isort: skip_file\nimport django\nimport myproject\n"
-    sort_imports = api.sort_code_string(test_input, known_third_party=["django"])
-    assert sort_imports.skipped
-    assert sort_imports.output == ""
+    with pytest.raises(FileSkipped):
+        api.sort_code_string(test_input, known_third_party=["django"])
 
 
 def test_force_to_top() -> None:
