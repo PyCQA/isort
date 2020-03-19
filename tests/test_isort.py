@@ -3002,7 +3002,7 @@ def test_new_lines_are_preserved() -> None:
         with open(rn_newline.name, mode="w", newline="") as rn_newline_input:
             rn_newline_input.write("import sys\r\nimport os\r\n")
 
-        api.sort_code_string(rn_newline.name, settings_path=os.getcwd())
+        api.sort_file(rn_newline.name, settings_path=os.getcwd())
         with open(rn_newline.name) as new_line_file:
             print(new_line_file.read())
         with open(rn_newline.name, newline="") as rn_newline_file:
@@ -3018,7 +3018,7 @@ def test_new_lines_are_preserved() -> None:
         with open(r_newline.name, mode="w", newline="") as r_newline_input:
             r_newline_input.write("import sys\rimport os\r")
 
-        api.sort_code_string(r_newline.name, settings_path=os.getcwd())
+        api.sort_file(r_newline.name, settings_path=os.getcwd())
         with open(r_newline.name, newline="") as r_newline_file:
             r_newline_contents = r_newline_file.read()
         assert r_newline_contents == "import os\rimport sys\r"
@@ -3032,7 +3032,7 @@ def test_new_lines_are_preserved() -> None:
         with open(n_newline.name, mode="w", newline="") as n_newline_input:
             n_newline_input.write("import sys\nimport os\n")
 
-        api.sort_code_string(n_newline.name, settings_path=os.getcwd())
+        api.sort_file(n_newline.name, settings_path=os.getcwd())
         with open(n_newline.name, newline="") as n_newline_file:
             n_newline_contents = n_newline_file.read()
         assert n_newline_contents == "import os\nimport sys\n"
