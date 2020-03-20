@@ -19,7 +19,7 @@ from isort import finders, main, sections, api
 from isort.main import SortImports, is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
-from isort.exceptions import FileSkipped
+from isort.exceptions import FileSkipped, ExistingSyntaxErrors
 
 try:
     import toml
@@ -1200,7 +1200,8 @@ def test_atomic_mode() -> None:
 
     # with syntax error content is not changed
     test_input += "while True print 'Hello world'"  # blatant syntax error
-    assert api.sort_code_string(test_input, atomic=True) == test_input
+    with pytest.raises(ExistingSyntaxErrors):
+        api.sort_code_string(test_input, atomic=True)
 
 
 def test_order_by_type() -> None:
