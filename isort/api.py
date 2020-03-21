@@ -72,6 +72,26 @@ def sort_code_string(
     return output_stream.read()
 
 
+def check_code_string(
+    code: str,
+    show_diff: bool = False,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+) -> bool:
+    return check_imports(
+        StringIO(code),
+        show_diff=show_diff,
+        extension=extension,
+        config=config,
+        file_path=file_path,
+        disregard_skip=disregard_skip,
+        **config_kwargs,
+    )
+
+
 def sorted_imports(
     input_stream: TextIO,
     output_stream: TextIO,

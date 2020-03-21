@@ -870,11 +870,10 @@ def test_check_newline_in_imports(capsys) -> None:
     """Ensure tests works correctly when new lines are in imports."""
     test_input = "from lib1 import (\n    sub1,\n    sub2,\n    sub3\n)\n"
 
-    api.sort_code_string(
+    assert api.check_code_string(
         code=test_input,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=20,
-        check=True,
         verbose=True,
     )
     out, err = capsys.readouterr()
@@ -2614,21 +2613,21 @@ def test_long_alias_using_paren_issue_957() -> None:
 
 def test_strict_whitespace_by_default(capsys) -> None:
     test_input = "import os\nfrom django.conf import settings\n"
-    api.sort_code_string(test_input, check=True)
+    assert not api.check_code_string(test_input)
     out, err = capsys.readouterr()
     assert out == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
 
 
 def test_strict_whitespace_no_closing_newline_issue_676(capsys) -> None:
     test_input = "import os\n\nfrom django.conf import settings\n\nprint(1)"
-    api.sort_code_string(test_input, check=True)
+    assert api.check_code_string(test_input)
     out, err = capsys.readouterr()
     assert out == ""
 
 
 def test_ignore_whitespace(capsys) -> None:
     test_input = "import os\nfrom django.conf import settings\n"
-    api.sort_code_string(test_input, check=True, ignore_whitespace=True)
+    assert api.check_code_string(test_input, ignore_whitespace=True)
     out, err = capsys.readouterr()
     assert out == ""
 
