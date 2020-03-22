@@ -59,6 +59,7 @@ def sort_code_string(
 ):
     input_stream = StringIO(code)
     output_stream = StringIO()
+    config = _config(config=config, **config_kwargs)
     sorted_imports(
         input_stream,
         output_stream,
@@ -66,7 +67,6 @@ def sort_code_string(
         config=config,
         file_path=file_path,
         disregard_skip=disregard_skip,
-        **config_kwargs,
     )
     output_stream.seek(0)
     return output_stream.read()
@@ -81,6 +81,7 @@ def check_code_string(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
+    config = _config(config=config, **config_kwargs)
     return check_imports(
         StringIO(code),
         show_diff=show_diff,
@@ -88,7 +89,6 @@ def check_code_string(
         config=config,
         file_path=file_path,
         disregard_skip=disregard_skip,
-        **config_kwargs,
     )
 
 

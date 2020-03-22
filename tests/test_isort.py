@@ -3990,7 +3990,7 @@ def test_failing_file_check_916() -> None:
     }  # type: Dict[str, Any]
     assert api.sort_code_string(test_input, **settings) == expected_output
     assert api.sort_code_string(expected_output, **settings) == expected_output
-    assert not api.sort_code_string(expected_output, check=True, **settings).incorrectly_sorted
+    assert api.check_code_string(expected_output, **settings)
 
 
 def test_import_heading_issue_905() -> None:
