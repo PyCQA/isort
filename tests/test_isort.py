@@ -2015,12 +2015,8 @@ def test_other_file_encodings(tmpdir) -> None:
         tmp_fname = tmpdir.join(f"test_{encoding}.py")
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
         tmp_fname.write_binary(file_contents.encode(encoding))
-        assert (
-            api.sort_code_string(
-                Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
-            )
-            == file_contents
-        )
+        api.sort_file(Path(tmp_fname), file_path=Path(tmp_fname), settings_path=os.getcwd())
+        assert tmp_fname.read_text(encoding) == file_contents
 
 
 def test_encoding_not_in_comment(tmpdir) -> None:
