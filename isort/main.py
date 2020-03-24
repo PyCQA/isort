@@ -10,7 +10,7 @@ from pprint import pprint
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
 
-from . import SortImports, __version__, sections, api
+from . import __version__, sections, api
 from .exceptions import FileSkipped
 from .logo import ASCII_ART
 from .profiles import profiles
