@@ -5,8 +5,9 @@ usage:
 """
 import subprocess  # nosec - Needed for hook
 from typing import List
+from pathlib import Path
 
-from isort import SortImports
+from isort import api
 
 
 def get_output(command: List[str]) -> str:
@@ -56,11 +57,11 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
             staged_cmd = ["git", "show", ":%s" % filename]
             staged_contents = get_output(staged_cmd)
 
-            sort = SortImports(filename=filename, file_contents=staged_contents, check=True)
-
-            if sort.incorrectly_sorted:
+            if not (
+                api.sort_file(filename)
+                if modify
+                else api.check_code_string(staged_contents, file_path=Path(filename))
+            ):
                 errors += 1
-                if modify:
-                    SortImports(filename=filename, file_contents=staged_contents, check=False)
 
     return errors if strict else 0
