@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 from pylama.lint import Linter as BaseLinter
 
-from . import SortImports
+from . import api
 
 
 @contextmanager
@@ -25,7 +25,7 @@ class Linter(BaseLinter):
     def run(self, path: str, **meta: Any) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with supress_stdout():
-            if SortImports(path, check=True).incorrectly_sorted:
+            if api.check_file(path, check=True):
                 return [
                     {"lnum": 0, "col": 0, "text": "Incorrectly sorted imports.", "type": "ISORT"}
                 ]

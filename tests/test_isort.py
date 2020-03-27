@@ -16,7 +16,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 import py
 import pytest
 from isort import finders, main, sections, api
-from isort.main import SortImports, is_python_file
+from isort.main import is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
