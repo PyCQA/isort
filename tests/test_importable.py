@@ -14,7 +14,6 @@ def test_importable():
     import isort.finders
     import isort.format
     import isort.hooks
-    import isort.isort
     import isort.logo
     import isort.main
     import isort.output
