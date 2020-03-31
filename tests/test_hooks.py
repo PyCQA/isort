@@ -21,5 +21,5 @@ def test_git_hook():
             stdout = b"import b\nimport a"
 
         with patch("subprocess.run", MagicMock(return_value=FakeProecssResponse())) as run_mock:
-            with patch("isort.hooks.SortImports", MagicMock()):
+            with patch("isort.hooks.api", MagicMock()):
                 hooks.git_hook(modify=True)
