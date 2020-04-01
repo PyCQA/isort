@@ -149,7 +149,6 @@ def check_imports(
         config=config,
         file_path=file_path,
         disregard_skip=disregard_skip,
-        **config_kwargs,
     )
 
     if not changed:
@@ -169,7 +168,6 @@ def check_imports(
                 config=config,
                 file_path=file_path,
                 disregard_skip=disregard_skip,
-                **config_kwargs,
             )
             output_stream.seek(0)
 

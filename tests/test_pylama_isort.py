@@ -12,7 +12,7 @@ class TestLinter:
         assert self.instance.allow("test_case.py")
 
     def test_run(self, src_dir, tmpdir):
-        assert not self.instance.run(os.path.join(src_dir, "isort.py"))
+        assert not self.instance.run(os.path.join(src_dir, "api.py"))
 
         incorrect = tmpdir.join("incorrect.py")
         incorrect.write("import b\nimport a\n")
