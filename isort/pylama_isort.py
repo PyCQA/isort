@@ -25,7 +25,7 @@ class Linter(BaseLinter):
     def run(self, path: str, **meta: Any) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with supress_stdout():
-            if not api.check_file(path):
+            if not api.check_file(path, profile="hug"):
                 return [
                     {"lnum": 0, "col": 0, "text": "Incorrectly sorted imports.", "type": "ISORT"}
                 ]
