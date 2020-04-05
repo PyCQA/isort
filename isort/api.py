@@ -1,12 +1,12 @@
-import textwrap
 import sys
+import textwrap
 from io import StringIO
 from itertools import chain
 from pathlib import Path
 from typing import List, Optional, TextIO, Union
 from warnings import warn
 
-from . import output, parse, io
+from . import io, output, parse
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -14,10 +14,10 @@ from .exceptions import (
     IntroducedSyntaxErrors,
 )
 from .format import (
+    ask_whether_to_apply_changes_to_file,
     format_natural,
     remove_whitespace,
     show_unified_diff,
-    ask_whether_to_apply_changes_to_file,
 )
 from .io import Empty, File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
@@ -59,7 +59,7 @@ def sort_code_string(
 ):
     input_stream = StringIO(code)
     output_stream = StringIO()
-    config = _config(config=config, **config_kwargs)
+    config = _config(path=file_path, config=config, **config_kwargs)
     sorted_imports(
         input_stream,
         output_stream,
@@ -81,7 +81,7 @@ def check_code_string(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
-    config = _config(config=config, **config_kwargs)
+    config = _config(path=file_path, config=config, **config_kwargs)
     return check_imports(
         StringIO(code),
         show_diff=show_diff,
@@ -101,7 +101,7 @@ def sorted_imports(
     disregard_skip: bool = False,
     **config_kwargs,
 ):
-    config = _config(config=config, **config_kwargs)
+    config = _config(path=file_path, config=config, **config_kwargs)
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
         if file_path and config.is_skipped(file_path):
@@ -140,7 +140,7 @@ def check_imports(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
-    config = _config(config=config, **config_kwargs)
+    config = _config(path=file_path, config=config, **config_kwargs)
 
     changed: bool = sorted_imports(
         input_stream=input_stream,
@@ -443,7 +443,7 @@ def check_file(
             show_diff=show_diff,
             extension=source_file.extension or "py",
             config=config,
-            file_path=source_file.path,
+            file_path=file_path or source_file.path,
             disregard_skip=disregard_skip,
             **config_kwargs,
         )
@@ -468,7 +468,7 @@ def sort_file(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
                     config=config,
-                    file_path=source_file.path,
+                    file_path=file_path or source_file.path,
                     disregard_skip=disregard_skip,
                     **config_kwargs,
                 )
@@ -482,7 +482,7 @@ def sort_file(
                             input_stream=source_file.stream,
                             output_stream=output_stream,
                             config=config,
-                            file_path=source_file.path,
+                            file_path=file_path or source_file.path,
                             disregard_skip=disregard_skip,
                             **config_kwargs,
                         )
@@ -492,7 +492,7 @@ def sort_file(
                             show_unified_diff(
                                 file_input=source_file.stream.read(),
                                 file_output=tmp_file.read_text(encoding=source_file.encoding),
-                                file_path=source_file.path,
+                                file_path=file_path or source_file.path,
                             )
                             if ask_to_apply and not ask_whether_to_apply_changes_to_file(
                                 str(source_file.path)
