@@ -529,7 +529,7 @@ class SortImports(object):
                             try:
                                 other_import_statement = self._multi_line_reformat(import_start, from_import_section, comments)
                                 if (max(len(x)
-                                        for x in import_statement.split('\n')) > self.config['line_length']):
+                                        for x in import_statement.splitlines() > self.config['line_length']):
                                     import_statement = other_import_statement
                             finally:
                                 self.config['multi_line_output'] = 0
