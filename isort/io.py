@@ -5,7 +5,7 @@ import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import List, NamedTuple, Optional, TextIO, Tuple, Union, Iterator
+from typing import Iterator, List, NamedTuple, Optional, TextIO, Tuple, Union
 
 from .exceptions import UnableToDetermineEncoding
 

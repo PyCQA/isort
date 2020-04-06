@@ -10,7 +10,7 @@ from pprint import pprint
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
 
-from . import __version__, sections, api
+from . import __version__, api, sections
 from .exceptions import FileSkipped
 from .logo import ASCII_ART
 from .profiles import profiles
@@ -84,7 +84,7 @@ def sort_imports(
         skipped: bool = False
         if check:
             try:
-                incorrectly_sorted = not api.check_file(file_name, config=config, **arguments)
+                incorrectly_sorted = not api.check_file(file_name, config=config)
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
@@ -95,7 +95,6 @@ def sort_imports(
                     config=config,
                     ask_to_apply=ask_to_apply,
                     write_to_stdout=write_to_stdout,
-                    **arguments,
                 )
             except FileSkipped:
                 skipped = True
