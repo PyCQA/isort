@@ -434,7 +434,7 @@ def check_file(
     show_diff: bool = False,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    disregard_skip: bool = False,
+    disregard_skip: bool = True,
     **config_kwargs,
 ) -> bool:
     with io.read_file(filename) as source_file:
@@ -454,7 +454,7 @@ def sort_file(
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    disregard_skip: bool = False,
+    disregard_skip: bool = True,
     ask_to_apply: bool = False,
     show_diff: bool = False,
     write_to_stdout: bool = False,
