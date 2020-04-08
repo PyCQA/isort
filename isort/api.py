@@ -486,6 +486,7 @@ def sort_file(
                             disregard_skip=disregard_skip,
                             **config_kwargs,
                         )
+                    source_file.stream.close()
                     if changed:
                         if show_diff or ask_to_apply:
                             source_file.stream.seek(0)
