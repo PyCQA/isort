@@ -2026,7 +2026,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
         api.sort_code_string(
-            Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
+            Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
         )
         == file_contents
     )
@@ -2039,7 +2039,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
         api.sort_code_string(
-            Path(tmp_fname).read_text(), file_path=Path(tmp_fname), settings_path=os.getcwd()
+            Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
         )
         == file_contents
     )
