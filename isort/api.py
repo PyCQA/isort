@@ -1,18 +1,25 @@
+import sys
 import textwrap
 from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import List, Optional, TextIO
+from typing import List, Optional, TextIO, Union
+from warnings import warn
 
-from . import output, parse
+from . import io, output, parse
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
     FileSkipSetting,
     IntroducedSyntaxErrors,
 )
-from .format import format_natural, remove_whitespace, show_unified_diff
-from .io import File
+from .format import (
+    ask_whether_to_apply_changes_to_file,
+    format_natural,
+    remove_whitespace,
+    show_unified_diff,
+)
+from .io import Empty, File
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
@@ -42,44 +49,31 @@ def _config(
     return config
 
 
-def sorted_imports(
-    file_contents: str,
-    extension: str = "py",
-    config: Config = DEFAULT_CONFIG,
+def sort_code_string(
+    code: str,
+    extension="py",
+    config=DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     **config_kwargs,
-) -> str:
-    config = _config(config=config, **config_kwargs)
-    content_source = str(file_path or "Passed in content")
-    if not disregard_skip:
-        if file_path and config.is_skipped(file_path):
-            raise FileSkipSetting(content_source)
-
-        for file_skip_comment in FILE_SKIP_COMMENTS:
-            if file_skip_comment in file_contents:
-                raise FileSkipComment(content_source)
-
-    if config.atomic:
-        try:
-            compile(file_contents, content_source, "exec", 0, 1)
-        except SyntaxError:
-            raise ExistingSyntaxErrors(content_source)
-
-    parsed_output = StringIO()
-    sort_imports(StringIO(file_contents), parsed_output, extension=extension, config=config)
-    parsed_output.seek(0)
-    parsed_output = parsed_output.read()
-    if config.atomic:
-        try:
-            compile(file_contents, content_source, "exec", 0, 1)
-        except SyntaxError:
-            raise IntroducedSyntaxErrors(content_source)
-    return parsed_output
+):
+    input_stream = StringIO(code)
+    output_stream = StringIO()
+    config = _config(path=file_path, config=config, **config_kwargs)
+    sorted_imports(
+        input_stream,
+        output_stream,
+        extension=extension,
+        config=config,
+        file_path=file_path,
+        disregard_skip=disregard_skip,
+    )
+    output_stream.seek(0)
+    return output_stream.read()
 
 
-def check_imports(
-    file_contents: str,
+def check_code_string(
+    code: str,
     show_diff: bool = False,
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
@@ -87,47 +81,100 @@ def check_imports(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
-    config = _config(config=config, **config_kwargs)
-
-    sorted_output = sorted_imports(
-        file_contents=file_contents,
+    config = _config(path=file_path, config=config, **config_kwargs)
+    return check_imports(
+        StringIO(code),
+        show_diff=show_diff,
         extension=extension,
         config=config,
         file_path=file_path,
         disregard_skip=disregard_skip,
-        **config_kwargs,
     )
-    if config.ignore_whitespace:
-        line_separator = config.line_ending or parse._infer_line_separator(file_contents)
-        compare_in = remove_whitespace(file_contents, line_separator=line_separator).strip()
-        compare_out = remove_whitespace(sorted_output, line_separator=line_separator).strip()
-    else:
-        compare_in = file_contents.strip()
-        compare_out = sorted_output.strip()
 
-    if compare_out == compare_in:
+
+def sorted_imports(
+    input_stream: TextIO,
+    output_stream: TextIO,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+):
+    config = _config(path=file_path, config=config, **config_kwargs)
+    content_source = str(file_path or "Passed in content")
+    if not disregard_skip:
+        if file_path and config.is_skipped(file_path):
+            raise FileSkipSetting(content_source)
+
+    if config.atomic:
+        try:
+            file_content = input_stream.read()
+            compile(file_content, content_source, "exec", 0, 1)
+            input_stream = StringIO(file_content)
+        except SyntaxError:
+            raise ExistingSyntaxErrors(content_source)
+
+    try:
+        changed = sort_imports(input_stream, output_stream, extension=extension, config=config)
+    except FileSkipComment:
+        raise FileSkipComment(content_source)
+
+    if config.atomic:
+        output_stream.seek(0)
+        try:
+            compile(output_stream.read(), content_source, "exec", 0, 1)
+            output_stream.seek(0)
+        except SyntaxError:
+            raise IntroducedSyntaxErrors(content_source)
+
+    return changed
+
+
+def check_imports(
+    input_stream: TextIO,
+    show_diff: bool = False,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = False,
+    **config_kwargs,
+) -> bool:
+    config = _config(path=file_path, config=config, **config_kwargs)
+
+    changed: bool = sorted_imports(
+        input_stream=input_stream,
+        output_stream=Empty,
+        extension=extension,
+        config=config,
+        file_path=file_path,
+        disregard_skip=disregard_skip,
+    )
+
+    if not changed:
         if config.verbose:
             print(f"SUCCESS: {file_path or ''} Everything Looks Good!")
         return True
     else:
         print(f"ERROR: {file_path or ''} Imports are incorrectly sorted and/or formatted.")
         if show_diff:
+            output_stream = StringIO()
+            input_stream.seek(0)
+            file_contents = input_stream.read()
+            sorted_imports(
+                input_stream=StringIO(file_contents),
+                output_stream=output_stream,
+                extension=extension,
+                config=config,
+                file_path=file_path,
+                disregard_skip=disregard_skip,
+            )
+            output_stream.seek(0)
+
             show_unified_diff(
-                file_input=file_contents, file_output=sorted_output, file_path=file_path
+                file_input=file_contents, file_output=output_stream.read(), file_path=file_path
             )
         return False
-
-
-def sorted_file(filename: str, config: Config = DEFAULT_CONFIG, **config_kwargs) -> str:
-    file_data = File.read(filename)
-    config = _config(path=file_data.path.parent, config=config)
-    return sorted_imports(
-        file_contents=file_data.contents,
-        extension=file_data.extension,
-        config=config,
-        file_path=file_data.path,
-        **config_kwargs,
-    )
 
 
 def sort_imports(
@@ -135,15 +182,22 @@ def sort_imports(
     output_stream: TextIO,
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
-) -> None:
+) -> bool:
     """Parses stream identifying sections of contiguous imports and sorting them
 
     Code with unsorted imports is read from the provided `input_stream`, sorted and then
-    outputted to the specified output_stream.
+    outputted to the specified `output_stream`.
 
     - `input_stream`: Text stream with unsorted import sections.
     - `output_stream`: Text stream to output sorted inputs into.
-    - `config`: Config settings to use when sorting imports. Defaults settings.DEFAULT_CONFIG.
+    - `config`: Config settings to use when sorting imports. Defaults settings.
+        - *Default*: `isort.settings.DEFAULT_CONFIG`.
+    - `extension`: The file extension or file extension rules that should be used.
+        - *Default*: `"py"`.
+        - *Choices*: `["py", "pyi", "pyx"]`.
+
+    Returns `True` if there were changes that needed to be made (errors present) from what
+    was provided in the input_stream, otherwise `False`.
     """
     line_separator: str = config.line_ending
     add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
@@ -160,11 +214,12 @@ def sort_imports(
     indent: str = ""
     isort_off: bool = False
     cimports: bool = False
+    made_changes: bool = False
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
             if index == 0 and not config.force_adds:
-                return
+                return False
 
             not_imports = True
             line = ""
@@ -173,6 +228,10 @@ def sort_imports(
         else:
             if not line_separator:
                 line_separator = line[-1]
+
+            for file_skip_comment in FILE_SKIP_COMMENTS:
+                if file_skip_comment in line:
+                    raise FileSkipComment("Passed in content")
 
             stripped_line = line.strip()
             if (
@@ -308,6 +367,7 @@ def sort_imports(
                         import_section = import_section.lstrip(line_separator)
                         first_import_section = False
 
+                    raw_import_section: str = import_section
                     if indent:
                         import_section = line_separator.join(
                             line.lstrip() for line in import_section.split(line_separator)
@@ -331,6 +391,21 @@ def sort_imports(
                             + trailing_whitespace
                         )
 
+                    if not made_changes:
+                        if config.ignore_whitespace:
+                            compare_in = remove_whitespace(
+                                raw_import_section, line_separator=line_separator
+                            ).strip()
+                            compare_out = remove_whitespace(
+                                sorted_import_section, line_separator=line_separator
+                            ).strip()
+                        else:
+                            compare_in = raw_import_section.strip()
+                            compare_out = sorted_import_section.strip()
+
+                        if compare_out != compare_in:
+                            made_changes = True
+
                     output_stream.write(sorted_import_section)
                     if not line and not indent and next_import_section:
                         output_stream.write(line_separator)
@@ -350,3 +425,89 @@ def sort_imports(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+    return made_changes
+
+
+def check_file(
+    filename: Union[str, Path],
+    show_diff: bool = False,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = True,
+    **config_kwargs,
+) -> bool:
+    with io.read_file(filename) as source_file:
+        return check_imports(
+            source_file.stream,
+            show_diff=show_diff,
+            extension=source_file.extension or "py",
+            config=config,
+            file_path=file_path or source_file.path,
+            disregard_skip=disregard_skip,
+            **config_kwargs,
+        )
+
+
+def sort_file(
+    filename: Union[str, Path],
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = True,
+    ask_to_apply: bool = False,
+    show_diff: bool = False,
+    write_to_stdout: bool = False,
+    **config_kwargs,
+):
+    with io.read_file(filename) as source_file:
+        changed: bool = False
+        try:
+            if write_to_stdout:
+                changed = sorted_imports(
+                    input_stream=source_file.stream,
+                    output_stream=sys.stdout,
+                    config=config,
+                    file_path=file_path or source_file.path,
+                    disregard_skip=disregard_skip,
+                    **config_kwargs,
+                )
+            else:
+                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+                try:
+                    with tmp_file.open(
+                        "w", encoding=source_file.encoding, newline=""
+                    ) as output_stream:
+                        changed = sorted_imports(
+                            input_stream=source_file.stream,
+                            output_stream=output_stream,
+                            config=config,
+                            file_path=file_path or source_file.path,
+                            disregard_skip=disregard_skip,
+                            **config_kwargs,
+                        )
+                    source_file.stream.close()
+                    if changed:
+                        if show_diff or ask_to_apply:
+                            source_file.stream.seek(0)
+                            show_unified_diff(
+                                file_input=source_file.stream.read(),
+                                file_output=tmp_file.read_text(encoding=source_file.encoding),
+                                file_path=file_path or source_file.path,
+                            )
+                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(
+                                str(source_file.path)
+                            ):
+                                return
+                        tmp_file.replace(source_file.path)
+                        if not config.quiet:
+                            print(f"Fixing {source_file.path}")
+                finally:
+                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                        tmp_file.unlink()
+                    except FileNotFoundError:
+                        pass
+        except ExistingSyntaxErrors:
+            warn("{file_path} unable to sort due to existing syntax errors")
+        except IntroducedSyntaxErrors:
+            warn("{file_path} unable to sort as isort introduces new syntax errors")
