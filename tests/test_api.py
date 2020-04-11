@@ -10,3 +10,9 @@ def test_sort_file_invalid_syntax(tmpdir) -> None:
     tmp_file.write_text("""print('mismathing quotes")""", "utf8")
     with pytest.warns(UserWarning):
         api.sort_file(tmp_file, atomic=True)
+
+
+def test_check_file(tmpdir) -> None:
+    perfect = tmpdir.join(f"test_no_changes.py")
+    perfect.write_text("import a\nimport b\n", "utf8")
+    assert api.check_file(perfect, show_diff=True)
