@@ -16,3 +16,7 @@ def test_check_file(tmpdir) -> None:
     perfect = tmpdir.join(f"test_no_changes.py")
     perfect.write_text("import a\nimport b\n", "utf8")
     assert api.check_file(perfect, show_diff=True)
+    
+    imperfect = tmpdir.join(f"test_needs_changes.py")
+    imperfect.write_text("import b\nimport a\n", "utf8")
+    assert not api.check_file(imperfect, show_diff=True)
