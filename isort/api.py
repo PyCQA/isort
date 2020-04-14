@@ -126,7 +126,7 @@ def sorted_imports(
             compile(output_stream.read(), content_source, "exec", 0, 1)
             output_stream.seek(0)
         except SyntaxError:
-            raise IntroducedSyntaxErrors(content_source)
+            raise IntroducedSyntaxErrors(content_source)  # pragma: no cover
 
     return changed
 
@@ -509,5 +509,5 @@ def sort_file(
                         pass
         except ExistingSyntaxErrors:
             warn("{file_path} unable to sort due to existing syntax errors")
-        except IntroducedSyntaxErrors:
+        except IntroducedSyntaxErrors:  # pragma: no cover
             warn("{file_path} unable to sort as isort introduces new syntax errors")
