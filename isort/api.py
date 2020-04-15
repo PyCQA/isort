@@ -125,8 +125,8 @@ def sorted_imports(
         try:
             compile(output_stream.read(), content_source, "exec", 0, 1)
             output_stream.seek(0)
-        except SyntaxError:
-            raise IntroducedSyntaxErrors(content_source)  # pragma: no cover
+        except SyntaxError: # pragma: no cover
+            raise IntroducedSyntaxErrors(content_source)  
 
     return changed
 
