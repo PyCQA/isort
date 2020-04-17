@@ -1,4 +1,6 @@
 """Tests the isort API module"""
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from isort import api, exceptions
@@ -15,6 +17,13 @@ def test_sort_file(tmpdir) -> None:
     imperfect = tmpdir.join(f"test_needs_changes.py")
     imperfect.write_text("import b\nimport a\n", "utf8")
     api.sort_file(imperfect, write_to_stdout=True, show_diff=True)
+
+    # First show diff, but ensure change wont get written by asking to apply
+    # and ensuring answer is no.
+    with patch("isort.format.input", MagicMock(return_value="n")):
+        api.sort_file(imperfect, show_diff=True, ask_to_apply=True)
+
+    # Then run again, but apply the change without asking
     api.sort_file(imperfect, show_diff=True)
 
 
