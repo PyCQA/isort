@@ -15,6 +15,7 @@ def test_sort_file(tmpdir) -> None:
     imperfect = tmpdir.join(f"test_needs_changes.py")
     imperfect.write_text("import b\nimport a\n", "utf8")
     api.sort_file(imperfect, write_to_stdout=True, show_diff=True)
+    api.sort_file(imperfect, show_diff=True)
 
 
 def test_check_file(tmpdir) -> None:

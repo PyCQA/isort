@@ -486,7 +486,6 @@ def sort_file(
                             disregard_skip=disregard_skip,
                             **config_kwargs,
                         )
-                    source_file.stream.close()
                     if changed:
                         if show_diff or ask_to_apply:
                             source_file.stream.seek(0)
@@ -499,6 +498,7 @@ def sort_file(
                                 str(source_file.path)
                             ):
                                 return
+                        source_file.stream.close()
                         tmp_file.replace(source_file.path)
                         if not config.quiet:
                             print(f"Fixing {source_file.path}")
