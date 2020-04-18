@@ -10,8 +10,8 @@ from .wrap_modes import formatter_from_string
 def import_statement(
     import_start: str,
     from_imports: List[str],
-    comments: Sequence[str],
-    line_separator: str,
+    comments: Sequence[str] = (),
+    line_separator: str = "\n",
     config: Config = DEFAULT_CONFIG,
     multi_line_output: Optional[Modes] = None,
 ) -> str:

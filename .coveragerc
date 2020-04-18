@@ -2,6 +2,7 @@
 omit =
   isort/_future/*
   except ImportError:
+  tests/*
 
 include =
   isort/*
