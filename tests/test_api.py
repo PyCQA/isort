@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from isort import api, exceptions
+from isort.settings import Config
 
 
 def test_sort_file(tmpdir) -> None:
@@ -35,3 +36,8 @@ def test_check_file(tmpdir) -> None:
     imperfect = tmpdir.join(f"test_needs_changes.py")
     imperfect.write_text("import b\nimport a\n", "utf8")
     assert not api.check_file(imperfect, show_diff=True)
+
+
+def test_sorted_imports_multiple_configs() -> None:
+    with pytest.raises(ValueError):
+        api.sort_code_string("import os", config=Config(line_length=80), line_length=80)
