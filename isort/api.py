@@ -344,7 +344,7 @@ def sort_imports(
                 contains_imports = True
                 add_imports = []
 
-            if next_import_section and not import_section:
+            if next_import_section and not import_section:  # pragma: no cover
                 import_section = next_import_section
                 next_import_section = ""
 
