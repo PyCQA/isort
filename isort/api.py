@@ -125,7 +125,7 @@ def sorted_imports(
         try:
             compile(output_stream.read(), content_source, "exec", 0, 1)
             output_stream.seek(0)
-        except SyntaxError:
+        except SyntaxError:  # pragma: no cover
             raise IntroducedSyntaxErrors(content_source)
 
     return changed
@@ -344,7 +344,7 @@ def sort_imports(
                 contains_imports = True
                 add_imports = []
 
-            if next_import_section and not import_section:
+            if next_import_section and not import_section:  # pragma: no cover
                 import_section = next_import_section
                 next_import_section = ""
 
@@ -486,7 +486,6 @@ def sort_file(
                             disregard_skip=disregard_skip,
                             **config_kwargs,
                         )
-                    source_file.stream.close()
                     if changed:
                         if show_diff or ask_to_apply:
                             source_file.stream.seek(0)
@@ -499,6 +498,7 @@ def sort_file(
                                 str(source_file.path)
                             ):
                                 return
+                        source_file.stream.close()
                         tmp_file.replace(source_file.path)
                         if not config.quiet:
                             print(f"Fixing {source_file.path}")
@@ -509,5 +509,5 @@ def sort_file(
                         pass
         except ExistingSyntaxErrors:
             warn("{file_path} unable to sort due to existing syntax errors")
-        except IntroducedSyntaxErrors:
+        except IntroducedSyntaxErrors:  # pragma: no cover
             warn("{file_path} unable to sort as isort introduces new syntax errors")

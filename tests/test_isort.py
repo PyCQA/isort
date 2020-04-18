@@ -4416,6 +4416,8 @@ ELIF UNAME_SYSNAME == "Linux":
 from cef_time cimport *
 from cef_drag cimport *
 
+import os
+
 IF CEF_VERSION == 1:
     from cef_v8 cimport *
     cimport cef_v8_static
@@ -4591,6 +4593,8 @@ ELIF UNAME_SYSNAME == "Linux":
 
 from cef_drag cimport *
 from cef_time cimport *
+
+import os
 
 IF CEF_VERSION == 1:
     cimport cef_cookie_manager_namespace
