@@ -56,8 +56,8 @@ class ISortCommand(setuptools.Command):
 
                 try:
                     if not api.check_file(python_file, **arguments):
-                        wrong_sorted_files = True
+                        wrong_sorted_files = True  # pragma: no cover
                 except OSError as error:  # pragma: no cover
                     warn(f"Unable to parse file {python_file} due to {error}")
         if wrong_sorted_files:
-            sys.exit(1)
+            sys.exit(1)  # pragma: no cover
