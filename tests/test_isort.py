@@ -836,6 +836,15 @@ def test_remove_imports() -> None:
     )
     assert test_output == "import lib1\nimport lib5\n"
 
+    # From imports
+    test_input = "from x import y"
+    test_output = api.sort_code_string(test_input, remove_imports=["x"])
+    assert test_output == ""
+
+    test_input = "from x import y"
+    test_output = api.sort_code_string(test_input, remove_imports=["x.y"])
+    assert test_output == ""
+
 
 def test_explicitly_local_import() -> None:
     """Ensure that explicitly local imports are separated."""
