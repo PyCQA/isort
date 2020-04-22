@@ -846,6 +846,12 @@ def test_remove_imports() -> None:
     assert test_output == ""
 
 
+def test_comments_above():
+    """Test to ensure comments above an import will stay in place"""
+    test_input = "import os\n\nfrom x import y\n\n# comment\nfrom z import __version__, api\n"
+    assert api.sort_code_string(test_input, ensure_newline_before_comments=True) == test_input
+
+
 def test_explicitly_local_import() -> None:
     """Ensure that explicitly local imports are separated."""
     test_input = "import lib1\nimport lib2\nimport .lib6\nfrom . import lib7"
