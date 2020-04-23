@@ -4917,6 +4917,7 @@ def test_python_future_category():
     """
     test_input = """from __future__ import absolute_import
 
+# my future comment
 from future import standard_library
 
 standard_library.install_aliases()
@@ -4935,6 +4936,7 @@ from .query_elastic import QueryElastic
 """
     expected_output = """from __future__ import absolute_import
 
+# my future comment
 from future import standard_library
 
 standard_library.install_aliases()
