@@ -159,7 +159,7 @@ def sorted_imports(
             pending_lines_before = pending_lines_before or not no_lines_before
 
     while output and output[-1].strip() == "":
-        output.pop()
+        output.pop()  # pragma: no cover
     while output and output[0].strip() == "":
         output.pop(0)
 

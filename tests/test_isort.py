@@ -4981,3 +4981,17 @@ from .query_elastic import QueryElastic
         )
         == expected_output
     )
+
+
+def test_combine_star_comments_above():
+    input_text = """from __future__ import absolute_import
+
+# my future comment
+from future import *, something
+"""
+    expected_output = """from __future__ import absolute_import
+
+# my future comment
+from future import *
+"""
+    assert api.sort_code_string(input_text, combine_star=True) == expected_output
