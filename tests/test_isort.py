@@ -1706,7 +1706,7 @@ def test_place_comments() -> None:
         "\n"
         "# isort: imports-thirdparty\n"
         "# isort: imports-firstparty\n"
-        "# isort: imports-stdlib\n"
+        "# isort:imports-stdlib\n"
         "\n"
     )
     expected_output = (
@@ -1716,7 +1716,7 @@ def test_place_comments() -> None:
         "# isort: imports-firstparty\n"
         "import myproject.test\n"
         "\n"
-        "# isort: imports-stdlib\n"
+        "# isort:imports-stdlib\n"
         "import os\n"
         "import sys\n"
     )
