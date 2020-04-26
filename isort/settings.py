@@ -35,7 +35,7 @@ try:
     import appdirs
 
     if appdirs.system == "darwin":
-        appdirs.system = "linux2"
+        appdirs.system = "linux2"  # pragma: no cover
 except ImportError:
     appdirs = None
 
@@ -164,7 +164,7 @@ class _Config:
 
     def __post_init__(self):
         py_version = self.py_version
-        if py_version == "auto":
+        if py_version == "auto":  # pragma: no cover
             if sys.version_info.major == 2 and sys.version_info.minor <= 6:
                 py_version = "2"
             elif sys.version_info.major == 3 and (

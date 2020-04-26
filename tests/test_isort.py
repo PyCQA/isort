@@ -4993,5 +4993,9 @@ from future import *, something
 
 # my future comment
 from future import *
+from future import something
 """
-    assert api.sort_code_string(input_text, combine_star=True) == expected_output
+    assert (
+        api.sort_code_string(input_text, combine_star=False, ensure_newline_before_comments=True, force_single_line=True)
+        == expected_output
+    )
