@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from isort import exceptions
@@ -15,3 +17,7 @@ class TestConfig:
     def test_invalid_profile(self):
         with pytest.raises(exceptions.ProfileDoesNotExist):
             Config(profile="blackandwhitestylemixedwithpep8")
+
+    def test_is_skipped(self):
+        assert Config().is_skipped(Path("C:\\path\\isort.py"))
+        assert Config(skip=["/path/isort.py"]).is_skipped(Path("C:\\path\\isort.py"))
