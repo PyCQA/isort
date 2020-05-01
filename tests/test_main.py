@@ -6,7 +6,7 @@ from hypothesis_auto import auto_pytest_magic
 
 from isort import main
 from isort._version import __version__
-from isort.settings import DEFAULT_CONFIG
+from isort.settings import DEFAULT_CONFIG, Config
 
 auto_pytest_magic(main.sort_imports)
 
@@ -15,6 +15,15 @@ def test_iter_source_code(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
     assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [])) == (tmp_file,)
+
+
+def test_sort_imports(tmpdir):
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import os, sys\n")
+    assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+    main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
+    assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+    assert main.sort_imports(str(tmp_file), Config(skip=str(tmp_file)), check=True)
 
 
 def test_is_python_file():
