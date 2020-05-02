@@ -2,8 +2,13 @@ from pathlib import Path
 
 import pytest
 
-from isort import exceptions
+from isort import exceptions, settings
 from isort.settings import Config
+
+
+def test_as_list():
+    assert settings._as_list([" one "]) == ["one"]
+    assert settings._as_list("one,two") == ["one", "two"]
 
 
 class TestConfig:
