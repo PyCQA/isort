@@ -71,7 +71,7 @@ if appdirs:
         appdirs.user_config_dir(".isort.cfg"),
         appdirs.user_config_dir(".editorconfig"),
     )
-else:
+else:  # pragma: no cover
     FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
 
 IMPORT_HEADING_PREFIX = "import_heading_"
