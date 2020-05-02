@@ -394,7 +394,7 @@ def _find_config(path: str) -> Dict[str, Any]:
 
 
 @lru_cache()
-def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
+def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
     with open(file_path) as config_file:
@@ -406,7 +406,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                     for key in section.split("."):
                         config_section = config_section.get(key, {})
                     settings.update(config_section)
-            else:
+            else:  # pragma: no cover
                 if "[tool.isort]" in config_file.read():
                     warnings.warn(
                         f"Found {file_path} with [tool.isort] section, but toml package is not "
