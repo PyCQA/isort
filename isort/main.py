@@ -76,15 +76,14 @@ def sort_imports(
     check: bool = False,
     ask_to_apply: bool = False,
     write_to_stdout: bool = False,
-    **arguments: Any,
+    **kwargs: Any,
 ) -> Optional[SortAttempt]:
-    arguments.pop("settings_path", None)
     try:
         incorrectly_sorted: bool = False
         skipped: bool = False
         if check:
             try:
-                incorrectly_sorted = not api.check_file(file_name, config=config)
+                incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
@@ -95,6 +94,7 @@ def sort_imports(
                     config=config,
                     ask_to_apply=ask_to_apply,
                     write_to_stdout=write_to_stdout,
+                    **kwargs,
                 )
             except FileSkipped:
                 skipped = True
@@ -647,7 +647,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 ask_to_apply=ask_to_apply,
                 show_diff=show_diff,
                 write_to_stdout=write_to_stdout,
-                **config_dict,
             )
             for file_name in file_names
         )

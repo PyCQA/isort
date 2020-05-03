@@ -23,7 +23,12 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
     main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
     assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
-    assert main.sort_imports(str(tmp_file), Config(skip=str(tmp_file)), check=True)
+
+    skip_config = Config(skip=[str(tmp_file)])
+    assert main.sort_imports(
+        str(tmp_file), config=skip_config, check=True, disregard_skip=False
+    ).skipped
+    assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped
 
 
 def test_is_python_file():
