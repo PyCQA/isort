@@ -7,6 +7,7 @@ from hypothesis_auto import auto_pytest_magic
 from isort import main
 from isort._version import __version__
 from isort.settings import DEFAULT_CONFIG, Config
+from isort.wrap_modes import WrapModes
 
 auto_pytest_magic(main.sort_imports)
 
@@ -38,6 +39,12 @@ def test_is_python_file():
     assert not main.is_python_file("file.pyc")
     assert not main.is_python_file("file.txt")
     assert not main.is_python_file("file.pex")
+
+
+def test_parse_args():
+    assert main.parse_args([]) == {}
+    assert main.parse_args(["--multi-line", "1"]) == {"multi_line_output": WrapModes.VERTICAL}
+    assert main.parse_args(["--multi-line", "GRID"]) == {"multi_line_output": WrapModes.GRID}
 
 
 def test_ascii_art(capsys):
