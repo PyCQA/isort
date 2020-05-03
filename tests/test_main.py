@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -73,6 +74,35 @@ def test_is_python_file_fifo(tmpdir):
     fifo_file = os.path.join(tmpdir, "fifo_file")
     os.mkfifo(fifo_file)
     assert not main.is_python_file(fifo_file)
+
+
+def test_main(capsys, tmpdir):
+    base_args = ["--settings-path", str(tmpdir), "--virtual-env", str(tmpdir)]
+
+    # If no files are passed in the quick guide is returned
+    main.main(base_args)
+    out, error = capsys.readouterr()
+    assert main.QUICK_GUIDE in out
+    assert not error
+
+    # Unless the config is requested, in which case it will be returned alone as JSON
+    main.main(base_args + ["--show-config"])
+    out, error = capsys.readouterr()
+    returned_config = json.loads(out)
+    assert returned_config
+    assert returned_config["virtual_env"] == str(tmpdir)
+
+    # This should work even if settings path is non-existent or not provided
+    main.main(base_args[2:] + ["--show-config"])
+    out, error = capsys.readouterr()
+    assert json.loads(out)["virtual_env"] == str(tmpdir)
+    main.main(
+        base_args[2:]
+        + ["--show-config"]
+        + ["--settings-path", "/random-root-folder-that-cant-exist-right?"]
+    )
+    out, error = capsys.readouterr()
+    assert json.loads(out)["virtual_env"] == str(tmpdir)
 
 
 def test_isort_command():

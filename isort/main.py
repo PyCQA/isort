@@ -1,12 +1,12 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
 import argparse
 import functools
+import json
 import os
 import re
 import stat
 import sys
 from pathlib import Path
-from pprint import pprint
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
 
@@ -603,7 +603,16 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     config = Config(**config_dict)
     if show_config:
-        pprint(config.__dict__)
+
+        def _preconvert(item):
+            if isinstance(item, frozenset):
+                return list(item)
+            elif isinstance(item, WrapModes):
+                return item.name
+            else:
+                raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
+
+        print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
 
     wrong_sorted_files = False
