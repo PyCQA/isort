@@ -16,6 +16,7 @@ exclude_lines =
   except ImportError:
   if TYPE_CHECKING:
   raise NotImplementedError
+  if __name__ == "__main__":
 
 [paths]
 source = isort/
