@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from io import BytesIO, TextIOWrapper
 
 import pytest
 from hypothesis_auto import auto_pytest_magic
@@ -103,6 +104,44 @@ def test_main(capsys, tmpdir):
     )
     out, error = capsys.readouterr()
     assert json.loads(out)["virtual_env"] == str(tmpdir)
+
+    # Should be able to set settings path to a file
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+profile=hug
+verbose=true
+"""
+    )
+    config_args = ["--settings-path", str(config_file)]
+    main.main(
+        config_args
+        + ["--virtual-env", "/random-root-folder-that-cant-exist-right?"]
+        + ["--show-config"]
+    )
+    out, error = capsys.readouterr()
+    assert json.loads(out)["profile"] == "hug"
+
+    # Should be able to stream in content to sort
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+    main.main(config_args + ["-"], stdin=input_content)
+    out, error = capsys.readouterr()
+    assert (
+        out
+        == """else-type place_module for b returned FIRSTPARTY
+else-type place_module for a returned FIRSTPARTY
+import a
+import b
+"""
+    )
 
 
 def test_isort_command():

@@ -6,6 +6,7 @@ import os
 import re
 import stat
 import sys
+from io import TextIOWrapper
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 from warnings import warn
@@ -555,7 +556,17 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     return arguments
 
 
-def main(argv: Optional[Sequence[str]] = None) -> None:
+def _preconvert(item):
+    """Preconverts objects from native types into JSONifyiable types"""
+    if isinstance(item, frozenset):
+        return list(item)
+    elif isinstance(item, WrapModes):
+        return item.name
+    else:
+        raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
+
+
+def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
         print(ASCII_ART)
@@ -583,7 +594,11 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         print(QUICK_GUIDE)
         return
     elif file_names == ["-"] and not show_config:
-        api.sorted_imports(input_stream=sys.stdin, output_stream=sys.stdout, **arguments)
+        api.sorted_imports(
+            input_stream=sys.stdin if stdin is None else stdin,
+            output_stream=sys.stdout,
+            **arguments,
+        )
         return
 
     if "settings_path" not in arguments:
@@ -603,15 +618,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     config = Config(**config_dict)
     if show_config:
-
-        def _preconvert(item):
-            if isinstance(item, frozenset):
-                return list(item)
-            elif isinstance(item, WrapModes):
-                return item.name
-            else:
-                raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
-
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
 
