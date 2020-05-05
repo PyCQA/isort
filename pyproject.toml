@@ -26,6 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
+urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
 
 [tool.poetry.dependencies]
 python = "^3.6"
