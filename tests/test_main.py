@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from datetime import datetime
 from io import BytesIO, TextIOWrapper
 
 import pytest
@@ -68,6 +69,13 @@ def test_ascii_art(capsys):
 """
     )
     assert error == ""
+
+
+def test_preconvert():
+    assert main._preconvert(frozenset([1, 1, 2])) == [1, 2]
+    assert main._preconvert(WrapModes.GRID) == "GRID"
+    with pytest.raises(TypeError):
+        main._preconvert(datetime.now())
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="cannot create fifo file on Windows platform")
