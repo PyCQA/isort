@@ -151,6 +151,56 @@ import b
 """
     )
 
+    # Should be able to run with just a file
+    python_file = tmpdir.join("has_imports.py")
+    python_file.write(
+        """
+import b
+import a
+"""
+    )
+    main.main([str(python_file), "--filter-files", "--verbose"])
+    assert (
+        python_file.read()
+        == """import a
+import b
+"""
+    )
+
+    # Add a file to skip
+    should_skip = tmpdir.join("should_skip.py")
+    should_skip.write("import nothing")
+    main.main(
+        [
+            str(python_file),
+            str(should_skip),
+            "--filter-files",
+            "--verbose",
+            "--skip",
+            str(should_skip),
+        ]
+    )
+
+    # Should raise a system exit if check only, with broken file
+    python_file.write(
+        """
+import b
+import a
+"""
+    )
+    with pytest.raises(SystemExit):
+        main.main(
+            [
+                str(python_file),
+                str(should_skip),
+                "--filter-files",
+                "--verbose",
+                "--check-only",
+                "--skip",
+                str(should_skip),
+            ]
+        )
+
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""

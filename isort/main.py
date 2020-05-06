@@ -611,7 +611,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     config_dict = arguments.copy()
     ask_to_apply = config_dict.pop("ask_to_apply", False)
     jobs = config_dict.pop("jobs", ())
-    show_logo = config_dict.pop("show_logo", False)
     filter_files = config_dict.pop("filter_files", False)
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
@@ -635,7 +634,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     file_names = iter_source_code(file_names, config, skipped)
     num_skipped = 0
-    if config.verbose or show_logo:
+    if config.verbose:
         print(ASCII_ART)
 
     if jobs:
