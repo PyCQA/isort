@@ -166,6 +166,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser.add_argument(
         "-c",
         "--check-only",
+        "--check",
         action="store_true",
         dest="check",
         help="Checks the file for unsorted / unformatted imports and prints them to the "
