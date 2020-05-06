@@ -668,12 +668,12 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     for sort_attempt in attempt_iterator:
         if not sort_attempt:
-            continue
+            continue  # pragma: no cover - shouldn't happen, satisfies type constraint
         incorrectly_sorted = sort_attempt.incorrectly_sorted
         if arguments.get("check", False) and incorrectly_sorted:
             wrong_sorted_files = True
         if sort_attempt.skipped:
-            num_skipped += 1
+            num_skipped += 1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
 
     if wrong_sorted_files:
         sys.exit(1)

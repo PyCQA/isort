@@ -201,6 +201,23 @@ import a
             ]
         )
 
+    # Should have same behavior if full directory is skipped
+    with pytest.raises(SystemExit):
+        main.main(
+            [str(tmpdir), "--filter-files", "--verbose", "--check-only", "--skip", str(should_skip)]
+        )
+
+    # Nested files should be skipped without needing --filter-files
+    nested_file = tmpdir.mkdir("nested_dir").join("skip.py")
+    nested_file.write("import b;import a")
+    python_file.write(
+        """
+import a
+import b
+"""
+    )
+    main.main([str(tmpdir), "--skip", str(nested_file), "--check"])
+
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
