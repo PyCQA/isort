@@ -3299,7 +3299,7 @@ def test_comments_not_removed_issue_576() -> None:
     test_input = (
         "import distutils\n"
         "# this comment is important and should not be removed\n"
-        "from sys import api_version as api_version\n"
+        "from sys import api_version\n"
     )
     assert api.sort_code_string(test_input) == test_input
 
@@ -3354,15 +3354,15 @@ def test_unwrap_issue_762() -> None:
 def test_multiple_as_imports() -> None:
     test_input = "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
     test_output = api.sort_code_string(test_input)
-    assert test_output == test_input
+    assert test_output == "from a import b\nfrom a import b as bb\nfrom a import b as bb_\n"
     test_output = api.sort_code_string(test_input, combine_as_imports=True)
-    assert test_output == "from a import b as b, b as bb, b as bb_\n"
+    assert test_output == "from a import b, b as bb, b as bb_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
-    assert test_output == test_input
+    assert test_output == "from a import b\nfrom a import b as bb\nfrom a import b as bb_\n"
     test_output = api.sort_code_string(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
-    assert test_output == "from a import b as b, b as bb, b as bb_\n"
+    assert test_output == "from a import b, b as bb, b as bb_\n"
 
     test_input = (
         "from a import b\n"
@@ -3371,17 +3371,17 @@ def test_multiple_as_imports() -> None:
         "from a import b as bb_\n"
     )
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
-    assert test_output == "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
+    assert test_output == "from a import b\nfrom a import b as bb\nfrom a import b as bb_\n"
     test_output = api.sort_code_string(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
     )
-    assert test_output == "from a import b as b, b as bb, b as bb_\n"
+    assert test_output == "from a import b, b as bb, b as bb_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
-    assert test_output == test_input
+    assert test_output == "from a import b\nfrom a import b as bb\nfrom a import b as bb_\n"
     test_output = api.sort_code_string(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
-    assert test_output == "from a import b, b as b, b as bb, b as bb_\n"
+    assert test_output == "from a import b, b as bb, b as bb_\n"
 
     test_input = (
         "from a import b as e\n"
@@ -3432,19 +3432,31 @@ def test_multiple_as_imports() -> None:
 
     test_input = "import a as a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
-    assert test_output == test_input
+    assert test_output == "import a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
-    assert test_output == test_input
+    assert test_output == "import a\nimport a as aa\nimport a as aa_\n"
 
     test_input = "import a\nimport a as a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
-    assert test_output == "import a as a\nimport a as aa\nimport a as aa_\n"
+    assert test_output == "import a\nimport a as aa\nimport a as aa_\n"
     test_output = api.sort_code_string(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
-    assert test_output == test_input
+    assert test_output == "import a\nimport a as aa\nimport a as aa_\n"
+
+
+def test_as_import_shadows_original_issue_1160() -> None:
+    test_input = (
+        "import a as a\n"
+        "from b import c as c\n"
+        "import b.c as c\n"
+        "import d.e.f as f\n"
+        "from g.h.i import j as j\n"
+    )
+    test_output = api.sort_code_string(test_input)
+    assert test_output == "import a\nfrom b import c\nfrom d.e import f\nfrom g.h.i import j\n"
 
 
 def test_all_imports_from_single_module() -> None:
@@ -4846,7 +4858,6 @@ class WeiboMblogPipeline(object):
 def test_multiple_aliases():
     """Test to ensure isort will retain multiple aliases. See issue #1037"""
     test_input = """import datetime
-import datetime as datetime
 import datetime as dt
 import datetime as dt2
 """

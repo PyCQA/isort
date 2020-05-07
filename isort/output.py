@@ -259,13 +259,20 @@ def _with_from_imports(
             ]
 
         sub_modules = [f"{module}.{from_import}" for from_import in from_imports]
-        as_imports = {
-            from_import: [
-                f"{from_import} as {as_module}" for as_module in parsed.as_map[sub_module]
-            ]
-            for from_import, sub_module in zip(from_imports, sub_modules)
-            if sub_module in parsed.as_map
-        }
+        as_imports = {}
+        for from_import, sub_module in zip(from_imports, sub_modules):
+            if sub_module not in parsed.as_map:
+                continue
+            as_import = []
+            for as_module in parsed.as_map[sub_module]:
+                if from_import == as_module:
+                    if config.keep_direct_and_as_imports:
+                        parsed.imports[section]["from"][module][as_module] = True
+                    else:
+                        as_import.append(as_module)
+                else:
+                    as_import.append(f"{from_import} as {as_module}")
+            as_imports[from_import] = as_import
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
             if not config.no_inline_sort:
                 for as_import in as_imports:
@@ -501,9 +508,15 @@ def _with_straight_imports(
         if module in parsed.as_map:
             if config.keep_direct_and_as_imports and parsed.imports[section]["straight"][module]:
                 import_definition.append(f"{import_type} {module}")
-            import_definition.extend(
-                f"{import_type} {module} as {as_import}" for as_import in parsed.as_map[module]
-            )
+            for as_import in parsed.as_map[module]:
+                if module == as_import:
+                    if not config.keep_direct_and_as_imports or not (
+                        as_import in parsed.imports[section]["straight"]
+                        and parsed.imports[section]["straight"][as_import]
+                    ):
+                        import_definition.append(f"{import_type} {module}")
+                else:
+                    import_definition.append(f"{import_type} {module} as {as_import}")
         else:
             import_definition.append(f"{import_type} {module}")
 
