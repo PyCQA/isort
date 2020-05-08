@@ -405,9 +405,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         print(f"else-type place_module for {module} returned {placed_module}")
                     if placed_module == "":
                         warn(
-                            f"could not place module {import_from} of line {line} --"
+                            f"could not place module {module} of line {line} --"
                             " Do you need to define a default section?"
                         )
+                        imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
                     straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
                         module, False
                     )

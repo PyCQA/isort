@@ -6,6 +6,15 @@ from isort.settings import Config
 TEST_CONTENTS = """
 import xyz
 import abc
+import (\\ # one
+    one as \\ # two
+    three)
+import \\
+    zebra as \\ # one
+    not_bacon
+from x import (\\ # one
+    one as \\ # two
+    three)
 
 
 def function():
@@ -28,11 +37,11 @@ def test_file_contents():
         line_separator,
         sections,
         section_comments,
-    ) = parse.file_contents(TEST_CONTENTS, config=Config())
+    ) = parse.file_contents(TEST_CONTENTS, config=Config(default_section=""))
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)
     assert import_index == 1
-    assert change_count == -2
+    assert change_count == -11
     assert original_line_count == len(in_lines)
 
 

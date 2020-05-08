@@ -2925,6 +2925,24 @@ def test_escaped_parens_sort() -> None:
     assert api.sort_code_string(test_input) == expected
 
 
+def test_escaped_parens_sort_with_comment() -> None:
+    test_input = "from foo import \\ \n(a,\nb,# comment\nc)\n"
+    expected = "from foo import b  # comment\nfrom foo import a, c\n"
+    assert api.sort_code_string(test_input) == expected
+
+
+def test_escaped_parens_sort_with_first_comment() -> None:
+    test_input = "from foo import \\ \n(a,# comment\nb,\nc)\n"
+    expected = "from foo import a  # comment\nfrom foo import b, c\n"
+    assert api.sort_code_string(test_input) == expected
+
+
+def test_escaped_no_parens_sort_with_first_comment() -> None:
+    test_input = "from foo import a, \\\nb, \\\nc # comment\n"
+    expected = "from foo import c  # comment\nfrom foo import a, b\n"
+    assert api.sort_code_string(test_input) == expected
+
+
 def test_is_python_file_ioerror(tmpdir) -> None:
     does_not_exist = tmpdir.join("fake.txt")
     assert is_python_file(str(does_not_exist)) is False
