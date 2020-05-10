@@ -390,6 +390,8 @@ class FindersManager:
         for finder in self.finders:
             try:
                 section = finder.find(module_name)
+                if section is not None:
+                    return section
             except Exception as exception:
                 # isort has to be able to keep trying to identify the correct
                 # import section even if one approach fails
@@ -398,6 +400,4 @@ class FindersManager:
                         f"{finder.__class__.__name__} encountered an error ({exception}) while "
                         f"trying to identify the {module_name} module"
                     )
-            if section is not None:
-                return section
         return None

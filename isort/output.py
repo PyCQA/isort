@@ -475,7 +475,7 @@ def _with_from_imports(
 
             if import_statement:
                 above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-                if above_comments:
+                if above_comments:  # pragma: no cover
                     if new_section_output and config.ensure_newline_before_comments:
                         new_section_output.append("")
                     new_section_output.extend(above_comments)
