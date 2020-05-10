@@ -84,3 +84,8 @@ class TestRequirementsFinder(AbstractTestFinder):
         test_finder = self.kind(settings.DEFAULT_CONFIG)
         test_finder.enabled = False
         assert not test_finder.find("isort")
+
+    def test_requirements_dir(self, tmpdir):
+        tmpdir.mkdir("requirements").join("development.txt").write("x==1.00")
+        test_finder = self.kind(settings.DEFAULT_CONFIG, str(tmpdir))
+        assert test_finder.find("x")
