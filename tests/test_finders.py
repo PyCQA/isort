@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from isort import finders, settings
 from isort.finders import FindersManager
 
@@ -35,14 +37,16 @@ class TestFindersManager:
 class AbstractTestFinder:
     kind = finders.BaseFinder
 
-    def __init__(self):
-        self.instance = self.kind(settings.DEFAULT_CONFIG)
+    @classmethod
+    def setup_class(cls):
+        cls.instance = cls.kind(settings.DEFAULT_CONFIG)
 
     def test_create(self):
         assert self.kind(settings.DEFAULT_CONFIG)
 
     def test_find(self):
         self.instance.find("isort")
+        self.instance.find("")
 
 
 class TestForcedSeparateFinder(AbstractTestFinder):
@@ -74,5 +78,9 @@ class TestRequirementsFinder(AbstractTestFinder):
 
     def test_no_pipreqs(self):
         with patch("isort.finders.pipreqs", None):
-            assert not self.instance.find("isort")
+            assert not self.kind(settings.DEFAULT_CONFIG).find("isort")
 
+    def test_not_enabled(self):
+        test_finder = self.kind(settings.DEFAULT_CONFIG)
+        test_finder.enabled = False
+        assert not test_finder.find("isort")
