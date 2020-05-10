@@ -72,11 +72,15 @@ class TestPathFinder(AbstractTestFinder):
         python3lib = tmpdir.mkdir("lib").mkdir("python3")
         python3lib.mkdir("site-packages").mkdir("y")
         python3lib.mkdir("n").mkdir("site-packages").mkdir("x")
+        tmpdir.mkdir("z").join("__init__.py").write("__version__ = '1.0.0'")
+        tmpdir.chdir()
 
-        conda = self.kind(settings.Config(conda_env=str(tmpdir)))
-        venv = self.kind(settings.Config(virtual_env=str(tmpdir)))
+        conda = self.kind(settings.Config(conda_env=str(tmpdir)), str(tmpdir))
+        venv = self.kind(settings.Config(virtual_env=str(tmpdir)), str(tmpdir))
         assert conda.find("y") == venv.find("y") == "THIRDPARTY"
         assert conda.find("x") == venv.find("x") == "THIRDPARTY"
+        assert conda.find("z") == "THIRDPARTY"
+        assert conda.find("os") == venv.find("os") == "STDLIB"
 
 
 class TestPipfileFinder(AbstractTestFinder):

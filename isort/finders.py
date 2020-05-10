@@ -116,11 +116,11 @@ class KnownPatternFinder(BaseFinder):
 
 
 class PathFinder(BaseFinder):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, path: str = ".") -> None:
         super().__init__(config)
 
         # restore the original import path (i.e. not the path to bin/isort)
-        root_dir = os.getcwd()
+        root_dir = os.path.abspath(path)
         src_dir = f"{root_dir}/src"
         self.paths = [root_dir, src_dir]
 
@@ -175,18 +175,18 @@ class PathFinder(BaseFinder):
             )
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
-                if "site-packages" in prefix:
+                if (
+                    "site-packages" in prefix
+                    or "dist-packages" in prefix
+                    or (self.virtual_env and self.virtual_env_src in prefix)
+                ):
                     return sections.THIRDPARTY
-                if "dist-packages" in prefix:
-                    return sections.THIRDPARTY
-                if self.virtual_env and self.virtual_env_src in prefix:
-                    return sections.THIRDPARTY
-                if os.path.normcase(prefix) == self.stdlib_lib_prefix:
+                elif os.path.normcase(prefix) == self.stdlib_lib_prefix:
                     return sections.STDLIB
-                if self.conda_env and self.conda_env in prefix:
+                elif self.conda_env and self.conda_env in prefix:
                     return sections.THIRDPARTY
-                if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
-                    return sections.STDLIB
+                elif os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
+                    return sections.STDLIB  # pragma: no cover - edge case for one OS. Hard to test.
                 return self.config.default_section
         return None
 
