@@ -71,3 +71,8 @@ class TestPipfileFinder(AbstractTestFinder):
 
 class TestRequirementsFinder(AbstractTestFinder):
     kind = finders.RequirementsFinder
+
+    def test_no_pipreqs(self):
+        with patch("isort.finders.pipreqs", None):
+            assert not self.instance.find("isort")
+
