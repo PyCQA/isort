@@ -68,6 +68,16 @@ class TestLocalFinder(AbstractTestFinder):
 class TestPathFinder(AbstractTestFinder):
     kind = finders.PathFinder
 
+    def test_conda_and_virtual_env(self, tmpdir):
+        python3lib = tmpdir.mkdir("lib").mkdir("python3")
+        python3lib.mkdir("site-packages").mkdir("y")
+        python3lib.mkdir("n").mkdir("site-packages").mkdir("x")
+
+        conda = self.kind(settings.Config(conda_env=str(tmpdir)))
+        venv = self.kind(settings.Config(virtual_env=str(tmpdir)))
+        assert conda.find("y") == venv.find("y") == "THIRDPARTY"
+        assert conda.find("x") == venv.find("x") == "THIRDPARTY"
+
 
 class TestPipfileFinder(AbstractTestFinder):
     kind = finders.PipfileFinder
