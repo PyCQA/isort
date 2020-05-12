@@ -211,7 +211,7 @@ import a
 import b
 """
     )
-    main.main([str(tmpdir), "--skip", str(nested_file), "--check"])
+    main.main([str(tmpdir), "--skip", "skip.py", "--check"])
 
 
 def test_isort_command():
