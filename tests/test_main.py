@@ -28,7 +28,7 @@ def test_sort_imports(tmpdir):
     main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
     assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
 
-    skip_config = Config(skip=[str(tmp_file)])
+    skip_config = Config(skip=["file.py"])
     assert main.sort_imports(
         str(tmp_file), config=skip_config, check=True, disregard_skip=False
     ).skipped
@@ -160,12 +160,7 @@ import a
 """
     )
     main.main([str(python_file), "--filter-files", "--verbose"])
-    assert (
-        python_file.read()
-        == """import a
-import b
-"""
-    )
+    assert python_file.read().lstrip() == "import a\nimport b\n"
 
     # Add a file to skip
     should_skip = tmpdir.join("should_skip.py")
