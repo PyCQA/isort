@@ -1,13 +1,10 @@
 """Defines any IO utilities used by isort"""
-import locale
 import re
 import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
 from typing import Iterator, List, NamedTuple, Optional, TextIO, Tuple, Union
-
-from .exceptions import UnableToDetermineEncoding
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 

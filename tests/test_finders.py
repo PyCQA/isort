@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-import pytest
-
 from isort import finders, settings
 from isort.finders import FindersManager
 

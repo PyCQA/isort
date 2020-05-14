@@ -18,7 +18,7 @@ from .profiles import profiles
 from .settings import SUPPORTED_EXTENSIONS, VALID_PY_TARGETS, Config, WrapModes
 
 try:
-    from .setuptools_commands import ISortCommand
+    pass
 except ImportError:
     pass
 

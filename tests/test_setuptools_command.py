@@ -1,7 +1,3 @@
-import os
-from unittest.mock import MagicMock
-
-import pytest
 
 from isort import setuptools_commands
 

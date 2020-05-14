@@ -7,7 +7,7 @@ from warnings import warn
 import setuptools
 
 from . import api
-from .settings import DEFAULT_CONFIG, Config
+from .settings import DEFAULT_CONFIG
 
 
 class ISortCommand(setuptools.Command):

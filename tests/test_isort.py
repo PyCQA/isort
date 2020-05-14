@@ -9,7 +9,6 @@ from pathlib import Path
 import posixpath
 import subprocess
 import sys
-import sysconfig
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Iterator, List, Set, Tuple
 

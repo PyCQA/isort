@@ -1,5 +1,4 @@
 import os
-from io import BytesIO
 from unittest.mock import MagicMock, patch
 
 from isort import hooks
