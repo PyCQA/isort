@@ -107,6 +107,12 @@ Install isort with both formats support:
 pip install isort[requirements,pipfile]
 ```
 
+Install isort with support for reading configuration from `pyproject.toml`:
+
+```bash
+pip install isort[pyproject]
+```
+
 Using isort
 ===========
 
@@ -272,7 +278,8 @@ Or, if you prefer, you can add an `isort` or `tool:isort` section to
 your project's `setup.cfg` or `tox.ini` file with any desired settings.
 
 You can also add your desired settings under a `[tool.isort]` section in
-your `pyproject.toml` file.
+your `pyproject.toml` file.  For `pyproject.toml` support, use
+`pip install isort[pyproject]`.
 
 You can then override any of these settings by using command line
 arguments, or by passing in override values to the SortImports class.
