@@ -3,8 +3,11 @@ FROM python:$VERSION
 
 RUN mkdir /isort
 WORKDIR /isort
-COPY . /isort
 
-RUN python3 -m pip install poetry && poetry install
+COPY pyproject.toml poetry.lock /isort/
+RUN python -m pip install --upgrade pip && python -m pip install poetry && poetry install
 
-CMD /isort/scripts/done.sh
+COPY . /isort/
+RUN poetry install
+
+CMD /isort/scripts/test.sh

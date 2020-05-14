@@ -1,0 +1,35 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: pip cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: lint-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            lint-pip-
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade poetry
+          poetry install
+
+      - name: Lint
+        run: ./scripts/lint.sh
