@@ -19,7 +19,7 @@ class File(NamedTuple):
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        encoding, lines = tokenize.detect_encoding(BytesIO(contents.encode("utf-8")).readline)
+        encoding, _ = tokenize.detect_encoding(BytesIO(contents.encode("utf-8")).readline)
         return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
 
     @property
@@ -33,7 +33,7 @@ class File(NamedTuple):
         """
         buffer = open(filename, "rb")
         try:
-            encoding, lines = tokenize.detect_encoding(buffer.readline)
+            encoding, _ = tokenize.detect_encoding(buffer.readline)
             buffer.seek(0)
             text = TextIOWrapper(buffer, encoding, line_buffering=True, newline="")
             text.mode = "r"  # type: ignore
