@@ -3172,13 +3172,9 @@ def test_path_finder(monkeypatch) -> None:
     finder = finders.PathFinder(config=config)
     third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
     ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
-    imaginary_paths = set(
-        [
-            posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
+    imaginary_paths = {posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
             posixpath.join(third_party_prefix, "example_2.py"),
-            posixpath.join(os.getcwd(), "example_3.py"),
-        ]
-    )
+            posixpath.join(os.getcwd(), "example_3.py"),}
     imaginary_paths.update(
         {
             posixpath.join(third_party_prefix, "example_" + str(i) + ext_suffix)
