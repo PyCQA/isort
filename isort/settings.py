@@ -216,7 +216,8 @@ class Config(_Config):
             config_vars = vars(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
-            return super().__init__(**config_vars)  # type: ignore
+            super().__init__(**config_vars)  # type: ignore
+            return
 
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
