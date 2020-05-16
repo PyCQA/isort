@@ -4519,13 +4519,11 @@ import cython
 
 if sys.version_info.major == 2:
     import urlparse
-
 else:
     from urllib import parse as urlparse
 
 if sys.version_info.major == 2:
     from urllib import pathname2url as urllib_pathname2url
-
 else:
     from urllib.request import pathname2url as urllib_pathname2url
 
@@ -4580,16 +4578,15 @@ from wstring cimport wstring as cpp_wstring
 IF UNAME_SYSNAME == "Windows":
     from dpi_aware_win cimport *
     from windows cimport *
-
 ELIF UNAME_SYSNAME == "Linux":
     from linux cimport *
-
 ELIF UNAME_SYSNAME == "Darwin":
     from mac cimport *
 
 from cef_string cimport *
 from cpp_utils cimport *
 from task cimport *
+
 
 cdef extern from *:
     ctypedef CefString ConstCefString "const CefString"
@@ -4615,10 +4612,8 @@ from cef_types cimport CefKeyEvent, CefMouseEvent, CefScreenInfo
 # cannot cimport *, name conflicts
 IF UNAME_SYSNAME == "Windows":
     cimport cef_types_win
-
 ELIF UNAME_SYSNAME == "Darwin":
     cimport cef_types_mac
-
 ELIF UNAME_SYSNAME == "Linux":
     cimport cef_types_linux
 
@@ -4677,7 +4672,7 @@ IF CEF_VERSION == 3:
     from string_visitor cimport *
     from web_request_client_cef3 cimport *
 """
-    api.sort_code_string(test_input) == expected_output
+    assert api.sort_code_string(test_input).strip() == expected_output.strip()
 
 
 def test_cdef_support():

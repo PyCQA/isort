@@ -41,7 +41,7 @@ class TestFileSkipped(TestISortError):
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
-        str(self.instance) == "message"
+        assert str(self.instance) == "message"
 
 
 class TestFileSkipComment(TestISortError):
