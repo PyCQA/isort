@@ -27,10 +27,10 @@ if TYPE_CHECKING:
     )
 
 
-def _infer_line_separator(file_contents: str) -> str:
-    if "\r\n" in file_contents:
+def _infer_line_separator(contents: str) -> str:
+    if "\r\n" in contents:
         return "\r\n"
-    elif "\r" in file_contents:
+    elif "\r" in contents:
         return "\r"
     else:
         return "\n"
@@ -86,7 +86,7 @@ def skip_line(
     (skip_line: bool,
      in_quote: str,)
     """
-    skip_line = bool(in_quote)
+    should_skip = bool(in_quote)
     if '"' in line or "'" in line:
         char_index = 0
         while char_index < len(line):
@@ -113,9 +113,9 @@ def skip_line(
                 and not part.startswith("from ")
                 and not part.startswith(("import ", "cimport "))
             ):
-                skip_line = True
+                should_skip = True
 
-    return (bool(skip_line or in_quote), in_quote)
+    return (bool(should_skip or in_quote), in_quote)
 
 
 class ParsedContent(NamedTuple):
