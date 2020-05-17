@@ -19,7 +19,7 @@ from .format import (
     remove_whitespace,
     show_unified_diff,
 )
-from .io import Empty, File
+from .io import Empty
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
