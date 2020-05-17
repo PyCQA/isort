@@ -1,6 +1,4 @@
 """All isort specific exception classes should be defined here"""
-from pathlib import Path
-
 from .profiles import profiles
 
 
