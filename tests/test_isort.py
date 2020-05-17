@@ -3222,7 +3222,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
         tmpdir.join("file2.py").read()
         == "import abc\nimport collections\nimport time\n\nimport isort\n"
     )
-    if not sys.platform.startswith("win"):
+    if not (sys.platform.startswith("win") or sys.platform.startswith("mac")):
         out, err = capfd.readouterr()
         assert not [error for error in err.split("\n") if error and "warning:" not in error]
         # it informs us about fixing the files:
