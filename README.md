@@ -148,50 +148,18 @@ run against code written using a different version of Python)
 **From within Python**:
 
 ```bash
-from isort import SortImports
+import isort
 
-SortImports("pythonfile.py")
+isort.file("pythonfile.py")
 ```
 
 or:
 
 ```bash
-from isort import SortImports
+import isort
 
-new_contents = SortImports(file_contents=old_contents).output
+sorted_code = isort.code("import b\nimport a\n")
 ```
-
-**From within Kate:**
-
-```bash
-ctrl+[
-```
-
-or:
-
-```bash
-menu > Python > Sort Imports
-```
-
-Installing isort's Kate plugin
-===============================
-
-For KDE 4.13+ / Pate 2.0+:
-
-```bash
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin_ui.rc --output-document ~/.kde/share/apps/kate/pate/isort_plugin_ui.rc
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/katepart_isort.desktop --output-document ~/.kde/share/kde4/services/katepart_isort.desktop
-```
-
-For all older versions:
-
-```bash
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin_old.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
-```
-
-You will then need to restart kate and enable Python Plugins as well as
-the isort plugin itself.
 
 Installing isort's for your preferred text editor
 ==================================================
