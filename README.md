@@ -244,7 +244,8 @@ You can also add your desired settings under a `[tool.isort]` section in
 your `pyproject.toml` file.
 
 You can then override any of these settings by using command line
-arguments, or by passing in override values to the SortImports class.
+arguments, or by passing in override values to any of the public Python API
+functions.
 
 Finally, as of version 3.0 isort supports editorconfig files using the
 standard syntax defined here: <https://editorconfig.org/>
