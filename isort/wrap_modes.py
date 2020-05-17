@@ -3,7 +3,7 @@ import enum
 from inspect import signature
 from typing import Any, Callable, Dict, List
 
-from . import comments
+import isort.comments
 
 _wrap_modes: Dict[str, Callable[[Any], str]] = {}
 
@@ -50,7 +50,7 @@ def grid(**interface):
     interface["statement"] += "(" + interface["imports"].pop(0)
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = comments.add_to_line(
+        next_statement = isort.comments.add_to_line(
             interface["comments"],
             interface["statement"] + ", " + next_import,
             removed=interface["remove_comments"],
@@ -69,7 +69,7 @@ def grid(**interface):
                     lines[-1] = new_line
             next_import = interface["line_separator"].join(lines)
             interface["statement"] = (
-                comments.add_to_line(
+                isort.comments.add_to_line(
                     interface["comments"],
                     f"{interface['statement']},",
                     removed=interface["remove_comments"],
@@ -89,7 +89,7 @@ def vertical(**interface):
         return ""
 
     first_import = (
-        comments.add_to_line(
+        isort.comments.add_to_line(
             interface["comments"],
             interface["imports"].pop(0) + ",",
             removed=interface["remove_comments"],
@@ -115,7 +115,7 @@ def hanging_indent(**interface):
     # Check for first import
     if len(next_statement) + 3 > interface["line_length"]:
         next_statement = (
-            comments.add_to_line(
+            isort.comments.add_to_line(
                 interface["comments"],
                 f"{interface['statement']}\\",
                 removed=interface["remove_comments"],
@@ -127,7 +127,7 @@ def hanging_indent(**interface):
     interface["statement"] = next_statement
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = comments.add_to_line(
+        next_statement = isort.comments.add_to_line(
             interface["comments"],
             interface["statement"] + ", " + next_import,
             removed=interface["remove_comments"],
@@ -138,7 +138,7 @@ def hanging_indent(**interface):
             > interface["line_length"]
         ):
             next_statement = (
-                comments.add_to_line(
+                isort.comments.add_to_line(
                     interface["comments"],
                     f"{interface['statement']}, \\",
                     removed=interface["remove_comments"],
@@ -153,7 +153,7 @@ def hanging_indent(**interface):
 
 @_wrap_mode
 def vertical_hanging_indent(**interface):
-    _line_with_comments = comments.add_to_line(
+    _line_with_comments = isort.comments.add_to_line(
         interface["comments"],
         "",
         removed=interface["remove_comments"],
@@ -172,7 +172,7 @@ def vertical_grid_common(need_trailing_char: bool, **interface):
         return ""
 
     interface["statement"] += (
-        comments.add_to_line(
+        isort.comments.add_to_line(
             interface["comments"],
             "(",
             removed=interface["remove_comments"],
@@ -302,7 +302,7 @@ def vertical_prefix_from_module_import(**interface):
     interface["statement"] += interface["imports"].pop(0)
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = comments.add_to_line(
+        next_statement = isort.comments.add_to_line(
             interface["comments"],
             interface["statement"] + ", " + next_import,
             removed=interface["remove_comments"],
@@ -313,7 +313,7 @@ def vertical_prefix_from_module_import(**interface):
             > interface["line_length"]
         ):
             next_statement = (
-                comments.add_to_line(
+                isort.comments.add_to_line(
                     interface["comments"],
                     f"{interface['statement']}",
                     removed=interface["remove_comments"],
