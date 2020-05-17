@@ -42,17 +42,17 @@ class File(NamedTuple):
             buffer.close()
             raise
 
-
-@contextmanager
-def read_file(filename: Union[str, Path]) -> Iterator["File"]:
-    file_path = Path(filename).resolve()
-    stream = None
-    try:
-        stream = File._open(file_path)
-        yield File(stream=stream, path=file_path, encoding=stream.encoding)
-    finally:
-        if stream is not None:
-            stream.close()
+    @staticmethod
+    @contextmanager
+    def read(filename: Union[str, Path]) -> Iterator["File"]:
+        file_path = Path(filename).resolve()
+        stream = None
+        try:
+            stream = File._open(file_path)
+            yield File(stream=stream, path=file_path, encoding=stream.encoding)
+        finally:
+            if stream is not None:
+                stream.close()
 
 
 class _EmptyIO(StringIO):

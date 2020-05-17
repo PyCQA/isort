@@ -437,7 +437,7 @@ def check_file(
     disregard_skip: bool = True,
     **config_kwargs,
 ) -> bool:
-    with io.read_file(filename) as source_file:
+    with io.File.read(filename) as source_file:
         return check_imports(
             source_file.stream,
             show_diff=show_diff,
@@ -460,7 +460,7 @@ def sort_file(
     write_to_stdout: bool = False,
     **config_kwargs,
 ):
-    with io.read_file(filename) as source_file:
+    with io.File.read(filename) as source_file:
         changed: bool = False
         try:
             if write_to_stdout:

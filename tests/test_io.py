@@ -16,7 +16,7 @@ import Ὡ
         test_file = tmpdir.join("file.py")
         test_file.write(test_file_content)
         with pytest.raises(Exception):
-            with io.read_file(str(test_file)) as file_handler:
+            with io.File.read(str(test_file)) as file_handler:
                 file_handler.stream.read()
 
     def test_from_content(self, tmpdir):
