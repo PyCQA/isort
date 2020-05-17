@@ -38,12 +38,13 @@ def _config(
         ):
             config_kwargs["settings_path"] = path
 
-    if config_kwargs and config is not DEFAULT_CONFIG:
-        raise ValueError(
-            "You can either specify custom configuration options using kwargs or "
-            "passing in a Config object. Not Both!"
-        )
-    elif config_kwargs:
+    if config_kwargs:
+        if config is not DEFAULT_CONFIG:
+            raise ValueError(
+                "You can either specify custom configuration options using kwargs or "
+                "passing in a Config object. Not Both!"
+            )
+
         config = Config(**config_kwargs)
 
     return config

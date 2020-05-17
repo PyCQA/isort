@@ -290,11 +290,11 @@ class Config(_Config):
         combined_config.pop("source", None)
         combined_config.pop("sources", None)
         if known_other:
-            for known_key in known_other.keys():
+            for known_key in known_other:
                 combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
             combined_config["known_other"] = known_other
         if import_headings:
-            for import_heading_key in import_headings.keys():
+            for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
 
@@ -350,12 +350,12 @@ def _as_list(value: str) -> List[str]:
 
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
-    paths = set(
+    paths = {
         os.path.join(cwd, value)
         if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
         else value
         for value in values
-    )
+    }
     return paths
 
 

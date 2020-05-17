@@ -132,26 +132,26 @@ class PathFinder(BaseFinder):
         self.virtual_env_src = ""
         if self.virtual_env:
             self.virtual_env_src = f"{self.virtual_env}/src/"
-            for path in glob(f"{self.virtual_env}/lib/python*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.virtual_env}/lib/python*/*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.virtual_env}/src/*"):
-                if os.path.isdir(path):
-                    self.paths.append(path)
+            for venv_path in glob(f"{self.virtual_env}/lib/python*/site-packages"):
+                if venv_path not in self.paths:
+                    self.paths.append(venv_path)
+            for nested_venv_path in glob(f"{self.virtual_env}/lib/python*/*/site-packages"):
+                if nested_venv_path not in self.paths:
+                    self.paths.append(nested_venv_path)
+            for venv_src_path in glob(f"{self.virtual_env}/src/*"):
+                if os.path.isdir(venv_src_path):
+                    self.paths.append(venv_src_path)
 
         # conda
         self.conda_env = self.config.conda_env or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
-            for path in glob(f"{self.conda_env}/lib/python*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.conda_env}/lib/python*/*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
+            for conda_path in glob(f"{self.conda_env}/lib/python*/site-packages"):
+                if conda_path not in self.paths:
+                    self.paths.append(conda_path)
+            for nested_conda_path in glob(f"{self.conda_env}/lib/python*/*/site-packages"):
+                if nested_conda_path not in self.paths:
+                    self.paths.append(nested_conda_path)
 
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()["stdlib"])
@@ -159,9 +159,9 @@ class PathFinder(BaseFinder):
             self.paths.append(self.stdlib_lib_prefix)
 
         # add system paths
-        for path in sys.path[1:]:
-            if path not in self.paths:
-                self.paths.append(path)
+        for system_path in sys.path[1:]:
+            if system_path not in self.paths:
+                self.paths.append(system_path)
 
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
