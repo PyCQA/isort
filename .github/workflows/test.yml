@@ -49,3 +49,6 @@ jobs:
         shell: bash
         run: |
           poetry run pytest tests/ -s --cov=isort/ --cov=tests/ --cov-report=term-missing ${@-} --cov-report html
+      - name: Report Coverage
+        if: startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.8'
+        run: bash <(curl -s https://codecov.io/bash)
