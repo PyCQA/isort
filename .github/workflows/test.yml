@@ -53,5 +53,5 @@ jobs:
       - name: Report Coverage
         if: startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.8'
         run: |
-          poetry run install codecov coverage
+          poetry run pip install codecov coverage
           bash <(curl -s https://codecov.io/bash)
