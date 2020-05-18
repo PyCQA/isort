@@ -1408,7 +1408,7 @@ requirements = ["pipreqs", "pip-api"]
 xdg_home = ["appdirs"]
 
 [metadata]
-content-hash = "799667179d478618849d8fd57653d36e73e4b9176f6b88e783fc0f6e0adce3f7"
+content-hash = "983dd12d7389a2267be62bd2f32082e7a7f66b2ef89c3298f5a688df6e70a715"
 python-versions = "^3.6"
 
 [metadata.files]
