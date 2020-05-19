@@ -13,12 +13,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install Poetry Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
-          python get-poetry.py
       - name: Ubuntu cache
         uses: actions/cache@v1
         if: startsWith(matrix.os, 'ubuntu')
