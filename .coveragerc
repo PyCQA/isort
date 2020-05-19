@@ -4,12 +4,6 @@ omit =
   except ImportError:
   tests/*
 
-include =
-  isort/*
-  test_*.py
-  .tox/*/lib/python*/site-packages/isort/*
-  .tox\*\Lib\site-packages\isort\*
-
 [report]
 exclude_lines =
   pragma: no cover

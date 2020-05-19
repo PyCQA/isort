@@ -48,7 +48,7 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          poetry run pytest tests/ -s --cov=isort/ --cov=tests/ --cov-report=term-missing ${@-}
+          poetry run pytest tests/ -s --cov=isort/ --cov-report=term-missing ${@-}
           poetry run coverage xml
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
