@@ -15,6 +15,11 @@ auto_pytest_magic(
     wrap_modes.vertical_prefix_from_module_import, auto_allow_exceptions_=(ValueError,)
 )
 auto_pytest_magic(wrap_modes.vertical_hanging_indent_bracket, auto_allow_exceptions_=(ValueError,))
+auto_pytest_magic(
+    wrap_modes.vertical_hanging_indent_bracket,
+    auto_allow_exceptions_=(ValueError,),
+    imports=["one", "two"],
+)
 
 
 def test_wrap_mode_interface():
