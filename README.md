@@ -3,7 +3,8 @@
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
-[![Build Status](https://travis-ci.org/timothycrosley/isort.svg?branch=develop)](https://travis-ci.org/timothycrosley/isort)
+[![Test Status](https://github.com/timothycrosley/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ATest)
+[![Lint Status](https://github.com/timothycrosley/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ALint)
 [![Code coverage Status](https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/timothycrosley/isort)
 [![Maintainability](https://api.codeclimate.com/v1/badges/060372d3e77573072609/maintainability)](https://codeclimate.com/github/timothycrosley/isort/maintainability)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/hug/)
