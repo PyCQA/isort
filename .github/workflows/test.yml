@@ -51,7 +51,5 @@ jobs:
           poetry run pytest tests/ -s --cov=isort/ --cov=tests/ --cov-report=term-missing ${@-} --cov-report html
           bash <(curl -s https://codecov.io/bash)
       - name: Report Coverage
-        if: startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.8'
-        run: |
-          poetry run pip install codecov coverage
-          bash <(curl -s https://codecov.io/bash)
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        uses: codecov/codecov-action@v1.0.6
