@@ -9,11 +9,16 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8]
-        os: [ubuntu-latest, ubuntu-18.04, macos-latest]
+        os: [ubuntu-latest, ubuntu-18.04, macos-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Poetry Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+          python get-poetry.py
       - name: Ubuntu cache
         uses: actions/cache@v1
         if: startsWith(matrix.os, 'ubuntu')
