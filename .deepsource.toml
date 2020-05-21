@@ -1,0 +1,15 @@
+version = 1
+
+test_patterns = ["tests/**"]
+exclude_patterns = [
+  "tests/**",
+  "isort/_future/**",
+]
+
+
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"

@@ -9,16 +9,6 @@ class TestISortError:
         assert isinstance(self.instance, exceptions.ISortError)
 
 
-class TestUnableToDetermineEncoding(TestISortError):
-    def setup_class(self):
-        self.instance = exceptions.UnableToDetermineEncoding("file_path", "encoding", "fallback")
-
-    def test_variables(self):
-        assert self.instance.file_path == "file_path"
-        assert self.instance.encoding == "encoding"
-        assert self.instance.fallback_encoding == "fallback"
-
-
 class TestExistingSyntaxErrors(TestISortError):
     def setup_class(self):
         self.instance = exceptions.ExistingSyntaxErrors("file_path")
@@ -41,7 +31,7 @@ class TestFileSkipped(TestISortError):
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
-        str(self.instance) == "message"
+        assert str(self.instance) == "message"
 
 
 class TestFileSkipComment(TestISortError):

@@ -6,8 +6,8 @@ from warnings import warn
 
 import setuptools
 
-from . import SortImports
-from .settings import DEFAULT_CONFIG, Config
+from . import api
+from .settings import DEFAULT_CONFIG
 
 
 class ISortCommand(setuptools.Command):
@@ -55,10 +55,9 @@ class ISortCommand(setuptools.Command):
             for python_file in glob.iglob(os.path.join(path, "*.py")):
 
                 try:
-                    incorrectly_sorted = SortImports(python_file, **arguments).incorrectly_sorted
-                    if incorrectly_sorted:
-                        wrong_sorted_files = True
+                    if not api.check_file(python_file, **arguments):
+                        wrong_sorted_files = True  # pragma: no cover
                 except OSError as error:  # pragma: no cover
                     warn(f"Unable to parse file {python_file} due to {error}")
         if wrong_sorted_files:
-            sys.exit(1)
+            sys.exit(1)  # pragma: no cover

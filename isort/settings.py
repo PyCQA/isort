@@ -35,7 +35,7 @@ try:
     import appdirs
 
     if appdirs.system == "darwin":
-        appdirs.system = "linux2"
+        appdirs.system = "linux2"  # pragma: no cover
 except ImportError:
     appdirs = None
 
@@ -71,7 +71,7 @@ if appdirs:
         appdirs.user_config_dir(".isort.cfg"),
         appdirs.user_config_dir(".editorconfig"),
     )
-else:
+else:  # pragma: no cover
     FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
 
 IMPORT_HEADING_PREFIX = "import_heading_"
@@ -164,7 +164,7 @@ class _Config:
 
     def __post_init__(self):
         py_version = self.py_version
-        if py_version == "auto":
+        if py_version == "auto":  # pragma: no cover
             if sys.version_info.major == 2 and sys.version_info.minor <= 6:
                 py_version = "2"
             elif sys.version_info.major == 3 and (
@@ -216,7 +216,8 @@ class Config(_Config):
             config_vars = vars(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
-            return super().__init__(**config_vars)  # type: ignore
+            super().__init__(**config_vars)  # type: ignore
+            return
 
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
@@ -289,11 +290,11 @@ class Config(_Config):
         combined_config.pop("source", None)
         combined_config.pop("sources", None)
         if known_other:
-            for known_key in known_other.keys():
+            for known_key in known_other:
                 combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
             combined_config["known_other"] = known_other
         if import_headings:
-            for import_heading_key in import_headings.keys():
+            for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
 
@@ -349,14 +350,12 @@ def _as_list(value: str) -> List[str]:
 
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
-    paths = set(
-        [
-            os.path.join(cwd, value)
-            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-            else value
-            for value in values
-        ]
-    )
+    paths = {
+        os.path.join(cwd, value)
+        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+        else value
+        for value in values
+    }
     return paths
 
 
@@ -394,7 +393,7 @@ def _find_config(path: str) -> Dict[str, Any]:
 
 
 @lru_cache()
-def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
+def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
     with open(file_path) as config_file:
@@ -406,7 +405,7 @@ def _get_config_data(file_path: str, sections: Iterable[str]) -> Dict[str, Any]:
                     for key in section.split("."):
                         config_section = config_section.get(key, {})
                     settings.update(config_section)
-            else:
+            else:  # pragma: no cover
                 if "[tool.isort]" in config_file.read():
                     warnings.warn(
                         f"Found {file_path} with [tool.isort] section, but toml package is not "

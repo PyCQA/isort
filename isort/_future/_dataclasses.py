@@ -361,7 +361,7 @@ def _tuple_str(obj_name, fields):
     if not fields:
         return "()"
     # Note the trailing comma, needed if this turns out to be a 1-tuple.
-    return f'({",".join([f"{obj_name}.{f.name}" for f in fields])},)'
+    return f'({",".join(f"{obj_name}.{f.name}" for f in fields)},)'
 
 
 def _create_fn(name, args, body, *, globals=None, locals=None, return_type=MISSING):
@@ -520,7 +520,7 @@ def _repr_fn(fields):
         ("self",),
         [
             'return self.__class__.__qualname__ + f"('
-            + ", ".join([f"{f.name}={{self.{f.name}!r}}" for f in fields])
+            + ", ".join(f"{f.name}={{self.{f.name}!r}}" for f in fields)
             + ')"'
         ],
     )

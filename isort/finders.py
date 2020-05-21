@@ -91,7 +91,8 @@ class KnownPatternFinder(BaseFinder):
                 regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
                 self.known_patterns.append((re.compile(regexp), placement))
 
-    def _parse_known_pattern(self, pattern: str) -> List[str]:
+    @staticmethod
+    def _parse_known_pattern(pattern: str) -> List[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
@@ -116,11 +117,11 @@ class KnownPatternFinder(BaseFinder):
 
 
 class PathFinder(BaseFinder):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, path: str = ".") -> None:
         super().__init__(config)
 
         # restore the original import path (i.e. not the path to bin/isort)
-        root_dir = os.getcwd()
+        root_dir = os.path.abspath(path)
         src_dir = f"{root_dir}/src"
         self.paths = [root_dir, src_dir]
 
@@ -131,26 +132,26 @@ class PathFinder(BaseFinder):
         self.virtual_env_src = ""
         if self.virtual_env:
             self.virtual_env_src = f"{self.virtual_env}/src/"
-            for path in glob(f"{self.virtual_env}/lib/python*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.virtual_env}/lib/python*/*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.virtual_env}/src/*"):
-                if os.path.isdir(path):
-                    self.paths.append(path)
+            for venv_path in glob(f"{self.virtual_env}/lib/python*/site-packages"):
+                if venv_path not in self.paths:
+                    self.paths.append(venv_path)
+            for nested_venv_path in glob(f"{self.virtual_env}/lib/python*/*/site-packages"):
+                if nested_venv_path not in self.paths:
+                    self.paths.append(nested_venv_path)
+            for venv_src_path in glob(f"{self.virtual_env}/src/*"):
+                if os.path.isdir(venv_src_path):
+                    self.paths.append(venv_src_path)
 
         # conda
         self.conda_env = self.config.conda_env or os.environ.get("CONDA_PREFIX") or ""
         if self.conda_env:
             self.conda_env = os.path.realpath(self.conda_env)
-            for path in glob(f"{self.conda_env}/lib/python*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
-            for path in glob(f"{self.conda_env}/lib/python*/*/site-packages"):
-                if path not in self.paths:
-                    self.paths.append(path)
+            for conda_path in glob(f"{self.conda_env}/lib/python*/site-packages"):
+                if conda_path not in self.paths:
+                    self.paths.append(conda_path)
+            for nested_conda_path in glob(f"{self.conda_env}/lib/python*/*/site-packages"):
+                if nested_conda_path not in self.paths:
+                    self.paths.append(nested_conda_path)
 
         # handle case-insensitive paths on windows
         self.stdlib_lib_prefix = os.path.normcase(sysconfig.get_paths()["stdlib"])
@@ -158,9 +159,9 @@ class PathFinder(BaseFinder):
             self.paths.append(self.stdlib_lib_prefix)
 
         # add system paths
-        for path in sys.path[1:]:
-            if path not in self.paths:
-                self.paths.append(path)
+        for system_path in sys.path[1:]:
+            if system_path not in self.paths:
+                self.paths.append(system_path)
 
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
@@ -175,20 +176,20 @@ class PathFinder(BaseFinder):
             )
             is_package = exists_case_sensitive(package_path) and os.path.isdir(package_path)
             if is_module or is_package:
-                if "site-packages" in prefix:
+                if (
+                    "site-packages" in prefix
+                    or "dist-packages" in prefix
+                    or (self.virtual_env and self.virtual_env_src in prefix)
+                ):
                     return sections.THIRDPARTY
-                if "dist-packages" in prefix:
-                    return sections.THIRDPARTY
-                if self.virtual_env and self.virtual_env_src in prefix:
-                    return sections.THIRDPARTY
-                if os.path.normcase(prefix) == self.stdlib_lib_prefix:
+                elif os.path.normcase(prefix) == self.stdlib_lib_prefix:
                     return sections.STDLIB
-                if self.conda_env and self.conda_env in prefix:
+                elif self.conda_env and self.conda_env in prefix:
                     return sections.THIRDPARTY
-                if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
-                    return sections.STDLIB
                 if os.getcwd() in package_path:
                     return sections.FIRSTPARTY
+                elif os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
+                    return sections.STDLIB  # pragma: no cover - edge case for one OS. Hard to test.
                 return self.config.default_section
         return None
 
@@ -392,6 +393,8 @@ class FindersManager:
         for finder in self.finders:
             try:
                 section = finder.find(module_name)
+                if section is not None:
+                    return section
             except Exception as exception:
                 # isort has to be able to keep trying to identify the correct
                 # import section even if one approach fails
@@ -400,6 +403,4 @@ class FindersManager:
                         f"{finder.__class__.__name__} encountered an error ({exception}) while "
                         f"trying to identify the {module_name} module"
                     )
-            if section is not None:
-                return section
         return None

@@ -1,24 +1,9 @@
 """All isort specific exception classes should be defined here"""
-from pathlib import Path
-
 from .profiles import profiles
 
 
 class ISortError(Exception):
     """Base isort exception object from which all isort sourced exceptions should inherit"""
-
-
-class UnableToDetermineEncoding(ISortError):
-    """Raised when isort is unable to determine a provided file's encoding"""
-
-    def __init__(self, file_path: Path, encoding: str, fallback_encoding: str):
-        super().__init__(
-            f"Couldn't open {file_path} with any of the attempted encodings."
-            f"Given {encoding} encoding or {fallback_encoding} fallback encoding both failed."
-        )
-        self.file_path = file_path
-        self.encoding = encoding
-        self.fallback_encoding = fallback_encoding
 
 
 class ExistingSyntaxErrors(ISortError):

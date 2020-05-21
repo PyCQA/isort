@@ -3,11 +3,14 @@
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
-[![Build Status](https://travis-ci.org/timothycrosley/isort.svg?branch=develop)](https://travis-ci.org/timothycrosley/isort)
+[![Test Status](https://github.com/timothycrosley/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ATest)
+[![Lint Status](https://github.com/timothycrosley/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ALint)
 [![Code coverage Status](https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/timothycrosley/isort)
+[![Maintainability](https://api.codeclimate.com/v1/badges/060372d3e77573072609/maintainability)](https://codeclimate.com/github/timothycrosley/isort/maintainability)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/hug/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Downloads](https://pepy.tech/badge/isort)](https://pepy.tech/project/isort)
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/timothycrosley/isort/?ref=repository-badge)
 _________________
 
 [Read Latest Documentation](https://timothycrosley.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/timothycrosley/isort/)
@@ -107,6 +110,12 @@ Install isort with both formats support:
 pip install isort[requirements,pipfile]
 ```
 
+Install isort with support for reading configuration from `pyproject.toml`:
+
+```bash
+pip install isort[pyproject]
+```
+
 Using isort
 ===========
 
@@ -147,50 +156,18 @@ run against code written using a different version of Python)
 **From within Python**:
 
 ```bash
-from isort import SortImports
+import isort
 
-SortImports("pythonfile.py")
+isort.file("pythonfile.py")
 ```
 
 or:
 
 ```bash
-from isort import SortImports
+import isort
 
-new_contents = SortImports(file_contents=old_contents).output
+sorted_code = isort.code("import b\nimport a\n")
 ```
-
-**From within Kate:**
-
-```bash
-ctrl+[
-```
-
-or:
-
-```bash
-menu > Python > Sort Imports
-```
-
-Installing isort's Kate plugin
-===============================
-
-For KDE 4.13+ / Pate 2.0+:
-
-```bash
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin_ui.rc --output-document ~/.kde/share/apps/kate/pate/isort_plugin_ui.rc
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/katepart_isort.desktop --output-document ~/.kde/share/kde4/services/katepart_isort.desktop
-```
-
-For all older versions:
-
-```bash
-wget https://raw.github.com/timothycrosley/isort/master/kate_plugin/isort_plugin_old.py --output-document ~/.kde/share/apps/kate/pate/isort_plugin.py
-```
-
-You will then need to restart kate and enable Python Plugins as well as
-the isort plugin itself.
 
 Installing isort's for your preferred text editor
 ==================================================
@@ -272,10 +249,12 @@ Or, if you prefer, you can add an `isort` or `tool:isort` section to
 your project's `setup.cfg` or `tox.ini` file with any desired settings.
 
 You can also add your desired settings under a `[tool.isort]` section in
-your `pyproject.toml` file.
+your `pyproject.toml` file.  For `pyproject.toml` support, use
+`pip install isort[pyproject]`.
 
 You can then override any of these settings by using command line
-arguments, or by passing in override values to the SortImports class.
+arguments, or by passing in override values to any of the public Python API
+functions.
 
 Finally, as of version 3.0 isort supports editorconfig files using the
 standard syntax defined here: <https://editorconfig.org/>

@@ -26,13 +26,14 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
+urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
 
 [tool.poetry.dependencies]
 python = "^3.6"
 appdirs = {version = "^1.4.0", optional = true}
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
-tomlkit = {version = "0.5.3", optional = true}
+tomlkit = {version = ">=0.5.3", optional = true}
 toml = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
 
@@ -62,12 +63,14 @@ appdirs = "^1.4"
 pipfile = "^0.0.2"
 requirementslib = "^1.5"
 pipreqs = "^0.4.9"
-tomlkit = "0.5.3"
+tomlkit = ">=0.5.3"
 pip_api = "^0.0.12"
 numpy = "^1.16.0"
 pylama = "^7.7"
 pip = "^20.0.2"
-pip-shims = "<=0.3.4"
+pip-shims = "^0.5.2"
+smmap2 = "^3.0.1"
+gitdb2 = "^4.0.2"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
