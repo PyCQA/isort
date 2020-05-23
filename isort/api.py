@@ -1,3 +1,4 @@
+import shutil
 import sys
 import textwrap
 from io import StringIO
@@ -479,6 +480,7 @@ def sort_file(
                     with tmp_file.open(
                         "w", encoding=source_file.encoding, newline=""
                     ) as output_stream:
+                        shutil.copymode(filename, tmp_file)
                         changed = sorted_imports(
                             input_stream=source_file.stream,
                             output_stream=output_stream,
