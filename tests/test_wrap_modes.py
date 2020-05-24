@@ -26,3 +26,24 @@ def test_wrap_mode_interface():
     assert (
         wrap_modes._wrap_mode_interface("statement", [], "", "", 80, [], "", "", True, True) == ""
     )
+
+
+def test_auto_saved():
+    """hypothesis_auto tests cases that have been saved to ensure they run each test cycle"""
+    assert (
+        wrap_modes.noqa(
+            **{
+                "comment_prefix": "-\U000bf82c\x0c\U0004608f\x10%",
+                "comments": [],
+                "imports": [],
+                "include_trailing_comma": False,
+                "indent": "0\x19",
+                "line_length": -19659,
+                "line_separator": "\x15\x0b\U00086494\x1d\U000e00a2\U000ee216\U0006708a\x03\x1f",
+                "remove_comments": False,
+                "statement": "\U00092452",
+                "white_space": "\U000a7322\U000c20e3-\U0010eae4\x07\x14\U0007d486",
+            }
+        )
+        == "\U00092452-\U000bf82c\x0c\U0004608f\x10% NOQA"
+    )
