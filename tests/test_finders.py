@@ -82,6 +82,10 @@ class TestPathFinder(AbstractTestFinder):
         assert conda.find("z") == "THIRDPARTY"
         assert conda.find("os") == venv.find("os") == "STDLIB"
 
+    def test_default_section(self, tmpdir):
+        tmpdir.join("file.py").write("import b\nimport a\n")
+        assert self.kind(settings.Config(default_section="CUSTOM"), tmpdir).find("file") == "CUSTOM"
+
 
 class TestPipfileFinder(AbstractTestFinder):
     kind = finders.PipfileFinder
