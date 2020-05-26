@@ -1,12 +1,13 @@
 #! /bin/env python
 import os
-
-from isort.settings import _DEFAULT_SETTINGS as config
-from isort.main import _build_arg_parser
 from typing import Generator
 
-OUTPUT_FILE = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                           "../docs/configuration/options.md"))
+from isort.main import _build_arg_parser
+from isort.settings import _DEFAULT_SETTINGS as config
+
+OUTPUT_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
+)
 HUMAN_NAME = {"py_version": "Python Version"}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help"}
@@ -43,10 +44,11 @@ def config_options() -> Generator[str, None, None]:
 
         cli = cli_actions.pop(name, None)
         if cli:
-            cli_options = ','.join(cli.option_strings)
+            cli_options = ",".join(cli.option_strings)
             description = description or cli.help
         else:
             cli_options = "**Not Supported**"
+        description = description.replace("\n", " ")
 
         yield f"|{human(name)}|{human(type(default).__name__)}|{default}|{name}|{cli_options}|{description}|\n"
 
@@ -60,7 +62,9 @@ def config_options() -> Generator[str, None, None]:
             type_name = human(type(cli.default).__name__)
         else:
             type_name = "*Not Typed*"
-        yield f"|{human(name)}|{type_name}|{cli.default}|**Not Supported**|{','.join(cli.option_strings)}|{DESCRIPTIONS.get(name, cli.help)}|\n"
+
+        description = DESCRIPTIONS.get(name, cli.help).replace("\n", " ")
+        yield f"|{human(name)}|{type_name}|{cli.default}|**Not Supported**|{','.join(cli.option_strings)}|{description}|\n"
 
 
 def document_text() -> str:
