@@ -20,6 +20,7 @@ isort will disagree but commit to your way of formatting. To enable this, isort 
 how you want your imports sorted.
 
 | {' | '.join(COLUMNS)} |
+| {' | '.join(["-" * len(column) for column in COLUMNS])} |
 """
 parser = _build_arg_parser()
 
