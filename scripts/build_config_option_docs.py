@@ -8,7 +8,7 @@ from isort.settings import _DEFAULT_SETTINGS as config
 OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
-HUMAN_NAME = {"py_version": "Python Version"}
+HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number"}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]
