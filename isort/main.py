@@ -126,7 +126,7 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
             yield path
 
 
-def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Sort Python import definitions alphabetically "
         "within logical sections. Run with no arguments to run "
@@ -544,7 +544,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         action="store_true",
         help="See isort's determined config, as well as sources of config options.",
     )
+    return parser
 
+
+def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+    parser = _build_arg_parser()
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
