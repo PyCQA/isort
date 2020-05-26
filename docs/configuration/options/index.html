@@ -1,0 +1,1487 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../art/logo.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>Options - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.adb8469c.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#fb8c00">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="orange" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#configuration-options-for-isort" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="isort" aria-label="isort" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="../../../art/logo.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              isort
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Options
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../.." title="isort" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="../../../art/logo.png" width="48" height="48">
+      
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Configuration
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Configuration
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+    <a href="./" title="Options" class="md-nav__link md-nav__link--active">
+      Options
+    </a>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Contributing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Contributing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+      1. Contributing Guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+      2. Coding Standard
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+      3. Code Of Conduct
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+      4. Acknowledgements
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1" type="checkbox" id="nav-5-1">
+    
+    <label class="md-nav__link" for="nav-5-1">
+      Isort
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-5-1">
+        Isort
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/exceptions/" title="Exceptions" class="md-nav__link">
+      Exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/format/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/hooks/" title="Hooks" class="md-nav__link">
+      Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/io/" title="Io" class="md-nav__link">
+      Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/logo/" title="Logo" class="md-nav__link">
+      Logo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/main/" title="Main" class="md-nav__link">
+      Main
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/output/" title="Output" class="md-nav__link">
+      Output
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/parse/" title="Parse" class="md-nav__link">
+      Parse
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/profiles/" title="Profiles" class="md-nav__link">
+      Profiles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/pylama_isort/" title="Pylama Isort" class="md-nav__link">
+      Pylama Isort
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/sections/" title="Sections" class="md-nav__link">
+      Sections
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/setuptools_commands/" title="Setuptools Commands" class="md-nav__link">
+      Setuptools Commands
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/sorting/" title="Sorting" class="md-nav__link">
+      Sorting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/wrap/" title="Wrap" class="md-nav__link">
+      Wrap
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/wrap_modes/" title="Wrap Modes" class="md-nav__link">
+      Wrap Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-22" type="checkbox" id="nav-5-1-22">
+    
+    <label class="md-nav__link" for="nav-5-1-22">
+      Stdlibs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-5-1-22">
+        Stdlibs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/all/" title="All" class="md-nav__link">
+      All
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py2/" title="Py2" class="md-nav__link">
+      Py2
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py27/" title="Py27" class="md-nav__link">
+      Py27
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py3/" title="Py3" class="md-nav__link">
+      Py3
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py35/" title="Py35" class="md-nav__link">
+      Py35
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py36/" title="Py36" class="md-nav__link">
+      Py36
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py37/" title="Py37" class="md-nav__link">
+      Py37
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py38/" title="Py38" class="md-nav__link">
+      Py38
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/timothycrosley/isort/edit/master/docs/configuration/options.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="configuration-options-for-isort">Configuration options for isort</h1>
+<p>As a code formatter isort has opinions. However, it also allows you to also have your own. If your opinions disagree with those of isort,
+isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
+how you want your imports sorted.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Python / Config file</th>
+<th>CLI</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Version</td>
+<td>Str</td>
+<td>py3</td>
+<td>py_version</td>
+<td>--py,--python-version</td>
+<td>Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</td>
+</tr>
+<tr>
+<td>Force To Top</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>force_to_top</td>
+<td>-t,--top</td>
+<td>Force specific imports to the top of their appropriate section.</td>
+</tr>
+<tr>
+<td>Skip</td>
+<td>Frozenset</td>
+<td _.eggs_="'.eggs'," _.git_="'.git'," _.hg_="'.hg'," _.mypy_cache_="'.mypy_cache'," _.nox_="'.nox'," _.pants.d_="'.pants.d'," _.tox_="'.tox'," _.venv_="'.venv'," __build_="'_build'," _buck-out_="'buck-out'," _build_="'build'," _dist_="'dist'," _node_modules_="'node_modules'," _venv_="'venv'">frozenset(</td>
+<td>skip</td>
+<td>-s,--skip</td>
+<td>Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.</td>
+</tr>
+<tr>
+<td>Skip Glob</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>skip_glob</td>
+<td>--sg,--skip-glob</td>
+<td>Files that sort imports should skip over.</td>
+</tr>
+<tr>
+<td>Line Length</td>
+<td>Int</td>
+<td>79</td>
+<td>line_length</td>
+<td>-l,-w,--line-length,--line-width</td>
+<td>The max length of an import line (used for wrapping long imports).</td>
+</tr>
+<tr>
+<td>Wrap Length</td>
+<td>Int</td>
+<td>0</td>
+<td>wrap_length</td>
+<td>--wl,--wrap-length</td>
+<td>Specifies how long lines that are wrapped should be, if not set line_length is used.</td>
+</tr>
+<tr>
+<td>NOTE: wrap_length must be LOWER than or equal to line_length.</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Line Ending</td>
+<td>Str</td>
+<td></td>
+<td>line_ending</td>
+<td>--le,--line-ending</td>
+<td>Forces line endings to the specified value. If not set, values will be guessed per-file.</td>
+</tr>
+<tr>
+<td>Sections</td>
+<td>Tuple</td>
+<td>('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</td>
+<td>sections</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>No Sections</td>
+<td>Bool</td>
+<td>False</td>
+<td>no_sections</td>
+<td>--ds,--no-sections</td>
+<td>Put all imports into the same section bucket</td>
+</tr>
+<tr>
+<td>Known Future Library</td>
+<td>Frozenset</td>
+<td>frozenset({'<strong>future</strong>'})</td>
+<td>known_future_library</td>
+<td>-f,--future</td>
+<td>Force sortImports to recognize a module as part of the future compatibility libraries.</td>
+</tr>
+<tr>
+<td>Known Third Party</td>
+<td>Frozenset</td>
+<td _google.appengine.api_="'google.appengine.api'">frozenset(</td>
+<td>known_third_party</td>
+<td>-o,--thirdparty</td>
+<td>Force sortImports to recognize a module as being part of a third party library.</td>
+</tr>
+<tr>
+<td>Known First Party</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>known_first_party</td>
+<td>-p,--project</td>
+<td>Force sortImports to recognize a module as being part of the current python project.</td>
+</tr>
+<tr>
+<td>Known Standard Library</td>
+<td>Frozenset</td>
+<td __dummy_thread_="'_dummy_thread'," __thread_="'_thread'," _abc_="'abc'," _aifc_="'aifc'," _argparse_="'argparse'," _array_="'array'," _ast_="'ast'," _asynchat_="'asynchat'," _asyncio_="'asyncio'," _asyncore_="'asyncore'," _atexit_="'atexit'," _audioop_="'audioop'," _base64_="'base64'," _bdb_="'bdb'," _binascii_="'binascii'," _binhex_="'binhex'," _bisect_="'bisect'," _builtins_="'builtins'," _bz2_="'bz2'," _cProfile_="'cProfile'," _calendar_="'calendar'," _cgi_="'cgi'," _cgitb_="'cgitb'," _chunk_="'chunk'," _cmath_="'cmath'," _cmd_="'cmd'," _code_="'code'," _codecs_="'codecs'," _codeop_="'codeop'," _collections_="'collections'," _colorsys_="'colorsys'," _compileall_="'compileall'," _concurrent_="'concurrent'," _configparser_="'configparser'," _contextlib_="'contextlib'," _contextvars_="'contextvars'," _copy_="'copy'," _copyreg_="'copyreg'," _crypt_="'crypt'," _csv_="'csv'," _ctypes_="'ctypes'," _curses_="'curses'" _dataclasses_="'dataclasses'," _datetime_="'datetime'," _dbm_="'dbm'," _decimal_="'decimal'," _difflib_="'difflib'," _dis_="'dis'," _distutils_="'distutils'," _doctest_="'doctest'," _dummy_threading_="'dummy_threading'," _email_="'email'," _encodings_="'encodings'," _ensurepip_="'ensurepip'," _enum_="'enum'," _errno_="'errno'," _faulthandler_="'faulthandler'," _fcntl_="'fcntl'," _filecmp_="'filecmp'," _fileinput_="'fileinput'," _fnmatch_="'fnmatch'," _formatter_="'formatter'," _fpectl_="'fpectl'," _fractions_="'fractions'," _ftplib_="'ftplib'," _functools_="'functools'," _gc_="'gc'," _getopt_="'getopt'," _getpass_="'getpass'," _gettext_="'gettext'," _glob_="'glob'," _grp_="'grp'," _gzip_="'gzip'," _hashlib_="'hashlib'," _heapq_="'heapq'," _hmac_="'hmac'," _html_="'html'," _http_="'http'," _imaplib_="'imaplib'," _imghdr_="'imghdr'," _imp_="'imp'," _importlib_="'importlib'," _inspect_="'inspect'," _io_="'io'," _ipaddress_="'ipaddress'," _itertools_="'itertools'," _json_="'json'," _keyword_="'keyword'," _lib2to3_="'lib2to3'," _linecache_="'linecache'," _locale_="'locale'," _logging_="'logging'," _lzma_="'lzma'," _macpath_="'macpath'," _mailbox_="'mailbox'," _mailcap_="'mailcap'," _marshal_="'marshal'," _math_="'math'," _mimetypes_="'mimetypes'," _mmap_="'mmap'," _modulefinder_="'modulefinder'," _msilib_="'msilib'," _msvcrt_="'msvcrt'," _multiprocessing_="'multiprocessing'," _netrc_="'netrc'," _nis_="'nis'," _nntplib_="'nntplib'," _numbers_="'numbers'," _operator_="'operator'," _optparse_="'optparse'," _os_="'os'," _ossaudiodev_="'ossaudiodev'," _parser_="'parser'," _pathlib_="'pathlib'," _pdb_="'pdb'," _pickle_="'pickle'," _pickletools_="'pickletools'," _pipes_="'pipes'," _pkgutil_="'pkgutil'," _platform_="'platform'," _plistlib_="'plistlib'," _poplib_="'poplib'," _posix_="'posix'," _pprint_="'pprint'," _profile_="'profile'," _pstats_="'pstats'," _pty_="'pty'," _pwd_="'pwd'," _py_compile_="'py_compile'," _pyclbr_="'pyclbr'," _pydoc_="'pydoc'," _queue_="'queue'," _quopri_="'quopri'," _random_="'random'," _re_="'re'," _readline_="'readline'," _reprlib_="'reprlib'," _resource_="'resource'," _rlcompleter_="'rlcompleter'," _runpy_="'runpy'," _sched_="'sched'," _secrets_="'secrets'," _select_="'select'," _selectors_="'selectors'," _shelve_="'shelve'," _shlex_="'shlex'," _shutil_="'shutil'," _signal_="'signal'," _site_="'site'," _smtpd_="'smtpd'," _smtplib_="'smtplib'," _sndhdr_="'sndhdr'," _socket_="'socket'," _socketserver_="'socketserver'," _spwd_="'spwd'," _sqlite3_="'sqlite3'," _ssl_="'ssl'," _stat_="'stat'," _statistics_="'statistics'," _string_="'string'," _stringprep_="'stringprep'," _struct_="'struct'," _subprocess_="'subprocess'," _sunau_="'sunau'," _symbol_="'symbol'," _symtable_="'symtable'," _sys_="'sys'," _sysconfig_="'sysconfig'," _syslog_="'syslog'," _tabnanny_="'tabnanny'," _tarfile_="'tarfile'," _telnetlib_="'telnetlib'," _tempfile_="'tempfile'," _termios_="'termios'," _test_="'test'," _textwrap_="'textwrap'," _threading_="'threading'," _time_="'time'," _timeit_="'timeit'," _tkinter_="'tkinter'," _token_="'token'," _tokenize_="'tokenize'," _trace_="'trace'," _traceback_="'traceback'," _tracemalloc_="'tracemalloc'," _tty_="'tty'," _turtle_="'turtle'," _turtledemo_="'turtledemo'," _types_="'types'," _typing_="'typing'," _unicodedata_="'unicodedata'," _unittest_="'unittest'," _urllib_="'urllib'," _uu_="'uu'," _uuid_="'uuid'," _venv_="'venv'," _warnings_="'warnings'," _wave_="'wave'," _weakref_="'weakref'," _webbrowser_="'webbrowser'," _winreg_="'winreg'," _winsound_="'winsound'," _wsgiref_="'wsgiref'," _xdrlib_="'xdrlib'," _xml_="'xml'," _xmlrpc_="'xmlrpc'," _zipapp_="'zipapp'," _zipfile_="'zipfile'," _zipimport_="'zipimport'," _zlib_="'zlib',">frozenset(</td>
+<td>known_standard_library</td>
+<td>-b,--builtin</td>
+<td>Force sortImports to recognize a module as part of the python standard library.</td>
+</tr>
+<tr>
+<td>Known Other</td>
+<td>Dict</td>
+<td></td>
+<td>known_other</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Multi Line Output</td>
+<td>Wrapmodes</td>
+<td>WrapModes.GRID</td>
+<td>multi_line_output</td>
+<td>-m,--multi-line</td>
+<td>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).</td>
+</tr>
+<tr>
+<td>Forced Separate</td>
+<td>Tuple</td>
+<td>()</td>
+<td>forced_separate</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Indent</td>
+<td>Str</td>
+<td></td>
+<td>indent</td>
+<td>-i,--indent</td>
+<td>String to place for indents defaults to "    " (4 spaces).</td>
+</tr>
+<tr>
+<td>Comment Prefix</td>
+<td>Str</td>
+<td>#</td>
+<td>comment_prefix</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Length Sort</td>
+<td>Bool</td>
+<td>False</td>
+<td>length_sort</td>
+<td>--ls,--length-sort</td>
+<td>Sort imports by their string length.</td>
+</tr>
+<tr>
+<td>Length Sort Sections</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>length_sort_sections</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Add Imports</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>add_imports</td>
+<td>-a,--add-import</td>
+<td>Adds the specified import line to all files, automatically determining correct placement.</td>
+</tr>
+<tr>
+<td>Remove Imports</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>remove_imports</td>
+<td>--rm,--remove-import</td>
+<td>Removes the specified import from all files.</td>
+</tr>
+<tr>
+<td>Reverse Relative</td>
+<td>Bool</td>
+<td>False</td>
+<td>reverse_relative</td>
+<td>--rr,--reverse-relative</td>
+<td>Reverse order of relative imports.</td>
+</tr>
+<tr>
+<td>Force Single Line</td>
+<td>Bool</td>
+<td>False</td>
+<td>force_single_line</td>
+<td>--sl,--force-single-line-imports</td>
+<td>Forces all from imports to appear on their own line</td>
+</tr>
+<tr>
+<td>Single Line Exclusions</td>
+<td>Tuple</td>
+<td>()</td>
+<td>single_line_exclusions</td>
+<td>--nsl,--single-line-exclusions</td>
+<td>One or more modules to exclude from the single line rule.</td>
+</tr>
+<tr>
+<td>Default Section</td>
+<td>Str</td>
+<td>FIRSTPARTY</td>
+<td>default_section</td>
+<td>--sd,--section-default</td>
+<td>Sets the default section for imports (by default FIRSTPARTY) options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</td>
+</tr>
+<tr>
+<td>Import Headings</td>
+<td>Dict</td>
+<td></td>
+<td>import_headings</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Balanced Wrapping</td>
+<td>Bool</td>
+<td>False</td>
+<td>balanced_wrapping</td>
+<td>-e,--balanced</td>
+<td>Balances wrapping to produce the most consistent line length possible</td>
+</tr>
+<tr>
+<td>Use Parentheses</td>
+<td>Bool</td>
+<td>False</td>
+<td>use_parentheses</td>
+<td>--up,--use-parentheses</td>
+<td>Use parenthesis for line continuation on length limit instead of slashes.</td>
+</tr>
+<tr>
+<td>Order By Type</td>
+<td>Bool</td>
+<td>True</td>
+<td>order_by_type</td>
+<td>--ot,--order-by-type</td>
+<td>Order imports by type in addition to alphabetically</td>
+</tr>
+<tr>
+<td>Atomic</td>
+<td>Bool</td>
+<td>False</td>
+<td>atomic</td>
+<td>--ac,--atomic</td>
+<td>Ensures the output doesn't save if the resulting file contains syntax errors.</td>
+</tr>
+<tr>
+<td>Lines After Imports</td>
+<td>Int</td>
+<td>-1</td>
+<td>lines_after_imports</td>
+<td>--lai,--lines-after-imports</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Lines Between Sections</td>
+<td>Int</td>
+<td>1</td>
+<td>lines_between_sections</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Lines Between Types</td>
+<td>Int</td>
+<td>0</td>
+<td>lines_between_types</td>
+<td>--lbt,--lines-between-types</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Combine As Imports</td>
+<td>Bool</td>
+<td>False</td>
+<td>combine_as_imports</td>
+<td>--ca,--combine-as</td>
+<td>Combines as imports on the same line.</td>
+</tr>
+<tr>
+<td>Combine Star</td>
+<td>Bool</td>
+<td>False</td>
+<td>combine_star</td>
+<td>--cs,--combine-star</td>
+<td>Ensures that if a star import is present, nothing else is imported from that namespace.</td>
+</tr>
+<tr>
+<td>Keep Direct And As Imports</td>
+<td>Bool</td>
+<td>True</td>
+<td>keep_direct_and_as_imports</td>
+<td>-k,--keep-direct-and-as</td>
+<td>Turns off default behavior that removes direct imports when as imports exist.</td>
+</tr>
+<tr>
+<td>Include Trailing Comma</td>
+<td>Bool</td>
+<td>False</td>
+<td>include_trailing_comma</td>
+<td>--tc,--trailing-comma</td>
+<td>Includes a trailing comma on multi line imports that include parentheses.</td>
+</tr>
+<tr>
+<td>From First</td>
+<td>Bool</td>
+<td>False</td>
+<td>from_first</td>
+<td>--ff,--from-first</td>
+<td>Switches the typical ordering preference, showing from imports first then straight ones.</td>
+</tr>
+<tr>
+<td>Verbose</td>
+<td>Bool</td>
+<td>False</td>
+<td>verbose</td>
+<td>-v,--verbose</td>
+<td>Shows verbose output, such as when files are skipped or when a check is successful.</td>
+</tr>
+<tr>
+<td>Quiet</td>
+<td>Bool</td>
+<td>False</td>
+<td>quiet</td>
+<td>-q,--quiet</td>
+<td>Shows extra quiet output, only errors are outputted.</td>
+</tr>
+<tr>
+<td>Force Adds</td>
+<td>Bool</td>
+<td>False</td>
+<td>force_adds</td>
+<td>--af,--force-adds</td>
+<td>Forces import adds even if the original file is empty.</td>
+</tr>
+<tr>
+<td>Force Alphabetical Sort Within Sections</td>
+<td>Bool</td>
+<td>False</td>
+<td>force_alphabetical_sort_within_sections</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Force Alphabetical Sort</td>
+<td>Bool</td>
+<td>False</td>
+<td>force_alphabetical_sort</td>
+<td>--fass,--force-alphabetical-sort-within-sections</td>
+<td>Force all imports to be sorted alphabetically within a section</td>
+</tr>
+<tr>
+<td>Force Grid Wrap</td>
+<td>Int</td>
+<td>0</td>
+<td>force_grid_wrap</td>
+<td>--fgw,--force-grid-wrap</td>
+<td>Force number of from imports (defaults to 2) to be grid wrapped regardless of line length</td>
+</tr>
+<tr>
+<td>Force Sort Within Sections</td>
+<td>Bool</td>
+<td>False</td>
+<td>force_sort_within_sections</td>
+<td>--fss,--force-sort-within-sections</td>
+<td>Force imports to be sorted by module, independent of import_type</td>
+</tr>
+<tr>
+<td>Lexicographical</td>
+<td>Bool</td>
+<td>False</td>
+<td>lexicographical</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Ignore Whitespace</td>
+<td>Bool</td>
+<td>False</td>
+<td>ignore_whitespace</td>
+<td>--ws,--ignore-whitespace</td>
+<td>Tells isort to ignore whitespace differences when --check-only is being used.</td>
+</tr>
+<tr>
+<td>No Lines Before</td>
+<td>Frozenset</td>
+<td>frozenset()</td>
+<td>no_lines_before</td>
+<td>--nlb,--no-lines-before</td>
+<td>Sections which should not be split with previous by empty lines</td>
+</tr>
+<tr>
+<td>No Inline Sort</td>
+<td>Bool</td>
+<td>False</td>
+<td>no_inline_sort</td>
+<td>--nis,--no-inline-sort</td>
+<td>Leaves <code>from</code> imports with multiple imports 'as-is' (e.g. <code>from foo import a, c ,b</code>).</td>
+</tr>
+<tr>
+<td>Ignore Comments</td>
+<td>Bool</td>
+<td>False</td>
+<td>ignore_comments</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Case Sensitive</td>
+<td>Bool</td>
+<td>False</td>
+<td>case_sensitive</td>
+<td>--case-sensitive</td>
+<td>Tells isort to include casing when sorting module names</td>
+</tr>
+<tr>
+<td>Sources</td>
+<td>Tuple</td>
+<td>()</td>
+<td>sources</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Virtual Env</td>
+<td>Str</td>
+<td></td>
+<td>virtual_env</td>
+<td>--virtual-env</td>
+<td>Virtual environment to use for determining whether a package is third-party</td>
+</tr>
+<tr>
+<td>Conda Env</td>
+<td>Str</td>
+<td></td>
+<td>conda_env</td>
+<td>--conda-env</td>
+<td>Conda environment to use for determining whether a package is third-party</td>
+</tr>
+<tr>
+<td>Ensure Newline Before Comments</td>
+<td>Bool</td>
+<td>False</td>
+<td>ensure_newline_before_comments</td>
+<td>-n,--ensure-newline-before-comments</td>
+<td>Inserts a blank line before a comment following an import.</td>
+</tr>
+<tr>
+<td>Directory</td>
+<td>Str</td>
+<td></td>
+<td>directory</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Profile</td>
+<td>Str</td>
+<td></td>
+<td>profile</td>
+<td>--profile</td>
+<td>Base profile type to use for configuration.</td>
+</tr>
+<tr>
+<td>Check</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>-c,--check-only,--check</td>
+<td>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</td>
+</tr>
+<tr>
+<td>Write To Stdout</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>-d,--stdout</td>
+<td>Force resulting output to stdout, instead of in-place.</td>
+</tr>
+<tr>
+<td>Show Diff</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>--df,--diff</td>
+<td>Prints a diff of all the changes isort would make to a file, instead of changing it in place</td>
+</tr>
+<tr>
+<td>Jobs</td>
+<td>Int</td>
+<td>None</td>
+<td><strong>Not Supported</strong></td>
+<td>-j,--jobs</td>
+<td>Number of files to process in parallel.</td>
+</tr>
+<tr>
+<td>Dont Order By Type</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>--dt,--dont-order-by-type</td>
+<td>Don't order imports by type in addition to alphabetically</td>
+</tr>
+<tr>
+<td>Settings Path</td>
+<td><em>Not Typed</em></td>
+<td>None</td>
+<td><strong>Not Supported</strong></td>
+<td>--sp,--settings-path,--settings-file,--settings</td>
+<td>Explicitly set the settings path or file instead of auto determining based on file location.</td>
+</tr>
+<tr>
+<td>Show Version</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>-V,--version</td>
+<td>Displays the currently installed version of isort.</td>
+</tr>
+<tr>
+<td>Vn</td>
+<td>Str</td>
+<td>==SUPPRESS==</td>
+<td><strong>Not Supported</strong></td>
+<td>--vn,--version-number</td>
+<td>Returns just the current version number without the logo</td>
+</tr>
+<tr>
+<td>Filter Files</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>--filter-files</td>
+<td>Tells isort to filter files even when they are explicitly passed in as part of the command</td>
+</tr>
+<tr>
+<td>Files</td>
+<td><em>Not Typed</em></td>
+<td>None</td>
+<td><strong>Not Supported</strong></td>
+<td></td>
+<td>One or more Python source files that need their imports sorted.</td>
+</tr>
+<tr>
+<td>Ask To Apply</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>--interactive</td>
+<td>Tells isort to apply changes interactively.</td>
+</tr>
+<tr>
+<td>Show Config</td>
+<td>Bool</td>
+<td>False</td>
+<td><strong>Not Supported</strong></td>
+<td>--show-config</td>
+<td>See isort's determined config, as well as sources of config options.</td>
+</tr>
+</tbody>
+</table>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../../../CHANGELOG/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Changelog
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                1. Contributing Guide
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.1",url:{base:"../../.."}})</script>
+      
+    
+  </body>
+</html>
