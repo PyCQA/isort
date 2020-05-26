@@ -15,9 +15,9 @@ COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Descriptio
 HEADER = f"""Configuration options for isort
 ========
 
-As a code formatter isort has opinions. However, it also allows you to also have your own. If your opinions disagree with those of isort,
+As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
-how you want your imports sorted.
+how you want your imports sorted, organized, and formatted.
 
 | {' | '.join(COLUMNS)} |
 | {' | '.join(["-" * len(column) for column in COLUMNS])} |
