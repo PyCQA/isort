@@ -45,7 +45,7 @@ def config_options() -> Generator[str, None, None]:
         cli = cli_actions.pop(name, None)
         if cli:
             cli_options = ",".join(cli.option_strings)
-            description = description or cli.help
+            description = description or cli.help or ""
         else:
             cli_options = "**Not Supported**"
         description = description.replace("\n", " ")
@@ -63,7 +63,7 @@ def config_options() -> Generator[str, None, None]:
         else:
             type_name = "*Not Typed*"
 
-        description = DESCRIPTIONS.get(name, cli.help).replace("\n", " ")
+        description = (DESCRIPTIONS.get(name, cli.help) or "").replace("\n", " ")
         yield f"|{human(name)}|{type_name}|{cli.default}|**Not Supported**|{','.join(cli.option_strings)}|{description}|\n"
 
 
