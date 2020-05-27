@@ -9,7 +9,8 @@ from isort.settings import _DEFAULT_SETTINGS as config
 OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
-HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number"}
+MD_NEWLINE = "  "
+HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String"}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]
@@ -20,8 +21,6 @@ As a code formatter isort has opinions. However, it also allows you to have your
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.
 
-| {' | '.join(COLUMNS)} |
-| {' | '.join(["-" * len(column) for column in COLUMNS])} |
 """
 parser = _build_arg_parser()
 
@@ -32,7 +31,7 @@ class ConfigOption:
     type: Type = str
     default: Any = ""
     config_name: str = "**Not Supported**"
-    cli_options: Iterable[str] = ("**Not Supported**")
+    cli_options: Iterable[str] = ("**Not Supported**", )
     description: str = "**No Description**"
 
     def __str__(self):
@@ -40,10 +39,18 @@ class ConfigOption:
             return ""
 
         description = DESCRIPTIONS.get(self.name, self.description).replace("\n", " ")
-        return (
-            f"|{human(self.name)}|{human(self.type.__name__)}|{self.default}|{self.config_name}"
-            f"|{','.join(self.cli_options)}|{description}|\n"
-        )
+        cli_options = "\n - ".join(self.cli_options)
+        return f"""
+## {human(self.name)}
+{self.description}
+
+**Type:** {human(self.type.__name__)}{MD_NEWLINE}
+**Default:** `{self.default}`{MD_NEWLINE}
+**Python & Config File Name:** {self.config_name}{MD_NEWLINE}
+**CLI Flags:**
+
+ - {cli_options}
+"""
 
 
 def human(name: str) -> str:
