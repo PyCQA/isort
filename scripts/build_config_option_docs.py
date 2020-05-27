@@ -1,7 +1,8 @@
 #! /bin/env python
 import os
-from typing import Generator
+from typing import Any, Generator, Type, Iterable
 
+from isort._future import dataclass, field
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
 
@@ -25,6 +26,26 @@ how you want your imports sorted, organized, and formatted.
 parser = _build_arg_parser()
 
 
+@dataclass(frozen=True)
+class ConfigOption:
+    name: str
+    type: Type = str
+    default: Any = ""
+    config_name: str = "**Not Supported**"
+    cli_options: Iterable[str] = ("**Not Supported**")
+    description: str = "**No Description**"
+
+    def __str__(self):
+        if self.name in IGNORED:
+            return ""
+
+        description = DESCRIPTIONS.get(self.name, self.description).replace("\n", " ")
+        return (
+            f"|{human(self.name)}|{human(self.type.__name__)}|{self.default}|{self.config_name}"
+            f"|{','.join(self.cli_options)}|{description}|\n"
+        )
+
+
 def human(name: str) -> str:
     if name in HUMAN_NAME:
         return HUMAN_NAME[name]
@@ -32,44 +53,41 @@ def human(name: str) -> str:
     return " ".join([part.capitalize() for part in name.replace("-", "_").split("_")])
 
 
-def config_options() -> Generator[str, None, None]:
+def config_options() -> Generator[ConfigOption, None, None]:
     cli_actions = {}
     for action in parser._actions:
         cli_actions[action.dest] = action
 
     for name, default in config.items():
-        if name in IGNORED:
-            continue
-
-        description = DESCRIPTIONS.get(name, "")
+        extra_kwargs = {}
 
         cli = cli_actions.pop(name, None)
         if cli:
-            cli_options = ",".join(cli.option_strings)
-            description = description or cli.help or ""
-        else:
-            cli_options = "**Not Supported**"
-        description = description.replace("\n", " ")
+            extra_kwargs["cli_options"] = cli.option_strings
+            if cli.help:
+                extra_kwargs["description"] = cli.help
 
-        yield f"|{human(name)}|{human(type(default).__name__)}|{default}|{name}|{cli_options}|{description}|\n"
+        yield ConfigOption(
+            name=name, type=type(default), default=default, config_name=name, **extra_kwargs
+        )
 
     for name, cli in cli_actions.items():
-        if name in IGNORED:
-            continue
-
+        extra_kwargs = {}
         if cli.type:
-            type_name = human(cli.type.__name__)
+            extra_kwargs["type"] = cli.type
         elif cli.default is not None:
-            type_name = human(type(cli.default).__name__)
-        else:
-            type_name = "*Not Typed*"
+            extra_kwargs["type"] = type(cli.default)
 
-        description = (DESCRIPTIONS.get(name, cli.help) or "").replace("\n", " ")
-        yield f"|{human(name)}|{type_name}|{cli.default}|**Not Supported**|{','.join(cli.option_strings)}|{description}|\n"
+        if cli.help:
+            extra_kwargs["description"] = cli.help
+
+        yield ConfigOption(
+            name=name, default=cli.default, cli_options=cli.option_strings, **extra_kwargs
+        )
 
 
 def document_text() -> str:
-    return f"{HEADER}{''.join(config_options())}"
+    return f"{HEADER}{''.join(str(config_option) for config_option in config_options())}"
 
 
 def write_document():
