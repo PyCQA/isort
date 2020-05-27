@@ -1859,7 +1859,7 @@ how you want your imports sorted, organized, and formatted.</p>
 <h2 id="skip">Skip</h2>
 <p>Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>frozenset({'.tox', 'venv', 'build', '.pants.d', 'node_modules', '.nox', 'buck-out', '_build', 'dist', '.git', '.eggs', '.mypy_cache', '.hg', '.venv'})</code><br />
+<strong>Default:</strong> <code>frozenset({'dist', '_build', '.eggs', '.hg', '.mypy_cache', '.pants.d', 'build', '.nox', 'node_modules', '.git', 'venv', '.venv', '.tox', 'buck-out'})</code><br />
 <strong>Python &amp; Config File Name:</strong> skip<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -1878,7 +1878,7 @@ how you want your imports sorted, organized, and formatted.</p>
 </ul>
 <h2 id="line-length">Line Length</h2>
 <p>The max length of an import line (used for wrapping long imports).</p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>79</code><br />
 <strong>Python &amp; Config File Name:</strong> line_length<br />
 <strong>CLI Flags:</strong></p>
@@ -1891,7 +1891,7 @@ how you want your imports sorted, organized, and formatted.</p>
 <h2 id="wrap-length">Wrap Length</h2>
 <p>Specifies how long lines that are wrapped should be, if not set line_length is used.
 NOTE: wrap_length must be LOWER than or equal to line_length.</p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> wrap_length<br />
 <strong>CLI Flags:</strong></p>
@@ -1961,7 +1961,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="known-standard-library">Known Standard Library</h2>
 <p>Force sortImports to recognize a module as part of the python standard library.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>frozenset({'gettext', 'calendar', 'sunau', 're', 'urllib', 'test', 'resource', 'html', 'platform', 'quopri', 'uu', 'shelve', 'zipfile', 'chunk', 'tokenize', 'turtle', 'imghdr', 'keyword', 'cmd', 'plistlib', 'struct', 'string', 'tarfile', 'ipaddress', 'encodings', 'webbrowser', 'difflib', 'copyreg', 'modulefinder', 'faulthandler', 'abc', 'code', 'netrc', 'gzip', 'binhex', 'fileinput', 'contextvars', 'smtplib', 'io', 'statistics', 'secrets', 'os', 'cgitb', 'grp', 'mmap', 'pyclbr', 'pathlib', 'heapq', 'winsound', 'cgi', 'pydoc', 'hmac', 'pkgutil', 'zlib', 'smtpd', 'distutils', 'pickle', 'codecs', 'math', 'lzma', 'unittest', 'email', 'dis', 'socket', 'tty', 'ssl', 'sysconfig', 'numbers', 'pdb', 'ossaudiodev', 'http', 'multiprocessing', 'pwd', 'shlex', 'socketserver', 'ctypes', 'mailbox', 'collections', 'sched', 'optparse', 'venv', 'builtins', 'site', 'dummy_threading', 'zipapp', 'imaplib', 'compileall', 'shutil', 'errno', 'cmath', 'argparse', 'pprint', 'telnetlib', 'enum', 'fpectl', 'poplib', 'time', 'csv', 'gc', 'select', 'codeop', 'nis', 'cProfile', 'warnings', 'asyncio', 'msilib', 'spwd', 'audioop', 'doctest', 'asyncore', 'ftplib', 'symbol', 'array', 'winreg', 'pipes', 'ensurepip', 'mailcap', 'typing', 'atexit', 'pstats', 'xdrlib', 'itertools', 'mimetypes', 'zipimport', 'aifc', 'rlcompleter', 'stringprep', 'textwrap', 'formatter', 'posix', 'tkinter', 'dbm', 'syslog', 'weakref', 'functools', 'linecache', 'datetime', 'curses', 'trace', 'pty', 'ast', 'nntplib', 'xml', 'decimal', 'turtledemo', 'profile', 'base64', 'filecmp', 'locale', 'readline', 'crypt', 'tabnanny', 'msvcrt', 'stat', 'glob', 'types', 'reprlib', 'wsgiref', 'json', 'lib2to3', 'py_compile', 'sndhdr', 'queue', 'uuid', 'threading', 'selectors', 'imp', 'asynchat', 'inspect', 'timeit', 'concurrent', 'bdb', 'getopt', 'unicodedata', 'termios', 'importlib', 'macpath', 'parser', 'wave', 'signal', 'sys', 'bisect', 'dataclasses', 'hashlib', 'fnmatch', 'pickletools', 'logging', 'sqlite3', 'tempfile', 'subprocess', 'traceback', 'tracemalloc', '_thread', 'xmlrpc', 'fractions', 'token', 'runpy', 'random', 'binascii', 'getpass', 'copy', 'configparser', 'fcntl', 'marshal', 'symtable', 'colorsys', 'operator', 'bz2', '_dummy_thread', 'contextlib'})</code><br />
+<strong>Default:</strong> <code>frozenset({'inspect', 'netrc', 'dis', 'lzma', 'array', 'fpectl', 'enum', 'poplib', 'time', 'platform', 'macpath', 'operator', 'encodings', 'modulefinder', 'mailcap', 'timeit', 'ctypes', 'bisect', 'pickletools', 'signal', 'calendar', 'tarfile', 'math', 'py_compile', 'pdb', 'atexit', 'socketserver', 'aifc', 'quopri', 'smtplib', 'asyncore', 'optparse', 'site', 'ensurepip', 'keyword', 'binascii', 'fcntl', 'queue', 're', 'reprlib', 'secrets', 'pydoc', 'cmd', 'rlcompleter', 'posix', 'code', 'typing', 'cgitb', 'colorsys', 'imghdr', 'formatter', 'os', 'shutil', 'socket', 'winreg', 'mimetypes', 'subprocess', 'sys', 'sndhdr', 'asynchat', 'http', 'bz2', 'parser', 'contextvars', 'webbrowser', 'zlib', 'numbers', 'fileinput', 'logging', 'pipes', 'shelve', 'pickle', 'pwd', 'tempfile', 'dummy_threading', 'stringprep', 'imp', 'hmac', 'telnetlib', 'unicodedata', 'nis', 'mailbox', 'crypt', 'tty', 'winsound', 'csv', 'argparse', 'pathlib', 'ossaudiodev', 'codecs', 'textwrap', 'wave', 'compileall', 'dbm', 'getopt', 'difflib', 'nntplib', 'pty', 'codeop', 'chunk', 'xdrlib', 'base64', 'string', 'uu', 'readline', 'dataclasses', 'smtpd', 'email', 'collections', 'lib2to3', 'getpass', 'resource', 'tkinter', 'heapq', 'syslog', 'pkgutil', 'functools', 'cmath', 'symbol', 'msvcrt', 'ast', 'selectors', 'contextlib', 'trace', 'doctest', 'turtle', 'zipfile', 'spwd', 'struct', 'gzip', 'pprint', 'select', 'concurrent', 'test', 'uuid', 'importlib', 'token', 'distutils', 'statistics', 'io', 'linecache', 'builtins', 'gc', 'termios', 'types', 'copy', 'profile', 'zipimport', 'fnmatch', 'urllib', 'shlex', 'imaplib', 'marshal', 'pyclbr', 'curses', 'symtable', 'hashlib', 'weakref', 'abc', '_dummy_thread', 'json', 'venv', 'filecmp', 'asyncio', 'unittest', 'tabnanny', 'sched', 'runpy', 'msilib', 'decimal', 'binhex', 'tokenize', 'html', 'xml', 'audioop', 'mmap', 'ftplib', 'xmlrpc', 'zipapp', 'wsgiref', 'turtledemo', 'pstats', 'errno', 'tracemalloc', 'sqlite3', 'multiprocessing', 'threading', 'faulthandler', 'stat', '_thread', 'locale', 'bdb', 'cgi', 'fractions', 'itertools', 'warnings', 'traceback', 'sunau', 'sysconfig', 'copyreg', 'gettext', 'ssl', 'ipaddress', 'configparser', 'glob', 'plistlib', 'random', 'grp', 'datetime', 'cProfile'})</code><br />
 <strong>Python &amp; Config File Name:</strong> known_standard_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -1970,7 +1970,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="known-other">Known Other</h2>
 <p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Dict<br />
+<p><strong>Type:</strong> Dictionary<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> known_other<br />
 <strong>CLI Flags:</strong></p>
@@ -2096,7 +2096,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="import-headings">Import Headings</h2>
 <p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Dict<br />
+<p><strong>Type:</strong> Dictionary<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_headings<br />
 <strong>CLI Flags:</strong></p>
@@ -2145,7 +2145,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="lines-after-imports">Lines After Imports</h2>
 <p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>-1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_after_imports<br />
 <strong>CLI Flags:</strong></p>
@@ -2155,7 +2155,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="lines-between-sections">Lines Between Sections</h2>
 <p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_between_sections<br />
 <strong>CLI Flags:</strong></p>
@@ -2164,7 +2164,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="lines-between-types">Lines Between Types</h2>
 <p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_between_types<br />
 <strong>CLI Flags:</strong></p>
@@ -2273,7 +2273,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="force-grid-wrap">Force Grid Wrap</h2>
 <p>Force number of from imports (defaults to 2) to be grid wrapped regardless of line length</p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> force_grid_wrap<br />
 <strong>CLI Flags:</strong></p>
@@ -2436,7 +2436,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="jobs">Jobs</h2>
 <p>Number of files to process in parallel.</p>
-<p><strong>Type:</strong> Int<br />
+<p><strong>Type:</strong> Integer<br />
 <strong>Default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
