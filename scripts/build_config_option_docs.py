@@ -14,7 +14,7 @@ HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "St
 DESCRIPTIONS = {}
 IGNORED = {"source", "help"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]
-HEADER = f"""Configuration options for isort
+HEADER = """Configuration options for isort
 ========
 
 As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
@@ -38,7 +38,6 @@ class ConfigOption:
         if self.name in IGNORED:
             return ""
 
-        description = DESCRIPTIONS.get(self.name, self.description).replace("\n", " ")
         cli_options = "\n - ".join(self.cli_options)
         return f"""
 ## {human(self.name)}
