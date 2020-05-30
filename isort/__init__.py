@@ -6,4 +6,4 @@ from .api import check_file
 from .api import check_imports as check_stream
 from .api import sort_code_string as code
 from .api import sort_file as file
-from .api import sort_imports as stream
+from .api import sort_stream as stream

@@ -599,7 +599,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(QUICK_GUIDE)
         return
     elif file_names == ["-"] and not show_config:
-        api.sorted_imports(
+        api.sort_stream(
             input_stream=sys.stdin if stdin is None else stdin,
             output_stream=sys.stdout,
             **arguments,

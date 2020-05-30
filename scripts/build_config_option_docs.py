@@ -1,6 +1,6 @@
 #! /bin/env python
 import os
-from typing import Any, Generator, Type, Iterable
+from typing import Any, Generator, Iterable, Type
 
 from isort._future import dataclass, field
 from isort.main import _build_arg_parser
@@ -31,7 +31,7 @@ class ConfigOption:
     type: Type = str
     default: Any = ""
     config_name: str = "**Not Supported**"
-    cli_options: Iterable[str] = ("**Not Supported**", )
+    cli_options: Iterable[str] = ("**Not Supported**",)
     description: str = "**No Description**"
 
     def __str__(self):

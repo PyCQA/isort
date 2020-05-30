@@ -66,12 +66,12 @@ def sort_code_string(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
-    - ** **config_kwargs**: Any config modifications.
+    - ****config_kwargs**: Any config modifications.
     """
     input_stream = StringIO(code)
     output_stream = StringIO()
     config = _config(path=file_path, config=config, **config_kwargs)
-    sorted_imports(
+    sort_stream(
         input_stream,
         output_stream,
         extension=extension,
@@ -92,6 +92,17 @@ def check_code_string(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
+    """Checks the order, format, and categorization of imports within the provided code string.
+    Returns `True` if everything is correct, otherwise `False`.
+
+    - **code**: The string of code with imports that need to be sorted.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ****config_kwargs**: Any config modifications.
+    """
     config = _config(path=file_path, config=config, **config_kwargs)
     return check_imports(
         StringIO(code),
@@ -103,7 +114,7 @@ def check_code_string(
     )
 
 
-def sorted_imports(
+def sort_stream(
     input_stream: TextIO,
     output_stream: TextIO,
     extension: str = "py",
@@ -127,7 +138,7 @@ def sorted_imports(
             raise ExistingSyntaxErrors(content_source)
 
     try:
-        changed = sort_imports(input_stream, output_stream, extension=extension, config=config)
+        changed = _sort_imports(input_stream, output_stream, extension=extension, config=config)
     except FileSkipComment:
         raise FileSkipComment(content_source)
 
@@ -153,7 +164,7 @@ def check_imports(
 ) -> bool:
     config = _config(path=file_path, config=config, **config_kwargs)
 
-    changed: bool = sorted_imports(
+    changed: bool = sort_stream(
         input_stream=input_stream,
         output_stream=Empty,
         extension=extension,
@@ -172,7 +183,7 @@ def check_imports(
             output_stream = StringIO()
             input_stream.seek(0)
             file_contents = input_stream.read()
-            sorted_imports(
+            sort_stream(
                 input_stream=StringIO(file_contents),
                 output_stream=output_stream,
                 extension=extension,
@@ -188,7 +199,7 @@ def check_imports(
         return False
 
 
-def sort_imports(
+def _sort_imports(
     input_stream: TextIO,
     output_stream: TextIO,
     extension: str = "py",
@@ -475,7 +486,7 @@ def sort_file(
         changed: bool = False
         try:
             if write_to_stdout:
-                changed = sorted_imports(
+                changed = sort_stream(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
                     config=config,
@@ -490,7 +501,7 @@ def sort_file(
                         "w", encoding=source_file.encoding, newline=""
                     ) as output_stream:
                         shutil.copymode(filename, tmp_file)
-                        changed = sorted_imports(
+                        changed = sort_stream(
                             input_stream=source_file.stream,
                             output_stream=output_stream,
                             config=config,
