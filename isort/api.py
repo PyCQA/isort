@@ -59,6 +59,15 @@ def sort_code_string(
     disregard_skip: bool = False,
     **config_kwargs,
 ):
+    """Sorts any imports within the provided code string, returning a new string with them sorted.
+
+    - **code**: The string of code with imports that need to be sorted.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ** **config_kwargs**: Any config modifications.
+    """
     input_stream = StringIO(code)
     output_stream = StringIO()
     config = _config(path=file_path, config=config, **config_kwargs)
