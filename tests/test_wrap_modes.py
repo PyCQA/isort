@@ -47,3 +47,20 @@ def test_auto_saved():
         )
         == "\U00092452-\U000bf82c\x0c\U0004608f\x10% NOQA"
     )
+    assert (
+        wrap_modes.noqa(
+            **{
+                "comment_prefix": '\x12\x07\U0009e994🁣"\U000ae787\x0e',
+                "comments": ["\x00\U0001ae99\U0005c3e7\U0004d08e", "\x1e", "", ""],
+                "imports": ["*"],
+                "include_trailing_comma": True,
+                "indent": "",
+                "line_length": 31492,
+                "line_separator": "\U00071610\U0005bfbc",
+                "remove_comments": False,
+                "statement": "",
+                "white_space": "\x08\x01ⷓ\x16%\U0006cd8c",
+            }
+        )
+        == '*\x12\x07\U0009e994🁣"\U000ae787\x0e \x00\U0001ae99\U0005c3e7\U0004d08e \x1e  '
+    )
