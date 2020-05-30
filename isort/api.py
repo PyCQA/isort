@@ -104,7 +104,7 @@ def check_code_string(
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
-    return check_imports(
+    return check_stream(
         StringIO(code),
         show_diff=show_diff,
         extension=extension,
@@ -123,6 +123,17 @@ def sort_stream(
     disregard_skip: bool = False,
     **config_kwargs,
 ):
+    """Sorts any imports within the provided code stream, outputs to the provided output stream.
+    Directly returns nothing.
+
+    - **input_stream**: The stream of code with imports that need to be sorted.
+    - **output_stream**: The stream where sorted imports should be written to.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ****config_kwargs**: Any config modifications.
+    """
     config = _config(path=file_path, config=config, **config_kwargs)
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:
@@ -153,7 +164,7 @@ def sort_stream(
     return changed
 
 
-def check_imports(
+def check_stream(
     input_stream: TextIO,
     show_diff: bool = False,
     extension: str = "py",
@@ -460,7 +471,7 @@ def check_file(
     **config_kwargs,
 ) -> bool:
     with io.File.read(filename) as source_file:
-        return check_imports(
+        return check_stream(
             source_file.stream,
             show_diff=show_diff,
             extension=source_file.extension or "py",
