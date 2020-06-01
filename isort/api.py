@@ -173,6 +173,17 @@ def check_stream(
     disregard_skip: bool = False,
     **config_kwargs,
 ) -> bool:
+    """Checks any imports within the provided code stream, returning `False` if any unsorted or
+    incorrectly imports are found or `True` if no problems are identified.
+
+    - **input_stream**: The stream of code with imports that need to be sorted.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ****config_kwargs**: Any config modifications.
+    """
     config = _config(path=file_path, config=config, **config_kwargs)
 
     changed: bool = sort_stream(
@@ -470,6 +481,17 @@ def check_file(
     disregard_skip: bool = True,
     **config_kwargs,
 ) -> bool:
+    """Checks any imports within the provided file, returning `False` if any unsorted or
+    incorrectly imports are found or `True` if no problems are identified.
+
+    - **filename**: The name or Path of the file to check.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ****config_kwargs**: Any config modifications.
+    """
     with io.File.read(filename) as source_file:
         return check_stream(
             source_file.stream,
@@ -493,6 +515,18 @@ def sort_file(
     write_to_stdout: bool = False,
     **config_kwargs,
 ):
+    """Sorts and formats any groups of imports imports within the provided file or Path.
+
+    - **filename**: The name or Path of the file to format.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - **ask_to_apply**: If `True`, prompt before applying any changes.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **write_to_stdout**: If `True`, write to stdout instead of the input file.
+    - ****config_kwargs**: Any config modifications.
+    """
     with io.File.read(filename) as source_file:
         changed: bool = False
         try:
