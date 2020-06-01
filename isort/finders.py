@@ -265,7 +265,7 @@ class ReqsBaseFinder(BaseFinder):
             Flask-RESTFul -> flask_restful
         """
         if self.mapping:
-            name = self.mapping.get(name, name)
+            name = self.mapping.get(name.replace("-","_"), name)
         return name.lower().replace("-", "_")
 
     def find(self, module_name: str) -> Optional[str]:
