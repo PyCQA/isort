@@ -28,29 +28,6 @@ IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMP
 COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
 
 
-def _config(
-    path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
-) -> Config:
-    if path:
-        if (
-            config is DEFAULT_CONFIG
-            and "settings_path" not in config_kwargs
-            and "settings_file" not in config_kwargs
-        ):
-            config_kwargs["settings_path"] = path
-
-    if config_kwargs:
-        if config is not DEFAULT_CONFIG:
-            raise ValueError(
-                "You can either specify custom configuration options using kwargs or "
-                "passing in a Config object. Not Both!"
-            )
-
-        config = Config(**config_kwargs)
-
-    return config
-
-
 def sort_code_string(
     code: str,
     extension="py",
@@ -219,6 +196,137 @@ def check_stream(
                 file_input=file_contents, file_output=output_stream.read(), file_path=file_path
             )
         return False
+
+
+def check_file(
+    filename: Union[str, Path],
+    show_diff: bool = False,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = True,
+    **config_kwargs,
+) -> bool:
+    """Checks any imports within the provided file, returning `False` if any unsorted or
+    incorrectly imports are found or `True` if no problems are identified.
+
+    - **filename**: The name or Path of the file to check.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - ****config_kwargs**: Any config modifications.
+    """
+    with io.File.read(filename) as source_file:
+        return check_stream(
+            source_file.stream,
+            show_diff=show_diff,
+            extension=source_file.extension or "py",
+            config=config,
+            file_path=file_path or source_file.path,
+            disregard_skip=disregard_skip,
+            **config_kwargs,
+        )
+
+
+def sort_file(
+    filename: Union[str, Path],
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    disregard_skip: bool = True,
+    ask_to_apply: bool = False,
+    show_diff: bool = False,
+    write_to_stdout: bool = False,
+    **config_kwargs,
+):
+    """Sorts and formats any groups of imports imports within the provided file or Path.
+
+    - **filename**: The name or Path of the file to format.
+    - **extension**: The file extension that contains the code.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - **ask_to_apply**: If `True`, prompt before applying any changes.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **write_to_stdout**: If `True`, write to stdout instead of the input file.
+    - ****config_kwargs**: Any config modifications.
+    """
+    with io.File.read(filename) as source_file:
+        changed: bool = False
+        try:
+            if write_to_stdout:
+                changed = sort_stream(
+                    input_stream=source_file.stream,
+                    output_stream=sys.stdout,
+                    config=config,
+                    file_path=file_path or source_file.path,
+                    disregard_skip=disregard_skip,
+                    **config_kwargs,
+                )
+            else:
+                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+                try:
+                    with tmp_file.open(
+                        "w", encoding=source_file.encoding, newline=""
+                    ) as output_stream:
+                        shutil.copymode(filename, tmp_file)
+                        changed = sort_stream(
+                            input_stream=source_file.stream,
+                            output_stream=output_stream,
+                            config=config,
+                            file_path=file_path or source_file.path,
+                            disregard_skip=disregard_skip,
+                            **config_kwargs,
+                        )
+                    if changed:
+                        if show_diff or ask_to_apply:
+                            source_file.stream.seek(0)
+                            show_unified_diff(
+                                file_input=source_file.stream.read(),
+                                file_output=tmp_file.read_text(encoding=source_file.encoding),
+                                file_path=file_path or source_file.path,
+                            )
+                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(
+                                str(source_file.path)
+                            ):
+                                return
+                        source_file.stream.close()
+                        tmp_file.replace(source_file.path)
+                        if not config.quiet:
+                            print(f"Fixing {source_file.path}")
+                finally:
+                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                        tmp_file.unlink()
+                    except FileNotFoundError:
+                        pass
+        except ExistingSyntaxErrors:
+            warn("{file_path} unable to sort due to existing syntax errors")
+        except IntroducedSyntaxErrors:  # pragma: no cover
+            warn("{file_path} unable to sort as isort introduces new syntax errors")
+
+
+def _config(
+    path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
+) -> Config:
+    if path:
+        if (
+            config is DEFAULT_CONFIG
+            and "settings_path" not in config_kwargs
+            and "settings_file" not in config_kwargs
+        ):
+            config_kwargs["settings_path"] = path
+
+    if config_kwargs:
+        if config is not DEFAULT_CONFIG:
+            raise ValueError(
+                "You can either specify custom configuration options using kwargs or "
+                "passing in a Config object. Not Both!"
+            )
+
+        config = Config(**config_kwargs)
+
+    return config
 
 
 def _sort_imports(
@@ -471,111 +579,3 @@ def _sort_imports(
                 not_imports = False
 
     return made_changes
-
-
-def check_file(
-    filename: Union[str, Path],
-    show_diff: bool = False,
-    config: Config = DEFAULT_CONFIG,
-    file_path: Optional[Path] = None,
-    disregard_skip: bool = True,
-    **config_kwargs,
-) -> bool:
-    """Checks any imports within the provided file, returning `False` if any unsorted or
-    incorrectly imports are found or `True` if no problems are identified.
-
-    - **filename**: The name or Path of the file to check.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
-    - **extension**: The file extension that contains the code.
-    - **config**: The config object to use when sorting imports.
-    - **file_path**: The disk location where the code string was pulled from.
-    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
-    - ****config_kwargs**: Any config modifications.
-    """
-    with io.File.read(filename) as source_file:
-        return check_stream(
-            source_file.stream,
-            show_diff=show_diff,
-            extension=source_file.extension or "py",
-            config=config,
-            file_path=file_path or source_file.path,
-            disregard_skip=disregard_skip,
-            **config_kwargs,
-        )
-
-
-def sort_file(
-    filename: Union[str, Path],
-    extension: str = "py",
-    config: Config = DEFAULT_CONFIG,
-    file_path: Optional[Path] = None,
-    disregard_skip: bool = True,
-    ask_to_apply: bool = False,
-    show_diff: bool = False,
-    write_to_stdout: bool = False,
-    **config_kwargs,
-):
-    """Sorts and formats any groups of imports imports within the provided file or Path.
-
-    - **filename**: The name or Path of the file to format.
-    - **extension**: The file extension that contains the code.
-    - **config**: The config object to use when sorting imports.
-    - **file_path**: The disk location where the code string was pulled from.
-    - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
-    - **ask_to_apply**: If `True`, prompt before applying any changes.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
-    - **write_to_stdout**: If `True`, write to stdout instead of the input file.
-    - ****config_kwargs**: Any config modifications.
-    """
-    with io.File.read(filename) as source_file:
-        changed: bool = False
-        try:
-            if write_to_stdout:
-                changed = sort_stream(
-                    input_stream=source_file.stream,
-                    output_stream=sys.stdout,
-                    config=config,
-                    file_path=file_path or source_file.path,
-                    disregard_skip=disregard_skip,
-                    **config_kwargs,
-                )
-            else:
-                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
-                try:
-                    with tmp_file.open(
-                        "w", encoding=source_file.encoding, newline=""
-                    ) as output_stream:
-                        shutil.copymode(filename, tmp_file)
-                        changed = sort_stream(
-                            input_stream=source_file.stream,
-                            output_stream=output_stream,
-                            config=config,
-                            file_path=file_path or source_file.path,
-                            disregard_skip=disregard_skip,
-                            **config_kwargs,
-                        )
-                    if changed:
-                        if show_diff or ask_to_apply:
-                            source_file.stream.seek(0)
-                            show_unified_diff(
-                                file_input=source_file.stream.read(),
-                                file_output=tmp_file.read_text(encoding=source_file.encoding),
-                                file_path=file_path or source_file.path,
-                            )
-                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(
-                                str(source_file.path)
-                            ):
-                                return
-                        source_file.stream.close()
-                        tmp_file.replace(source_file.path)
-                        if not config.quiet:
-                            print(f"Fixing {source_file.path}")
-                finally:
-                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                        tmp_file.unlink()
-                    except FileNotFoundError:
-                        pass
-        except ExistingSyntaxErrors:
-            warn("{file_path} unable to sort due to existing syntax errors")
-        except IntroducedSyntaxErrors:  # pragma: no cover
-            warn("{file_path} unable to sort as isort introduces new syntax errors")
