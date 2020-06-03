@@ -161,7 +161,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--builtin",
         dest="known_standard_library",
         action="append",
-        help="Force sortImports to recognize a module as part of the python standard library.",
+        help="Force isort to recognize a module as part of the python standard library.",
     )
     parser.add_argument(
         "-c",
@@ -221,7 +221,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--future",
         dest="known_future_library",
         action="append",
-        help="Force sortImports to recognize a module as part "
+        help="Force isort to recognize a module as part "
         "of the future compatibility libraries.",
     )
     parser.add_argument(
@@ -332,7 +332,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--thirdparty",
         dest="known_third_party",
         action="append",
-        help="Force sortImports to recognize a module as being part of a third party library.",
+        help="Force isort to recognize a module as being part of a third party library.",
     )
     parser.add_argument(
         "--ot",
@@ -353,7 +353,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--project",
         dest="known_first_party",
         action="append",
-        help="Force sortImports to recognize a module as being part of the current python project.",
+        help="Force isort to recognize a module as being part of the current python project.",
     )
     parser.add_argument(
         "-q",
