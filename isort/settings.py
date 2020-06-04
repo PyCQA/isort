@@ -161,6 +161,7 @@ class _Config:
     ensure_newline_before_comments: bool = False
     directory: str = ""
     profile: str = ""
+    src_paths: FrozenSet[Path] = frozenset()
 
     def __post_init__(self):
         py_version = self.py_version
@@ -297,6 +298,9 @@ class Config(_Config):
             for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
+
+        if "src_paths" not in combined_config:
+            combined_config["src_paths"] = frozenset((Path.cwd(),))
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 

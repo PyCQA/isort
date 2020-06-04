@@ -14,6 +14,7 @@ class ISortCommand(setuptools.Command):
     """The :class:`ISortCommand` class is used by setuptools to perform
     imports checks on registered modules.
     """
+
     description = "Run isort on modules registered in setuptools"
     user_options: List[Any] = []
 

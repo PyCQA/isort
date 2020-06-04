@@ -567,6 +567,8 @@ def _preconvert(item):
         return list(item)
     elif isinstance(item, WrapModes):
         return item.name
+    elif isinstance(item, Path):
+        return str(item)
     else:
         raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
