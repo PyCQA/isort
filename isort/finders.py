@@ -186,10 +186,14 @@ class PathFinder(BaseFinder):
                     return sections.STDLIB
                 elif self.conda_env and self.conda_env in prefix:
                     return sections.THIRDPARTY
-                if os.getcwd() in package_path:
-                    return sections.FIRSTPARTY
-                elif os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
+
+                for src_path in self.config.src_paths:
+                    if str(src_path.absolute) in os.path.abspath(package_path):
+                        return sections.FIRSTPARTY
+
+                if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
                     return sections.STDLIB  # pragma: no cover - edge case for one OS. Hard to test.
+
                 return self.config.default_section
         return None
 
