@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -85,6 +86,13 @@ class TestPathFinder(AbstractTestFinder):
     def test_default_section(self, tmpdir):
         tmpdir.join("file.py").write("import b\nimport a\n")
         assert self.kind(settings.Config(default_section="CUSTOM"), tmpdir).find("file") == "CUSTOM"
+
+    def test_src_paths(self, tmpdir):
+        tmpdir.join("file.py").write("import b\nimport a\n")
+        assert (
+            self.kind(settings.Config(src_paths=[Path(str(tmpdir))]), tmpdir).find("file")
+            == "FIRSTPARTY"
+        )
 
 
 class TestPipfileFinder(AbstractTestFinder):
