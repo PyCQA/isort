@@ -135,6 +135,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument(
+        "--src",
+        "--src-path",
+        dest="source_paths",
+        action="append",
+        help="Add an explicitly defined source path "
+        "(modules within src paths have their imports automatically catorgorized as first_party).",
+    )
+    parser.add_argument(
         "-a",
         "--add-import",
         dest="add_imports",
