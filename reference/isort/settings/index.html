@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.6.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-4.6.3">
     
     
       
@@ -1291,6 +1291,8 @@
 
     <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
+    <span class="n">src_paths</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -1522,6 +1524,10 @@
                 <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{IMPORT_HEADING_PREFIX}{import_heading_key}&quot;</span><span class="p">)</span>
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;import_headings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_headings</span>
+
+        <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
+
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),))</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -2077,6 +2083,10 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;import_headings&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_headings</span><span class="w"></span>
 
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">(),))</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span><span class="w"> </span><span class="o">**</span><span class="n">combined_config</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">is_skipped</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="k">Path</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">bool</span><span class="p">:</span><span class="w"></span>
@@ -2348,6 +2358,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">src_paths</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">use_parentheses</span>
 </code></pre></div>
 
@@ -2502,7 +2516,7 @@ dynamically determined later on.</p>
     
       <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.1",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"1.1.2",url:{base:"../../.."}})</script>
       
     
   </body>

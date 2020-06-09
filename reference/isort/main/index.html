@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.6.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-4.6.3">
     
     
       
@@ -1240,6 +1240,22 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--src&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--src-path&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;source_paths&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Add an explicitly defined source path &quot;</span>
+
+        <span class="s2">&quot;(modules within src paths have their imports automatically catorgorized as first_party).&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
 
         <span class="s2">&quot;--add-import&quot;</span><span class="p">,</span>
@@ -2096,6 +2112,10 @@
 
         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span>
 
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unserializable object {} of type {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
@@ -2148,7 +2168,7 @@
 
     <span class="k">elif</span> <span class="n">file_names</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">show_config</span><span class="p">:</span>
 
-        <span class="n">api</span><span class="o">.</span><span class="n">sorted_imports</span><span class="p">(</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
 
             <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
 
@@ -2504,7 +2524,7 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">[</span><span class="n">&quot;-&quot;</span><span class="o">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">show_config</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">api</span><span class="p">.</span><span class="n">sorted_imports</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
 
@@ -2878,7 +2898,7 @@
     
       <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.1",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"1.1.2",url:{base:"../../.."}})</script>
       
     
   </body>
