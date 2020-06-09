@@ -32,7 +32,7 @@ Force specific imports to the top of their appropriate section.
 Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'.tox', 'venv', 'build', '.pants.d', 'node_modules', '.nox', 'buck-out', '_build', 'dist', '.git', '.eggs', '.mypy_cache', '.hg', '.venv'})`  
+**Default:** `frozenset({'dist', '.git', 'buck-out', '.nox', '.eggs', '_build', '.venv', '.tox', 'build', 'node_modules', 'venv', '.pants.d', '.hg', '.mypy_cache'})`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -144,7 +144,7 @@ Force sortImports to recognize a module as being part of the current python proj
 Force sortImports to recognize a module as part of the python standard library.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'gettext', 'calendar', 'sunau', 're', 'urllib', 'test', 'resource', 'html', 'platform', 'quopri', 'uu', 'shelve', 'zipfile', 'chunk', 'tokenize', 'turtle', 'imghdr', 'keyword', 'cmd', 'plistlib', 'struct', 'string', 'tarfile', 'ipaddress', 'encodings', 'webbrowser', 'difflib', 'copyreg', 'modulefinder', 'faulthandler', 'abc', 'code', 'netrc', 'gzip', 'binhex', 'fileinput', 'contextvars', 'smtplib', 'io', 'statistics', 'secrets', 'os', 'cgitb', 'grp', 'mmap', 'pyclbr', 'pathlib', 'heapq', 'winsound', 'cgi', 'pydoc', 'hmac', 'pkgutil', 'zlib', 'smtpd', 'distutils', 'pickle', 'codecs', 'math', 'lzma', 'unittest', 'email', 'dis', 'socket', 'tty', 'ssl', 'sysconfig', 'numbers', 'pdb', 'ossaudiodev', 'http', 'multiprocessing', 'pwd', 'shlex', 'socketserver', 'ctypes', 'mailbox', 'collections', 'sched', 'optparse', 'venv', 'builtins', 'site', 'dummy_threading', 'zipapp', 'imaplib', 'compileall', 'shutil', 'errno', 'cmath', 'argparse', 'pprint', 'telnetlib', 'enum', 'fpectl', 'poplib', 'time', 'csv', 'gc', 'select', 'codeop', 'nis', 'cProfile', 'warnings', 'asyncio', 'msilib', 'spwd', 'audioop', 'doctest', 'asyncore', 'ftplib', 'symbol', 'array', 'winreg', 'pipes', 'ensurepip', 'mailcap', 'typing', 'atexit', 'pstats', 'xdrlib', 'itertools', 'mimetypes', 'zipimport', 'aifc', 'rlcompleter', 'stringprep', 'textwrap', 'formatter', 'posix', 'tkinter', 'dbm', 'syslog', 'weakref', 'functools', 'linecache', 'datetime', 'curses', 'trace', 'pty', 'ast', 'nntplib', 'xml', 'decimal', 'turtledemo', 'profile', 'base64', 'filecmp', 'locale', 'readline', 'crypt', 'tabnanny', 'msvcrt', 'stat', 'glob', 'types', 'reprlib', 'wsgiref', 'json', 'lib2to3', 'py_compile', 'sndhdr', 'queue', 'uuid', 'threading', 'selectors', 'imp', 'asynchat', 'inspect', 'timeit', 'concurrent', 'bdb', 'getopt', 'unicodedata', 'termios', 'importlib', 'macpath', 'parser', 'wave', 'signal', 'sys', 'bisect', 'dataclasses', 'hashlib', 'fnmatch', 'pickletools', 'logging', 'sqlite3', 'tempfile', 'subprocess', 'traceback', 'tracemalloc', '_thread', 'xmlrpc', 'fractions', 'token', 'runpy', 'random', 'binascii', 'getpass', 'copy', 'configparser', 'fcntl', 'marshal', 'symtable', 'colorsys', 'operator', 'bz2', '_dummy_thread', 'contextlib'})`  
+**Default:** `frozenset({'distutils', 'builtins', 'pickle', 'compileall', 'tty', 'test', 'winsound', 'telnetlib', 'sysconfig', 'aifc', 'socketserver', 'calendar', 'bz2', 'sndhdr', 'codecs', 'errno', 'turtledemo', 'winreg', 'sunau', 'dbm', 'configparser', 'lib2to3', 'webbrowser', 'array', 'code', 'collections', 'quopri', 'imp', 'sys', 'textwrap', 'dummy_threading', 'inspect', 'shelve', 'itertools', 'smtpd', 'heapq', 'optparse', 'cgitb', 'wsgiref', 'mailcap', 'fileinput', 'tempfile', 'copyreg', 'pkgutil', 'json', 'importlib', 'zipapp', 'marshal', 'parser', 'select', 'ssl', 'enum', 'grp', 'crypt', 'abc', 'dataclasses', '_dummy_thread', 'email', 'getopt', 'logging', 'types', 'fcntl', 'imghdr', 'poplib', 'asyncore', 'functools', 'cgi', 'bdb', 'bisect', 'typing', 'mailbox', 're', 'smtplib', 'pathlib', 'reprlib', 'gettext', 'codeop', 'tracemalloc', 'unittest', 'termios', 'tkinter', 'colorsys', 'cProfile', 'keyword', 'queue', 'unicodedata', 'profile', 'shutil', 'imaplib', 'formatter', 'difflib', 'base64', 'io', 'getpass', 'pyclbr', 'weakref', 'numbers', 'pwd', 'nntplib', 'fractions', 'gzip', 'encodings', 'glob', 'fpectl', 'msvcrt', 'hashlib', 'html', 'http', 'xml', 'tokenize', 'signal', 'subprocess', 'xdrlib', 'shlex', 'pdb', 'plistlib', 'pty', 'threading', 'struct', 'fnmatch', 'syslog', 'tarfile', 'doctest', 'tabnanny', 'resource', 'stat', 'zlib', 'spwd', 'locale', 'macpath', 'random', 'ast', 'pipes', 'uu', 'pprint', 'statistics', 'cmd', 'warnings', 'sqlite3', 'mmap', 'posix', 'token', 'decimal', 'multiprocessing', 'contextlib', 'mimetypes', 'binhex', 'site', 'asyncio', 'modulefinder', 'runpy', 'wave', 'os', 'netrc', 'pstats', 'gc', 'venv', 'asynchat', 'platform', 'argparse', 'chunk', 'string', 'readline', 'selectors', 'ctypes', 'hmac', 'turtle', 'rlcompleter', 'filecmp', 'csv', 'msilib', 'zipimport', 'audioop', 'stringprep', 'zipfile', 'cmath', 'ipaddress', 'time', 'socket', 'math', 'lzma', 'ensurepip', 'nis', 'pickletools', 'linecache', 'trace', 'uuid', 'traceback', 'pydoc', 'symbol', 'faulthandler', '_thread', 'operator', 'timeit', 'ftplib', 'ossaudiodev', 'dis', 'concurrent', 'binascii', 'symtable', 'copy', 'sched', 'curses', 'contextvars', 'atexit', 'xmlrpc', 'datetime', 'secrets', 'py_compile', 'urllib'})`  
 **Python & Config File Name:** known_standard_library  
 **CLI Flags:**
 
@@ -630,6 +630,27 @@ Base profile type to use for configuration.
 **CLI Flags:**
 
  - --profile
+
+## Src Paths
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** src_paths  
+**CLI Flags:**
+
+ - **Not Supported**
+
+## Source Paths
+Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+ - --src
+ - --src-path
 
 ## Check
 Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.
