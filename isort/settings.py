@@ -300,7 +300,11 @@ class Config(_Config):
             combined_config["import_headings"] = import_headings
 
         if "src_paths" not in combined_config:
-            combined_config["src_paths"] = frozenset((Path.cwd(),))
+            combined_config["src_paths"] = frozenset((Path.cwd().absolute(),))
+        else:
+            combined_config["src_paths"] = frozenset(
+                path.absolute() for path in combined_config["src_paths"]
+            )
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
