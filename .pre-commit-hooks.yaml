@@ -3,4 +3,5 @@
     entry: isort
     require_serial: true
     language: python
+    files: \.py$
     types: [python]
