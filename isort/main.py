@@ -571,7 +571,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
 
 def _preconvert(item):
     """Preconverts objects from native types into JSONifyiable types"""
-    if isinstance(item, frozenset):
+    if isinstance(item, frozenset) or isinstance(item, set):
         return list(item)
     elif isinstance(item, WrapModes):
         return item.name
@@ -630,6 +630,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
+
+    src_paths = config_dict.setdefault("src_paths", set())
+    for file_name in file_names:
+        if os.path.isdir(file_name):
+            src_paths.add(Path(file_name).absolute())
+        else:
+            src_paths.add(Path(file_name).parent.absolute())
+
     config = Config(**config_dict)
     if show_config:
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
