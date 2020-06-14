@@ -10,6 +10,7 @@ from abc import ABCMeta, abstractmethod
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
+from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, Tuple, Type
 
 from . import sections
@@ -166,6 +167,7 @@ class PathFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         for prefix in self.paths:
             package_path = "/".join((prefix, module_name.split(".")[0]))
+            path_obj = Path(package_path).resolve()
             is_module = (
                 exists_case_sensitive(package_path + ".py")
                 or any(
@@ -187,7 +189,7 @@ class PathFinder(BaseFinder):
                 elif self.conda_env and self.conda_env in prefix:
                     return sections.THIRDPARTY
                 for src_path in self.config.src_paths:
-                    if str(src_path) in os.path.abspath(package_path):
+                    if src_path in path_obj.parents and not self.config.is_skipped(path_obj):
                         return sections.FIRSTPARTY
 
                 if os.path.normcase(prefix).startswith(self.stdlib_lib_prefix):
