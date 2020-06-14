@@ -634,9 +634,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     src_paths = config_dict.setdefault("src_paths", set())
     for file_name in file_names:
         if os.path.isdir(file_name):
-            src_paths.add(Path(file_name).absolute())
+            src_paths.add(Path(file_name).resolve())
         else:
-            src_paths.add(Path(file_name).parent.absolute())
+            src_paths.add(Path(file_name).parent.resolve())
 
     config = Config(**config_dict)
     if show_config:
