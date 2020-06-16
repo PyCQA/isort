@@ -162,6 +162,7 @@ class _Config:
     directory: str = ""
     profile: str = ""
     src_paths: FrozenSet[Path] = frozenset()
+    old_finders: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

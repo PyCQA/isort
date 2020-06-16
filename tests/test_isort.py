@@ -2,11 +2,9 @@
 
 Should be ran using py.test by simply running py.test in the isort project directory
 """
-import importlib.machinery
 import os
 import os.path
 from pathlib import Path
-import posixpath
 import subprocess
 import sys
 import sysconfig
@@ -15,7 +13,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-from isort import finders, main, sections, api
+from isort import main, api
 from isort.main import is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
@@ -3069,33 +3067,6 @@ def test_new_lines_are_preserved() -> None:
         os.remove(n_newline.name)
 
 
-def test_requirements_finder(tmpdir) -> None:
-    subdir = tmpdir.mkdir("subdir").join("lol.txt")
-    subdir.write("flask")
-    req_file = tmpdir.join("requirements.txt")
-    req_file.write("Django==1.11\n-e git+https://github.com/orsinium/deal.git#egg=deal\n")
-    for path in (str(tmpdir), str(subdir)):
-
-        finder = finders.RequirementsFinder(config=Config(), path=path)
-
-        files = list(finder._get_files())
-        assert len(files) == 1  # file finding
-        assert files[0].endswith("requirements.txt")  # file finding
-        assert set(finder._get_names(str(req_file))) == {"Django", "deal"}  # file parsing
-
-        assert finder.find("django") == sections.THIRDPARTY  # package in reqs
-        assert finder.find("flask") is None  # package not in reqs
-        assert finder.find("deal") == sections.THIRDPARTY  # vcs
-
-        assert len(finder.mapping) > 100
-        assert finder._normalize_name("deal") == "deal"
-        assert finder._normalize_name("Django") == "django"  # lowercase
-        assert finder._normalize_name("django_haystack") == "haystack"  # mapping
-        assert finder._normalize_name("Flask-RESTful") == "flask_restful"  # conver `-`to `_`
-
-    req_file.remove()
-
-
 def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
 
     config_file = tmpdir.join("setup.cfg")
@@ -3123,73 +3094,11 @@ def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
     assert api.sort_code_string(test_input, settings_file=config_file.strpath) == test_input
 
 
-PIPFILE = """
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
-
-[requires]
-python_version = "3.5"
-
-[packages]
-Django = "~=1.11"
-deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
-
-[dev-packages]
-"""
-
-
-def test_pipfile_finder(tmpdir) -> None:
-    pipfile = tmpdir.join("Pipfile")
-    pipfile.write(PIPFILE)
-    finder = finders.PipfileFinder(config=Config(), path=str(tmpdir))
-
-    assert set(finder._get_names(str(tmpdir))) == {"Django", "deal"}  # file parsing
-
-    assert finder.find("django") == sections.THIRDPARTY  # package in reqs
-    assert finder.find("flask") is None  # package not in reqs
-    assert finder.find("deal") == sections.THIRDPARTY  # vcs
-
-    assert len(finder.mapping) > 100
-    assert finder._normalize_name("deal") == "deal"
-    assert finder._normalize_name("Django") == "django"  # lowercase
-    assert finder._normalize_name("django_haystack") == "haystack"  # mapping
-    assert finder._normalize_name("Flask-RESTful") == "flask_restful"  # conver `-`to `_`
-
-    pipfile.remove()
-
-
 def test_monkey_patched_urllib() -> None:
     with pytest.raises(ImportError):
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
         from urllib import quote  # type: ignore  # noqa: F401
-
-
-def test_path_finder(monkeypatch) -> None:
-    config = config = Config()
-    finder = finders.PathFinder(config=config)
-    third_party_prefix = next(path for path in finder.paths if "site-packages" in path)
-    ext_suffixes = importlib.machinery.EXTENSION_SUFFIXES
-    imaginary_paths = {
-        posixpath.join(finder.stdlib_lib_prefix, "example_1.py"),
-        posixpath.join(third_party_prefix, "example_2.py"),
-        posixpath.join(os.getcwd(), "example_3.py"),
-    }
-    imaginary_paths.update(
-        {
-            posixpath.join(third_party_prefix, "example_" + str(i) + ext_suffix)
-            for i, ext_suffix in enumerate(ext_suffixes, 4)
-        }
-    )
-
-    monkeypatch.setattr("isort.finders.exists_case_sensitive", lambda p: p in imaginary_paths)
-    assert finder.find("example_1") == sections.STDLIB
-    assert finder.find("example_2") == sections.THIRDPARTY
-    assert finder.find("example_3") == sections.FIRSTPARTY
-    for i, _ in enumerate(ext_suffixes, 4):
-        assert finder.find("example_" + str(i)) == sections.THIRDPARTY
 
 
 def test_argument_parsing() -> None:

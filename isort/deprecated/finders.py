@@ -13,9 +13,9 @@ from glob import glob
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, Tuple, Type
 
-from . import sections
-from .settings import Config
-from .utils import chdir, exists_case_sensitive
+from isort import sections
+from isort.settings import Config
+from isort.utils import chdir, exists_case_sensitive
 
 try:
     from pipreqs import pipreqs

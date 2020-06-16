@@ -7,7 +7,7 @@ from warnings import warn
 from isort.settings import DEFAULT_CONFIG, Config
 
 from .comments import parse as parse_comments
-from .finders import FindersManager
+from .deprecated.finders import FindersManager
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
@@ -141,7 +141,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     out_lines = []
     original_line_count = len(in_lines)
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
-    finder = FindersManager(config=config)
+    if config.old_finders:
+        finder = FindersManager(config=config)
+    else:
+        finder = FindersManager(config=config)  # TODO: replace with alternative new finder
 
     line_count = len(in_lines)
 

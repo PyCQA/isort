@@ -546,6 +546,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Tells isort to apply changes interactively.",
     )
     parser.add_argument(
+        "--old-finders",
+        "--magic",
+        dest="old_finders",
+        action="store_true",
+        help="Use the old deprecated finder logic that relies on environment introspection magic.",
+    )
+    parser.add_argument(
         "--show-config",
         dest="show_config",
         action="store_true",
