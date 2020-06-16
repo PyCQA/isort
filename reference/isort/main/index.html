@@ -432,18 +432,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../finders/" title="Finders" class="md-nav__link">
-      Finders
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../format/" title="Format" class="md-nav__link">
       Format
     </a>
@@ -745,6 +733,54 @@
     <a href="../wrap_modes/" title="Wrap Modes" class="md-nav__link">
       Wrap Modes
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-21" type="checkbox" id="nav-5-1-21">
+    
+    <label class="md-nav__link" for="nav-5-1-21">
+      Deprecated
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-5-1-21">
+        Deprecated
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../deprecated/finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../deprecated/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1308,7 +1344,7 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force sortImports to recognize a module as part of the python standard library.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force isort to recognize a module as part of the python standard library.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -1428,9 +1464,7 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force sortImports to recognize a module as part &quot;</span>
-
-        <span class="s2">&quot;of the future compatibility libraries.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force isort to recognize a module as part of the future compatibility libraries.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -1650,7 +1684,7 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force sortImports to recognize a module as being part of a third party library.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force isort to recognize a module as being part of a third party library.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -1692,7 +1726,7 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force sortImports to recognize a module as being part of the current python project.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force isort to recognize a module as being part of the current python project.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -2064,6 +2098,20 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--old-finders&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--magic&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;old_finders&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use the old deprecated finder logic that relies on environment introspection magic.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;--show-config&quot;</span><span class="p">,</span>
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;show_config&quot;</span><span class="p">,</span>
@@ -2104,7 +2152,7 @@
 
     <span class="sd">&quot;&quot;&quot;Preconverts objects from native types into JSONifyiable types&quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
@@ -2205,6 +2253,18 @@
     <span class="n">show_diff</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_diff&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
     <span class="n">write_to_stdout</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;write_to_stdout&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">src_paths</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+
+            <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
 
     <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
 
@@ -2561,6 +2621,18 @@
 <span class="w">    </span><span class="n">show_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;show_diff&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">write_to_stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;write_to_stdout&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">src_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">set</span><span class="p">())</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nf">file_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">file_names</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="nf">file_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">src_paths</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="nf">file_name</span><span class="p">).</span><span class="n">resolve</span><span class="p">())</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">src_paths</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="nf">file_name</span><span class="p">).</span><span class="n">parent</span><span class="p">.</span><span class="n">resolve</span><span class="p">())</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span><span class="w"></span>
 

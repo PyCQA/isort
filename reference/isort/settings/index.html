@@ -432,18 +432,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../finders/" title="Finders" class="md-nav__link">
-      Finders
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../format/" title="Format" class="md-nav__link">
       Format
     </a>
@@ -737,6 +725,54 @@
     <a href="../wrap_modes/" title="Wrap Modes" class="md-nav__link">
       Wrap Modes
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-21" type="checkbox" id="nav-5-1-21">
+    
+    <label class="md-nav__link" for="nav-5-1-21">
+      Deprecated
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-5-1-21">
+        Deprecated
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../deprecated/finders/" title="Finders" class="md-nav__link">
+      Finders
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../deprecated/" title="Index" class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1293,6 +1329,8 @@
 
     <span class="n">src_paths</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
+    <span class="n">old_finders</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -1527,7 +1565,15 @@
 
         <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
 
-            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),))</span>
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+
+                <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span>
+
+            <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -2085,7 +2131,15 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">(),))</span><span class="w"></span>
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">().</span><span class="n">resolve</span><span class="p">(),))</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">path</span><span class="p">.</span><span class="n">resolve</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span><span class="w"> </span><span class="o">**</span><span class="n">combined_config</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
@@ -2311,6 +2365,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">no_sections</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">old_finders</span>
 </code></pre></div>
 
 
