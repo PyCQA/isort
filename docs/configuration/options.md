@@ -32,7 +32,7 @@ Force specific imports to the top of their appropriate section.
 Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'dist', '.git', 'buck-out', '.nox', '.eggs', '_build', '.venv', '.tox', 'build', 'node_modules', 'venv', '.pants.d', '.hg', '.mypy_cache'})`  
+**Default:** `frozenset({'.nox', 'node_modules', 'buck-out', '.venv', '.mypy_cache', 'build', '.pants.d', '.hg', 'dist', '.git', '_build', '.eggs', 'venv', '.tox'})`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -108,7 +108,7 @@ Put all imports into the same section bucket
  - --no-sections
 
 ## Known Future Library
-Force sortImports to recognize a module as part of the future compatibility libraries.
+Force isort to recognize a module as part of the future compatibility libraries.
 
 **Type:** Frozenset  
 **Default:** `frozenset({'__future__'})`  
@@ -119,7 +119,7 @@ Force sortImports to recognize a module as part of the future compatibility libr
  - --future
 
 ## Known Third Party
-Force sortImports to recognize a module as being part of a third party library.
+Force isort to recognize a module as being part of a third party library.
 
 **Type:** Frozenset  
 **Default:** `frozenset({'google.appengine.api'})`  
@@ -130,7 +130,7 @@ Force sortImports to recognize a module as being part of a third party library.
  - --thirdparty
 
 ## Known First Party
-Force sortImports to recognize a module as being part of the current python project.
+Force isort to recognize a module as being part of the current python project.
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
@@ -141,10 +141,10 @@ Force sortImports to recognize a module as being part of the current python proj
  - --project
 
 ## Known Standard Library
-Force sortImports to recognize a module as part of the python standard library.
+Force isort to recognize a module as part of the python standard library.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'distutils', 'builtins', 'pickle', 'compileall', 'tty', 'test', 'winsound', 'telnetlib', 'sysconfig', 'aifc', 'socketserver', 'calendar', 'bz2', 'sndhdr', 'codecs', 'errno', 'turtledemo', 'winreg', 'sunau', 'dbm', 'configparser', 'lib2to3', 'webbrowser', 'array', 'code', 'collections', 'quopri', 'imp', 'sys', 'textwrap', 'dummy_threading', 'inspect', 'shelve', 'itertools', 'smtpd', 'heapq', 'optparse', 'cgitb', 'wsgiref', 'mailcap', 'fileinput', 'tempfile', 'copyreg', 'pkgutil', 'json', 'importlib', 'zipapp', 'marshal', 'parser', 'select', 'ssl', 'enum', 'grp', 'crypt', 'abc', 'dataclasses', '_dummy_thread', 'email', 'getopt', 'logging', 'types', 'fcntl', 'imghdr', 'poplib', 'asyncore', 'functools', 'cgi', 'bdb', 'bisect', 'typing', 'mailbox', 're', 'smtplib', 'pathlib', 'reprlib', 'gettext', 'codeop', 'tracemalloc', 'unittest', 'termios', 'tkinter', 'colorsys', 'cProfile', 'keyword', 'queue', 'unicodedata', 'profile', 'shutil', 'imaplib', 'formatter', 'difflib', 'base64', 'io', 'getpass', 'pyclbr', 'weakref', 'numbers', 'pwd', 'nntplib', 'fractions', 'gzip', 'encodings', 'glob', 'fpectl', 'msvcrt', 'hashlib', 'html', 'http', 'xml', 'tokenize', 'signal', 'subprocess', 'xdrlib', 'shlex', 'pdb', 'plistlib', 'pty', 'threading', 'struct', 'fnmatch', 'syslog', 'tarfile', 'doctest', 'tabnanny', 'resource', 'stat', 'zlib', 'spwd', 'locale', 'macpath', 'random', 'ast', 'pipes', 'uu', 'pprint', 'statistics', 'cmd', 'warnings', 'sqlite3', 'mmap', 'posix', 'token', 'decimal', 'multiprocessing', 'contextlib', 'mimetypes', 'binhex', 'site', 'asyncio', 'modulefinder', 'runpy', 'wave', 'os', 'netrc', 'pstats', 'gc', 'venv', 'asynchat', 'platform', 'argparse', 'chunk', 'string', 'readline', 'selectors', 'ctypes', 'hmac', 'turtle', 'rlcompleter', 'filecmp', 'csv', 'msilib', 'zipimport', 'audioop', 'stringprep', 'zipfile', 'cmath', 'ipaddress', 'time', 'socket', 'math', 'lzma', 'ensurepip', 'nis', 'pickletools', 'linecache', 'trace', 'uuid', 'traceback', 'pydoc', 'symbol', 'faulthandler', '_thread', 'operator', 'timeit', 'ftplib', 'ossaudiodev', 'dis', 'concurrent', 'binascii', 'symtable', 'copy', 'sched', 'curses', 'contextvars', 'atexit', 'xmlrpc', 'datetime', 'secrets', 'py_compile', 'urllib'})`  
+**Default:** `frozenset({'multiprocessing', 'codeop', 'pprint', 'chunk', 'msilib', 'concurrent', 'sched', 'random', 'webbrowser', 'socketserver', 'nis', 'tracemalloc', 'filecmp', 'formatter', 'codecs', 'winsound', 'tty', 'xml', 'gzip', 'binascii', 'enum', 'symtable', '_thread', 'xmlrpc', 'io', 'timeit', 'typing', 'datetime', 'sysconfig', 'ipaddress', 'traceback', 'zipfile', 'audioop', 'mimetypes', 'poplib', 'glob', 'weakref', 'pdb', 'locale', 'queue', 'collections', '_dummy_thread', 'trace', 'linecache', 'code', 'wave', 'reprlib', 'zipimport', 'posix', 'select', 'time', 'sqlite3', 'cgitb', 'ast', 'imp', 'shutil', 'resource', 'decimal', 'itertools', 'json', 'curses', 'pkgutil', 'contextvars', 'bdb', 'dis', 'pstats', 'copyreg', 'distutils', 'marshal', 'winreg', 'faulthandler', 'nntplib', 'ssl', 'struct', 'functools', 'pydoc', 'stat', 'asyncore', 'runpy', 'token', 'ossaudiodev', 'shlex', 'urllib', 'cgi', 'imghdr', 'netrc', 'operator', 'py_compile', 'unittest', 'sunau', 'tempfile', 'textwrap', 'dbm', 'calendar', 'cmath', 'selectors', 'dataclasses', 'pickletools', 'macpath', 'pipes', 'pyclbr', 'asyncio', 'copy', 'spwd', 'heapq', 'statistics', 'venv', 'optparse', 'string', 'encodings', 'fnmatch', 'ftplib', 'bisect', 'fractions', 'msvcrt', 'html', 'binhex', 'crypt', 'colorsys', 'telnetlib', 'smtplib', 'ctypes', 'stringprep', 'fpectl', 'warnings', 'atexit', 'signal', 'subprocess', 'aifc', 'getpass', 'ensurepip', 'imaplib', 'gc', 'profile', 'parser', 'math', 'errno', 'numbers', 'readline', 'argparse', 'mailbox', 'smtpd', 'zlib', 'os', 'platform', 'tarfile', 'tkinter', 'configparser', 'plistlib', 'keyword', 'pathlib', 'mailcap', 'lzma', 'cProfile', 'sndhdr', 'secrets', 'mmap', 'array', 'pickle', 'syslog', 'threading', 'xdrlib', 'http', 'socket', 'tabnanny', 'email', 'rlcompleter', 'logging', 'inspect', 'test', 'quopri', 'difflib', 'bz2', 'types', 'csv', 'gettext', 'dummy_threading', 'symbol', 'turtledemo', 'compileall', 'hmac', 'doctest', 'unicodedata', 'turtle', 'uuid', 'sys', 'termios', 'modulefinder', 'contextlib', 'tokenize', 'zipapp', 're', 'cmd', 'uu', 'base64', 'fileinput', 'wsgiref', 'getopt', 'grp', 'lib2to3', 'pwd', 'site', 'asynchat', 'shelve', 'pty', 'builtins', 'fcntl', 'importlib', 'abc', 'hashlib'})`  
 **Python & Config File Name:** known_standard_library  
 **CLI Flags:**
 
@@ -640,6 +640,17 @@ Base profile type to use for configuration.
 **CLI Flags:**
 
  - **Not Supported**
+
+## Old Finders
+Use the old deprecated finder logic that relies on environment introspection magic.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** old_finders  
+**CLI Flags:**
+
+ - --old-finders
+ - --magic
 
 ## Source Paths
 Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).
