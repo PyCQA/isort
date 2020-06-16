@@ -229,8 +229,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--future",
         dest="known_future_library",
         action="append",
-        help="Force isort to recognize a module as part "
-        "of the future compatibility libraries.",
+        help="Force isort to recognize a module as part of the future compatibility libraries.",
     )
     parser.add_argument(
         "--fas",
