@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, Tuple, Type
 
 from isort import sections
+from isort.place import KNOWN_SECTION_MAPPING
 from isort.settings import Config
 from isort.utils import chdir, exists_case_sensitive
 
@@ -34,13 +35,6 @@ try:
 
 except ImportError:
     Pipfile = None
-
-KNOWN_SECTION_MAPPING: Dict[str, str] = {
-    sections.STDLIB: "STANDARD_LIBRARY",
-    sections.FUTURE: "FUTURE_LIBRARY",
-    sections.FIRSTPARTY: "FIRST_PARTY",
-    sections.THIRDPARTY: "THIRD_PARTY",
-}
 
 
 class BaseFinder(metaclass=ABCMeta):
