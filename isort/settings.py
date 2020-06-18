@@ -14,10 +14,10 @@ import warnings
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
 from warnings import warn
 
-from . import stdlibs
+from . import sections, stdlibs
 from ._future import dataclass, field
 from .exceptions import ProfileDoesNotExist
 from .profiles import profiles
@@ -76,6 +76,12 @@ else:  # pragma: no cover
 
 IMPORT_HEADING_PREFIX = "import_heading_"
 KNOWN_PREFIX = "known_"
+KNOWN_SECTION_MAPPING: Dict[str, str] = {
+    sections.STDLIB: "STANDARD_LIBRARY",
+    sections.FUTURE: "FUTURE_LIBRARY",
+    sections.FIRSTPARTY: "FIRST_PARTY",
+    sections.THIRDPARTY: "THIRD_PARTY",
+}
 
 
 @dataclass(frozen=True)
@@ -218,6 +224,7 @@ class Config(_Config):
             config_vars = vars(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
+            config_vars.pop("_known_patterns")
             super().__init__(**config_vars)  # type: ignore
             return
 
@@ -307,6 +314,7 @@ class Config(_Config):
                 path.resolve() for path in combined_config["src_paths"]
             )
 
+        self._known_patterns = None
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -342,6 +350,43 @@ class Config(_Config):
             return True
 
         return False
+
+    @property
+    def known_patterns(self):
+        if self._known_patterns:
+            return self._known_patterns
+
+        self._known_patterns: List[Tuple[Pattern[str], str]] = []
+        for placement in reversed(self.sections):
+            known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
+            config_key = f"{KNOWN_PREFIX}{known_placement}"
+            known_patterns = list(
+                getattr(self, config_key, self.known_other.get(known_placement, []))
+            )
+            known_patterns = [
+                pattern
+                for known_pattern in known_patterns
+                for pattern in self._parse_known_pattern(known_pattern)
+            ]
+            for known_pattern in known_patterns:
+                regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
+                self._known_patterns.append((re.compile(regexp), placement))
+
+        return self._known_patterns
+
+    @staticmethod
+    def _parse_known_pattern(pattern: str) -> List[str]:
+        """Expand pattern if identified as a directory and return found sub packages"""
+        if pattern.endswith(os.path.sep):
+            patterns = [
+                filename
+                for filename in os.listdir(pattern)
+                if os.path.isdir(os.path.join(pattern, filename))
+            ]
+        else:
+            patterns = [pattern]
+
+        return patterns
 
 
 def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
