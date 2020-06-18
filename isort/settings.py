@@ -9,6 +9,7 @@ import configparser
 import fnmatch
 import os
 import posixpath
+import re
 import sys
 import warnings
 from distutils.util import strtobool as _as_bool
@@ -314,7 +315,7 @@ class Config(_Config):
                 path.resolve() for path in combined_config["src_paths"]
             )
 
-        self._known_patterns = None
+        self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -353,10 +354,10 @@ class Config(_Config):
 
     @property
     def known_patterns(self):
-        if self._known_patterns:
+        if self._known_patterns is not None:
             return self._known_patterns
 
-        self._known_patterns: List[Tuple[Pattern[str], str]] = []
+        self._known_patterns = []
         for placement in reversed(self.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"{KNOWN_PREFIX}{known_placement}"
