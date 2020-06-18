@@ -1,13 +1,14 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 from collections import OrderedDict, defaultdict
+from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
 from warnings import warn
 
-from isort.settings import DEFAULT_CONFIG, Config
-
+from . import place
 from .comments import parse as parse_comments
 from .deprecated.finders import FindersManager
+from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
     from mypy_extensions import TypedDict
@@ -142,9 +143,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     original_line_count = len(in_lines)
     section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     if config.old_finders:
-        finder = FindersManager(config=config)
+        finder = FindersManager(config=config).find
     else:
-        finder = FindersManager(config=config)  # TODO: replace with alternative new finder
+        finder = partial(place.module, config=config)
 
     line_count = len(in_lines)
 
@@ -326,7 +327,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     del just_imports[as_index : as_index + 2]
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
-                placed_module = finder.find(import_from)
+                placed_module = finder(import_from)
                 if config.verbose:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
                 if placed_module == "":
@@ -403,7 +404,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             import_index -= len(
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
-                    placed_module = finder.find(module)
+                    placed_module = finder(module)
                     if config.verbose:
                         print(f"else-type place_module for {module} returned {placed_module}")
                     if placed_module == "":
