@@ -19,11 +19,12 @@ from warnings import warn
 
 import posixpath
 
-from . import sections, stdlibs
+from . import stdlibs
 from ._future import dataclass, field
 from .exceptions import ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
+from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
@@ -79,10 +80,10 @@ else:  # pragma: no cover
 IMPORT_HEADING_PREFIX = "import_heading_"
 KNOWN_PREFIX = "known_"
 KNOWN_SECTION_MAPPING: Dict[str, str] = {
-    sections.STDLIB: "STANDARD_LIBRARY",
-    sections.FUTURE: "FUTURE_LIBRARY",
-    sections.FIRSTPARTY: "FIRST_PARTY",
-    sections.THIRDPARTY: "THIRD_PARTY",
+    STDLIB: "STANDARD_LIBRARY",
+    FUTURE: "FUTURE_LIBRARY",
+    FIRSTPARTY: "FIRST_PARTY",
+    THIRDPARTY: "THIRD_PARTY",
 }
 
 
@@ -136,7 +137,7 @@ class _Config:
     reverse_relative: bool = False
     force_single_line: bool = False
     single_line_exclusions: Tuple[str, ...] = ()
-    default_section: str = "FIRSTPARTY"
+    default_section: str = THIRDPARTY
     import_headings: Dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False

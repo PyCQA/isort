@@ -111,7 +111,7 @@ class TestPathFinder(AbstractTestFinder):
         tmpdir.join("file.py").write("import b\nimport a\n")
         assert (
             self.kind(settings.Config(src_paths=[Path(str(tmpdir))]), tmpdir).find("file")
-            == "FIRSTPARTY"
+            == settings.DEFAULT_CONFIG.default_section
         )
 
 
@@ -206,6 +206,6 @@ def test_path_finder(monkeypatch) -> None:
     )
     assert finder.find("example_1") == sections.STDLIB
     assert finder.find("example_2") == sections.THIRDPARTY
-    assert finder.find("example_3") == sections.FIRSTPARTY
+    assert finder.find("example_3") == settings.DEFAULT_CONFIG.default_section
     for i, _ in enumerate(ext_suffixes, 4):
         assert finder.find("example_" + str(i)) == sections.THIRDPARTY

@@ -13,7 +13,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-from isort import main, api
+from isort import main, api, sections
 from isort.main import is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
@@ -64,7 +64,7 @@ def default_settings_path(tmpdir_factory) -> Iterator[str]:
 def test_happy_path() -> None:
     """Test the most basic use case, straight imports no code, simply not organized by category."""
     test_input = "import sys\nimport os\nimport myproject.test\nimport django.settings"
-    test_output = api.sort_code_string(test_input, known_third_party=["django"])
+    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
     assert test_output == (
         "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
     )
@@ -725,7 +725,7 @@ def test_skip() -> None:
         "import sys  # isort: skip this import needs to be placed here\n\n\n\n\n\n\n"
     )
 
-    test_output = api.sort_code_string(test_input, known_third_party=["django"])
+    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
     assert test_output == (
         "import django\n"
         "\n"
@@ -1125,7 +1125,7 @@ def test_titled_imports() -> None:
     )
     test_output = api.sort_code_string(
         code=test_input,
-        known_third_party=["django"],
+        known_first_party=["myproject"],
         import_heading_stdlib="Standard Library",
         import_heading_firstparty="My Stuff",
     )
@@ -1143,7 +1143,7 @@ def test_titled_imports() -> None:
     )
     test_second_run = api.sort_code_string(
         code=test_output,
-        known_third_party=["django"],
+        known_first_party=["myproject"],
         import_heading_stdlib="Standard Library",
         import_heading_firstparty="My Stuff",
     )
@@ -1625,6 +1625,7 @@ def test_correctly_placed_imports() -> None:
             force_single_line=True,
             line_length=140,
             known_third_party=["django", "model_mommy"],
+            default_section=sections.FIRSTPARTY,
         )
         == test_input
     )
@@ -1718,9 +1719,9 @@ def test_place_comments() -> None:
         "import os\n"
         "import sys\n"
     )
-    test_output = api.sort_code_string(test_input, known_third_party=["django"])
+    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
     assert test_output == expected_output
-    test_output = api.sort_code_string(test_output, known_third_party=["django"])
+    test_output = api.sort_code_string(test_output, known_first_party=["myproject"])
     assert test_output == expected_output
 
 
@@ -2090,7 +2091,7 @@ def test_alphabetic_sorting() -> None:
         "force_alphabetical_sort_within_sections": True,
     }  # type: Dict[str, Any]
 
-    output = api.sort_code_string(test_input, known_first_party=["django"], **options)
+    output = api.sort_code_string(test_input, **options)
     assert output == test_input
 
     test_input = "# -*- coding: utf-8 -*-\nfrom django.db import models\n"
@@ -2679,8 +2680,9 @@ def test_import_case_produces_inconsistent_results_issue_472() -> None:
 def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
     """Test to ensure Python 2 and 3 have the same behavior"""
     test_input = (
-        "from future.standard_library import hooks\n"
         "from workalendar.europe import UnitedKingdom\n"
+        "\n"
+        "from future.standard_library import hooks\n"
     )
     assert api.sort_code_string(test_input, known_first_party=["future"]) == test_input
 
@@ -2837,22 +2839,29 @@ def test_not_splitted_sections() -> None:
         + statement
     )
 
-    assert api.sort_code_string(test_input) == test_input
-    assert api.sort_code_string(test_input, no_lines_before=["LOCALFOLDER"]) == (
-        stdlib_section + whiteline + firstparty_section + local_section + whiteline + statement
-    )
+    assert api.sort_code_string(test_input, known_first_party=["app"]) == test_input
+    assert api.sort_code_string(
+        test_input, no_lines_before=["LOCALFOLDER"], known_first_party=["app"]
+    ) == (stdlib_section + whiteline + firstparty_section + local_section + whiteline + statement)
     # by default STDLIB and FIRSTPARTY sections are split by THIRDPARTY section,
     # so don't merge them if THIRDPARTY imports aren't exist
-    assert api.sort_code_string(test_input, no_lines_before=["FIRSTPARTY"]) == test_input
+    assert (
+        api.sort_code_string(test_input, no_lines_before=["FIRSTPARTY"], known_first_party=["app"])
+        == test_input
+    )
     # in case when THIRDPARTY section is excluded from sections list,
     # it's ok to merge STDLIB and FIRSTPARTY
     assert api.sort_code_string(
         code=test_input,
         sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
         no_lines_before=["FIRSTPARTY"],
+        known_first_party=["app"],
     ) == (stdlib_section + firstparty_section + whiteline + local_section + whiteline + statement)
     # it doesn't change output, because stdlib packages don't have any whitelines before them
-    assert api.sort_code_string(test_input, no_lines_before=["STDLIB"]) == test_input
+    assert (
+        api.sort_code_string(test_input, no_lines_before=["STDLIB"], known_first_party=["app"])
+        == test_input
+    )
 
 
 def test_no_lines_before_empty_section() -> None:

@@ -143,8 +143,8 @@ import a
     out, error = capsys.readouterr()
     assert (
         out
-        == """else-type place_module for b returned FIRSTPARTY
-else-type place_module for a returned FIRSTPARTY
+        == f"""else-type place_module for b returned {DEFAULT_CONFIG.default_section}
+else-type place_module for a returned {DEFAULT_CONFIG.default_section}
 import a
 import b
 """
