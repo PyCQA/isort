@@ -21,6 +21,8 @@ from .format import (
     show_unified_diff,
 )
 from .io import Empty
+from .place import module as place_module
+from .place import module_with_reason as place_module_with_reason
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
