@@ -4,7 +4,7 @@ from sphinx.ext.intersphinx import fetch_inventory
 
 URL = "https://docs.python.org/{}/objects.inv"
 PATH = "isort/stdlibs/py{}.py"
-VERSIONS = [("2", "7"), ("3", "5"), ("3", "6"), ("3", "7"), ("3", "8")]
+VERSIONS = [("2", "7"), ("3", "5"), ("3", "6"), ("3", "7"), ("3", "8"), ("3", "9")]
 
 DOCSTRING = """
 File contains the standard library of Python {}.
@@ -17,6 +17,7 @@ using the mkstdlibs.py script.
 class FakeConfig:
     intersphinx_timeout = None
     tls_verify = True
+    user_agent = ""
 
 
 class FakeApp:
