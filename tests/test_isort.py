@@ -4591,6 +4591,7 @@ IF CEF_VERSION == 3:
     from web_request_client_cef3 cimport *
 """
     assert api.sort_code_string(test_input).strip() == expected_output.strip()
+    assert api.sort_code_string(test_input, old_finders=True).strip() == expected_output.strip()
 
 
 def test_cdef_support():
