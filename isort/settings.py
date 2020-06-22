@@ -86,6 +86,8 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
     THIRDPARTY: "THIRD_PARTY",
 }
 
+RUNTIME_SOURCE = "runtime"
+
 
 @dataclass(frozen=True)
 class _Config:
@@ -257,7 +259,7 @@ class Config(_Config):
         if config_settings:
             sources.append(config_settings)
         if config_overrides:
-            config_overrides["source"] = "runtime"
+            config_overrides["source"] = RUNTIME_SOURCE
             sources.append(config_overrides)
 
         combined_config = {**profile, **config_settings, **config_overrides}
@@ -297,6 +299,19 @@ class Config(_Config):
                 config_settings.get("source", None) or os.getcwd()
             )
 
+
+        if "src_paths" not in combined_config:
+            combined_config["src_paths"] = frozenset((Path.cwd().resolve(),))
+        else:
+            if combined_config.get("source", RUNTIME_SOURCE) == RUNTIME_SOURCE:
+                path_root = Path.cwd().resolve()
+            else:
+                path_root = Path(combined_config["source"]).resolve().parent
+
+            combined_config["src_paths"] = frozenset(
+                path_root / path for path in combined_config["src_paths"]
+            )
+
         # Remove any config values that are used for creating config object but
         # aren't defined in dataclass
         combined_config.pop("source", None)
@@ -309,13 +324,6 @@ class Config(_Config):
             for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
-
-        if "src_paths" not in combined_config:
-            combined_config["src_paths"] = frozenset((Path.cwd().resolve(),))
-        else:
-            combined_config["src_paths"] = frozenset(
-                path.resolve() for path in combined_config["src_paths"]
-            )
 
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
