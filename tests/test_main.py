@@ -6,6 +6,7 @@ from io import BytesIO, TextIOWrapper
 
 import pytest
 from hypothesis_auto import auto_pytest_magic
+
 from isort import main
 from isort._version import __version__
 from isort.settings import DEFAULT_CONFIG, Config

@@ -2,6 +2,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from isort import api, exceptions
 from isort.settings import Config
 

@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from isort import exceptions, settings
 from isort.settings import Config
 

@@ -61,8 +61,13 @@ def _known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
 
 def _src_path(name: str, config: Config) -> Optional[Tuple[str, str]]:
     for src_path in config.src_paths:
-        module_path = (src_path / name.split(".")[0]).resolve()
-        if _is_module(module_path) or _is_package(module_path):
+        root_module_name = name.split(".")[0]
+        module_path = (src_path / root_module_name).resolve()
+        if (
+            _is_module(module_path)
+            or _is_package(module_path)
+            or _src_path_is_module(src_path, root_module_name)
+        ):
             return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
 
     return None
@@ -81,3 +86,7 @@ def _is_module(path: Path) -> bool:
 
 def _is_package(path: Path) -> bool:
     return exists_case_sensitive(str(path)) and path.is_dir()
+
+
+def _src_path_is_module(src_path: Path, module: str) -> bool:
+    return module == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
