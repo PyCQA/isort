@@ -1,5 +1,6 @@
 """isort test wide fixtures and configuration"""
 import os
+from pathlib import Path
 
 import pytest
 
@@ -15,3 +16,13 @@ def test_dir():
 @pytest.fixture
 def src_dir():
     return SRC_DIR
+
+
+@pytest.fixture
+def test_path():
+    return Path(TEST_DIR).resolve()
+
+
+@pytest.fixture
+def src_path():
+    return Path(SRC_DIR).resolve()
