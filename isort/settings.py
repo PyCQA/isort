@@ -260,6 +260,7 @@ class Config(_Config):
             sources.append(config_settings)
         if config_overrides:
             config_overrides["source"] = RUNTIME_SOURCE
+            config_overrides["runtime_src_paths"] = config_overrides.pop("src_paths", ())
             sources.append(config_overrides)
 
         combined_config = {**profile, **config_settings, **config_overrides}
@@ -299,23 +300,22 @@ class Config(_Config):
                 config_settings.get("source", None) or os.getcwd()
             )
 
-
-        if "src_paths" not in combined_config:
+        if "src_paths" not in combined_config and not combined_config.get("runtime_src_paths"):
             combined_config["src_paths"] = frozenset((Path.cwd().resolve(),))
         else:
-            if combined_config.get("source", RUNTIME_SOURCE) == RUNTIME_SOURCE:
-                path_root = Path.cwd().resolve()
-            else:
-                path_root = Path(combined_config["source"]).resolve().parent
-
+            path_root = Path(combined_config.get("directory", Path.cwd())).resolve()
             combined_config["src_paths"] = frozenset(
-                path_root / path for path in combined_config["src_paths"]
+                {path_root / path for path in combined_config.get("src_paths", ())}.union(
+                    Path.cwd().resolve() / path
+                    for path in combined_config.get("runtime_src_paths", ())
+                )
             )
 
         # Remove any config values that are used for creating config object but
         # aren't defined in dataclass
         combined_config.pop("source", None)
         combined_config.pop("sources", None)
+        combined_config.pop("runtime_src_paths", None)
         if known_other:
             for known_key in known_other:
                 combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
