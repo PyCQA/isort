@@ -304,6 +304,7 @@ class Config(_Config):
             combined_config["src_paths"] = frozenset((Path.cwd().resolve(),))
         else:
             path_root = Path(combined_config.get("directory", Path.cwd())).resolve()
+            path_root = path_root if path_root.is_dir() else path_root.parent
             combined_config["src_paths"] = frozenset(
                 {path_root / path for path in combined_config.get("src_paths", ())}.union(
                     Path.cwd().resolve() / path
