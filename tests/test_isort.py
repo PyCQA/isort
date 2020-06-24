@@ -856,6 +856,9 @@ def test_explicitly_local_import() -> None:
     assert api.sort_code_string(test_input) == (
         "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
     )
+    assert api.sort_code_string(test_input, old_finders=True) == (
+        "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
+    )
 
 
 def test_quotes_in_file() -> None:
@@ -926,11 +929,32 @@ def test_forced_separate() -> None:
         )
         == test_input
     )
+    assert (
+        api.sort_code_string(
+            code=test_input,
+            forced_separate=["django.contrib"],
+            known_third_party=["django"],
+            line_length=120,
+            order_by_type=False,
+            old_finders=True,
+        )
+        == test_input
+    )
 
     test_input = "from .foo import bar\n\nfrom .y import ca\n"
     assert (
         api.sort_code_string(
             code=test_input, forced_separate=[".y"], line_length=120, order_by_type=False
+        )
+        == test_input
+    )
+    assert (
+        api.sort_code_string(
+            code=test_input,
+            forced_separate=[".y"],
+            line_length=120,
+            order_by_type=False,
+            old_finders=True,
         )
         == test_input
     )
@@ -997,13 +1021,23 @@ def test_known_pattern_path_expansion() -> None:
         default_section="THIRDPARTY",
         known_first_party=["./", "this", "kate_plugin", "isort"],
     )
-    assert test_output == (
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "import isort.settings\n"
-        "import this\n"
-        "from kate_plugin import isort_plugin\n"
+    test_output_old_finder = api.sort_code_string(
+        code=test_input,
+        default_section="FIRSTPARTY",
+        old_finders=True,
+        known_first_party=["./", "this", "kate_plugin", "isort"],
+    )
+    assert (
+        test_output_old_finder
+        == test_output
+        == (
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "import isort.settings\n"
+            "import this\n"
+            "from kate_plugin import isort_plugin\n"
+        )
     )
 
 
@@ -2470,6 +2504,7 @@ def test_sys_path_mutation(tmpdir) -> None:
     expected_length = len(sys.path)
     api.sort_code_string(test_input, **options)
     assert len(sys.path) == expected_length
+    api.sort_code_string(test_input, old_finders=True, **options)
 
 
 def test_long_single_line() -> None:
