@@ -202,6 +202,7 @@ stdlib = {
     "poplib",
     "posix",
     "posixfile",
+    "posixpath",
     "pprint",
     "profile",
     "pstats",

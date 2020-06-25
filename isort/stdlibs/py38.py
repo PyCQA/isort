@@ -127,6 +127,7 @@ stdlib = {
     "plistlib",
     "poplib",
     "posix",
+    "posixpath",
     "pprint",
     "profile",
     "pstats",

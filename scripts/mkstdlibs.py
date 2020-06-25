@@ -30,7 +30,7 @@ for version_info in VERSIONS:
     url = URL.format(version)
     invdata = fetch_inventory(FakeApp(), "", url)
 
-    modules = set()
+    modules = {"posixpath"}  # Any modules we want to enforce across Python versions stdlibs
     for module in invdata["py:module"]:
         root, *_ = module.split(".")
         if root not in ["__future__", "__main__"]:
