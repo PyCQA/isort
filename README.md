@@ -25,7 +25,7 @@ editors](https://github.com/timothycrosley/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
-[Try isort now from your browser!](/docs/interactive/try)
+[Try isort now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
 
 ![Example Usage](https://raw.github.com/timothycrosley/isort/develop/example.gif)
 
