@@ -1,9 +1,9 @@
 import importlib.machinery
 import os
+import posixpath
 from pathlib import Path
 from unittest.mock import patch
 
-import posixpath
 import pytest
 
 from isort import sections, settings

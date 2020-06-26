@@ -8,6 +8,7 @@ Defines how the default settings for isort should be loaded
 import configparser
 import fnmatch
 import os
+import posixpath
 import re
 import sys
 import warnings
@@ -16,8 +17,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
 from warnings import warn
-
-import posixpath
 
 from . import stdlibs
 from ._future import dataclass, field
