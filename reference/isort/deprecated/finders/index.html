@@ -352,18 +352,54 @@
       
       
 
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Interactive
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Interactive
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../docs/interactive/try/" title="Try" class="md-nav__link">
+      Try
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-6">
       Reference
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-6">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -378,13 +414,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1" type="checkbox" id="nav-5-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1" checked>
     
-    <label class="md-nav__link" for="nav-5-1">
+    <label class="md-nav__link" for="nav-6-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-5-1">
+      <label class="md-nav__title" for="nav-6-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -528,6 +564,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../place/" title="Place" class="md-nav__link">
+      Place
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../profiles/" title="Profiles" class="md-nav__link">
       Profiles
     </a>
@@ -639,13 +687,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-21" type="checkbox" id="nav-5-1-21" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-22" type="checkbox" id="nav-6-1-22" checked>
     
-    <label class="md-nav__link" for="nav-5-1-21">
+    <label class="md-nav__link" for="nav-6-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-5-1-21">
+      <label class="md-nav__title" for="nav-6-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1159,13 +1207,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-22" type="checkbox" id="nav-5-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-23" type="checkbox" id="nav-6-1-23">
     
-    <label class="md-nav__link" for="nav-5-1-22">
+    <label class="md-nav__link" for="nav-6-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-5-1-22">
+      <label class="md-nav__title" for="nav-6-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1275,6 +1323,18 @@
   <li class="md-nav__item">
     <a href="../../stdlibs/py38/" title="Py38" class="md-nav__link">
       Py38
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../stdlibs/py39/" title="Py39" class="md-nav__link">
+      Py39
     </a>
   </li>
 
@@ -1806,7 +1866,7 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">isort</span> <span class="s s-Atom">import</span> <span class="s s-Atom">sections</span>
 
-<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">settings</span> <span class="s s-Atom">import</span> <span class="nv">Config</span>
+<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">settings</span> <span class="s s-Atom">import</span> <span class="nv">KNOWN_SECTION_MAPPING</span><span class="p">,</span> <span class="nv">Config</span>
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">utils</span> <span class="s s-Atom">import</span> <span class="s s-Atom">chdir</span><span class="p">,</span> <span class="s s-Atom">exists_case_sensitive</span>
 
@@ -1833,18 +1893,6 @@
 <span class="s s-Atom">except</span> <span class="nv">ImportError</span><span class="s s-Atom">:</span>
 
     <span class="nv">Pipfile</span> <span class="o">=</span> <span class="nv">None</span>
-
-<span class="nv">KNOWN_SECTION_MAPPING</span><span class="s s-Atom">:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="s s-Atom">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-
-    <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">STDLIB</span><span class="s s-Atom">:</span> <span class="s2">&quot;STANDARD_LIBRARY&quot;</span><span class="p">,</span>
-
-    <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">FUTURE</span><span class="s s-Atom">:</span> <span class="s2">&quot;FUTURE_LIBRARY&quot;</span><span class="p">,</span>
-
-    <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">FIRSTPARTY</span><span class="s s-Atom">:</span> <span class="s2">&quot;FIRST_PARTY&quot;</span><span class="p">,</span>
-
-    <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">THIRDPARTY</span><span class="s s-Atom">:</span> <span class="s2">&quot;THIRD_PARTY&quot;</span><span class="p">,</span>
-
-<span class="p">}</span>
 
 <span class="s s-Atom">class</span> <span class="nv">BaseFinder</span><span class="p">(</span><span class="s s-Atom">metaclass</span><span class="o">=</span><span class="nv">ABCMeta</span><span class="p">)</span><span class="s s-Atom">:</span>
 

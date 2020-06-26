@@ -352,18 +352,54 @@
       
       
 
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Interactive
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Interactive
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/interactive/try/" title="Try" class="md-nav__link">
+      Try
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-6">
       Reference
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-6">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -378,13 +414,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1" type="checkbox" id="nav-5-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1" checked>
     
-    <label class="md-nav__link" for="nav-5-1">
+    <label class="md-nav__link" for="nav-6-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-5-1">
+      <label class="md-nav__title" for="nav-6-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -528,6 +564,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../place/" title="Place" class="md-nav__link">
+      Place
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../profiles/" title="Profiles" class="md-nav__link">
       Profiles
     </a>
@@ -623,6 +671,13 @@
           <li class="md-nav__item">
   <a href="#class-variables" class="md-nav__link">
     Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
   </a>
   
 </li>
@@ -735,13 +790,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-21" type="checkbox" id="nav-5-1-21">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-22" type="checkbox" id="nav-6-1-22">
     
-    <label class="md-nav__link" for="nav-5-1-21">
+    <label class="md-nav__link" for="nav-6-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-5-1-21">
+      <label class="md-nav__title" for="nav-6-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -783,13 +838,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-1-22" type="checkbox" id="nav-5-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-23" type="checkbox" id="nav-6-1-23">
     
-    <label class="md-nav__link" for="nav-5-1-22">
+    <label class="md-nav__link" for="nav-6-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-5-1-22">
+      <label class="md-nav__title" for="nav-6-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -903,6 +958,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../stdlibs/py39/" title="Py39" class="md-nav__link">
+      Py39
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -971,6 +1038,13 @@
           <li class="md-nav__item">
   <a href="#class-variables" class="md-nav__link">
     Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-variables" class="md-nav__link">
+    Instance variables
   </a>
   
 </li>
@@ -1047,6 +1121,8 @@
 
 <span class="kn">import</span> <span class="nn">posixpath</span>
 
+<span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -1057,7 +1133,7 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">FrozenSet</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">FrozenSet</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
@@ -1070,6 +1146,8 @@
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
 <span class="kn">from</span> <span class="nn">.sections</span> <span class="kn">import</span> <span class="n">DEFAULT</span> <span class="k">as</span> <span class="n">SECTION_DEFAULTS</span>
+
+<span class="kn">from</span> <span class="nn">.sections</span> <span class="kn">import</span> <span class="n">FIRSTPARTY</span><span class="p">,</span> <span class="n">FUTURE</span><span class="p">,</span> <span class="n">STDLIB</span><span class="p">,</span> <span class="n">THIRDPARTY</span>
 
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">WrapModes</span>
 
@@ -1164,6 +1242,20 @@
 <span class="n">IMPORT_HEADING_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;import_heading_&quot;</span>
 
 <span class="n">KNOWN_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;known_&quot;</span>
+
+<span class="n">KNOWN_SECTION_MAPPING</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="n">STDLIB</span><span class="p">:</span> <span class="s2">&quot;STANDARD_LIBRARY&quot;</span><span class="p">,</span>
+
+    <span class="n">FUTURE</span><span class="p">:</span> <span class="s2">&quot;FUTURE_LIBRARY&quot;</span><span class="p">,</span>
+
+    <span class="n">FIRSTPARTY</span><span class="p">:</span> <span class="s2">&quot;FIRST_PARTY&quot;</span><span class="p">,</span>
+
+    <span class="n">THIRDPARTY</span><span class="p">:</span> <span class="s2">&quot;THIRD_PARTY&quot;</span><span class="p">,</span>
+
+<span class="p">}</span>
+
+<span class="n">RUNTIME_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;runtime&quot;</span>
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
@@ -1261,7 +1353,7 @@
 
     <span class="n">single_line_exclusions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
 
-    <span class="n">default_section</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FIRSTPARTY&quot;</span>
+    <span class="n">default_section</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">THIRDPARTY</span>
 
     <span class="n">import_headings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
@@ -1343,7 +1435,7 @@
 
             <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="p">(</span>
 
-                <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;=</span> <span class="mi">8</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;=</span> <span class="mi">9</span>
 
             <span class="p">):</span>
 
@@ -1423,6 +1515,8 @@
 
             <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;py_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;py_version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
+            <span class="n">config_vars</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_known_patterns&quot;</span><span class="p">)</span>
+
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">config_vars</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
             <span class="k">return</span>
@@ -1471,7 +1565,9 @@
 
         <span class="k">if</span> <span class="n">config_overrides</span><span class="p">:</span>
 
-            <span class="n">config_overrides</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;runtime&quot;</span>
+            <span class="n">config_overrides</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RUNTIME_SOURCE</span>
+
+            <span class="n">config_overrides</span><span class="p">[</span><span class="s2">&quot;runtime_src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_overrides</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">())</span>
 
             <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">config_overrides</span><span class="p">)</span>
 
@@ -1539,6 +1635,28 @@
 
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;runtime_src_paths&quot;</span><span class="p">):</span>
+
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">path_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;directory&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+            <span class="n">path_root</span> <span class="o">=</span> <span class="n">path_root</span> <span class="k">if</span> <span class="n">path_root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="k">else</span> <span class="n">path_root</span><span class="o">.</span><span class="n">parent</span>
+
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+
+                <span class="p">{</span><span class="n">path_root</span> <span class="o">/</span> <span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">())}</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+
+                    <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="n">path</span>
+
+                    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;runtime_src_paths&quot;</span><span class="p">,</span> <span class="p">())</span>
+
+                <span class="p">)</span>
+
+            <span class="p">)</span>
+
         <span class="c1"># Remove any config values that are used for creating config object but</span>
 
         <span class="c1"># aren&#39;t defined in dataclass</span>
@@ -1546,6 +1664,8 @@
         <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
         <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;runtime_src_paths&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">known_other</span><span class="p">:</span>
 
@@ -1563,17 +1683,7 @@
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;import_headings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_headings</span>
 
-        <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
-
-            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),))</span>
-
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-
-                <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span>
-
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -1628,6 +1738,70 @@
             <span class="k">return</span> <span class="bp">True</span>
 
         <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">known_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">placement</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">):</span>
+
+            <span class="n">known_placement</span> <span class="o">=</span> <span class="n">KNOWN_SECTION_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">placement</span><span class="p">,</span> <span class="n">placement</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="n">config_key</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{KNOWN_PREFIX}{known_placement}&quot;</span>
+
+            <span class="n">known_patterns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_other</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span> <span class="p">[]))</span>
+
+            <span class="p">)</span>
+
+            <span class="n">known_patterns</span> <span class="o">=</span> <span class="p">[</span>
+
+                <span class="n">pattern</span>
+
+                <span class="k">for</span> <span class="n">known_pattern</span> <span class="ow">in</span> <span class="n">known_patterns</span>
+
+                <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_known_pattern</span><span class="p">(</span><span class="n">known_pattern</span><span class="p">)</span>
+
+            <span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">known_pattern</span> <span class="ow">in</span> <span class="n">known_patterns</span><span class="p">:</span>
+
+                <span class="n">regexp</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span> <span class="o">+</span> <span class="n">known_pattern</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;.?&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">),</span> <span class="n">placement</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span>
+
+    <span class="nd">@staticmethod</span>
+
+    <span class="k">def</span> <span class="nf">_parse_known_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+        <span class="sd">&quot;&quot;&quot;Expand pattern if identified as a directory and return found sub packages&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span>
+
+            <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span>
+
+                <span class="n">filename</span>
+
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+            <span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pattern</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">patterns</span>
 
 <span class="k">def</span> <span class="nf">_get_str_to_type_converter</span><span class="p">(</span><span class="n">setting_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
 
@@ -1919,6 +2093,14 @@
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">FIRSTPARTY</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">FUTURE</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">IMPORT_HEADING_PREFIX</span>
 </code></pre></div>
 
@@ -1927,11 +2109,23 @@
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">KNOWN_SECTION_MAPPING</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">MAX_CONFIG_SEARCH_DEPTH</span>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">RUNTIME_SOURCE</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">SECTION_DEFAULTS</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">STDLIB</span>
 </code></pre></div>
 
 
@@ -1940,6 +2134,10 @@
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">SUPPORTED_EXTENSIONS</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">THIRDPARTY</span>
 </code></pre></div>
 
 
@@ -1989,6 +2187,8 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">config_vars</span><span class="o">[</span><span class="n">&quot;py_version&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_vars</span><span class="o">[</span><span class="n">&quot;py_version&quot;</span><span class="o">]</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;py&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="p">)</span><span class="w"></span>
 
+<span class="w">            </span><span class="n">config_vars</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;_known_patterns&quot;</span><span class="p">)</span><span class="w"></span>
+
 <span class="w">            </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">config_vars</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">return</span><span class="w"></span>
@@ -2037,7 +2237,9 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">config_overrides</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">config_overrides</span><span class="o">[</span><span class="n">&quot;source&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;runtime&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="n">config_overrides</span><span class="o">[</span><span class="n">&quot;source&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RUNTIME_SOURCE</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">config_overrides</span><span class="o">[</span><span class="n">&quot;runtime_src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_overrides</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">sources</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">config_overrides</span><span class="p">)</span><span class="w"></span>
 
@@ -2105,6 +2307,28 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="p">)</span><span class="w"></span>
 
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;runtime_src_paths&quot;</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">().</span><span class="n">resolve</span><span class="p">(),))</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">path_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">Path</span><span class="p">(</span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;directory&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">())).</span><span class="n">resolve</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">path_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path_root</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">path_root</span><span class="p">.</span><span class="n">is_dir</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">path_root</span><span class="p">.</span><span class="n">parent</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="err">{</span><span class="n">path_root</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">}</span><span class="p">.</span><span class="ow">union</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">().</span><span class="n">resolve</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">path</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;runtime_src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
+
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+
 <span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Remove</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">creating</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="n">but</span><span class="w"></span>
 
 <span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">aren</span><span class="err">&#39;</span><span class="n">t</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">dataclass</span><span class="w"></span>
@@ -2112,6 +2336,8 @@ dynamically determined later on.</p>
 <span class="w">        </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;source&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;sources&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;runtime_src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
 
@@ -2129,17 +2355,7 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;import_headings&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_headings</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="k">Path</span><span class="p">.</span><span class="n">cwd</span><span class="p">().</span><span class="n">resolve</span><span class="p">(),))</span><span class="w"></span>
-
-<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="w"></span>
-
-<span class="w">                </span><span class="k">path</span><span class="p">.</span><span class="n">resolve</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"></span>
-
-<span class="w">            </span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_known_patterns</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">List[Tuple[Pattern[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span><span class="w"> </span><span class="o">**</span><span class="n">combined_config</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
@@ -2194,6 +2410,70 @@ dynamically determined later on.</p>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">    </span><span class="nv">@property</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">known_patterns</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">placement</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">reversed</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">sections</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">known_placement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KNOWN_SECTION_MAPPING</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">placement</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="p">).</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">config_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{KNOWN_PREFIX}{known_placement}&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">config_key</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">known_other</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n"></span>
+
+<span class="n">                pattern</span>
+
+<span class="n">                for known_pattern in known_patterns</span>
+
+<span class="n">                for pattern in self._parse_known_pattern(known_pattern)</span>
+
+<span class="n">            </span><span class="o">]</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">known_pattern</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">known_patterns</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">regexp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;^&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">known_pattern</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;*&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;.*&quot;</span><span class="p">).</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;?&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;.?&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;$&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">re</span><span class="p">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">),</span><span class="w"> </span><span class="n">placement</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"></span>
+
+<span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_parse_known_pattern</span><span class="p">(</span><span class="nl">pattern</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;Expand pattern if identified as a directory and return found sub packages&quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">pattern</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">sep</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n"></span>
+
+<span class="n">                filename</span>
+
+<span class="n">                for filename in os.listdir(pattern)</span>
+
+<span class="n">                if os.path.isdir(os.path.join(pattern, filename))</span>
+
+<span class="n">            </span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">pattern</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">patterns</span><span class="w"></span>
 </code></pre></div>
 
 
@@ -2433,6 +2713,11 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">wrap_length</span>
+</code></pre></div>
+
+
+<h4 id="instance-variables">Instance variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">known_patterns</span>
 </code></pre></div>
 
 
