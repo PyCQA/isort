@@ -25,19 +25,7 @@ editors](https://github.com/timothycrosley/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
-------------------------------------------------------------------------
-
-[Get professionally supported isort with the Tidelift
-Subscription](https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme)
-
-Professional support for isort is available as part of the [Tidelift
-Subscription](https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme).
-Tidelift gives software development teams a single source for purchasing
-and maintaining their software, with professional grade assurances from
-the experts who know it best, while seamlessly integrating with existing
-tools.
-
-------------------------------------------------------------------------
+[Try isort now from your browser!](/docs/interactive/try)
 
 ![Example Usage](https://raw.github.com/timothycrosley/isort/develop/example.gif)
 
@@ -673,6 +661,18 @@ imports. The code base was huge - and he meant for us to do it by hand.
 However, being a programmer - I\'m too lazy to spend 8 hours mindlessly
 performing a function, but not too lazy to spend 16 hours automating it.
 I was given permission to open source sortImports and here we are :)
+
+------------------------------------------------------------------------
+
+[Get professionally supported isort with the Tidelift
+Subscription](https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme)
+
+Professional support for isort is available as part of the [Tidelift
+Subscription](https://tidelift.com/subscription/pkg/pypi-isort?utm_source=pypi-isort&utm_medium=referral&utm_campaign=readme).
+Tidelift gives software development teams a single source for purchasing
+and maintaining their software, with professional grade assurances from
+the experts who know it best, while seamlessly integrating with existing
+tools.
 
 ------------------------------------------------------------------------
 

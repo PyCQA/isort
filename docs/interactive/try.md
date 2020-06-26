@@ -1,0 +1,48 @@
+Try isort from your browser!
+========
+
+Use our live isort editor to see how isort can help improve the formatting of your Python imports.
+
+!!! important - "Safe to use. No code is transmitted."
+    The below live isort tester doesn't transmit any of the code you paste to our server or anyone else's. Instead, this page runs a complete Python3 installation with isort installed entirely within your browser. To accomplish this, it utilizes the [pyodide](https://github.com/iodide-project/pyodide) project.
+
+<head>
+<script type="text/javascript">
+    // set the pyodide files URL (packages.json, pyodide.asm.data etc)
+    window.languagePluginUrl = 'https://pyodide-cdn2.iodide.io/v0.15.0/full/';
+</script>
+<script src="https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js"></script>
+<script src="https://pagecdn.io/lib/ace/1.4.5/ace.js" integrity="sha256-5Xkhn3k/1rbXB+Q/DX/2RuAtaB4dRRyQvMs83prFjpM=" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="/docs/interactive/interactive.css">
+</head>
+
+
+<div id="liveTester">
+<div id="sideBySide">
+<div id="inputEditor" class="editor">from future import braces
+import b
+import b
+import os
+import a
+from future import braces
+import b
+import a
+import b, a
+</div>
+<div id="outputEditor" class="editor">Loading...</div>
+<div>
+
+&nbsp;Configuration (Note: the below must follow JSON format). Full configuration guide is <a href="/docs/configuration/options">here</a>:
+
+<div id="configEditor" class="configurator">{"line_length": 80,
+ "multi_line_output": 2,
+ "atomic": true
+}
+</div>
+</div>
+</div>
+</div>
+
+<script src="/docs/interactive/interactive.js"></script>
+<div style="clear:both;"></div>
+Like what you saw? Installing isort to use locally is as simple as `pip3 install isort`.
