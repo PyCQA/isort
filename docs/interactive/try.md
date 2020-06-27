@@ -32,7 +32,7 @@ import b, a
 <div id="outputEditor" class="editor">Loading...</div>
 <div>
 
-&nbsp;Configuration (Note: the below must follow JSON format). Full configuration guide is <a href="/docs/configuration/options">here</a>:
+&nbsp;Configuration (Note: the below must follow JSON format). Full configuration guide is <a href="https://timothycrosley.github.io/isort/docs/configuration/options/">here</a>:
 
 <div id="configEditor" class="configurator">{"line_length": 80,
  "multi_line_output": 2,
