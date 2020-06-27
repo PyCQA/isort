@@ -637,12 +637,10 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
 
-    src_paths = set(config_dict.setdefault("src_paths", ()))
+    src_paths = config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
     for file_name in file_names:
         if os.path.isdir(file_name):
             src_paths.add(Path(file_name).resolve())
-        else:
-            src_paths.add(Path(file_name).parent.resolve())
 
     config = Config(**config_dict)
     if show_config:

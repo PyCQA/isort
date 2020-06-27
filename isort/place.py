@@ -2,6 +2,7 @@
 import importlib
 import os
 from fnmatch import fnmatch
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -17,6 +18,7 @@ def module(name: str, config: Config = DEFAULT_CONFIG) -> str:
     return module_with_reason(name, config)[0]
 
 
+@lru_cache(maxsize=1000)
 def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> Tuple[str, str]:
     """Returns the section placement for the given module name alongside the reasoning."""
     return (

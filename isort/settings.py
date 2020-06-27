@@ -212,6 +212,9 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
+    def __hash__(self):
+        return id(self)
+
 
 _DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
 
