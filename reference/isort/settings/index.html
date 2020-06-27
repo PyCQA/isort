@@ -1329,6 +1329,8 @@
 
     <span class="n">known_standard_library</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
+    <span class="n">extra_standard_library</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
     <span class="n">known_other</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
     <span class="n">multi_line_output</span><span class="p">:</span> <span class="n">WrapModes</span> <span class="o">=</span> <span class="n">WrapModes</span><span class="o">.</span><span class="n">GRID</span>  <span class="c1"># type: ignore</span>
@@ -1488,6 +1490,10 @@
                 <span class="n">f</span><span class="s2">&quot;{self.wrap_length} &gt; {self.line_length}.&quot;</span>
 
             <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <span class="n">_DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">_Config</span><span class="p">()),</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;defaults&quot;</span><span class="p">}</span>
 
@@ -2525,6 +2531,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">ensure_newline_before_comments</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">extra_standard_library</span>
 </code></pre></div>
 
 

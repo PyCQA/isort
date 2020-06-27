@@ -1340,7 +1340,7 @@
 
         <span class="s2">&quot;--src-path&quot;</span><span class="p">,</span>
 
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;source_paths&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span>
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
@@ -2314,17 +2314,13 @@
 
     <span class="n">write_to_stdout</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;write_to_stdout&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
-    <span class="n">src_paths</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+    <span class="n">src_paths</span> <span class="o">=</span> <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">()))</span>
 
     <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">:</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
 
             <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
 
     <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
 
@@ -2682,17 +2678,13 @@
 
 <span class="w">    </span><span class="n">write_to_stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;write_to_stdout&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">src_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">set</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="n">src_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">(</span><span class="n">config_dict</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()))</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nf">file_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">file_names</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="nf">file_name</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">src_paths</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="nf">file_name</span><span class="p">).</span><span class="n">resolve</span><span class="p">())</span><span class="w"></span>
-
-<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">src_paths</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="nf">file_name</span><span class="p">).</span><span class="n">parent</span><span class="p">.</span><span class="n">resolve</span><span class="p">())</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span><span class="w"></span>
 
