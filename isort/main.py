@@ -137,7 +137,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--src",
         "--src-path",
-        dest="source_paths",
+        dest="src_paths",
         action="append",
         help="Add an explicitly defined source path "
         "(modules within src paths have their imports automatically catorgorized as first_party).",
@@ -637,7 +637,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
 
-    src_paths = config_dict.setdefault("src_paths", set())
+    src_paths = set(config_dict.setdefault("src_paths", ()))
     for file_name in file_names:
         if os.path.isdir(file_name):
             src_paths.add(Path(file_name).resolve())
