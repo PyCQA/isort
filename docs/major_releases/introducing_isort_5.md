@@ -1,5 +1,5 @@
-isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it conceived more than ten years ago.
-It's also the first version to require Python3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
+isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it was conceived more than ten years ago.
+It's also the first version to require Python 3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.
 
 [Click here for an attempt at full changelog with a list of breaking changes.](https://timothycrosley.github.io/isort/CHANGELOG/)
@@ -7,7 +7,7 @@ This does mean that there may be some pain with the upgrade process, but we beli
 
 So why the massive change? 
 
-# Profile Support
+# Profile support
 ```
 isort --profile black .
 isort --profile django .
@@ -53,7 +53,8 @@ import b
 isort has been refactored to use a streaming architecture. This means it can sort files of *any* size (even larger than the Python interpreter supports!) without breaking a sweat.
 It also means that even when sorting imports in smaller files, it is faster and more resource-efficient.
 
-# Consistent behavior across **all** environments.
+# Consistent behavior across **all** environments
+
 Sorting the same file with the same configuration should give you the same output no matter what computer or OS you are running. Extensive effort has been placed around refactoring
 how modules are placed and how configuration files are loaded to ensure this is the case.
 
@@ -98,10 +99,10 @@ isort now exposes its programmatic API as a first-class citizen. This API makes 
 
 # Solid base for the future
 
-A major focus for the release was to give isort a solid foundation for the next 5-10 years of the projects life.
+A major focus for the release was to give isort a solid foundation for the next 5-10 years of the project's life.
 isort has been refactored into functional components that are easily testable. The project now has 100% code coverage.
-It utilizes tools like [hypothesis](https://hypothesis.readthedocs.io/en/latest/) to reduce the number of unexpected errors.
-It went from fully dynamic to fully static typing using mypy. Finally, it utilizes the latest linters both on (like [deepsource](https://deepsource.io/gh/timothycrosley/isort/)) and offline (like [flake8](https://flake8.pycqa.org/en/latest/)) to help ensure a higher bar for all code contributions into the future.
+It utilizes tools like [Hypothesis](https://hypothesis.readthedocs.io/en/latest/) to reduce the number of unexpected errors.
+It went from fully dynamic to fully static typing using mypy. Finally, it utilizes the latest linters both on (like [DeepSource](https://deepsource.io/gh/timothycrosley/isort/)) and offline (like [Flake8](https://flake8.pycqa.org/en/latest/)) to help ensure a higher bar for all code contributions into the future.
 
 # Give 5.0.0 a try!
 
