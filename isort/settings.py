@@ -20,18 +20,13 @@ from warnings import warn
 
 from . import stdlibs
 from ._future import dataclass, field
+from ._vendored import toml
 from .exceptions import ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
-
-try:
-    import toml
-
-except ImportError:
-    toml = None  # type: ignore
 
 try:
     import appdirs
@@ -467,13 +462,12 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
 
     with open(file_path) as config_file:
         if file_path.endswith(".toml"):
-            if toml:
-                config = toml.load(config_file)
-                for section in sections:
-                    config_section = config
-                    for key in section.split("."):
-                        config_section = config_section.get(key, {})
-                    settings.update(config_section)
+            config = toml.load(config_file)
+            for section in sections:
+                config_section = config
+                for key in section.split("."):
+                    config_section = config_section.get(key, {})
+                settings.update(config_section)
             else:  # pragma: no cover
                 if "[tool.isort]" in config_file.read():
                     warnings.warn(
