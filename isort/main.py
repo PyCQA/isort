@@ -169,7 +169,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--builtin",
         dest="known_standard_library",
         action="append",
-        help="Force isort to recognize a module as part of the python standard library.",
+        help="Force isort to recognize a module as part of Python's standard library.",
+    )
+    parser.add_argument(
+        "--extra-builtin",
+        dest="extra_standard_library",
+        action="append",
+        help="Extra modules to be included in the list of ones in Python's standard library.",
     )
     parser.add_argument(
         "-c",

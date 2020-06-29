@@ -126,6 +126,7 @@ class _Config:
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
+    extra_standard_library: FrozenSet[str] = frozenset()
     known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
     multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
     forced_separate: Tuple[str, ...] = ()
@@ -374,12 +375,12 @@ class Config(_Config):
         for placement in reversed(self.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"{KNOWN_PREFIX}{known_placement}"
-            known_patterns = list(
-                getattr(self, config_key, self.known_other.get(known_placement, []))
-            )
+            known_modules = getattr(self, config_key, self.known_other.get(known_placement, ()))
+            extra_modules = getattr(self, f"extra_{known_placement}", ())
+            all_modules = set(known_modules).union(extra_modules)
             known_patterns = [
                 pattern
-                for known_pattern in known_patterns
+                for known_pattern in all_modules
                 for pattern in self._parse_known_pattern(known_pattern)
             ]
             for known_pattern in known_patterns:
