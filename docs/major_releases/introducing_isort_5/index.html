@@ -953,25 +953,26 @@
                   <a href="https://github.com/timothycrosley/isort/edit/master/docs/major_releases/introducing_isort_5.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <p>isort 5.0.0 is the first significant release of isort in over five years and the first major refactoring of isort since it conceived more than ten years ago.
+                <p>isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it conceived more than ten years ago.
+It's also the first version to require Python3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.</p>
 <p><a href="https://timothycrosley.github.io/isort/CHANGELOG/">Click here for an attempt at full changelog with a list of breaking changes.</a>
 <a href="https://timothycrosley.github.io/isort/docs/interactive/try/">Try isort 5 right now from your browser!</a></p>
 <p>So why the massive change? </p>
 <h1 id="profile-support">Profile Support</h1>
-<div class="codehilite"><pre><span></span><code><span class="err">isort --profile black</span>
-<span class="err">isort --profile django</span>
-<span class="err">isort --profile pycharm</span>
-<span class="err">isort --profile google</span>
-<span class="err">isort --profile open_stack</span>
-<span class="err">isort --profile plone</span>
-<span class="err">isort --profile attrs</span>
-<span class="err">isort --profile hug</span>
+<div class="codehilite"><pre><span></span><code><span class="err">isort --profile black .</span>
+<span class="err">isort --profile django .</span>
+<span class="err">isort --profile pycharm .</span>
+<span class="err">isort --profile google .</span>
+<span class="err">isort --profile open_stack .</span>
+<span class="err">isort --profile plone .</span>
+<span class="err">isort --profile attrs .</span>
+<span class="err">isort --profile hug .</span>
 </code></pre></div>
 
 
 <p>isort is very configurable. That's great, but it can be overwhelming, both for users and for the isort project. isort now comes with profiles for the most common isort configurations,
-so you likely will not need to configure anything at all.</p>
+so you likely will not need to configure anything at all. This also means that as a project, isort can run extensive tests against these specific profiles to ensure nothing breaks over time.</p>
 <h1 id="sort-imports-anywhere">Sort imports <strong>anywhere</strong></h1>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">a</span>  <span class="c1"># &lt;- These are sorted</span>
 <span class="kn">import</span> <span class="nn">b</span>
@@ -1003,6 +1004,49 @@ It also means that even when sorting imports in smaller files, it is faster and 
 <h1 id="consistent-behavior-across-all-environments">Consistent behavior across <strong>all</strong> environments.</h1>
 <p>Sorting the same file with the same configuration should give you the same output no matter what computer or OS you are running. Extensive effort has been placed around refactoring
 how modules are placed and how configuration files are loaded to ensure this is the case.</p>
+<h1 id="cython-support">Cython support</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">cimport</span> <span class="n">ctime</span>
+<span class="kn">from</span> <span class="nn">cpython</span> <span class="n">cimport</span> <span class="n">PyLong_FromVoidPtr</span>
+<span class="kn">from</span> <span class="nn">cpython</span> <span class="n">cimport</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">py_bool</span>
+<span class="kn">from</span> <span class="nn">cython.operator</span> <span class="n">cimport</span> <span class="n">dereference</span> <span class="k">as</span> <span class="n">deref</span>
+<span class="kn">from</span> <span class="nn">cython.operator</span> <span class="n">cimport</span> <span class="n">preincrement</span> <span class="k">as</span> <span class="n">preinc</span>
+<span class="kn">from</span> <span class="nn">libc.stdint</span> <span class="n">cimport</span> <span class="n">uint64_t</span><span class="p">,</span> <span class="n">uintptr_t</span>
+<span class="kn">from</span> <span class="nn">libc.stdlib</span> <span class="n">cimport</span> <span class="n">atoi</span><span class="p">,</span> <span class="n">calloc</span><span class="p">,</span> <span class="n">free</span><span class="p">,</span> <span class="n">malloc</span>
+<span class="kn">from</span> <span class="nn">libc.string</span> <span class="n">cimport</span> <span class="n">memcpy</span><span class="p">,</span> <span class="n">strlen</span>
+<span class="kn">from</span> <span class="nn">libcpp</span> <span class="n">cimport</span> <span class="nb">bool</span> <span class="k">as</span> <span class="n">cpp_bool</span>
+<span class="kn">from</span> <span class="nn">libcpp.map</span> <span class="n">cimport</span> <span class="nb">map</span> <span class="k">as</span> <span class="n">cpp_map</span>
+<span class="kn">from</span> <span class="nn">libcpp.pair</span> <span class="n">cimport</span> <span class="n">pair</span> <span class="k">as</span> <span class="n">cpp_pair</span>
+<span class="kn">from</span> <span class="nn">libcpp.string</span> <span class="n">cimport</span> <span class="n">string</span> <span class="k">as</span> <span class="n">cpp_string</span>
+<span class="kn">from</span> <span class="nn">libcpp.vector</span> <span class="n">cimport</span> <span class="n">vector</span> <span class="k">as</span> <span class="n">cpp_vector</span>
+<span class="kn">from</span> <span class="nn">multimap</span> <span class="n">cimport</span> <span class="n">multimap</span> <span class="k">as</span> <span class="n">cpp_multimap</span>
+<span class="kn">from</span> <span class="nn">wstring</span> <span class="n">cimport</span> <span class="n">wstring</span> <span class="k">as</span> <span class="n">cpp_wstring</span>
+</code></pre></div>
+
+
+<p>isort 5 adds seamless support for Cython (<code>.pyx</code>) files.</p>
+<h1 id="first-class-python-api">First class Python API</h1>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">isort</span>
+
+<span class="n">isort</span><span class="o">.</span><span class="n">code</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import b</span>
+<span class="s2">import a</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import a</span>
+<span class="s2">import b</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<p>isort now exposes its programmatic API as a first-class citizen. This API makes it easy to extend or use isort in your own Python project. You can see the full documentation for this new API <a href="https://timothycrosley.github.io/isort/reference/isort/api/">here</a>.</p>
+<h1 id="solid-base-for-the-future">Solid base for the future</h1>
+<p>A major focus for the release was to give isort a solid foundation for the next 5-10 years of the projects life.
+isort has been refactored into functional components that are easily testable. The project now has 100% code coverage.
+It utilizes tools like <a href="https://hypothesis.readthedocs.io/en/latest/">hypothesis</a> to reduce the number of unexpected errors.
+It went from fully dynamic to fully static typing using mypy. Finally, it utilizes the latest linters both on (like <a href="https://deepsource.io/gh/timothycrosley/isort/">deepsource</a>) and offline (like <a href="https://flake8.pycqa.org/en/latest/">flake8</a>) to help ensure a higher bar for all code contributions into the future.</p>
+<h1 id="give-500-a-try">Give 5.0.0 a try!</h1>
+<p><a href="https://timothycrosley.github.io/isort/docs/interactive/try/">Try isort 5 right now from your browser!</a></p>
+<p>or </p>
+<p>Install isort locally using <code>pip3 install isort</code></p>
                 
                   
                 
