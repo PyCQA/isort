@@ -705,10 +705,46 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
     <label class="md-nav__link" for="nav-6">
-      Reference
+      Major Releases
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-6">
+        Major Releases
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docs/major_releases/introducing_isort_5/" title="Introducing Isort 5" class="md-nav__link">
+      Introducing Isort 5
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -721,13 +757,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1">
     
-    <label class="md-nav__link" for="nav-6-1">
+    <label class="md-nav__link" for="nav-7-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-6-1">
+      <label class="md-nav__title" for="nav-7-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -992,13 +1028,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-22" type="checkbox" id="nav-6-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-22" type="checkbox" id="nav-7-1-22">
     
-    <label class="md-nav__link" for="nav-6-1-22">
+    <label class="md-nav__link" for="nav-7-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-22">
+      <label class="md-nav__title" for="nav-7-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1040,13 +1076,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-23" type="checkbox" id="nav-6-1-23">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-23" type="checkbox" id="nav-7-1-23">
     
-    <label class="md-nav__link" for="nav-6-1-23">
+    <label class="md-nav__link" for="nav-7-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-23">
+      <label class="md-nav__title" for="nav-7-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1526,7 +1562,11 @@
     - a new <code>--interactive</code> flag has been added to enable the old style behaviour.
   - isort now works on contiguous sections of imports, instead of one whole file at a time.
   - isort now formats all nested "as" imports in the "from" form. <code>import x.y as a</code> becomes <code>from x import y as a</code>.
-  - <code>keep_direct_and_as_imports</code> option now defaults to <code>True</code>.</p>
+  - <code>keep_direct_and_as_imports</code> option now defaults to <code>True</code>.
+  - <code>appdirs</code> is no longer supported. Unless manually specified, config should be project config only.
+  - <code>toml</code> is now installed as a vendorized module, meaning pyproject.toml based config is always supported.
+  - Completely new Python API, old version is removed and no longer accessible.
+  - New module placement logic and module fully replaces old finders. Old approach is still available via <code>--old-finders</code>.</p>
 <p>Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.
   - isort now utilizes black internally to ensure more consistent formatting.</p>

@@ -388,18 +388,54 @@
       
       
 
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Major Releases
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Major Releases
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/major_releases/introducing_isort_5/" title="Introducing Isort 5" class="md-nav__link">
+      Introducing Isort 5
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7" checked>
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-7">
       Reference
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-7">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -414,13 +450,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1" checked>
     
-    <label class="md-nav__link" for="nav-6-1">
+    <label class="md-nav__link" for="nav-7-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-6-1">
+      <label class="md-nav__title" for="nav-7-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -790,13 +826,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-22" type="checkbox" id="nav-6-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-22" type="checkbox" id="nav-7-1-22">
     
-    <label class="md-nav__link" for="nav-6-1-22">
+    <label class="md-nav__link" for="nav-7-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-22">
+      <label class="md-nav__title" for="nav-7-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -838,13 +874,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-23" type="checkbox" id="nav-6-1-23">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-23" type="checkbox" id="nav-7-1-23">
     
-    <label class="md-nav__link" for="nav-6-1-23">
+    <label class="md-nav__link" for="nav-7-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-23">
+      <label class="md-nav__title" for="nav-7-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1141,6 +1177,8 @@
 
 <span class="kn">from</span> <span class="nn">._future</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
+<span class="kn">from</span> <span class="nn">._vendored</span> <span class="kn">import</span> <span class="n">toml</span>
+
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">ProfileDoesNotExist</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
@@ -1152,26 +1190,6 @@
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">WrapModes</span>
 
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">from_string</span> <span class="k">as</span> <span class="n">wrap_mode_from_string</span>
-
-<span class="k">try</span><span class="p">:</span>
-
-    <span class="kn">import</span> <span class="nn">toml</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-    <span class="n">toml</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># type: ignore</span>
-
-<span class="k">try</span><span class="p">:</span>
-
-    <span class="kn">import</span> <span class="nn">appdirs</span>
-
-    <span class="k">if</span> <span class="n">appdirs</span><span class="o">.</span><span class="n">system</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
-
-        <span class="n">appdirs</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="s2">&quot;linux2&quot;</span>  <span class="c1"># pragma: no cover</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-    <span class="n">appdirs</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="n">SUPPORTED_EXTENSIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;.pyi&quot;</span><span class="p">,</span> <span class="s2">&quot;.pyx&quot;</span><span class="p">)</span>
 
@@ -1222,22 +1240,6 @@
 <span class="p">}</span>
 
 <span class="n">FALLBACK_CONFIG_SECTIONS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;isort&quot;</span><span class="p">,</span> <span class="s2">&quot;tool:isort&quot;</span><span class="p">,</span> <span class="s2">&quot;tool.isort&quot;</span><span class="p">)</span>
-
-<span class="n">FALLBACK_CONFIGS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-
-<span class="k">if</span> <span class="n">appdirs</span><span class="p">:</span>
-
-    <span class="n">FALLBACK_CONFIGS</span> <span class="o">=</span> <span class="p">(</span>
-
-        <span class="n">appdirs</span><span class="o">.</span><span class="n">user_config_dir</span><span class="p">(</span><span class="s2">&quot;.isort.cfg&quot;</span><span class="p">),</span>
-
-        <span class="n">appdirs</span><span class="o">.</span><span class="n">user_config_dir</span><span class="p">(</span><span class="s2">&quot;.editorconfig&quot;</span><span class="p">),</span>
-
-    <span class="p">)</span>
-
-<span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-
-    <span class="n">FALLBACK_CONFIGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;~/.isort.cfg&quot;</span><span class="p">,</span> <span class="s2">&quot;~/.editorconfig&quot;</span><span class="p">)</span>
 
 <span class="n">IMPORT_HEADING_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;import_heading_&quot;</span>
 
@@ -1761,17 +1763,17 @@
 
             <span class="n">config_key</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{KNOWN_PREFIX}{known_placement}&quot;</span>
 
-            <span class="n">known_patterns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">known_modules</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_other</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span> <span class="p">()))</span>
 
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_other</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">extra_modules</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;extra_{known_placement}&quot;</span><span class="p">,</span> <span class="p">())</span>
 
-            <span class="p">)</span>
+            <span class="n">all_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">known_modules</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">)</span>
 
             <span class="n">known_patterns</span> <span class="o">=</span> <span class="p">[</span>
 
                 <span class="n">pattern</span>
 
-                <span class="k">for</span> <span class="n">known_pattern</span> <span class="ow">in</span> <span class="n">known_patterns</span>
+                <span class="k">for</span> <span class="n">known_pattern</span> <span class="ow">in</span> <span class="n">all_modules</span>
 
                 <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_known_pattern</span><span class="p">(</span><span class="n">known_pattern</span><span class="p">)</span>
 
@@ -1909,19 +1911,17 @@
 
         <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.toml&quot;</span><span class="p">):</span>
 
-            <span class="k">if</span> <span class="n">toml</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
 
-                <span class="n">config</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
 
-                <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+                <span class="n">config_section</span> <span class="o">=</span> <span class="n">config</span>
 
-                    <span class="n">config_section</span> <span class="o">=</span> <span class="n">config</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
 
-                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                    <span class="n">config_section</span> <span class="o">=</span> <span class="n">config_section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
 
-                        <span class="n">config_section</span> <span class="o">=</span> <span class="n">config_section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
-
-                    <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config_section</span><span class="p">)</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config_section</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
 
@@ -2084,10 +2084,6 @@
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">DEFAULT_CONFIG</span>
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code><span class="n">FALLBACK_CONFIGS</span>
 </code></pre></div>
 
 
@@ -2433,17 +2429,17 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">config_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{KNOWN_PREFIX}{known_placement}&quot;</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">known_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">config_key</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">known_other</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span><span class="w"> </span><span class="p">()))</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">config_key</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">known_other</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">known_placement</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">))</span><span class="w"></span>
+<span class="w">            </span><span class="n">extra_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;extra_{known_placement}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
 
-<span class="w">            </span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">all_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">(</span><span class="n">known_modules</span><span class="p">).</span><span class="ow">union</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n"></span>
 
 <span class="n">                pattern</span>
 
-<span class="n">                for known_pattern in known_patterns</span>
+<span class="n">                for known_pattern in all_modules</span>
 
 <span class="n">                for pattern in self._parse_known_pattern(known_pattern)</span>
 

@@ -385,6 +385,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#extra-standard-library" class="md-nav__link">
+    Extra Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-other" class="md-nav__link">
     Known Other
   </a>
@@ -714,13 +721,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#source-paths" class="md-nav__link">
-    Source Paths
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -938,10 +938,46 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
     <label class="md-nav__link" for="nav-6">
-      Reference
+      Major Releases
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-6">
+        Major Releases
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../major_releases/introducing_isort_5/" title="Introducing Isort 5" class="md-nav__link">
+      Introducing Isort 5
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -954,13 +990,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1">
     
-    <label class="md-nav__link" for="nav-6-1">
+    <label class="md-nav__link" for="nav-7-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-6-1">
+      <label class="md-nav__title" for="nav-7-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1225,13 +1261,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-22" type="checkbox" id="nav-6-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-22" type="checkbox" id="nav-7-1-22">
     
-    <label class="md-nav__link" for="nav-6-1-22">
+    <label class="md-nav__link" for="nav-7-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-22">
+      <label class="md-nav__title" for="nav-7-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1273,13 +1309,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1-23" type="checkbox" id="nav-6-1-23">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-23" type="checkbox" id="nav-7-1-23">
     
-    <label class="md-nav__link" for="nav-6-1-23">
+    <label class="md-nav__link" for="nav-7-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-6-1-23">
+      <label class="md-nav__title" for="nav-7-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1527,6 +1563,13 @@
         <li class="md-nav__item">
   <a href="#known-standard-library" class="md-nav__link">
     Known Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-standard-library" class="md-nav__link">
+    Extra Standard Library
   </a>
   
 </li>
@@ -1861,13 +1904,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#source-paths" class="md-nav__link">
-    Source Paths
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -1997,7 +2033,7 @@ how you want your imports sorted, organized, and formatted.</p>
 <h2 id="skip">Skip</h2>
 <p>Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>frozenset({'.nox', 'node_modules', 'buck-out', '.venv', '.mypy_cache', 'build', '.pants.d', '.hg', 'dist', '.git', '_build', '.eggs', 'venv', '.tox'})</code><br />
+<strong>Default:</strong> <code>frozenset({'venv', '.nox', 'node_modules', 'buck-out', '.mypy_cache', '.tox', '.pants.d', '.venv', 'build', '.git', '.eggs', '_build', 'dist', '.hg'})</code><br />
 <strong>Python &amp; Config File Name:</strong> skip<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -2097,14 +2133,23 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--project</li>
 </ul>
 <h2 id="known-standard-library">Known Standard Library</h2>
-<p>Force isort to recognize a module as part of the python standard library.</p>
+<p>Force isort to recognize a module as part of Python's standard library.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>frozenset({'multiprocessing', 'codeop', 'pprint', 'chunk', 'msilib', 'concurrent', 'sched', 'random', 'webbrowser', 'socketserver', 'nis', 'tracemalloc', 'filecmp', 'formatter', 'codecs', 'winsound', 'tty', 'xml', 'gzip', 'binascii', 'enum', 'symtable', '_thread', 'xmlrpc', 'io', 'timeit', 'typing', 'datetime', 'sysconfig', 'ipaddress', 'traceback', 'zipfile', 'audioop', 'mimetypes', 'poplib', 'glob', 'weakref', 'pdb', 'locale', 'queue', 'collections', '_dummy_thread', 'trace', 'linecache', 'code', 'wave', 'reprlib', 'zipimport', 'posix', 'select', 'time', 'sqlite3', 'cgitb', 'ast', 'imp', 'shutil', 'resource', 'decimal', 'itertools', 'json', 'curses', 'pkgutil', 'contextvars', 'bdb', 'dis', 'pstats', 'copyreg', 'distutils', 'marshal', 'winreg', 'faulthandler', 'nntplib', 'ssl', 'struct', 'functools', 'pydoc', 'stat', 'asyncore', 'runpy', 'token', 'ossaudiodev', 'shlex', 'urllib', 'cgi', 'imghdr', 'netrc', 'operator', 'py_compile', 'unittest', 'sunau', 'tempfile', 'textwrap', 'dbm', 'calendar', 'cmath', 'selectors', 'dataclasses', 'pickletools', 'macpath', 'pipes', 'pyclbr', 'asyncio', 'copy', 'spwd', 'heapq', 'statistics', 'venv', 'optparse', 'string', 'encodings', 'fnmatch', 'ftplib', 'bisect', 'fractions', 'msvcrt', 'html', 'binhex', 'crypt', 'colorsys', 'telnetlib', 'smtplib', 'ctypes', 'stringprep', 'fpectl', 'warnings', 'atexit', 'signal', 'subprocess', 'aifc', 'getpass', 'ensurepip', 'imaplib', 'gc', 'profile', 'parser', 'math', 'errno', 'numbers', 'readline', 'argparse', 'mailbox', 'smtpd', 'zlib', 'os', 'platform', 'tarfile', 'tkinter', 'configparser', 'plistlib', 'keyword', 'pathlib', 'mailcap', 'lzma', 'cProfile', 'sndhdr', 'secrets', 'mmap', 'array', 'pickle', 'syslog', 'threading', 'xdrlib', 'http', 'socket', 'tabnanny', 'email', 'rlcompleter', 'logging', 'inspect', 'test', 'quopri', 'difflib', 'bz2', 'types', 'csv', 'gettext', 'dummy_threading', 'symbol', 'turtledemo', 'compileall', 'hmac', 'doctest', 'unicodedata', 'turtle', 'uuid', 'sys', 'termios', 'modulefinder', 'contextlib', 'tokenize', 'zipapp', 're', 'cmd', 'uu', 'base64', 'fileinput', 'wsgiref', 'getopt', 'grp', 'lib2to3', 'pwd', 'site', 'asynchat', 'shelve', 'pty', 'builtins', 'fcntl', 'importlib', 'abc', 'hashlib'})</code><br />
+<strong>Default:</strong> <code>frozenset({'_thread', 'asyncio', 'cgitb', 'hmac', 'ctypes', 'multiprocessing', 'stat', 'functools', 'posixpath', 'atexit', 'configparser', 'tarfile', 'numbers', 'errno', 'gzip', 'cgi', 'concurrent', 'pwd', 'heapq', 'sqlite3', 'select', 'spwd', 'csv', 'distutils', 'syslog', 'time', 'quopri', 'shlex', 'audioop', 'fileinput', 'doctest', 'queue', 'email', 'pdb', 'fpectl', 'winsound', 'fcntl', 'glob', 'operator', 'colorsys', 'locale', 'contextlib', 'urllib', 'uu', 'venv', 'imaplib', 'pstats', 'dis', 'plistlib', 'sysconfig', 'lzma', 'weakref', 'unittest', 'signal', 'compileall', 'html', 'secrets', 'tracemalloc', 'aifc', 'profile', 'termios', 'test', 'turtledemo', 'tty', 'mailbox', 'ftplib', 'webbrowser', 'zipfile', 'asyncore', 're', 'unicodedata', 'linecache', 'json', 'types', 'shelve', 'pty', 'os', 'threading', 'bz2', 'encodings', 'grp', 'math', 'cProfile', 'builtins', 'inspect', 'collections', 'nis', 'chunk', 'turtle', 'uuid', 'getopt', 'symtable', 'token', 'dataclasses', 'array', 'codecs', 'pipes', 'itertools', 'netrc', 'binascii', 'telnetlib', 'filecmp', 'winreg', 'zipimport', 'symbol', 'decimal', 'difflib', 'traceback', 'mmap', 'smtplib', 'argparse', 'string', 'poplib', 'rlcompleter', 'wave', 'site', 'macpath', 'zlib', 'bdb', 'socketserver', 'cmath', 'modulefinder', 'bisect', 'mimetypes', 'statistics', 'trace', 'binhex', 'fnmatch', 'pkgutil', 'pyclbr', 'xml', 'readline', 'xmlrpc', 'tokenize', 'resource', 'keyword', 'copyreg', 'getpass', 'ast', 'abc', 'ipaddress', 'sched', 'runpy', 'crypt', 'textwrap', 'contextvars', 'random', 'marshal', 'ssl', 'selectors', 'timeit', 'ntpath', 'ensurepip', 'parser', 'msvcrt', 'sndhdr', 'typing', 'formatter', 'pathlib', 'platform', 'lib2to3', 'base64', 'ossaudiodev', 'nntplib', 'dbm', 'asynchat', 'mailcap', 'copy', 'reprlib', 'tempfile', 'enum', 'posix', 'dummy_threading', 'faulthandler', 'py_compile', 'gc', 'hashlib', 'fractions', 'smtpd', 'pprint', 'zipapp', 'tabnanny', 'sre_constants', 'logging', 'sunau', 'pickletools', 'importlib', 'stringprep', 'struct', 'subprocess', 'optparse', 'tkinter', 'http', '_dummy_thread', 'curses', 'socket', 'shutil', 'wsgiref', 'gettext', 'pydoc', 'sys', 'pickle', 'io', 'imghdr', 'xdrlib', 'msilib', 'cmd', 'datetime', 'imp', 'codeop', 'calendar', 'code', 'warnings'})</code><br />
 <strong>Python &amp; Config File Name:</strong> known_standard_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>-b</li>
 <li>--builtin</li>
+</ul>
+<h2 id="extra-standard-library">Extra Standard Library</h2>
+<p>Extra modules to be included in the list of ones in Python's standard library.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> extra_standard_library<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--extra-builtin</li>
 </ul>
 <h2 id="known-other">Known Other</h2>
 <p><strong>No Description</strong></p>
@@ -2225,7 +2270,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="default-section">Default Section</h2>
 <p>Sets the default section for imports (by default FIRSTPARTY) options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> <code>FIRSTPARTY</code><br />
+<strong>Default:</strong> <code>THIRDPARTY</code><br />
 <strong>Python &amp; Config File Name:</strong> default_section<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -2542,13 +2587,14 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--profile</li>
 </ul>
 <h2 id="src-paths">Src Paths</h2>
-<p><strong>No Description</strong></p>
+<p>Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> src_paths<br />
 <strong>CLI Flags:</strong></p>
 <ul>
-<li><strong>Not Supported</strong></li>
+<li>--src</li>
+<li>--src-path</li>
 </ul>
 <h2 id="old-finders">Old Finders</h2>
 <p>Use the old deprecated finder logic that relies on environment introspection magic.</p>
@@ -2558,17 +2604,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--old-finders</li>
-<li>--magic</li>
-</ul>
-<h2 id="source-paths">Source Paths</h2>
-<p>Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).</p>
-<p><strong>Type:</strong> String<br />
-<strong>Default:</strong> <code>None</code><br />
-<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>--src</li>
-<li>--src-path</li>
+<li>--magic-placement</li>
 </ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
