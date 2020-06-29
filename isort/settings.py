@@ -28,14 +28,6 @@ from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-try:
-    import appdirs
-
-    if appdirs.system == "darwin":
-        appdirs.system = "linux2"  # pragma: no cover
-except ImportError:
-    appdirs = None
-
 SUPPORTED_EXTENSIONS = (".py", ".pyi", ".pyx")
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",
@@ -62,14 +54,6 @@ CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
     ".editorconfig": ("*", "*.py", "**.py", "*.{py}"),
 }
 FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
-FALLBACK_CONFIGS: Tuple[str, ...]
-if appdirs:
-    FALLBACK_CONFIGS = (
-        appdirs.user_config_dir(".isort.cfg"),
-        appdirs.user_config_dir(".editorconfig"),
-    )
-else:  # pragma: no cover
-    FALLBACK_CONFIGS = ("~/.isort.cfg", "~/.editorconfig")
 
 IMPORT_HEADING_PREFIX = "import_heading_"
 KNOWN_PREFIX = "known_"
