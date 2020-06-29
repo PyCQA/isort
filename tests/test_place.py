@@ -15,7 +15,8 @@ def test_module(src_path):
 
 
 def test_extra_standard_library(src_path):
-    place_tester = partial(place.module, config=Config(src_paths=[src_path],
-                                                       extra_standard_library=["hug"]))
+    place_tester = partial(
+        place.module, config=Config(src_paths=[src_path], extra_standard_library=["hug"])
+    )
     assert place_tester("os") == sections.STDLIB
     assert place_tester("hug") == sections.STDLIB
