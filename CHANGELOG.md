@@ -21,6 +21,10 @@ Changelog
   - isort now works on contiguous sections of imports, instead of one whole file at a time.
   - isort now formats all nested "as" imports in the "from" form. `import x.y as a` becomes `from x import y as a`.
   - `keep_direct_and_as_imports` option now defaults to `True`.
+  - `appdirs` is no longer supported. Unless manually specified, config should be project config only.
+  - `toml` is now installed as a vendorized module, meaning pyproject.toml based config is always supported.
+  - Completely new Python API, old version is removed and no longer accessible.
+  - New module placement logic and module fully replaces old finders. Old approach is still available via `--old-finders`.
 
 Internal:
   - isort now utilizes mypy and typing to filter out typing related issues before deployment.
