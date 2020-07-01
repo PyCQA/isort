@@ -261,8 +261,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#500-unreleased" class="md-nav__link">
-    5.0.0 UNRELEASED
+  <a href="#500-penny-july-4-2020" class="md-nav__link">
+    5.0.0 Penny - July 4, 2020
   </a>
   
 </li>
@@ -569,6 +569,18 @@
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docs/configuration/action_comments/" title="Action Comments" class="md-nav__link">
+      Action Comments
+    </a>
+  </li>
+
         
           
           
@@ -1256,8 +1268,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#500-unreleased" class="md-nav__link">
-    5.0.0 UNRELEASED
+  <a href="#500-penny-july-4-2020" class="md-nav__link">
+    5.0.0 Penny - July 4, 2020
   </a>
   
 </li>
@@ -1551,39 +1563,55 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/timothycrosley/isort/edit/master/CHANGELOG.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/timothycrosley/isort/edit/develop/CHANGELOG.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="changelog">Changelog</h1>
-<h3 id="500-unreleased">5.0.0 UNRELEASED</h3>
-<p><strong>Breaking changes:</strong>
-  - isort now requires Python 3.6+ to run but continues to support formatting on ALL versions of python including
-    Python 2 code.
-  - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
-      - user
-  - Config files are no longer composed on-top of each-other. Instead the first config file found is used.
-    - Since there is no longer composition negative form settings (such as --dont-skip) are no longer required and have been removed.
-  - Two-letter shortened setting names (like <code>ac</code> for <code>atomic</code>) now require two dashes to avoid ambiguity: <code>--ac</code>.
-  - For consistency with other tools <code>-v</code> now is shorthand for verbose and <code>-V</code> is shorthand for version. See Issue: #1067.
-  - <code>length_sort_{section_name}</code> config usage has been deprecated. Instead <code>length_sort_sections</code> list can be used to specify a list of sections that need to be length sorted.
-  - <code>safety_excludes</code> and <code>unsafe</code> have been deprecated
-  - Config now includes as default full set of safety directories defined by safety excludes.
-  - <code>--recursive</code> option has been removed. Directories passed in are now automatically sorted recursive.
-  - <code>--apply</code> option has been removed as it is the default behaviour.
-  - isort now does nothing, beyond giving instructions and exiting status code 0, when ran with no arguments.
-    - a new <code>--interactive</code> flag has been added to enable the old style behaviour.
-  - isort now works on contiguous sections of imports, instead of one whole file at a time.
-  - isort now formats all nested "as" imports in the "from" form. <code>import x.y as a</code> becomes <code>from x import y as a</code>.
-  - <code>keep_direct_and_as_imports</code> option now defaults to <code>True</code>.
-  - <code>appdirs</code> is no longer supported. Unless manually specified, config should be project config only.
-  - <code>toml</code> is now installed as a vendorized module, meaning pyproject.toml based config is always supported.
-  - Completely new Python API, old version is removed and no longer accessible.
-  - New module placement logic and module fully replaces old finders. Old approach is still available via <code>--old-finders</code>.</p>
-<p>Internal:
-  - isort now utilizes mypy and typing to filter out typing related issues before deployment.
-  - isort now utilizes black internally to ensure more consistent formatting.</p>
-<p>Planned:
-  - profile support for common project types (black, django, google, etc)</p>
+<h3 id="500-penny-july-4-2020">5.0.0 Penny - July 4, 2020</h3>
+<p><strong>Breaking changes:</strong></p>
+<ul>
+<li>isort now requires Python 3.6+ to run but continues to support formatting on ALL versions of python including
+    Python 2 code.</li>
+<li>isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:<ul>
+<li>user</li>
+</ul>
+</li>
+<li>Config files are no longer composed on-top of each-other. Instead the first config file found is used.<ul>
+<li>Since there is no longer composition negative form settings (such as --dont-skip) are no longer required and have been removed.</li>
+</ul>
+</li>
+<li>Two-letter shortened setting names (like <code>ac</code> for <code>atomic</code>) now require two dashes to avoid ambiguity: <code>--ac</code>.</li>
+<li>For consistency with other tools <code>-v</code> now is shorthand for verbose and <code>-V</code> is shorthand for version. See Issue: #1067.</li>
+<li><code>length_sort_{section_name}</code> config usage has been deprecated. Instead <code>length_sort_sections</code> list can be used to specify a list of sections that need to be length sorted.</li>
+<li><code>safety_excludes</code> and <code>unsafe</code> have been deprecated</li>
+<li>Config now includes as default full set of safety directories defined by safety excludes.</li>
+<li><code>--recursive</code> option has been removed. Directories passed in are now automatically sorted recursive.</li>
+<li><code>--apply</code> option has been removed as it is the default behaviour.</li>
+<li>isort now does nothing, beyond giving instructions and exiting status code 0, when ran with no arguments.<ul>
+<li>a new <code>--interactive</code> flag has been added to enable the old style behaviour.</li>
+</ul>
+</li>
+<li>isort now works on contiguous sections of imports, instead of one whole file at a time.</li>
+<li>isort now formats all nested "as" imports in the "from" form. <code>import x.y as a</code> becomes <code>from x import y as a</code>.</li>
+<li><code>keep_direct_and_as_imports</code> option now defaults to <code>True</code>.</li>
+<li><code>appdirs</code> is no longer supported. Unless manually specified, config should be project config only.</li>
+<li><code>toml</code> is now installed as a vendorized module, meaning pyproject.toml based config is always supported.</li>
+<li>Completely new Python API, old version is removed and no longer accessible.</li>
+<li>New module placement logic and module fully replaces old finders. Old approach is still available via <code>--old-finders</code>.</li>
+</ul>
+<p>Internal:</p>
+<ul>
+<li>isort now utilizes mypy and typing to filter out typing related issues before deployment.</li>
+<li>
+<p>isort now utilizes black internally to ensure more consistent formatting.</p>
+</li>
+<li>
+<p>profile support for common project types (black, django, google, etc)</p>
+</li>
+<li>
+<p>Much much more. There is some difficulty in fully capturing the extent of changes in this release - just because of how all encompassing the release is. See: <a href="https://github.com/timothycrosley/isort/issues?q=is%3Aissue+is%3Aclosed">Github Issues</a> for more.</p>
+</li>
+</ul>
 <h3 id="4321-june-25-2019-hot-fix-release">4.3.21 - June 25, 2019 - hot fix release</h3>
 <ul>
 <li>Fixed issue #957 - Long aliases and use_parentheses generates invalid syntax</li>
@@ -1880,13 +1908,13 @@ Breaking Changes:<ul>
           </a>
         
         
-          <a href="../docs/configuration/options/" title="Options" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../docs/configuration/action_comments/" title="Action Comments" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Options
+                Action Comments
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
