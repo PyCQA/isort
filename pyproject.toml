@@ -77,6 +77,9 @@ isort = "isort.main:ISortCommand"
 [tool.poetry.plugins."pylama.linter"]
 isort = "isort = isort.pylama_isort:Linter"
 
+[tool.portray.mkdocs]
+edit_uri="https://github.com/timothycrosley/isort/edit/develop/"
+
 [tool.portray.mkdocs.theme]
 name = "material"
 favicon = "art/logo.png"
