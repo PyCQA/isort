@@ -11,7 +11,6 @@ import os
 import posixpath
 import re
 import sys
-import warnings
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
