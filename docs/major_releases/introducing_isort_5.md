@@ -6,7 +6,7 @@ This does mean that there may be some pain with the upgrade process, but we beli
 
 [Click here for an attempt at full changelog with a list of breaking changes.](https://timothycrosley.github.io/isort/CHANGELOG/)
 
-[Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
+[Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/quick_start/0.-try/)
 
 So why the massive change?
 
@@ -129,8 +129,10 @@ It went from fully dynamic to fully static typing using mypy. Finally, it utiliz
 
 # Give 5.0.0 a try!
 
-[Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
+[Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/quick_start/0.-try/)
 
-or
+OR
 
-Install isort locally using `pip3 install isort`
+Install isort locally using `pip3 install isort`.
+
+[Click here for full installation instructions.](https://timothycrosley.github.io/isort/docs/quick_start/1.-install/)
