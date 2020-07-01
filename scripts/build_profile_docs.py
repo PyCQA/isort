@@ -1,6 +1,6 @@
 #! /bin/env python
 import os
-from typing import Any, Generator, Iterable, Type, Dict
+from typing import Any, Dict, Generator, Iterable, Type
 
 from isort._future import dataclass
 from isort.main import _build_arg_parser
