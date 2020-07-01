@@ -1,7 +1,7 @@
 Changelog
 =========
 
-### 5.0.0 UNRELEASED
+### 5.0.0 Penny - July 4, 2020
 **Breaking changes:**
 
   - isort now requires Python 3.6+ to run but continues to support formatting on ALL versions of python including
