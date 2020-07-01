@@ -4,6 +4,7 @@ test_patterns = ["tests/**"]
 exclude_patterns = [
   "tests/**",
   "isort/_future/**",
+  "isort/_vendored/**",
 ]
 
 
