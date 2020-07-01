@@ -376,54 +376,18 @@
       
       
 
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
-    
-    <label class="md-nav__link" for="nav-5">
-      Interactive
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
-        Interactive
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../interactive/try/" title="Try" class="md-nav__link">
-      Try
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-5">
       Major Releases
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-5">
         Major Releases
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -447,6 +411,54 @@
       Introducing Isort 5
     </a>
     
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Quick Start
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Quick Start
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../quick_start/0.-try/" title="0. Try" class="md-nav__link">
+      0. Try
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../quick_start/1.-install/" title="1. Install" class="md-nav__link">
+      1. Install
+    </a>
   </li>
 
         
@@ -981,8 +993,8 @@
 <p>isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it was conceived more than ten years ago.
 It's also the first version to require Python 3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.</p>
-<p><a href="https://timothycrosley.github.io/isort/CHANGELOG/">Click here for an attempt at full changelog with a list of breaking changes.</a>
-<a href="https://timothycrosley.github.io/isort/docs/interactive/try/">Try isort 5 right now from your browser!</a></p>
+<p><a href="https://timothycrosley.github.io/isort/CHANGELOG/">Click here for an attempt at full changelog with a list of breaking changes.</a></p>
+<p><a href="https://timothycrosley.github.io/isort/docs/quick_start/0.-try/">Try isort 5 right now from your browser!</a></p>
 <p>So why the massive change?</p>
 <h1 id="profile-support">Profile support</h1>
 <div class="codehilite"><pre><span></span><code><span class="err">isort --profile black .</span>
@@ -1049,6 +1061,23 @@ how modules are placed and how configuration files are loaded to ensure this is 
 
 
 <p>isort 5 adds seamless support for Cython (<code>.pyx</code>) files.</p>
+<h1 id="action-comments">Action Comments</h1>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">e</span>
+<span class="kn">import</span> <span class="nn">f</span>
+
+<span class="c1"># isort: off  &lt;- Turns isort parsing off</span>
+
+<span class="kn">import</span> <span class="nn">b</span>
+<span class="kn">import</span> <span class="nn">a</span>
+
+<span class="c1"># isort: on  &lt;- Turns isort parsing back on</span>
+
+<span class="kn">import</span> <span class="nn">c</span>
+<span class="kn">import</span> <span class="nn">d</span>
+</code></pre></div>
+
+
+<p>isort 5 adds support for <a href="https://timothycrosley.github.io/isort/docs/configuration/action_comments/">Action Comments</a> which provide a quick and convient way to control the flow of parsing within single source files.</p>
 <h1 id="first-class-python-api">First class Python API</h1>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">isort</span>
 
@@ -1069,9 +1098,10 @@ isort has been refactored into functional components that are easily testable. T
 It utilizes tools like <a href="https://hypothesis.readthedocs.io/en/latest/">Hypothesis</a> to reduce the number of unexpected errors.
 It went from fully dynamic to fully static typing using mypy. Finally, it utilizes the latest linters both on (like <a href="https://deepsource.io/gh/timothycrosley/isort/">DeepSource</a>) and offline (like <a href="https://flake8.pycqa.org/en/latest/">Flake8</a>) to help ensure a higher bar for all code contributions into the future.</p>
 <h1 id="give-500-a-try">Give 5.0.0 a try!</h1>
-<p><a href="https://timothycrosley.github.io/isort/docs/interactive/try/">Try isort 5 right now from your browser!</a></p>
-<p>or</p>
-<p>Install isort locally using <code>pip3 install isort</code></p>
+<p><a href="https://timothycrosley.github.io/isort/docs/quick_start/0.-try/">Try isort 5 right now from your browser!</a></p>
+<p>OR</p>
+<p>Install isort locally using <code>pip3 install isort</code>.</p>
+<p><a href="https://timothycrosley.github.io/isort/docs/quick_start/1.-install/">Click here for full installation instructions.</a></p>
                 
                   
                 
@@ -1093,7 +1123,7 @@ It went from fully dynamic to fully static typing using mypy. Finally, it utiliz
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../interactive/try/" title="Try" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../../contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1102,19 +1132,19 @@ It went from fully dynamic to fully static typing using mypy. Finally, it utiliz
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Try
+                4. Acknowledgements
               </span>
             </div>
           </a>
         
         
-          <a href="../../../reference/isort/api/" title="API" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../quick_start/0.-try/" title="0. Try" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                API
+                0. Try
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
