@@ -2,7 +2,7 @@
 import os
 from typing import Any, Generator, Iterable, Type
 
-from isort._future import dataclass, field
+from isort._future import dataclass
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
 

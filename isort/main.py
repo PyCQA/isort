@@ -583,7 +583,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
 
 def _preconvert(item):
     """Preconverts objects from native types into JSONifyiable types"""
-    if isinstance(item, frozenset) or isinstance(item, set):
+    if isinstance(item, (set, frozenset)):
         return list(item)
     elif isinstance(item, WrapModes):
         return item.name
