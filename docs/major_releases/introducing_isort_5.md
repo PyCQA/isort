@@ -5,6 +5,7 @@ It's also the first version to require Python 3 (Python 3.6+ at that!) to run - 
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.
 
 [Click here for an attempt at full changelog with a list of breaking changes.](https://timothycrosley.github.io/isort/CHANGELOG/)
+
 [Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
 
 So why the massive change?
@@ -82,6 +83,26 @@ from wstring cimport wstring as cpp_wstring
 ```
 
 isort 5 adds seamless support for Cython (`.pyx`) files.
+
+# Action Comments
+
+```python3
+import e
+import f
+
+# isort: off  <- Turns isort parsing off
+
+import b
+import a
+
+# isort: on  <- Turns isort parsing back on
+
+import c
+import d
+```
+
+isort 5 adds support for [Action Comments](https://timothycrosley.github.io/isort/docs/configuration/action_comments/) which provide a quick and convient way to control the flow of parsing within single source files.
+
 
 # First class Python API
 
