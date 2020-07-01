@@ -56,7 +56,7 @@ def human(name: str) -> str:
     if name in HUMAN_NAME:
         return HUMAN_NAME[name]
 
-    return " ".join([part.capitalize() for part in name.replace("-", "_").split("_")])
+    return " ".join(part.capitalize() for part in name.replace("-", "_").split("_"))
 
 
 def config_options() -> Generator[ConfigOption, None, None]:
