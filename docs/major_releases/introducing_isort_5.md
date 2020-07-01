@@ -1,3 +1,5 @@
+# Introducing isort 5
+
 isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it was conceived more than ten years ago.
 It's also the first version to require Python 3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.
@@ -5,7 +7,7 @@ This does mean that there may be some pain with the upgrade process, but we beli
 [Click here for an attempt at full changelog with a list of breaking changes.](https://timothycrosley.github.io/isort/CHANGELOG/)
 [Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
 
-So why the massive change? 
+So why the massive change?
 
 # Profile support
 ```
@@ -108,6 +110,6 @@ It went from fully dynamic to fully static typing using mypy. Finally, it utiliz
 
 [Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/interactive/try/)
 
-or 
+or
 
 Install isort locally using `pip3 install isort`

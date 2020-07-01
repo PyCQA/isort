@@ -21,6 +21,8 @@ As a code formatter isort has opinions. However, it also allows you to have your
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.
 
+Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in profiles](https://timothycrosley.github.io/isort/docs/configuration/profiles/).
+
 """
 parser = _build_arg_parser()
 
