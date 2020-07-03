@@ -21,6 +21,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 
 """
 
+
 def format_profile(profile_name: str, profile: Dict[str, Any]) -> str:
     options = "\n".join(f" - **{name}**: `{repr(value)}`" for name, value in profile.items())
     return f"""
