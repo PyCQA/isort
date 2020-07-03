@@ -32,8 +32,8 @@ COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
 
 def sort_code_string(
     code: str,
-    extension="py",
-    config=DEFAULT_CONFIG,
+    extension: str = "py",
+    config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     **config_kwargs,
