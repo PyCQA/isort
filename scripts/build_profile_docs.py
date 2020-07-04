@@ -1,11 +1,7 @@
 #! /bin/env python
 import os
 from typing import Any, Dict, Generator, Iterable, Type
-
-from isort._future import dataclass
-from isort.main import _build_arg_parser
 from isort.profiles import profiles
-from isort.settings import _DEFAULT_SETTINGS as config
 
 OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/profiles.md")
