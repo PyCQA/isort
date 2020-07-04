@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.0.2 - July 4, 2020
+  - Ensured black profile was complete, adding missing line_length definition.
+
 ### 5.0.1 - July 4, 2020
   - Fixed a runtime error in a vendored dependency (toml).
 

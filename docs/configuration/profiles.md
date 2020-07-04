@@ -15,6 +15,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
  - **force_grid_wrap**: `0`
  - **use_parentheses**: `True`
  - **ensure_newline_before_comments**: `True`
+ - **line_length**: `88`
 
 #django
 
