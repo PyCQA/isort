@@ -1,6 +1,9 @@
 Changelog
 =========
 
+### 5.0.1 - July 4, 2020
+  - Fixed a runtime error in a vendored dependency (toml).
+
 ### 5.0.0 Penny - July 4, 2020
 **Breaking changes:**
 
