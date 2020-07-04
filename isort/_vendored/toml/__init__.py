@@ -2,7 +2,7 @@
 
 Released under the MIT license.
 """
-from toml import decoder, encoder
+from . import decoder, encoder
 
 __version__ = "0.10.1"
 _spec_ = "0.5.0"
