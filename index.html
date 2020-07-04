@@ -1107,11 +1107,6 @@ supports formatting Python 2 code too.</p>
 </code></pre></div>
 
 
-<p>Install isort with support for reading configuration from <code>pyproject.toml</code>:</p>
-<div class="codehilite"><pre><span></span><code>pip install isort<span class="o">[</span>pyproject<span class="o">]</span>
-</code></pre></div>
-
-
 <h1 id="using-isort">Using isort</h1>
 <p><strong>From the command line</strong>:</p>
 <div class="codehilite"><pre><span></span><code>isort mypythonfile.py mypythonfile2.py
@@ -1218,8 +1213,7 @@ project specific configuration.</p>
 <p>Or, if you prefer, you can add an <code>isort</code> or <code>tool:isort</code> section to
 your project's <code>setup.cfg</code> or <code>tox.ini</code> file with any desired settings.</p>
 <p>You can also add your desired settings under a <code>[tool.isort]</code> section in
-your <code>pyproject.toml</code> file.  For <code>pyproject.toml</code> support, use
-<code>pip install isort[pyproject]</code>.</p>
+your <code>pyproject.toml</code> file.</p>
 <p>You can then override any of these settings by using command line
 arguments, or by passing in override values to any of the public Python API
 functions.</p>
