@@ -7,7 +7,7 @@
 [![Lint Status](https://github.com/timothycrosley/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ALint)
 [![Code coverage Status](https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/timothycrosley/isort)
 [![Maintainability](https://api.codeclimate.com/v1/badges/060372d3e77573072609/maintainability)](https://codeclimate.com/github/timothycrosley/isort/maintainability)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/hug/)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/isort/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Downloads](https://pepy.tech/badge/isort)](https://pepy.tech/project/isort)
 [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/timothycrosley/isort/?ref=repository-badge)
