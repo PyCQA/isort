@@ -34,7 +34,7 @@ This means other developers will know to look here and you will keep your projec
 The only disadvantage is that other tools you use might not yet support this format, negating the cleanliness.
 
 ```toml
-[tools.isort]
+[tool.isort]
 profile = "hug"
 src_paths = ["isort", "test"]
 ```
