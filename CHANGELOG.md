@@ -1,6 +1,8 @@
 Changelog
 =========
 
+NOTE: isort follows the [semver](https://semver.org/) versioning standard.
+
 ### 5.0.1 - July 4, 2020
   - Fixed a runtime error in a vendored dependency (toml).
 
