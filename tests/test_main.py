@@ -86,7 +86,15 @@ def test_is_python_file_fifo(tmpdir):
 
 
 def test_main(capsys, tmpdir):
-    base_args = ["--settings-path", str(tmpdir), "--virtual-env", str(tmpdir)]
+    base_args = [
+        "--settings-path",
+        str(tmpdir),
+        "--virtual-env",
+        str(tmpdir),
+        "--src-path",
+        str(tmpdir),
+    ]
+    tmpdir.mkdir(".git")
 
     # If no files are passed in the quick guide is returned
     main.main(base_args)

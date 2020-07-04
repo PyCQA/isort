@@ -1,9 +1,6 @@
 """isort/settings.py.
 
 Defines how the default settings for isort should be loaded
-
-(First from the default setting dictionary at the top of the file, then overridden by any settings
- in ~/.isort.cfg or $XDG_CONFIG_HOME/.isort.cfg if there are any)
 """
 import configparser
 import fnmatch
@@ -217,15 +214,18 @@ class Config(_Config):
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
         config_settings: Dict[str, Any]
+        project_root: str
         if settings_file:
             config_settings = _get_config_data(
                 settings_file,
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
+            project_root = os.path.dirname(settings_file)
         elif settings_path:
-            config_settings = _find_config(settings_path)
+            project_root, config_settings = _find_config(settings_path)
         else:
             config_settings = {}
+            project_root = os.getcwd()
 
         profile_name = config_overrides.get("profile", config_settings.get("profile", ""))
         profile: Dict[str, Any] = {}
@@ -241,7 +241,6 @@ class Config(_Config):
             sources.append(config_settings)
         if config_overrides:
             config_overrides["source"] = RUNTIME_SOURCE
-            config_overrides["runtime_src_paths"] = config_overrides.pop("src_paths", ())
             sources.append(config_overrides)
 
         combined_config = {**profile, **config_settings, **config_overrides}
@@ -277,20 +276,19 @@ class Config(_Config):
             combined_config[key] = type(default_value)(value)
 
         if "directory" not in combined_config:
-            combined_config["directory"] = os.path.basename(
-                config_settings.get("source", None) or os.getcwd()
+            combined_config["directory"] = (
+                os.path.dirname(config_settings["source"])
+                if config_settings.get("source", None)
+                else os.getcwd()
             )
 
-        if "src_paths" not in combined_config and not combined_config.get("runtime_src_paths"):
-            combined_config["src_paths"] = frozenset((Path.cwd().resolve(),))
+        path_root = Path(combined_config.get("directory", project_root)).resolve()
+        path_root = path_root if path_root.is_dir() else path_root.parent
+        if "src_paths" not in combined_config:
+            combined_config["src_paths"] = frozenset((path_root, path_root / "src"))
         else:
-            path_root = Path(combined_config.get("directory", Path.cwd())).resolve()
-            path_root = path_root if path_root.is_dir() else path_root.parent
             combined_config["src_paths"] = frozenset(
-                {path_root / path for path in combined_config.get("src_paths", ())}.union(
-                    Path.cwd().resolve() / path
-                    for path in combined_config.get("runtime_src_paths", ())
-                )
+                path_root / path for path in combined_config.get("src_paths", ())
             )
 
         # Remove any config values that are used for creating config object but
@@ -407,7 +405,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
 
 
 @lru_cache()
-def _find_config(path: str) -> Dict[str, Any]:
+def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     current_directory = path
     tries = 0
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
@@ -423,11 +421,11 @@ def _find_config(path: str) -> Dict[str, Any]:
                     warn(f"Failed to pull configuration information from {potential_config_file}")
                     config_data = {}
                 if config_data:
-                    return config_data
+                    return (current_directory, config_data)
 
         for stop_dir in STOP_CONFIG_SEARCH_ON_DIRS:
-            if os.path.isdir(stop_dir):
-                break
+            if os.path.isdir(os.path.join(current_directory, stop_dir)):
+                return (current_directory, {})
 
         new_directory = os.path.split(current_directory)[0]
         if new_directory == current_directory:
@@ -436,7 +434,7 @@ def _find_config(path: str) -> Dict[str, Any]:
         current_directory = new_directory
         tries += 1
 
-    return {}
+    return (path, {})
 
 
 @lru_cache()

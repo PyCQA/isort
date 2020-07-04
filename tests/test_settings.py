@@ -42,13 +42,13 @@ force_grid_wrap=true
 """,
         "utf8",
     )
-    assert not settings._find_config(str(tmpdir))
+    assert not settings._find_config(str(tmpdir))[1]
 
     # or if it is malformed
     settings._find_config.cache_clear()
     settings._get_config_data.cache_clear()
     tmp_config.write_text("""arstoyrsyan arienrsaeinrastyngpuywnlguyn354q^%$)(%_)@$""", "utf8")
-    assert not settings._find_config(str(tmpdir))
+    assert not settings._find_config(str(tmpdir))[1]
 
     # can when it has either a file format, or generic relevant section
     settings._find_config.cache_clear()
@@ -60,7 +60,7 @@ force_grid_wrap=true
 """,
         "utf8",
     )
-    assert settings._find_config(str(tmpdir))
+    assert settings._find_config(str(tmpdir))[1]
 
 
 def test_get_config_data(tmpdir):
