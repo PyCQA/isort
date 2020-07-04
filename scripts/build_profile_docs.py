@@ -1,6 +1,7 @@
 #! /bin/env python
 import os
 from typing import Any, Dict, Generator, Iterable, Type
+
 from isort.profiles import profiles
 
 OUTPUT_FILE = os.path.abspath(
