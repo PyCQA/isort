@@ -52,5 +52,5 @@ def use_isort(*args):
     document.sort_code = sort_code
     document.updateOutput()
 
-micropip.install('https://timothycrosley.github.io/isort/docs/quick_start/isort-5.0.0-py3-none-any.whl').then(use_isort)`);
+micropip.install('https://timothycrosley.github.io/isort/docs/quick_start/isort-5.0.1-py3-none-any.whl').then(use_isort)`);
 });
