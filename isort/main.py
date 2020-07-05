@@ -84,7 +84,9 @@ def sort_imports(
         skipped: bool = False
         if check:
             try:
-                incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
+                incorrectly_sorted = not api.check_file(
+                    file_name, config=config, **kwargs
+                )
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
@@ -105,11 +107,15 @@ def sort_imports(
         return None
 
 
-def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
+def iter_source_code(
+    paths: Iterable[str], config: Config, skipped: List[str]
+) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
+            for dirpath, dirnames, filenames in os.walk(
+                path, topdown=True, followlinks=True
+            ):
                 base_path = Path(dirpath)
                 for dirname in list(dirnames):
                     if config.is_skipped(base_path / dirname):
@@ -278,12 +284,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-i",
         "--indent",
-        help='String to place for indents defaults to "    " (4 spaces).',
+        help='String to place for indents defaults to `"    "` (4 spaces).',
         dest="indent",
         type=str,
     )
     parser.add_argument(
-        "-j", "--jobs", help="Number of files to process in parallel.", dest="jobs", type=int
+        "-j",
+        "--jobs",
+        help="Number of files to process in parallel.",
+        dest="jobs",
+        type=int,
     )
     parser.add_argument(
         "-k",
@@ -292,8 +302,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Turns off default behavior that removes direct imports when as imports exist.",
     )
-    parser.add_argument("--lai", "--lines-after-imports", dest="lines_after_imports", type=int)
-    parser.add_argument("--lbt", "--lines-between-types", dest="lines_between_types", type=int)
+    parser.add_argument(
+        "--lai", "--lines-after-imports", dest="lines_after_imports", type=int
+    )
+    parser.add_argument(
+        "--lbt", "--lines-between-types", dest="lines_between_types", type=int
+    )
     parser.add_argument(
         "--le",
         "--line-ending",
@@ -524,7 +538,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "part of the command",
     )
     parser.add_argument(
-        "files", nargs="*", help="One or more Python source files that need their imports sorted."
+        "files",
+        nargs="*",
+        help="One or more Python source files that need their imports sorted.",
     )
     parser.add_argument(
         "--py",
@@ -569,7 +585,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     parser = _build_arg_parser()
-    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
+    arguments = {
+        key: value for key, value in vars(parser.parse_args(argv)).items() if value
+    }
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
     multi_line_output = arguments.get("multi_line_output", None)
@@ -593,7 +611,9 @@ def _preconvert(item):
         raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
 
-def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
+def main(
+    argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None
+) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
         print(ASCII_ART)
@@ -650,7 +670,11 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     config = Config(**config_dict)
     if show_config:
-        print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
+        print(
+            json.dumps(
+                config.__dict__, indent=4, separators=(",", ": "), default=_preconvert
+            )
+        )
         return
 
     wrong_sorted_files = False
