@@ -8,9 +8,7 @@ from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
 
 OUTPUT_FILE = os.path.abspath(
-    os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md"
-    )
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
 MD_NEWLINE = "  "
 HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String"}
@@ -44,11 +42,7 @@ class ConfigOption:
     example_cli: str = ""
 
     def __post_init__(self):
-        if (
-            self.example_cfg == ""
-            and self.example_pyproject_toml == ""
-            and self.example_cli == ""
-        ):
+        if self.example_cfg == "" and self.example_pyproject_toml == "" and self.example_cli == "":
             self.example_section = "**No Examples**"
         else:
             if self.example_cfg == "":
@@ -176,17 +170,12 @@ def config_options() -> Generator[ConfigOption, None, None]:
             extra_kwargs["description"] = cli.help
 
         yield ConfigOption(
-            name=name,
-            default=cli.default,
-            cli_options=cli.option_strings,
-            **extra_kwargs,
+            name=name, default=cli.default, cli_options=cli.option_strings, **extra_kwargs,
         )
 
 
 def document_text() -> str:
-    return (
-        f"{HEADER}{''.join(str(config_option) for config_option in config_options())}"
-    )
+    return f"{HEADER}{''.join(str(config_option) for config_option in config_options())}"
 
 
 def write_document():
