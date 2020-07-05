@@ -50,10 +50,8 @@ class ISortCommand(setuptools.Command):
     def run(self) -> None:
         arguments = self.arguments
         wrong_sorted_files = False
-        arguments["check"] = True
         for path in self.distribution_files():
             for python_file in glob.iglob(os.path.join(path, "*.py")):
-
                 try:
                     if not api.check_file(python_file, **arguments):
                         wrong_sorted_files = True  # pragma: no cover

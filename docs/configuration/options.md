@@ -34,7 +34,7 @@ Force specific imports to the top of their appropriate section.
 Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'node_modules', '.hg', '_build', 'dist', 'build', '.eggs', '.tox', '.nox', 'buck-out', '.mypy_cache', '.pants.d', '.venv', 'venv', '.git'})`  
+**Default:** `frozenset({'buck-out', '.nox', '.mypy_cache', '.venv', 'node_modules', 'dist', '.eggs', 'venv', '.pants.d', '.hg', '_build', 'build', '.tox', '.git'})`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -146,7 +146,7 @@ Force isort to recognize a module as being part of the current python project.
 Force isort to recognize a module as part of Python's standard library.
 
 **Type:** Frozenset  
-**Default:** `frozenset({'distutils', 'webbrowser', 'codeop', 'binhex', 'tempfile', 'platform', 'struct', 'base64', 'calendar', 'ast', 'abc', 'pwd', 'spwd', 'plistlib', 'numbers', 'secrets', 'signal', 'grp', 'unittest', 'statistics', 'typing', 'imaplib', 'multiprocessing', 'uuid', 'wsgiref', 'email', 'tokenize', 'getpass', 'asynchat', 'imp', 'mmap', 'sys', 'colorsys', 'cmath', 'tabnanny', 'rlcompleter', 'json', 'sqlite3', 'pprint', 'copyreg', 'zipapp', 'contextvars', 'tarfile', 'telnetlib', 'fileinput', 'modulefinder', 'curses', 'syslog', 'imghdr', 'copy', 'msvcrt', 'cgi', 'weakref', 'datetime', 'dataclasses', 'optparse', 'locale', 'ossaudiodev', '_thread', 'fcntl', 'sched', 'zipfile', 'subprocess', 'formatter', 'operator', 'xml', 'faulthandler', 'dummy_threading', 'shlex', 'argparse', 'trace', 'ntpath', 'unicodedata', 'uu', 'symbol', 'atexit', 'ipaddress', 'runpy', 'binascii', 'doctest', 'termios', 'lzma', 'pdb', 'shutil', 'readline', 'zlib', 're', 'zipimport', 'audioop', 'quopri', 'sndhdr', 'venv', 'msilib', 'array', 'symtable', 'encodings', 'timeit', 'nis', 'http', 'fnmatch', 'codecs', 'stat', 'csv', 'site', 'mimetypes', 'inspect', 'poplib', 'getopt', 'pipes', 'select', 'configparser', 'dbm', 'time', 'html', 'os', 'logging', 'types', 'chunk', 'winreg', 'nntplib', 'compileall', 'pydoc', 'bisect', 'warnings', 'py_compile', 'random', 'importlib', 'cProfile', 'tty', 'linecache', 'shelve', 'parser', 'gc', 'mailbox', 'reprlib', 'token', 'turtledemo', 'pty', 'contextlib', 'hmac', 'socket', 'asyncore', 'keyword', 'pkgutil', 'aifc', 'bdb', 'queue', 'xdrlib', 'ctypes', 'dis', 'ftplib', 'gzip', 'smtplib', 'code', 'pickle', 'socketserver', 'fpectl', 'resource', 'sunau', 'io', 'bz2', 'decimal', 'traceback', 'hashlib', 'smtpd', 'itertools', 'concurrent', 'textwrap', 'pstats', 'tracemalloc', 'sysconfig', 'errno', 'mailcap', 'pickletools', 'test', 'pathlib', 'functools', 'tkinter', 'xmlrpc', 'ensurepip', 'string', 'enum', '_dummy_thread', 'profile', 'glob', 'math', 'posixpath', 'builtins', 'fractions', 'crypt', 'urllib', 'gettext', 'ssl', 'sre_constants', 'collections', 'asyncio', 'netrc', 'filecmp', 'turtle', 'stringprep', 'selectors', 'heapq', 'macpath', 'winsound', 'marshal', 'posix', 'pyclbr', 'cgitb', 'difflib', 'threading', 'wave', 'cmd', 'lib2to3'})`  
+**Default:** `frozenset({'imaplib', 'datetime', 'collections', '_dummy_thread', 'email', 'lzma', 'mimetypes', 'statistics', 'tracemalloc', 'os', 'bdb', 'webbrowser', 'pkgutil', 'code', 'textwrap', 'html', 'time', 'shutil', 'cProfile', 'pwd', 'dis', 'modulefinder', 'builtins', 'chunk', 'mmap', 'nntplib', 'heapq', 'socket', 'threading', 'aifc', 'pydoc', 'sndhdr', 'macpath', 'io', 'unittest', 'gc', 'readline', 'ast', 'turtle', 'fractions', 'copy', 'ipaddress', 'asyncio', 'zlib', 'sre_constants', 'plistlib', 'fcntl', 'shlex', 'stringprep', 'cgitb', 'importlib', 'posixpath', 'sqlite3', 'test', 'urllib', 're', 'multiprocessing', 'py_compile', 'typing', 'pyclbr', 'select', 'traceback', 'msvcrt', 'decimal', '_thread', 'enum', 'syslog', 'linecache', 'ssl', 'base64', 'winreg', 'marshal', 'sched', 'codecs', 'errno', 'dbm', 'difflib', 'functools', 'resource', 'unicodedata', 'poplib', 'secrets', 'turtledemo', 'distutils', 'reprlib', 'mailbox', 'pipes', 'zipapp', 'array', 'winsound', 'getpass', 'tokenize', 'crypt', 'curses', 'site', 'csv', 'pickle', 'sysconfig', 'xdrlib', 'zipfile', 'audioop', 'doctest', 'http', 'imghdr', 'ctypes', 'shelve', 'ensurepip', 'math', 'signal', 'colorsys', 'pathlib', 'contextvars', 'runpy', 'profile', 'wave', 'stat', 'calendar', 'copyreg', 'random', 'cmd', 'asyncore', 'tempfile', 'selectors', 'keyword', 'inspect', 'formatter', 'smtpd', 'fileinput', 'tarfile', 'lib2to3', 'xml', 'fpectl', 'asynchat', 'parser', 'cmath', 'xmlrpc', 'json', 'symtable', 'platform', 'types', 'hmac', 'abc', 'ftplib', 'codeop', 'optparse', 'tkinter', 'argparse', 'nis', 'smtplib', 'tabnanny', 'ntpath', 'locale', 'sunau', 'subprocess', 'telnetlib', 'struct', 'binascii', 'configparser', 'compileall', 'quopri', 'rlcompleter', 'pdb', 'token', 'bisect', 'dataclasses', 'zipimport', 'warnings', 'dummy_threading', 'contextlib', 'glob', 'posix', 'tty', 'pickletools', 'trace', 'atexit', 'hashlib', 'concurrent', 'itertools', 'netrc', 'encodings', 'numbers', 'spwd', 'weakref', 'termios', 'ossaudiodev', 'symbol', 'getopt', 'gettext', 'grp', 'bz2', 'faulthandler', 'pty', 'uu', 'queue', 'timeit', 'pstats', 'logging', 'venv', 'socketserver', 'pprint', 'uuid', 'wsgiref', 'filecmp', 'string', 'binhex', 'sys', 'mailcap', 'imp', 'msilib', 'cgi', 'operator', 'fnmatch', 'gzip'})`  
 **Python & Config File Name:** known_standard_library  
 **CLI Flags:**
 
@@ -477,25 +477,26 @@ Forces import adds even if the original file is empty.
  - --force-adds
 
 ## Force Alphabetical Sort Within Sections
-**No Description**
+Force all imports to be sorted alphabetically within a section
 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** force_alphabetical_sort_within_sections  
 **CLI Flags:**
 
- - **Not Supported**
+ - --fass
+ - --force-alphabetical-sort-within-sections
 
 ## Force Alphabetical Sort
-Force all imports to be sorted alphabetically within a section
+Force all imports to be sorted as a single section
 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** force_alphabetical_sort  
 **CLI Flags:**
 
- - --fass
- - --force-alphabetical-sort-within-sections
+ - --fas
+ - --force-alphabetical-sort
 
 ## Force Grid Wrap
 Force number of from imports (defaults to 2) to be grid wrapped regardless of line length

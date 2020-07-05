@@ -248,7 +248,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--fass",
         "--force-alphabetical-sort-within-sections",
         action="store_true",
-        dest="force_alphabetical_sort",
+        dest="force_alphabetical_sort_within_sections",
         help="Force all imports to be sorted alphabetically within a section",
     )
     parser.add_argument(
