@@ -1627,8 +1627,6 @@
 
         <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">False</span>
 
-        <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;check&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_files</span><span class="p">():</span>
 
             <span class="k">for</span> <span class="n">python_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;*.py&quot;</span><span class="p">)):</span>
@@ -1728,8 +1726,6 @@ imports checks on registered modules.</p>
 <span class="w">        </span><span class="n">arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">arguments</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">wrong_sorted_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;check&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">distribution_files</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
 
@@ -2456,8 +2452,6 @@ interaction should be done by 'run()'.</p>
         <span class="n">arguments</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">arguments</span>
 
         <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="k">False</span>
-
-        <span class="n">arguments</span><span class="p">[</span><span class="ss">&quot;check&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">True</span>
 
         <span class="k">for</span> <span class="n">path</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">distribution_files</span><span class="p">():</span>
 
