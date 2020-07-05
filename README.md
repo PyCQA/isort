@@ -110,7 +110,7 @@ isort mypythonfile.py mypythonfile2.py
 or recursively:
 
 ```bash
-isort
+isort .
 ```
 
 *which is equivalent to:*
