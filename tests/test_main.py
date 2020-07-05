@@ -221,6 +221,9 @@ import b
     )
     main.main([str(tmpdir), "--skip", "skip.py", "--check"])
 
+    # without filter options passed in should successfully sort files
+    main.main([str(python_file), str(should_skip), "--verbose", "--atomic"])
+
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""

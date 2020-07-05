@@ -119,6 +119,8 @@ def sort_stream(
         if file_path and config.is_skipped(file_path):
             raise FileSkipSetting(content_source)
 
+    _internal_output = output_stream
+
     if config.atomic:
         try:
             file_content = input_stream.read()
@@ -127,16 +129,21 @@ def sort_stream(
         except SyntaxError:
             raise ExistingSyntaxErrors(content_source)
 
+        if not output_stream.readable():
+            _internal_output = StringIO()
+
     try:
-        changed = _sort_imports(input_stream, output_stream, extension=extension, config=config)
+        changed = _sort_imports(input_stream, _internal_output, extension=extension, config=config)
     except FileSkipComment:
         raise FileSkipComment(content_source)
 
     if config.atomic:
-        output_stream.seek(0)
+        _internal_output.seek(0)
         try:
-            compile(output_stream.read(), content_source, "exec", 0, 1)
-            output_stream.seek(0)
+            compile(_internal_output.read(), content_source, "exec", 0, 1)
+            _internal_output.seek(0)
+            if _internal_output != output_stream:
+                output_stream.write(_internal_output.read())
         except SyntaxError:  # pragma: no cover
             raise IntroducedSyntaxErrors(content_source)
 
