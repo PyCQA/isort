@@ -6,6 +6,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 ### 5.0.3 - July 4, 2020
   - Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/timothycrosley/isort/issues/1258)
   - Fixed missing patch version
+  - Fixed issue #1253: Atomic fails when passed in not readable output stream
 
 ### 5.0.2 - July 4, 2020
   - Ensured black profile was complete, adding missing line_length definition.
