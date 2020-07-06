@@ -63,7 +63,6 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
  - **lines_after_imports**: `2`
  - **lines_between_types**: `1`
  - **multi_line_output**: `3`
- - **not_skip**: `'__init__.py'`
  - **use_parentheses**: `True`
 
 #hug

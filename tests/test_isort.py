@@ -34,7 +34,6 @@ known_third_party = kate
 ignore_frosted_errors = E103
 skip = build,.tox,venv
 balanced_wrapping = true
-not_skip = __init__.py
 """
 SHORT_IMPORT = "from third_party import lib1, lib2, lib3, lib4"
 SINGLE_FROM_IMPORT = "from third_party import lib1"
