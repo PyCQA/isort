@@ -401,8 +401,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--sd",
         "--section-default",
         dest="default_section",
-        help="Sets the default section for import options: "
-        + str(sections.DEFAULT),
+        help="Sets the default section for import options: " + str(sections.DEFAULT),
     )
     parser.add_argument(
         "--sg",
@@ -674,11 +673,11 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     deprecated_flags = config_dict.pop("deprecated_flags", False)
 
-    if deprecated_flags:
+    if deprecated_flags:  # pragma: no cover
         warn(
             f"\n\nThe following deprecated CLI flags where used: {', '.join(deprecated_flags)}!\n"
             "Please see the 5.0.0 upgrade guide:\n"
-            "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n",
+            "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
         )
 
     if "src_paths" in config_dict:
