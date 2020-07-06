@@ -3,6 +3,10 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.0.4 July 6, 2020
+  - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option
+  - Added warning for deprecated CLI flags and linked to upgrade guide.
+
 ### 5.0.3 - July 4, 2020
   - Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/timothycrosley/isort/issues/1258)
   - Fixed missing patch version
@@ -22,7 +26,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
       - user
   - Config files are no longer composed on-top of each-other. Instead the first config file found is used.
-    - Since there is no longer composition negative form settings (such as --dont-skip) are no longer required and have been removed.
+    - Since there is no longer composition negative form settings (such as --dont-skip or it's config file variant `not_skip`) are no longer required and have been removed.
   - Two-letter shortened setting names (like `ac` for `atomic`) now require two dashes to avoid ambiguity: `--ac`.
   - For consistency with other tools `-v` now is shorthand for verbose and `-V` is shorthand for version. See Issue: #1067.
   - `length_sort_{section_name}` config usage has been deprecated. Instead `length_sort_sections` list can be used to specify a list of sections that need to be length sorted.
