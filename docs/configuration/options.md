@@ -10,7 +10,7 @@ Too busy to build your perfect isort configuration? For curated common configura
 
 ## Python Version
 
-Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 37) will be used.
+Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.
 
 **Type:** String  
 **Default:** `py3`  
@@ -259,10 +259,10 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 
 ## Indent
 
-String to place for indents defaults to " " (4 spaces).
+String to place for indents defaults to "    " (4 spaces).
 
 **Type:** String  
-**Default:** ``  
+**Default:** `    `  
 **Python & Config File Name:** indent  
 **CLI Flags:**
 
@@ -276,7 +276,7 @@ String to place for indents defaults to " " (4 spaces).
 **No Description**
 
 **Type:** String  
-**Default:** `#`  
+**Default:** `  #`  
 **Python & Config File Name:** comment_prefix  
 **CLI Flags:**
 
@@ -383,7 +383,7 @@ One or more modules to exclude from the single line rule.
 
 ## Default Section
 
-Sets the default section for imports (by default FIRSTPARTY) options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
+Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 **Type:** String  
 **Default:** `THIRDPARTY`  
@@ -619,28 +619,29 @@ Forces import adds even if the original file is empty.
 
 ## Force Alphabetical Sort Within Sections
 
-**No Description**
+Force all imports to be sorted alphabetically within a section
 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** force_alphabetical_sort_within_sections  
 **CLI Flags:**
 
-- **Not Supported**
+- --fass
+- --force-alphabetical-sort-within-sections
 
 **No Examples**
 
 ## Force Alphabetical Sort
 
-Force all imports to be sorted alphabetically within a section
+Force all imports to be sorted as a single section
 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** force_alphabetical_sort  
 **CLI Flags:**
 
-- --fass
-- --force-alphabetical-sort-within-sections
+- --fas
+- --force-alphabetical-sort
 
 **No Examples**
 
@@ -997,7 +998,7 @@ One or more Python source files that need their imports sorted.
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
--
+- 
 
 **No Examples**
 
@@ -1024,5 +1025,18 @@ See isort's determined config, as well as sources of config options.
 **CLI Flags:**
 
 - --show-config
+
+**No Examples**
+
+## Deprecated Flags
+
+==SUPPRESS==
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --apply
 
 **No Examples**
