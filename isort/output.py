@@ -1,7 +1,7 @@
 import copy
 import itertools
 from functools import partial
-from typing import Iterable, List, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 from isort.format import format_simplified
 
@@ -57,9 +57,6 @@ def sorted_imports(
             from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
         )
 
-        if config.force_sort_within_sections:
-            copied_comments = copy.deepcopy(parsed.categorized_comments)
-
         section_output: List[str] = []
         if config.from_first:
             section_output = _with_from_imports(
@@ -107,11 +104,20 @@ def sorted_imports(
             )
 
         if config.force_sort_within_sections:
-            # Remove comments
-            section_output = [line for line in section_output if not line.startswith("#")]
+            # collapse comments
+            comments_above = []
+            new_section_output: List[str] = []
+            for line in section_output:
+                if line.startswith("#"):
+                    comments_above.append(line)
+                elif comments_above:
+                    new_section_output.append(_LineWithComments(line, comments_above))
+                    comments_above = []
+                else:
+                    new_section_output.append(line)
 
-            section_output = sorting.naturally(
-                section_output,
+            new_section_output = sorting.naturally(
+                new_section_output,
                 key=partial(
                     sorting.section_key,
                     order_by_type=config.order_by_type,
@@ -121,19 +127,11 @@ def sorted_imports(
                 ),
             )
 
-            # Add comments back
-            all_comments = copied_comments["above"]["from"]
-            all_comments.update(copied_comments["above"]["straight"])
-            comment_indexes = {}
-            for module, comment_list in all_comments.items():
-                for idx, line in enumerate(section_output):
-                    if module in line:
-                        comment_indexes[idx] = comment_list
-            added = 0
-            for idx, comment_list in comment_indexes.items():
-                for comment in comment_list:
-                    section_output.insert(idx + added, comment)
-                    added += 1
+            # uncollapse comments
+            section_output = []
+            for line in new_section_output:
+                section_output.extend(getattr(line, "comments", ()))
+                section_output.append(str(line))
 
         section_name = section
         no_lines_before = section_name in config.no_lines_before
@@ -535,3 +533,9 @@ def _normalize_empty_lines(lines: List[str]) -> List[str]:
 
     lines.append("")
     return lines
+
+
+class _LineWithComments(str):
+    def __new__(cls, value, comments):
+        cls.comments = comments
+        return super().__new__(cls, value)  # type: ignore
