@@ -4087,25 +4087,6 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
     assert api.sort_code_string(test_input, **config) == expected_output
 
 
-def test_moving_comments_issue_726():
-    config = {"force_sort_within_sections": 1}  # type: Dict[str, Any]
-    test_input = (
-        "from Blue import models as BlueModels\n"
-        "# comment for PlaidModel\n"
-        "from Plaid.models import PlaidModel\n"
-    )
-    assert api.sort_code_string(test_input, **config) == test_input
-
-    test_input = (
-        "# comment for BlueModels\n"
-        "from Blue import models as BlueModels\n"
-        "# comment for PlaidModel\n"
-        "# another comment for PlaidModel\n"
-        "from Plaid.models import PlaidModel\n"
-    )
-    assert api.sort_code_string(test_input, **config) == test_input
-
-
 def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()

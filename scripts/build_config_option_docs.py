@@ -170,7 +170,7 @@ def config_options() -> Generator[ConfigOption, None, None]:
             extra_kwargs["description"] = cli.help
 
         yield ConfigOption(
-            name=name, default=cli.default, cli_options=cli.option_strings, **extra_kwargs,
+            name=name, default=cli.default, cli_options=cli.option_strings, **extra_kwargs
         )
 
 
