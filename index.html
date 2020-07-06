@@ -511,10 +511,46 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
     
     <label class="md-nav__link" for="nav-7">
-      Reference
+      Upgrade Guides
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-7">
+        Upgrade Guides
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="docs/upgrade_guides/5.0.0/" title="5.0.0" class="md-nav__link">
+      5.0.0
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -527,13 +563,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1" type="checkbox" id="nav-8-1">
     
-    <label class="md-nav__link" for="nav-7-1">
+    <label class="md-nav__link" for="nav-8-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-1">
+      <label class="md-nav__title" for="nav-8-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -798,13 +834,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-22" type="checkbox" id="nav-7-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
     
-    <label class="md-nav__link" for="nav-7-1-22">
+    <label class="md-nav__link" for="nav-8-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-7-1-22">
+      <label class="md-nav__title" for="nav-8-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -846,13 +882,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-23" type="checkbox" id="nav-7-1-23">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
     
-    <label class="md-nav__link" for="nav-7-1-23">
+    <label class="md-nav__link" for="nav-8-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-7-1-23">
+      <label class="md-nav__title" for="nav-8-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1114,7 +1150,7 @@ supports formatting Python 2 code too.</p>
 
 
 <p>or recursively:</p>
-<div class="codehilite"><pre><span></span><code>isort
+<div class="codehilite"><pre><span></span><code>isort .
 </code></pre></div>
 
 
@@ -1157,73 +1193,6 @@ wiki</a>.
 Additionally, I will enthusiastically accept pull requests that include
 plugins for other text editors and add documentation for them as I am
 notified.</p>
-<h1 id="how-does-isort-work">How does isort work?</h1>
-<p>isort parses specified files for global level import lines (imports
-outside of try / except blocks, functions, etc..) and puts them all at
-the top of the file grouped together by the type of import:</p>
-<ul>
-<li>Future</li>
-<li>Python Standard Library</li>
-<li>Third Party</li>
-<li>Current Python Project</li>
-<li>Explicitly Local (. before import, as in: <code>from . import x</code>)</li>
-<li>Custom Separate Sections (Defined by forced_separate list in
-    configuration file)</li>
-<li>Custom Sections (Defined by sections list in configuration file)</li>
-</ul>
-<p>Inside of each section the imports are sorted alphabetically. isort
-automatically removes duplicate python imports, and wraps long from
-imports to the specified line length (defaults to 79).</p>
-<h1 id="when-will-isort-not-work">When will isort not work?</h1>
-<p>If you ever have the situation where you need to have a try / except
-block in the middle of top-level imports or if your import order is
-directly linked to precedence.</p>
-<p>For example: a common practice in Django settings files is importing *
-from various settings files to form a new settings file. In this case if
-any of the imports change order you are changing the settings definition
-itself.</p>
-<p>However, you can configure isort to skip over just these files - or even
-to force certain imports to the top.</p>
-<h1 id="configuring-isort">Configuring isort</h1>
-<p>If you find the default isort settings do not work well for your
-project, isort provides several ways to adjust the behavior.</p>
-<p>To configure isort for a single user create a <code>~/.isort.cfg</code> or
-<code>$XDG_CONFIG_HOME/.isort.cfg</code> file:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
-<span class="na">line_length</span><span class="o">=</span><span class="s">120</span>
-<span class="na">force_to_top</span><span class="o">=</span><span class="s">file1.py,file2.py</span>
-<span class="na">skip</span><span class="o">=</span><span class="s">file3.py,file4.py</span>
-<span class="na">known_future_library</span><span class="o">=</span><span class="s">future,pies</span>
-<span class="na">known_standard_library</span><span class="o">=</span><span class="s">std,std2</span>
-<span class="na">known_third_party</span><span class="o">=</span><span class="s">randomthirdparty</span>
-<span class="na">known_first_party</span><span class="o">=</span><span class="s">mylib1,mylib2</span>
-<span class="na">indent</span><span class="o">=</span><span class="s">&#39;    &#39;</span>
-<span class="na">multi_line_output</span><span class="o">=</span><span class="s">3</span>
-<span class="na">length_sort</span><span class="o">=</span><span class="s">1</span>
-<span class="na">forced_separate</span><span class="o">=</span><span class="s">django.contrib,django.utils</span>
-<span class="na">default_section</span><span class="o">=</span><span class="s">FIRSTPARTY</span>
-<span class="na">no_lines_before</span><span class="o">=</span><span class="s">LOCALFOLDER</span>
-</code></pre></div>
-
-
-<p>Additionally, you can specify project level configuration simply by
-placing a <code>.isort.cfg</code> file at the root of your project. isort will look
-up to 25 directories up, from the file it is ran against, to find a
-project specific configuration.</p>
-<p>Or, if you prefer, you can add an <code>isort</code> or <code>tool:isort</code> section to
-your project's <code>setup.cfg</code> or <code>tox.ini</code> file with any desired settings.</p>
-<p>You can also add your desired settings under a <code>[tool.isort]</code> section in
-your <code>pyproject.toml</code> file.</p>
-<p>You can then override any of these settings by using command line
-arguments, or by passing in override values to any of the public Python API
-functions.</p>
-<p>Finally, as of version 3.0 isort supports editorconfig files using the
-standard syntax defined here: <a href="https://editorconfig.org/">https://editorconfig.org/</a></p>
-<p>Meaning you place any standard isort configuration parameters within a
-.editorconfig file under the <code>*.py</code> section and they will be honored.</p>
-<p>For a full list of isort settings and their meanings <a href="https://github.com/timothycrosley/isort/wiki/isort-Settings">take a look at the
-isort
-wiki</a>.</p>
 <h1 id="multi-line-output-modes">Multi line output modes</h1>
 <p>You will notice above the \"multi_line_output\" setting. This setting
 defines how from imports wrap when they extend past the line_length

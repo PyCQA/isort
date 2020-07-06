@@ -261,6 +261,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#504-july-6-2020" class="md-nav__link">
+    5.0.4 July 6, 2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#503-july-4-2020" class="md-nav__link">
     5.0.3 - July 4, 2020
   </a>
@@ -834,10 +841,46 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
     
     <label class="md-nav__link" for="nav-7">
-      Reference
+      Upgrade Guides
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-7">
+        Upgrade Guides
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docs/upgrade_guides/5.0.0/" title="5.0.0" class="md-nav__link">
+      5.0.0
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -850,13 +893,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1" type="checkbox" id="nav-8-1">
     
-    <label class="md-nav__link" for="nav-7-1">
+    <label class="md-nav__link" for="nav-8-1">
       Isort
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-1">
+      <label class="md-nav__title" for="nav-8-1">
         Isort
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1121,13 +1164,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-22" type="checkbox" id="nav-7-1-22">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
     
-    <label class="md-nav__link" for="nav-7-1-22">
+    <label class="md-nav__link" for="nav-8-1-22">
       Deprecated
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-7-1-22">
+      <label class="md-nav__title" for="nav-8-1-22">
         Deprecated
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1169,13 +1212,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-1-23" type="checkbox" id="nav-7-1-23">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
     
-    <label class="md-nav__link" for="nav-7-1-23">
+    <label class="md-nav__link" for="nav-8-1-23">
       Stdlibs
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-7-1-23">
+      <label class="md-nav__title" for="nav-8-1-23">
         Stdlibs
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1335,6 +1378,13 @@
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#504-july-6-2020" class="md-nav__link">
+    5.0.4 July 6, 2020
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#503-july-4-2020" class="md-nav__link">
@@ -1658,6 +1708,11 @@
                 
                 <h1 id="changelog">Changelog</h1>
 <p>NOTE: isort follows the <a href="https://semver.org/">semver</a> versioning standard.</p>
+<h3 id="504-july-6-2020">5.0.4 July 6, 2020</h3>
+<ul>
+<li>Fixed #1264: a regression with comment handling and <code>force_sort_within_sections</code> config option
+  -</li>
+</ul>
 <h3 id="503-july-4-2020">5.0.3 - July 4, 2020</h3>
 <ul>
 <li>Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/timothycrosley/isort/issues/1258)</li>
@@ -1682,7 +1737,7 @@
 </ul>
 </li>
 <li>Config files are no longer composed on-top of each-other. Instead the first config file found is used.<ul>
-<li>Since there is no longer composition negative form settings (such as --dont-skip) are no longer required and have been removed.</li>
+<li>Since there is no longer composition negative form settings (such as --dont-skip or it's config file variant <code>not_skip</code>) are no longer required and have been removed.</li>
 </ul>
 </li>
 <li>Two-letter shortened setting names (like <code>ac</code> for <code>atomic</code>) now require two dashes to avoid ambiguity: <code>--ac</code>.</li>
