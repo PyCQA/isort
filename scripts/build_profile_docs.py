@@ -24,7 +24,7 @@ def format_profile(profile_name: str, profile: Dict[str, Any]) -> str:
     return f"""
 #{profile_name}
 
-{profile.get('descripiton', '')}
+{profile.get('description', '')}
 {options}
 """
 

@@ -401,8 +401,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--sd",
         "--section-default",
         dest="default_section",
-        help="Sets the default section for imports (by default FIRSTPARTY) options: "
-        + str(sections.DEFAULT),
+        help="Sets the default section for import options: " + str(sections.DEFAULT),
     )
     parser.add_argument(
         "--sg",
@@ -564,6 +563,36 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="See isort's determined config, as well as sources of config options.",
     )
+
+    # deprecated options
+    parser.add_argument(
+        "--recursive",
+        dest="deprecated_flags",
+        action="append_const",
+        const="--recursive",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-rc", dest="deprecated_flags", action="append_const", const="-rc", help=argparse.SUPPRESS
+    )
+    parser.add_argument(
+        "--dont-skip",
+        dest="deprecated_flags",
+        action="append_const",
+        const="--dont-skip",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-ns", dest="deprecated_flags", action="append_const", const="-ns", help=argparse.SUPPRESS
+    )
+    parser.add_argument(
+        "--apply",
+        dest="deprecated_flags",
+        action="append_const",
+        const="-y",
+        help=argparse.SUPPRESS,
+    )
+
     return parser
 
 
@@ -642,6 +671,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
+    deprecated_flags = config_dict.pop("deprecated_flags", False)
+
+    if deprecated_flags:  # pragma: no cover
+        warn(
+            f"\n\nThe following deprecated CLI flags where used: {', '.join(deprecated_flags)}!\n"
+            "Please see the 5.0.0 upgrade guide:\n"
+            "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
+        )
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {

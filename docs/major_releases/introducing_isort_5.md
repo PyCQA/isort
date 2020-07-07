@@ -8,6 +8,8 @@ This does mean that there may be some pain with the upgrade process, but we beli
 
 [Click here for an attempt at full changelog with a list of breaking changes.](https://timothycrosley.github.io/isort/CHANGELOG/)
 
+[Using isort 4.x.x? Click here for the isort 5.0.0 upgrade guide.](https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/)
+
 [Try isort 5 right now from your browser!](https://timothycrosley.github.io/isort/docs/quick_start/0.-try/)
 
 So why the massive change?

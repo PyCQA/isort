@@ -1,6 +1,9 @@
+[tool.black]
+line-length = 100
+
 [tool.poetry]
 name = "isort"
-version = "5.0.3"
+version = "5.0.4"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -28,6 +31,13 @@ classifiers = [
     "Topic :: Utilities",
 ]
 urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
+include = [
+    "CHANGELOG.md",
+    "docs/configuration/*.md",
+    "docs/contributing/*.md",
+    "docs/major_releases/*.md",
+    "docs/quick_start/*.md",
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
