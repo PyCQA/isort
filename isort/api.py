@@ -32,7 +32,7 @@ COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
 
 def sort_code_string(
     code: str,
-    extension: str = "py",
+    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
@@ -41,7 +41,7 @@ def sort_code_string(
     """Sorts any imports within the provided code string, returning a new string with them sorted.
 
     - **code**: The string of code with imports that need to be sorted.
-    - **extension**: The file extension that contains the code.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -65,7 +65,7 @@ def sort_code_string(
 def check_code_string(
     code: str,
     show_diff: bool = False,
-    extension: str = "py",
+    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
@@ -76,7 +76,7 @@ def check_code_string(
 
     - **code**: The string of code with imports that need to be sorted.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
-    - **extension**: The file extension that contains the code.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -96,7 +96,7 @@ def check_code_string(
 def sort_stream(
     input_stream: TextIO,
     output_stream: TextIO,
-    extension: str = "py",
+    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
@@ -107,7 +107,7 @@ def sort_stream(
 
     - **input_stream**: The stream of code with imports that need to be sorted.
     - **output_stream**: The stream where sorted imports should be written to.
-    - **extension**: The file extension that contains the code.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -133,7 +133,12 @@ def sort_stream(
             _internal_output = StringIO()
 
     try:
-        changed = _sort_imports(input_stream, _internal_output, extension=extension, config=config)
+        changed = _sort_imports(
+            input_stream,
+            _internal_output,
+            extension=extension or (file_path and file_path.suffix.lstrip(".")) or "py",
+            config=config,
+        )
     except FileSkipComment:
         raise FileSkipComment(content_source)
 
@@ -153,7 +158,7 @@ def sort_stream(
 def check_stream(
     input_stream: TextIO,
     show_diff: bool = False,
-    extension: str = "py",
+    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
@@ -164,7 +169,7 @@ def check_stream(
 
     - **input_stream**: The stream of code with imports that need to be sorted.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
-    - **extension**: The file extension that contains the code.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -213,6 +218,7 @@ def check_file(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = True,
+    extension: Optional[str] = None,
     **config_kwargs,
 ) -> bool:
     """Checks any imports within the provided file, returning `False` if any unsorted or
@@ -220,17 +226,17 @@ def check_file(
 
     - **filename**: The name or Path of the file to check.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
-    - **extension**: The file extension that contains the code.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
         return check_stream(
             source_file.stream,
             show_diff=show_diff,
-            extension=source_file.extension or "py",
+            extension=extension,
             config=config,
             file_path=file_path or source_file.path,
             disregard_skip=disregard_skip,
@@ -240,7 +246,7 @@ def check_file(
 
 def sort_file(
     filename: Union[str, Path],
-    extension: str = "py",
+    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = True,
@@ -252,7 +258,7 @@ def sort_file(
     """Sorts and formats any groups of imports imports within the provided file or Path.
 
     - **filename**: The name or Path of the file to format.
-    - **extension**: The file extension that contains the code.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -271,6 +277,7 @@ def sort_file(
                     config=config,
                     file_path=file_path or source_file.path,
                     disregard_skip=disregard_skip,
+                    extension=extension,
                     **config_kwargs,
                 )
             else:
@@ -286,6 +293,7 @@ def sort_file(
                             config=config,
                             file_path=file_path or source_file.path,
                             disregard_skip=disregard_skip,
+                            extension=extension,
                             **config_kwargs,
                         )
                     if changed:

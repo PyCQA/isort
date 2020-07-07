@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 ### 5.0.5 July 6, 2020
   - Fixed #1285: packaging issue with bundling tests via poetry.
-
+  - Fixed #1284: Regression when sorting `.pyi` files from CLI using black profile.
 
 ### 5.0.4 July 6, 2020
   - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option

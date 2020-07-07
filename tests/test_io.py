@@ -22,7 +22,9 @@ import Ὡ
     def test_from_content(self, tmpdir):
         test_file = tmpdir.join("file.py")
         test_file.write_text("import os", "utf8")
-        assert io.File.from_contents("import os", filename=str(test_file))
+        file_obj = io.File.from_contents("import os", filename=str(test_file))
+        assert file_obj
+        assert file_obj.extension == "py"
 
     def test_open(self, tmpdir):
         with pytest.raises(Exception):

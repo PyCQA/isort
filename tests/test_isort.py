@@ -4112,6 +4112,13 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
         == expected_pyi_output
     )
 
+    # Ensure it works for direct file API as well (see: issue #1284)
+    source_pyi = tmpdir.join("source.pyi")
+    source_pyi.write(test_input)
+    api.sort_file(Path(source_pyi))
+
+    assert source_pyi.read().splitlines() == expected_pyi_output
+
 
 def test_move_class_issue_751() -> None:
     test_input = (
