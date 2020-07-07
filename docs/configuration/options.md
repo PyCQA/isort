@@ -382,8 +382,7 @@ One or more modules to exclude from the single line rule.
 **No Examples**
 
 ## Default Section
-
-Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
+Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 **Type:** String  
 **Default:** `THIRDPARTY`  
