@@ -37,7 +37,6 @@ include = [
     "docs/contributing/*.md",
     "docs/major_releases/*.md",
     "docs/quick_start/*.md",
-    "tests/*.py"
 ]
 
 [tool.poetry.dependencies]
