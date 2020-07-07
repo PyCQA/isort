@@ -4682,6 +4682,7 @@ from flask_principal import identity_changed as user_identity_changed  # noqa
 #
 # USER SIGNALS
 #
+
 from flask_login import user_logged_in, user_logged_out  # noqa
 from flask_principal import identity_changed as user_identity_changed  # noqa
 from flask_security.signals import password_changed as user_reset_password  # noqa

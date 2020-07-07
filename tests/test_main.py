@@ -152,7 +152,8 @@ import a
     out, error = capsys.readouterr()
     assert (
         out
-        == f"""else-type place_module for b returned {DEFAULT_CONFIG.default_section}
+        == f"""
+else-type place_module for b returned {DEFAULT_CONFIG.default_section}
 else-type place_module for a returned {DEFAULT_CONFIG.default_section}
 import a
 import b

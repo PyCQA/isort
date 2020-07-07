@@ -450,6 +450,13 @@ def _sort_imports(
                     isort_off = True
                 elif stripped_line == "# isort: split":
                     not_imports = True
+                elif not (stripped_line or contains_imports):
+                    if add_imports and not indent:
+                        import_section += line_separator.join(add_imports) + line_separator
+                        contains_imports = True
+                        add_imports = []
+                    else:
+                        not_imports = True
                 elif (
                     not stripped_line
                     or stripped_line.startswith("#")

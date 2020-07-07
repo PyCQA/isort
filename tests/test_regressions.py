@@ -36,3 +36,27 @@ def test_moving_comments_issue_726():
         "from Plaid.models import PlaidModel\n"
     )
     assert isort.code(test_input, force_sort_within_sections=True) == test_input
+
+
+def test_blank_lined_removed_issue_1275():
+    """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
+    See: https://github.com/timothycrosley/isort/issues/1275
+    """
+    assert (
+        isort.code(
+            '''"""
+My docstring
+"""
+
+from b import thing
+from a import other_thing
+'''
+        )
+        == '''"""
+My docstring
+"""
+
+from a import other_thing
+from b import thing
+'''
+    )

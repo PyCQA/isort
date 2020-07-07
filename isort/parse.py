@@ -363,7 +363,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             last = out_lines[-1].rstrip()
                         else:
                             last = ""
-                    if statement_index - 1 == import_index:
+                    if statement_index - 1 == import_index:  # pragma: no cover
                         import_index -= len(
                             categorized_comments["above"]["from"].get(import_from, [])
                         )
