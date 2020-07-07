@@ -60,3 +60,13 @@ from a import other_thing
 from b import thing
 '''
     )
+
+def test_blank_lined_removed_issue_1283():
+    """Ensure isort doesn't accidentally remove blank lines after __version__ identifiers.
+    See: https://github.com/timothycrosley/isort/issues/1283
+    """
+    test_input = """__version__ = "0.58.1"
+
+from starlette import status
+"""
+    assert isort.code(test_input) == test_input
