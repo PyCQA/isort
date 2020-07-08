@@ -281,6 +281,12 @@ def _with_from_imports(
 
         while from_imports:
             comments = parsed.categorized_comments["from"].pop(module, ())
+            above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+            if above_comments:
+                if new_section_output and config.ensure_newline_before_comments:
+                    new_section_output.append("")
+                new_section_output.extend(above_comments)
+
             if "*" in from_imports and config.combine_star:
                 import_statement = wrap.line(
                     with_comments(
@@ -336,12 +342,6 @@ def _with_from_imports(
                         )
                     comments = None
             else:
-                above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-                if above_comments:
-                    if new_section_output and config.ensure_newline_before_comments:
-                        new_section_output.append("")
-                    new_section_output.extend(above_comments)
-
                 while from_imports and from_imports[0] in as_imports:
                     from_import = from_imports.pop(0)
                     as_imports[from_import] = sorting.naturally(as_imports[from_import])
@@ -472,11 +472,6 @@ def _with_from_imports(
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)
 
             if import_statement:
-                above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-                if above_comments:  # pragma: no cover
-                    if new_section_output and config.ensure_newline_before_comments:
-                        new_section_output.append("")
-                    new_section_output.extend(above_comments)
                 new_section_output.append(import_statement)
     return new_section_output
 

@@ -151,3 +151,18 @@ class Something(object):
             ...
 """
     assert isort.code(test_input) == test_input
+
+
+def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296():
+    """Tests to ensure force_single_line setting doesn't result in lost comments.
+    See: https://github.com/timothycrosley/isort/issues/1296
+    """
+    test_input = """
+# A comment
+# A comment
+
+# Oh no, I'm gone
+from moo import foo
+"""
+    # assert isort.code(test_input) == test_input
+    assert isort.code(test_input, force_single_line=True) == test_input

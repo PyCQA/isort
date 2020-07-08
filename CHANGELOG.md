@@ -10,6 +10,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1290: Unecessary blank lines above nested imports when import comments turned on.
   - Fixed #1297: Usage of `--add-imports` alongside `--check` is broken.
   - Fixed #1289: Stream usage no longer auto picking up config file from current working directory.
+  - Fixed #1296: Force_single_line setting removes immediately following comment line.
 
 ### 5.0.4 July 6, 2020
   - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option
