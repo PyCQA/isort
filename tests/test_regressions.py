@@ -106,7 +106,9 @@ def func():
 
 
 def test_add_imports_shouldnt_make_isort_unusable_issue_1297():
-    """Test to ensure add imports doesn't cause any unexpected behaviour when combined with check"""
+    """Test to ensure add imports doesn't cause any unexpected behaviour when combined with check
+    See: https://github.com/timothycrosley/isort/issues/1297
+    """
     assert isort.check_code(
         """from __future__ import unicode_literals
 
@@ -114,3 +116,21 @@ from os import path
 """,
         add_imports={"from __future__ import unicode_literals"},
     )
+
+
+def test_no_extra_lines_for_imports_in_functions_issue_1277():
+    """Test to ensure isort doesn't introduce extra blank lines for imports within function.
+    See: https://github.com/timothycrosley/isort/issues/1277
+    """
+    test_input = """
+def main():
+    import time
+
+    import sys
+"""
+    expected_output = """
+def main():
+    import sys
+    import time
+"""
+    assert isort.code(isort.code(isort.code(test_input))) == expected_output
