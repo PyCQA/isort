@@ -1359,6 +1359,8 @@
 
 <span class="n">RUNTIME_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;runtime&quot;</span>
 
+<span class="n">DEPRECATED_SETTINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;not_skip&quot;</span><span class="p">,)</span>
+
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">_Config</span><span class="p">:</span>
@@ -1777,6 +1779,22 @@
 
         <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;runtime_src_paths&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
+        <span class="k">for</span> <span class="n">deprecated_option</span> <span class="ow">in</span> <span class="n">DEPRECATED_SETTINGS</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">deprecated_option</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
+
+                <span class="n">warn</span><span class="p">(</span>
+
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">The following deprecated settings was used: {deprecated_option}!</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                    <span class="s2">&quot;Please see the 5.0.0 upgrade guide:</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                    <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                <span class="p">)</span>
+
+                <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">deprecated_option</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">known_other</span><span class="p">:</span>
 
             <span class="k">for</span> <span class="n">known_key</span> <span class="ow">in</span> <span class="n">known_other</span><span class="p">:</span>
@@ -2175,6 +2193,10 @@
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">DEPRECATED_SETTINGS</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">FALLBACK_CONFIG_SECTIONS</span>
 </code></pre></div>
 
@@ -2430,6 +2452,22 @@ dynamically determined later on.</p>
 <span class="w">        </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;sources&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;runtime_src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">deprecated_option</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">DEPRECATED_SETTINGS</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">deprecated_option</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;\n\nThe following deprecated settings was used: {deprecated_option}!\n&quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;Please see the 5.0.0 upgrade guide:\n&quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="n">deprecated_option</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
 

@@ -26,8 +26,6 @@ window.addEventListener('load', () => {
 languagePluginLoader.then(() => {
     return pyodide.loadPackage(['micropip'])
 }).then(() => {
-    console.log(pyodide.runPython('import sys\nsys.version'));
-    console.log(pyodide.runPython('print(1 + 2)'));
     pyodide.runPython(`
 import micropip
 
@@ -37,7 +35,8 @@ def use_isort(*args):
     import isort
     import json
     import textwrap
-    print(isort.code("import b; import a"))
+
+    print(f"Using {isort.__version__} of isort.")
 
     def sort_code(code, configuration):
         try:
@@ -52,5 +51,5 @@ def use_isort(*args):
     document.sort_code = sort_code
     document.updateOutput()
 
-micropip.install('https://timothycrosley.github.io/isort/docs/quick_start/isort-5.0.1-py3-none-any.whl').then(use_isort)`);
+micropip.install('isort').then(use_isort)`);
 });
