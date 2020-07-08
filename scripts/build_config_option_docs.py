@@ -17,8 +17,6 @@ IGNORED = {"source", "help"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]
 HEADER = """# Configuration options for isort
 
-========
-
 As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.
@@ -42,12 +40,8 @@ class ConfigOption:
     example_cli: str = ""
 
     def __post_init__(self):
-        if self.example_cfg == "" and self.example_pyproject_toml == "" and self.example_cli == "":
-            self.example_section = "**No Examples**"
-        else:
-            if self.example_cfg == "":
-                self.example_cfg = "No example `.isort.cfg`"
-            else:
+        if self.example_cfg or self.example_pyproject_toml or self.example_cli:
+            if self.example_cfg:
                 self.example_cfg = textwrap.dedent(
                     f"""
                     ### Example `.isort.cfg`
@@ -58,9 +52,7 @@ class ConfigOption:
                     """
                 )
 
-            if self.example_pyproject_toml == "":
-                self.example_pyproject_toml = "No example pyproject.toml"
-            else:
+            if self.example_pyproject_toml:
                 self.example_pyproject_toml = textwrap.dedent(
                     f"""
                     ### Example `pyproject.toml`
@@ -70,11 +62,8 @@ class ConfigOption:
                     ```
                     """
                 )
-                print(self.example_pyproject_toml)
 
             if self.example_cli == "":
-                self.example_cli = "No example cli usage"
-            else:
                 self.example_cli = textwrap.dedent(
                     f"""
                     ### Example cli usage

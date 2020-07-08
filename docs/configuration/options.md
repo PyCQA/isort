@@ -1,7 +1,5 @@
 # Configuration options for isort
 
-========
-
 As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.
@@ -20,7 +18,7 @@ Tells isort to set the known standard library based on the the specified Python 
 - --py
 - --python-version
 
-**No Examples**
+
 
 ## Force To Top
 
@@ -34,7 +32,7 @@ Force specific imports to the top of their appropriate section.
 - -t
 - --top
 
-**No Examples**
+
 
 ## Skip
 
@@ -48,7 +46,7 @@ Files that sort imports should skip over. If you want to skip multiple files you
 - -s
 - --skip
 
-**No Examples**
+
 
 ## Skip Glob
 
@@ -62,7 +60,7 @@ Files that sort imports should skip over.
 - --sg
 - --skip-glob
 
-**No Examples**
+
 
 ## Line Length
 
@@ -78,7 +76,7 @@ The max length of an import line (used for wrapping long imports).
 - --line-length
 - --line-width
 
-**No Examples**
+
 
 ## Wrap Length
 
@@ -93,7 +91,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.
 - --wl
 - --wrap-length
 
-**No Examples**
+
 
 ## Line Ending
 
@@ -107,7 +105,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 - --le
 - --line-ending
 
-**No Examples**
+
 
 ## Sections
 
@@ -120,7 +118,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## No Sections
 
@@ -134,7 +132,7 @@ Put all imports into the same section bucket
 - --ds
 - --no-sections
 
-**No Examples**
+
 
 ## Known Future Library
 
@@ -148,7 +146,7 @@ Force isort to recognize a module as part of the future compatibility libraries.
 - -f
 - --future
 
-**No Examples**
+
 
 ## Known Third Party
 
@@ -162,7 +160,7 @@ Force isort to recognize a module as being part of a third party library.
 - -o
 - --thirdparty
 
-**No Examples**
+
 
 ## Known First Party
 
@@ -176,7 +174,7 @@ Force isort to recognize a module as being part of the current python project.
 - -p
 - --project
 
-**No Examples**
+
 
 ## Known Standard Library
 
@@ -190,7 +188,7 @@ Force isort to recognize a module as part of Python's standard library.
 - -b
 - --builtin
 
-**No Examples**
+
 
 ## Extra Standard Library
 
@@ -203,7 +201,7 @@ Extra modules to be included in the list of ones in Python's standard library.
 
 - --extra-builtin
 
-**No Examples**
+
 
 ## Known Other
 
@@ -218,7 +216,7 @@ Extra modules to be included in the list of ones in Python's standard library.
 
 **Examples:**
 
-No example `.isort.cfg`
+
 
 ### Example `pyproject.toml`
 
@@ -228,7 +226,10 @@ sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOL
 known_airflow = ['airflow']
 ```
 
-No example cli usage
+
+### Example cli usage
+``
+
 
 ## Multi Line Output
 
@@ -242,7 +243,7 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 - -m
 - --multi-line
 
-**No Examples**
+
 
 ## Forced Separate
 
@@ -255,7 +256,7 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Indent
 
@@ -269,7 +270,7 @@ String to place for indents defaults to "    " (4 spaces).
 - -i
 - --indent
 
-**No Examples**
+
 
 ## Comment Prefix
 
@@ -282,7 +283,7 @@ String to place for indents defaults to "    " (4 spaces).
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Length Sort
 
@@ -296,7 +297,7 @@ Sort imports by their string length.
 - --ls
 - --length-sort
 
-**No Examples**
+
 
 ## Length Sort Sections
 
@@ -309,7 +310,7 @@ Sort imports by their string length.
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Add Imports
 
@@ -323,7 +324,7 @@ Adds the specified import line to all files, automatically determining correct p
 - -a
 - --add-import
 
-**No Examples**
+
 
 ## Remove Imports
 
@@ -337,7 +338,7 @@ Removes the specified import from all files.
 - --rm
 - --remove-import
 
-**No Examples**
+
 
 ## Reverse Relative
 
@@ -351,7 +352,7 @@ Reverse order of relative imports.
 - --rr
 - --reverse-relative
 
-**No Examples**
+
 
 ## Force Single Line
 
@@ -365,7 +366,7 @@ Forces all from imports to appear on their own line
 - --sl
 - --force-single-line-imports
 
-**No Examples**
+
 
 ## Single Line Exclusions
 
@@ -379,10 +380,11 @@ One or more modules to exclude from the single line rule.
 - --nsl
 - --single-line-exclusions
 
-**No Examples**
+
 
 ## Default Section
-Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
+
+Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
 
 **Type:** String  
 **Default:** `THIRDPARTY`  
@@ -392,7 +394,7 @@ Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPA
 - --sd
 - --section-default
 
-**No Examples**
+
 
 ## Import Headings
 
@@ -405,7 +407,7 @@ Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPA
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Balanced Wrapping
 
@@ -419,7 +421,7 @@ Balances wrapping to produce the most consistent line length possible
 - -e
 - --balanced
 
-**No Examples**
+
 
 ## Use Parentheses
 
@@ -433,7 +435,7 @@ Use parenthesis for line continuation on length limit instead of slashes.
 - --up
 - --use-parentheses
 
-**No Examples**
+
 
 ## Order By Type
 
@@ -447,7 +449,7 @@ Order imports by type in addition to alphabetically
 - --ot
 - --order-by-type
 
-**No Examples**
+
 
 ## Atomic
 
@@ -461,7 +463,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --ac
 - --atomic
 
-**No Examples**
+
 
 ## Lines After Imports
 
@@ -475,7 +477,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --lai
 - --lines-after-imports
 
-**No Examples**
+
 
 ## Lines Between Sections
 
@@ -488,7 +490,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Lines Between Types
 
@@ -502,7 +504,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --lbt
 - --lines-between-types
 
-**No Examples**
+
 
 ## Combine As Imports
 
@@ -516,7 +518,7 @@ Combines as imports on the same line.
 - --ca
 - --combine-as
 
-**No Examples**
+
 
 ## Combine Star
 
@@ -530,7 +532,7 @@ Ensures that if a star import is present, nothing else is imported from that nam
 - --cs
 - --combine-star
 
-**No Examples**
+
 
 ## Keep Direct And As Imports
 
@@ -544,7 +546,7 @@ Turns off default behavior that removes direct imports when as imports exist.
 - -k
 - --keep-direct-and-as
 
-**No Examples**
+
 
 ## Include Trailing Comma
 
@@ -558,7 +560,7 @@ Includes a trailing comma on multi line imports that include parentheses.
 - --tc
 - --trailing-comma
 
-**No Examples**
+
 
 ## From First
 
@@ -572,7 +574,7 @@ Switches the typical ordering preference, showing from imports first then straig
 - --ff
 - --from-first
 
-**No Examples**
+
 
 ## Verbose
 
@@ -586,7 +588,7 @@ Shows verbose output, such as when files are skipped or when a check is successf
 - -v
 - --verbose
 
-**No Examples**
+
 
 ## Quiet
 
@@ -600,7 +602,7 @@ Shows extra quiet output, only errors are outputted.
 - -q
 - --quiet
 
-**No Examples**
+
 
 ## Force Adds
 
@@ -614,7 +616,7 @@ Forces import adds even if the original file is empty.
 - --af
 - --force-adds
 
-**No Examples**
+
 
 ## Force Alphabetical Sort Within Sections
 
@@ -628,7 +630,7 @@ Force all imports to be sorted alphabetically within a section
 - --fass
 - --force-alphabetical-sort-within-sections
 
-**No Examples**
+
 
 ## Force Alphabetical Sort
 
@@ -642,7 +644,7 @@ Force all imports to be sorted as a single section
 - --fas
 - --force-alphabetical-sort
 
-**No Examples**
+
 
 ## Force Grid Wrap
 
@@ -656,7 +658,7 @@ Force number of from imports (defaults to 2) to be grid wrapped regardless of li
 - --fgw
 - --force-grid-wrap
 
-**No Examples**
+
 
 ## Force Sort Within Sections
 
@@ -670,7 +672,7 @@ Force imports to be sorted by module, independent of import_type
 - --fss
 - --force-sort-within-sections
 
-**No Examples**
+
 
 ## Lexicographical
 
@@ -683,7 +685,7 @@ Force imports to be sorted by module, independent of import_type
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Ignore Whitespace
 
@@ -697,7 +699,7 @@ Tells isort to ignore whitespace differences when --check-only is being used.
 - --ws
 - --ignore-whitespace
 
-**No Examples**
+
 
 ## No Lines Before
 
@@ -711,7 +713,7 @@ Sections which should not be split with previous by empty lines
 - --nlb
 - --no-lines-before
 
-**No Examples**
+
 
 ## No Inline Sort
 
@@ -725,7 +727,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 - --nis
 - --no-inline-sort
 
-**No Examples**
+
 
 ## Ignore Comments
 
@@ -738,7 +740,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Case Sensitive
 
@@ -751,7 +753,7 @@ Tells isort to include casing when sorting module names
 
 - --case-sensitive
 
-**No Examples**
+
 
 ## Sources
 
@@ -764,7 +766,7 @@ Tells isort to include casing when sorting module names
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Virtual Env
 
@@ -777,7 +779,7 @@ Virtual environment to use for determining whether a package is third-party
 
 - --virtual-env
 
-**No Examples**
+
 
 ## Conda Env
 
@@ -790,7 +792,7 @@ Conda environment to use for determining whether a package is third-party
 
 - --conda-env
 
-**No Examples**
+
 
 ## Ensure Newline Before Comments
 
@@ -804,7 +806,7 @@ Inserts a blank line before a comment following an import.
 - -n
 - --ensure-newline-before-comments
 
-**No Examples**
+
 
 ## Directory
 
@@ -817,7 +819,7 @@ Inserts a blank line before a comment following an import.
 
 - **Not Supported**
 
-**No Examples**
+
 
 ## Profile
 
@@ -830,7 +832,7 @@ Base profile type to use for configuration.
 
 - --profile
 
-**No Examples**
+
 
 ## Src Paths
 
@@ -844,7 +846,7 @@ Add an explicitly defined source path (modules within src paths have their impor
 - --src
 - --src-path
 
-**No Examples**
+
 
 ## Old Finders
 
@@ -858,7 +860,7 @@ Use the old deprecated finder logic that relies on environment introspection mag
 - --old-finders
 - --magic-placement
 
-**No Examples**
+
 
 ## Check
 
@@ -873,7 +875,7 @@ Checks the file for unsorted / unformatted imports and prints them to the comman
 - --check-only
 - --check
 
-**No Examples**
+
 
 ## Write To Stdout
 
@@ -887,7 +889,7 @@ Force resulting output to stdout, instead of in-place.
 - -d
 - --stdout
 
-**No Examples**
+
 
 ## Show Diff
 
@@ -901,7 +903,7 @@ Prints a diff of all the changes isort would make to a file, instead of changing
 - --df
 - --diff
 
-**No Examples**
+
 
 ## Jobs
 
@@ -915,7 +917,7 @@ Number of files to process in parallel.
 - -j
 - --jobs
 
-**No Examples**
+
 
 ## Dont Order By Type
 
@@ -929,7 +931,7 @@ Don't order imports by type in addition to alphabetically
 - --dt
 - --dont-order-by-type
 
-**No Examples**
+
 
 ## Settings Path
 
@@ -945,7 +947,7 @@ Explicitly set the settings path or file instead of auto determining based on fi
 - --settings-file
 - --settings
 
-**No Examples**
+
 
 ## Show Version
 
@@ -959,7 +961,7 @@ Displays the currently installed version of isort.
 - -V
 - --version
 
-**No Examples**
+
 
 ## Version Number
 
@@ -973,7 +975,7 @@ Returns just the current version number without the logo
 - --vn
 - --version-number
 
-**No Examples**
+
 
 ## Filter Files
 
@@ -986,7 +988,7 @@ Tells isort to filter files even when they are explicitly passed in as part of t
 
 - --filter-files
 
-**No Examples**
+
 
 ## Files
 
@@ -999,7 +1001,7 @@ One or more Python source files that need their imports sorted.
 
 - 
 
-**No Examples**
+
 
 ## Ask To Apply
 
@@ -1012,7 +1014,7 @@ Tells isort to apply changes interactively.
 
 - --interactive
 
-**No Examples**
+
 
 ## Show Config
 
@@ -1025,7 +1027,7 @@ See isort's determined config, as well as sources of config options.
 
 - --show-config
 
-**No Examples**
+
 
 ## Deprecated Flags
 
@@ -1038,4 +1040,4 @@ See isort's determined config, as well as sources of config options.
 
 - --apply
 
-**No Examples**
+
