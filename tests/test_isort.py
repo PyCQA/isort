@@ -133,6 +133,9 @@ def test_correct_space_between_imports() -> None:
         "def my_method():\n"
         "    print('hello world')\n"
     )
+    test_input_assign = "import sys\nVAR = 1\n"
+    test_output_assign = api.sort_code_string(test_input_assign)
+    assert test_output_assign == "import sys\n\nVAR = 1\n"
 
 
 def test_sort_on_number() -> None:

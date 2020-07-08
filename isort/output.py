@@ -195,16 +195,6 @@ def sorted_imports(
             elif in_quote:
                 next_construct = line
                 break
-            else:
-                parts = line.split()
-                if (
-                    len(parts) >= 3
-                    and parts[1] == "="
-                    and "'" not in parts[0]
-                    and '"' not in parts[0]
-                ):
-                    next_construct = line
-                    break
 
         if config.lines_after_imports != -1:
             formatted_output[imports_tail:0] = ["" for line in range(config.lines_after_imports)]
