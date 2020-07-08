@@ -174,7 +174,6 @@ def sorted_imports(
 
     if len(formatted_output) > imports_tail:
         next_construct = ""
-        _in_quote: str = ""
         tail = formatted_output[imports_tail:]
 
         for index, line in enumerate(tail):
