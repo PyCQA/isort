@@ -509,6 +509,7 @@ def _sort_imports(
                     not_imports = True
 
         if not_imports:
+            raw_import_section: str = import_section
             if (
                 add_imports
                 and not in_top_comment
@@ -521,7 +522,7 @@ def _sort_imports(
                 add_imports = []
 
             if next_import_section and not import_section:  # pragma: no cover
-                import_section = next_import_section
+                raw_import_section = import_section = next_import_section
                 next_import_section = ""
 
             if import_section:
@@ -532,6 +533,7 @@ def _sort_imports(
 
                 if not indent:
                     import_section += line
+                    raw_import_section += line
                 if not contains_imports:
                     output_stream.write(import_section)
                 else:
@@ -541,9 +543,9 @@ def _sort_imports(
                         line_separator
                     ).startswith(COMMENT_INDICATORS):
                         import_section = import_section.lstrip(line_separator)
+                        raw_import_section = raw_import_section.lstrip(line_separator)
                         first_import_section = False
 
-                    raw_import_section: str = import_section
                     if indent:
                         import_section = line_separator.join(
                             line.lstrip() for line in import_section.split(line_separator)

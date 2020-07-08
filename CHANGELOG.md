@@ -8,6 +8,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1275 & #1283: Blank line after docstring removed.
   - Fixed #1298: CLI Help out of date with isort 5.
   - Fixed #1290: Unecessary blank lines above nested imports when import comments turned on.
+  - Fixed #1297: Usage of `--add-imports` alongside `--check` is broken.
 
 ### 5.0.4 July 6, 2020
   - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option

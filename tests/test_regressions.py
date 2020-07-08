@@ -103,3 +103,14 @@ def func():
         )
         == test_input
     )
+
+
+def test_add_imports_shouldnt_make_isort_unusable_issue_1297():
+    """Test to ensure add imports doesn't cause any unexpected behaviour when combined with check"""
+    assert isort.check_code(
+        """from __future__ import unicode_literals
+
+from os import path
+""",
+        add_imports={"from __future__ import unicode_literals"},
+    )
