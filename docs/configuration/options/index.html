@@ -430,6 +430,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1717,6 +1724,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2155,7 +2169,6 @@
                 
                 
                 <h1 id="configuration-options-for-isort">Configuration options for isort</h1>
-<p>========</p>
 <p>As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.</p>
@@ -2170,7 +2183,6 @@ how you want your imports sorted, organized, and formatted.</p>
 <li>--py</li>
 <li>--python-version</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-to-top">Force To Top</h2>
 <p>Force specific imports to the top of their appropriate section.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2181,7 +2193,6 @@ how you want your imports sorted, organized, and formatted.</p>
 <li>-t</li>
 <li>--top</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="skip">Skip</h2>
 <p>Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2192,7 +2203,6 @@ how you want your imports sorted, organized, and formatted.</p>
 <li>-s</li>
 <li>--skip</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="skip-glob">Skip Glob</h2>
 <p>Files that sort imports should skip over.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2203,7 +2213,6 @@ how you want your imports sorted, organized, and formatted.</p>
 <li>--sg</li>
 <li>--skip-glob</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="line-length">Line Length</h2>
 <p>The max length of an import line (used for wrapping long imports).</p>
 <p><strong>Type:</strong> Int<br />
@@ -2216,7 +2225,6 @@ how you want your imports sorted, organized, and formatted.</p>
 <li>--line-length</li>
 <li>--line-width</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="wrap-length">Wrap Length</h2>
 <p>Specifies how long lines that are wrapped should be, if not set line_length is used.
 NOTE: wrap_length must be LOWER than or equal to line_length.</p>
@@ -2228,7 +2236,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--wl</li>
 <li>--wrap-length</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="line-ending">Line Ending</h2>
 <p>Forces line endings to the specified value. If not set, values will be guessed per-file.</p>
 <p><strong>Type:</strong> String<br />
@@ -2239,7 +2246,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--le</li>
 <li>--line-ending</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="sections">Sections</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Tuple<br />
@@ -2249,7 +2255,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="no-sections">No Sections</h2>
 <p>Put all imports into the same section bucket</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2260,7 +2265,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ds</li>
 <li>--no-sections</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="known-future-library">Known Future Library</h2>
 <p>Force isort to recognize a module as part of the future compatibility libraries.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2271,7 +2275,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-f</li>
 <li>--future</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="known-third-party">Known Third Party</h2>
 <p>Force isort to recognize a module as being part of a third party library.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2282,7 +2285,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-o</li>
 <li>--thirdparty</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="known-first-party">Known First Party</h2>
 <p>Force isort to recognize a module as being part of the current python project.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2293,7 +2295,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-p</li>
 <li>--project</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="known-standard-library">Known Standard Library</h2>
 <p>Force isort to recognize a module as part of Python's standard library.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2304,7 +2305,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-b</li>
 <li>--builtin</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="extra-standard-library">Extra Standard Library</h2>
 <p>Extra modules to be included in the list of ones in Python's standard library.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2314,7 +2314,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--extra-builtin</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="known-other">Known Other</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Dict<br />
@@ -2325,7 +2324,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li><strong>Not Supported</strong></li>
 </ul>
 <p><strong>Examples:</strong></p>
-<p>No example <code>.isort.cfg</code></p>
 <h3 id="example-pyprojecttoml">Example <code>pyproject.toml</code></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
 <span class="na">sections</span> <span class="o">=</span> <span class="s">[&#39;FUTURE&#39;, &#39;STDLIB&#39;, &#39;THIRDPARTY&#39;, &#39;AIRFLOW&#39;, &#39;FIRSTPARTY&#39;, &#39;LOCALFOLDER&#39;]</span>
@@ -2333,7 +2331,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </code></pre></div>
 
 
-<p>No example cli usage</p>
+<h3 id="example-cli-usage">Example cli usage</h3>
+<p>``</p>
 <h2 id="multi-line-output">Multi Line Output</h2>
 <p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).</p>
 <p><strong>Type:</strong> Wrapmodes<br />
@@ -2344,7 +2343,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-m</li>
 <li>--multi-line</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="forced-separate">Forced Separate</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Tuple<br />
@@ -2354,7 +2352,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="indent">Indent</h2>
 <p>String to place for indents defaults to "    " (4 spaces).</p>
 <p><strong>Type:</strong> String<br />
@@ -2365,7 +2362,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-i</li>
 <li>--indent</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="comment-prefix">Comment Prefix</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> String<br />
@@ -2375,7 +2371,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="length-sort">Length Sort</h2>
 <p>Sort imports by their string length.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2386,7 +2381,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ls</li>
 <li>--length-sort</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="length-sort-sections">Length Sort Sections</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2396,7 +2390,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="add-imports">Add Imports</h2>
 <p>Adds the specified import line to all files, automatically determining correct placement.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2407,7 +2400,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-a</li>
 <li>--add-import</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="remove-imports">Remove Imports</h2>
 <p>Removes the specified import from all files.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2418,7 +2410,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--rm</li>
 <li>--remove-import</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="reverse-relative">Reverse Relative</h2>
 <p>Reverse order of relative imports.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2429,7 +2420,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--rr</li>
 <li>--reverse-relative</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-single-line">Force Single Line</h2>
 <p>Forces all from imports to appear on their own line</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2440,7 +2430,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--sl</li>
 <li>--force-single-line-imports</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="single-line-exclusions">Single Line Exclusions</h2>
 <p>One or more modules to exclude from the single line rule.</p>
 <p><strong>Type:</strong> Tuple<br />
@@ -2451,9 +2440,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--nsl</li>
 <li>--single-line-exclusions</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="default-section">Default Section</h2>
-<p>Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
+<p>Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>THIRDPARTY</code><br />
 <strong>Python &amp; Config File Name:</strong> default_section<br />
@@ -2462,7 +2450,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--sd</li>
 <li>--section-default</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="import-headings">Import Headings</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Dict<br />
@@ -2472,7 +2459,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="balanced-wrapping">Balanced Wrapping</h2>
 <p>Balances wrapping to produce the most consistent line length possible</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2483,7 +2469,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-e</li>
 <li>--balanced</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="use-parentheses">Use Parentheses</h2>
 <p>Use parenthesis for line continuation on length limit instead of slashes.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2494,7 +2479,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--up</li>
 <li>--use-parentheses</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="order-by-type">Order By Type</h2>
 <p>Order imports by type in addition to alphabetically</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2505,7 +2489,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ot</li>
 <li>--order-by-type</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="atomic">Atomic</h2>
 <p>Ensures the output doesn't save if the resulting file contains syntax errors.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2516,7 +2499,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ac</li>
 <li>--atomic</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="lines-after-imports">Lines After Imports</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Int<br />
@@ -2527,7 +2509,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--lai</li>
 <li>--lines-after-imports</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="lines-between-sections">Lines Between Sections</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Int<br />
@@ -2537,7 +2518,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="lines-between-types">Lines Between Types</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Int<br />
@@ -2548,7 +2528,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--lbt</li>
 <li>--lines-between-types</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="combine-as-imports">Combine As Imports</h2>
 <p>Combines as imports on the same line.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2559,7 +2538,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ca</li>
 <li>--combine-as</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="combine-star">Combine Star</h2>
 <p>Ensures that if a star import is present, nothing else is imported from that namespace.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2570,7 +2548,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--cs</li>
 <li>--combine-star</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="keep-direct-and-as-imports">Keep Direct And As Imports</h2>
 <p>Turns off default behavior that removes direct imports when as imports exist.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2581,7 +2558,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-k</li>
 <li>--keep-direct-and-as</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="include-trailing-comma">Include Trailing Comma</h2>
 <p>Includes a trailing comma on multi line imports that include parentheses.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2592,7 +2568,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--tc</li>
 <li>--trailing-comma</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="from-first">From First</h2>
 <p>Switches the typical ordering preference, showing from imports first then straight ones.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2603,7 +2578,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ff</li>
 <li>--from-first</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="verbose">Verbose</h2>
 <p>Shows verbose output, such as when files are skipped or when a check is successful.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2614,7 +2588,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-v</li>
 <li>--verbose</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="quiet">Quiet</h2>
 <p>Shows extra quiet output, only errors are outputted.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2625,7 +2598,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-q</li>
 <li>--quiet</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-adds">Force Adds</h2>
 <p>Forces import adds even if the original file is empty.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2636,7 +2608,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--af</li>
 <li>--force-adds</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-alphabetical-sort-within-sections">Force Alphabetical Sort Within Sections</h2>
 <p>Force all imports to be sorted alphabetically within a section</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2647,7 +2618,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--fass</li>
 <li>--force-alphabetical-sort-within-sections</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-alphabetical-sort">Force Alphabetical Sort</h2>
 <p>Force all imports to be sorted as a single section</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2658,7 +2628,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--fas</li>
 <li>--force-alphabetical-sort</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-grid-wrap">Force Grid Wrap</h2>
 <p>Force number of from imports (defaults to 2) to be grid wrapped regardless of line length</p>
 <p><strong>Type:</strong> Int<br />
@@ -2669,7 +2638,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--fgw</li>
 <li>--force-grid-wrap</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="force-sort-within-sections">Force Sort Within Sections</h2>
 <p>Force imports to be sorted by module, independent of import_type</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2680,7 +2648,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--fss</li>
 <li>--force-sort-within-sections</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="lexicographical">Lexicographical</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Bool<br />
@@ -2690,7 +2657,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="ignore-whitespace">Ignore Whitespace</h2>
 <p>Tells isort to ignore whitespace differences when --check-only is being used.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2701,7 +2667,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ws</li>
 <li>--ignore-whitespace</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="no-lines-before">No Lines Before</h2>
 <p>Sections which should not be split with previous by empty lines</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2712,7 +2677,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--nlb</li>
 <li>--no-lines-before</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="no-inline-sort">No Inline Sort</h2>
 <p>Leaves <code>from</code> imports with multiple imports 'as-is' (e.g. <code>from foo import a, c ,b</code>).</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2723,7 +2687,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--nis</li>
 <li>--no-inline-sort</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="ignore-comments">Ignore Comments</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Bool<br />
@@ -2733,7 +2696,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="case-sensitive">Case Sensitive</h2>
 <p>Tells isort to include casing when sorting module names</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2743,7 +2705,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--case-sensitive</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="sources">Sources</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Tuple<br />
@@ -2753,7 +2714,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="virtual-env">Virtual Env</h2>
 <p>Virtual environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
@@ -2763,7 +2723,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--virtual-env</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="conda-env">Conda Env</h2>
 <p>Conda environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
@@ -2773,7 +2732,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--conda-env</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="ensure-newline-before-comments">Ensure Newline Before Comments</h2>
 <p>Inserts a blank line before a comment following an import.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2784,7 +2742,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-n</li>
 <li>--ensure-newline-before-comments</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="directory">Directory</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> String<br />
@@ -2794,7 +2751,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li><strong>Not Supported</strong></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="profile">Profile</h2>
 <p>Base profile type to use for configuration.</p>
 <p><strong>Type:</strong> String<br />
@@ -2804,7 +2760,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--profile</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="src-paths">Src Paths</h2>
 <p>Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2815,7 +2770,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--src</li>
 <li>--src-path</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="old-finders">Old Finders</h2>
 <p>Use the old deprecated finder logic that relies on environment introspection magic.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2826,7 +2780,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--old-finders</li>
 <li>--magic-placement</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2838,7 +2791,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--check-only</li>
 <li>--check</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="write-to-stdout">Write To Stdout</h2>
 <p>Force resulting output to stdout, instead of in-place.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2849,7 +2801,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-d</li>
 <li>--stdout</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="show-diff">Show Diff</h2>
 <p>Prints a diff of all the changes isort would make to a file, instead of changing it in place</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2860,7 +2811,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--df</li>
 <li>--diff</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="jobs">Jobs</h2>
 <p>Number of files to process in parallel.</p>
 <p><strong>Type:</strong> Int<br />
@@ -2871,7 +2821,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-j</li>
 <li>--jobs</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="dont-order-by-type">Dont Order By Type</h2>
 <p>Don't order imports by type in addition to alphabetically</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2882,7 +2831,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--dt</li>
 <li>--dont-order-by-type</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="settings-path">Settings Path</h2>
 <p>Explicitly set the settings path or file instead of auto determining based on file location.</p>
 <p><strong>Type:</strong> String<br />
@@ -2895,7 +2843,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--settings-file</li>
 <li>--settings</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="show-version">Show Version</h2>
 <p>Displays the currently installed version of isort.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2906,7 +2853,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-V</li>
 <li>--version</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="version-number">Version Number</h2>
 <p>Returns just the current version number without the logo</p>
 <p><strong>Type:</strong> String<br />
@@ -2917,7 +2863,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--vn</li>
 <li>--version-number</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="filter-files">Filter Files</h2>
 <p>Tells isort to filter files even when they are explicitly passed in as part of the command</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2927,7 +2872,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--filter-files</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="files">Files</h2>
 <p>One or more Python source files that need their imports sorted.</p>
 <p><strong>Type:</strong> String<br />
@@ -2937,7 +2881,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li></li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="ask-to-apply">Ask To Apply</h2>
 <p>Tells isort to apply changes interactively.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2947,7 +2890,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--interactive</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="show-config">Show Config</h2>
 <p>See isort's determined config, as well as sources of config options.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2957,7 +2899,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--show-config</li>
 </ul>
-<p><strong>No Examples</strong></p>
 <h2 id="deprecated-flags">Deprecated Flags</h2>
 <p>==SUPPRESS==</p>
 <p><strong>Type:</strong> String<br />
@@ -2967,7 +2908,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--apply</li>
 </ul>
-<p><strong>No Examples</strong></p>
                 
                   
                 
