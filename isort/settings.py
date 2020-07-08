@@ -62,6 +62,8 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
 
 RUNTIME_SOURCE = "runtime"
 
+DEPRECATED_SETTINGS = ("not_skip",)
+
 
 @dataclass(frozen=True)
 class _Config:
@@ -296,6 +298,16 @@ class Config(_Config):
         combined_config.pop("source", None)
         combined_config.pop("sources", None)
         combined_config.pop("runtime_src_paths", None)
+
+        for deprecated_option in DEPRECATED_SETTINGS:
+            if deprecated_option in combined_config:
+                warn(
+                    f"\n\nThe following deprecated settings was used: {deprecated_option}!\n"
+                    "Please see the 5.0.0 upgrade guide:\n"
+                    "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
+                )
+                combined_config.pop(deprecated_option)
+
         if known_other:
             for known_key in known_other:
                 combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)

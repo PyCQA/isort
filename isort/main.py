@@ -680,7 +680,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     if deprecated_flags:  # pragma: no cover
         warn(
-            f"\n\nThe following deprecated CLI flags where used: {', '.join(deprecated_flags)}!\n"
+            f"\n\nThe following deprecated CLI flags were used: {', '.join(deprecated_flags)}!\n"
             "Please see the 5.0.0 upgrade guide:\n"
             "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
         )

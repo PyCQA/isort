@@ -13,6 +13,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
+import isort
 from isort import main, api, sections
 from isort.main import is_python_file
 from isort.settings import WrapModes, Config
@@ -63,7 +64,7 @@ def default_settings_path(tmpdir_factory) -> Iterator[str]:
 def test_happy_path() -> None:
     """Test the most basic use case, straight imports no code, simply not organized by category."""
     test_input = "import sys\nimport os\nimport myproject.test\nimport django.settings"
-    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
+    test_output = isort.code(test_input, known_first_party=["myproject"])
     assert test_output == (
         "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
     )
@@ -82,7 +83,7 @@ def test_code_intermixed() -> None:
         "print('I like to put code between imports cause I want stuff to break')\n"
         "import myproject.test\n"
     )
-    test_output = api.sort_code_string(test_input)
+    test_output = isort.code(test_input)
     assert test_output == (
         "import sys\n"
         "\n"
@@ -100,39 +101,39 @@ def test_correct_space_between_imports() -> None:
 
     """
     test_input_method = "import sys\ndef my_method():\n    print('hello world')\n"
-    test_output_method = api.sort_code_string(test_input_method)
+    test_output_method = isort.code(test_input_method)
     assert test_output_method == ("import sys\n\n\ndef my_method():\n    print('hello world')\n")
 
     test_input_decorator = (
         "import sys\n" "@my_decorator\n" "def my_method():\n" "    print('hello world')\n"
     )
-    test_output_decorator = api.sort_code_string(test_input_decorator)
+    test_output_decorator = isort.code(test_input_decorator)
     assert test_output_decorator == (
         "import sys\n" "\n" "\n" "@my_decorator\n" "def my_method():\n" "    print('hello world')\n"
     )
 
     test_input_class = "import sys\nclass MyClass(object):\n    pass\n"
-    test_output_class = api.sort_code_string(test_input_class)
+    test_output_class = isort.code(test_input_class)
     assert test_output_class == "import sys\n\n\nclass MyClass(object):\n    pass\n"
 
     test_input_other = "import sys\nprint('yo')\n"
-    test_output_other = api.sort_code_string(test_input_other)
+    test_output_other = isort.code(test_input_other)
     assert test_output_other == "import sys\n\nprint('yo')\n"
 
 
 def test_sort_on_number() -> None:
     """Ensure numbers get sorted logically (10 > 9 not the other way around)"""
     test_input = "import lib10\nimport lib9\n"
-    test_output = api.sort_code_string(test_input)
+    test_output = isort.code(test_input)
     assert test_output == "import lib9\nimport lib10\n"
 
 
 def test_line_length() -> None:
     """Ensure isort enforces the set line_length."""
-    assert len(api.sort_code_string(REALLY_LONG_IMPORT, line_length=80).split("\n")[0]) <= 80
-    assert len(api.sort_code_string(REALLY_LONG_IMPORT, line_length=120).split("\n")[0]) <= 120
+    assert len(isort.code(REALLY_LONG_IMPORT, line_length=80).split("\n")[0]) <= 80
+    assert len(isort.code(REALLY_LONG_IMPORT, line_length=120).split("\n")[0]) <= 120
 
-    test_output = api.sort_code_string(REALLY_LONG_IMPORT, line_length=42)
+    test_output = isort.code(REALLY_LONG_IMPORT, line_length=42)
     assert test_output == (
         "from third_party import (lib1, lib2, lib3,\n"
         "                         lib4, lib5, lib6,\n"
@@ -152,7 +153,7 @@ def test_line_length() -> None:
         ")\n"
     )  # Test case described in issue #654
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             include_trailing_comma=True,
             line_length=79,
@@ -162,7 +163,7 @@ def test_line_length() -> None:
         == test_input
     )
 
-    test_output = api.sort_code_string(code=REALLY_LONG_IMPORT, line_length=42, wrap_length=32)
+    test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=42, wrap_length=32)
     assert test_output == (
         "from third_party import (lib1,\n"
         "                         lib2,\n"
@@ -191,13 +192,11 @@ def test_line_length() -> None:
         "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
     )
     with pytest.raises(ValueError):
-        test_output = api.sort_code_string(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
-    test_output = (
-        api.sort_code_string(REALLY_LONG_IMPORT, line_length=100, wrap_length=99) == test_input
-    )
+        test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
+    test_output = isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99) == test_input
 
     # Test Case described in issue #1015
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         REALLY_LONG_IMPORT, line_length=25, multi_line_output=WrapModes.HANGING_INDENT
     )
     assert test_output == (
@@ -216,7 +215,7 @@ def test_line_length() -> None:
 
 def test_output_modes() -> None:
     """Test setting isort to use various output modes works as expected"""
-    test_output_grid = api.sort_code_string(
+    test_output_grid = isort.code(
         code=REALLY_LONG_IMPORT, multi_line_output=WrapModes.GRID, line_length=40
     )
     assert test_output_grid == (
@@ -233,7 +232,7 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    test_output_vertical = api.sort_code_string(
+    test_output_vertical = isort.code(
         code=REALLY_LONG_IMPORT, multi_line_output=WrapModes.VERTICAL, line_length=40
     )
     assert test_output_vertical == (
@@ -260,7 +259,7 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    comment_output_vertical = api.sort_code_string(
+    comment_output_vertical = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.VERTICAL, line_length=40
     )
     assert comment_output_vertical == (
@@ -287,7 +286,7 @@ def test_output_modes() -> None:
         "                         lib22)\n"
     )
 
-    test_output_hanging_indent = api.sort_code_string(
+    test_output_hanging_indent = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -301,7 +300,7 @@ def test_output_modes() -> None:
         "    lib18, lib20, lib21, lib22\n"
     )
 
-    comment_output_hanging_indent = api.sort_code_string(
+    comment_output_hanging_indent = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -315,7 +314,7 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22\n"
     )
 
-    test_output_vertical_indent = api.sort_code_string(
+    test_output_vertical_indent = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
@@ -347,7 +346,7 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    comment_output_vertical_indent = api.sort_code_string(
+    comment_output_vertical_indent = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
@@ -379,7 +378,7 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    test_output_vertical_grid = api.sort_code_string(
+    test_output_vertical_grid = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
@@ -393,7 +392,7 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22)\n"
     )
 
-    comment_output_vertical_grid = api.sort_code_string(
+    comment_output_vertical_grid = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
@@ -407,7 +406,7 @@ def test_output_modes() -> None:
         "    lib17, lib18, lib20, lib21, lib22)\n"
     )
 
-    test_output_vertical_grid_grouped = api.sort_code_string(
+    test_output_vertical_grid_grouped = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
@@ -422,7 +421,7 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    comment_output_vertical_grid_grouped = api.sort_code_string(
+    comment_output_vertical_grid_grouped = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
@@ -437,9 +436,7 @@ def test_output_modes() -> None:
         ")\n"
     )
 
-    output_noqa = api.sort_code_string(
-        code=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.NOQA
-    )
+    output_noqa = isort.code(code=REALLY_LONG_IMPORT_WITH_COMMENT, multi_line_output=WrapModes.NOQA)
     assert output_noqa == (
         "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7,"
         " lib8, lib9, lib10, lib11,"
@@ -447,7 +444,7 @@ def test_output_modes() -> None:
         "# NOQA comment\n"
     )
 
-    test_case = api.sort_code_string(
+    test_case = isort.code(
         code=SINGLE_LINE_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
         line_length=40,
@@ -458,7 +455,7 @@ def test_output_modes() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4, lib5, lib5ab\n)\n"
     )
 
-    test_output_prefix_from_module = api.sort_code_string(
+    test_output_prefix_from_module = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
         line_length=40,
@@ -477,7 +474,7 @@ def test_output_modes() -> None:
         "from third_party import lib22\n"
     )
 
-    test_output_prefix_from_module_with_comment = api.sort_code_string(
+    test_output_prefix_from_module_with_comment = isort.code(
         code=REALLY_LONG_IMPORT_WITH_COMMENT,
         multi_line_output=WrapModes.VERTICAL_PREFIX_FROM_MODULE_IMPORT,
         line_length=40,
@@ -502,7 +499,7 @@ def test_output_modes() -> None:
         "    from allennlp.modules.text_field_embedders.basic_text_field_embedder"
         " import BasicTextFieldEmbedder"
     )
-    test_output = api.sort_code_string(test_input, line_length=100)
+    test_output = isort.code(test_input, line_length=100)
     assert test_output == (
         "def a():\n"
         "    from allennlp.modules.text_field_embedders.basic_text_field_embedder import \\\n"
@@ -520,21 +517,17 @@ def test_output_modes() -> None:
         "        from allennlp.common.registrable import Registrable"
         "  # import here to avoid circular imports\n"
     )
-    test_output = api.sort_code_string(test_input, line_length=100)
+    test_output = isort.code(test_input, line_length=100)
     assert test_output == test_input
 
 
 def test_qa_comment_case() -> None:
     test_input = "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA"
-    test_output = api.sort_code_string(
-        code=test_input, line_length=40, multi_line_output=WrapModes.NOQA
-    )
+    test_output = isort.code(code=test_input, line_length=40, multi_line_output=WrapModes.NOQA)
     assert test_output == "from veryveryveryveryveryveryveryveryveryveryvery import X  # NOQA\n"
 
     test_input = "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA"
-    test_output = api.sort_code_string(
-        code=test_input, line_length=40, multi_line_output=WrapModes.NOQA
-    )
+    test_output = isort.code(code=test_input, line_length=40, multi_line_output=WrapModes.NOQA)
     assert test_output == "import veryveryveryveryveryveryveryveryveryveryvery  # NOQA\n"
 
 
@@ -546,7 +539,7 @@ def test_length_sort() -> None:
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"
     )
-    test_output = api.sort_code_string(test_input, length_sort=True)
+    test_output = isort.code(test_input, length_sort=True)
     assert test_output == (
         "import shortie\n"
         "import medium_sizeeeeeeeeeeeeea\n"
@@ -565,7 +558,7 @@ def test_length_sort_section() -> None:
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"
     )
-    test_output = api.sort_code_string(test_input, length_sort_sections=("stdlib",))
+    test_output = isort.code(test_input, length_sort_sections=("stdlib",))
     assert test_output == (
         "import os\n"
         "import sys\n"
@@ -587,9 +580,7 @@ def test_convert_hanging() -> None:
         "    lib13, lib14, lib15, lib16, lib17, \\\n"
         "    lib18, lib20, lib21, lib22\n"
     )
-    test_output = api.sort_code_string(
-        code=test_input, multi_line_output=WrapModes.GRID, line_length=40
-    )
+    test_output = isort.code(code=test_input, multi_line_output=WrapModes.GRID, line_length=40)
     assert test_output == (
         "from third_party import (lib1, lib2,\n"
         "                         lib3, lib4,\n"
@@ -607,7 +598,7 @@ def test_convert_hanging() -> None:
 
 def test_custom_indent() -> None:
     """Ensure setting a custom indent will work as expected."""
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -622,7 +613,7 @@ def test_custom_indent() -> None:
         "   lib20, lib21, lib22\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -637,7 +628,7 @@ def test_custom_indent() -> None:
         "  lib20, lib21, lib22\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -652,7 +643,7 @@ def test_custom_indent() -> None:
         "\tlib20, lib21, lib22\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=REALLY_LONG_IMPORT,
         multi_line_output=WrapModes.HANGING_INDENT,
         line_length=40,
@@ -673,14 +664,14 @@ def test_use_parentheses() -> None:
         "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import "
         "    my_custom_function as my_special_function"
     )
-    test_output = api.sort_code_string(test_input, line_length=79, use_parentheses=True)
+    test_output = isort.code(test_input, line_length=79, use_parentheses=True)
 
     assert test_output == (
         "from fooooooooooooooooooooooooo.baaaaaaaaaaaaaaaaaaarrrrrrr import (\n"
         "    my_custom_function as my_special_function)\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, line_length=79, use_parentheses=True, include_trailing_comma=True
     )
 
@@ -689,7 +680,7 @@ def test_use_parentheses() -> None:
         "    my_custom_function as my_special_function,)\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         line_length=79,
         use_parentheses=True,
@@ -701,7 +692,7 @@ def test_use_parentheses() -> None:
         "    my_custom_function as my_special_function\n)\n"
     )
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         line_length=79,
         use_parentheses=True,
@@ -724,7 +715,7 @@ def test_skip() -> None:
         "import sys  # isort: skip this import needs to be placed here\n\n\n\n\n\n\n"
     )
 
-    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
+    test_output = isort.code(test_input, known_first_party=["myproject"])
     assert test_output == (
         "import django\n"
         "\n"
@@ -739,7 +730,7 @@ def test_skip_with_file_name() -> None:
     """Ensure skipping a file works even when file_contents is provided."""
     test_input = "import django\nimport myproject\n"
     with pytest.raises(FileSkipped):
-        api.sort_code_string(
+        isort.code(
             file_path=Path("/baz.py"), code=test_input, settings_path=os.getcwd(), skip=["baz.py"]
         )
 
@@ -748,20 +739,20 @@ def test_skip_within_file() -> None:
     """Ensure skipping a whole file works."""
     test_input = "# isort: skip_file\nimport django\nimport myproject\n"
     with pytest.raises(FileSkipped):
-        api.sort_code_string(test_input, known_third_party=["django"])
+        isort.code(test_input, known_third_party=["django"])
 
 
 def test_force_to_top() -> None:
     """Ensure forcing a single import to the top of its category works as expected."""
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n"
-    test_output = api.sort_code_string(test_input, force_to_top=["lib5"])
+    test_output = isort.code(test_input, force_to_top=["lib5"])
     assert test_output == "import lib5\nimport lib1\nimport lib2\nimport lib6\n"
 
 
 def test_add_imports() -> None:
     """Ensures adding imports works as expected."""
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n\n"
-    test_output = api.sort_code_string(code=test_input, add_imports=["import lib4", "import lib7"])
+    test_output = isort.code(code=test_input, add_imports=["import lib4", "import lib7"])
     assert test_output == (
         "import lib1\n"
         "import lib2\n"
@@ -773,7 +764,7 @@ def test_add_imports() -> None:
 
     # Using simplified syntax
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n\n"
-    test_output = api.sort_code_string(code=test_input, add_imports=["lib4", "lib7", "lib8.a"])
+    test_output = isort.code(code=test_input, add_imports=["lib4", "lib7", "lib8.a"])
     assert test_output == (
         "import lib1\n"
         "import lib2\n"
@@ -786,9 +777,7 @@ def test_add_imports() -> None:
 
     # On a file that has no pre-existing imports
     test_input = '"""Module docstring"""\n' "\nclass MyClass(object):\n    pass\n"
-    test_output = api.sort_code_string(
-        code=test_input, add_imports=["from __future__ import print_function"]
-    )
+    test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
         '"""Module docstring"""\n'
         "from __future__ import print_function\n"
@@ -800,62 +789,60 @@ def test_add_imports() -> None:
 
     # On a file that has no pre-existing imports, and no doc-string
     test_input = "class MyClass(object):\n    pass\n"
-    test_output = api.sort_code_string(
-        code=test_input, add_imports=["from __future__ import print_function"]
-    )
+    test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
         "from __future__ import print_function\n" "\n" "\n" "class MyClass(object):\n" "    pass\n"
     )
 
     # On a file with no content what so ever
     test_input = ""
-    test_output = api.sort_code_string(test_input, add_imports=["lib4"])
+    test_output = isort.code(test_input, add_imports=["lib4"])
     assert test_output == ("")
 
     # On a file with no content what so ever, after force_adds is set to True
     test_input = ""
-    test_output = api.sort_code_string(code=test_input, add_imports=["lib4"], force_adds=True)
+    test_output = isort.code(code=test_input, add_imports=["lib4"], force_adds=True)
     assert test_output == ("import lib4\n")
 
 
 def test_remove_imports() -> None:
     """Ensures removing imports works as expected."""
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1"
-    test_output = api.sort_code_string(test_input, remove_imports=["lib2", "lib6"])
+    test_output = isort.code(test_input, remove_imports=["lib2", "lib6"])
     assert test_output == "import lib1\nimport lib5\n"
 
     # Using natural syntax
     test_input = (
         "import lib6\n" "import lib2\n" "import lib5\n" "import lib1\n" "from lib8 import a"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, remove_imports=["import lib2", "import lib6", "from lib8 import a"]
     )
     assert test_output == "import lib1\nimport lib5\n"
 
     # From imports
     test_input = "from x import y"
-    test_output = api.sort_code_string(test_input, remove_imports=["x"])
+    test_output = isort.code(test_input, remove_imports=["x"])
     assert test_output == ""
 
     test_input = "from x import y"
-    test_output = api.sort_code_string(test_input, remove_imports=["x.y"])
+    test_output = isort.code(test_input, remove_imports=["x.y"])
     assert test_output == ""
 
 
 def test_comments_above():
     """Test to ensure comments above an import will stay in place"""
     test_input = "import os\n\nfrom x import y\n\n# comment\nfrom z import __version__, api\n"
-    assert api.sort_code_string(test_input, ensure_newline_before_comments=True) == test_input
+    assert isort.code(test_input, ensure_newline_before_comments=True) == test_input
 
 
 def test_explicitly_local_import() -> None:
     """Ensure that explicitly local imports are separated."""
     test_input = "import lib1\nimport lib2\nimport .lib6\nfrom . import lib7"
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
     )
-    assert api.sort_code_string(test_input, old_finders=True) == (
+    assert isort.code(test_input, old_finders=True) == (
         "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
     )
 
@@ -863,22 +850,22 @@ def test_explicitly_local_import() -> None:
 def test_quotes_in_file() -> None:
     """Ensure imports within triple quotes don't get imported."""
     test_input = "import os\n\n" '"""\n' "Let us\nimport foo\nokay?\n" '"""\n'
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "import os\n\n" '\'"""\'\n' "import foo\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "import os\n\n" '"""Let us"""\n' "import foo\n\n" '"""okay?"""\n'
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "import os\n\n" '#"""\n' "import foo\n" '#"""'
-    assert api.sort_code_string(test_input) == ('import os\n\nimport foo\n\n#"""\n#"""\n')
+    assert isort.code(test_input) == ('import os\n\nimport foo\n\n#"""\n#"""\n')
 
     test_input = "import os\n\n'\\\nimport foo'\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "import os\n\n'''\n\\'''\nimport junk\n'''\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_check_newline_in_imports(capsys) -> None:
@@ -919,7 +906,7 @@ def test_forced_separate() -> None:
         "TO_FIELD_VAR\n"
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             forced_separate=["django.contrib"],
             known_third_party=["django"],
@@ -929,7 +916,7 @@ def test_forced_separate() -> None:
         == test_input
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             forced_separate=["django.contrib"],
             known_third_party=["django"],
@@ -942,13 +929,11 @@ def test_forced_separate() -> None:
 
     test_input = "from .foo import bar\n\nfrom .y import ca\n"
     assert (
-        api.sort_code_string(
-            code=test_input, forced_separate=[".y"], line_length=120, order_by_type=False
-        )
+        isort.code(code=test_input, forced_separate=[".y"], line_length=120, order_by_type=False)
         == test_input
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             forced_separate=[".y"],
             line_length=120,
@@ -962,14 +947,14 @@ def test_forced_separate() -> None:
 def test_default_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = "import sys\nimport os\nimport myproject.test\nimport django.settings"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, known_third_party=["django"], default_section="FIRSTPARTY"
     )
     assert test_output == (
         "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
     )
 
-    test_output_custom = api.sort_code_string(
+    test_output_custom = isort.code(
         code=test_input, known_third_party=["django"], default_section="STDLIB"
     )
     assert test_output_custom == (
@@ -985,9 +970,7 @@ def test_first_party_overrides_standard_section() -> None:
         "import os\n"
         "import profile.test\n"
     )
-    test_output = api.sort_code_string(
-        code=test_input, known_first_party=["profile"], py_version="27"
-    )
+    test_output = isort.code(code=test_input, known_first_party=["profile"], py_version="27")
     assert test_output == (
         "import os\n"
         "import sys\n"
@@ -1000,7 +983,7 @@ def test_first_party_overrides_standard_section() -> None:
 def test_thirdy_party_overrides_standard_section() -> None:
     """Test to ensure changing the default section works as expected."""
     test_input = "import sys\nimport os\nimport profile.test\n"
-    test_output = api.sort_code_string(test_input, known_third_party=["profile"])
+    test_output = isort.code(test_input, known_third_party=["profile"])
     assert test_output == "import os\nimport sys\n\nimport profile.test\n"
 
 
@@ -1015,12 +998,12 @@ def test_known_pattern_path_expansion() -> None:
         "import this\n"
         "import os\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         default_section="THIRDPARTY",
         known_first_party=["./", "this", "kate_plugin", "isort"],
     )
-    test_output_old_finder = api.sort_code_string(
+    test_output_old_finder = isort.code(
         code=test_input,
         default_section="FIRSTPARTY",
         old_finders=True,
@@ -1049,7 +1032,7 @@ def test_force_single_line_imports() -> None:
         "    lib13, lib14, lib15, lib16, lib17, \\\n"
         "    lib18, lib20, lib21, lib22\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.GRID, line_length=40, force_single_line=True
     )
     assert test_output == (
@@ -1079,7 +1062,7 @@ def test_force_single_line_imports() -> None:
     test_input = (
         "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.GRID, line_length=40, force_single_line=True
     )
     assert test_output == (
@@ -1092,7 +1075,7 @@ def test_force_single_line_imports() -> None:
 
 def test_force_single_line_long_imports() -> None:
     test_input = "from veryveryveryveryveryvery import small, big\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.NOQA, line_length=40, force_single_line=True
     )
     assert test_output == (
@@ -1105,7 +1088,7 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
     test_input = (
         "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
@@ -1118,7 +1101,7 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
         "from third_party import lib_d\n"
         "from third_party.lib_c import lib1\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         multi_line_output=WrapModes.GRID,
         line_length=40,
@@ -1141,8 +1124,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 """
     test_output = (
-        api.sort_code_string(code=test_input, force_sort_within_sections=True, length_sort=True)
-        == test_input
+        isort.code(code=test_input, force_sort_within_sections=True, length_sort=True) == test_input
     )
 
 
@@ -1156,7 +1138,7 @@ def test_titled_imports() -> None:
         "import myproject.test\n"
         "import django.settings"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         known_first_party=["myproject"],
         import_heading_stdlib="Standard Library",
@@ -1174,7 +1156,7 @@ def test_titled_imports() -> None:
         "# My Stuff\n"
         "import myproject.test\n"
     )
-    test_second_run = api.sort_code_string(
+    test_second_run = isort.code(
         code=test_output,
         known_first_party=["myproject"],
         import_heading_stdlib="Standard Library",
@@ -1189,7 +1171,7 @@ def test_balanced_wrapping() -> None:
         "from __future__ import (absolute_import, division, print_function,\n"
         "                        unicode_literals)"
     )
-    test_output = api.sort_code_string(code=test_input, line_length=70, balanced_wrapping=True)
+    test_output = isort.code(code=test_input, line_length=70, balanced_wrapping=True)
     assert test_output == (
         "from __future__ import (absolute_import, division,\n"
         "                        print_function, unicode_literals)\n"
@@ -1201,19 +1183,19 @@ def test_relative_import_with_space() -> None:
     with a space.
     """
     test_input = "from ... fields.sproqet import SproqetCollection"
-    assert api.sort_code_string(test_input) == ("from ...fields.sproqet import SproqetCollection\n")
+    assert isort.code(test_input) == ("from ...fields.sproqet import SproqetCollection\n")
     test_input = "from .import foo"
     test_output = "from . import foo\n"
-    assert api.sort_code_string(test_input) == test_output
+    assert isort.code(test_input) == test_output
     test_input = "from.import foo"
     test_output = "from . import foo\n"
-    assert api.sort_code_string(test_input) == test_output
+    assert isort.code(test_input) == test_output
 
 
 def test_multiline_import() -> None:
     """Test the case where import spawns multiple lines with inconsistent indentation."""
     test_input = "from pkg \\\n    import stuff, other_suff \\\n               more_stuff"
-    assert api.sort_code_string(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
+    assert isort.code(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
 
     # test again with a custom configuration
     custom_configuration = {
@@ -1226,38 +1208,36 @@ def test_multiline_import() -> None:
     expected_output = (
         "from pkg import more_stuff\n" "from pkg import other_suff\n" "from pkg import stuff\n"
     )
-    assert api.sort_code_string(test_input, **custom_configuration) == expected_output
+    assert isort.code(test_input, **custom_configuration) == expected_output
 
 
 def test_single_multiline() -> None:
     """Test the case where a single import spawns multiple lines."""
     test_input = "from os import\\\n        getuid\n\nprint getuid()\n"
-    output = api.sort_code_string(test_input)
+    output = isort.code(test_input)
     assert output == ("from os import getuid\n\nprint getuid()\n")
 
 
 def test_atomic_mode() -> None:
     # without syntax error, everything works OK
     test_input = "from b import d, c\nfrom a import f, e\n"
-    assert api.sort_code_string(test_input, atomic=True) == (
-        "from a import e, f\nfrom b import c, d\n"
-    )
+    assert isort.code(test_input, atomic=True) == ("from a import e, f\nfrom b import c, d\n")
 
     # with syntax error content is not changed
     test_input += "while True print 'Hello world'"  # blatant syntax error
     with pytest.raises(ExistingSyntaxErrors):
-        api.sort_code_string(test_input, atomic=True)
+        isort.code(test_input, atomic=True)
 
 
 def test_order_by_type() -> None:
     test_input = "from module import Class, CONSTANT, function"
-    assert api.sort_code_string(test_input, order_by_type=True) == (
+    assert isort.code(test_input, order_by_type=True) == (
         "from module import CONSTANT, Class, function\n"
     )
 
     # More complex sample data
     test_input = "from module import Class, CONSTANT, function, BASIC, Apple"
-    assert api.sort_code_string(test_input, order_by_type=True) == (
+    assert isort.code(test_input, order_by_type=True) == (
         "from module import BASIC, CONSTANT, Apple, Class, function\n"
     )
 
@@ -1272,7 +1252,7 @@ def test_order_by_type() -> None:
         "from subprocess import PIPE, Popen, STDOUT\n"
     )
 
-    assert api.sort_code_string(test_input, order_by_type=True, py_version="27") == (
+    assert isort.code(test_input, order_by_type=True, py_version="27") == (
         "import glob\n"
         "import os\n"
         "import shutil\n"
@@ -1288,37 +1268,31 @@ def test_custom_lines_after_import_section() -> None:
     test_input = "from a import b\nfoo = 'bar'\n"
 
     # default case is one space if not method or class after imports
-    assert api.sort_code_string(test_input) == ("from a import b\n\nfoo = 'bar'\n")
+    assert isort.code(test_input) == ("from a import b\n\nfoo = 'bar'\n")
 
     # test again with a custom number of lines after the import section
-    assert api.sort_code_string(test_input, lines_after_imports=2) == (
-        "from a import b\n\n\nfoo = 'bar'\n"
-    )
+    assert isort.code(test_input, lines_after_imports=2) == ("from a import b\n\n\nfoo = 'bar'\n")
 
 
 def test_smart_lines_after_import_section() -> None:
     """Tests the default 'smart' behavior for dealing with lines after the import section"""
     # one space if not method or class after imports
     test_input = "from a import b\nfoo = 'bar'\n"
-    assert api.sort_code_string(test_input) == ("from a import b\n\nfoo = 'bar'\n")
+    assert isort.code(test_input) == ("from a import b\n\nfoo = 'bar'\n")
 
     # two spaces if a method or class after imports
     test_input = "from a import b\ndef my_function():\n    pass\n"
-    assert api.sort_code_string(test_input) == (
-        "from a import b\n\n\ndef my_function():\n    pass\n"
-    )
+    assert isort.code(test_input) == ("from a import b\n\n\ndef my_function():\n    pass\n")
 
     # two spaces if an async method after imports
     test_input = "from a import b\nasync def my_function():\n    pass\n"
-    assert api.sort_code_string(test_input) == (
-        "from a import b\n\n\nasync def my_function():\n    pass\n"
-    )
+    assert isort.code(test_input) == ("from a import b\n\n\nasync def my_function():\n    pass\n")
 
     # two spaces if a method or class after imports - even if comment before function
     test_input = (
         "from a import b\n" "# comment should be ignored\n" "def my_function():\n" "    pass\n"
     )
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "from a import b\n"
         "\n"
         "\n"
@@ -1336,7 +1310,7 @@ def test_smart_lines_after_import_section() -> None:
         "def my_function():\n"
         "    pass\n"
     )
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "from a import b\n"
         "\n"
         '"""\n'
@@ -1348,7 +1322,7 @@ def test_smart_lines_after_import_section() -> None:
 
     # Ensure logic doesn't incorrectly skip over assignments to multi-line strings
     test_input = 'from a import b\nX = """test\n"""\ndef my_function():\n    pass\n'
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "from a import b\n" "\n" 'X = """test\n' '"""\n' "def my_function():\n" "    pass\n"
     )
 
@@ -1368,10 +1342,10 @@ def test_combined_from_and_as_imports() -> None:
         "from translate.storage import base, factory\n"
         "from translate.storage.placeables import general, parse as rich_parse\n"
     )
-    assert api.sort_code_string(test_input, combine_as_imports=True) == test_input
+    assert isort.code(test_input, combine_as_imports=True) == test_input
     test_input = "import os \nimport os as _os"
     test_output = "import os\nimport os as _os\n"
-    assert api.sort_code_string(test_input, keep_direct_and_as_imports=True) == test_output
+    assert isort.code(test_input, keep_direct_and_as_imports=True) == test_output
 
 
 def test_as_imports_with_line_length() -> None:
@@ -1380,7 +1354,7 @@ def test_as_imports_with_line_length() -> None:
         "from translate.storage import base as storage_base\n"
         "from translate.storage.placeables import general, parse as rich_parse\n"
     )
-    assert api.sort_code_string(code=test_input, combine_as_imports=False, line_length=40) == (
+    assert isort.code(code=test_input, combine_as_imports=False, line_length=40) == (
         "from translate.storage import \\\n    base as storage_base\n"
         "from translate.storage.placeables import \\\n    general\n"
         "from translate.storage.placeables import \\\n    parse as rich_parse\n"
@@ -1391,23 +1365,23 @@ def test_keep_comments() -> None:
     """Test to ensure isort properly keeps comments in tact after sorting."""
     # Straight Import
     test_input = "import foo  # bar\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     # Star import
     test_input_star = "from foo import *  # bar\n"
-    assert api.sort_code_string(test_input_star) == test_input_star
+    assert isort.code(test_input_star) == test_input_star
 
     # Force Single Line From Import
     test_input = "from foo import bar  # comment\n"
-    assert api.sort_code_string(test_input, force_single_line=True) == test_input
+    assert isort.code(test_input, force_single_line=True) == test_input
 
     # From import
     test_input = "from foo import bar  # My Comment\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     # More complicated case
     test_input = "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
     )
 
@@ -1415,7 +1389,7 @@ def test_keep_comments() -> None:
     test_input = (
         "from a import b # My Comment1\n" "from a import c # My Comment2\n" "from a import d\n"
     )
-    assert api.sort_code_string(test_input, line_length=45) == (
+    assert isort.code(test_input, line_length=45) == (
         "from a import b  # My Comment1\n" "from a import c  # My Comment2\n" "from a import d\n"
     )
 
@@ -1424,14 +1398,14 @@ def test_keep_comments() -> None:
         "from a import b, c  # My Comment1\n"
         "from a import c, d # My Comment2 is really really really really long\n"
     )
-    assert api.sort_code_string(test_input, line_length=45) == (
+    assert isort.code(test_input, line_length=45) == (
         "from a import (  # My Comment1; My Comment2 is really really really really long\n"
         "    b, c, d)\n"
     )
 
     # Test that comments are not stripped from 'import ... as ...' by default
     test_input = "from a import b as bb  # b comment\nfrom a import c as cc  # c comment\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     # Test that 'import ... as ...' comments are not collected inappropriately
     test_input = (
@@ -1439,8 +1413,8 @@ def test_keep_comments() -> None:
         "from a import c as cc  # c comment\n"
         "from a import d\n"
     )
-    assert api.sort_code_string(test_input) == test_input
-    assert api.sort_code_string(test_input, combine_as_imports=True) == (
+    assert isort.code(test_input) == test_input
+    assert isort.code(test_input, combine_as_imports=True) == (
         "from a import b as bb, c as cc, d  # b comment; c comment\n"
     )
 
@@ -1453,7 +1427,7 @@ def test_multiline_split_on_dot() -> None:
         "from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.\\\n"
         "    my_module import my_function"
     )
-    assert api.sort_code_string(test_input, line_length=70) == (
+    assert isort.code(test_input, line_length=70) == (
         "from my_lib.my_package.test.level_1.level_2.level_3.level_4.level_5.my_module import \\\n"
         "    my_function\n"
     )
@@ -1462,13 +1436,13 @@ def test_multiline_split_on_dot() -> None:
 def test_import_star() -> None:
     """Test to ensure isort handles star imports correctly"""
     test_input = "from blah import *\nfrom blah import _potato\n"
-    assert api.sort_code_string(test_input) == ("from blah import *\nfrom blah import _potato\n")
-    assert api.sort_code_string(test_input, combine_star=True) == ("from blah import *\n")
+    assert isort.code(test_input) == ("from blah import *\nfrom blah import _potato\n")
+    assert isort.code(test_input, combine_star=True) == ("from blah import *\n")
 
 
 def test_include_trailing_comma() -> None:
     """Test for the include_trailing_comma option"""
-    test_output_grid = api.sort_code_string(
+    test_output_grid = isort.code(
         code=SHORT_IMPORT,
         multi_line_output=WrapModes.GRID,
         line_length=40,
@@ -1478,7 +1452,7 @@ def test_include_trailing_comma() -> None:
         "from third_party import (lib1, lib2,\n" "                         lib3, lib4,)\n"
     )
 
-    test_output_vertical = api.sort_code_string(
+    test_output_vertical = isort.code(
         code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL,
         line_length=40,
@@ -1491,7 +1465,7 @@ def test_include_trailing_comma() -> None:
         "                         lib4,)\n"
     )
 
-    test_output_vertical_indent = api.sort_code_string(
+    test_output_vertical_indent = isort.code(
         code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
         line_length=40,
@@ -1501,7 +1475,7 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n" "    lib1,\n" "    lib2,\n" "    lib3,\n" "    lib4,\n" ")\n"
     )
 
-    test_output_vertical_grid = api.sort_code_string(
+    test_output_vertical_grid = isort.code(
         code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID,
         line_length=40,
@@ -1511,7 +1485,7 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4,)\n"
     )
 
-    test_output_vertical_grid_grouped = api.sort_code_string(
+    test_output_vertical_grid_grouped = isort.code(
         code=SHORT_IMPORT,
         multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
@@ -1521,14 +1495,14 @@ def test_include_trailing_comma() -> None:
         "from third_party import (\n    lib1, lib2, lib3, lib4,\n)\n"
     )
 
-    test_output_wrap_single_import_with_use_parentheses = api.sort_code_string(
+    test_output_wrap_single_import_with_use_parentheses = isort.code(
         code=SINGLE_FROM_IMPORT, line_length=25, include_trailing_comma=True, use_parentheses=True
     )
     assert test_output_wrap_single_import_with_use_parentheses == (
         "from third_party import (\n    lib1,)\n"
     )
 
-    test_output_wrap_single_import_vertical_indent = api.sort_code_string(
+    test_output_wrap_single_import_vertical_indent = isort.code(
         code=SINGLE_FROM_IMPORT,
         line_length=25,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -1548,7 +1522,7 @@ def test_include_trailing_comma() -> None:
         "    urlencode,  # pylint: disable=no-n"
         "ame-in-module,import-error\n)\n"
     )
-    trailing_comma_with_comment = api.sort_code_string(
+    trailing_comma_with_comment = isort.code(
         code=trailing_comma_with_comment,
         line_length=80,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -1557,7 +1531,7 @@ def test_include_trailing_comma() -> None:
     )
     assert trailing_comma_with_comment == expected_trailing_comma_with_comment
     # The next time around, it should be equal
-    trailing_comma_with_comment = api.sort_code_string(
+    trailing_comma_with_comment = isort.code(
         code=trailing_comma_with_comment,
         line_length=80,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -1572,16 +1546,16 @@ def test_similar_to_std_library() -> None:
     don't end up clobbered
     """
     test_input = "import datetime\n\nimport requests\nimport times\n"
-    assert api.sort_code_string(test_input, known_third_party=["requests", "times"]) == test_input
+    assert isort.code(test_input, known_third_party=["requests", "times"]) == test_input
 
 
 def test_correctly_placed_imports() -> None:
     """Test to ensure comments stay on correct placement after being sorted"""
     test_input = "from a import b # comment for b\nfrom a import c # comment for c\n"
-    assert api.sort_code_string(test_input, force_single_line=True) == (
+    assert isort.code(test_input, force_single_line=True) == (
         "from a import b  # comment for b\nfrom a import c  # comment for c\n"
     )
-    assert api.sort_code_string(test_input) == (
+    assert isort.code(test_input) == (
         "from a import b  # comment for b\nfrom a import c  # comment for c\n"
     )
 
@@ -1653,7 +1627,7 @@ def test_correctly_placed_imports() -> None:
         "get_right\n"
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             force_single_line=True,
             line_length=140,
@@ -1671,10 +1645,10 @@ def test_auto_detection() -> None:
 
     # Issue 157
     test_input = "import binascii\nimport os\n\nimport cv2\nimport requests\n"
-    assert api.sort_code_string(test_input, known_third_party=["cv2", "requests"]) == test_input
+    assert isort.code(test_input, known_third_party=["cv2", "requests"]) == test_input
 
     # alternative solution
-    assert api.sort_code_string(test_input, default_section="THIRDPARTY") == test_input
+    assert isort.code(test_input, default_section="THIRDPARTY") == test_input
 
 
 def test_same_line_statements() -> None:
@@ -1682,10 +1656,10 @@ def test_same_line_statements() -> None:
     contains multiple statements including an import
     """
     test_input = "import pdb; import nose\n"
-    assert api.sort_code_string(test_input) == ("import pdb\n\nimport nose\n")
+    assert isort.code(test_input) == ("import pdb\n\nimport nose\n")
 
     test_input = "import pdb; pdb.set_trace()\nimport nose; nose.run()\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_long_line_comments() -> None:
@@ -1698,7 +1672,7 @@ def test_long_line_comments() -> None:
         "sync_stage_envdir, "
         "update_stage_app, update_stage_cron  # noqa\n"
     )
-    assert api.sort_code_string(code=test_input, line_length=100, balanced_wrapping=True) == (
+    assert isort.code(code=test_input, line_length=100, balanced_wrapping=True) == (
         "from foo.utils.fabric_stuff.live import (check_clean_live, deploy_live,  # noqa\n"
         "                                         sync_live_envdir, update_live_app, "
         "update_live_cron)\n"
@@ -1713,7 +1687,7 @@ def test_tab_character_in_import() -> None:
     test_input = (
         "from __future__ import print_function\n" "from __future__ import\tprint_function\n"
     )
-    assert api.sort_code_string(test_input) == "from __future__ import print_function\n"
+    assert isort.code(test_input) == "from __future__ import print_function\n"
 
 
 def test_split_position() -> None:
@@ -1722,7 +1696,7 @@ def test_split_position() -> None:
         "from p24.shared.exceptions.master.host_state_flag_unchanged "
         "import HostStateUnchangedException\n"
     )
-    assert api.sort_code_string(test_input, line_length=80) == (
+    assert isort.code(test_input, line_length=80) == (
         "from p24.shared.exceptions.master.host_state_flag_unchanged import \\\n"
         "    HostStateUnchangedException\n"
     )
@@ -1752,9 +1726,9 @@ def test_place_comments() -> None:
         "import os\n"
         "import sys\n"
     )
-    test_output = api.sort_code_string(test_input, known_first_party=["myproject"])
+    test_output = isort.code(test_input, known_first_party=["myproject"])
     assert test_output == expected_output
-    test_output = api.sort_code_string(test_output, known_first_party=["myproject"])
+    test_output = isort.code(test_output, known_first_party=["myproject"])
     assert test_output == expected_output
 
 
@@ -1769,7 +1743,7 @@ def test_placement_control() -> None:
         "import p24.imports._VERSION as VERSION\n"
         "import p24.shared.media_wiki_syntax as syntax\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
         known_standard_library=["p24.imports", "os", "sys"],
@@ -1805,7 +1779,7 @@ def test_custom_sections() -> None:
         "import numpy as np\n"
         "import p24.shared.media_wiki_syntax as syntax\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         known_first_party=["p24", "p24.imports._VERSION"],
         import_heading_stdlib="Standard Library",
@@ -1861,7 +1835,7 @@ def test_glob_known() -> None:
         "from django.conf import settings\n"
         "from . import another\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         import_heading_stdlib="Standard Library",
         import_heading_thirdparty="Third Party",
@@ -1906,7 +1880,7 @@ def test_sticky_comments() -> None:
         "# Used for type-hinting (ref: https://github.com/davidhalter/jedi/issues/414).\n"
         "from selenium.webdriver.remote.webdriver import WebDriver  # noqa\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = (
         "from django import forms\n"
@@ -1915,26 +1889,26 @@ def test_sticky_comments() -> None:
         "from django.contrib.gis.geos import GEOSException, GEOSGeometry\n"
         "from django.utils.translation import ugettext_lazy as _\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_zipimport() -> None:
     """Imports ending in "import" shouldn't be clobbered"""
     test_input = "from zipimport import zipimport\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_from_ending() -> None:
     """Imports ending in "from" shouldn't be clobbered."""
     test_input = "from foo import get_foo_from, get_foo\n"
     expected_output = "from foo import get_foo, get_foo_from\n"
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_from_first() -> None:
     """Tests the setting from_first works correctly"""
     test_input = "from os import path\nimport os\n"
-    assert api.sort_code_string(test_input, from_first=True) == test_input
+    assert isort.code(test_input, from_first=True) == test_input
 
 
 def test_top_comments() -> None:
@@ -1945,32 +1919,32 @@ def test_top_comments() -> None:
         "#\n"
         "from __future__ import unicode_literals\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = (
         "# -*- coding: utf-8 -*-\n"
         "from django.db import models\n"
         "from django.utils.encoding import python_2_unicode_compatible\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "# Comment\nimport sys\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "# -*- coding\nimport sys\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_consistency() -> None:
     """Ensures consistency of handling even when dealing with non ordered-by-type imports"""
     test_input = "from sqlalchemy.dialects.postgresql import ARRAY, array\n"
-    assert api.sort_code_string(test_input, order_by_type=True) == test_input
+    assert isort.code(test_input, order_by_type=True) == test_input
 
 
 def test_force_grid_wrap() -> None:
     """Ensures removing imports works as expected."""
     test_input = "from bar import lib2\nfrom foo import lib6, lib7\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
     )
     assert (
@@ -1982,7 +1956,7 @@ from foo import (
 )
 """
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, force_grid_wrap=3, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
     )
     assert test_output == test_input
@@ -1995,7 +1969,7 @@ def test_force_grid_wrap_long() -> None:
         "from bar import lib2\n"
         "from babar import something_that_is_kind_of_long"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         force_grid_wrap=2,
         multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
@@ -2018,7 +1992,7 @@ def test_uses_jinja_variables() -> None:
     test_input = (
         "import sys\n" "import os\n" "import myproject.{ test }\n" "import django.{ settings }"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, known_third_party=["django"], known_first_party=["myproject"]
     )
     assert test_output == (
@@ -2031,13 +2005,13 @@ def test_uses_jinja_variables() -> None:
     )
 
     test_input = "import {{ cookiecutter.repo_name }}\n" "from foo import {{ cookiecutter.bar }}\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_fcntl() -> None:
     """Test to ensure fcntl gets correctly recognized as stdlib import"""
     test_input = "import fcntl\nimport os\nimport sys\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_import_split_is_word_boundary_aware() -> None:
@@ -2046,7 +2020,7 @@ def test_import_split_is_word_boundary_aware() -> None:
         "from mycompany.model.size_value_array_import_func import \\\n"
         "    get_size_value_array_import_func_jobs"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=79
     )
     assert test_output == (
@@ -2072,7 +2046,7 @@ def test_encoding_not_in_comment(tmpdir) -> None:
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
-        api.sort_code_string(
+        isort.code(
             Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
         )
         == file_contents
@@ -2085,7 +2059,7 @@ def test_encoding_not_in_first_two_lines(tmpdir) -> None:
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
     tmp_fname.write_binary(file_contents.encode("utf8"))
     assert (
-        api.sort_code_string(
+        isort.code(
             Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
         )
         == file_contents
@@ -2100,10 +2074,10 @@ def test_comment_at_top_of_file() -> None:
         "# Comment two\n"
         "from django.contrib.gis.geos import GEOSException\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "# -*- coding: utf-8 -*-\nfrom django.db import models\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_alphabetic_sorting() -> None:
@@ -2124,11 +2098,11 @@ def test_alphabetic_sorting() -> None:
         "force_alphabetical_sort_within_sections": True,
     }  # type: Dict[str, Any]
 
-    output = api.sort_code_string(test_input, **options)
+    output = isort.code(test_input, **options)
     assert output == test_input
 
     test_input = "# -*- coding: utf-8 -*-\nfrom django.db import models\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_alphabetic_sorting_multi_line() -> None:
@@ -2138,7 +2112,7 @@ def test_alphabetic_sorting_multi_line() -> None:
         "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n"
     )
     options = {"force_alphabetical_sort_within_sections": True}  # type: Dict[str, Any]
-    assert api.sort_code_string(test_input, **options) == test_input
+    assert isort.code(test_input, **options) == test_input
 
 
 def test_comments_not_duplicated() -> None:
@@ -2149,7 +2123,7 @@ def test_comments_not_duplicated() -> None:
         "from service import demo  # inline comment\n"
         "from service import settings\n"
     )
-    output = api.sort_code_string(test_input)
+    output = isort.code(test_input)
     assert output.count("# Whole line comment\n") == 1
     assert output.count("# inline comment\n") == 1
 
@@ -2166,7 +2140,7 @@ def test_top_of_line_comments() -> None:
         "\n"
         "import logging\n"
     )
-    output = api.sort_code_string(test_input)
+    output = isort.code(test_input)
     print(output)
     assert output.startswith("# -*- coding: utf-8 -*-\n")
 
@@ -2174,7 +2148,7 @@ def test_top_of_line_comments() -> None:
 def test_basic_comment() -> None:
     """Test to ensure a basic comment wont crash isort"""
     test_input = "import logging\n# Foo\nimport os\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_shouldnt_add_lines() -> None:
@@ -2182,7 +2156,7 @@ def test_shouldnt_add_lines() -> None:
     See: issue #316
     """
     test_input = '"""Text"""\n' "# This is a comment\nimport pkg_resources\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_sections_parsed_correct(tmpdir) -> None:
@@ -2207,7 +2181,7 @@ def test_sections_parsed_correct(tmpdir) -> None:
         "from nose import *\n"
     )
     tmpdir.join(".isort.cfg").write(conf_file_data)
-    assert api.sort_code_string(test_input, settings_path=str(tmpdir)) == correct_output
+    assert isort.code(test_input, settings_path=str(tmpdir)) == correct_output
 
 
 @pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
@@ -2246,7 +2220,7 @@ def test_pyproject_conf_file(tmpdir) -> None:
         "from nose import *\n"
     )
     tmpdir.join("pyproject.toml").write(conf_file_data)
-    assert api.sort_code_string(test_input, settings_path=str(tmpdir)) == correct_output
+    assert isort.code(test_input, settings_path=str(tmpdir)) == correct_output
 
 
 def test_alphabetic_sorting_no_newlines() -> None:
@@ -2254,13 +2228,11 @@ def test_alphabetic_sorting_no_newlines() -> None:
     erroneously introduce new lines (issue #328)
     """
     test_input = "import os\n"
-    test_output = api.sort_code_string(
-        code=test_input, force_alphabetical_sort_within_sections=True
-    )
+    test_output = isort.code(code=test_input, force_alphabetical_sort_within_sections=True)
     assert test_input == test_output
 
     test_input = "import os\n" "import unittest\n" "\n" "from a import b\n" "\n" "\n" "print(1)\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, force_alphabetical_sort_within_sections=True, lines_after_imports=2
     )
     assert test_input == test_output
@@ -2274,7 +2246,7 @@ def test_sort_within_section() -> None:
         "from foo import bar\n"
         "from foo.bar import Quux, baz\n"
     )
-    test_output = api.sort_code_string(test_input, force_sort_within_sections=True)
+    test_output = isort.code(test_input, force_sort_within_sections=True)
     assert test_output == test_input
 
     test_input = (
@@ -2284,7 +2256,7 @@ def test_sort_within_section() -> None:
         "from foo.bar import Quux\n"
         "from Foob import ar\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         force_sort_within_sections=True,
         order_by_type=False,
@@ -2296,18 +2268,14 @@ def test_sort_within_section() -> None:
 def test_sorting_with_two_top_comments() -> None:
     """Test to ensure isort will sort files that contain 2 top comments"""
     test_input = "#! comment1\n''' comment2\n'''\nimport b\nimport a\n"
-    assert api.sort_code_string(test_input) == (
-        "#! comment1\n''' comment2\n'''\nimport a\nimport b\n"
-    )
+    assert isort.code(test_input) == ("#! comment1\n''' comment2\n'''\nimport a\nimport b\n")
 
 
 def test_lines_between_sections() -> None:
     """Test to ensure lines_between_sections works"""
     test_input = "from bar import baz\nimport os\n"
-    assert api.sort_code_string(test_input, lines_between_sections=0) == (
-        "import os\nfrom bar import baz\n"
-    )
-    assert api.sort_code_string(test_input, lines_between_sections=2) == (
+    assert isort.code(test_input, lines_between_sections=0) == ("import os\nfrom bar import baz\n")
+    assert isort.code(test_input, lines_between_sections=2) == (
         "import os\n\n\nfrom bar import baz\n"
     )
 
@@ -2325,9 +2293,7 @@ def test_forced_sepatate_globs() -> None:
         "\n"
         "import sys\n"
     )
-    test_output = api.sort_code_string(
-        code=test_input, forced_separate=["*.models"], line_length=120
-    )
+    test_output = isort.code(code=test_input, forced_separate=["*.models"], line_length=120)
 
     assert test_output == (
         "import os\n"
@@ -2364,18 +2330,18 @@ def test_no_additional_lines_issue_358() -> None:
         "    unicode_literals\n"
         ")\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
-        test_output = api.sort_code_string(
+        test_output = isort.code(
             code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
         )
         assert test_output == expected_output
@@ -2402,18 +2368,18 @@ def test_no_additional_lines_issue_358() -> None:
         "    unicode_literals\n"
         ")\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
     )
     assert test_output == expected_output
 
     for _attempt in range(5):
-        test_output = api.sort_code_string(
+        test_output = isort.code(
             code=test_output, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT, line_length=20
         )
         assert test_output == expected_output
@@ -2424,7 +2390,7 @@ def test_import_by_paren_issue_375() -> None:
     paren is directly by the import body
     """
     test_input = "from .models import(\n   Foo,\n   Bar,\n)\n"
-    assert api.sort_code_string(test_input) == "from .models import Bar, Foo\n"
+    assert isort.code(test_input) == "from .models import Bar, Foo\n"
 
 
 def test_import_by_paren_issue_460() -> None:
@@ -2436,7 +2402,7 @@ def test_import_by_paren_issue_460() -> None:
 import io
 import os
 """
-    assert api.sort_code_string((test_input)) == test_input
+    assert isort.code((test_input)) == test_input
 
 
 def test_function_with_docstring() -> None:
@@ -2453,7 +2419,7 @@ def test_function_with_docstring() -> None:
         '    """ Single line triple quoted doctring """\n'
         "    pass\n"
     )
-    assert api.sort_code_string(test_input, add_imports=add_imports) == expected_output
+    assert isort.code(test_input, add_imports=add_imports) == expected_output
 
 
 def test_plone_style() -> None:
@@ -2470,7 +2436,7 @@ def test_plone_style() -> None:
         "import Zope\n"
     )
     options = {"force_single_line": True, "force_alphabetical_sort": True}  # type: Dict[str, Any]
-    assert api.sort_code_string(test_input, **options) == test_input
+    assert isort.code(test_input, **options) == test_input
 
 
 def test_third_party_case_sensitive() -> None:
@@ -2478,7 +2444,7 @@ def test_third_party_case_sensitive() -> None:
     test_input = "import thirdparty\nimport os\nimport ABC\n"
 
     expected_output = "import os\n\nimport ABC\nimport thirdparty\n"
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_exists_case_sensitive_file(tmpdir) -> None:
@@ -2501,14 +2467,14 @@ def test_sys_path_mutation(tmpdir) -> None:
     test_input = "from myproject import test"
     options = {"virtual_env": str(tmpdir)}  # type: Dict[str, Any]
     expected_length = len(sys.path)
-    api.sort_code_string(test_input, **options)
+    isort.code(test_input, **options)
     assert len(sys.path) == expected_length
-    api.sort_code_string(test_input, old_finders=True, **options)
+    isort.code(test_input, old_finders=True, **options)
 
 
 def test_long_single_line() -> None:
     """Test to ensure long single lines get handled correctly"""
-    output = api.sort_code_string(
+    output = isort.code(
         code="from ..views import ("
         " _a,"
         "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
@@ -2517,7 +2483,7 @@ def test_long_single_line() -> None:
     for line in output.split("\n"):
         assert len(line) <= 79
 
-    output = api.sort_code_string(
+    output = isort.code(
         code="from ..views import ("
         " _a,"
         "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
@@ -2542,32 +2508,32 @@ def test_import_inside_class_issue_432() -> None:
         "    def bar(self):\n"
         "        pass\n"
     )
-    assert api.sort_code_string(test_input, add_imports=["import baz"]) == expected_output
+    assert isort.code(test_input, add_imports=["import baz"]) == expected_output
 
 
 def test_wildcard_import_without_space_issue_496() -> None:
     """Test to ensure issue #496: wildcard without space, is resolved"""
     test_input = "from findorserver.coupon.models import*"
     expected_output = "from findorserver.coupon.models import *\n"
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_import_line_mangles_issues_491() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = "import os  # ([\n\n" 'print("hi")\n'
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_import_line_mangles_issues_505() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = "from sys import *  # (\n\n\ndef test():\n" '    print("Test print")\n'
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_import_line_mangles_issues_439() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
     test_input = "import a  # () import\nfrom b import b\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_alias_using_paren_issue_466() -> None:
@@ -2579,7 +2545,7 @@ def test_alias_using_paren_issue_466() -> None:
         "from django.db.backends.mysql.base import (\n"
         "    DatabaseWrapper as MySQLDatabaseWrapper)\n"
     )
-    assert api.sort_code_string(test_input, line_length=50, use_parentheses=True) == expected_output
+    assert isort.code(test_input, line_length=50, use_parentheses=True) == expected_output
 
     test_input = (
         "from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper\n"
@@ -2590,7 +2556,7 @@ def test_alias_using_paren_issue_466() -> None:
         ")\n"
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             line_length=50,
             multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
@@ -2610,7 +2576,7 @@ def test_long_alias_using_paren_issue_957() -> None:
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = api.sort_code_string(
+    out = isort.code(
         code=test_input,
         line_length=50,
         use_parentheses=True,
@@ -2627,7 +2593,7 @@ def test_long_alias_using_paren_issue_957() -> None:
         "    module as very_very_very_very_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = api.sort_code_string(
+    out = isort.code(
         code=test_input,
         line_length=50,
         use_parentheses=True,
@@ -2646,7 +2612,7 @@ def test_long_alias_using_paren_issue_957() -> None:
         "_very_very_very_very_very_very_long_alias\n"
         ")\n"
     )
-    out = api.sort_code_string(
+    out = isort.code(
         code=test_input,
         line_length=50,
         use_parentheses=True,
@@ -2687,9 +2653,7 @@ def test_import_wraps_with_comment_issue_471() -> None:
         "    SuperLongClassName)  # @UnusedImport -- long string of comments which wrap over\n"
     )
     assert (
-        api.sort_code_string(
-            code=test_input, line_length=50, multi_line_output=1, use_parentheses=True
-        )
+        isort.code(code=test_input, line_length=50, multi_line_output=1, use_parentheses=True)
         == expected_output
     )
 
@@ -2702,13 +2666,13 @@ def test_import_case_produces_inconsistent_results_issue_472() -> None:
         "from sqlalchemy.dialects.postgresql import ARRAY\n"
         "from sqlalchemy.dialects.postgresql import array\n"
     )
-    assert api.sort_code_string(test_input, force_single_line=True) == test_input
+    assert isort.code(test_input, force_single_line=True) == test_input
 
     test_input = (
         "from scrapy.core.downloader.handlers.http import "
         "HttpDownloadHandler, HTTPDownloadHandler\n"
     )
-    assert api.sort_code_string(test_input, line_length=100) == test_input
+    assert isort.code(test_input, line_length=100) == test_input
 
 
 def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
@@ -2718,7 +2682,7 @@ def test_inconsistent_behavior_in_python_2_and_3_issue_479() -> None:
         "\n"
         "from future.standard_library import hooks\n"
     )
-    assert api.sort_code_string(test_input, known_first_party=["future"]) == test_input
+    assert isort.code(test_input, known_first_party=["future"]) == test_input
 
 
 def test_sort_within_section_comments_issue_436() -> None:
@@ -2732,14 +2696,14 @@ def test_sort_within_section_comments_issue_436() -> None:
         "# it must not be ...      comment line 3\n"
         "import report\n"
     )
-    assert api.sort_code_string(test_input, force_sort_within_sections=True) == test_input
+    assert isort.code(test_input, force_sort_within_sections=True) == test_input
 
 
 def test_sort_within_sections_with_force_to_top_issue_473() -> None:
     """Test to ensure it's possible to sort within sections with items forced to top"""
     test_input = "import z\nimport foo\nfrom foo import bar\n"
     assert (
-        api.sort_code_string(code=test_input, force_sort_within_sections=True, force_to_top=["z"])
+        isort.code(code=test_input, force_sort_within_sections=True, force_to_top=["z"])
         == test_input
     )
 
@@ -2749,7 +2713,7 @@ def test_correct_number_of_new_lines_with_comment_issue_435() -> None:
     doesn't mess up the new line spacing
     """
     test_input = "import foo\n\n# comment\n\n\ndef baz():\n    pass\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_future_below_encoding_issue_545() -> None:
@@ -2769,7 +2733,7 @@ def test_future_below_encoding_issue_545() -> None:
         "\n"
         'print("hello")\n'
     )
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_no_extra_lines_issue_557() -> None:
@@ -2786,7 +2750,7 @@ def test_no_extra_lines_issue_557() -> None:
         "HTTPDownloadHandler\n"
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             force_alphabetical_sort=True,
             force_sort_within_sections=True,
@@ -2803,9 +2767,7 @@ def test_long_import_wrap_support_with_mode_2() -> None:
         "    an_even_longer_function_name_over_80_characters\n"
     )
     assert (
-        api.sort_code_string(
-            code=test_input, multi_line_output=WrapModes.HANGING_INDENT, line_length=80
-        )
+        isort.code(code=test_input, multi_line_output=WrapModes.HANGING_INDENT, line_length=80)
         == test_input
     )
 
@@ -2820,7 +2782,7 @@ def test_pylint_comments_incorrectly_wrapped_issue_571() -> None:
         "from PyQt5.QtCore import \\\n"
         "    QRegExp  # @UnresolvedImport pylint: disable=import-error,useless-suppression\n"
     )
-    assert api.sort_code_string(test_input, line_length=60) == expected_output
+    assert isort.code(test_input, line_length=60) == expected_output
 
 
 def test_ensure_async_methods_work_issue_537() -> None:
@@ -2832,29 +2794,29 @@ def test_ensure_async_methods_work_issue_537() -> None:
         "async def test_myfunction(test_client, app):\n"
         "    a = await myfunction(test_client, app)\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_ensure_as_imports_sort_correctly_within_from_imports_issue_590() -> None:
     """Test to ensure combination from and as import statements are sorted correct"""
     test_input = "from os import defpath\nfrom os import pathsep as separator\n"
-    assert api.sort_code_string(test_input, force_sort_within_sections=True) == test_input
+    assert isort.code(test_input, force_sort_within_sections=True) == test_input
 
     test_input = "from os import defpath\nfrom os import pathsep as separator\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = "from os import defpath\nfrom os import pathsep as separator\n"
-    assert api.sort_code_string(test_input, force_single_line=True) == test_input
+    assert isort.code(test_input, force_single_line=True) == test_input
 
 
 def test_ensure_line_endings_are_preserved_issue_493() -> None:
     """Test to ensure line endings are not converted"""
     test_input = "from os import defpath\r\nfrom os import pathsep as separator\r\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
     test_input = "from os import defpath\rfrom os import pathsep as separator\r"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
     test_input = "from os import defpath\nfrom os import pathsep as separator\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_not_splitted_sections() -> None:
@@ -2873,19 +2835,19 @@ def test_not_splitted_sections() -> None:
         + statement
     )
 
-    assert api.sort_code_string(test_input, known_first_party=["app"]) == test_input
-    assert api.sort_code_string(
-        test_input, no_lines_before=["LOCALFOLDER"], known_first_party=["app"]
-    ) == (stdlib_section + whiteline + firstparty_section + local_section + whiteline + statement)
+    assert isort.code(test_input, known_first_party=["app"]) == test_input
+    assert isort.code(test_input, no_lines_before=["LOCALFOLDER"], known_first_party=["app"]) == (
+        stdlib_section + whiteline + firstparty_section + local_section + whiteline + statement
+    )
     # by default STDLIB and FIRSTPARTY sections are split by THIRDPARTY section,
     # so don't merge them if THIRDPARTY imports aren't exist
     assert (
-        api.sort_code_string(test_input, no_lines_before=["FIRSTPARTY"], known_first_party=["app"])
+        isort.code(test_input, no_lines_before=["FIRSTPARTY"], known_first_party=["app"])
         == test_input
     )
     # in case when THIRDPARTY section is excluded from sections list,
     # it's ok to merge STDLIB and FIRSTPARTY
-    assert api.sort_code_string(
+    assert isort.code(
         code=test_input,
         sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
         no_lines_before=["FIRSTPARTY"],
@@ -2893,15 +2855,14 @@ def test_not_splitted_sections() -> None:
     ) == (stdlib_section + firstparty_section + whiteline + local_section + whiteline + statement)
     # it doesn't change output, because stdlib packages don't have any whitelines before them
     assert (
-        api.sort_code_string(test_input, no_lines_before=["STDLIB"], known_first_party=["app"])
-        == test_input
+        isort.code(test_input, no_lines_before=["STDLIB"], known_first_party=["app"]) == test_input
     )
 
 
 def test_no_lines_before_empty_section() -> None:
     test_input = "import first\nimport custom\n"
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             known_third_party=["first"],
             known_custom=["custom"],
@@ -2918,18 +2879,14 @@ def test_no_inline_sort() -> None:
     If `--force-single-line-imports` flag is enabled, then `--no-inline-sort` is ignored.
     """
     test_input = "from foo import a, c, b\n"
+    assert isort.code(test_input, no_inline_sort=True, force_single_line=False) == test_input
     assert (
-        api.sort_code_string(test_input, no_inline_sort=True, force_single_line=False) == test_input
-    )
-    assert (
-        api.sort_code_string(test_input, no_inline_sort=False, force_single_line=False)
+        isort.code(test_input, no_inline_sort=False, force_single_line=False)
         == "from foo import a, b, c\n"
     )
     expected = "from foo import a\nfrom foo import b\nfrom foo import c\n"
-    assert (
-        api.sort_code_string(test_input, no_inline_sort=False, force_single_line=True) == expected
-    )
-    assert api.sort_code_string(test_input, no_inline_sort=True, force_single_line=True) == expected
+    assert isort.code(test_input, no_inline_sort=False, force_single_line=True) == expected
+    assert isort.code(test_input, no_inline_sort=True, force_single_line=True) == expected
 
 
 def test_relative_import_of_a_module() -> None:
@@ -2956,32 +2913,32 @@ def test_relative_import_of_a_module() -> None:
         "from six.moves import asd\n"
     )
 
-    sorted_result = api.sort_code_string(test_input, force_single_line=True)
+    sorted_result = isort.code(test_input, force_single_line=True)
     assert sorted_result == expected_results
 
 
 def test_escaped_parens_sort() -> None:
     test_input = "from foo import \\ \n(a,\nb,\nc)\n"
     expected = "from foo import a, b, c\n"
-    assert api.sort_code_string(test_input) == expected
+    assert isort.code(test_input) == expected
 
 
 def test_escaped_parens_sort_with_comment() -> None:
     test_input = "from foo import \\ \n(a,\nb,# comment\nc)\n"
     expected = "from foo import b  # comment\nfrom foo import a, c\n"
-    assert api.sort_code_string(test_input) == expected
+    assert isort.code(test_input) == expected
 
 
 def test_escaped_parens_sort_with_first_comment() -> None:
     test_input = "from foo import \\ \n(a,# comment\nb,\nc)\n"
     expected = "from foo import a  # comment\nfrom foo import b, c\n"
-    assert api.sort_code_string(test_input) == expected
+    assert isort.code(test_input) == expected
 
 
 def test_escaped_no_parens_sort_with_first_comment() -> None:
     test_input = "from foo import a, \\\nb, \\\nc # comment\n"
     expected = "from foo import c  # comment\nfrom foo import a, b\n"
-    assert api.sort_code_string(test_input) == expected
+    assert isort.code(test_input) == expected
 
 
 def test_is_python_file_ioerror(tmpdir) -> None:
@@ -3025,7 +2982,7 @@ def test_to_ensure_imports_are_brought_to_top_issue_651() -> None:
         "multiline text\n"
         '"""\n'
     )
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_to_ensure_importing_from_imports_module_works_issue_662() -> None:
@@ -3037,7 +2994,7 @@ def test_to_ensure_importing_from_imports_module_works_issue_662() -> None:
         "    warn(description=description or qualname(fun), deprecation=deprecation, "
         "removal=removal)\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_to_ensure_no_unexpected_changes_issue_666() -> None:
@@ -3056,12 +3013,12 @@ def test_to_ensure_no_unexpected_changes_issue_666() -> None:
         "from django.utils.translation import ugettext_lazy as _\n"
         '"""\n'
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_to_ensure_tabs_dont_become_space_issue_665() -> None:
     test_input = "import os\n\n\ndef my_method():\n\tpass\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_new_lines_are_preserved() -> None:
@@ -3134,7 +3091,7 @@ def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
         "from separate4 import quux\n"
     )
 
-    assert api.sort_code_string(test_input, settings_file=config_file.strpath) == test_input
+    assert isort.code(test_input, settings_file=config_file.strpath) == test_input
 
 
 def test_monkey_patched_urllib() -> None:
@@ -3269,7 +3226,7 @@ def test_comments_not_removed_issue_576() -> None:
         "# this comment is important and should not be removed\n"
         "from sys import api_version as api_version\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_reverse_relative_imports_issue_417() -> None:
@@ -3287,10 +3244,7 @@ def test_reverse_relative_imports_issue_417() -> None:
         "from ...eu import dignissim\n"
         "from ...ex import metus\n"
     )
-    assert (
-        api.sort_code_string(test_input, force_single_line=True, reverse_relative=True)
-        == test_input
-    )
+    assert isort.code(test_input, force_single_line=True, reverse_relative=True) == test_input
 
 
 def test_inconsistent_relative_imports_issue_577() -> None:
@@ -3308,26 +3262,26 @@ def test_inconsistent_relative_imports_issue_577() -> None:
         "from .dolor import consecteur\n"
         "from .sit import apidiscing\n"
     )
-    assert api.sort_code_string(test_input, force_single_line=True) == test_input
+    assert isort.code(test_input, force_single_line=True) == test_input
 
 
 def test_unwrap_issue_762() -> None:
     test_input = "from os.path \\\nimport (join, split)\n"
-    assert api.sort_code_string(test_input) == "from os.path import join, split\n"
+    assert isort.code(test_input) == "from os.path import join, split\n"
 
     test_input = "from os.\\\n    path import (join, split)"
-    assert api.sort_code_string(test_input) == "from os.path import join, split\n"
+    assert isort.code(test_input) == "from os.path import join, split\n"
 
 
 def test_multiple_as_imports() -> None:
     test_input = "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
-    test_output = api.sort_code_string(test_input)
+    test_output = isort.code(test_input)
     assert test_output == test_input
-    test_output = api.sort_code_string(test_input, combine_as_imports=True)
+    test_output = isort.code(test_input, combine_as_imports=True)
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
     assert test_output == test_input
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
@@ -3338,15 +3292,15 @@ def test_multiple_as_imports() -> None:
         "from a import b as bb\n"
         "from a import b as bb_\n"
     )
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
     assert test_output == "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
     )
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
     assert test_output == test_input
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b, b as b, b as bb, b as bb_\n"
@@ -3357,40 +3311,36 @@ def test_multiple_as_imports() -> None:
         "from a import b\n"
         "from a import b as f\n"
     )
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
     )
     assert test_output == "from a import b as c, b as e, b as f\n"
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = api.sort_code_string(
-        code=test_input, no_inline_sort=True, keep_direct_and_as_imports=False
-    )
+    test_output = isort.code(code=test_input, no_inline_sort=True, keep_direct_and_as_imports=False)
     assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = api.sort_code_string(
-        code=test_input, keep_direct_and_as_imports=True, no_inline_sort=True
-    )
+    test_output = isort.code(code=test_input, keep_direct_and_as_imports=True, no_inline_sort=True)
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == "from a import b, b as c, b as e, b as f\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_as_imports=True,
         no_inline_sort=True,
         keep_direct_and_as_imports=False,
     )
     assert test_output == "from a import b as e, b as c, b as f\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_as_imports=True,
         keep_direct_and_as_imports=True,
@@ -3399,17 +3349,17 @@ def test_multiple_as_imports() -> None:
     assert test_output == "from a import b, b as e, b as c, b as f\n"
 
     test_input = "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
     assert test_output == test_input
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == test_input
 
     test_input = "import a\nimport a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = api.sort_code_string(test_input, keep_direct_and_as_imports=False)
+    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
     assert test_output == "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
     )
     assert test_output == test_input
@@ -3426,7 +3376,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import b as c, g as h\n"
         "from a import e as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3444,7 +3394,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import i as j\n"
         "from a import w, x, y, z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3453,7 +3403,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3466,7 +3416,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b as c, b as d, e as f, g as h, i as j, w, x, y, z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3485,7 +3435,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import i as j\n"
         "from a import w, x, y, z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3506,7 +3456,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3524,7 +3474,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import g as h\n"
         "from a import e as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
@@ -3533,7 +3483,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3542,7 +3492,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3551,7 +3501,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3560,7 +3510,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3573,7 +3523,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b, b as c, b as d, e as f, g as h, i as j, w, x, y, z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3594,7 +3544,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3607,7 +3557,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b as d, b as c, z, x, y, w, i as j, g as h, e as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3629,7 +3579,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3648,7 +3598,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import g as h\n"
         "from a import e as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3669,7 +3619,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
@@ -3678,7 +3628,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
@@ -3687,7 +3637,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
@@ -3696,7 +3646,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3705,7 +3655,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3714,7 +3664,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
@@ -3723,7 +3673,7 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3745,7 +3695,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
@@ -3758,7 +3708,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import *\n"
         "from a import b, b as d, b as c, z, x, y, w, i as j, g as h, e as f\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
@@ -3780,7 +3730,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
-    test_output = api.sort_code_string(
+    test_output = isort.code(
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
@@ -3811,7 +3761,7 @@ def test_noqa_issue_679() -> None:
         "import zed # NOQA\n"
         "import ujson # NOQA\n"
     )
-    assert api.sort_code_string(test_input) == test_output
+    assert isort.code(test_input) == test_output
 
 
 def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
@@ -3845,7 +3795,7 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> N
         "from pkg import recorder\n"
     )
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input, case_sensitive=True, order_by_type=False, force_single_line=True
         )
         == expected_output
@@ -3854,14 +3804,14 @@ def test_ensure_support_for_non_typed_but_cased_alphabetic_sort_issue_890() -> N
 
 def test_to_ensure_empty_line_not_added_to_file_start_issue_889() -> None:
     test_input = "# comment\nimport os\n# comment2\nimport sys\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys) -> None:
     test_input = (
         "import os\n" "import sys\n" "\n" "\x0c\n" "def my_function():\n" '    print("hi")\n'
     )
-    api.sort_code_string(test_input, ignore_whitespace=True)
+    isort.code(test_input, ignore_whitespace=True)
     out, err = capsys.readouterr()
     assert out == ""
     assert err == ""
@@ -3869,7 +3819,7 @@ def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys) -> No
 
 def test_standard_library_deprecates_user_issue_778() -> None:
     test_input = "import os\n\nimport user\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_settings_path_skip_issue_909(tmpdir) -> None:
@@ -3967,8 +3917,8 @@ def test_failing_file_check_916() -> None:
         "multi_line_output": 3,
         "lines_after_imports": 2,
     }  # type: Dict[str, Any]
-    assert api.sort_code_string(test_input, **settings) == expected_output
-    assert api.sort_code_string(expected_output, **settings) == expected_output
+    assert isort.code(test_input, **settings) == expected_output
+    assert isort.code(expected_output, **settings) == expected_output
     assert api.check_code_string(expected_output, **settings)
 
 
@@ -3990,7 +3940,7 @@ def test_import_heading_issue_905() -> None:
         "# Local imports\n"
         "from oklib.plot_ok import imagesc\n"
     )
-    assert api.sort_code_string(test_input, **config) == test_input
+    assert isort.code(test_input, **config) == test_input
 
 
 def test_isort_keeps_comments_issue_691() -> None:
@@ -4017,7 +3967,7 @@ def test_isort_keeps_comments_issue_691() -> None:
         "def path(*subdirectories):\n"
         "    return os.path.join(PROJECT_DIR, *subdirectories)\n"
     )
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_isort_ensures_blank_line_between_import_and_comment() -> None:
@@ -4084,29 +4034,27 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
         "# noinspection PyUnresolvedReferences\n"
         "from four.b import b as bb\n"
     )
-    assert api.sort_code_string(test_input, **config) == expected_output
+    assert isort.code(test_input, **config) == expected_output
 
 
 def test_pyi_formatting_issue_942(tmpdir) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()
     expected_pyi_output = "import os\n\ndef my_method():\n".splitlines()
-    assert api.sort_code_string(test_input).splitlines() == expected_py_output
-    assert api.sort_code_string(test_input, extension="pyi").splitlines() == expected_pyi_output
+    assert isort.code(test_input).splitlines() == expected_py_output
+    assert isort.code(test_input, extension="pyi").splitlines() == expected_pyi_output
 
     source_py = tmpdir.join("source.py")
     source_py.write(test_input)
     assert (
-        api.sort_code_string(
-            code=Path(source_py).read_text(), file_path=Path(source_py)
-        ).splitlines()
+        isort.code(code=Path(source_py).read_text(), file_path=Path(source_py)).splitlines()
         == expected_py_output
     )
 
     source_pyi = tmpdir.join("source.pyi")
     source_pyi.write(test_input)
     assert (
-        api.sort_code_string(
+        isort.code(
             code=Path(source_pyi).read_text(), extension="pyi", file_path=Path(source_pyi)
         ).splitlines()
         == expected_pyi_output
@@ -4142,7 +4090,7 @@ def test_move_class_issue_751() -> None:
         "        return item"
         "\n"
     )
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_python_version() -> None:
@@ -4156,15 +4104,15 @@ def test_python_version() -> None:
     assert args["py_version"] == "3"
 
     test_input = "import os\n\nimport user\n"
-    assert api.sort_code_string(test_input, py_version="3") == test_input
+    assert isort.code(test_input, py_version="3") == test_input
 
     # user is part of the standard library in python 2
     output_python_2 = "import os\nimport user\n"
-    assert api.sort_code_string(test_input, py_version="27") == output_python_2
+    assert isort.code(test_input, py_version="27") == output_python_2
 
     test_input = "import os\nimport xml"
 
-    print(api.sort_code_string(test_input, py_version="all"))
+    print(isort.code(test_input, py_version="all"))
 
 
 def test_isort_with_single_character_import() -> None:
@@ -4174,7 +4122,7 @@ def test_isort_with_single_character_import() -> None:
     See Issue #376: https://github.com/timothycrosley/isort/issues/376
     """
     test_input = "from django.db.models import CASCADE, SET_NULL, Q\n"
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_isort_nested_imports() -> None:
@@ -4191,7 +4139,7 @@ def test_isort_nested_imports() -> None:
         return True
     """
     assert (
-        api.sort_code_string(test_input)
+        isort.code(test_input)
         == """
     def import_test():
         import os
@@ -4216,7 +4164,7 @@ import os
 
 from . import local
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_isort_split() -> None:
@@ -4229,7 +4177,7 @@ import sys
 import os
 import sys
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_comment_look_alike():
@@ -4245,7 +4193,7 @@ import sys
 import os
 '''
     assert (
-        api.sort_code_string(test_input)
+        isort.code(test_input)
         == '''
 """This is a multi-line comment
 
@@ -4612,13 +4560,13 @@ IF CEF_VERSION == 3:
     from string_visitor cimport *
     from web_request_client_cef3 cimport *
 """
-    assert api.sort_code_string(test_input).strip() == expected_output.strip()
-    assert api.sort_code_string(test_input, old_finders=True).strip() == expected_output.strip()
+    assert isort.code(test_input).strip() == expected_output.strip()
+    assert isort.code(test_input, old_finders=True).strip() == expected_output.strip()
 
 
 def test_cdef_support():
     assert (
-        api.sort_code_string(
+        isort.code(
             code="""
 from cpython.version cimport PY_MAJOR_VERSION
 
@@ -4636,7 +4584,7 @@ cdef extern from *:
     )
 
     assert (
-        api.sort_code_string(
+        isort.code(
             code="""
 from cpython.version cimport PY_MAJOR_VERSION
 
@@ -4659,7 +4607,7 @@ def test_top_level_import_order() -> None:
         "from rest_framework import throttling, viewsets\n"
         "from rest_framework.authentication import TokenAuthentication\n"
     )
-    assert api.sort_code_string(test_input, force_sort_within_sections=True) == test_input
+    assert isort.code(test_input, force_sort_within_sections=True) == test_input
 
 
 def test_noqa_issue_1065() -> None:
@@ -4689,7 +4637,7 @@ from flask_security.signals import password_changed as user_reset_password  # no
 from flask_security.signals import user_confirmed  # noqa
 from flask_security.signals import user_registered  # noqa
 """
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_single_line_exclusions():
@@ -4705,9 +4653,7 @@ from os import system
 from typing import List, TypeVar
 """
     assert (
-        api.sort_code_string(
-            code=test_input, force_single_line=True, single_line_exclusions=("typing",)
-        )
+        isort.code(code=test_input, force_single_line=True, single_line_exclusions=("typing",))
         == expected_output
     )
 
@@ -4719,7 +4665,7 @@ if True:
 
 # comment for bar
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     # If comments appear inside import sections at same indentation they can be re-arranged.
     test_input = """
@@ -4735,7 +4681,7 @@ if True:
     import os
     import sys
 """
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
     # Comments shouldn't be unexpectedly rearranged. See issue #1090.
     test_input = """
@@ -4749,7 +4695,7 @@ def f():
     from b import b
 
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     # Whitespace shouldn't be adjusted for nested imports. See issue #1090.
     test_input = """
@@ -4758,7 +4704,7 @@ try:
  except ImportError:
      import bar
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_comments_top_of_file():
@@ -4770,7 +4716,7 @@ def test_comments_top_of_file():
 # comment 4
 from foo import *
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
     test_input = """# -*- coding: utf-8 -*-
 
@@ -4793,7 +4739,7 @@ class WeiboMblogPipeline(object):
         item['inserted_at'] = datetime.now()
         return item
 """
-    assert api.sort_code_string(test_input) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_multiple_aliases():
@@ -4803,7 +4749,7 @@ import datetime as datetime
 import datetime as dt
 import datetime as dt2
 """
-    assert api.sort_code_string(keep_direct_and_as_imports=True, code=test_input) == test_input
+    assert isort.code(keep_direct_and_as_imports=True, code=test_input) == test_input
 
 
 def test_parens_in_comment():
@@ -4813,7 +4759,7 @@ def test_parens_in_comment():
 )
 """
     expected_output = "from foo import bar  # (some text in brackets)\n"
-    assert api.sort_code_string(test_input) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_as_imports_mixed():
@@ -4824,7 +4770,7 @@ import datetime.datetime as dt
     expected_output = """from datetime import datetime
 from datetime import datetime as dt
 """
-    assert api.sort_code_string(test_input, keep_direct_and_as_imports=True) == expected_output
+    assert isort.code(test_input, keep_direct_and_as_imports=True) == expected_output
 
 
 def test_no_sections_with_future():
@@ -4836,7 +4782,7 @@ import os
 
 import os
 """
-    assert api.sort_code_string(test_input, no_sections=True) == expected_output
+    assert isort.code(test_input, no_sections=True) == expected_output
 
 
 def test_no_sections_with_as_import():
@@ -4844,7 +4790,7 @@ def test_no_sections_with_as_import():
     test_input = """import oumpy as np
 import sympy
 """
-    assert api.sort_code_string(test_input, no_sections=True) == test_input
+    assert isort.code(test_input, no_sections=True) == test_input
 
 
 def test_no_lines_too_long():
@@ -4860,7 +4806,7 @@ from package2 import \\
 from package2 import \\
     first_package
 """
-    assert api.sort_code_string(test_input, line_length=25, multi_line_output=2) == expected_output
+    assert isort.code(test_input, line_length=25, multi_line_output=2) == expected_output
 
 
 def test_python_future_category():
@@ -4909,7 +4855,7 @@ from katlogger import log_formatter, log_rollover
 from .query_elastic import QueryElastic
 """
     assert (
-        api.sort_code_string(
+        isort.code(
             code=test_input,
             force_grid_wrap=False,
             include_trailing_comma=True,
@@ -4947,4 +4893,10 @@ from future import *, something
 # my future comment
 from future import *
 """
-    assert api.sort_code_string(input_text, combine_star=True) == expected_output
+    assert isort.code(input_text, combine_star=True) == expected_output
+
+
+def test_deprecated_settings():
+    """Test to ensure isort warns when deprecated settings are used, but doesn't fail to run"""
+    with pytest.warns(UserWarning):
+        assert isort.code("hi", not_skip=True)

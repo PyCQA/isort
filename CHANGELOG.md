@@ -12,6 +12,8 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1289: Stream usage no longer auto picking up config file from current working directory.
   - Fixed #1296: Force_single_line setting removes immediately following comment line.
   - Fixed #1295: `ensure_newline_before_comments` doesnt work with `force_sort_within_sections`.
+  - Setting not_skip will no longer immediately fail but instead give user a warning and direct
+    to upgrade docs.
 
 ### 5.0.4 July 6, 2020
   - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option
