@@ -129,9 +129,13 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Sort Python import definitions alphabetically "
-        "within logical sections. Run with no arguments to run "
-        "interactively. Run with `-` as the first argument to read from "
-        "stdin. Otherwise provide a list of files to sort."
+        "within logical sections. Run with no arguments to see a quick "
+        "start guide, otherwise, one or more files/directories/stdin must be provided. "
+        "Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 "
+        "interactive behavior."
+        ""
+        "If you've used isort 4 but are new to isort 5, see the upgrading guide:"
+        "https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/."
     )
     inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument(
