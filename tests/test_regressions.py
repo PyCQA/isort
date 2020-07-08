@@ -134,3 +134,20 @@ def main():
     import time
 """
     assert isort.code(isort.code(isort.code(test_input))) == expected_output
+
+
+def test_no_extra_blank_lines_in_methods_issue_1293():
+    """Test to ensure isort isn't introducing extra lines in methods that contain imports
+    See: https://github.com/timothycrosley/isort/issues/1293
+    """
+    test_input = """
+
+class Something(object):
+    def on_email_deleted(self, email):
+        from hyperkitty.tasks import rebuild_thread_cache_new_email
+
+        # update or cleanup thread                  # noqa: E303 (isort issue)
+        if self.emails.count() == 0:
+            ...
+"""
+    assert isort.code(test_input) == test_input
