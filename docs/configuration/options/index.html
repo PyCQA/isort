@@ -841,6 +841,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#deprecated-flags" class="md-nav__link">
+    Deprecated Flags
+  </a>
+  
+</li>
+      
       
       
       
@@ -2121,6 +2128,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#deprecated-flags" class="md-nav__link">
+    Deprecated Flags
+  </a>
+  
+</li>
+      
       
       
       
@@ -2147,7 +2161,7 @@ isort will disagree but commit to your way of formatting. To enable this, isort 
 how you want your imports sorted, organized, and formatted.</p>
 <p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://timothycrosley.github.io/isort/docs/configuration/profiles/">built-in profiles</a>.</p>
 <h2 id="python-version">Python Version</h2>
-<p>Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 37) will be used.</p>
+<p>Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>py3</code><br />
 <strong>Python &amp; Config File Name:</strong> py_version<br />
@@ -2342,9 +2356,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <p><strong>No Examples</strong></p>
 <h2 id="indent">Indent</h2>
-<p>String to place for indents defaults to " " (4 spaces).</p>
+<p>String to place for indents defaults to "    " (4 spaces).</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code></code><br />
 <strong>Python &amp; Config File Name:</strong> indent<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -2439,7 +2453,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <p><strong>No Examples</strong></p>
 <h2 id="default-section">Default Section</h2>
-<p>Sets the default section for imports (by default FIRSTPARTY) options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
+<p>Sets the default section for imports ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>THIRDPARTY</code><br />
 <strong>Python &amp; Config File Name:</strong> default_section<br />
@@ -2624,24 +2638,25 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <p><strong>No Examples</strong></p>
 <h2 id="force-alphabetical-sort-within-sections">Force Alphabetical Sort Within Sections</h2>
-<p><strong>No Description</strong></p>
+<p>Force all imports to be sorted alphabetically within a section</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> force_alphabetical_sort_within_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
-<li><strong>Not Supported</strong></li>
+<li>--fass</li>
+<li>--force-alphabetical-sort-within-sections</li>
 </ul>
 <p><strong>No Examples</strong></p>
 <h2 id="force-alphabetical-sort">Force Alphabetical Sort</h2>
-<p>Force all imports to be sorted alphabetically within a section</p>
+<p>Force all imports to be sorted as a single section</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> force_alphabetical_sort<br />
 <strong>CLI Flags:</strong></p>
 <ul>
-<li>--fass</li>
-<li>--force-alphabetical-sort-within-sections</li>
+<li>--fas</li>
+<li>--force-alphabetical-sort</li>
 </ul>
 <p><strong>No Examples</strong></p>
 <h2 id="force-grid-wrap">Force Grid Wrap</h2>
@@ -2919,7 +2934,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>Default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
-<p>-</p>
+<ul>
+<li></li>
+</ul>
 <p><strong>No Examples</strong></p>
 <h2 id="ask-to-apply">Ask To Apply</h2>
 <p>Tells isort to apply changes interactively.</p>
@@ -2939,6 +2956,16 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--show-config</li>
+</ul>
+<p><strong>No Examples</strong></p>
+<h2 id="deprecated-flags">Deprecated Flags</h2>
+<p>==SUPPRESS==</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--apply</li>
 </ul>
 <p><strong>No Examples</strong></p>
                 

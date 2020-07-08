@@ -1468,11 +1468,19 @@
 
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sort Python import definitions alphabetically &quot;</span>
 
-        <span class="s2">&quot;within logical sections. Run with no arguments to run &quot;</span>
+        <span class="s2">&quot;within logical sections. Run with no arguments to see a quick &quot;</span>
 
-        <span class="s2">&quot;interactively. Run with `-` as the first argument to read from &quot;</span>
+        <span class="s2">&quot;start guide, otherwise, one or more files/directories/stdin must be provided. &quot;</span>
 
-        <span class="s2">&quot;stdin. Otherwise provide a list of files to sort.&quot;</span>
+        <span class="s2">&quot;Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 &quot;</span>
+
+        <span class="s2">&quot;interactive behavior.&quot;</span>
+
+        <span class="s2">&quot;&quot;</span>
+
+        <span class="s2">&quot;If you&#39;ve used isort 4 but are new to isort 5, see the upgrading guide:&quot;</span>
+
+        <span class="s2">&quot;https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/.&quot;</span>
 
     <span class="p">)</span>
 
@@ -2012,9 +2020,7 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;default_section&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sets the default section for imports (by default FIRSTPARTY) options: &quot;</span>
-
-        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sections</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sets the default section for import options: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sections</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">),</span>
 
     <span class="p">)</span>
 
@@ -2350,19 +2356,15 @@
 
         <span class="n">const</span><span class="o">=</span><span class="s2">&quot;--recursive&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+
+    <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
-        <span class="s2">&quot;-rc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-rc&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-rc&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span>
 
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span>
-
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span>
-
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-rc&quot;</span><span class="p">,</span>
-
-        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
@@ -2374,19 +2376,15 @@
 
         <span class="n">const</span><span class="o">=</span><span class="s2">&quot;--dont-skip&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+
+    <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
-        <span class="s2">&quot;-ns&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-ns&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-ns&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span>
 
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span>
-
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span>
-
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-ns&quot;</span><span class="p">,</span>
-
-        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
@@ -2398,7 +2396,9 @@
 
         <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span>
 
@@ -2494,6 +2494,8 @@
 
     <span class="k">elif</span> <span class="n">file_names</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">show_config</span><span class="p">:</span>
 
+        <span class="n">arguments</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;settings_path&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
         <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
 
             <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
@@ -2531,6 +2533,20 @@
     <span class="n">show_diff</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_diff&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
     <span class="n">write_to_stdout</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;write_to_stdout&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">deprecated_flags</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">deprecated_flags</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+        <span class="n">warn</span><span class="p">(</span>
+
+            <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">The following deprecated CLI flags where used: {&#39;, &#39;.join(deprecated_flags)}!</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="s2">&quot;Please see the 5.0.0 upgrade guide:</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="p">:</span>
 
@@ -2858,6 +2874,8 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">[</span><span class="n">&quot;-&quot;</span><span class="o">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">show_config</span><span class="p">:</span><span class="w"></span>
 
+<span class="w">        </span><span class="n">arguments</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="ss">&quot;settings_path&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">())</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
@@ -2895,6 +2913,20 @@
 <span class="w">    </span><span class="n">show_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;show_diff&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">write_to_stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;write_to_stdout&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">deprecated_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;deprecated_flags&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">deprecated_flags</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;\n\nThe following deprecated CLI flags where used: {&#39;, &#39;.join(deprecated_flags)}!\n&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;Please see the 5.0.0 upgrade guide:\n&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">config_dict</span><span class="p">:</span><span class="w"></span>
 
