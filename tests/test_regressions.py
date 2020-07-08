@@ -166,3 +166,20 @@ from moo import foo
 """
     # assert isort.code(test_input) == test_input
     assert isort.code(test_input, force_single_line=True) == test_input
+
+
+def test_ensure_new_line_before_comments_mixed_with_ensure_newline_before_comments_1295():
+    """Tests to ensure that the black profile can be used in conjunction with
+    force_sort_within_sections.
+
+    See: https://github.com/timothycrosley/isort/issues/1295
+    """
+    test_input = """
+from openzwave.group import ZWaveGroup
+from openzwave.network import ZWaveNetwork
+
+# pylint: disable=import-error
+from openzwave.option import ZWaveOption
+"""
+    assert isort.code(test_input, profile="black") == test_input
+    assert isort.code(test_input, profile="black", force_sort_within_sections=True) == test_input

@@ -130,7 +130,11 @@ def sorted_imports(
             # uncollapse comments
             section_output = []
             for line in new_section_output:
-                section_output.extend(getattr(line, "comments", ()))
+                comments = getattr(line, "comments", ())
+                if comments:
+                    if new_section_output and config.ensure_newline_before_comments:
+                        section_output.append("")
+                    section_output.extend(comments)
                 section_output.append(str(line))
 
         section_name = section
