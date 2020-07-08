@@ -180,7 +180,7 @@ def sorted_imports(
         for index, line in enumerate(tail):
             should_skip, in_quote, *_ = parse.skip_line(
                 line,
-                in_quote='',
+                in_quote="",
                 index=len(formatted_output),
                 section_comments=parsed.section_comments,
             )
