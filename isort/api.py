@@ -560,31 +560,32 @@ def _sort_imports(
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
-                    if indent:
-                        sorted_import_section = (
-                            leading_whitespace
-                            + textwrap.indent(sorted_import_section, indent).strip()
-                            + trailing_whitespace
-                        )
+                    if not (import_section.strip() and not sorted_import_section):
+                        if indent:
+                            sorted_import_section = (
+                                leading_whitespace
+                                + textwrap.indent(sorted_import_section, indent).strip()
+                                + trailing_whitespace
+                            )
 
-                    if not made_changes:
-                        if config.ignore_whitespace:
-                            compare_in = remove_whitespace(
-                                raw_import_section, line_separator=line_separator
-                            ).strip()
-                            compare_out = remove_whitespace(
-                                sorted_import_section, line_separator=line_separator
-                            ).strip()
-                        else:
-                            compare_in = raw_import_section.strip()
-                            compare_out = sorted_import_section.strip()
+                        if not made_changes:
+                            if config.ignore_whitespace:
+                                compare_in = remove_whitespace(
+                                    raw_import_section, line_separator=line_separator
+                                ).strip()
+                                compare_out = remove_whitespace(
+                                    sorted_import_section, line_separator=line_separator
+                                ).strip()
+                            else:
+                                compare_in = raw_import_section.strip()
+                                compare_out = sorted_import_section.strip()
 
-                        if compare_out != compare_in:
-                            made_changes = True
+                            if compare_out != compare_in:
+                                made_changes = True
 
-                    output_stream.write(sorted_import_section)
-                    if not line and not indent and next_import_section:
-                        output_stream.write(line_separator)
+                        output_stream.write(sorted_import_section)
+                        if not line and not indent and next_import_section:
+                            output_stream.write(line_separator)
 
                 if indent:
                     output_stream.write(line)

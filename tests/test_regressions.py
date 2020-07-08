@@ -61,6 +61,7 @@ from b import thing
 '''
     )
 
+
 def test_blank_lined_removed_issue_1283():
     """Ensure isort doesn't accidentally remove blank lines after __version__ identifiers.
     See: https://github.com/timothycrosley/isort/issues/1283
@@ -70,3 +71,35 @@ def test_blank_lined_removed_issue_1283():
 from starlette import status
 """
     assert isort.code(test_input) == test_input
+
+
+def test_extra_blank_line_added_nested_imports_issue_1290():
+    """Ensure isort doesn't added unecessary blank lines above nested imports.
+    See: https://github.com/timothycrosley/isort/issues/1290
+    """
+    test_input = '''from typing import TYPE_CHECKING
+
+# Special imports
+from special import thing
+
+if TYPE_CHECKING:
+    # Special imports
+    from special import another_thing
+
+
+def func():
+    """Docstring"""
+
+    # Special imports
+    from special import something_else
+    return
+'''
+    assert (
+        isort.code(
+            test_input,
+            import_heading_special="Special imports",
+            known_special=["special"],
+            sections=["FUTURE", "STDLIB", "THIRDPARTY", "SPECIAL", "FIRSTPARTY", "LOCALFOLDER"],
+        )
+        == test_input
+    )
