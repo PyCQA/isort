@@ -8,6 +8,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1293: extra new line in indented imports, when immediately followed by a comment.
   - Fixed #1304: isort 5 no longer recognises `sre_parse` as a stdlib module.
   - Fixed #1300: add_imports moves comments following import section.
+  - Fixed #1276: Fix a bug that creates only one line after triple quotes.
 
 ### 5.0.5 July 7, 2020
   - Fixed #1285: packaging issue with bundling tests via poetry.
