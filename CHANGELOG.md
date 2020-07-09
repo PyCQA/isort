@@ -2,6 +2,10 @@ Changelog
 =========
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
+
+### 5.0.6 July 8, 2020
+  - Fixed #1302: comments and --trailing-comma can generate invalid code
+
 ### 5.0.5 July 7, 2020
   - Fixed #1285: packaging issue with bundling tests via poetry.
   - Fixed #1284: Regression when sorting `.pyi` files from CLI using black profile.

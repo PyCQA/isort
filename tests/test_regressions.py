@@ -183,3 +183,22 @@ from openzwave.option import ZWaveOption
 """
     assert isort.code(test_input, profile="black") == test_input
     assert isort.code(test_input, profile="black", force_sort_within_sections=True) == test_input
+
+
+def test_trailing_comma_doesnt_introduce_broken_code_with_comment_and_wrap_issue_1302():
+    """Tests to assert the combination of include_trailing_comma and a wrapped line doesnt break.
+    See: https://github.com/timothycrosley/isort/issues/1302.
+    """
+    assert (
+        isort.code(
+            """
+from somewhere import very_very_very_very_very_very_long_symbol # some comment
+""",
+            line_length=50,
+            include_trailing_comma=True,
+        )
+        == """
+from somewhere import \\
+    very_very_very_very_very_very_long_symbol  # some comment
+"""
+    )

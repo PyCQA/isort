@@ -76,7 +76,9 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             ):
                 line_parts = re.split(exp, line_without_comment)
                 if comment:
-                    _comma_maybe = "," if config.include_trailing_comma else ""
+                    _comma_maybe = (
+                        "," if (config.include_trailing_comma and config.use_parentheses) else ""
+                    )
                     line_parts[-1] = f"{line_parts[-1].strip()}{_comma_maybe}  #{comment}"
                 next_line = []
                 while (len(content) + 2) > (
