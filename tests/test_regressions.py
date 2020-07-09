@@ -203,3 +203,10 @@ from somewhere import \\
     very_very_very_very_very_very_long_symbol  # some comment
 """
     )
+
+
+def test_ensure_sre_parse_is_identified_as_stdlib_1304():
+    """Ensure sre_parse is idenified as STDLIB.
+    See: https://github.com/timothycrosley/isort/issues/1304.
+    """
+    assert isort.place_module("sre_parse") == isort.place_module("sre") == isort.settings.STDLIB
