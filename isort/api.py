@@ -551,7 +551,9 @@ def _sort_imports(
                             line.lstrip() for line in import_section.split(line_separator)
                         )
                         out_config = Config(
-                            config=config, line_length=max(config.line_length - len(indent), 0)
+                            config=config,
+                            line_length=max(config.line_length - len(indent), 0),
+                            lines_after_imports=1,
                         )
                     else:
                         out_config = config

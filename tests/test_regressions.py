@@ -151,6 +151,7 @@ class Something(object):
             ...
 """
     assert isort.code(test_input) == test_input
+    assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
 def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296():
