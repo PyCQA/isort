@@ -178,14 +178,12 @@ def sorted_imports(
 
     if len(formatted_output) > imports_tail:
         next_construct = ""
-        _in_quote: str = ""
         tail = formatted_output[imports_tail:]
 
         for index, line in enumerate(tail):
-            in_quote = _in_quote
-            should_skip, _in_quote, *_ = parse.skip_line(
+            should_skip, in_quote, *_ = parse.skip_line(
                 line,
-                in_quote=_in_quote,
+                in_quote="",
                 index=len(formatted_output),
                 section_comments=parsed.section_comments,
             )
@@ -198,16 +196,9 @@ def sorted_imports(
                     continue
                 next_construct = line
                 break
-            elif not in_quote:
-                parts = line.split()
-                if (
-                    len(parts) >= 3
-                    and parts[1] == "="
-                    and "'" not in parts[0]
-                    and '"' not in parts[0]
-                ):
-                    next_construct = line
-                    break
+            elif in_quote:
+                next_construct = line
+                break
 
         if config.lines_after_imports != -1:
             formatted_output[imports_tail:0] = ["" for line in range(config.lines_after_imports)]

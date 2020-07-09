@@ -120,6 +120,24 @@ def test_correct_space_between_imports() -> None:
     test_output_other = isort.code(test_input_other)
     assert test_output_other == "import sys\n\nprint('yo')\n"
 
+    test_input_inquotes = (
+        "import sys\n"
+        "@my_decorator('''hello\nworld''')\n"
+        "def my_method():\n"
+        "    print('hello world')\n"
+    )
+    test_output_inquotes = api.sort_code_string(test_input_inquotes)
+    assert (
+        test_output_inquotes == "import sys\n"
+        "\n\n"
+        "@my_decorator('''hello\nworld''')\n"
+        "def my_method():\n"
+        "    print('hello world')\n"
+    )
+    test_input_assign = "import sys\nVAR = 1\n"
+    test_output_assign = api.sort_code_string(test_input_assign)
+    assert test_output_assign == "import sys\n\nVAR = 1\n"
+
 
 def test_sort_on_number() -> None:
     """Ensure numbers get sorted logically (10 > 9 not the other way around)"""
