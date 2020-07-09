@@ -138,6 +138,19 @@ def test_correct_space_between_imports() -> None:
     test_output_assign = api.sort_code_string(test_input_assign)
     assert test_output_assign == "import sys\n\nVAR = 1\n"
 
+    test_input_assign = "import sys\nVAR = 1\ndef y():\n"
+    test_output_assign = api.sort_code_string(test_input_assign)
+    assert test_output_assign == "import sys\n\nVAR = 1\ndef y():\n"
+
+    test_input = """
+import os
+
+x = "hi"
+def x():
+    pass
+"""
+    assert isort.code(test_input) == test_input
+
 
 def test_sort_on_number() -> None:
     """Ensure numbers get sorted logically (10 > 9 not the other way around)"""
