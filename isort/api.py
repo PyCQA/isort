@@ -527,7 +527,9 @@ def _sort_imports(
 
             if import_section:
                 if add_imports and not indent:
-                    import_section += line_separator.join(add_imports) + line_separator
+                    import_section = (
+                        line_separator.join(add_imports) + line_separator + import_section
+                    )
                     contains_imports = True
                     add_imports = []
 

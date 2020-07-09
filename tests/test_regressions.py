@@ -205,8 +205,22 @@ from somewhere import \\
     )
 
 
-def test_ensure_sre_parse_is_identified_as_stdlib_1304():
+def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304():
     """Ensure sre_parse is idenified as STDLIB.
     See: https://github.com/timothycrosley/isort/issues/1304.
     """
     assert isort.place_module("sre_parse") == isort.place_module("sre") == isort.settings.STDLIB
+
+
+def test_add_imports_shouldnt_move_lower_comments_issue_1300():
+    """Ensure add_imports doesn't move comments immediately below imports.
+    See:: https://github.com/timothycrosley/isort/issues/1300.
+    """
+    test_input = """from __future__ import unicode_literals
+
+from os import path
+
+# A comment for a constant
+ANSWER = 42
+"""
+    assert isort.code(test_input, add_imports=["from os import path"]) == test_input
