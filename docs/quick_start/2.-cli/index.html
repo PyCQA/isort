@@ -1150,21 +1150,21 @@
                 
                 <h1 id="command-line-usage">Command Line Usage</h1>
 <p>Once installed, <code>isort</code> exposes a command line utility for sorting, organizing, and formatting imports within Python and Cython source files.</p>
-<p>To verify the tool is installed correctly, run <code>isort --version</code> from the command line and you should be given the available commands and the version of isort installed.
+<p>To verify the tool is installed correctly, run <code>isort</code> from the command line and you should be given the available commands and the version of isort installed.
 For a list of all CLI options type <code>isort --help</code> or view <a href="http://127.0.0.1:8000/docs/configuration/options/">the online configuration reference</a>.:</p>
-<script id="asciicast-RgDc2o0URNsh2jXAOPsGxN7Kq" src="https://asciinema.org/a/RgDc2o0URNsh2jXAOPsGxN7Kq.js" async></script>
+<script id="asciicast-346599" src="https://asciinema.org/a/346599.js" async></script>
 
 <h2 id="formatting-a-project">Formatting a Project</h2>
 <p>In general, isort is most commonly utilized across an entire projects source at once. The simplest way to do this is <code>isort .</code> or if using a <code>src</code> directory <code>isort src</code>. isort will automatically find all Python source files recursively and pick-up a configuration file placed at the root of your project if present. This can be combined with any command line configuration customizations such as specifying a profile to use (<code>isort . --profile black</code>).</p>
-<script id="asciicast-3bLYNjlnk14eLrRFgCL5gCpFt" src="https://asciinema.org/a/3bLYNjlnk14eLrRFgCL5gCpFt.js" async></script>
+<script id="asciicast-346600" src="https://asciinema.org/a/346600.js" async></script>
 
 <h2 id="verifying-a-project">Verifying a Project</h2>
 <p>The second most common usage of isort is verifying that imports within a project are formatted correctly (often within the context of a CI/CD system). The simplest way to accomplish this is using the check command line option: <code>isort --check .</code>. To improve the usefulness of errors when they do occur, this can be combined with the diff option: <code>isort --check --diff .</code>.</p>
-<script id="asciicast-g4tyWhblyJqgq1BTyrC9MxpbD" src="https://asciinema.org/a/g4tyWhblyJqgq1BTyrC9MxpbD.js" async></script>
+<script id="asciicast-346601" src="https://asciinema.org/a/346601.js" async></script>
 
 <h2 id="single-source-files">Single Source Files</h2>
 <p>Finally, isort can just as easily be ran against individual source files. Simply pass in a single or multiple source files to sort or validate (Example: <code>isort setup.py</code>).</p>
-<script id="asciicast-WEVnVpy0F9dTH8TSHofwPVcK3" src="https://asciinema.org/a/WEVnVpy0F9dTH8TSHofwPVcK3.js" async></script>
+<script id="asciicast-346602" src="https://asciinema.org/a/346602.js" async></script>
 
 <h2 id="multiple-projects">Multiple Projects</h2>
 <p>Running a single isort command across multiple projects, or source files spanning multiple projects, is highly discouraged. Instead it is recommended that an isort process (or command) is ran for each project independently. This is because isort creates an immutable config for each CLI instance.</p>
