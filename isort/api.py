@@ -304,8 +304,9 @@ def sort_file(
                                 file_output=tmp_file.read_text(encoding=source_file.encoding),
                                 file_path=file_path or source_file.path,
                             )
-                            if ask_to_apply and not ask_whether_to_apply_changes_to_file(
-                                str(source_file.path)
+                            if show_diff or (
+                                ask_to_apply
+                                and not ask_whether_to_apply_changes_to_file(str(source_file.path))
                             ):
                                 return
                         source_file.stream.close()
