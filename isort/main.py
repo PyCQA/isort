@@ -567,6 +567,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="See isort's determined config, as well as sources of config options.",
     )
+    parser.add_argument(
+        "--honor-noqa",
+        dest="honor_noqa",
+        action="store_true",
+        help="Tells isort to honor noqa comments to enforce skipping those comments.",
+    )
 
     # deprecated options
     parser.add_argument(

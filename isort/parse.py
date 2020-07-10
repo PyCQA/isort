@@ -51,9 +51,11 @@ def _normalize_line(raw_line: str) -> Tuple[str, str]:
     return (line, raw_line)
 
 
-def import_type(line: str) -> Optional[str]:
+def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
-    if "isort:skip" in line or "isort: skip" in line or "NOQA" in line:
+    if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
+        return None
+    elif "isort:skip" in line or "isort: skip" in line:
         return None
     elif line.startswith(("import ", "cimport ")):
         return "straight"
@@ -195,7 +197,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             (line.strip() for line in line.split(";")) if ";" in line else (line,)  # type: ignore
         ):
             line, raw_line = _normalize_line(line)
-            type_of_import = import_type(line) or ""
+            type_of_import = import_type(line, config) or ""
             if not type_of_import:
                 out_lines.append(raw_line)
                 continue

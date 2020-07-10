@@ -149,6 +149,7 @@ class _Config:
     ensure_newline_before_comments: bool = False
     directory: str = ""
     profile: str = ""
+    honor_noqa: bool = False
     src_paths: FrozenSet[Path] = frozenset()
     old_finders: bool = False
 

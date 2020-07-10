@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
 ### 5.0.7 July 9, 2020
   - Fixed #1306: unexpected --diff behavior.
+  - Fixed #1279: Fixed NOQA comment regression.
 
 ### 5.0.6 July 8, 2020
   - Fixed #1302: comments and --trailing-comma can generate invalid code.

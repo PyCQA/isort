@@ -3773,26 +3773,38 @@ def test_all_imports_from_single_module() -> None:
 
 
 def test_noqa_issue_679() -> None:
-    # Test to ensure that NOQA notation is being observed as expected
-    test_input = (
-        "import os\n"
-        "\n"
-        "import requestsss\n"
-        "import zed # NOQA\n"
-        "import ujson # NOQA\n"
-        "\n"
-        "import foo"
-    )
-    test_output = (
-        "import os\n"
-        "\n"
-        "import foo\n"
-        "import requestsss\n"
-        "\n"
-        "import zed # NOQA\n"
-        "import ujson # NOQA\n"
-    )
+    """Test to ensure that NOQA notation is being observed as expected
+    if honor_noqa is set to `True`
+    """
+    test_input = """
+import os
+
+import requestsss
+import zed # NOQA
+import ujson # NOQA
+
+import foo"""
+    test_output = """
+import os
+
+import foo
+import requestsss
+import ujson  # NOQA
+import zed  # NOQA
+"""
+    test_output_honor_noqa = """
+import os
+
+import foo
+import requestsss
+
+import zed # NOQA
+import ujson # NOQA
+"""
     assert isort.code(test_input) == test_output
+    assert isort.code(test_input.lower()) == test_output.lower()
+    assert isort.code(test_input, honor_noqa=True) == test_output_honor_noqa
+    assert isort.code(test_input.lower(), honor_noqa=True) == test_output_honor_noqa.lower()
 
 
 def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
