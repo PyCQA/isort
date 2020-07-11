@@ -231,8 +231,8 @@ def test_windows_newline_issue_1277():
     See: https://github.com/timothycrosley/isort/issues/1277
     """
     assert (
-        isort.code("\ndef main():\r\n    import time\r\n\n    import sys\r\n") ==
-        "\ndef main():\r\n    import sys\r\n    import time\r\n"
+        isort.code("\ndef main():\r\n    import time\r\n\n    import sys\r\n")
+        == "\ndef main():\r\n    import sys\r\n    import time\r\n"
     )
 
 
