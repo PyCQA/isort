@@ -50,6 +50,8 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
     # Get list of files modified and staged
     diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
     files_modified = get_lines(diff_cmd)
+    if not files_modified:
+        return 0
 
     errors = 0
     config = Config(settings_path=os.path.dirname(os.path.abspath(files_modified[0])))
