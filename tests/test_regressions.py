@@ -224,3 +224,24 @@ from os import path
 ANSWER = 42
 """
     assert isort.code(test_input, add_imports=["from os import path"]) == test_input
+
+
+def test_windows_newline_issue_1277():
+    """Test to ensure windows new lines are correctly handled within indented scopes.
+    See: https://github.com/timothycrosley/isort/issues/1277
+    """
+    assert (
+        isort.code("\ndef main():\r\n    import time\r\n\n    import sys\r\n") ==
+        "\ndef main():\r\n    import sys\r\n    import time\r\n"
+    )
+
+
+def test_windows_newline_issue_1278():
+    """Test to ensure windows new lines are correctly handled within indented scopes.
+    See: https://github.com/timothycrosley/isort/issues/1278
+    """
+    assert isort.check_code(
+        "\ntry:\r\n    import datadog_agent\r\n\r\n    "
+        "from ..log import CheckLoggingAdapter, init_logging\r\n\r\n    init_logging()\r\n"
+        "except ImportError:\r\n    pass\r\n"
+    )

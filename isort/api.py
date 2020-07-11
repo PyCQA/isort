@@ -396,14 +396,14 @@ def _sort_imports(
             if not line_separator:
                 line_separator = "\n"
         else:
-            if not line_separator:
-                line_separator = line[-1]
+            stripped_line = line.strip()
+            if stripped_line and not line_separator:
+                line_separator = line[len(line.rstrip()):]
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
                     raise FileSkipComment("Passed in content")
 
-            stripped_line = line.strip()
             if (
                 (index == 0 or (index in (1, 2) and not contains_imports))
                 and stripped_line.startswith("#")
