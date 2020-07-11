@@ -456,6 +456,11 @@ def _sort_imports(
                         import_section += line_separator.join(add_imports) + line_separator
                         contains_imports = True
                         add_imports = []
+
+                        # HACK: This will occur on the blank line after a
+                        # module docstring. We want to preserve this blank
+                        # line.
+                        output_stream.write(line_separator)
                     else:
                         not_imports = True
                 elif (

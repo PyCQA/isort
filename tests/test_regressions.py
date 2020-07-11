@@ -42,23 +42,25 @@ def test_blank_lined_removed_issue_1275():
     """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
     See: https://github.com/timothycrosley/isort/issues/1275
     """
+    input_code = '''"""
+My docstring
+"""
+
+from b import thing
+from a import other_thing
+'''
+    output_code = '''"""
+My docstring
+"""
+
+from a import other_thing
+from b import thing
+'''
+
+    assert isort.code(input_code) == output_code
     assert (
-        isort.code(
-            '''"""
-My docstring
-"""
-
-from b import thing
-from a import other_thing
-'''
-        )
-        == '''"""
-My docstring
-"""
-
-from a import other_thing
-from b import thing
-'''
+        isort.code(input_code, add_imports=["from c import cthing"])
+        == output_code + "from c import cthing\n"
     )
 
 

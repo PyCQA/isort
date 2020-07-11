@@ -810,7 +810,7 @@ def test_add_imports() -> None:
     test_input = '"""Module docstring"""\n' "\nclass MyClass(object):\n    pass\n"
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
-        '"""Module docstring"""\n'
+        '"""Module docstring"""\n\n'
         "from __future__ import print_function\n"
         "\n"
         "\n"
