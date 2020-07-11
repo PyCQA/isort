@@ -602,6 +602,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#known_standard_library" class="md-nav__link">
+    known_standard_library
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#module-placement-changes-known_third_party-known_first_party-default_section-etc" class="md-nav__link">
     module placement changes: known_third_party, known_first_party, default_section, etc...
   </a>
@@ -1198,6 +1205,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#known_standard_library" class="md-nav__link">
+    known_standard_library
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#module-placement-changes-known_third_party-known_first_party-default_section-etc" class="md-nav__link">
     module placement changes: known_third_party, known_first_party, default_section, etc...
   </a>
@@ -1251,6 +1265,10 @@ If you have multiple configs, they will need to be merged into 1 single one. You
 <a href="https://timothycrosley.github.io/isort/docs/configuration/config_files/">config files documentation page</a>.</p>
 <h3 id="not_skip"><code>not_skip</code></h3>
 <p>This is the same as the <code>--dont-skip</code> CLI option above. In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the setting. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
+<h3 id="known_standard_library"><code>known_standard_library</code></h3>
+<p>isort settings no longer merge together, instead they override. The old behavior of merging together caused many hard to
+track down errors, but the one place it was very convenient was for adding a few additional standard library modules.
+In isort 5, you can still get this behavior by moving your extra modules from the <code>known_standard_library</code> setting to <a href="https://timothycrosley.github.io/isort/docs/configuration/options/#extra-standard-library"><code>extra_standard_library</code></a>.</p>
 <h3 id="module-placement-changes-known_third_party-known_first_party-default_section-etc">module placement changes: <code>known_third_party</code>, <code>known_first_party</code>, <code>default_section</code>, etc...</h3>
 <p>isort has completely rewritten its logic for placing modules in 5.0.0 to ensure the same behavior across environments. You can see the details of this change <a href="https://github.com/timothycrosley/isort/issues/1147">here</a>.
 The TL;DR of which is that isort has now changed from <code>default_section=FIRSTPARTY</code> to <code>default_section=THIRDPARTY</code>. If you all already setting the default section to third party, your config is probably in good shape.

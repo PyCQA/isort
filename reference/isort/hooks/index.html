@@ -1238,7 +1238,7 @@
 
     <span class="c1"># Get list of files modified and staged</span>
 
-    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s2">&quot;--cached&quot;</span><span class="p">,</span> <span class="s2">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s2">&quot;--diff-filter=ACMRTUXB HEAD&quot;</span><span class="p">]</span>
+    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s2">&quot;--cached&quot;</span><span class="p">,</span> <span class="s2">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s2">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">]</span>
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
@@ -1250,21 +1250,17 @@
 
             <span class="c1"># Get the staged contents of the file</span>
 
-            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">]</span>
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;:{filename}&quot;</span><span class="p">]</span>
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-
-                <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">modify</span>
-
-                <span class="k">else</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)):</span>
 
                 <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">modify</span><span class="p">:</span>
+
+                    <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="n">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
@@ -1370,7 +1366,7 @@
 
     <span class="o">#</span> <span class="k">Get</span> <span class="n">list</span> <span class="k">of</span> <span class="n">files</span> <span class="n">modified</span> <span class="k">and</span> <span class="n">staged</span>
 
-    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;diff-index&quot;</span><span class="p">,</span> <span class="ss">&quot;--cached&quot;</span><span class="p">,</span> <span class="ss">&quot;--name-only&quot;</span><span class="p">,</span> <span class="ss">&quot;--diff-filter=ACMRTUXB HEAD&quot;</span><span class="p">]</span>
+    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;diff-index&quot;</span><span class="p">,</span> <span class="ss">&quot;--cached&quot;</span><span class="p">,</span> <span class="ss">&quot;--name-only&quot;</span><span class="p">,</span> <span class="ss">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="ss">&quot;HEAD&quot;</span><span class="p">]</span>
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
@@ -1382,21 +1378,17 @@
 
             <span class="o">#</span> <span class="k">Get</span> <span class="n">the</span> <span class="n">staged</span> <span class="n">contents</span> <span class="k">of</span> <span class="n">the</span> <span class="n">file</span>
 
-            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;show&quot;</span><span class="p">,</span> <span class="ss">&quot;:%s&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">]</span>
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="ss">&quot;:{filename}&quot;</span><span class="p">]</span>
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="k">not</span> <span class="p">(</span>
-
-                <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="k">modify</span>
-
-                <span class="k">else</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)):</span>
 
                 <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="k">modify</span><span class="p">:</span>
+
+                    <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="k">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
