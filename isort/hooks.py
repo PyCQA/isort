@@ -3,11 +3,12 @@
 usage:
     exit_code = git_hook(strict=True|False, modify=True|False)
 """
+import os
 import subprocess  # nosec - Needed for hook
 from pathlib import Path
 from typing import List
 
-from isort import api
+from isort import Config, api
 
 
 def get_output(command: List[str]) -> str:
@@ -51,17 +52,16 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
     files_modified = get_lines(diff_cmd)
 
     errors = 0
+    config = Config(settings_path=os.path.dirname(os.path.abspath(files_modified[0])))
     for filename in files_modified:
         if filename.endswith(".py"):
             # Get the staged contents of the file
             staged_cmd = ["git", "show", f":{filename}"]
             staged_contents = get_output(staged_cmd)
 
-            if not api.check_code_string(
-                staged_contents, file_path=Path(filename), settings_path=Path(filename).parent
-            ):
+            if not api.check_code_string(staged_contents, file_path=Path(filename), config=config):
                 errors += 1
                 if modify:
-                    api.sort_file(filename, settings_path=Path(filename).parent)
+                    api.sort_file(filename, config=config)
 
     return errors if strict else 0

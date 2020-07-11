@@ -6,3 +6,4 @@ from .api import check_file, check_stream, place_module, place_module_with_reaso
 from .api import sort_code_string as code
 from .api import sort_file as file
 from .api import sort_stream as stream
+from .settings import Config

@@ -8,10 +8,18 @@ from typing import List, Optional, TextIO, Union
 from warnings import warn
 
 from . import io, output, parse
-from .exceptions import (ExistingSyntaxErrors, FileSkipComment,
-                         FileSkipSetting, IntroducedSyntaxErrors)
-from .format import (ask_whether_to_apply_changes_to_file, format_natural,
-                     remove_whitespace, show_unified_diff)
+from .exceptions import (
+    ExistingSyntaxErrors,
+    FileSkipComment,
+    FileSkipSetting,
+    IntroducedSyntaxErrors,
+)
+from .format import (
+    ask_whether_to_apply_changes_to_file,
+    format_natural,
+    remove_whitespace,
+    show_unified_diff,
+)
 from .io import Empty
 from .place import module as place_module  # skipcq: PYL-W0611 (intended export of public API)
 from .place import module_with_reason as place_module_with_reason  # skipcq: PYL-W0611 (^)
