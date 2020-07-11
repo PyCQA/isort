@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
 ### 5.0.8 July 11, 2020
   - Fixed #1277 & #1278: New line detection issues on Windows.
+  - Fixed #1294: Fix bundled git hook.
 
 ### 5.0.7 July 9, 2020
   - Fixed #1306: unexpected --diff behavior.

@@ -47,21 +47,19 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
     """
 
     # Get list of files modified and staged
-    diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB HEAD"]
+    diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
     files_modified = get_lines(diff_cmd)
 
     errors = 0
     for filename in files_modified:
         if filename.endswith(".py"):
             # Get the staged contents of the file
-            staged_cmd = ["git", "show", ":%s" % filename]
+            staged_cmd = ["git", "show", f":{filename}"]
             staged_contents = get_output(staged_cmd)
 
-            if not (
-                api.sort_file(filename)
-                if modify
-                else api.check_code_string(staged_contents, file_path=Path(filename))
-            ):
+            if not api.check_code_string(staged_contents, file_path=Path(filename)):
                 errors += 1
+                if modify:
+                    api.sort_file(filename)
 
     return errors if strict else 0
