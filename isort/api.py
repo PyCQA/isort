@@ -8,18 +8,10 @@ from typing import List, Optional, TextIO, Union
 from warnings import warn
 
 from . import io, output, parse
-from .exceptions import (
-    ExistingSyntaxErrors,
-    FileSkipComment,
-    FileSkipSetting,
-    IntroducedSyntaxErrors,
-)
-from .format import (
-    ask_whether_to_apply_changes_to_file,
-    format_natural,
-    remove_whitespace,
-    show_unified_diff,
-)
+from .exceptions import (ExistingSyntaxErrors, FileSkipComment,
+                         FileSkipSetting, IntroducedSyntaxErrors)
+from .format import (ask_whether_to_apply_changes_to_file, format_natural,
+                     remove_whitespace, show_unified_diff)
 from .io import Empty
 from .place import module as place_module  # skipcq: PYL-W0611 (intended export of public API)
 from .place import module_with_reason as place_module_with_reason  # skipcq: PYL-W0611 (^)
@@ -398,7 +390,7 @@ def _sort_imports(
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
-                line_separator = line[len(line.rstrip()) :]
+                line_separator = line[len(line.rstrip()) :].replace(" ", "").replace("\t", "")
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
@@ -451,6 +443,9 @@ def _sort_imports(
                     isort_off = True
                 elif stripped_line == "# isort: split":
                     not_imports = True
+                elif stripped_line in config.section_comments and not import_section:
+                    import_section += line
+                    indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
                     if add_imports and not indent:
                         import_section += line_separator.join(add_imports) + line_separator

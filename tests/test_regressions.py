@@ -245,3 +245,20 @@ def test_windows_newline_issue_1278():
         "from ..log import CheckLoggingAdapter, init_logging\r\n\r\n    init_logging()\r\n"
         "except ImportError:\r\n    pass\r\n"
     )
+
+
+def test_check_never_passes_with_indented_headings_1301():
+    """Test to ensure that test can pass even when there are indented headings.
+    See: https://github.com/timothycrosley/isort/issues/1301
+    """
+    assert isort.check_code(
+        """
+try:
+    # stdlib
+    import logging
+    from os import abc, path
+except ImportError:
+    pass
+""",
+        import_heading_stdlib="stdlib",
+    )

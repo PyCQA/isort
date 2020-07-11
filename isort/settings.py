@@ -11,7 +11,8 @@ import sys
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
+from typing import (Any, Callable, Dict, FrozenSet, Iterable, List, Optional,
+                    Pattern, Set, Tuple)
 from warnings import warn
 
 from . import stdlibs
@@ -206,11 +207,15 @@ class Config(_Config):
         config: Optional[_Config] = None,
         **config_overrides,
     ):
+        self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
+        self._section_comments: Optional[Tuple[str, ...]] = None
+
         if config:
             config_vars = vars(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
             config_vars.pop("_known_patterns")
+            config_vars.pop("_section_comments")
             super().__init__(**config_vars)  # type: ignore
             return
 
@@ -318,7 +323,6 @@ class Config(_Config):
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
 
-        self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -377,6 +381,14 @@ class Config(_Config):
                 self._known_patterns.append((re.compile(regexp), placement))
 
         return self._known_patterns
+
+    @property
+    def section_comments(self) -> Tuple[str, ...]:
+        if self._section_comments is not None:
+            return self._section_comments
+
+        self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
+        return self._section_comments
 
     @staticmethod
     def _parse_known_pattern(pattern: str) -> List[str]:

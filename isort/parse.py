@@ -80,7 +80,7 @@ def _strip_syntax(import_string: str) -> str:
 
 
 def skip_line(
-    line: str, in_quote: str, index: int, section_comments: List[str]
+    line: str, in_quote: str, index: int, section_comments: Tuple[str, ...]
 ) -> Tuple[bool, str]:
     """Determine if a given line should be skipped.
 
@@ -134,7 +134,6 @@ class ParsedContent(NamedTuple):
     original_line_count: int
     line_separator: str
     sections: Any
-    section_comments: List[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -143,7 +142,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     in_lines = contents.split(line_separator)
     out_lines = []
     original_line_count = len(in_lines)
-    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     if config.old_finders:
         finder = FindersManager(config=config).find
     else:
@@ -172,10 +170,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         index += 1
         statement_index = index
         (skipping_line, in_quote) = skip_line(
-            line, in_quote=in_quote, index=index, section_comments=section_comments
+            line, in_quote=in_quote, index=index, section_comments=config.section_comments
         )
 
-        if line in section_comments and not skipping_line:
+        if line in config.section_comments and not skipping_line:
             if import_index == -1:
                 import_index = index - 1
             continue
@@ -435,5 +433,4 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         original_line_count=original_line_count,
         line_separator=line_separator,
         sections=config.sections,
-        section_comments=section_comments,
     )

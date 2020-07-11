@@ -185,7 +185,7 @@ def sorted_imports(
                 line,
                 in_quote="",
                 index=len(formatted_output),
-                section_comments=parsed.section_comments,
+                section_comments=config.section_comments,
             )
             if not should_skip and line.strip():
                 if (

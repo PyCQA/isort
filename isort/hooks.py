@@ -57,9 +57,11 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
             staged_cmd = ["git", "show", f":{filename}"]
             staged_contents = get_output(staged_cmd)
 
-            if not api.check_code_string(staged_contents, file_path=Path(filename)):
+            if not api.check_code_string(
+                staged_contents, file_path=Path(filename), settings_path=Path(filename).parent
+            ):
                 errors += 1
                 if modify:
-                    api.sort_file(filename)
+                    api.sort_file(filename, settings_path=Path(filename).parent)
 
     return errors if strict else 0
