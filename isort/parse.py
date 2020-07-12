@@ -80,7 +80,11 @@ def _strip_syntax(import_string: str) -> str:
 
 
 def skip_line(
-    line: str, in_quote: str, index: int, section_comments: Tuple[str, ...]
+    line: str,
+    in_quote: str,
+    index: int,
+    section_comments: Tuple[str, ...],
+    needs_import: bool = True,
 ) -> Tuple[bool, str]:
     """Determine if a given line should be skipped.
 
@@ -109,7 +113,7 @@ def skip_line(
                 break
             char_index += 1
 
-    if ";" in line:
+    if ";" in line and needs_import:
         for part in (part.strip() for part in line.split(";")):
             if (
                 part
