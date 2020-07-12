@@ -1922,7 +1922,19 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Order imports by type in addition to alphabetically&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Order imports by type in addition to alphabetically.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="s2">&quot;**NOTE**: type here refers to the implied type from the import name capitalization.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="s1">&#39; isort does not do type introspection for the imports. These &quot;types&quot; are simply: &#39;</span>
+
+        <span class="s2">&quot;CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8&quot;</span>
+
+        <span class="s2">&quot; or a related coding standard and has many imports this is a good default, otherwise you &quot;</span>
+
+        <span class="s2">&quot;likely will want to turn it off. From the CLI the `--dont-order-by-type` option will turn &quot;</span>
+
+        <span class="s2">&quot;this off.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -1936,7 +1948,17 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Don&#39;t order imports by type in addition to alphabetically&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Don&#39;t order imports by type in addition to alphabetically.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="s2">&quot;**NOTE**: type here refers to the implied type from the import name capitalization.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="s1">&#39; isort does not do type introspection for the imports. These &quot;types&quot; are simply: &#39;</span>
+
+        <span class="s2">&quot;CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8&quot;</span>
+
+        <span class="s2">&quot; or a related coding standard and has many imports this is a good default. You can turn &quot;</span>
+
+        <span class="s2">&quot;this on from the CLI using `--order-by-type`.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
