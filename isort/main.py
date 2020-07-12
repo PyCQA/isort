@@ -356,8 +356,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--order-by-type",
         dest="order_by_type",
         action="store_true",
-        help="Order imports by type in addition to alphabetically.\n\n"
-        "**NOTE**: type here refers to the implied type from the import name capitalization.\n"
+        help="Order imports by type, which is determined by case, in addition to alphabetically.\n"
+        "\n**NOTE**: type here refers to the implied type from the import name capitalization.\n"
         ' isort does not do type introspection for the imports. These "types" are simply: '
         "CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8"
         " or a related coding standard and has many imports this is a good default, otherwise you "
@@ -369,7 +369,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--dont-order-by-type",
         dest="dont_order_by_type",
         action="store_true",
-        help="Don't order imports by type in addition to alphabetically.\n\n"
+        help="Don't order imports by type, which is determined by case, in addition to "
+        "alphabetically.\n\n"
         "**NOTE**: type here refers to the implied type from the import name capitalization.\n"
         ' isort does not do type introspection for the imports. These "types" are simply: '
         "CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8"
