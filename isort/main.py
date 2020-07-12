@@ -374,7 +374,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         ' isort does not do type introspection for the imports. These "types" are simply: '
         "CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8"
         " or a related coding standard and has many imports this is a good default. You can turn "
-        "this on from the CLI using `--order-by-type`."
+        "this on from the CLI using `--order-by-type`.",
     )
     parser.add_argument(
         "-p",
