@@ -439,7 +439,7 @@ Use parenthesis for line continuation on length limit instead of slashes.
 
 ## Order By Type
 
-Order imports by type in addition to alphabetically.
+Order imports by type, which is determined by case, in addition to alphabetically.
 
 **NOTE**: type here refers to the implied type from the import name capitalization.
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the `--dont-order-by-type` option will turn this off.
@@ -937,7 +937,7 @@ Number of files to process in parallel.
 
 ## Dont Order By Type
 
-Don't order imports by type in addition to alphabetically.
+Don't order imports by type, which is determined by case, in addition to alphabetically.
 
 **NOTE**: type here refers to the implied type from the import name capitalization.
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using `--order-by-type`.
