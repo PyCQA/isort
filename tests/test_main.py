@@ -9,6 +9,7 @@ from hypothesis_auto import auto_pytest_magic
 
 from isort import main
 from isort._version import __version__
+from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 
@@ -109,17 +110,18 @@ def test_main(capsys, tmpdir):
     assert returned_config
     assert returned_config["virtual_env"] == str(tmpdir)
 
-    # This should work even if settings path is non-existent or not provided
+    # This should work even if settings path is not provided
     main.main(base_args[2:] + ["--show-config"])
     out, error = capsys.readouterr()
     assert json.loads(out)["virtual_env"] == str(tmpdir)
-    main.main(
-        base_args[2:]
-        + ["--show-config"]
-        + ["--settings-path", "/random-root-folder-that-cant-exist-right?"]
-    )
-    out, error = capsys.readouterr()
-    assert json.loads(out)["virtual_env"] == str(tmpdir)
+
+    # This should raise an error if an invalid settings path is provided
+    with pytest.raises(InvalidSettingsPath):
+        main.main(
+            base_args[2:]
+            + ["--show-config"]
+            + ["--settings-path", "/random-root-folder-that-cant-exist-right?"]
+        )
 
     # Should be able to set settings path to a file
     config_file = tmpdir.join(".isort.cfg")

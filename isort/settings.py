@@ -17,7 +17,7 @@ from warnings import warn
 from . import stdlibs
 from ._future import dataclass, field
 from ._vendored import toml
-from .exceptions import ProfileDoesNotExist
+from .exceptions import InvalidSettingsPath, ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
@@ -229,6 +229,10 @@ class Config(_Config):
             )
             project_root = os.path.dirname(settings_file)
         elif settings_path:
+            if not os.path.exists(settings_path):
+                raise InvalidSettingsPath(settings_path)
+
+            settings_path = os.path.abspath(settings_path)
             project_root, config_settings = _find_config(settings_path)
         else:
             config_settings = {}

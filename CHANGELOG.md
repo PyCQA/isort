@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.1.0 July 12, 2020
+  - isort now throws an exception if an invalid settings path is given (issue #1174).
+
 ### 5.0.9 July 11, 2020
   - Fixed #1301: Import headings in nested sections leads to check errors
 

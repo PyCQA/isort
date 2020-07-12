@@ -6,6 +6,18 @@ class ISortError(Exception):
     """Base isort exception object from which all isort sourced exceptions should inherit"""
 
 
+class InvalidSettingsPath(ISortError):
+    """Raised when a settings path is provided that is neither a valid file or directory"""
+
+    def __init__(self, settings_path: str):
+        super().__init__(
+            f"isort was told to use the settings_path: {settings_path} as the base directory or "
+            "file that represents the starting point of config file discovery, but it does not "
+            "exist."
+        )
+        self.settings_path = settings_path
+
+
 class ExistingSyntaxErrors(ISortError):
     """Raised when isort is told to sort imports within code that has existing syntax errors"""
 

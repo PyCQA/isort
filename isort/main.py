@@ -656,8 +656,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if os.path.isfile(arguments["settings_path"]):
             arguments["settings_file"] = os.path.abspath(arguments["settings_path"])
             arguments["settings_path"] = os.path.dirname(arguments["settings_file"])
-        elif not os.path.isdir(arguments["settings_path"]):
-            warn(f"settings_path dir does not exist: {arguments['settings_path']}")
         else:
             arguments["settings_path"] = os.path.abspath(arguments["settings_path"])
 
