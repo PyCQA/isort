@@ -1174,13 +1174,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
+
 <span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c1"># nosec - Needed for hook</span>
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">isort</span> <span class="kn">import</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="nn">isort</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">api</span>
 
 <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -1242,7 +1244,13 @@
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">files_modified</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
     <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files_modified</span><span class="p">:</span>
 
@@ -1254,13 +1262,13 @@
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
 
                 <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="k">if</span> <span class="n">modify</span><span class="p">:</span>
 
-                    <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="n">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
@@ -1370,7 +1378,13 @@
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="k">not</span> <span class="n">files_modified</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
     <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="k">in</span> <span class="n">files_modified</span><span class="p">:</span>
 
@@ -1382,13 +1396,13 @@
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
 
                 <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="k">if</span> <span class="k">modify</span><span class="p">:</span>
 
-                    <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="k">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>

@@ -1619,6 +1619,10 @@
 
     <span class="p">):</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span>
+
         <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
 
             <span class="n">config_vars</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1628,6 +1632,8 @@
             <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;py_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;py_version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
             <span class="n">config_vars</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_known_patterns&quot;</span><span class="p">)</span>
+
+            <span class="n">config_vars</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_section_comments&quot;</span><span class="p">)</span>
 
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">config_vars</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -1813,8 +1819,6 @@
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;import_headings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_headings</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="bp">None</span>
-
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1908,6 +1912,18 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">),</span> <span class="n">placement</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span>
+
+    <span class="nd">@property</span>
+
+    <span class="k">def</span> <span class="nf">section_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;# {heading}&quot;</span> <span class="k">for</span> <span class="n">heading</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_headings</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span>
 
     <span class="nd">@staticmethod</span>
 
@@ -2293,6 +2309,10 @@ dynamically determined later on.</p>
 
 <span class="w">    </span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_known_patterns</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">List[Tuple[Pattern[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_section_comments</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Tuple[str, ...</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
+
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">config</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">config_vars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vars</span><span class="p">(</span><span class="n">config</span><span class="p">).</span><span class="n">copy</span><span class="p">()</span><span class="w"></span>
@@ -2302,6 +2322,8 @@ dynamically determined later on.</p>
 <span class="w">            </span><span class="n">config_vars</span><span class="o">[</span><span class="n">&quot;py_version&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_vars</span><span class="o">[</span><span class="n">&quot;py_version&quot;</span><span class="o">]</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;py&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">config_vars</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;_known_patterns&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">config_vars</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;_section_comments&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">config_vars</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
@@ -2487,8 +2509,6 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;import_headings&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_headings</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nl">_known_patterns</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">List[Tuple[Pattern[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nf">str</span><span class="err">]]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
-
 <span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span><span class="w"> </span><span class="o">**</span><span class="n">combined_config</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">is_skipped</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="k">Path</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">bool</span><span class="p">:</span><span class="w"></span>
@@ -2582,6 +2602,18 @@ dynamically determined later on.</p>
 <span class="w">                </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">re</span><span class="p">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">),</span><span class="w"> </span><span class="n">placement</span><span class="p">))</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"></span>
+
+<span class="w">    </span><span class="nv">@property</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">section_comments</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Tuple</span><span class="o">[</span><span class="n">str, ...</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_section_comments</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_section_comments</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_section_comments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tuple</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;# {heading}&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">heading</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">import_headings</span><span class="p">.</span><span class="k">values</span><span class="p">())</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_section_comments</span><span class="w"></span>
 
 <span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
 
@@ -2858,6 +2890,10 @@ dynamically determined later on.</p>
 
 <h4 id="instance-variables">Instance variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">known_patterns</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">section_comments</span>
 </code></pre></div>
 
 
