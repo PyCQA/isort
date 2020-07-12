@@ -2494,7 +2494,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--use-parentheses</li>
 </ul>
 <h2 id="order-by-type">Order By Type</h2>
-<p>Order imports by type in addition to alphabetically.</p>
+<p>Order imports by type, which is determined by case, in addition to alphabetically.</p>
 <p><strong>NOTE</strong>: type here refers to the implied type from the import name capitalization.
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the <code>--dont-order-by-type</code> option will turn this off.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2847,7 +2847,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--jobs</li>
 </ul>
 <h2 id="dont-order-by-type">Dont Order By Type</h2>
-<p>Don't order imports by type in addition to alphabetically.</p>
+<p>Don't order imports by type, which is determined by case, in addition to alphabetically.</p>
 <p><strong>NOTE</strong>: type here refers to the implied type from the import name capitalization.
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using <code>--order-by-type</code>.</p>
 <p><strong>Type:</strong> Bool<br />
