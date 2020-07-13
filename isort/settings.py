@@ -7,7 +7,7 @@ import fnmatch
 import os
 import posixpath
 import re
-import setuptools  # Import setuptools before distutils to suppress      warning.
+import setuptools  # Import setuptools before distutils to suppress warning.
 import sys
 from distutils.util import strtobool as _as_bool
 from functools import lru_cache
