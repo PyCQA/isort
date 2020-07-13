@@ -67,12 +67,13 @@ class Example:
                     .lstrip()
                 )
 
-            if self.cli == "":
+            if self.cli:
                 cli = dedent(self.cli).lstrip()
                 self.cli = (
                     dedent(
                         """
                     ### Example cli usage
+
                     `{cli}`
                     """
                     )
@@ -80,11 +81,11 @@ class Example:
                     .lstrip()
                 )
 
+            sections = [s for s in [self.cfg, self.pyproject_toml, self.cli] if s]
+            sections_str = "\n".join(sections)
             self.section_complete = f"""**Examples:**
 
-{self.cfg}
-{self.pyproject_toml}
-{self.cli}"""
+{sections_str}"""
 
         else:
             self.section_complete = ""
@@ -106,6 +107,7 @@ example_mapping = {
             known_airflow = ['airflow']""",
     ),
     "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
+    "show_version": Example(cli="isort --version"),
 }
 
 

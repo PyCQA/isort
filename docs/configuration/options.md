@@ -200,9 +200,6 @@ sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOL
 known_airflow = ['airflow']
 ```
 
-### Example cli usage
-``
-
 ## Multi Line Output
 
 Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).
@@ -228,9 +225,6 @@ multi_line_output=3
 ```
 multi_line_output = 3
 ```
-
-### Example cli usage
-``
 
 ## Forced Separate
 
@@ -844,6 +838,12 @@ Displays the currently installed version of isort.
 
 - -V
 - --version
+
+**Examples:**
+
+### Example cli usage
+
+`isort --version`
 
 ## Version Number
 
