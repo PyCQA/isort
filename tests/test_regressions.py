@@ -247,7 +247,7 @@ def test_windows_newline_issue_1278():
     )
 
 
-def test_check_never_passes_with_indented_headings_1301():
+def test_check_never_passes_with_indented_headings_issue_1301():
     """Test to ensure that test can pass even when there are indented headings.
     See: https://github.com/timothycrosley/isort/issues/1301
     """
@@ -261,4 +261,31 @@ except ImportError:
     pass
 """,
         import_heading_stdlib="stdlib",
+    )
+
+
+def test_isort_shouldnt_fail_on_long_from_with_dot_issue_1190():
+    """Test to ensure that isort will correctly handle formatting a long from import that contains
+    a dot.
+    See: https://github.com/timothycrosley/isort/issues/1190
+    """
+    assert (
+        isort.code(
+            """
+from this_is_a_very_long_import_statement.that_will_occur_across_two_lines\\
+        .when_the_line_length.is_only_seventynine_chars import (
+    function1,
+    function2,
+)
+        """,
+            line_length=79,
+            multi_line_output=3,
+        )
+        == """
+from this_is_a_very_long_import_statement.that_will_occur_across_two_lines"""
+        """.when_the_line_length.is_only_seventynine_chars import (
+    function1,
+    function2
+)
+"""
     )

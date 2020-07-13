@@ -288,7 +288,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             if type_of_import == "from":
                 cimports: bool
-                import_string = import_string.replace("import(", "import (")
+                import_string = (
+                    import_string.replace("import(", "import (")
+                    .replace("\\", " ")
+                    .replace("\n", " ")
+                )
                 if " cimport " in import_string:
                     parts = import_string.split(" cimport ")
                     cimports = True
