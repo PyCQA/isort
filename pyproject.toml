@@ -31,6 +31,10 @@ classifiers = [
     "Topic :: Utilities",
 ]
 urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
+packages = [
+    { include = "isort" },
+    { include = "tests", format = "sdist" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
