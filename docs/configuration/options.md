@@ -18,8 +18,6 @@ Tells isort to set the known standard library based on the the specified Python 
 - --py
 - --python-version
 
-
-
 ## Force To Top
 
 Force specific imports to the top of their appropriate section.
@@ -31,8 +29,6 @@ Force specific imports to the top of their appropriate section.
 
 - -t
 - --top
-
-
 
 ## Skip
 
@@ -46,8 +42,6 @@ Files that sort imports should skip over. If you want to skip multiple files you
 - -s
 - --skip
 
-
-
 ## Skip Glob
 
 Files that sort imports should skip over.
@@ -59,8 +53,6 @@ Files that sort imports should skip over.
 
 - --sg
 - --skip-glob
-
-
 
 ## Line Length
 
@@ -76,8 +68,6 @@ The max length of an import line (used for wrapping long imports).
 - --line-length
 - --line-width
 
-
-
 ## Wrap Length
 
 Specifies how long lines that are wrapped should be, if not set line_length is used.
@@ -91,8 +81,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.
 - --wl
 - --wrap-length
 
-
-
 ## Line Ending
 
 Forces line endings to the specified value. If not set, values will be guessed per-file.
@@ -105,8 +93,6 @@ Forces line endings to the specified value. If not set, values will be guessed p
 - --le
 - --line-ending
 
-
-
 ## Sections
 
 **No Description**
@@ -116,9 +102,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 **Python & Config File Name:** sections  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## No Sections
 
@@ -132,8 +116,6 @@ Put all imports into the same section bucket
 - --ds
 - --no-sections
 
-
-
 ## Known Future Library
 
 Force isort to recognize a module as part of the future compatibility libraries.
@@ -145,8 +127,6 @@ Force isort to recognize a module as part of the future compatibility libraries.
 
 - -f
 - --future
-
-
 
 ## Known Third Party
 
@@ -160,8 +140,6 @@ Force isort to recognize a module as being part of a third party library.
 - -o
 - --thirdparty
 
-
-
 ## Known First Party
 
 Force isort to recognize a module as being part of the current python project.
@@ -173,8 +151,6 @@ Force isort to recognize a module as being part of the current python project.
 
 - -p
 - --project
-
-
 
 ## Known Standard Library
 
@@ -188,8 +164,6 @@ Force isort to recognize a module as part of Python's standard library.
 - -b
 - --builtin
 
-
-
 ## Extra Standard Library
 
 Extra modules to be included in the list of ones in Python's standard library.
@@ -201,8 +175,6 @@ Extra modules to be included in the list of ones in Python's standard library.
 
 - --extra-builtin
 
-
-
 ## Known Other
 
 **No Description**
@@ -212,7 +184,7 @@ Extra modules to be included in the list of ones in Python's standard library.
 **Python & Config File Name:** known_other  
 **CLI Flags:**
 
-- **Not Supported**
+**Not Supported**
 
 **Examples:**
 
@@ -230,7 +202,6 @@ known_airflow = ['airflow']
 ### Example cli usage
 ``
 
-
 ## Multi Line Output
 
 Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).
@@ -243,8 +214,6 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 - -m
 - --multi-line
 
-
-
 ## Forced Separate
 
 **No Description**
@@ -254,9 +223,7 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 **Python & Config File Name:** forced_separate  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Indent
 
@@ -270,8 +237,6 @@ String to place for indents defaults to "    " (4 spaces).
 - -i
 - --indent
 
-
-
 ## Comment Prefix
 
 **No Description**
@@ -281,9 +246,7 @@ String to place for indents defaults to "    " (4 spaces).
 **Python & Config File Name:** comment_prefix  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Length Sort
 
@@ -297,8 +260,6 @@ Sort imports by their string length.
 - --ls
 - --length-sort
 
-
-
 ## Length Sort Sections
 
 **No Description**
@@ -308,9 +269,7 @@ Sort imports by their string length.
 **Python & Config File Name:** length_sort_sections  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Add Imports
 
@@ -324,8 +283,6 @@ Adds the specified import line to all files, automatically determining correct p
 - -a
 - --add-import
 
-
-
 ## Remove Imports
 
 Removes the specified import from all files.
@@ -337,8 +294,6 @@ Removes the specified import from all files.
 
 - --rm
 - --remove-import
-
-
 
 ## Reverse Relative
 
@@ -352,8 +307,6 @@ Reverse order of relative imports.
 - --rr
 - --reverse-relative
 
-
-
 ## Force Single Line
 
 Forces all from imports to appear on their own line
@@ -365,8 +318,6 @@ Forces all from imports to appear on their own line
 
 - --sl
 - --force-single-line-imports
-
-
 
 ## Single Line Exclusions
 
@@ -380,8 +331,6 @@ One or more modules to exclude from the single line rule.
 - --nsl
 - --single-line-exclusions
 
-
-
 ## Default Section
 
 Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')
@@ -394,8 +343,6 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 - --sd
 - --section-default
 
-
-
 ## Import Headings
 
 **No Description**
@@ -405,9 +352,7 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 **Python & Config File Name:** import_headings  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Balanced Wrapping
 
@@ -421,8 +366,6 @@ Balances wrapping to produce the most consistent line length possible
 - -e
 - --balanced
 
-
-
 ## Use Parentheses
 
 Use parenthesis for line continuation on length limit instead of slashes.
@@ -434,8 +377,6 @@ Use parenthesis for line continuation on length limit instead of slashes.
 
 - --up
 - --use-parentheses
-
-
 
 ## Order By Type
 
@@ -452,8 +393,6 @@ Order imports by type, which is determined by case, in addition to alphabeticall
 - --ot
 - --order-by-type
 
-
-
 ## Atomic
 
 Ensures the output doesn't save if the resulting file contains syntax errors.
@@ -465,8 +404,6 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 - --ac
 - --atomic
-
-
 
 ## Lines After Imports
 
@@ -480,8 +417,6 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --lai
 - --lines-after-imports
 
-
-
 ## Lines Between Sections
 
 **No Description**
@@ -491,9 +426,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 **Python & Config File Name:** lines_between_sections  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Lines Between Types
 
@@ -507,8 +440,6 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --lbt
 - --lines-between-types
 
-
-
 ## Combine As Imports
 
 Combines as imports on the same line.
@@ -520,8 +451,6 @@ Combines as imports on the same line.
 
 - --ca
 - --combine-as
-
-
 
 ## Combine Star
 
@@ -535,8 +464,6 @@ Ensures that if a star import is present, nothing else is imported from that nam
 - --cs
 - --combine-star
 
-
-
 ## Keep Direct And As Imports
 
 Turns off default behavior that removes direct imports when as imports exist.
@@ -548,8 +475,6 @@ Turns off default behavior that removes direct imports when as imports exist.
 
 - -k
 - --keep-direct-and-as
-
-
 
 ## Include Trailing Comma
 
@@ -563,8 +488,6 @@ Includes a trailing comma on multi line imports that include parentheses.
 - --tc
 - --trailing-comma
 
-
-
 ## From First
 
 Switches the typical ordering preference, showing from imports first then straight ones.
@@ -576,8 +499,6 @@ Switches the typical ordering preference, showing from imports first then straig
 
 - --ff
 - --from-first
-
-
 
 ## Verbose
 
@@ -591,8 +512,6 @@ Shows verbose output, such as when files are skipped or when a check is successf
 - -v
 - --verbose
 
-
-
 ## Quiet
 
 Shows extra quiet output, only errors are outputted.
@@ -604,8 +523,6 @@ Shows extra quiet output, only errors are outputted.
 
 - -q
 - --quiet
-
-
 
 ## Force Adds
 
@@ -619,8 +536,6 @@ Forces import adds even if the original file is empty.
 - --af
 - --force-adds
 
-
-
 ## Force Alphabetical Sort Within Sections
 
 Force all imports to be sorted alphabetically within a section
@@ -632,8 +547,6 @@ Force all imports to be sorted alphabetically within a section
 
 - --fass
 - --force-alphabetical-sort-within-sections
-
-
 
 ## Force Alphabetical Sort
 
@@ -647,8 +560,6 @@ Force all imports to be sorted as a single section
 - --fas
 - --force-alphabetical-sort
 
-
-
 ## Force Grid Wrap
 
 Force number of from imports (defaults to 2) to be grid wrapped regardless of line length
@@ -660,8 +571,6 @@ Force number of from imports (defaults to 2) to be grid wrapped regardless of li
 
 - --fgw
 - --force-grid-wrap
-
-
 
 ## Force Sort Within Sections
 
@@ -675,8 +584,6 @@ Force imports to be sorted by module, independent of import_type
 - --fss
 - --force-sort-within-sections
 
-
-
 ## Lexicographical
 
 **No Description**
@@ -686,9 +593,7 @@ Force imports to be sorted by module, independent of import_type
 **Python & Config File Name:** lexicographical  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Ignore Whitespace
 
@@ -702,8 +607,6 @@ Tells isort to ignore whitespace differences when --check-only is being used.
 - --ws
 - --ignore-whitespace
 
-
-
 ## No Lines Before
 
 Sections which should not be split with previous by empty lines
@@ -715,8 +618,6 @@ Sections which should not be split with previous by empty lines
 
 - --nlb
 - --no-lines-before
-
-
 
 ## No Inline Sort
 
@@ -730,8 +631,6 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 - --nis
 - --no-inline-sort
 
-
-
 ## Ignore Comments
 
 **No Description**
@@ -741,9 +640,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 **Python & Config File Name:** ignore_comments  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Case Sensitive
 
@@ -756,8 +653,6 @@ Tells isort to include casing when sorting module names
 
 - --case-sensitive
 
-
-
 ## Sources
 
 **No Description**
@@ -767,9 +662,7 @@ Tells isort to include casing when sorting module names
 **Python & Config File Name:** sources  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Virtual Env
 
@@ -782,8 +675,6 @@ Virtual environment to use for determining whether a package is third-party
 
 - --virtual-env
 
-
-
 ## Conda Env
 
 Conda environment to use for determining whether a package is third-party
@@ -794,8 +685,6 @@ Conda environment to use for determining whether a package is third-party
 **CLI Flags:**
 
 - --conda-env
-
-
 
 ## Ensure Newline Before Comments
 
@@ -809,8 +698,6 @@ Inserts a blank line before a comment following an import.
 - -n
 - --ensure-newline-before-comments
 
-
-
 ## Directory
 
 **No Description**
@@ -820,9 +707,7 @@ Inserts a blank line before a comment following an import.
 **Python & Config File Name:** directory  
 **CLI Flags:**
 
-- **Not Supported**
-
-
+**Not Supported**
 
 ## Profile
 
@@ -835,8 +720,6 @@ Base profile type to use for configuration.
 
 - --profile
 
-
-
 ## Honor Noqa
 
 Tells isort to honor noqa comments to enforce skipping those comments.
@@ -847,8 +730,6 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 **CLI Flags:**
 
 - --honor-noqa
-
-
 
 ## Src Paths
 
@@ -862,8 +743,6 @@ Add an explicitly defined source path (modules within src paths have their impor
 - --src
 - --src-path
 
-
-
 ## Old Finders
 
 Use the old deprecated finder logic that relies on environment introspection magic.
@@ -875,8 +754,6 @@ Use the old deprecated finder logic that relies on environment introspection mag
 
 - --old-finders
 - --magic-placement
-
-
 
 ## Check
 
@@ -891,8 +768,6 @@ Checks the file for unsorted / unformatted imports and prints them to the comman
 - --check-only
 - --check
 
-
-
 ## Write To Stdout
 
 Force resulting output to stdout, instead of in-place.
@@ -904,8 +779,6 @@ Force resulting output to stdout, instead of in-place.
 
 - -d
 - --stdout
-
-
 
 ## Show Diff
 
@@ -919,8 +792,6 @@ Prints a diff of all the changes isort would make to a file, instead of changing
 - --df
 - --diff
 
-
-
 ## Jobs
 
 Number of files to process in parallel.
@@ -932,8 +803,6 @@ Number of files to process in parallel.
 
 - -j
 - --jobs
-
-
 
 ## Dont Order By Type
 
@@ -950,8 +819,6 @@ Don't order imports by type, which is determined by case, in addition to alphabe
 - --dt
 - --dont-order-by-type
 
-
-
 ## Settings Path
 
 Explicitly set the settings path or file instead of auto determining based on file location.
@@ -966,8 +833,6 @@ Explicitly set the settings path or file instead of auto determining based on fi
 - --settings-file
 - --settings
 
-
-
 ## Show Version
 
 Displays the currently installed version of isort.
@@ -979,8 +844,6 @@ Displays the currently installed version of isort.
 
 - -V
 - --version
-
-
 
 ## Version Number
 
@@ -994,8 +857,6 @@ Returns just the current version number without the logo
 - --vn
 - --version-number
 
-
-
 ## Filter Files
 
 Tells isort to filter files even when they are explicitly passed in as part of the command
@@ -1006,8 +867,6 @@ Tells isort to filter files even when they are explicitly passed in as part of t
 **CLI Flags:**
 
 - --filter-files
-
-
 
 ## Files
 
@@ -1020,8 +879,6 @@ One or more Python source files that need their imports sorted.
 
 - 
 
-
-
 ## Ask To Apply
 
 Tells isort to apply changes interactively.
@@ -1032,8 +889,6 @@ Tells isort to apply changes interactively.
 **CLI Flags:**
 
 - --interactive
-
-
 
 ## Show Config
 
@@ -1046,8 +901,6 @@ See isort's determined config, as well as sources of config options.
 
 - --show-config
 
-
-
 ## Deprecated Flags
 
 ==SUPPRESS==
@@ -1058,5 +911,3 @@ See isort's determined config, as well as sources of config options.
 **CLI Flags:**
 
 - --apply
-
-

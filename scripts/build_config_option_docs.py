@@ -36,34 +36,37 @@ class Example:
     def __post_init__(self):
         if self.cfg or self.pyproject_toml or self.cli:
             if self.cfg:
+                cfg = dedent(self.cfg).lstrip()
                 self.cfg = dedent(
-                    f"""
+                    """
                     ### Example `.isort.cfg`
 
                     ```
-                    {self.cfg}
+                    {cfg}
                     ```
                     """
-                )
+                ).format(cfg=cfg)
 
             if self.pyproject_toml:
+                pyproject_toml = dedent(self.pyproject_toml).lstrip()
                 self.pyproject_toml = dedent(
-                    f"""
+                    """
                     ### Example `pyproject.toml`
 
                     ```
-                    {self.pyproject_toml}
+                    {pyproject_toml}
                     ```
                     """
-                )
+                ).format(pyproject_toml=pyproject_toml)
 
             if self.cli == "":
+                cli = dedent(self.cli).lstrip()
                 self.cli = dedent(
-                    f"""
-                    ### Example cli usage
-                    `{self.cli}`
                     """
-                )
+                    ### Example cli usage
+                    `{cli}`
+                    """
+                ).format(cli=cli)
 
             self.section_complete = f"""**Examples:**
 
@@ -81,9 +84,10 @@ class Example:
 example_mapping: Dict[str, Example]
 example_mapping = {
     "known_other": Example(
-        pyproject_toml="""[tool.isort]
-                    sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOLDER']
-                    known_airflow = ['airflow']"""
+        pyproject_toml="""
+            [tool.isort]
+            sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOLDER']
+            known_airflow = ['airflow']"""
     )
 }
 
