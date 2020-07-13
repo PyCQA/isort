@@ -37,36 +37,48 @@ class Example:
         if self.cfg or self.pyproject_toml or self.cli:
             if self.cfg:
                 cfg = dedent(self.cfg).lstrip()
-                self.cfg = dedent(
-                    """
+                self.cfg = (
+                    dedent(
+                        """
                     ### Example `.isort.cfg`
 
                     ```
                     {cfg}
                     ```
                     """
-                ).format(cfg=cfg)
+                    )
+                    .format(cfg=cfg)
+                    .lstrip()
+                )
 
             if self.pyproject_toml:
                 pyproject_toml = dedent(self.pyproject_toml).lstrip()
-                self.pyproject_toml = dedent(
-                    """
+                self.pyproject_toml = (
+                    dedent(
+                        """
                     ### Example `pyproject.toml`
 
                     ```
                     {pyproject_toml}
                     ```
                     """
-                ).format(pyproject_toml=pyproject_toml)
+                    )
+                    .format(pyproject_toml=pyproject_toml)
+                    .lstrip()
+                )
 
             if self.cli == "":
                 cli = dedent(self.cli).lstrip()
-                self.cli = dedent(
-                    """
+                self.cli = (
+                    dedent(
+                        """
                     ### Example cli usage
                     `{cli}`
                     """
-                ).format(cli=cli)
+                    )
+                    .format(cli=cli)
+                    .lstrip()
+                )
 
             self.section_complete = f"""**Examples:**
 
@@ -84,11 +96,16 @@ class Example:
 example_mapping: Dict[str, Example]
 example_mapping = {
     "known_other": Example(
+        cfg="""
+        [settings]
+        sections=FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER
+        known_airflow=airflow""",
         pyproject_toml="""
             [tool.isort]
             sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOLDER']
-            known_airflow = ['airflow']"""
-    )
+            known_airflow = ['airflow']""",
+    ),
+    "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
 }
 
 
@@ -107,9 +124,9 @@ class ConfigOption:
             return ""
 
         if self.cli_options == ():
-            cli_options = "**Not Supported**"
+            cli_options = " **Not Supported**"
         else:
-            cli_options = "- " + "\n- ".join(self.cli_options)
+            cli_options = "\n\n- " + "\n- ".join(self.cli_options)
 
         # new line if example otherwise nothing
         example = f"\n{self.example}" if self.example else ""
@@ -121,9 +138,7 @@ class ConfigOption:
 **Type:** {human(self.type.__name__)}{MD_NEWLINE}
 **Default:** `{self.default}`{MD_NEWLINE}
 **Python & Config File Name:** {self.config_name}{MD_NEWLINE}
-**CLI Flags:**
-
-{cli_options}
+**CLI Flags:**{cli_options}
 {example}"""
 
 

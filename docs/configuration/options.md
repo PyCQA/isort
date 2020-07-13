@@ -100,9 +100,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 **Type:** Tuple  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  
 **Python & Config File Name:** sections  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## No Sections
 
@@ -182,13 +180,17 @@ Extra modules to be included in the list of ones in Python's standard library.
 **Type:** Dict  
 **Default:** `{}`  
 **Python & Config File Name:** known_other  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 **Examples:**
 
+### Example `.isort.cfg`
 
+```
+[settings]
+sections=FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER
+known_airflow=airflow
+```
 
 ### Example `pyproject.toml`
 
@@ -197,7 +199,6 @@ Extra modules to be included in the list of ones in Python's standard library.
 sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOLDER']
 known_airflow = ['airflow']
 ```
-
 
 ### Example cli usage
 ``
@@ -214,6 +215,23 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 - -m
 - --multi-line
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+multi_line_output=3
+```
+
+### Example `pyproject.toml`
+
+```
+multi_line_output = 3
+```
+
+### Example cli usage
+``
+
 ## Forced Separate
 
 **No Description**
@@ -221,9 +239,7 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 **Type:** Tuple  
 **Default:** `()`  
 **Python & Config File Name:** forced_separate  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Indent
 
@@ -244,9 +260,7 @@ String to place for indents defaults to "    " (4 spaces).
 **Type:** String  
 **Default:** `  #`  
 **Python & Config File Name:** comment_prefix  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Length Sort
 
@@ -267,9 +281,7 @@ Sort imports by their string length.
 **Type:** Frozenset  
 **Default:** `frozenset()`  
 **Python & Config File Name:** length_sort_sections  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Add Imports
 
@@ -350,9 +362,7 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 **Type:** Dict  
 **Default:** `{}`  
 **Python & Config File Name:** import_headings  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Balanced Wrapping
 
@@ -424,9 +434,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 **Type:** Int  
 **Default:** `1`  
 **Python & Config File Name:** lines_between_sections  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Lines Between Types
 
@@ -591,9 +599,7 @@ Force imports to be sorted by module, independent of import_type
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** lexicographical  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Ignore Whitespace
 
@@ -638,9 +644,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** ignore_comments  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Case Sensitive
 
@@ -660,9 +664,7 @@ Tells isort to include casing when sorting module names
 **Type:** Tuple  
 **Default:** `()`  
 **Python & Config File Name:** sources  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Virtual Env
 
@@ -705,9 +707,7 @@ Inserts a blank line before a comment following an import.
 **Type:** String  
 **Default:** ``  
 **Python & Config File Name:** directory  
-**CLI Flags:**
-
-**Not Supported**
+**CLI Flags:** **Not Supported**
 
 ## Profile
 
