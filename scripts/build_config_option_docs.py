@@ -43,6 +43,7 @@ class Example:
                     ### Example `.isort.cfg`
 
                     ```
+                    [settings]
                     {cfg}
                     ```
                     """
@@ -59,6 +60,7 @@ class Example:
                     ### Example `pyproject.toml`
 
                     ```
+                    [tool.isort]
                     {pyproject_toml}
                     ```
                     """
@@ -98,11 +100,9 @@ example_mapping: Dict[str, Example]
 example_mapping = {
     "known_other": Example(
         cfg="""
-        [settings]
         sections=FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER
         known_airflow=airflow""",
         pyproject_toml="""
-            [tool.isort]
             sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'AIRFLOW', 'FIRSTPARTY', 'LOCALFOLDER']
             known_airflow = ['airflow']""",
     ),

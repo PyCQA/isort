@@ -217,12 +217,14 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 ### Example `.isort.cfg`
 
 ```
+[settings]
 multi_line_output=3
 ```
 
 ### Example `pyproject.toml`
 
 ```
+[tool.isort]
 multi_line_output = 3
 ```
 
