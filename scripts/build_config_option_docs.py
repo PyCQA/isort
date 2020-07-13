@@ -117,7 +117,7 @@ class ConfigOption:
     type: Type = str
     default: Any = ""
     config_name: str = "**Not Supported**"
-    cli_options: Iterable[str] = tuple()
+    cli_options: Iterable[str] = (" **Not Supported**",)
     description: str = "**No Description**"
     example: Optional[Example] = None
 
@@ -125,8 +125,8 @@ class ConfigOption:
         if self.name in IGNORED:
             return ""
 
-        if self.cli_options == ():
-            cli_options = " **Not Supported**"
+        if self.cli_options == (" **Not Supported**",):
+            cli_options = self.cli_options[0]
         else:
             cli_options = "\n\n- " + "\n- ".join(self.cli_options)
 
