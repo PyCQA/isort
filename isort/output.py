@@ -132,7 +132,7 @@ def sorted_imports(
             for line in new_section_output:
                 comments = getattr(line, "comments", ())
                 if comments:
-                    if new_section_output and config.ensure_newline_before_comments:
+                    if section_output and config.ensure_newline_before_comments:
                         section_output.append("")
                     section_output.extend(comments)
                 section_output.append(str(line))

@@ -289,3 +289,37 @@ from this_is_a_very_long_import_statement.that_will_occur_across_two_lines"""
 )
 """
     )
+
+
+def test_isort_shouldnt_add_extra_new_line_when_fass_and_n_issue_1315():
+    """Test to ensure isort doesnt add a second extra new line when combining --fss and -n options.
+    See: https://github.com/timothycrosley/isort/issues/1315
+    """
+    assert isort.check_code(
+        """import sys
+
+# Comment canary
+from . import foo
+""",
+        ensure_newline_before_comments=True,  # -n
+        force_sort_within_sections=True,  # -fss
+        show_diff=True,  # for better debugging in the case the test case fails.
+    )
+
+    assert (
+        isort.code(
+            """
+from . import foo
+# Comment canary
+from .. import foo
+""",
+            ensure_newline_before_comments=True,
+            force_sort_within_sections=True,
+        )
+        == """
+from . import foo
+
+# Comment canary
+from .. import foo
+"""
+    )
