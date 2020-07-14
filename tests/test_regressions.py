@@ -323,3 +323,20 @@ from . import foo
 from .. import foo
 """
     )
+
+
+def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280():
+    """Test to ensure isort doesn't rewrite imports in the from of import y.x into from y import x.
+    This is because they are not technically fully equivalent to eachother and can introduce broken
+    behaviour.
+    See: https://github.com/timothycrosley/isort/issues/1280
+    """
+    assert isort.check_code(
+        """
+        import test.module
+        import test.module as m
+        from test import module
+        from test import module as m
+    """,
+        show_diff=True,
+    )

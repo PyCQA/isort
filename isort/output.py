@@ -255,10 +255,10 @@ def _with_from_imports(
         sub_modules = [f"{module}.{from_import}" for from_import in from_imports]
         as_imports = {
             from_import: [
-                f"{from_import} as {as_module}" for as_module in parsed.as_map[sub_module]
+                f"{from_import} as {as_module}" for as_module in parsed.as_map["from"][sub_module]
             ]
             for from_import, sub_module in zip(from_imports, sub_modules)
-            if sub_module in parsed.as_map
+            if sub_module in parsed.as_map["from"]
         }
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
             if not config.no_inline_sort:
@@ -487,11 +487,12 @@ def _with_straight_imports(
             continue
 
         import_definition = []
-        if module in parsed.as_map:
+        if module in parsed.as_map["straight"]:
             if config.keep_direct_and_as_imports and parsed.imports[section]["straight"][module]:
                 import_definition.append(f"{import_type} {module}")
             import_definition.extend(
-                f"{import_type} {module} as {as_import}" for as_import in parsed.as_map[module]
+                f"{import_type} {module} as {as_import}"
+                for as_import in parsed.as_map["straight"][module]
             )
         else:
             import_definition.append(f"{import_type} {module}")

@@ -7,6 +7,8 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - isort now throws an exception if an invalid settings path is given (issue #1174).
   - Fixed #1178: support for semicolons in decorators.
   - Fixed #1315: Extra newline before comment with -n + --fss.
+**Formatting changes implied:**
+  - Fixed #1280: rewrite of as imports changes the behavior of the imports.
 
 ### 5.0.9 July 11, 2020
 is

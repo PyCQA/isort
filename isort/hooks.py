@@ -8,7 +8,7 @@ import subprocess  # nosec - Needed for hook
 from pathlib import Path
 from typing import List
 
-from isort import Config, api
+from isort import Config, api, exceptions
 
 
 def get_output(command: List[str]) -> str:
@@ -61,9 +61,14 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
             staged_cmd = ["git", "show", f":{filename}"]
             staged_contents = get_output(staged_cmd)
 
-            if not api.check_code_string(staged_contents, file_path=Path(filename), config=config):
-                errors += 1
-                if modify:
-                    api.sort_file(filename, config=config)
+            try:
+                if not api.check_code_string(staged_contents,
+                                             file_path=Path(filename),
+                                             config=config):
+                    errors += 1
+                    if modify:
+                        api.sort_file(filename, config=config)
+            except exceptions.FileSkipComment:
+                pass
 
     return errors if strict else 0

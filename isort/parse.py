@@ -131,7 +131,7 @@ class ParsedContent(NamedTuple):
     import_index: int
     place_imports: Dict[str, List[str]]
     import_placements: Dict[str, str]
-    as_map: Dict[str, List[str]]
+    as_map: Dict[str, Dict[str, List[str]]]
     imports: Dict[str, Dict[str, Any]]
     categorized_comments: "CommentsDict"
     change_count: int
@@ -155,7 +155,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
     place_imports: Dict[str, List[str]] = {}
     import_placements: Dict[str, str] = {}
-    as_map: Dict[str, List[str]] = defaultdict(list)
+    as_map: Dict[str, Dict[str, List[str]]] = {
+        "straight": defaultdict(list),
+        "from": defaultdict(list),
+    }
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
@@ -318,17 +321,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if type_of_import == "from":
                         module = just_imports[0] + "." + just_imports[as_index - 1]
                         as_name = just_imports[as_index + 1]
-                        if as_name not in as_map[module]:
-                            as_map[module].append(as_name)
+                        if as_name not in as_map["from"][module]:
+                            as_map["from"][module].append(as_name)
                     else:
                         module = just_imports[as_index - 1]
                         as_name = just_imports[as_index + 1]
-                        if as_name not in as_map[module]:
-                            as_map[module].append(as_name)
-                        if "." in module:
-                            type_of_import = "from"
-                            just_imports[:as_index] = module.rsplit(".", 1)
-                            as_index = just_imports.index("as")
+                        if as_name not in as_map["straight"][module]:
+                            as_map["straight"][module].append(as_name)
                     if not config.combine_as_imports:
                         categorized_comments["straight"][module] = comments
                         comments = []
