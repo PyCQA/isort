@@ -166,6 +166,7 @@ class _Config:
     honor_noqa: bool = False
     src_paths: FrozenSet[Path] = frozenset()
     old_finders: bool = False
+    remove_redundant_aliases: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

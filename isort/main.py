@@ -585,6 +585,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Tells isort to honor noqa comments to enforce skipping those comments.",
     )
+    parser.add_argument(
+        "--remove-redundant-aliases",
+        dest="remove_redundant_aliases",
+        action="store_true",
+        help=(
+            "Tells isort to remove redundant aliases from imports, such as import os as os."
+            " This defaults to false simply because some projects use these seemingly useless alias"
+            " to signify intent and change behaviour."
+        ),
+    )
 
     # deprecated options
     parser.add_argument(

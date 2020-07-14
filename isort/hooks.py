@@ -62,13 +62,13 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
             staged_contents = get_output(staged_cmd)
 
             try:
-                if not api.check_code_string(staged_contents,
-                                             file_path=Path(filename),
-                                             config=config):
+                if not api.check_code_string(
+                    staged_contents, file_path=Path(filename), config=config
+                ):
                     errors += 1
                     if modify:
                         api.sort_file(filename, config=config)
-            except exceptions.FileSkipComment:
+            except exceptions.FileSkipped:  # pragma: no cover
                 pass
 
     return errors if strict else 0

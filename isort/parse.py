@@ -319,14 +319,19 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 while "as" in just_imports:
                     as_index = just_imports.index("as")
                     if type_of_import == "from":
-                        module = just_imports[0] + "." + just_imports[as_index - 1]
+                        nested_module = just_imports[as_index - 1]
+                        module = just_imports[0] + "." + nested_module
                         as_name = just_imports[as_index + 1]
-                        if as_name not in as_map["from"][module]:
+                        if nested_module == as_name and config.remove_redundant_aliases:
+                            pass
+                        elif as_name not in as_map["from"][module]:
                             as_map["from"][module].append(as_name)
                     else:
                         module = just_imports[as_index - 1]
                         as_name = just_imports[as_index + 1]
-                        if as_name not in as_map["straight"][module]:
+                        if module == as_name and config.remove_redundant_aliases:
+                            pass
+                        elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
                     if not config.combine_as_imports:
                         categorized_comments["straight"][module] = comments
