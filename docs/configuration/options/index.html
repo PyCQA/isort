@@ -424,15 +424,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example-pyprojecttoml" class="md-nav__link">
-    Example pyproject.toml
+  <a href="#example-isortcfg" class="md-nav__link">
+    Example .isort.cfg
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-cli-usage" class="md-nav__link">
-    Example cli usage
+  <a href="#example-pyprojecttoml" class="md-nav__link">
+    Example pyproject.toml
   </a>
   
 </li>
@@ -446,6 +446,26 @@
   <a href="#multi-line-output" class="md-nav__link">
     Multi Line Output
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg_1" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml_1" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -817,6 +837,19 @@
   <a href="#show-version" class="md-nav__link">
     Show Version
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1725,15 +1758,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example-pyprojecttoml" class="md-nav__link">
-    Example pyproject.toml
+  <a href="#example-isortcfg" class="md-nav__link">
+    Example .isort.cfg
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-cli-usage" class="md-nav__link">
-    Example cli usage
+  <a href="#example-pyprojecttoml" class="md-nav__link">
+    Example pyproject.toml
   </a>
   
 </li>
@@ -1747,6 +1780,26 @@
   <a href="#multi-line-output" class="md-nav__link">
     Multi Line Output
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg_1" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml_1" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2119,6 +2172,19 @@
     Show Version
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2265,10 +2331,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</code><br />
 <strong>Python &amp; Config File Name:</strong> sections<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="no-sections">No Sections</h2>
 <p>Put all imports into the same section bucket</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2333,11 +2396,15 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> known_other<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <p><strong>Examples:</strong></p>
+<h3 id="example-isortcfg">Example <code>.isort.cfg</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
+<span class="na">sections</span><span class="o">=</span><span class="s">FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER</span>
+<span class="na">known_airflow</span><span class="o">=</span><span class="s">airflow</span>
+</code></pre></div>
+
+
 <h3 id="example-pyprojecttoml">Example <code>pyproject.toml</code></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
 <span class="na">sections</span> <span class="o">=</span> <span class="s">[&#39;FUTURE&#39;, &#39;STDLIB&#39;, &#39;THIRDPARTY&#39;, &#39;AIRFLOW&#39;, &#39;FIRSTPARTY&#39;, &#39;LOCALFOLDER&#39;]</span>
@@ -2345,8 +2412,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </code></pre></div>
 
 
-<h3 id="example-cli-usage">Example cli usage</h3>
-<p>``</p>
 <h2 id="multi-line-output">Multi Line Output</h2>
 <p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).</p>
 <p><strong>Type:</strong> Wrapmodes<br />
@@ -2357,15 +2422,25 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-m</li>
 <li>--multi-line</li>
 </ul>
+<p><strong>Examples:</strong></p>
+<h3 id="example-isortcfg_1">Example <code>.isort.cfg</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
+<span class="na">multi_line_output</span><span class="o">=</span><span class="s">3</span>
+</code></pre></div>
+
+
+<h3 id="example-pyprojecttoml_1">Example <code>pyproject.toml</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
+<span class="na">multi_line_output</span> <span class="o">=</span> <span class="s">3</span>
+</code></pre></div>
+
+
 <h2 id="forced-separate">Forced Separate</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>()</code><br />
 <strong>Python &amp; Config File Name:</strong> forced_separate<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="indent">Indent</h2>
 <p>String to place for indents defaults to "    " (4 spaces).</p>
 <p><strong>Type:</strong> String<br />
@@ -2381,10 +2456,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>#</code><br />
 <strong>Python &amp; Config File Name:</strong> comment_prefix<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="length-sort">Length Sort</h2>
 <p>Sort imports by their string length.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2400,10 +2472,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> length_sort_sections<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="add-imports">Add Imports</h2>
 <p>Adds the specified import line to all files, automatically determining correct placement.</p>
 <p><strong>Type:</strong> Frozenset<br />
@@ -2469,10 +2538,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_headings<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="balanced-wrapping">Balanced Wrapping</h2>
 <p>Balances wrapping to produce the most consistent line length possible</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2530,10 +2596,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_between_sections<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="lines-between-types">Lines Between Types</h2>
 <p><strong>No Description</strong></p>
 <p><strong>Type:</strong> Int<br />
@@ -2669,10 +2732,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> lexicographical<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="ignore-whitespace">Ignore Whitespace</h2>
 <p>Tells isort to ignore whitespace differences when --check-only is being used.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2708,10 +2768,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> ignore_comments<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="case-sensitive">Case Sensitive</h2>
 <p>Tells isort to include casing when sorting module names</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2726,10 +2783,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>()</code><br />
 <strong>Python &amp; Config File Name:</strong> sources<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="virtual-env">Virtual Env</h2>
 <p>Virtual environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
@@ -2763,10 +2817,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> ``<br />
 <strong>Python &amp; Config File Name:</strong> directory<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li><strong>Not Supported</strong></li>
-</ul>
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="profile">Profile</h2>
 <p>Base profile type to use for configuration.</p>
 <p><strong>Type:</strong> String<br />
@@ -2880,6 +2931,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-V</li>
 <li>--version</li>
 </ul>
+<p><strong>Examples:</strong></p>
+<h3 id="example-cli-usage">Example cli usage</h3>
+<p><code>isort --version</code></p>
 <h2 id="version-number">Version Number</h2>
 <p>Returns just the current version number without the logo</p>
 <p><strong>Type:</strong> String<br />

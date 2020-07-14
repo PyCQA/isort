@@ -2502,10 +2502,6 @@
 
             <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_file&quot;</span><span class="p">])</span>
 
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">]):</span>
-
-            <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;settings_path dir does not exist: {arguments[&#39;settings_path&#39;]}&quot;</span><span class="p">)</span>
-
         <span class="k">else</span><span class="p">:</span>
 
             <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">])</span>
@@ -2881,10 +2877,6 @@
 <span class="w">            </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_file&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_path&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_path&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_file&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_path&quot;</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;settings_path dir does not exist: {arguments[&#39;settings_path&#39;]}&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 

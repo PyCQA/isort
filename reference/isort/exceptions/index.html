@@ -938,8 +938,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#profiledoesnotexist" class="md-nav__link">
-    ProfileDoesNotExist
+  <a href="#invalidsettingspath" class="md-nav__link">
+    InvalidSettingsPath
   </a>
   
     <nav class="md-nav">
@@ -969,6 +969,53 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_6" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profiledoesnotexist" class="md-nav__link">
+    ProfileDoesNotExist
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_7" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_7" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_7" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_7" class="md-nav__link">
     with_traceback
   </a>
   
@@ -1750,8 +1797,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#profiledoesnotexist" class="md-nav__link">
-    ProfileDoesNotExist
+  <a href="#invalidsettingspath" class="md-nav__link">
+    InvalidSettingsPath
   </a>
   
     <nav class="md-nav">
@@ -1781,6 +1828,53 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_6" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profiledoesnotexist" class="md-nav__link">
+    ProfileDoesNotExist
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_7" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_7" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_7" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_7" class="md-nav__link">
     with_traceback
   </a>
   
@@ -1829,6 +1923,24 @@
 <span class="k">class</span> <span class="nc">ISortError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Base isort exception object from which all isort sourced exceptions should inherit&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">InvalidSettingsPath</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Raised when a settings path is provided that is neither a valid file or directory&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+
+            <span class="n">f</span><span class="s2">&quot;isort was told to use the settings_path: {settings_path} as the base directory or &quot;</span>
+
+            <span class="s2">&quot;file that represents the starting point of config file discovery, but it does not &quot;</span>
+
+            <span class="s2">&quot;exist.&quot;</span>
+
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span> <span class="o">=</span> <span class="n">settings_path</span>
 
 <span class="k">class</span> <span class="nc">ExistingSyntaxErrors</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
 
@@ -2144,6 +2256,7 @@ set self.<strong>traceback</strong> to tb and return self.</p>
 </ul>
 <h4 id="descendants_1">Descendants</h4>
 <ul>
+<li>isort.exceptions.InvalidSettingsPath</li>
 <li>isort.exceptions.ExistingSyntaxErrors</li>
 <li>isort.exceptions.IntroducedSyntaxErrors</li>
 <li>isort.exceptions.FileSkipped</li>
@@ -2213,6 +2326,57 @@ set self.<strong>traceback</strong> to tb and return self.</p>
 
 <p>Exception.with_traceback(tb) --
 set self.<strong>traceback</strong> to tb and return self.</p>
+<h3 id="invalidsettingspath">InvalidSettingsPath</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">InvalidSettingsPath</span><span class="p">(</span>
+    <span class="n">settings_path</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<p>Raised when a settings path is provided that is neither a valid file or directory</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">InvalidSettingsPath</span>(<span class="n">ISortError</span>):
+
+    <span class="s">&quot;&quot;&quot;Raised when a settings path is provided that is neither a valid file or directory&quot;&quot;&quot;</span>
+
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">settings_path:</span> <span class="n">str</span>):
+
+        <span class="n">super</span>().<span class="n">__init__</span>(
+
+            <span class="nb">f</span><span class="s">&quot;isort was told to use the settings_path: {settings_path} as the base directory or &quot;</span>
+
+            <span class="s">&quot;file that represents the starting point of config file discovery, but it does not &quot;</span>
+
+            <span class="s">&quot;exist.&quot;</span>
+
+        )
+
+        <span class="nb">self</span>.<span class="n">settings_path</span> = <span class="n">settings_path</span>
+</code></pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro_6">Ancestors (in MRO)</h4>
+<ul>
+<li>isort.exceptions.ISortError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h4 id="class-variables_6">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">args</span>
+</code></pre></div>
+
+
+<h4 id="methods_6">Methods</h4>
+<h5 id="with_traceback_6">with_traceback</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<p>Exception.with_traceback(tb) --
+set self.<strong>traceback</strong> to tb and return self.</p>
 <h3 id="profiledoesnotexist">ProfileDoesNotExist</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">ProfileDoesNotExist</span><span class="p">(</span>
     <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span>
@@ -2241,19 +2405,19 @@ set self.<strong>traceback</strong> to tb and return self.</p>
 
 </details>
 <hr />
-<h4 id="ancestors-in-mro_6">Ancestors (in MRO)</h4>
+<h4 id="ancestors-in-mro_7">Ancestors (in MRO)</h4>
 <ul>
 <li>isort.exceptions.ISortError</li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
-<h4 id="class-variables_6">Class variables</h4>
+<h4 id="class-variables_7">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">args</span>
 </code></pre></div>
 
 
-<h4 id="methods_6">Methods</h4>
-<h5 id="with_traceback_6">with_traceback</h5>
+<h4 id="methods_7">Methods</h4>
+<h5 id="with_traceback_7">with_traceback</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
     <span class="o">...</span>
 <span class="p">)</span>

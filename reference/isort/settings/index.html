@@ -1279,7 +1279,7 @@
 
 <span class="kn">from</span> <span class="nn">._vendored</span> <span class="kn">import</span> <span class="n">toml</span>
 
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">ProfileDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">InvalidSettingsPath</span><span class="p">,</span> <span class="n">ProfileDoesNotExist</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
@@ -1658,6 +1658,12 @@
             <span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">settings_path</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">settings_path</span><span class="p">):</span>
+
+                <span class="k">raise</span> <span class="n">InvalidSettingsPath</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span>
+
+            <span class="n">settings_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span>
 
             <span class="n">project_root</span><span class="p">,</span> <span class="n">config_settings</span> <span class="o">=</span> <span class="n">_find_config</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span>
 
@@ -2348,6 +2354,12 @@ dynamically determined later on.</p>
 <span class="w">            </span><span class="n">project_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="nl">settings_path</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="ow">exists</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">InvalidSettingsPath</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">settings_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">project_root</span><span class="p">,</span><span class="w"> </span><span class="n">config_settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_find_config</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span><span class="w"></span>
 
