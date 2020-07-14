@@ -8,7 +8,6 @@ import os
 import posixpath
 import re
 import sys
-from distutils.util import strtobool as _as_bool
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
@@ -63,6 +62,21 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
 RUNTIME_SOURCE = "runtime"
 
 DEPRECATED_SETTINGS = ("not_skip",)
+
+_STR_BOOLEAN_MAPPING = {
+    "y": True,
+    "yes": True,
+    "t": True,
+    "on": True,
+    "1": True,
+    "true": True,
+    "n": False,
+    "no": False,
+    "f": False,
+    "off": False,
+    "0": False,
+    "false": False,
+}
 
 
 @dataclass(frozen=True)
@@ -536,7 +550,7 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
             elif existing_value_type == bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
-                    value = bool(_as_bool(value))
+                    value = _as_bool(value)
                 settings[key] = value
             elif key.startswith(KNOWN_PREFIX):
                 settings[key] = _abspaths(os.path.dirname(file_path), _as_list(value))
@@ -552,6 +566,16 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                 settings[key] = existing_value_type(value)
 
     return settings
+
+
+def _as_bool(value: str) -> bool:
+    """Given a string value that represents True or False, returns the Boolean equivalent.
+    Heavily inspired from distutils strtobool.
+    """
+    try:
+        return _STR_BOOLEAN_MAPPING[value.lower()]
+    except KeyError:
+        raise ValueError(f"invalid truth value {value}")
 
 
 DEFAULT_CONFIG = Config()

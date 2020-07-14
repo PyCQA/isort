@@ -87,3 +87,18 @@ comment_prefix="text"
     assert loaded_settings["force_grid_wrap"] == 0
     assert loaded_settings["indent"] == "\t"
     assert str(tmpdir) in loaded_settings["source"]
+
+
+def test_as_bool():
+    assert settings._as_bool("TrUe") is True
+    assert settings._as_bool("true") is True
+    assert settings._as_bool("t") is True
+    assert settings._as_bool("FALSE") is False
+    assert settings._as_bool("faLSE") is False
+    assert settings._as_bool("f") is False
+    with pytest.raises(ValueError):
+        settings._as_bool("")
+    with pytest.raises(ValueError):
+        settings._as_bool("falsey")
+    with pytest.raises(ValueError):
+        settings._as_bool("truthy")
