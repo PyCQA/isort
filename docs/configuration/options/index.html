@@ -617,13 +617,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keep-direct-and-as-imports" class="md-nav__link">
-    Keep Direct And As Imports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#include-trailing-comma" class="md-nav__link">
     Include Trailing Comma
   </a>
@@ -794,6 +787,13 @@
         <li class="md-nav__item">
   <a href="#remove-redundant-aliases" class="md-nav__link">
     Remove Redundant Aliases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-to-top" class="md-nav__link">
+    Float To Top
   </a>
   
 </li>
@@ -1958,13 +1958,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keep-direct-and-as-imports" class="md-nav__link">
-    Keep Direct And As Imports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#include-trailing-comma" class="md-nav__link">
     Include Trailing Comma
   </a>
@@ -2135,6 +2128,13 @@
         <li class="md-nav__item">
   <a href="#remove-redundant-aliases" class="md-nav__link">
     Remove Redundant Aliases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-to-top" class="md-nav__link">
+    Float To Top
   </a>
   
 </li>
@@ -2641,16 +2641,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--cs</li>
 <li>--combine-star</li>
 </ul>
-<h2 id="keep-direct-and-as-imports">Keep Direct And As Imports</h2>
-<p>Turns off default behavior that removes direct imports when as imports exist.</p>
-<p><strong>Type:</strong> Bool<br />
-<strong>Default:</strong> <code>True</code><br />
-<strong>Python &amp; Config File Name:</strong> keep_direct_and_as_imports<br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>-k</li>
-<li>--keep-direct-and-as</li>
-</ul>
 <h2 id="include-trailing-comma">Include Trailing Comma</h2>
 <p>Includes a trailing comma on multi line imports that include parentheses.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2879,6 +2869,15 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--remove-redundant-aliases</li>
 </ul>
+<h2 id="float-to-top">Float To Top</h2>
+<p>Causes all non indented imports to float to the top of the file having its imports sorted. <em>NOTE</em>: This is a <strong>beta</strong> feature. It currently doesn't work with cimports and is gauranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> float_to_top<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--float-to-top</li>
+</ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -3010,7 +3009,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
-<li>--apply</li>
+<li>-k</li>
+<li>--keep-direct-and-as</li>
 </ul>
                 
                   

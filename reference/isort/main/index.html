@@ -1788,20 +1788,6 @@
 
     <span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-
-        <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
-
-        <span class="s2">&quot;--keep-direct-and-as&quot;</span><span class="p">,</span>
-
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;keep_direct_and_as_imports&quot;</span><span class="p">,</span>
-
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Turns off default behavior that removes direct imports when as imports exist.&quot;</span><span class="p">,</span>
-
-    <span class="p">)</span>
-
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--lai&quot;</span><span class="p">,</span> <span class="s2">&quot;--lines-after-imports&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;lines_after_imports&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--lbt&quot;</span><span class="p">,</span> <span class="s2">&quot;--lines-between-types&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;lines_between_types&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -2400,6 +2386,26 @@
 
     <span class="p">)</span>
 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--float-to-top&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;float_to_top&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes all non indented imports to float to the top of the file having its imports &quot;</span>
+
+        <span class="s2">&quot;sorted. *NOTE*: This is a **beta** feature. It currently doesn&#39;t work with cimports and &quot;</span>
+
+        <span class="s2">&quot;is gauranteed to run much slower and use much more memory than the default. Still it &quot;</span>
+
+        <span class="s2">&quot;can be a great shortcut for collecting imports every once in a while when you put them &quot;</span>
+
+        <span class="s2">&quot;in the middle of a file.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
     <span class="c1"># deprecated options</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -2450,7 +2456,23 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span>
 
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;--apply&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--keep-direct-and-as&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;deprecated_flags&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append_const&quot;</span><span class="p">,</span>
+
+        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;--keep-direct-and-as&quot;</span><span class="p">,</span>
 
         <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
 

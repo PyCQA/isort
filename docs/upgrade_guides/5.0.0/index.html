@@ -575,6 +575,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-keep-direct-and-as-or-k" class="md-nav__link">
+    --keep-direct-and-as or -k
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-ac-wl-ws-tc-sp-sp-sl-sg-sd-rr-ot-nlb-nis-ls-le-lbt-lai-fss-fgw-ff-fass-fas-dt-ds-df-cs-ca-af-ac" class="md-nav__link">
     -ac, -wl, -ws, -tc, -sp, -sp, -sl, -sg, -sd, -rr, -ot, -nlb, -nis, -ls, -le, -lbt, -lai, -fss, -fgw, -ff, -fass, -fas, -dt, -ds, -df, -cs, -ca, -af, -ac
   </a>
@@ -597,6 +604,13 @@
           <li class="md-nav__item">
   <a href="#not_skip" class="md-nav__link">
     not_skip
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep_direct_and_as_imports" class="md-nav__link">
+    keep_direct_and_as_imports
   </a>
   
 </li>
@@ -1178,6 +1192,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#-keep-direct-and-as-or-k" class="md-nav__link">
+    --keep-direct-and-as or -k
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-ac-wl-ws-tc-sp-sp-sl-sg-sd-rr-ot-nlb-nis-ls-le-lbt-lai-fss-fgw-ff-fass-fas-dt-ds-df-cs-ca-af-ac" class="md-nav__link">
     -ac, -wl, -ws, -tc, -sp, -sp, -sl, -sg, -sd, -rr, -ot, -nlb, -nis, -ls, -le, -lbt, -lai, -fss, -fgw, -ff, -fass, -fas, -dt, -ds, -df, -cs, -ca, -af, -ac
   </a>
@@ -1200,6 +1221,13 @@
           <li class="md-nav__item">
   <a href="#not_skip" class="md-nav__link">
     not_skip
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep_direct_and_as_imports" class="md-nav__link">
+    keep_direct_and_as_imports
   </a>
   
 </li>
@@ -1257,6 +1285,9 @@ This guide is meant to help migrate projects from using isort 4.x.x unto the 5.0
 <p>Prior to version 5.0.0, isort wouldn't automatically traverse directories. The --recursive option was necessary to tell it to do so. In 5.0.0 directories are automatically traversed for all Python files, and as such this option is no longer necessary and should simply be removed.</p>
 <h3 id="-apply-or-y"><code>--apply</code> or <code>-y</code></h3>
 <p>Prior to version 5.0.0, depending on how isort was executed, it would ask you before making every file change. In isort 5.0.0 file changes happen by default inline with other formatters. <code>--interactive</code> is available to restore the previous behavior. If encountered this option can simply be removed.</p>
+<h3 id="-keep-direct-and-as-or-k"><code>--keep-direct-and-as</code> or <code>-k</code></h3>
+<p>Many versions ago, by default isort would remove imports such as <code>from datetime import datetime</code> if an alias for the same import also existed such as <code>from datetime import datetime as dt</code> - never allowing both to exist.
+The option was originally added to allow working around this, and was then turned on as the default. Now the option for the old behaviour has been removed. Simply remove the option from your config file.</p>
 <h3 id="-ac-wl-ws-tc-sp-sp-sl-sg-sd-rr-ot-nlb-nis-ls-le-lbt-lai-fss-fgw-ff-fass-fas-dt-ds-df-cs-ca-af-ac"><code>-ac</code>, <code>-wl</code>, <code>-ws</code>, <code>-tc</code>, <code>-sp</code>, <code>-sp</code>, <code>-sl</code>, <code>-sg</code>, <code>-sd</code>, <code>-rr</code>, <code>-ot</code>, <code>-nlb</code>, <code>-nis</code>, <code>-ls</code>, <code>-le</code>, <code>-lbt</code>, <code>-lai</code>, <code>-fss</code>, <code>-fgw</code>, <code>-ff</code>, <code>-fass</code>, <code>-fas</code>, <code>-dt</code>, <code>-ds</code>, <code>-df</code>, <code>-cs</code>, <code>-ca</code>, <code>-af</code>, <code>-ac</code></h3>
 <p>Two-letter shortened setting names (like <code>ac</code> for <code>atomic</code>) now require two dashes to avoid ambiguity. Simply add another dash before the option, or switch to the long form option to fix (example: <code>--ac</code> or <code>--atomic</code>).</p>
 <h2 id="migrating-config-options">Migrating Config options</h2>
@@ -1265,6 +1296,9 @@ If you have multiple configs, they will need to be merged into 1 single one. You
 <a href="https://timothycrosley.github.io/isort/docs/configuration/config_files/">config files documentation page</a>.</p>
 <h3 id="not_skip"><code>not_skip</code></h3>
 <p>This is the same as the <code>--dont-skip</code> CLI option above. In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the setting. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
+<h3 id="keep_direct_and_as_imports"><code>keep_direct_and_as_imports</code></h3>
+<p>This is the same as <code>keep-direct-and-as</code> from CLI. Many versions ago, by default isort would remove imports such as <code>from datetime import datetime</code> if an alias for the same import also existed such as <code>from datetime import datetime as dt</code> - never allowing both to exist.
+The option was originally added to allow working around this, and was then turned on as the default. Now the option for the old behaviour has been removed. Simply remove the option from your config file.</p>
 <h3 id="known_standard_library"><code>known_standard_library</code></h3>
 <p>isort settings no longer merge together, instead they override. The old behavior of merging together caused many hard to
 track down errors, but the one place it was very convenient was for adding a few additional standard library modules.
