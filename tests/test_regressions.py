@@ -61,6 +61,26 @@ from b import thing
 '''
     )
 
+    assert (
+        isort.code(
+            '''"""
+My docstring
+"""
+
+from b import thing
+from a import other_thing
+''',
+            add_imports=["from b import thing"],
+        )
+        == '''"""
+My docstring
+"""
+
+from a import other_thing
+from b import thing
+'''
+    )
+
 
 def test_blank_lined_removed_issue_1283():
     """Ensure isort doesn't accidentally remove blank lines after __version__ identifiers.

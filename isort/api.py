@@ -456,6 +456,9 @@ def _sort_imports(
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
                     if add_imports and not indent:
+                        if not import_section:
+                            output_stream.write(line)
+                            line = ""
                         import_section += line_separator.join(add_imports) + line_separator
                         contains_imports = True
                         add_imports = []
