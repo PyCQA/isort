@@ -3,7 +3,7 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.1.0 July TBD, 2020
+### 5.1.0 July 14, 2020
   - isort now throws an exception if an invalid settings path is given (issue #1174).
   - Implemented support for automatic redundant alias removal (issue #1281).
   - Implemented experimental support for floating all imports to the top of a file (issue #1228)
