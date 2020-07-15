@@ -1263,8 +1263,6 @@
 
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">distutils.util</span> <span class="kn">import</span> <span class="n">strtobool</span> <span class="k">as</span> <span class="n">_as_bool</span>
-
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -1360,6 +1358,34 @@
 <span class="n">RUNTIME_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;runtime&quot;</span>
 
 <span class="n">DEPRECATED_SETTINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;not_skip&quot;</span><span class="p">,)</span>
+
+<span class="n">_STR_BOOLEAN_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;on&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+
+    <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="s2">&quot;off&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+    <span class="s2">&quot;false&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+<span class="p">}</span>
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
@@ -1530,6 +1556,8 @@
     <span class="n">src_paths</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
     <span class="n">old_finders</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">remove_redundant_aliases</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -2169,7 +2197,7 @@
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
 
-                    <span class="n">value</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_as_bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">_as_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
                 <span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
@@ -2198,6 +2226,22 @@
                 <span class="n">settings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">existing_value_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">settings</span>
+
+<span class="k">def</span> <span class="nf">_as_bool</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;Given a string value that represents True or False, returns the Boolean equivalent.</span>
+
+<span class="sd">    Heavily inspired from distutils strtobool.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="n">_STR_BOOLEAN_MAPPING</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;invalid truth value {value}&quot;</span><span class="p">)</span>
 
 <span class="n">DEFAULT_CONFIG</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
 </code></pre></div>
@@ -2853,6 +2897,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">remove_imports</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">remove_redundant_aliases</span>
 </code></pre></div>
 
 

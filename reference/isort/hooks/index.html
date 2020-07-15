@@ -1182,7 +1182,7 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">isort</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="nn">isort</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">exceptions</span>
 
 <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -1262,13 +1262,23 @@
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
 
-                <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span>
 
-                <span class="k">if</span> <span class="n">modify</span><span class="p">:</span>
+                    <span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
 
-                    <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+                <span class="p">):</span>
+
+                    <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="n">modify</span><span class="p">:</span>
+
+                        <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FileSkipped</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                <span class="k">pass</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="n">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
@@ -1396,13 +1406,23 @@
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span><span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
+            <span class="n">try</span><span class="p">:</span>
 
-                <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span>
 
-                <span class="k">if</span> <span class="k">modify</span><span class="p">:</span>
+                    <span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
 
-                    <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+                <span class="p">):</span>
+
+                    <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="k">modify</span><span class="p">:</span>
+
+                        <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">exceptions</span><span class="p">.</span><span class="n">FileSkipped</span><span class="p">:</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+
+                <span class="n">pass</span>
 
     <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="k">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
