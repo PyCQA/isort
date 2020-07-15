@@ -32,3 +32,120 @@ def test_isort_automatically_removes_duplicate_aliases_issue_1193():
     )
     assert isort.check_code("import os as os\n", show_diff=True)
     assert isort.code("import os as os", remove_redundant_aliases=True) == "import os\n"
+
+
+def test_isort_enables_floating_imports_to_top_of_module_issue_1228():
+    """Test to ensure isort will allow floating all non-indented imports to the top of a file.
+    See: https://github.com/timothycrosley/isort/issues/1228.
+    """
+    assert (
+        isort.code(
+            """
+import os
+
+
+def my_function_1():
+    pass
+
+import sys
+
+def my_function_2():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """
+import os
+import sys
+
+
+def my_function_1():
+    pass
+
+
+def my_function_2():
+    pass
+"""
+    )
+
+    assert (
+        isort.code(
+            """
+import os
+
+
+def my_function_1():
+    pass
+
+# isort: split
+import sys
+
+def my_function_2():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """
+import os
+
+
+def my_function_1():
+    pass
+
+# isort: split
+import sys
+
+
+def my_function_2():
+    pass
+"""
+    )
+
+
+assert (
+    isort.code(
+        """
+import os
+
+
+def my_function_1():
+    pass
+
+# isort: off
+import b
+import a
+def y():
+    pass
+
+# isort: on
+import b
+
+def my_function_2():
+    pass
+
+import a
+""",
+        float_to_top=True,
+    )
+    == """
+import os
+
+
+def my_function_1():
+    pass
+
+# isort: off
+import b
+import a
+def y():
+    pass
+
+# isort: on
+import a
+import b
+
+
+def my_function_2():
+    pass
+"""
+)

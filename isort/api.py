@@ -386,6 +386,36 @@ def _sort_imports(
     cimports: bool = False
     made_changes: bool = False
 
+    if config.float_to_top:
+        new_input = ""
+        current = ""
+        isort_off = False
+        for line in chain(input_stream, (None,)):
+            if isort_off and line is not None:
+                if line == "# isort: on\n":
+                    isort_off = False
+                new_input += line
+            elif line in ("# isort: split\n", "# isort: off\n", None):
+                if line == "# isort: off\n":
+                    isort_off = True
+                if current:
+                    parsed = parse.file_contents(current, config=config)
+                    extra_space = ""
+                    while current[-1] == "\n":
+                        extra_space += "\n"
+                        current = current[:-1]
+                    extra_space = extra_space.replace("\n", "", 1)
+                    new_input += output.sorted_imports(
+                        parsed, config, extension, import_type="import"
+                    )
+                    new_input += extra_space
+                    current = ""
+                new_input += line or ""
+            else:
+                current += line or ""
+
+        input_stream = StringIO(new_input)
+
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
             if index == 0 and not config.force_adds:

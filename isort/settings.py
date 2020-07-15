@@ -166,6 +166,7 @@ class _Config:
     src_paths: FrozenSet[Path] = frozenset()
     old_finders: bool = False
     remove_redundant_aliases: bool = False
+    float_to_top: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

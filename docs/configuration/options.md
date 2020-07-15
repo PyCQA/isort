@@ -468,18 +468,6 @@ Ensures that if a star import is present, nothing else is imported from that nam
 - --cs
 - --combine-star
 
-## Keep Direct And As Imports
-
-Turns off default behavior that removes direct imports when as imports exist.
-
-**Type:** Bool  
-**Default:** `True`  
-**Python & Config File Name:** keep_direct_and_as_imports  
-**CLI Flags:**
-
-- -k
-- --keep-direct-and-as
-
 ## Include Trailing Comma
 
 Includes a trailing comma on multi line imports that include parentheses.
@@ -762,6 +750,17 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 - --remove-redundant-aliases
 
+## Float To Top
+
+Causes all non indented imports to float to the top of the file having its imports sorted. *NOTE*: This is a **beta** feature. It currently doesn't work with cimports and is gauranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** float_to_top  
+**CLI Flags:**
+
+- --float-to-top
+
 ## Check
 
 Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.
@@ -923,4 +922,5 @@ See isort's determined config, as well as sources of config options.
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
-- --apply
+- -k
+- --keep-direct-and-as
