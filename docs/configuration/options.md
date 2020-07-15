@@ -753,7 +753,7 @@ Use the old deprecated finder logic that relies on environment introspection mag
 
 ## Remove Redundant Aliases
 
-Tells isort to remove redundant aliases from imports, such as import os as os. This defaults to false simply because some projects use these seemingly useless alias to signify intent and change behaviour.
+Tells isort to remove redundant aliases from imports, such as `import os as os`. This defaults to `False` simply because some projects use these seemingly useless  aliases to signify intent and change behaviour.
 
 **Type:** Bool  
 **Default:** `False`  
