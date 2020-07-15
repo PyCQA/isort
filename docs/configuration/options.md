@@ -751,6 +751,17 @@ Use the old deprecated finder logic that relies on environment introspection mag
 - --old-finders
 - --magic-placement
 
+## Remove Redundant Aliases
+
+Tells isort to remove redundant aliases from imports, such as import os as os. This defaults to false simply because some projects use these seemingly useless alias to signify intent and change behaviour.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** remove_redundant_aliases  
+**CLI Flags:**
+
+- --remove-redundant-aliases
+
 ## Check
 
 Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.
