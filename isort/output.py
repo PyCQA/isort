@@ -267,10 +267,7 @@ def _with_from_imports(
             for from_import in copy.copy(from_imports):
                 if from_import in as_imports:
                     idx = from_imports.index(from_import)
-                    if (
-                        config.keep_direct_and_as_imports
-                        and parsed.imports[section]["from"][module][from_import]
-                    ):
+                    if parsed.imports[section]["from"][module][from_import]:
                         from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
@@ -313,10 +310,7 @@ def _with_from_imports(
                             f"{comments and ';' or config.comment_prefix} " f"{comment}"
                         )
                     if from_import in as_imports:
-                        if (
-                            config.keep_direct_and_as_imports
-                            and parsed.imports[section]["from"][module][from_import]
-                        ):
+                        if parsed.imports[section]["from"][module][from_import]:
                             new_section_output.append(
                                 wrap.line(single_import_line, parsed.line_separator, config)
                             )
@@ -344,10 +338,7 @@ def _with_from_imports(
                     from_comments = parsed.categorized_comments["straight"].get(
                         f"{module}.{from_import}"
                     )
-                    if (
-                        config.keep_direct_and_as_imports
-                        and parsed.imports[section]["from"][module][from_import]
-                    ):
+                    if parsed.imports[section]["from"][module][from_import]:
                         new_section_output.append(
                             with_comments(
                                 from_comments,
@@ -383,8 +374,6 @@ def _with_from_imports(
                     comments = None
 
                 for from_import in copy.copy(from_imports):
-                    if from_import in as_imports and not config.keep_direct_and_as_imports:
-                        continue
                     comment = (
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
@@ -408,8 +397,7 @@ def _with_from_imports(
                 while from_imports and (
                     from_imports[0] not in as_imports
                     or (
-                        config.keep_direct_and_as_imports
-                        and config.combine_as_imports
+                        config.combine_as_imports
                         and parsed.imports[section]["from"][module][from_import]
                     )
                 ):
@@ -488,7 +476,7 @@ def _with_straight_imports(
 
         import_definition = []
         if module in parsed.as_map["straight"]:
-            if config.keep_direct_and_as_imports and parsed.imports[section]["straight"][module]:
+            if parsed.imports[section]["straight"][module]:
                 import_definition.append(f"{import_type} {module}")
             import_definition.extend(
                 f"{import_type} {module} as {as_import}"

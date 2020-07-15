@@ -61,7 +61,7 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
 
 RUNTIME_SOURCE = "runtime"
 
-DEPRECATED_SETTINGS = ("not_skip",)
+DEPRECATED_SETTINGS = ("not_skip", "keep_direct_and_as_imports")
 
 _STR_BOOLEAN_MAPPING = {
     "y": True,
@@ -141,7 +141,6 @@ class _Config:
     lines_between_types: int = 0
     combine_as_imports: bool = False
     combine_star: bool = False
-    keep_direct_and_as_imports: bool = True
     include_trailing_comma: bool = False
     from_first: bool = False
     verbose: bool = False

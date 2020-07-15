@@ -8,6 +8,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented support for automatic redundant alias removal (issue #1281).
   - Fixed #1178: support for semicolons in decorators.
   - Fixed #1315: Extra newline before comment with -n + --fss.
+  - Fixed #1192: `-k` or `--keep-direct-and-as-imports` option has been deprecated as it is now always on.
 
 **Formatting changes implied:**
   - Fixed #1280: rewrite of as imports changes the behavior of the imports.

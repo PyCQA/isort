@@ -289,13 +289,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-j", "--jobs", help="Number of files to process in parallel.", dest="jobs", type=int
     )
-    parser.add_argument(
-        "-k",
-        "--keep-direct-and-as",
-        dest="keep_direct_and_as_imports",
-        action="store_true",
-        help="Turns off default behavior that removes direct imports when as imports exist.",
-    )
     parser.add_argument("--lai", "--lines-after-imports", dest="lines_after_imports", type=int)
     parser.add_argument("--lbt", "--lines-between-types", dest="lines_between_types", type=int)
     parser.add_argument(
@@ -621,10 +614,17 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--apply",
         dest="deprecated_flags",
         action="append_const",
-        const="-y",
+        const="--apply",
         help=argparse.SUPPRESS,
     )
-
+    parser.add_argument(
+        "-k",
+        "--keep-direct-and-as",
+        dest="deprecated_flags",
+        action="append_const",
+        const="--keep-direct-and-as",
+        help=argparse.SUPPRESS,
+    )
     return parser
 
 

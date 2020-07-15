@@ -807,7 +807,7 @@ def test_add_imports() -> None:
     )
 
     # On a file that has no pre-existing imports
-    test_input = '"""Module docstring"""\n' "\nclass MyClass(object):\n    pass\n"
+    test_input = '"""Module docstring"""\n' "class MyClass(object):\n    pass\n"
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
         '"""Module docstring"""\n'
@@ -1376,7 +1376,7 @@ def test_combined_from_and_as_imports() -> None:
     assert isort.code(test_input, combine_as_imports=True) == test_input
     test_input = "import os \nimport os as _os"
     test_output = "import os\nimport os as _os\n"
-    assert isort.code(test_input, keep_direct_and_as_imports=True) == test_output
+    assert isort.code(test_input) == test_output
 
 
 def test_as_imports_with_line_length() -> None:
@@ -3310,11 +3310,9 @@ def test_multiple_as_imports() -> None:
     assert test_output == test_input
     test_output = isort.code(test_input, combine_as_imports=True)
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
-    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input)
     assert test_output == test_input
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True)
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
 
     test_input = (
@@ -3323,17 +3321,9 @@ def test_multiple_as_imports() -> None:
         "from a import b as bb\n"
         "from a import b as bb_\n"
     )
-    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
-    assert test_output == "from a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
-    )
-    assert test_output == "from a import b as b, b as bb, b as bb_\n"
-    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input)
     assert test_output == test_input
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True)
     assert test_output == "from a import b, b as b, b as bb, b as bb_\n"
 
     test_input = (
@@ -3342,57 +3332,27 @@ def test_multiple_as_imports() -> None:
         "from a import b\n"
         "from a import b as f\n"
     )
-    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
-    assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=False
-    )
-    assert test_output == "from a import b as c, b as e, b as f\n"
-    test_output = isort.code(test_input, keep_direct_and_as_imports=True)
+    test_output = isort.code(test_input)
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = isort.code(code=test_input, no_inline_sort=True, keep_direct_and_as_imports=False)
-    assert test_output == "from a import b as c\nfrom a import b as e\nfrom a import b as f\n"
-    test_output = isort.code(code=test_input, keep_direct_and_as_imports=True, no_inline_sort=True)
+    test_output = isort.code(code=test_input, no_inline_sort=True)
     assert (
         test_output
         == "from a import b\nfrom a import b as c\nfrom a import b as e\nfrom a import b as f\n"
     )
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True)
     assert test_output == "from a import b, b as c, b as e, b as f\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_as_imports=True,
-        no_inline_sort=True,
-        keep_direct_and_as_imports=False,
-    )
-    assert test_output == "from a import b as e, b as c, b as f\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=True,
-        no_inline_sort=True,
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True, no_inline_sort=True)
     assert test_output == "from a import b, b as e, b as c, b as f\n"
 
     test_input = "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
-    assert test_output == test_input
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True)
     assert test_output == test_input
 
-    test_input = "import a\nimport a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = isort.code(test_input, keep_direct_and_as_imports=False)
     assert test_output == "import a as a\nimport a as aa\nimport a as aa_\n"
-    test_output = isort.code(
-        code=test_input, combine_as_imports=True, keep_direct_and_as_imports=True
-    )
+    test_output = isort.code(code=test_input, combine_as_imports=True)
     assert test_output == test_input
 
 
@@ -3411,47 +3371,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=False,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import e as f\n"
-        "from a import g as h\n"
-        "from a import i as j\n"
-        "from a import w, x, y, z\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=False,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=False,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=False,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c, b as d, e as f, g as h, i as j, w, x, y, z\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=False,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=False,
     )
@@ -3468,84 +3387,16 @@ def test_all_imports_from_single_module() -> None:
     )
     test_output = isort.code(
         code=test_input,
-        combine_star=False,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
-        no_inline_sort=False,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import e as f\n"
-        "from a import g as h\n"
-        "from a import i as j\n"
-        "from a import w\n"
-        "from a import x\n"
-        "from a import y\n"
-        "from a import z\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=False,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=True,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import z, x, y, w\n"
-        "from a import i as j\n"
-        "from a import g as h\n"
-        "from a import e as f\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=False,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
         combine_star=True,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=False,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
-        no_inline_sort=False,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
     test_output = isort.code(
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=False,
     )
@@ -3557,42 +3408,7 @@ def test_all_imports_from_single_module() -> None:
     test_output = isort.code(
         code=test_input,
         combine_star=False,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
-        no_inline_sort=False,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import e as f\n"
-        "from a import g as h\n"
-        "from a import i as j\n"
-        "from a import w\n"
-        "from a import x\n"
-        "from a import y\n"
-        "from a import z\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=False,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=True,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as d, b as c, z, x, y, w, i as j, g as h, e as f\n"
-    )
-    test_output = isort.code(
-        code=test_input,
-        combine_star=False,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=True,
         no_inline_sort=False,
     )
@@ -3614,7 +3430,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=True,
     )
@@ -3631,30 +3446,8 @@ def test_all_imports_from_single_module() -> None:
     )
     test_output = isort.code(
         code=test_input,
-        combine_star=False,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
-        no_inline_sort=True,
-    )
-    assert test_output == (
-        "import a\n"
-        "from a import *\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import e as f\n"
-        "from a import g as h\n"
-        "from a import i as j\n"
-        "from a import w\n"
-        "from a import x\n"
-        "from a import y\n"
-        "from a import z\n"
-    )
-    test_output = isort.code(
-        code=test_input,
         combine_star=True,
         combine_as_imports=True,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=False,
     )
@@ -3662,26 +3455,7 @@ def test_all_imports_from_single_module() -> None:
     test_output = isort.code(
         code=test_input,
         combine_star=True,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
-        no_inline_sort=False,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=True,
-        keep_direct_and_as_imports=False,
-        force_single_line=False,
-        no_inline_sort=True,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=True,
         no_inline_sort=False,
     )
@@ -3690,17 +3464,7 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=True,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
-        no_inline_sort=True,
-    )
-    assert test_output == "import a\nfrom a import *\n"
-    test_output = isort.code(
-        code=test_input,
-        combine_star=True,
-        combine_as_imports=False,
-        keep_direct_and_as_imports=False,
-        force_single_line=True,
         no_inline_sort=True,
     )
     assert test_output == "import a\nfrom a import *\n"
@@ -3708,7 +3472,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
-        keep_direct_and_as_imports=True,
         force_single_line=True,
         no_inline_sort=False,
     )
@@ -3730,7 +3493,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=False,
         combine_as_imports=True,
-        keep_direct_and_as_imports=True,
         force_single_line=False,
         no_inline_sort=True,
     )
@@ -3743,7 +3505,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=False,
         combine_as_imports=False,
-        keep_direct_and_as_imports=True,
         force_single_line=True,
         no_inline_sort=True,
     )
@@ -3765,7 +3526,6 @@ def test_all_imports_from_single_module() -> None:
         code=test_input,
         combine_star=True,
         combine_as_imports=True,
-        keep_direct_and_as_imports=True,
         force_single_line=True,
         no_inline_sort=False,
     )
@@ -4793,7 +4553,7 @@ import datetime as datetime
 import datetime as dt
 import datetime as dt2
 """
-    assert isort.code(keep_direct_and_as_imports=True, code=test_input) == test_input
+    assert isort.code(code=test_input) == test_input
 
 
 def test_parens_in_comment():
@@ -4814,7 +4574,7 @@ import datetime.datetime as dt
     expected_output = """import datetime.datetime as dt
 from datetime import datetime
 """
-    assert isort.code(test_input, keep_direct_and_as_imports=True) == expected_output
+    assert isort.code(test_input) == expected_output
 
 
 def test_no_sections_with_future():
