@@ -461,7 +461,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--use-parentheses",
         dest="use_parentheses",
         action="store_true",
-        help="Use parenthesis for line continuation on length limit instead of slashes.",
+        help="Use parentheses for line continuation on length limit instead of slashes.",
     )
     parser.add_argument(
         "-V",
