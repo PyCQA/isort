@@ -1235,7 +1235,11 @@
 
     <span class="k">return</span> <span class="n">import_line</span>
 
-<span class="k">def</span> <span class="nf">show_unified_diff</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">show_unified_diff</span><span class="p">(</span>
+
+    <span class="o">*</span><span class="p">,</span> <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+<span class="p">):</span>
 
     <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
@@ -1263,7 +1267,7 @@
 
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">unified_diff_lines</span><span class="p">:</span>
 
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">ask_whether_to_apply_changes_to_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
@@ -1401,12 +1405,17 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span>
+    <span class="n">output</span><span class="o">=&lt;</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&lt;stdout&gt;&#39;</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="o">&gt;</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">show_unified_diff</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nl">file_input</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_output</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">show_unified_diff</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">    </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nl">file_input</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_output</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"></span>
+
+<span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="nf">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">file_path</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
@@ -1434,7 +1443,7 @@
 
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">unified_diff_lines</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">.</span><span class="k">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">output</span><span class="p">.</span><span class="k">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 
