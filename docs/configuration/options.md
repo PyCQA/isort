@@ -374,7 +374,7 @@ Balances wrapping to produce the most consistent line length possible
 
 ## Use Parentheses
 
-Use parenthesis for line continuation on length limit instead of slashes.
+Use parentheses for line continuation on length limit instead of slashes.
 
 **Type:** Bool  
 **Default:** `False`  
