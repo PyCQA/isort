@@ -752,7 +752,7 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 ## Float To Top
 
-Causes all non indented imports to float to the top of the file having its imports sorted. *NOTE*: This is a **beta** feature. It currently doesn't work with cimports and is gauranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.
+Causes all non indented imports to float to the top of the file having its imports sorted. *NOTE*: This is an **experimental** feature. It currently doesn't work with cimports and is guaranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.
 
 **Type:** Bool  
 **Default:** `False`  
