@@ -4,7 +4,8 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
 ### 5.1.1 July 15, 2020
-  - Fix issue #1322: Occasionally two extra newlines before comment with `-n` & `--fss`.
+  - Fixed issue #1322: Occasionally two extra newlines before comment with `-n` & `--fss`.
+  - Fixed issue #1189: `--diff` broken when reading from standard input.
 
 ### 5.1.0 July 14, 2020
   - isort now throws an exception if an invalid settings path is given (issue #1174).

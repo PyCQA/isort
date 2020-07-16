@@ -100,6 +100,7 @@ def sort_stream(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
+    show_diff: bool = False,
     **config_kwargs,
 ):
     """Sorts any imports within the provided code stream, outputs to the provided output stream.
@@ -113,6 +114,28 @@ def sort_stream(
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - ****config_kwargs**: Any config modifications.
     """
+    if show_diff:
+        _output_stream = StringIO()
+        _input_stream = StringIO(input_stream.read())
+        changed = sort_stream(
+            input_stream=_input_stream,
+            output_stream=_output_stream,
+            extension=extension,
+            config=config,
+            file_path=file_path,
+            disregard_skip=disregard_skip,
+            **config_kwargs,
+        )
+        _output_stream.seek(0)
+        _input_stream.seek(0)
+        show_unified_diff(
+            file_input=_input_stream.read(),
+            file_output=_output_stream.read(),
+            file_path=file_path,
+            output=output_stream,
+        )
+        return changed
+
     config = _config(path=file_path, config=config, **config_kwargs)
     content_source = str(file_path or "Passed in content")
     if not disregard_skip:

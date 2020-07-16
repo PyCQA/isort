@@ -1,4 +1,5 @@
 """Tests the isort API module"""
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -41,3 +42,10 @@ def test_check_file(tmpdir) -> None:
 def test_sorted_imports_multiple_configs() -> None:
     with pytest.raises(ValueError):
         api.sort_code_string("import os", config=Config(line_length=80), line_length=80)
+
+
+def test_diff_stream() -> None:
+    output = StringIO()
+    assert api.sort_stream(StringIO("import b\nimport a\n"), output, show_diff=True)
+    output.seek(0)
+    assert "import a\n import b\n" in output.read()

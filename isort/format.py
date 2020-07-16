@@ -28,7 +28,9 @@ def format_natural(import_line: str) -> str:
     return import_line
 
 
-def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[Path]):
+def show_unified_diff(
+    *, file_input: str, file_output: str, file_path: Optional[Path], output=sys.stdout
+):
     file_name = "" if file_path is None else str(file_path)
     file_mtime = str(
         datetime.now() if file_path is None else datetime.fromtimestamp(file_path.stat().st_mtime)
@@ -43,7 +45,7 @@ def show_unified_diff(*, file_input: str, file_output: str, file_path: Optional[
         tofiledate=str(datetime.now()),
     )
     for line in unified_diff_lines:
-        sys.stdout.write(line)
+        output.write(line)
 
 
 def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
