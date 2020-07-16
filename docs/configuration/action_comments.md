@@ -26,7 +26,7 @@ import sys
 ## isort: skip
 
 If placed on the same line as (or within the continuation of a) an import statement, isort will not sort this import.
-More specifically, it prevents the import statement to be recognized by isort as an import. In consequence, this line will be treated as code and be pushed down to below the import section of the file.
+More specifically, it prevents the import statement from being recognized by isort as an import. In consequence, this line will be treated as code and be pushed down to below the import section of the file.
 
 Example:
 
