@@ -360,3 +360,29 @@ def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280():
     """,
         show_diff=True,
     )
+
+
+def test_isort_shouldnt_introduce_extra_lines_with_fass_issue_1322():
+    """Tests to ensure isort doesn't introduce extra lines when used with fass option.
+    See: https://github.com/timothycrosley/isort/issues/1322
+    """
+    assert (
+        isort.code(
+            """
+        import logging
+
+# Comment canary
+from foo import bar
+import quux
+""",
+            force_sort_within_sections=True,
+            ensure_newline_before_comments=True,
+        )
+        == """
+        import logging
+
+# Comment canary
+from foo import bar
+import quux
+"""
+    )

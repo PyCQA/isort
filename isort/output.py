@@ -108,6 +108,8 @@ def sorted_imports(
             comments_above = []
             new_section_output: List[str] = []
             for line in section_output:
+                if not line:
+                    continue
                 if line.startswith("#"):
                     comments_above.append(line)
                 elif comments_above:
@@ -132,7 +134,11 @@ def sorted_imports(
             for line in new_section_output:
                 comments = getattr(line, "comments", ())
                 if comments:
-                    if section_output and config.ensure_newline_before_comments:
+                    if (
+                        config.ensure_newline_before_comments
+                        and section_output
+                        and section_output[-1]
+                    ):
                         section_output.append("")
                     section_output.extend(comments)
                 section_output.append(str(line))
