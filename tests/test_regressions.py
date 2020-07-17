@@ -386,3 +386,19 @@ from foo import bar
 import quux
 """
     )
+
+
+def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_1219():
+    """Tests to ensure if isort encounters a single import line which is made too long with a comment
+    it is wrapped when using black profile.
+    See: https://github.com/timothycrosley/isort/issues/1219
+    """
+    assert isort.check_code(
+        """
+from many_stop_words import (
+    get_stop_words as get_base_stopwords,  # extended list of stop words, also for en
+)
+""",
+        show_diff=True,
+        profile="black",
+    )

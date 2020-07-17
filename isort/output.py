@@ -346,21 +346,27 @@ def _with_from_imports(
                     )
                     if parsed.imports[section]["from"][module][from_import]:
                         new_section_output.append(
-                            with_comments(
-                                from_comments,
-                                wrap.line(
-                                    import_start + from_import, parsed.line_separator, config
+                            wrap.line(
+                                with_comments(
+                                    from_comments,
+                                    import_start + from_import,
+                                    removed=config.ignore_comments,
+                                    comment_prefix=config.comment_prefix,
                                 ),
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
+                                parsed.line_separator,
+                                config,
                             )
                         )
                     new_section_output.extend(
-                        with_comments(
-                            from_comments,
-                            wrap.line(import_start + as_import, parsed.line_separator, config),
-                            removed=config.ignore_comments,
-                            comment_prefix=config.comment_prefix,
+                        wrap.line(
+                            with_comments(
+                                from_comments,
+                                import_start + as_import,
+                                removed=config.ignore_comments,
+                                comment_prefix=config.comment_prefix,
+                            ),
+                            parsed.line_separator,
+                            config,
                         )
                         for as_import in as_imports[from_import]
                     )

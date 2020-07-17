@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.1.2 July 17, 2020
+  - Fixed issue #1219 / #1326: Comments not wrapped for long lines
+
 ### 5.1.1 July 15, 2020
   - Fixed issue #1322: Occasionally two extra newlines before comment with `-n` & `--fss`.
   - Fixed issue #1189: `--diff` broken when reading from standard input.

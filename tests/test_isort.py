@@ -4441,7 +4441,7 @@ from flask_security.signals import password_changed as user_reset_password  # no
 from flask_security.signals import user_confirmed  # noqa
 from flask_security.signals import user_registered  # noqa
 """
-    assert isort.code(test_input) == expected_output
+    assert isort.code(test_input, line_length=100) == expected_output
 
 
 def test_single_line_exclusions():
