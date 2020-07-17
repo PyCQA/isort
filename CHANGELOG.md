@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
 ### 5.1.2 July 17, 2020
   - Fixed issue #1219 / #1326: Comments not wrapped for long lines
+  - Fixed issue #1156: Bug related to isort:skip usage followed by a multiline comment block
 
 ### 5.1.1 July 15, 2020
   - Fixed issue #1322: Occasionally two extra newlines before comment with `-n` & `--fss`.

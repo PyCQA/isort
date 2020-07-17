@@ -402,3 +402,28 @@ from many_stop_words import (
         show_diff=True,
         profile="black",
     )
+
+
+def test_comment_blocks_should_stay_associated_without_extra_lines_issue_1156():
+    """Tests to ensure isort doesn't add an extra line when there are large import blocks
+    or otherwise warp the intent.
+    See: https://github.com/timothycrosley/isort/issues/1156
+    """
+    assert (
+        isort.code(
+            """from top_level_ignored import config  # isort:skip
+####################################
+# COMMENT BLOCK SEPARATING THESE   #
+####################################
+from ast import excepthandler
+import logging
+"""
+        )
+        == """from top_level_ignored import config  # isort:skip
+import logging
+####################################
+# COMMENT BLOCK SEPARATING THESE   #
+####################################
+from ast import excepthandler
+"""
+    )

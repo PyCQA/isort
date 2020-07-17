@@ -371,7 +371,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["above"]["from"].setdefault(import_from, []).insert(
                             0, out_lines.pop(-1)
                         )
-                        if len(out_lines) > max(import_index - 1, 1) - 1:
+                        if len(out_lines):
                             last = out_lines[-1].rstrip()
                         else:
                             last = ""
