@@ -23,7 +23,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1280: rewrite of as imports changes the behavior of the imports.
 
 ### 5.0.9 July 11, 2020
-Fixed #1301: Import headings in nested sections leads to check errors
+  - Fixed #1301: Import headings in nested sections leads to check errors
 
 ### 5.0.8 July 11, 2020
   - Fixed #1277 & #1278: New line detection issues on Windows.
