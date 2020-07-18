@@ -427,3 +427,17 @@ import logging
 from ast import excepthandler
 """
     )
+
+
+def test_losing_comments_when_combine_as_is_set_issue_1321():
+    """Tests to ensure isort doesn't remove comments information when used in conjunction with
+    combine_as_imports.
+    See: https://github.com/timothycrosley/isort/issues/1321
+    """
+    assert isort.check_code(
+        """from foo import *  # noqa
+from foo import bar as quux  # noqa
+""",
+        show_diff=True,
+        combine_as_imports=True,
+    )

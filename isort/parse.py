@@ -322,6 +322,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         nested_module = just_imports[as_index - 1]
                         module = just_imports[0] + "." + nested_module
                         as_name = just_imports[as_index + 1]
+                        categorized_comments["nested"].setdefault(just_imports[0], {})[nested_module] = ", ".join(comments)
                         if nested_module == as_name and config.remove_redundant_aliases:
                             pass
                         elif as_name not in as_map["from"][module]:
@@ -333,9 +334,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             pass
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
-                    if not config.combine_as_imports:
+
                         categorized_comments["straight"][module] = comments
-                        comments = []
+                    comments = []
                     del just_imports[as_index : as_index + 2]
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
