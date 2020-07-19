@@ -427,3 +427,22 @@ import logging
 from ast import excepthandler
 """
     )
+
+
+def test_comment_shouldnt_be_duplicated_with_fass_enabled_issue_1329():
+    """Tests to ensure isort doesn't duplicate comments when imports occur with comment on top,
+    immediately after large comment blocks.
+    See: https://github.com/timothycrosley/isort/pull/1329/files.
+    """
+    assert isort.check_code(
+        """'''
+Multi-line docstring
+'''
+# Comment for A.
+import a
+# Comment for B - not A!
+import b
+""",
+        force_sort_within_sections=True,
+        show_diff=True,
+    )

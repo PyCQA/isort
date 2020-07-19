@@ -529,5 +529,6 @@ def _normalize_empty_lines(lines: List[str]) -> List[str]:
 
 class _LineWithComments(str):
     def __new__(cls, value, comments):
-        cls.comments = comments
-        return super().__new__(cls, value)  # type: ignore
+        instance = super().__new__(cls, value)  # type: ignore
+        instance.comments = comments
+        return instance

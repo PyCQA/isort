@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.1.3 July 18, 2020
+  - Fixed issue #1329: Fix comments duplicated when --fass option is set.
+
 ### 5.1.2 July 17, 2020
   - Fixed issue #1219 / #1326: Comments not wrapped for long lines
   - Fixed issue #1156: Bug related to isort:skip usage followed by a multiline comment block
