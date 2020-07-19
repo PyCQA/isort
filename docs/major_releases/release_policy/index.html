@@ -431,9 +431,79 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Release Policy
+      </label>
+    
     <a href="./" title="Release Policy" class="md-nav__link md-nav__link--active">
       Release Policy
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-guarantees" class="md-nav__link">
+    Formatting guarantees
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packaging-guarantees" class="md-nav__link">
+    Packaging guarantees
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    Versioning
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#patch-releases-xx1" class="md-nav__link">
+    Patch Releases x.x.1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minor-releases-x1x" class="md-nav__link">
+    Minor Releases x.1.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#major-releases-1xx" class="md-nav__link">
+    Major Releases 1.x.x
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -1060,6 +1130,63 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-guarantees" class="md-nav__link">
+    Formatting guarantees
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packaging-guarantees" class="md-nav__link">
+    Packaging guarantees
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning" class="md-nav__link">
+    Versioning
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#patch-releases-xx1" class="md-nav__link">
+    Patch Releases x.x.1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minor-releases-x1x" class="md-nav__link">
+    Minor Releases x.1.x
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#major-releases-1xx" class="md-nav__link">
+    Major Releases 1.x.x
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1074,10 +1201,40 @@
                 
                 
                 <h1 id="isort-project-official-release-policy">isort Project Official Release Policy</h1>
-<p>isort has moved from being a simple hobby project for individuals to sort imports in their personal Python files
-to an important part of the CI/CD pipeline for both large companies and significant Open Source projects.
-Due to this evolution it is now of increased importance that isort maintains a level of quality, predictability, and consistency
-projects big and small can rely on.</p>
+<p>isort has moved from being a simple hobby project for individuals to sort imports in their Python files
+to an essential part of the CI/CD pipeline for large companies and significant Open Source projects.
+Due to this evolution, it is now of increased importance that isort maintains a level of quality, predictability, and consistency
+that gives projects big and small confidence to depend on it.</p>
+<h2 id="formatting-guarantees">Formatting guarantees</h2>
+<p>With isort 5.1.0, the isort Project guarantees that formatting will stay the same for the options given in accordance to its test suite for the duration of all major releases. This means projects can safely use isort &gt; 5.1.0 &lt; 6.0.0
+without worrying about major formatting changes disrupting their Project.</p>
+<h2 id="packaging-guarantees">Packaging guarantees</h2>
+<p>Starting with the 5.0.0 release isort includes the following project guarantees to help guide development:</p>
+<ul>
+<li>isort will never have dependencies, optional, required, or otherwise.</li>
+<li>isort will always act the same independent to the Python environment it is installed in.</li>
+</ul>
+<h2 id="versioning">Versioning</h2>
+<p>isort follows the <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning 2.0.0 specification</a> meaning it has three numerical version parts with distinct rules
+<code>MAJOR.MINOR.PATCH</code>.</p>
+<h3 id="patch-releases-xx1">Patch Releases x.x.1</h3>
+<p>Within the isort Project, patch releases are really meant solely to fix bugs and minor oversights.
+Patch releases should <em>never</em> drastically change formatting, even if it's for the better.</p>
+<h3 id="minor-releases-x1x">Minor Releases x.1.x</h3>
+<p>Minor changes can contain new backward-incompatible features, and of particular note can include bug fixes
+that result in intentional formatting changes - but they should still never be too large in scope.
+API backward compatibility should strictly be maintained.</p>
+<h3 id="major-releases-1xx">Major Releases 1.x.x</h3>
+<p>Major releases are the only place where backward-incompatible changes or substantial formatting changes can occur.
+Because these kind of changes are likely to break projects that utilize isort, either as a formatter or library,
+isort must do the following:</p>
+<ul>
+<li>Release a release candidate with at least 2 weeks for bugs to be reported and fixed.</li>
+<li>Keep releasing follow up release candidates until there are no or few bugs reported.</li>
+<li>Provide an upgrade guide that helps users work around any backward-incompatible changes.</li>
+<li>Provide a detailed changelog of all changes.</li>
+<li>Where possible, warn and point to the upgrade guide instead of breaking when options are removed.</li>
+</ul>
                 
                   
                 
