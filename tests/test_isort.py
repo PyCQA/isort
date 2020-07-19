@@ -866,6 +866,18 @@ def test_comments_above():
     test_input = "import os\n\nfrom x import y\n\n# comment\nfrom z import __version__, api\n"
     assert isort.code(test_input, ensure_newline_before_comments=True) == test_input
 
+    # Show edge case from #1328.
+    test_input = (
+        "'''\n"
+        "Multi-line docstring\n"
+        "'''\n"
+        "# Comment for A.\n"
+        "import a\n"
+        "# Comment for B - not A!\n"
+        "import b\n"
+    )
+    assert isort.code(test_input, force_sort_within_sections=True) == test_input
+
 
 def test_explicitly_local_import() -> None:
     """Ensure that explicitly local imports are separated."""
