@@ -461,6 +461,5 @@ def function():
 """,
         line_length=17,
         wrap_length=17,
-        show_diff=True
+        show_diff=True,
     )
-

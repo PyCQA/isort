@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 from difflib import unified_diff
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TextIO
 
 
 def format_simplified(import_line: str) -> str:
@@ -29,8 +29,16 @@ def format_natural(import_line: str) -> str:
 
 
 def show_unified_diff(
-    *, file_input: str, file_output: str, file_path: Optional[Path], output=sys.stdout
+    *, file_input: str, file_output: str, file_path: Optional[Path], output: Optional[TextIO] = None
 ):
+    """Shows a unified_diff for the provided input and output against the provided file path.
+
+    - **file_input**: A string that represents the contents of a file before changes.
+    - **file_output**: A string that represents the contents of a file after changes.
+    - **file_path**: A Path object that represents the file path of the file being changed.
+    - **output**: A stream to output the diff to. If non is provided uses sys.stdout.
+    """
+    output = sys.stdout if output is None else output
     file_name = "" if file_path is None else str(file_path)
     file_mtime = str(
         datetime.now() if file_path is None else datetime.fromtimestamp(file_path.stat().st_mtime)
