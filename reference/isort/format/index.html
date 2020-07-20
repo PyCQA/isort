@@ -1211,7 +1211,7 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span>
 
 <span class="k">def</span> <span class="nf">format_simplified</span><span class="p">(</span><span class="n">import_line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -1249,9 +1249,23 @@
 
 <span class="k">def</span> <span class="nf">show_unified_diff</span><span class="p">(</span>
 
-    <span class="o">*</span><span class="p">,</span> <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Shows a unified_diff for the provided input and output against the provided file path.</span>
+
+<span class="sd">    - **file_input**: A string that represents the contents of a file before changes.</span>
+
+<span class="sd">    - **file_output**: A string that represents the contents of a file after changes.</span>
+
+<span class="sd">    - **file_path**: A Path object that represents the file path of the file being changed.</span>
+
+<span class="sd">    - **output**: A stream to output the diff to. If non is provided uses sys.stdout.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">output</span>
 
     <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
@@ -1418,16 +1432,37 @@
     <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span>
-    <span class="n">output</span><span class="o">=&lt;</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&lt;stdout&gt;&#39;</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="o">&gt;</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
+<p>Shows a unified_diff for the provided input and output against the provided file path.</p>
+<ul>
+<li><strong>file_input</strong>: A string that represents the contents of a file before changes.</li>
+<li><strong>file_output</strong>: A string that represents the contents of a file after changes.</li>
+<li><strong>file_path</strong>: A Path object that represents the file path of the file being changed.</li>
+<li><strong>output</strong>: A stream to output the diff to. If non is provided uses sys.stdout.</li>
+</ul>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">show_unified_diff</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">    </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nl">file_input</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_output</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"></span>
+<span class="w">    </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nl">file_input</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_output</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
 
 <span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Shows a unified_diff for the provided input and output against the provided file path.</span>
+
+<span class="ss">    - **file_input**: A string that represents the contents of a file before changes.</span>
+
+<span class="ss">    - **file_output**: A string that represents the contents of a file after changes.</span>
+
+<span class="ss">    - **file_path**: A Path object that represents the file path of the file being changed.</span>
+
+<span class="ss">    - **output**: A stream to output the diff to. If non is provided uses sys.stdout.</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">output</span><span class="w"></span>
 
 <span class="w">    </span><span class="nf">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">file_path</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
