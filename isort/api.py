@@ -4,7 +4,7 @@ import textwrap
 from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional, TextIO, Union, cast
 from warnings import warn
 
 from . import io, output, parse
@@ -36,6 +36,7 @@ def sort_code_string(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     **config_kwargs,
 ):
     """Sorts any imports within the provided code string, returning a new string with them sorted.
@@ -45,6 +46,8 @@ def sort_code_string(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
     input_stream = StringIO(code)
@@ -57,6 +60,7 @@ def sort_code_string(
         config=config,
         file_path=file_path,
         disregard_skip=disregard_skip,
+        show_diff=show_diff,
     )
     output_stream.seek(0)
     return output_stream.read()
@@ -64,7 +68,7 @@ def sort_code_string(
 
 def check_code_string(
     code: str,
-    show_diff: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -75,7 +79,8 @@ def check_code_string(
     Returns `True` if everything is correct, otherwise `False`.
 
     - **code**: The string of code with imports that need to be sorted.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
@@ -100,7 +105,7 @@ def sort_stream(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
-    show_diff: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     **config_kwargs,
 ):
     """Sorts any imports within the provided code stream, outputs to the provided output stream.
@@ -112,6 +117,8 @@ def sort_stream(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
     if show_diff:
@@ -132,7 +139,7 @@ def sort_stream(
             file_input=_input_stream.read(),
             file_output=_output_stream.read(),
             file_path=file_path,
-            output=output_stream,
+            output=output_stream if show_diff is True else cast(TextIO, show_diff),
         )
         return changed
 
@@ -180,7 +187,7 @@ def sort_stream(
 
 def check_stream(
     input_stream: TextIO,
-    show_diff: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -191,7 +198,8 @@ def check_stream(
     incorrectly imports are found or `True` if no problems are identified.
 
     - **input_stream**: The stream of code with imports that need to be sorted.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
@@ -230,14 +238,17 @@ def check_stream(
             output_stream.seek(0)
 
             show_unified_diff(
-                file_input=file_contents, file_output=output_stream.read(), file_path=file_path
+                file_input=file_contents,
+                file_output=output_stream.read(),
+                file_path=file_path,
+                output=None if show_diff is True else cast(TextIO, show_diff),
             )
         return False
 
 
 def check_file(
     filename: Union[str, Path],
-    show_diff: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = True,
@@ -248,7 +259,8 @@ def check_file(
     incorrectly imports are found or `True` if no problems are identified.
 
     - **filename**: The name or Path of the file to check.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -274,7 +286,7 @@ def sort_file(
     file_path: Optional[Path] = None,
     disregard_skip: bool = True,
     ask_to_apply: bool = False,
-    show_diff: bool = False,
+    show_diff: Union[bool, TextIO] = False,
     write_to_stdout: bool = False,
     **config_kwargs,
 ):
@@ -286,7 +298,8 @@ def sort_file(
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - **ask_to_apply**: If `True`, prompt before applying any changes.
-    - **show_diff**: If `True` the changes that need to be done will be printed to stdout.
+    - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
+    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **write_to_stdout**: If `True`, write to stdout instead of the input file.
     - ****config_kwargs**: Any config modifications.
     """
@@ -326,6 +339,7 @@ def sort_file(
                                 file_input=source_file.stream.read(),
                                 file_output=tmp_file.read_text(encoding=source_file.encoding),
                                 file_path=file_path or source_file.path,
+                                output=None if show_diff is True else cast(TextIO, show_diff),
                             )
                             if show_diff or (
                                 ask_to_apply

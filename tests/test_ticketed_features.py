@@ -1,6 +1,8 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+from io import StringIO
+
 import isort
 
 
@@ -149,3 +151,13 @@ def my_function_2():
     pass
 """
 )
+
+
+def test_isort_provides_official_api_for_diff_output_issue_1335():
+    """Test to ensure isort API for diff capturing allows capturing diff without sys.stdout.
+    See: https://github.com/timothycrosley/isort/issues/1335.
+    """
+    diff_output = StringIO()
+    isort.code("import b\nimport a\n", show_diff=diff_output)
+    diff_output.seek(0)
+    assert "+import a" in diff_output.read()

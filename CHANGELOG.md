@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.2.0 TBD
+  - Implemented #1335: Official API for diff capturing.
+
 ### 5.1.4 July 19, 2020
   - Fixed issue #1333: Use of wrap_length raises an exception about it not being lower or equal to line_length.
   - Fixed issue #1330: Ensure stdout can be stubbed dynamically for `show_unified_diff` function.
