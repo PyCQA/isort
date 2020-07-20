@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.1.4 July 19, 2020
+  - Fixed issue #1333: Use of wrap_length raises an exception about it not being lower or equal to line_length.
+
 ### 5.1.3 July 18, 2020
   - Fixed issue #1329: Fix comments duplicated when --fass option is set.
 

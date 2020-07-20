@@ -446,3 +446,21 @@ import b
         force_sort_within_sections=True,
         show_diff=True,
     )
+
+
+def test_wrap_mode_equal_to_line_length_with_indendet_imports_issue_1333():
+    assert isort.check_code(
+        """
+import a
+import b
+
+
+def function():
+    import a as b
+    import c as d
+""",
+        line_length=17,
+        wrap_length=17,
+        show_diff=True
+    )
+
