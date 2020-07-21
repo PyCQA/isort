@@ -19,7 +19,7 @@ from ._vendored import toml
 from .exceptions import InvalidSettingsPath, ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
-from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
+from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
@@ -57,6 +57,7 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
     FUTURE: "FUTURE_LIBRARY",
     FIRSTPARTY: "FIRST_PARTY",
     THIRDPARTY: "THIRD_PARTY",
+    LOCALFOLDER: "LOCAL_FOLDER",
 }
 
 RUNTIME_SOURCE = "runtime"
