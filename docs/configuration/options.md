@@ -54,6 +54,18 @@ Files that sort imports should skip over.
 - --sg
 - --skip-glob
 
+## Skip Gitignore
+
+Treat project as a git respository and ignore files listed in .gitignore
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** skip_gitignore  
+**CLI Flags:**
+
+- --gitignore
+- --skip-gitignore
+
 ## Line Length
 
 The max length of an import line (used for wrapping long imports).
