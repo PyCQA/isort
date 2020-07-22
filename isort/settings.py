@@ -7,7 +7,7 @@ import fnmatch
 import os
 import posixpath
 import re
-import subprocess
+import subprocess  # nosec: Needed for gitignore support.
 import sys
 from functools import lru_cache
 from pathlib import Path
@@ -375,7 +375,7 @@ class Config(_Config):
         os_path = str(file_path)
 
         if self.skip_gitignore:
-            result = subprocess.run(["git", "check-ignore", "--quiet", os_path])
+            result = subprocess.run(["git", "check-ignore", "--quiet", os_path])  # nosec
             if result.returncode == 0:
                 return True
 
