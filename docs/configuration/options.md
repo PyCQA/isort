@@ -761,6 +761,17 @@ Causes all non indented imports to float to the top of the file having its impor
 
 - --float-to-top
 
+## Filter Files
+
+Tells isort to filter files even when they are explicitly passed in as part of the CLI command. Note that while this can be set as part of the config file it only affects CLI operation.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** filter_files  
+**CLI Flags:**
+
+- --filter-files
+
 ## Check
 
 Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.
@@ -868,17 +879,6 @@ Returns just the current version number without the logo
 
 - --vn
 - --version-number
-
-## Filter Files
-
-Tells isort to filter files even when they are explicitly passed in as part of the command
-
-**Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- --filter-files
 
 ## Files
 
