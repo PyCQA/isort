@@ -623,8 +623,8 @@ def _sort_imports(
                         first_import_section = False
 
                     if indent:
-                        import_section = line_separator.join(
-                            line.lstrip() for line in import_section.split(line_separator)
+                        import_section = "".join(
+                            line[len(indent):] for line in import_section.splitlines(keepends=True)
                         )
                         out_config = Config(
                             config=config,
