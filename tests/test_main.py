@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
@@ -226,6 +227,20 @@ import b
 
     # without filter options passed in should successfully sort files
     main.main([str(python_file), str(should_skip), "--verbose", "--atomic"])
+
+    # should respect gitignore if requested.
+    out, error = capsys.readouterr()  # clear sysoutput before tests
+    subprocess.run(["git", "init", str(tmpdir)])
+    main.main([str(python_file), "--skip-gitignore", "--filter-files"])
+    out, error = capsys.readouterr()
+    assert "Skipped" not in out
+    tmpdir.join(".gitignore").write("has_imports.py")
+    main.main([str(python_file)])
+    out, error = capsys.readouterr()
+    assert "Skipped" not in out
+    main.main([str(python_file), "--skip-gitignore", "--filter-files"])
+    out, error = capsys.readouterr()
+    assert "Skipped" in out
 
 
 def test_isort_command():
