@@ -376,7 +376,7 @@ class Config(_Config):
 
         if self.skip_gitignore:
             result = subprocess.run(  # nosec
-                ["git", "-C", file_path.resolve().parent, "check-ignore", "--quiet", os_path]
+                ["git", "-C", str(file_path.resolve().parent), "check-ignore", "--quiet", os_path]
             )
             if result.returncode == 0:
                 return True
