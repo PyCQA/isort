@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Service
-ServiceTypes=Kate/PythonPlugin
-X-KDE-Library=isort_plugin
-Name=isort
-Comment=Python import sorter and manager
-X-Python-2-Compatible=true

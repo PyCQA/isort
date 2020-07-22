@@ -1,17 +1,120 @@
 Changelog
 =========
 
-### 5.0.0 UNRELEASED
+NOTE: isort follows the [semver](https://semver.org/) versioning standard.
+
+### 5.2.0 TBD
+  - Implemented #1335: Official API for diff capturing.
+  - Implemented #1331: Warn when sections don't match up.
+  - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
+  - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
+
+### 5.1.4 July 19, 2020
+  - Fixed issue #1333: Use of wrap_length raises an exception about it not being lower or equal to line_length.
+  - Fixed issue #1330: Ensure stdout can be stubbed dynamically for `show_unified_diff` function.
+
+### 5.1.3 July 18, 2020
+  - Fixed issue #1329: Fix comments duplicated when --fass option is set.
+
+### 5.1.2 July 17, 2020
+  - Fixed issue #1219 / #1326: Comments not wrapped for long lines
+  - Fixed issue #1156: Bug related to isort:skip usage followed by a multiline comment block
+
+### 5.1.1 July 15, 2020
+  - Fixed issue #1322: Occasionally two extra newlines before comment with `-n` & `--fss`.
+  - Fixed issue #1189: `--diff` broken when reading from standard input.
+
+### 5.1.0 July 14, 2020
+  - isort now throws an exception if an invalid settings path is given (issue #1174).
+  - Implemented support for automatic redundant alias removal (issue #1281).
+  - Implemented experimental support for floating all imports to the top of a file (issue #1228)
+  - Fixed #1178: support for semicolons in decorators.
+  - Fixed #1315: Extra newline before comment with -n + --fss.
+  - Fixed #1192: `-k` or `--keep-direct-and-as-imports` option has been deprecated as it is now always on.
+
+**Formatting changes implied:**
+  - Fixed #1280: rewrite of as imports changes the behavior of the imports.
+
+### 5.0.9 July 11, 2020
+  - Fixed #1301: Import headings in nested sections leads to check errors
+
+### 5.0.8 July 11, 2020
+  - Fixed #1277 & #1278: New line detection issues on Windows.
+  - Fixed #1294: Fix bundled git hook.
+
+### 5.0.7 July 9, 2020
+  - Fixed #1306: unexpected --diff behavior.
+  - Fixed #1279: Fixed NOQA comment regression.
+
+### 5.0.6 July 8, 2020
+  - Fixed #1302: comments and --trailing-comma can generate invalid code.
+  - Fixed #1293: extra new line in indented imports, when immediately followed by a comment.
+  - Fixed #1304: isort 5 no longer recognises `sre_parse` as a stdlib module.
+  - Fixed #1300: add_imports moves comments following import section.
+  - Fixed #1276: Fix a bug that creates only one line after triple quotes.
+
+### 5.0.5 July 7, 2020
+  - Fixed #1285: packaging issue with bundling tests via poetry.
+  - Fixed #1284: Regression when sorting `.pyi` files from CLI using black profile.
+  - Fixed #1275 & #1283: Blank line after docstring removed.
+  - Fixed #1298: CLI Help out of date with isort 5.
+  - Fixed #1290: Unecessary blank lines above nested imports when import comments turned on.
+  - Fixed #1297: Usage of `--add-imports` alongside `--check` is broken.
+  - Fixed #1289: Stream usage no longer auto picking up config file from current working directory.
+  - Fixed #1296: Force_single_line setting removes immediately following comment line.
+  - Fixed #1295: `ensure_newline_before_comments` doesnt work with `force_sort_within_sections`.
+  - Setting not_skip will no longer immediately fail but instead give user a warning and direct
+    to upgrade docs.
+
+### 5.0.4 July 6, 2020
+  - Fixed #1264: a regression with comment handling and `force_sort_within_sections` config option
+  - Added warning for deprecated CLI flags and linked to upgrade guide.
+
+### 5.0.3 - July 4, 2020
+  - Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/timothycrosley/isort/issues/1258)
+  - Fixed missing patch version
+  - Fixed issue #1253: Atomic fails when passed in not readable output stream
+
+### 5.0.2 - July 4, 2020
+  - Ensured black profile was complete, adding missing line_length definition.
+
+### 5.0.1 - July 4, 2020
+  - Fixed a runtime error in a vendored dependency (toml).
+
+### 5.0.0 Penny - July 4, 2020
 **Breaking changes:**
-  - isort now requires Python 3.5+ to run but continues to support formatting
+
+  - isort now requires Python 3.6+ to run but continues to support formatting on ALL versions of python including
     Python 2 code.
   - isort deprecates official support for Python 3.4, removing modules only in this release from known_standard_library:
       - user
-Internal:
-  - isort now utilizes mypy and typing to filter out typing related issues before deployment
+  - Config files are no longer composed on-top of each-other. Instead the first config file found is used.
+    - Since there is no longer composition negative form settings (such as --dont-skip or it's config file variant `not_skip`) are no longer required and have been removed.
+  - Two-letter shortened setting names (like `ac` for `atomic`) now require two dashes to avoid ambiguity: `--ac`.
+  - For consistency with other tools `-v` now is shorthand for verbose and `-V` is shorthand for version. See Issue: #1067.
+  - `length_sort_{section_name}` config usage has been deprecated. Instead `length_sort_sections` list can be used to specify a list of sections that need to be length sorted.
+  - `safety_excludes` and `unsafe` have been deprecated
+  - Config now includes as default full set of safety directories defined by safety excludes.
+  - `--recursive` option has been removed. Directories passed in are now automatically sorted recursive.
+  - `--apply` option has been removed as it is the default behaviour.
+  - isort now does nothing, beyond giving instructions and exiting status code 0, when ran with no arguments.
+    - a new `--interactive` flag has been added to enable the old style behaviour.
+  - isort now works on contiguous sections of imports, instead of one whole file at a time.
+  - isort now formats all nested "as" imports in the "from" form. `import x.y as a` becomes `from x import y as a`.
+  - `keep_direct_and_as_imports` option now defaults to `True`.
+  - `appdirs` is no longer supported. Unless manually specified, config should be project config only.
+  - `toml` is now installed as a vendorized module, meaning pyproject.toml based config is always supported.
+  - Completely new Python API, old version is removed and no longer accessible.
+  - New module placement logic and module fully replaces old finders. Old approach is still available via `--old-finders`.
 
-Planned:
-  - profile support for common project types (black, django, google, etc)
+Internal:
+
+  - isort now utilizes mypy and typing to filter out typing related issues before deployment.
+  - isort now utilizes black internally to ensure more consistent formatting.
+
+- profile support for common project types (black, django, google, etc)
+
+- Much much more. There is some difficulty in fully capturing the extent of changes in this release - just because of how all encompassing the release is. See: [Github Issues](https://github.com/timothycrosley/isort/issues?q=is%3Aissue+is%3Aclosed) for more.
 
 ### 4.3.21 - June 25, 2019 - hot fix release
 - Fixed issue #957 - Long aliases and use_parentheses generates invalid syntax

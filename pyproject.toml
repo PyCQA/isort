@@ -1,0 +1,98 @@
+[tool.black]
+line-length = 100
+
+[tool.poetry]
+name = "isort"
+version = "5.1.4"
+description = "A Python utility / library to sort Python imports."
+authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/timothycrosley/isort"
+homepage = "https://timothycrosley.github.io/isort/"
+documentation = "https://timothycrosley.github.io/isort/"
+keywords = ["Refactor", "Lint", "Imports", "Sort", "Clean"]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+]
+urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
+packages = [
+    { include = "isort" },
+    { include = "tests", format = "sdist" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+pipreqs = {version = "*", optional = true}
+requirementslib = {version = "*", optional = true}
+tomlkit = {version = ">=0.5.3", optional = true}
+pip-api = {version = "*", optional = true}
+
+[tool.poetry.extras]
+pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib", "pip-shims<=0.3.4"]
+requirements_deprecated_finder = ["pipreqs", "pip-api"]
+
+[tool.poetry.dev-dependencies]
+vulture = "^1.0"
+bandit = "^1.6"
+safety = "^1.8"
+flake8-bugbear = "^19.8"
+black = {version = "^18.3-alpha.0", allow-prereleases = true}
+mypy = "^0.761.0"
+ipython = "^7.7"
+pytest = "^5.0"
+pytest-cov = "^2.7"
+pytest-mock = "^1.10"
+pep8-naming = "^0.8.2"
+hypothesis-auto = { version = "^1.0.0" }
+examples = { version = "^1.0.0" }
+cruft = { version = "^1.1" }
+portray = { version = "^1.3.0" }
+pipfile = "^0.0.2"
+requirementslib = "^1.5"
+pipreqs = "^0.4.9"
+tomlkit = ">=0.5.3"
+pip_api = "^0.0.12"
+numpy = "^1.16.0"
+pylama = "^7.7"
+pip = "^20.0.2"
+pip-shims = "^0.5.2"
+smmap2 = "^3.0.1"
+gitdb2 = "^4.0.2"
+
+[tool.poetry.scripts]
+isort = "isort.main:main"
+
+[tool.poetry.plugins."distutils.commands"]
+isort = "isort.main:ISortCommand"
+
+[tool.poetry.plugins."pylama.linter"]
+isort = "isort = isort.pylama_isort:Linter"
+
+[tool.portray.mkdocs]
+edit_uri="https://github.com/timothycrosley/isort/edit/develop/"
+
+[tool.portray.mkdocs.theme]
+name = "material"
+favicon = "art/logo.png"
+logo = "art/logo.png"
+palette = {primary = "orange", accent = "indigo"}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

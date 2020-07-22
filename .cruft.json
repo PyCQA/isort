@@ -1,0 +1,15 @@
+{
+    "template": "https://github.com/timothycrosley/cookiecutter-python/",
+    "commit": "5f2c774c99969c8483d7f329e38db5b1a7fc5050",
+    "context": {
+        "cookiecutter": {
+            "full_name": "Timothy Crosley",
+            "email": "timothy.crosley@gmail.com",
+            "github_username": "timothycrosley",
+            "project_name": "isort",
+            "description": "A Python utility / library to sort Python imports.",
+            "version": "4.3.21",
+            "_template": "https://github.com/timothycrosley/cookiecutter-python/"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+# project build medadata that can't be used in docker
+Dockerfile
+.appveyor.yml
+.dockerignore
+.pre-commit-hooks.yaml
+.travis.yml
+.git*
+
+# documentation not needed
+CHANGELOG.md
+LICENSE
+MANIFEST.in
+.undertake
+example.gif
+logo.png
+art/
+docs/
