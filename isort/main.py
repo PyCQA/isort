@@ -419,6 +419,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="skip_glob",
         action="append",
     )
+    parser.add_argument(
+        "--gitignore",
+        "--skip-gitignore",
+        action="store_true",
+        dest="skip_gitignore",
+        help="Treat project as a git respository and ignore files listed in .gitignore"
+    )
     inline_args_group.add_argument(
         "--sl",
         "--force-single-line-imports",
