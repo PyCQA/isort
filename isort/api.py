@@ -624,7 +624,7 @@ def _sort_imports(
 
                     if indent:
                         import_section = "".join(
-                            line[len(indent):] for line in import_section.splitlines(keepends=True)
+                            line[len(indent) :] for line in import_section.splitlines(keepends=True)
                         )
                         out_config = Config(
                             config=config,
