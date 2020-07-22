@@ -529,7 +529,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="filter_files",
         action="store_true",
         help="Tells isort to filter files even when they are explicitly passed in as "
-        "part of the command",
+        "part of the CLI command. Note that while this can be set as part of the config file it "
+        "only affects CLI operation.",
     )
     parser.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
@@ -707,7 +708,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     config_dict = arguments.copy()
     ask_to_apply = config_dict.pop("ask_to_apply", False)
     jobs = config_dict.pop("jobs", ())
-    filter_files = config_dict.pop("filter_files", False)
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
@@ -733,7 +733,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     wrong_sorted_files = False
     skipped: List[str] = []
 
-    if filter_files:
+    if config.filter_files:
         filtered_files = []
         for file_name in file_names:
             if config.is_skipped(Path(file_name)):

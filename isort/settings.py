@@ -168,6 +168,7 @@ class _Config:
     old_finders: bool = False
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
+    filter_files: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

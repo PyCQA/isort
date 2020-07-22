@@ -6,6 +6,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 ### 5.2.0 TBD
   - Implemented #1335: Official API for diff capturing.
   - Implemented #1331: Warn when sections don't match up.
+  - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
 
 ### 5.1.4 July 19, 2020
