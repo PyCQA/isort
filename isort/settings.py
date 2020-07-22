@@ -7,6 +7,7 @@ import fnmatch
 import os
 import posixpath
 import re
+import subprocess
 import sys
 from functools import lru_cache
 from pathlib import Path
@@ -374,7 +375,7 @@ class Config(_Config):
         os_path = str(file_path)
         
         if self.skip_gitignore:
-          result = subprocess.run(['git', 'check-ignore', '--quiet', filename])
+          result = subprocess.run(['git', 'check-ignore', '--quiet', os_path])
           if result.returncode == 0:
               return True
 
