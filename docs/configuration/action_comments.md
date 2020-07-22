@@ -35,7 +35,7 @@ import b
 import a # isort: skip <- this will now stay below b
 ```
 !!! note
-    It is recommended to where possible use `# isort: off` and `# isort: on` instead as the behaviour is more explicit and predictable.
+    It is recommended to where possible use `# isort: off` and `# isort: on` or `# isort: split` instead as the behavior is more explicit and predictable.
 
 ## isort: off
 
@@ -94,6 +94,14 @@ import b
 import c
 import d
 
+```
+
+You can also use it inline to keep an import from having imports above or below it swap position:
+
+```python
+import c
+import b  # isort: split
+import a
 ```
 
 !!! tip
