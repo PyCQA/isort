@@ -3957,6 +3957,17 @@ def test_isort_nested_imports() -> None:
     )
 
 
+def test_isort_skipped_nested_imports() -> None:
+    """Ensure `isort:skip`s are honored in nested imports"""
+    test_input = """
+    def import_test():
+        from os ( # isort:skip
+            import path
+        )
+    """
+    assert isort.code(test_input) == test_input
+
+
 def test_isort_off() -> None:
     """Test that isort can be turned on and off at will using comments"""
     test_input = """import os
