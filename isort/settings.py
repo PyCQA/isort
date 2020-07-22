@@ -373,11 +373,11 @@ class Config(_Config):
             file_name = str(file_path)
 
         os_path = str(file_path)
-        
+
         if self.skip_gitignore:
-          result = subprocess.run(['git', 'check-ignore', '--quiet', os_path])
-          if result.returncode == 0:
-              return True
+            result = subprocess.run(["git", "check-ignore", "--quiet", os_path])
+            if result.returncode == 0:
+                return True
 
         normalized_path = os_path.replace("\\", "/")
         if normalized_path[1:2] == ":":
@@ -595,7 +595,7 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
 
     return settings
 
-  
+
 def _as_bool(value: str) -> bool:
     """Given a string value that represents True or False, returns the Boolean equivalent.
     Heavily inspired from distutils strtobool.
