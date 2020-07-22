@@ -463,3 +463,18 @@ def function():
         wrap_length=17,
         show_diff=True,
     )
+
+
+def test_isort_skipped_nested_imports_issue_1339():
+    """Ensure `isort:skip are honored in nested imports.
+    See: https://github.com/timothycrosley/isort/issues/1339.
+    """
+    assert isort.check_code(
+        """
+    def import_test():
+        from os ( # isort:skip
+            import path
+        )
+    """,
+        show_diff=True,
+    )
