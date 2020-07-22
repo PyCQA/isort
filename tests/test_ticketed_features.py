@@ -1,7 +1,12 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+from io import StringIO
+
+import pytest
+
 import isort
+from isort import Config
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
@@ -149,3 +154,47 @@ def my_function_2():
     pass
 """
 )
+
+
+def test_isort_provides_official_api_for_diff_output_issue_1335():
+    """Test to ensure isort API for diff capturing allows capturing diff without sys.stdout.
+    See: https://github.com/timothycrosley/isort/issues/1335.
+    """
+    diff_output = StringIO()
+    isort.code("import b\nimport a\n", show_diff=diff_output)
+    diff_output.seek(0)
+    assert "+import a" in diff_output.read()
+
+
+def test_isort_warns_when_known_sections_dont_match_issue_1331():
+    """Test to ensure that isort warns if there is a mismatch between sections and known_sections.
+    See: https://github.com/timothycrosley/isort/issues/1331.
+    """
+    assert (
+        isort.place_module(
+            "bot_core",
+            config=Config(
+                known_robotlocomotion_upstream=["bot_core"],
+                sections=["ROBOTLOCOMOTION_UPSTREAM", "THIRDPARTY"],
+            ),
+        )
+        == "ROBOTLOCOMOTION_UPSTREAM"
+    )
+    with pytest.warns(UserWarning):
+        assert (
+            isort.place_module(
+                "bot_core",
+                config=Config(
+                    known_robotlocomotion_upstream=["bot_core"],
+                    sections=["ROBOTLOOMOTION_UPSTREAM", "THIRDPARTY"],
+                ),
+            )
+            == "THIRDPARTY"
+        )
+    with pytest.warns(UserWarning):
+        assert (
+            isort.place_module(
+                "bot_core", config=Config(known_robotlocomotion_upstream=["bot_core"])
+            )
+            == "THIRDPARTY"
+        )

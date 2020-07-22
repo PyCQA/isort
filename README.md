@@ -339,6 +339,19 @@ no_lines_before=LOCALFOLDER
 would produce a section with both FIRSTPARTY and LOCALFOLDER modules
 combined.
 
+**IMPORTANT NOTE**: It is very important to know when setting `known` sections that the naming
+does not directly map for historical reasons. For custom settings, the only difference is
+capitalization (`known_custom=custom` VS `sections=CUSTOM,...`) for all others reference the
+following mapping:
+
+ - `known_standard_library` : `STANDARD_LIBRARY`
+ - `known_future_library` : `FUTURE`
+ - `known_first_party`: `FIRSTPARTY`
+ - `known_third_party`: `THIRDPARTY`
+ - `known_local_folder`: `LOCALFOLDER`
+
+This will likely be changed in isort 6.0.0+ in a backwards compatible way.
+
 Auto-comment import sections
 ============================
 

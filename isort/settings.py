@@ -19,7 +19,7 @@ from ._vendored import toml
 from .exceptions import InvalidSettingsPath, ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
-from .sections import FIRSTPARTY, FUTURE, STDLIB, THIRDPARTY
+from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
@@ -57,6 +57,7 @@ KNOWN_SECTION_MAPPING: Dict[str, str] = {
     FUTURE: "FUTURE_LIBRARY",
     FIRSTPARTY: "FIRST_PARTY",
     THIRDPARTY: "THIRD_PARTY",
+    LOCALFOLDER: "LOCAL_FOLDER",
 }
 
 RUNTIME_SOURCE = "runtime"
@@ -290,7 +291,14 @@ class Config(_Config):
                 "known_third_party",
                 "known_first_party",
             ):
-                known_other[key[len(KNOWN_PREFIX) :].lower()] = frozenset(value)
+                import_heading = key[len(KNOWN_PREFIX) :].lower()
+                known_other[import_heading] = frozenset(value)
+                if not import_heading.upper() in combined_config.get("sections", ()):
+                    warn(
+                        f"`{key}` setting is defined, but not {import_heading.upper} is not"
+                        " included in `sections` config option:"
+                        f" {combined_config.get('sections', SECTION_DEFAULTS)}."
+                    )
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
@@ -300,6 +308,17 @@ class Config(_Config):
                 continue
 
             combined_config[key] = type(default_value)(value)
+
+        for section in combined_config.get("sections", ()):
+            if section in SECTION_DEFAULTS:
+                continue
+            elif not section.lower() in known_other:
+                config_keys = ", ".join(known_other.keys())
+                warn(
+                    f"`sections` setting includes {section}, but no known_{section.lower()} "
+                    "is defined. "
+                    f"The following known_SECTION config options are defined: {config_keys}."
+                )
 
         if "directory" not in combined_config:
             combined_config["directory"] = (
