@@ -74,6 +74,7 @@ pip = "^20.0.2"
 pip-shims = "^0.5.2"
 smmap2 = "^3.0.1"
 gitdb2 = "^4.0.2"
+httpx = "^0.13.3"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"

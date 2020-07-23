@@ -1,44 +1,23 @@
 #!/usr/bin/env python3
-import re
+import asyncio
 import sys
-from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Set, Union
+from typing import Dict
 
-import requests
+import httpx
+import hug
 
 IGNORED_AUTHOR_LOGINS = {"deepsource-autofix[bot]"}
 
-GITHUB_USER_PATTERN = re.compile(r"@(?P<login>([a-z\d]+-)*[a-z\d]+)")
-REQUESTS_TIMEOUT = (60, 60)
 REPO = "timothycrosley/isort"
 GITHUB_API_CONTRIBUTORS = f"https://api.github.com/repos/{REPO}/contributors"
 GITHUB_USER_CONTRIBUTIONS = f"https://github.com/{REPO}/commits?author="
+GITHUB_USER_TYPE = "User"
 USER_DELIMITER = "-" * 80
+PER_PAGE = 100
 
-
-def _acknowledged_logins() -> Set[str]:
-    project_root = Path(__file__).parent.parent
-    acknowledgments_file = project_root / "docs" / "contributing" / "4.-acknowledgements.md"
-    markdown_text = acknowledgments_file.read_text()
-    logins = {match.group("login") for match in re.finditer(GITHUB_USER_PATTERN, markdown_text)}
-    return logins
-
-
-def _request_json(url: str) -> Any:
-    r = requests.get(url, timeout=REQUESTS_TIMEOUT)
-    r.raise_for_status()
-    return r.json()
-
-
-_fetch_author_logins = partial(_request_json, GITHUB_API_CONTRIBUTORS)
-_fetch_user = _request_json
-
-
-def _fetch_users(urls: Iterable[str]) -> Iterable[Dict[str, Any]]:
-    with ThreadPoolExecutor() as executor:
-        return executor.map(_fetch_user, urls)
+_ACK_FILE = Path(__file__).parent.parent / "docs" / "contributing" / "4.-acknowledgements.md"
+ACKNOWLEDGEMENTS = _ACK_FILE.read_text().lower()
 
 
 def _user_info(user: Dict[str, str], verbose=False) -> str:
@@ -52,33 +31,50 @@ def _user_info(user: Dict[str, str], verbose=False) -> str:
     return user_info
 
 
-def main():
-    acknowledged_logins = _acknowledged_logins()
-    authors = (a for a in _fetch_author_logins() if a["login"] not in IGNORED_AUTHOR_LOGINS)
+@hug.cli()
+async def main():
+    async with httpx.AsyncClient() as client:
+        page = 0
+        results = []
+        contributors = set()
+        while not page or len(results) == PER_PAGE:
+            page += 1
+            response = await client.get(f"{GITHUB_API_CONTRIBUTORS}?per_page={PER_PAGE}&page{page}")
+            results = response.json()
+            print(results)
+            contributors.update(
+                (
+                    contributor
+                    for contributor in results
+                    if contributor["type"] == GITHUB_USER_TYPE
+                    and contributer["login"] not in IGNORED_AUTHOR_LOGINS
+                    and f"@{contributor['login']}" not in ACKNOWLEDGEMENTS
+                )
+            )
 
-    unacknowledged_author_urls = (
-        author["url"] for author in authors if author["login"] not in acknowledged_logins
-    )
-    unacknowledged_users = list(_fetch_users(unacknowledged_author_urls))
+        breakpoint()
+        unacknowledged_users = await asyncio.gather(
+            (client.get(contributor["url"]).json() for contributor in contributors)
+        )
 
-    if not unacknowledged_users:
-        sys.exit()
+        if not unacknowledged_users:
+            sys.exit()
 
-    print("Found unacknowledged authors:")
-    print()
+        print("Found unacknowledged authors:")
+        print()
 
-    for user in unacknowledged_users:
-        print(_user_info(user, verbose=True))
-        print(USER_DELIMITER)
+        for user in unacknowledged_users:
+            print(_user_info(user, verbose=True))
+            print(USER_DELIMITER)
 
-    print()
-    print("Printing again for easy inclusion in Markdown file:")
-    print()
-    for user in unacknowledged_users:
-        print(_user_info(user))
+        print()
+        print("Printing again for easy inclusion in Markdown file:")
+        print()
+        for user in unacknowledged_users:
+            print(_user_info(user))
 
-    sys.exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    main.interface.cli()

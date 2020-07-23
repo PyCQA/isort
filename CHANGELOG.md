@@ -8,6 +8,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented #1331: Warn when sections don't match up.
   - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
   - Implemented #960: Support for respecting git ignore via "--gitignore" or "skip_gitignore=True".
+  - `# isort: split` can now be used at the end of an import line.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
 
 ### 5.1.4 July 19, 2020

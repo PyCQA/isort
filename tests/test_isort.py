@@ -3983,6 +3983,15 @@ import sys
 """
     assert isort.code(test_input) == test_input
 
+    test_input = """import c
+
+import b  # isort: split
+
+import a
+import c
+"""
+    assert isort.code(test_input) == test_input
+
 
 def test_comment_look_alike():
     """Test to ensure isort will handle what looks like a single line comment

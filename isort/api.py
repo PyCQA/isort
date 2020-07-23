@@ -516,7 +516,7 @@ def _sort_imports(
                 elif stripped_line == "# isort: off":
                     not_imports = True
                     isort_off = True
-                elif stripped_line == "# isort: split":
+                elif stripped_line.endswith("# isort: split"):
                     not_imports = True
                 elif stripped_line in config.section_comments and not import_section:
                     import_section += line
