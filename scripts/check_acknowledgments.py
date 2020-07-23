@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
 import sys
+from getpass import getpass
 from pathlib import Path
 from typing import Dict
 
@@ -33,8 +34,7 @@ def _user_info(user: Dict[str, str], verbose=False) -> str:
 
 @hug.cli()
 async def main():
-    auth = (input("Github Username: "),
-            getpass())
+    auth = (input("Github Username: "), getpass())
     async with httpx.AsyncClient() as client:
         page = 0
         results = []
@@ -42,8 +42,7 @@ async def main():
         while not page or len(results) == PER_PAGE:
             page += 1
             response = await client.get(
-                f"{GITHUB_API_CONTRIBUTORS}?per_page={PER_PAGE}&page={page}",
-                auth=auth
+                f"{GITHUB_API_CONTRIBUTORS}?per_page={PER_PAGE}&page={page}", auth=auth
             )
             results = response.json()
             contributors.extend(
