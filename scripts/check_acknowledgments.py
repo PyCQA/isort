@@ -33,29 +33,33 @@ def _user_info(user: Dict[str, str], verbose=False) -> str:
 
 @hug.cli()
 async def main():
+    auth = (input("Github Username: "),
+            getpass())
     async with httpx.AsyncClient() as client:
         page = 0
         results = []
-        contributors = set()
+        contributors = []
         while not page or len(results) == PER_PAGE:
             page += 1
-            response = await client.get(f"{GITHUB_API_CONTRIBUTORS}?per_page={PER_PAGE}&page{page}")
+            response = await client.get(
+                f"{GITHUB_API_CONTRIBUTORS}?per_page={PER_PAGE}&page={page}",
+                auth=auth
+            )
             results = response.json()
-            print(results)
-            contributors.update(
+            contributors.extend(
                 (
                     contributor
                     for contributor in results
                     if contributor["type"] == GITHUB_USER_TYPE
-                    and contributer["login"] not in IGNORED_AUTHOR_LOGINS
-                    and f"@{contributor['login']}" not in ACKNOWLEDGEMENTS
+                    and contributor["login"] not in IGNORED_AUTHOR_LOGINS
+                    and f"@{contributor['login'].lower()}" not in ACKNOWLEDGEMENTS
                 )
             )
 
-        breakpoint()
         unacknowledged_users = await asyncio.gather(
-            (client.get(contributor["url"]).json() for contributor in contributors)
+            *(client.get(contributor["url"], auth=auth) for contributor in contributors)
         )
+        unacknowledged_users = [request.json() for request in unacknowledged_users]
 
         if not unacknowledged_users:
             sys.exit()
