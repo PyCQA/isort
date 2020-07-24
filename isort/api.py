@@ -356,9 +356,9 @@ def sort_file(
                     except FileNotFoundError:
                         pass
         except ExistingSyntaxErrors:
-            warn("{file_path} unable to sort due to existing syntax errors")
+            warn(f"{file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
-            warn("{file_path} unable to sort as isort introduces new syntax errors")
+            warn(f"{file_path} unable to sort as isort introduces new syntax errors")
 
 
 def _config(
