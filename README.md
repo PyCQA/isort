@@ -568,7 +568,7 @@ Spread the word
 
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
 
-Place this badge at the top your repository to let others know your project uses isort.
+Place this badge at the top of your repository to let others know your project uses isort.
 
 For README.md:
 
