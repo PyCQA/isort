@@ -386,7 +386,7 @@ Balances wrapping to produce the most consistent line length possible
 
 ## Use Parentheses
 
-Use parentheses for line continuation on length limit instead of slashes.
+Use parentheses for line continuation on length limit instead of slashes. **NOTE**: This is separate from wrap modes, and only affects individual line to long wrapping, not sections of multiple imports.
 
 **Type:** Bool  
 **Default:** `False`  

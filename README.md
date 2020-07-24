@@ -563,6 +563,26 @@ setup(
 )
 ```
 
+Spread the word
+==========
+
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
+
+Place this badge at the top your repository to let others know your project uses isort.
+
+For README.md:
+
+```markdown
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
+```
+
+Or README.rst:
+
+```rst
+.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+    :target: https://timothycrosley.github.io/isort/
+```
+
 Security contact information
 ==========
 
