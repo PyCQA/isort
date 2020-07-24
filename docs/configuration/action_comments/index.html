@@ -1204,7 +1204,7 @@ More specifically, it prevents the import statement from being recognized by iso
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is recommended to where possible use <code># isort: off</code> and <code># isort: on</code> instead as the behaviour is more explicit and predictable.</p>
+<p>It is recommended to where possible use <code># isort: off</code> and <code># isort: on</code> or <code># isort: split</code> instead as the behavior is more explicit and predictable.</p>
 </div>
 <h2 id="isort-off">isort: off</h2>
 <p>Turns isort parsing off. Every line after an <code># isort: off</code> statement will be passed along unchanged until an <code># isort: on</code> comment or the end of the file.</p>
@@ -1249,6 +1249,13 @@ More specifically, it prevents the import statement from being recognized by iso
 <span class="kn">import</span> <span class="nn">b</span>
 <span class="kn">import</span> <span class="nn">c</span>
 <span class="kn">import</span> <span class="nn">d</span>
+</code></pre></div>
+
+
+<p>You can also use it inline to keep an import from having imports above or below it swap position:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">c</span>
+<span class="kn">import</span> <span class="nn">b</span>  <span class="c1"># isort: split</span>
+<span class="kn">import</span> <span class="nn">a</span>
 </code></pre></div>
 
 

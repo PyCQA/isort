@@ -346,6 +346,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#skip-gitignore" class="md-nav__link">
+    Skip Gitignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#line-length" class="md-nav__link">
     Line Length
   </a>
@@ -799,6 +806,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#filter-files" class="md-nav__link">
+    Filter Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -863,13 +877,6 @@
         <li class="md-nav__item">
   <a href="#version-number" class="md-nav__link">
     Version Number
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#filter-files" class="md-nav__link">
-    Filter Files
   </a>
   
 </li>
@@ -1699,6 +1706,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#skip-gitignore" class="md-nav__link">
+    Skip Gitignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#line-length" class="md-nav__link">
     Line Length
   </a>
@@ -2152,6 +2166,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#filter-files" class="md-nav__link">
+    Filter Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2216,13 +2237,6 @@
         <li class="md-nav__item">
   <a href="#version-number" class="md-nav__link">
     Version Number
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#filter-files" class="md-nav__link">
-    Filter Files
   </a>
   
 </li>
@@ -2318,6 +2332,16 @@ how you want your imports sorted, organized, and formatted.</p>
 <ul>
 <li>--sg</li>
 <li>--skip-glob</li>
+</ul>
+<h2 id="skip-gitignore">Skip Gitignore</h2>
+<p>Treat project as a git respository and ignore files listed in .gitignore</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> skip_gitignore<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--gitignore</li>
+<li>--skip-gitignore</li>
 </ul>
 <h2 id="line-length">Line Length</h2>
 <p>The max length of an import line (used for wrapping long imports).</p>
@@ -2576,7 +2600,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--balanced</li>
 </ul>
 <h2 id="use-parentheses">Use Parentheses</h2>
-<p>Use parentheses for line continuation on length limit instead of slashes.</p>
+<p>Use parentheses for line continuation on length limit instead of slashes. <strong>NOTE</strong>: This is separate from wrap modes, and only affects individual line to long wrapping, not sections of multiple imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> use_parentheses<br />
@@ -2890,6 +2914,15 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--float-to-top</li>
 </ul>
+<h2 id="filter-files">Filter Files</h2>
+<p>Tells isort to filter files even when they are explicitly passed in as part of the CLI command. Note that while this can be set as part of the config file it only affects CLI operation.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> filter_files<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--filter-files</li>
+</ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2977,15 +3010,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--vn</li>
 <li>--version-number</li>
-</ul>
-<h2 id="filter-files">Filter Files</h2>
-<p>Tells isort to filter files even when they are explicitly passed in as part of the command</p>
-<p><strong>Type:</strong> Bool<br />
-<strong>Default:</strong> <code>False</code><br />
-<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>--filter-files</li>
 </ul>
 <h2 id="files">Files</h2>
 <p>One or more Python source files that need their imports sorted.</p>

@@ -1273,6 +1273,8 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c1"># nosec: Needed for gitignore support.</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
@@ -1295,7 +1297,7 @@
 
 <span class="kn">from</span> <span class="nn">.sections</span> <span class="kn">import</span> <span class="n">DEFAULT</span> <span class="k">as</span> <span class="n">SECTION_DEFAULTS</span>
 
-<span class="kn">from</span> <span class="nn">.sections</span> <span class="kn">import</span> <span class="n">FIRSTPARTY</span><span class="p">,</span> <span class="n">FUTURE</span><span class="p">,</span> <span class="n">STDLIB</span><span class="p">,</span> <span class="n">THIRDPARTY</span>
+<span class="kn">from</span> <span class="nn">.sections</span> <span class="kn">import</span> <span class="n">FIRSTPARTY</span><span class="p">,</span> <span class="n">FUTURE</span><span class="p">,</span> <span class="n">LOCALFOLDER</span><span class="p">,</span> <span class="n">STDLIB</span><span class="p">,</span> <span class="n">THIRDPARTY</span>
 
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">WrapModes</span>
 
@@ -1364,6 +1366,8 @@
     <span class="n">FIRSTPARTY</span><span class="p">:</span> <span class="s2">&quot;FIRST_PARTY&quot;</span><span class="p">,</span>
 
     <span class="n">THIRDPARTY</span><span class="p">:</span> <span class="s2">&quot;THIRD_PARTY&quot;</span><span class="p">,</span>
+
+    <span class="n">LOCALFOLDER</span><span class="p">:</span> <span class="s2">&quot;LOCAL_FOLDER&quot;</span><span class="p">,</span>
 
 <span class="p">}</span>
 
@@ -1452,6 +1456,8 @@
     <span class="p">)</span>
 
     <span class="n">skip_glob</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">skip_gitignore</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="n">line_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">79</span>
 
@@ -1570,6 +1576,8 @@
     <span class="n">remove_redundant_aliases</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="n">float_to_top</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">filter_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -1779,7 +1787,21 @@
 
             <span class="p">):</span>
 
-                <span class="n">known_other</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">KNOWN_PREFIX</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">import_heading</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">KNOWN_PREFIX</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+                <span class="n">known_other</span><span class="p">[</span><span class="n">import_heading</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">import_heading</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">()):</span>
+
+                    <span class="n">warn</span><span class="p">(</span>
+
+                        <span class="n">f</span><span class="s2">&quot;`{key}` setting is defined, but not {import_heading.upper} is not&quot;</span>
+
+                        <span class="s2">&quot; included in `sections` config option:&quot;</span>
+
+                        <span class="n">f</span><span class="s2">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.&quot;</span>
+
+                    <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">IMPORT_HEADING_PREFIX</span><span class="p">):</span>
 
@@ -1794,6 +1816,26 @@
                 <span class="k">continue</span>
 
             <span class="n">combined_config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">()):</span>
+
+            <span class="k">if</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">SECTION_DEFAULTS</span><span class="p">:</span>
+
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">known_other</span><span class="p">:</span>
+
+                <span class="n">config_keys</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">known_other</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+                <span class="n">warn</span><span class="p">(</span>
+
+                    <span class="n">f</span><span class="s2">&quot;`sections` setting includes {section}, but no known_{section.lower()} &quot;</span>
+
+                    <span class="s2">&quot;is defined. &quot;</span>
+
+                    <span class="n">f</span><span class="s2">&quot;The following known_SECTION config options are defined: {config_keys}.&quot;</span>
+
+                <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;directory&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
 
@@ -1880,6 +1922,18 @@
             <span class="n">file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
         <span class="n">os_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># nosec</span>
+
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
+
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="bp">True</span>
 
         <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">os_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
@@ -2305,6 +2359,10 @@
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">LOCALFOLDER</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">MAX_CONFIG_SEARCH_DEPTH</span>
 </code></pre></div>
 
@@ -2491,7 +2549,21 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">known_other</span><span class="o">[</span><span class="n">key[len(KNOWN_PREFIX) :</span><span class="o">]</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">import_heading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">key</span><span class="o">[</span><span class="n">len(KNOWN_PREFIX) :</span><span class="o">]</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">known_other</span><span class="o">[</span><span class="n">import_heading</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">import_heading</span><span class="p">.</span><span class="nf">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">f</span><span class="ss">&quot;`{key}` setting is defined, but not {import_heading.upper} is not&quot;</span><span class="w"></span>
+
+<span class="w">                        </span><span class="ss">&quot; included in `sections` config option:&quot;</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">f</span><span class="ss">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.&quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">key</span><span class="p">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">IMPORT_HEADING_PREFIX</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
@@ -2506,6 +2578,26 @@ dynamically determined later on.</p>
 <span class="w">                </span><span class="k">continue</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">section</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">section</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">SECTION_DEFAULTS</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">continue</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">section</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">config_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;, &quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">known_other</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;`sections` setting includes {section}, but no known_{section.lower()} &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;is defined. &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;The following known_SECTION config options are defined: {config_keys}.&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;directory&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
 
@@ -2592,6 +2684,18 @@ dynamically determined later on.</p>
 <span class="w">            </span><span class="nf">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">os_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">skip_gitignore</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">nosec</span><span class="w"></span>
+
+<span class="w">                </span><span class="o">[</span><span class="n">&quot;git&quot;, &quot;-C&quot;, str(file_path.resolve().parent), &quot;check-ignore&quot;, &quot;--quiet&quot;, os_path</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">result</span><span class="p">.</span><span class="n">returncode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">normalized_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os_path</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;\\&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;/&quot;</span><span class="p">)</span><span class="w"></span>
 
@@ -2764,6 +2868,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">filter_files</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">float_to_top</span>
 </code></pre></div>
 
@@ -2932,6 +3040,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">skip_gitignore</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">skip_glob</span>
 </code></pre></div>
 
@@ -2992,6 +3104,18 @@ dynamically determined later on.</p>
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
         <span class="n">os_path</span> <span class="o">=</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="k">self</span><span class="p">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
+
+            <span class="k">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span>  <span class="o">#</span> <span class="n">nosec</span>
+
+                <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;-C&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">().</span><span class="n">parent</span><span class="p">),</span> <span class="ss">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="ss">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
+
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="k">result</span><span class="p">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="k">True</span>
 
         <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">os_path</span><span class="p">.</span><span class="k">replace</span><span class="p">(</span><span class="ss">&quot;\\&quot;</span><span class="p">,</span> <span class="ss">&quot;/&quot;</span><span class="p">)</span>
 

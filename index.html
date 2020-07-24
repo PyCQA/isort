@@ -1081,6 +1081,8 @@
 <a href="https://pypi.org/project/isort/"><img alt="License" src="https://img.shields.io/github/license/mashape/apistatus.svg" /></a>
 <a href="https://gitter.im/timothycrosley/isort?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Join the chat at https://gitter.im/timothycrosley/isort" src="https://badges.gitter.im/Join%20Chat.svg" /></a>
 <a href="https://pepy.tech/project/isort"><img alt="Downloads" src="https://pepy.tech/badge/isort" /></a>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
+<a href="https://timothycrosley.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a>
 <a href="https://deepsource.io/gh/timothycrosley/isort/?ref=repository-badge"><img alt="DeepSource" src="https://static.deepsource.io/deepsource-badge-light-mini.svg" /></a></p>
 <hr />
 <p><a href="https://timothycrosley.github.io/isort/">Read Latest Documentation</a> - <a href="https://github.com/timothycrosley/isort/">Browse GitHub Code Repository</a></p>
@@ -1351,6 +1353,18 @@ split from the previous section by an empty line.</p>
 
 <p>would produce a section with both FIRSTPARTY and LOCALFOLDER modules
 combined.</p>
+<p><strong>IMPORTANT NOTE</strong>: It is very important to know when setting <code>known</code> sections that the naming
+does not directly map for historical reasons. For custom settings, the only difference is
+capitalization (<code>known_custom=custom</code> VS <code>sections=CUSTOM,...</code>) for all others reference the
+following mapping:</p>
+<ul>
+<li><code>known_standard_library</code> : <code>STANDARD_LIBRARY</code></li>
+<li><code>known_future_library</code> : <code>FUTURE</code></li>
+<li><code>known_first_party</code>: <code>FIRSTPARTY</code></li>
+<li><code>known_third_party</code>: <code>THIRDPARTY</code></li>
+<li><code>known_local_folder</code>: <code>LOCALFOLDER</code></li>
+</ul>
+<p>This will likely be changed in isort 6.0.0+ in a backwards compatible way.</p>
 <h1 id="auto-comment-import-sections">Auto-comment import sections</h1>
 <p>Some projects prefer to have import sections uniquely titled to aid in
 identifying the sections quickly when visually scanning. isort can

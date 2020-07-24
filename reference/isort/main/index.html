@@ -2060,6 +2060,20 @@
 
     <span class="p">)</span>
 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--gitignore&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--skip-gitignore&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;skip_gitignore&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Treat project as a git respository and ignore files listed in .gitignore&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
     <span class="n">inline_args_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
         <span class="s2">&quot;--sl&quot;</span><span class="p">,</span>
@@ -2144,7 +2158,11 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use parentheses for line continuation on length limit instead of slashes.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use parentheses for line continuation on length limit instead of slashes.&quot;</span>
+
+        <span class="s2">&quot; **NOTE**: This is separate from wrap modes, and only affects individual line to long&quot;</span>
+
+        <span class="s2">&quot; wrapping, not sections of multiple imports.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -2280,7 +2298,9 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to filter files even when they are explicitly passed in as &quot;</span>
 
-        <span class="s2">&quot;part of the command&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;part of the CLI command. Note that while this can be set as part of the config file it &quot;</span>
+
+        <span class="s2">&quot;only affects CLI operation.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -2612,8 +2632,6 @@
 
     <span class="n">jobs</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;jobs&quot;</span><span class="p">,</span> <span class="p">())</span>
 
-    <span class="n">filter_files</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;filter_files&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
-
     <span class="n">check</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;check&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
     <span class="n">show_diff</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_diff&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
@@ -2654,7 +2672,7 @@
 
     <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">if</span> <span class="n">filter_files</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_files</span><span class="p">:</span>
 
         <span class="n">filtered_files</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2988,8 +3006,6 @@
 
 <span class="w">    </span><span class="n">jobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;jobs&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">filter_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;filter_files&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
-
 <span class="w">    </span><span class="k">check</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;check&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">show_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_dict</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;show_diff&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
@@ -3030,7 +3046,7 @@
 
 <span class="w">    </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">filter_files</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">filter_files</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">filtered_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
