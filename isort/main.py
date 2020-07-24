@@ -155,6 +155,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "automatically determining correct placement.",
     )
     parser.add_argument(
+        "--append",
+        "--append-only",
+        dest="append_only",
+        action="store_true",
+        help="Only adds the imports specified in --add-imports if the file"
+        " contains existing imports.",
+    )
+    parser.add_argument(
         "--ac",
         "--atomic",
         dest="atomic",

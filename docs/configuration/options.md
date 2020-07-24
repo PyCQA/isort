@@ -315,6 +315,18 @@ Removes the specified import from all files.
 - --rm
 - --remove-import
 
+## Append Only
+
+Only adds the imports specified in --add-imports if the file contains existing imports.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** append_only  
+**CLI Flags:**
+
+- --append
+- --append-only
+
 ## Reverse Relative
 
 Reverse order of relative imports.
@@ -386,7 +398,7 @@ Balances wrapping to produce the most consistent line length possible
 
 ## Use Parentheses
 
-Use parentheses for line continuation on length limit instead of slashes. **NOTE**: This is separate from wrap modes, and only affects individual line to long wrapping, not sections of multiple imports.
+Use parentheses for line continuation on length limit instead of slashes. **NOTE**: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.
 
 **Type:** Bool  
 **Default:** `False`  

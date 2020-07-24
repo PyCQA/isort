@@ -198,3 +198,17 @@ def test_isort_warns_when_known_sections_dont_match_issue_1331():
             )
             == "THIRDPARTY"
         )
+
+
+def test_isort_supports_append_only_imports_727():
+    """Test to ensure isort provides a way to only add imports as an append.
+    See: https://github.com/timothycrosley/isort/issues/727.
+    """
+    assert isort.code("", add_imports=["from __future__ import absolute_imports"]) == ""
+    assert (
+        isort.code("import os", add_imports=["from __future__ import absolute_imports"])
+        == """from __future__ import absolute_imports
+
+import os
+"""
+    )

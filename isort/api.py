@@ -522,7 +522,7 @@ def _sort_imports(
                     import_section += line
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
-                    if add_imports and not indent:
+                    if add_imports and not indent and not config.append_only:
                         if not import_section:
                             output_stream.write(line)
                             line = ""
@@ -586,6 +586,7 @@ def _sort_imports(
             raw_import_section: str = import_section
             if (
                 add_imports
+                and not config.append_only
                 and not in_top_comment
                 and not in_quote
                 and not import_section
