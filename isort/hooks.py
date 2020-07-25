@@ -33,7 +33,7 @@ def get_lines(command: List[str]) -> List[str]:
     return [line.strip() for line in stdout.splitlines()]
 
 
-def git_hook(strict: bool = False, modify: bool = False) -> int:
+def git_hook(strict: bool = False, modify: bool = False, lazy: bool = False) -> int:
     """
     Git pre-commit hook to check staged files for isort errors
 
@@ -43,12 +43,18 @@ def git_hook(strict: bool = False, modify: bool = False) -> int:
     :param bool modify - if True, fix the sources if they are not
         sorted properly. If False, only report result without
         modifying anything.
+    :param bool lazy - if True, also check/fix unstaged files.
+        This is useful if you frequently use ``git commit -a`` for example.
+        If False, ony check/fix the staged files for isort errors.
 
     :return number of errors if in strict mode, 0 otherwise.
     """
 
     # Get list of files modified and staged
     diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
+    if lazy:
+        diff_cmd.remove("--cached")
+
     files_modified = get_lines(diff_cmd)
     if not files_modified:
         return 0
