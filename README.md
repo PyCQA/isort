@@ -73,8 +73,7 @@ print("Hey")
 print("yo")
 ```
 
-Installing isort
-================
+## Installing isort
 
 Installing isort is as simple as:
 
@@ -100,8 +99,7 @@ Install isort with both formats support:
 pip install isort[requirements_deprecated_finder,pipfile_deprecated_finder]
 ```
 
-Using isort
-===========
+## Using isort
 
 **From the command line**:
 
@@ -153,8 +151,7 @@ import isort
 sorted_code = isort.code("import b\nimport a\n")
 ```
 
-Installing isort's for your preferred text editor
-==================================================
+## Installing isort's for your preferred text editor
 
 Several plugins have been written that enable to use isort from within a
 variety of text-editors. You can find a full list of them [on the isort
@@ -163,8 +160,7 @@ Additionally, I will enthusiastically accept pull requests that include
 plugins for other text editors and add documentation for them as I am
 notified.
 
-Multi line output modes
-=======================
+## Multi line output modes
 
 You will notice above the \"multi\_line\_output\" setting. This setting
 defines how from imports wrap when they extend past the line\_length
@@ -275,8 +271,7 @@ For the import styles that use parentheses, you can control whether or
 not to include a trailing comma after the last import with the
 `include_trailing_comma` option (defaults to `False`).
 
-Intelligently Balanced Multi-line Imports
-=========================================
+## Intelligently Balanced Multi-line Imports
 
 As of isort 3.1.0 support for balanced multi-line imports has been
 added. With this enabled isort will dynamically change the import length
@@ -300,8 +295,7 @@ from __future__ import (absolute_import, division, print_function,
 To enable this set `balanced_wrapping` to `True` in your config or pass
 the `-e` option into the command line utility.
 
-Custom Sections and Ordering
-============================
+## Custom Sections and Ordering
 
 You can change the section order with `sections` option from the default
 of:
@@ -354,8 +348,7 @@ following mapping:
 
 This will likely be changed in isort 6.0.0+ in a backwards compatible way.
 
-Auto-comment import sections
-============================
+## Auto-comment import sections
 
 Some projects prefer to have import sections uniquely titled to aid in
 identifying the sections quickly when visually scanning. isort can
@@ -383,8 +376,7 @@ import django.settings
 import myproject.test
 ```
 
-Ordering by import length
-=========================
+## Ordering by import length
 
 isort also makes it easy to sort your imports by length, simply by
 setting the `length_sort` option to `True`. This will result in the
@@ -407,8 +399,7 @@ as a configuration item, e.g.:
 
     length_sort_stdlib=1
 
-Controlling how isort sections `from` imports
-=========================
+## Controlling how isort sections `from` imports
 
 By default isort places straight (`import y`) imports above from imports (`from x import y`):
 
@@ -432,8 +423,7 @@ from b import b # If from first is set to True, all from imports will be placed 
 import a
 ```
 
-Skip processing of imports (outside of configuration)
-=====================================================
+## Skip processing of imports (outside of configuration)
 
 To make isort ignore a single import simply add a comment at the end of
 the import line containing the text `isort:skip`:
@@ -464,8 +454,7 @@ import b
 import a
 ```
 
-Adding an import to multiple files
-==================================
+## Adding an import to multiple files
 
 isort makes it easy to add an import statement across multiple files,
 while being assured it's correctly placed.
@@ -483,8 +472,7 @@ isort -a "from __future__ import print_function" --append-only *.py
 ```
 
 
-Removing an import from multiple files
-======================================
+## Removing an import from multiple files
 
 isort also makes it easy to remove an import from multiple files,
 without having to be concerned with how it was originally formatted.
@@ -495,8 +483,7 @@ From the command line:
 isort --rm "os.system" *.py
 ```
 
-Using isort to verify code
-==========================
+## Using isort to verify code
 
 The `--check-only` option
 -------------------------
@@ -547,8 +534,7 @@ Set it to `True` to ensure all tracked files are properly isorted,
 leave it out or set it to `False` to check only files added to your
 index.
 
-Setuptools integration
-----------------------
+## Setuptools integration
 
 Upon installation, isort enables a `setuptools` command that checks
 Python files declared by your project.
@@ -576,8 +562,7 @@ setup(
 )
 ```
 
-Spread the word
-==========
+## Spread the word
 
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
 
@@ -596,15 +581,13 @@ Or README.rst:
     :target: https://timothycrosley.github.io/isort/
 ```
 
-Security contact information
-==========
+## Security contact information
 
 To report a security vulnerability, please use the [Tidelift security
 contact](https://tidelift.com/security). Tidelift will coordinate the
 fix and disclosure.
 
-Why isort?
-==========
+## Why isort?
 
 isort simply stands for import sort. It was originally called
 "sortImports" however I got tired of typing the extra characters and
