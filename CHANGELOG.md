@@ -9,6 +9,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
   - Implemented #960: Support for respecting git ignore via "--gitignore" or "skip_gitignore=True".
   - Implemented #727: Ability to only add imports if existing imports exist.
+  - Implemented #970: Support for custom sharable isort profiles.
   - `# isort: split` can now be used at the end of an import line.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
 

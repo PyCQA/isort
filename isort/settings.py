@@ -262,6 +262,12 @@ class Config(_Config):
         profile: Dict[str, Any] = {}
         if profile_name:
             if profile_name not in profiles:
+                import pkg_resources
+
+                for plugin in pkg_resources.iter_entry_points("isort.profiles"):
+                    profiles.setdefault(plugin.name, plugin.load().PROFILE)  # pragma: no cover
+
+            if profile_name not in profiles:
                 raise ProfileDoesNotExist(profile_name)
 
             profile = profiles[profile_name].copy()
