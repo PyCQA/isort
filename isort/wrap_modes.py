@@ -106,18 +106,28 @@ def vertical(**interface):
     return f"{interface['statement']}({first_import}{_imports}{_comma_maybe})"
 
 
-@_wrap_mode
-def hanging_indent(**interface):
+def _hanging_indent_common(use_parentheses=False, **interface):
     if not interface["imports"]:
         return ""
+    line_length_limit = interface["line_length"] - (1 if use_parentheses else 3)
+
+    def end_line(line):
+        if use_parentheses:
+            return line
+        if not line.endswith(" "):
+            line += " "
+        return line + "\\"
+
+    if use_parentheses:
+        interface["statement"] += "("
     next_import = interface["imports"].pop(0)
     next_statement = interface["statement"] + next_import
     # Check for first import
-    if len(next_statement) + 3 > interface["line_length"]:
+    if len(next_statement) > line_length_limit:
         next_statement = (
             isort.comments.add_to_line(
                 interface["comments"],
-                f"{interface['statement']}\\",
+                end_line(interface["statement"]),
                 removed=interface["remove_comments"],
                 comment_prefix=interface["comment_prefix"],
             )
@@ -133,14 +143,12 @@ def hanging_indent(**interface):
             removed=interface["remove_comments"],
             comment_prefix=interface["comment_prefix"],
         )
-        if (
-            len(next_statement.split(interface["line_separator"])[-1]) + 3
-            > interface["line_length"]
-        ):
+        current_line = next_statement.split(interface["line_separator"])[-1]
+        if len(current_line) > line_length_limit:
             next_statement = (
                 isort.comments.add_to_line(
                     interface["comments"],
-                    f"{interface['statement']}, \\",
+                    end_line(interface["statement"] + ","),
                     removed=interface["remove_comments"],
                     comment_prefix=interface["comment_prefix"],
                 )
@@ -148,7 +156,14 @@ def hanging_indent(**interface):
             )
             interface["comments"] = []
         interface["statement"] = next_statement
-    return interface["statement"]
+    _comma_maybe = "," if interface["include_trailing_comma"] else ""
+    _close_parentheses_maybe = ")" if use_parentheses else ""
+    return interface["statement"] + _comma_maybe + _close_parentheses_maybe
+
+
+@_wrap_mode
+def hanging_indent(**interface):
+    return _hanging_indent_common(use_parentheses=False, **interface)
 
 
 @_wrap_mode
@@ -167,7 +182,7 @@ def vertical_hanging_indent(**interface):
     )
 
 
-def vertical_grid_common(need_trailing_char: bool, **interface):
+def _vertical_grid_common(need_trailing_char: bool, **interface):
     if not interface["imports"]:
         return ""
 
@@ -203,40 +218,13 @@ def vertical_grid_common(need_trailing_char: bool, **interface):
 
 @_wrap_mode
 def vertical_grid(**interface) -> str:
-    return (
-        vertical_grid_common(
-            statement=interface["statement"],
-            imports=interface["imports"],
-            white_space=interface["white_space"],
-            indent=interface["indent"],
-            line_length=interface["line_length"],
-            comments=interface["comments"],
-            line_separator=interface["line_separator"],
-            comment_prefix=interface["comment_prefix"],
-            include_trailing_comma=interface["include_trailing_comma"],
-            remove_comments=interface["remove_comments"],
-            need_trailing_char=True,
-        )
-        + ")"
-    )
+    return _vertical_grid_common(need_trailing_char=True, **interface) + ")"
 
 
 @_wrap_mode
 def vertical_grid_grouped(**interface):
     return (
-        vertical_grid_common(
-            statement=interface["statement"],
-            imports=interface["imports"],
-            white_space=interface["white_space"],
-            indent=interface["indent"],
-            line_length=interface["line_length"],
-            comments=interface["comments"],
-            line_separator=interface["line_separator"],
-            comment_prefix=interface["comment_prefix"],
-            include_trailing_comma=interface["include_trailing_comma"],
-            remove_comments=interface["remove_comments"],
-            need_trailing_char=True,
-        )
+        _vertical_grid_common(need_trailing_char=True, **interface)
         + interface["line_separator"]
         + ")"
     )
@@ -245,19 +233,7 @@ def vertical_grid_grouped(**interface):
 @_wrap_mode
 def vertical_grid_grouped_no_comma(**interface):
     return (
-        vertical_grid_common(
-            statement=interface["statement"],
-            imports=interface["imports"],
-            white_space=interface["white_space"],
-            indent=interface["indent"],
-            line_length=interface["line_length"],
-            comments=interface["comments"],
-            line_separator=interface["line_separator"],
-            comment_prefix=interface["comment_prefix"],
-            include_trailing_comma=interface["include_trailing_comma"],
-            remove_comments=interface["remove_comments"],
-            need_trailing_char=False,
-        )
+        _vertical_grid_common(need_trailing_char=False, **interface)
         + interface["line_separator"]
         + ")"
     )
@@ -323,6 +299,11 @@ def vertical_prefix_from_module_import(**interface):
             interface["comments"] = []
         interface["statement"] = next_statement
     return interface["statement"]
+
+
+@_wrap_mode
+def hanging_indent_with_parentheses(**interface):
+    return _hanging_indent_common(use_parentheses=True, **interface)
 
 
 WrapModes = enum.Enum(  # type: ignore

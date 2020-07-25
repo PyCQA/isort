@@ -20,6 +20,7 @@ auto_pytest_magic(
     auto_allow_exceptions_=(ValueError,),
     imports=["one", "two"],
 )
+auto_pytest_magic(wrap_modes.hanging_indent_with_parentheses, auto_allow_exceptions_=(ValueError,))
 
 
 def test_wrap_mode_interface():

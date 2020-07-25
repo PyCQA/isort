@@ -525,6 +525,34 @@ def test_output_modes() -> None:
         "from third_party import lib21, lib22\n"
     )
 
+    test_output_hanging_indent_with_parentheses = isort.code(
+        code=REALLY_LONG_IMPORT,
+        multi_line_output=WrapModes.HANGING_INDENT_WITH_PARENTHESES,
+        line_length=40,
+        indent="    ",
+    )
+    assert test_output_hanging_indent_with_parentheses == (
+        "from third_party import (lib1, lib2,\n"
+        "    lib3, lib4, lib5, lib6, lib7, lib8,\n"
+        "    lib9, lib10, lib11, lib12, lib13,\n"
+        "    lib14, lib15, lib16, lib17, lib18,\n"
+        "    lib20, lib21, lib22)\n"
+    )
+
+    comment_output_hanging_indent_with_parentheses = isort.code(
+        code=REALLY_LONG_IMPORT_WITH_COMMENT,
+        multi_line_output=WrapModes.HANGING_INDENT_WITH_PARENTHESES,
+        line_length=40,
+        indent="    ",
+    )
+    assert comment_output_hanging_indent_with_parentheses == (
+        "from third_party import (lib1,  # comment\n"
+        "    lib2, lib3, lib4, lib5, lib6, lib7,\n"
+        "    lib8, lib9, lib10, lib11, lib12,\n"
+        "    lib13, lib14, lib15, lib16, lib17,\n"
+        "    lib18, lib20, lib21, lib22)\n"
+    )
+
     test_input = (
         "def a():\n"
         "    from allennlp.modules.text_field_embedders.basic_text_field_embedder"
@@ -2518,7 +2546,7 @@ def test_long_single_line() -> None:
         code="from ..views import ("
         " _a,"
         "_xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx as xxxxxx_xxxxxxx_xxxxxxxx_xxx_xxxxxxx)",
-        line_length=76,
+        line_length=79,
         combine_as_imports=True,
     )
     for line in output.split("\n"):
