@@ -590,7 +590,7 @@ Force number of from imports (defaults to 2) to be grid wrapped regardless of li
 
 ## Force Sort Within Sections
 
-Force imports to be sorted by module, independent of import_type
+Don't sort straight-style imports (like import sys) before from-style imports (like from itertools import groupby). Instead, sort the imports by module, independent of import style.
 
 **Type:** Bool  
 **Default:** `False`  

@@ -285,7 +285,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--force-sort-within-sections",
         action="store_true",
         dest="force_sort_within_sections",
-        help="Force imports to be sorted by module, independent of import_type",
+        help="Don't sort straight-style imports (like import sys) before from-style imports "
+        "(like from itertools import groupby). Instead, sort the imports by module, "
+        "independent of import style.",
     )
     parser.add_argument(
         "-i",

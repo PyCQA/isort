@@ -407,6 +407,31 @@ as a configuration item, e.g.:
 
     length_sort_stdlib=1
 
+Controlling how isort sections `from` imports
+=========================
+
+By default isort places straight (`import y`) imports above from imports (`from x import y`):
+
+```python
+import b
+from a import a  # This will always appear below because it is a from import.
+```
+
+However, if you prefer to keep strict alphabetical sorting you can set [force sort within sections](https://timothycrosley.github.io/isort/docs/configuration/options/#force-sort-within-sections) to true. Resulting in:
+
+
+```python
+from a import a  # This will now appear at top because a appears in the alphabet before b
+import b
+```
+
+You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](https://timothycrosley.github.io/isort/docs/configuration/options/#from-first).
+
+```python
+from b import b # If from first is set to True, all from imports will be placed before non-from imports.
+import a
+```
+
 Skip processing of imports (outside of configuration)
 =====================================================
 
@@ -445,23 +470,18 @@ Adding an import to multiple files
 isort makes it easy to add an import statement across multiple files,
 while being assured it's correctly placed.
 
-From the command line:
+To add an import to all files:
 
 ```bash
 isort -a "from __future__ import print_function" *.py
 ```
 
-from within Kate:
+To add an import only to files that already have imports:
 
-```
-ctrl+]
+```bash
+isort -a "from __future__ import print_function" --append-only *.py
 ```
 
-or:
-
-```
-menu > Python > Add Import
-```
 
 Removing an import from multiple files
 ======================================
@@ -472,19 +492,7 @@ without having to be concerned with how it was originally formatted.
 From the command line:
 
 ```bash
-isort -rm "os.system" *.py
-```
-
-from within Kate:
-
-```
-ctrl+shift+]
-```
-
-or:
-
-```
-menu > Python > Remove Import
+isort --rm "os.system" *.py
 ```
 
 Using isort to verify code
