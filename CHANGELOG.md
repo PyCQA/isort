@@ -11,6 +11,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented #727: Ability to only add imports if existing imports exist.
   - Implemented #970: Support for custom sharable isort profiles.
   - Implemented #1214: Added support for git_hook lazy option (Thanks @sztamas!)
+  - Implemented #941: Added an additional `multi_line_output` mode for more compact formatting (Thanks @sztamas!)
   - `# isort: split` can now be used at the end of an import line.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
 
