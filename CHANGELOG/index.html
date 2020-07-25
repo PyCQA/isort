@@ -1880,6 +1880,9 @@
 <li>Implemented #1331: Warn when sections don't match up.</li>
 <li>Implemented #1261: By popular demand, <code>filter_files</code> can now be set in the config option.</li>
 <li>Implemented #960: Support for respecting git ignore via "--gitignore" or "skip_gitignore=True".</li>
+<li>Implemented #727: Ability to only add imports if existing imports exist.</li>
+<li>Implemented #970: Support for custom sharable isort profiles.</li>
+<li>Implemented #1214: Added support for git_hook lazy option (Thanks @sztamas!)</li>
 <li><code># isort: split</code> can now be used at the end of an import line.</li>
 <li>Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.</li>
 </ul>
@@ -1993,7 +1996,7 @@
 </ul>
 </li>
 <li>isort now works on contiguous sections of imports, instead of one whole file at a time.</li>
-<li>isort now formats all nested "as" imports in the "from" form. <code>import x.y as a</code> becomes <code>from x import y as a</code>.</li>
+<li>~~isort now formats all nested "as" imports in the "from" form. <code>import x.y as a</code> becomes <code>from x import y as a</code>.~~ NOTE: This was undone in version 5.1.0 due to feedback it caused issues with some project conventions.</li>
 <li><code>keep_direct_and_as_imports</code> option now defaults to <code>True</code>.</li>
 <li><code>appdirs</code> is no longer supported. Unless manually specified, config should be project config only.</li>
 <li><code>toml</code> is now installed as a vendorized module, meaning pyproject.toml based config is always supported.</li>

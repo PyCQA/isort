@@ -1497,6 +1497,8 @@
 
     <span class="n">remove_imports</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
+    <span class="n">append_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="n">force_single_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
@@ -1726,6 +1728,14 @@
         <span class="n">profile</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">profile_name</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">profile_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">profiles</span><span class="p">:</span>
+
+                <span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+                <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">iter_entry_points</span><span class="p">(</span><span class="s2">&quot;isort.profiles&quot;</span><span class="p">):</span>
+
+                    <span class="n">profiles</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">plugin</span><span class="o">.</span><span class="n">load</span><span class="p">()</span><span class="o">.</span><span class="n">PROFILE</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
             <span class="k">if</span> <span class="n">profile_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">profiles</span><span class="p">:</span>
 
@@ -2491,6 +2501,14 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">profile_name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">profiles</span><span class="p">:</span><span class="w"></span>
 
+<span class="w">                </span><span class="n">import</span><span class="w"> </span><span class="n">pkg_resources</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">plugin</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">pkg_resources</span><span class="p">.</span><span class="n">iter_entry_points</span><span class="p">(</span><span class="ss">&quot;isort.profiles&quot;</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">profiles</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">plugin</span><span class="p">.</span><span class="k">load</span><span class="p">().</span><span class="n">PROFILE</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">profile_name</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">profiles</span><span class="p">:</span><span class="w"></span>
+
 <span class="w">                </span><span class="n">raise</span><span class="w"> </span><span class="n">ProfileDoesNotExist</span><span class="p">(</span><span class="n">profile_name</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profiles</span><span class="o">[</span><span class="n">profile_name</span><span class="o">]</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span><span class="w"></span>
@@ -2821,6 +2839,10 @@ dynamically determined later on.</p>
 </ul>
 <h4 id="class-variables">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">add_imports</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">append_only</span>
 </code></pre></div>
 
 

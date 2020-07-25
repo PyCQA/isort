@@ -1411,6 +1411,25 @@ as a configuration item, e.g.:</p>
 </code></pre></div>
 
 
+<h1 id="controlling-how-isort-sections-from-imports">Controlling how isort sections <code>from</code> imports</h1>
+<p>By default isort places straight (<code>import y</code>) imports above from imports (<code>from x import y</code>):</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">b</span>
+<span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will always appear below because it is a from import.</span>
+</code></pre></div>
+
+
+<p>However, if you prefer to keep strict alphabetical sorting you can set <a href="https://timothycrosley.github.io/isort/docs/configuration/options/#force-sort-within-sections">force sort within sections</a> to true. Resulting in:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will now appear at top because a appears in the alphabet before b</span>
+<span class="kn">import</span> <span class="nn">b</span>
+</code></pre></div>
+
+
+<p>You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using <a href="https://timothycrosley.github.io/isort/docs/configuration/options/#from-first">from first</a>.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">b</span> <span class="kn">import</span> <span class="n">b</span> <span class="c1"># If from first is set to True, all from imports will be placed before non-from imports.</span>
+<span class="kn">import</span> <span class="nn">a</span>
+</code></pre></div>
+
+
 <h1 id="skip-processing-of-imports-outside-of-configuration">Skip processing of imports (outside of configuration)</h1>
 <p>To make isort ignore a single import simply add a comment at the end of
 the import line containing the text <code>isort:skip</code>:</p>
@@ -1441,18 +1460,13 @@ module's doc string:</p>
 <h1 id="adding-an-import-to-multiple-files">Adding an import to multiple files</h1>
 <p>isort makes it easy to add an import statement across multiple files,
 while being assured it's correctly placed.</p>
-<p>From the command line:</p>
+<p>To add an import to all files:</p>
 <div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> *.py
 </code></pre></div>
 
 
-<p>from within Kate:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">ctrl+]</span>
-</code></pre></div>
-
-
-<p>or:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">menu &gt; Python &gt; Add Import</span>
+<p>To add an import only to files that already have imports:</p>
+<div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> --append-only *.py
 </code></pre></div>
 
 
@@ -1460,17 +1474,7 @@ while being assured it's correctly placed.</p>
 <p>isort also makes it easy to remove an import from multiple files,
 without having to be concerned with how it was originally formatted.</p>
 <p>From the command line:</p>
-<div class="codehilite"><pre><span></span><code>isort -rm <span class="s2">&quot;os.system&quot;</span> *.py
-</code></pre></div>
-
-
-<p>from within Kate:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">ctrl+shift+]</span>
-</code></pre></div>
-
-
-<p>or:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">menu &gt; Python &gt; Remove Import</span>
+<div class="codehilite"><pre><span></span><code>isort --rm <span class="s2">&quot;os.system&quot;</span> *.py
 </code></pre></div>
 
 
@@ -1500,14 +1504,19 @@ include the following in <code>.git/hooks/pre-commit</code>:</p>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">isort.hooks</span> <span class="kn">import</span> <span class="n">git_hook</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </code></pre></div>
 
 
 <p>If you just want to display warnings, but allow the commit to happen
 anyway, call <code>git_hook</code> without the strict parameter. If you want to
 display warnings, but not also fix the code, call <code>git_hook</code> without the
-modify parameter.</p>
+modify parameter.
+The <code>lazy</code> argument is to support users who are "lazy" to add files
+individually to the index and tend to use <code>git commit -a</code> instead.
+Set it to <code>True</code> to ensure all tracked files are properly isorted,
+leave it out or set it to <code>False</code> to check only files added to your
+index.</p>
 <h2 id="setuptools-integration">Setuptools integration</h2>
 <p>Upon installation, isort enables a <code>setuptools</code> command that checks
 Python files declared by your project.</p>
@@ -1529,6 +1538,20 @@ install isort themselves, add isort to the setup_requires of your
         <span class="s2">&quot;isort&quot;</span>
     <span class="p">]</span>
 <span class="p">)</span>
+</code></pre></div>
+
+
+<h1 id="spread-the-word">Spread the word</h1>
+<p><a href="https://timothycrosley.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a></p>
+<p>Place this badge at the top of your repository to let others know your project uses isort.</p>
+<p>For README.md:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336)](https://timothycrosley.github.io/isort/)</span>
+</code></pre></div>
+
+
+<p>Or README.rst:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">..</span> <span class="ow">image</span><span class="p">::</span> https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336
+    <span class="nc">:target:</span> https://timothycrosley.github.io/isort/
 </code></pre></div>
 
 

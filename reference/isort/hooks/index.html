@@ -1228,7 +1228,7 @@
 
     <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdout</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
 
-<span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -1246,6 +1246,12 @@
 
 <span class="sd">        modifying anything.</span>
 
+<span class="sd">    :param bool lazy - if True, also check/fix unstaged files.</span>
+
+<span class="sd">        This is useful if you frequently use ``git commit -a`` for example.</span>
+
+<span class="sd">        If False, ony check/fix the staged files for isort errors.</span>
+
 <span class="sd">    :return number of errors if in strict mode, 0 otherwise.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1253,6 +1259,10 @@
     <span class="c1"># Get list of files modified and staged</span>
 
     <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s2">&quot;--cached&quot;</span><span class="p">,</span> <span class="s2">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s2">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">lazy</span><span class="p">:</span>
+
+        <span class="n">diff_cmd</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;--cached&quot;</span><span class="p">)</span>
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
@@ -1359,7 +1369,8 @@
 <h3 id="git_hook">git_hook</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
@@ -1370,9 +1381,12 @@
     just act as a warning.
 :param bool modify - if True, fix the sources if they are not
     sorted properly. If False, only report result without
-    modifying anything.</p>
+    modifying anything.
+:param bool lazy - if True, also check/fix unstaged files.
+    This is useful if you frequently use <code>git commit -a</code> for example.
+    If False, ony check/fix the staged files for isort errors.</p>
 <p>:return number of errors if in strict mode, 0 otherwise.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span><span class="k">strict</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="k">modify</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span><span class="k">strict</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="k">modify</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
     <span class="ss">&quot;&quot;&quot;</span>
 
@@ -1390,6 +1404,12 @@
 
 <span class="ss">        modifying anything.</span>
 
+<span class="ss">    :param bool lazy - if True, also check/fix unstaged files.</span>
+
+<span class="ss">        This is useful if you frequently use ``git commit -a`` for example.</span>
+
+<span class="ss">        If False, ony check/fix the staged files for isort errors.</span>
+
 <span class="ss">    :return number of errors if in strict mode, 0 otherwise.</span>
 
 <span class="ss">    &quot;&quot;&quot;</span>
@@ -1397,6 +1417,10 @@
     <span class="o">#</span> <span class="k">Get</span> <span class="n">list</span> <span class="k">of</span> <span class="n">files</span> <span class="n">modified</span> <span class="k">and</span> <span class="n">staged</span>
 
     <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;diff-index&quot;</span><span class="p">,</span> <span class="ss">&quot;--cached&quot;</span><span class="p">,</span> <span class="ss">&quot;--name-only&quot;</span><span class="p">,</span> <span class="ss">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="ss">&quot;HEAD&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">lazy</span><span class="p">:</span>
+
+        <span class="n">diff_cmd</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="ss">&quot;--cached&quot;</span><span class="p">)</span>
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 

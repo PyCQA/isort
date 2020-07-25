@@ -526,6 +526,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#append-only" class="md-nav__link">
+    Append Only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reverse-relative" class="md-nav__link">
     Reverse Relative
   </a>
@@ -1886,6 +1893,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#append-only" class="md-nav__link">
+    Append Only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reverse-relative" class="md-nav__link">
     Reverse Relative
   </a>
@@ -2543,6 +2557,16 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--rm</li>
 <li>--remove-import</li>
 </ul>
+<h2 id="append-only">Append Only</h2>
+<p>Only adds the imports specified in --add-imports if the file contains existing imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> append_only<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--append</li>
+<li>--append-only</li>
+</ul>
 <h2 id="reverse-relative">Reverse Relative</h2>
 <p>Reverse order of relative imports.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -2600,7 +2624,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--balanced</li>
 </ul>
 <h2 id="use-parentheses">Use Parentheses</h2>
-<p>Use parentheses for line continuation on length limit instead of slashes. <strong>NOTE</strong>: This is separate from wrap modes, and only affects individual line to long wrapping, not sections of multiple imports.</p>
+<p>Use parentheses for line continuation on length limit instead of slashes. <strong>NOTE</strong>: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> use_parentheses<br />
@@ -2758,7 +2782,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--force-grid-wrap</li>
 </ul>
 <h2 id="force-sort-within-sections">Force Sort Within Sections</h2>
-<p>Force imports to be sorted by module, independent of import_type</p>
+<p>Don't sort straight-style imports (like import sys) before from-style imports (like from itertools import groupby). Instead, sort the imports by module, independent of import style.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> force_sort_within_sections<br />
