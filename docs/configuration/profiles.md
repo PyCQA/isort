@@ -51,7 +51,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 
  - **force_alphabetical_sort**: `True`
  - **force_single_line**: `True`
- - **ines_after_imports**: `2`
+ - **lines_after_imports**: `2`
  - **line_length**: `200`
 
 #attrs
