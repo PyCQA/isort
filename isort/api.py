@@ -7,8 +7,6 @@ from pathlib import Path
 from typing import List, Optional, TextIO, Union, cast
 from warnings import warn
 
-import colorama
-
 from . import io, output, parse
 from .exceptions import (
     ExistingSyntaxErrors,
