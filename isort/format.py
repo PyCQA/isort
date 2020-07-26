@@ -1,8 +1,13 @@
 import sys
 from datetime import datetime
 from difflib import unified_diff
+from functools import partial
 from pathlib import Path
-from typing import Optional, TextIO
+from typing import Iterable, Optional, TextIO
+
+import colorama
+
+colorama.init()
 
 
 def format_simplified(import_line: str) -> str:
@@ -71,3 +76,12 @@ def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
 def remove_whitespace(content: str, line_separator: str = "\n") -> str:
     content = content.replace(line_separator, "").replace(" ", "").replace("\x0c", "")
     return content
+
+
+def style_text(text: str, styles: Iterable[str]) -> str:
+    escape_sequences = "".join(styles)
+    return escape_sequences + text + colorama.Style.RESET_ALL
+
+
+style_error = partial(style_text, styles=(colorama.Fore.RED,))
+style_success = partial(style_text, styles=(colorama.Fore.GREEN,))

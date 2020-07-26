@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import List, Optional, TextIO, Union, cast
 from warnings import warn
 
+import colorama
+
 from . import io, output, parse
 from .exceptions import (
     ExistingSyntaxErrors,
@@ -19,6 +21,8 @@ from .format import (
     format_natural,
     remove_whitespace,
     show_unified_diff,
+    style_error,
+    style_success,
 )
 from .io import Empty
 from .place import module as place_module  # skipcq: PYL-W0611 (intended export of public API)
@@ -219,10 +223,13 @@ def check_stream(
 
     if not changed:
         if config.verbose:
-            print(f"SUCCESS: {file_path or ''} Everything Looks Good!")
+            print(f"{style_success('SUCCESS')}: {file_path or ''} Everything Looks Good!")
         return True
     else:
-        print(f"ERROR: {file_path or ''} Imports are incorrectly sorted and/or formatted.")
+        print(
+            f"{style_error('ERROR')}: "
+            f"{file_path or ''} Imports are incorrectly sorted and/or formatted."
+        )
         if show_diff:
             output_stream = StringIO()
             input_stream.seek(0)
