@@ -261,6 +261,14 @@ pipenv = ["pipenv"]
 
 [[package]]
 category = "dev"
+description = "An example shared isort profile"
+name = "example-shared-isort-profile"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "0.0.1"
+
+[[package]]
+category = "dev"
 description = "Tests and Documentation Done by Example."
 name = "examples"
 optional = false
@@ -1532,7 +1540,7 @@ pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 
 [metadata]
-content-hash = "ace34d56082ee3f0ccfa77f6c8b6a6e8a6449a1e51a0e31a69368c697af7384b"
+content-hash = "4db91d831e91eff8a42ff63d3ba2683d3575886c5d23c09cd27dc4196d41b28b"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1656,6 +1664,10 @@ docopt = [
 dparse = [
     {file = "dparse-0.5.1-py3-none-any.whl", hash = "sha256:e953a25e44ebb60a5c6efc2add4420c177f1d8404509da88da9729202f306994"},
     {file = "dparse-0.5.1.tar.gz", hash = "sha256:a1b5f169102e1c894f9a7d5ccf6f9402a836a5d24be80a986c7ce9eaed78f367"},
+]
+example-shared-isort-profile = [
+    {file = "example_shared_isort_profile-0.0.1-py3-none-any.whl", hash = "sha256:3fa3e2d093e68285fc7893704b727791ed3e0969d07bdd2733e366303d1a2582"},
+    {file = "example_shared_isort_profile-0.0.1.tar.gz", hash = "sha256:fc2a0fa892611d6c1c2060dc0ca8e511e3f65fad8e4e449e8a375ef49549e710"},
 ]
 examples = [
     {file = "examples-1.0.2-py3-none-any.whl", hash = "sha256:372fefd15d5a17bda3b003cf26edbc2d29632bc63f29c816b55ed33dcccb3e65"},

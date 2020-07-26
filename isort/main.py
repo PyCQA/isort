@@ -569,9 +569,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--profile",
         dest="profile",
-        choices=list(profiles.keys()),
         type=str,
-        help="Base profile type to use for configuration.",
+        help="Base profile type to use for configuration. "
+        f"Profiles include: {', '.join(profiles.keys())}. As well as any shared profiles.",
     )
     parser.add_argument(
         "--interactive",
