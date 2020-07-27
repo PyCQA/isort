@@ -23,8 +23,8 @@ from .format import (
     style_success,
 )
 from .io import Empty
-from .place import module as place_module  # skipcq: PYL-W0611 (intended export of public API)
-from .place import module_with_reason as place_module_with_reason  # skipcq: PYL-W0611 (^)
+from .place import module as place_module  # noqa: F401
+from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
@@ -340,17 +340,22 @@ def sort_file(
                     if changed:
                         if show_diff or ask_to_apply:
                             source_file.stream.seek(0)
-                            show_unified_diff(
-                                file_input=source_file.stream.read(),
-                                file_output=tmp_file.read_text(encoding=source_file.encoding),
-                                file_path=file_path or source_file.path,
-                                output=None if show_diff is True else cast(TextIO, show_diff),
-                            )
-                            if show_diff or (
-                                ask_to_apply
-                                and not ask_whether_to_apply_changes_to_file(str(source_file.path))
-                            ):
-                                return
+                            with tmp_file.open(
+                                encoding=source_file.encoding, newline=""
+                            ) as tmp_out:
+                                show_unified_diff(
+                                    file_input=source_file.stream.read(),
+                                    file_output=tmp_out.read(),
+                                    file_path=file_path or source_file.path,
+                                    output=None if show_diff is True else cast(TextIO, show_diff),
+                                )
+                                if show_diff or (
+                                    ask_to_apply
+                                    and not ask_whether_to_apply_changes_to_file(
+                                        str(source_file.path)
+                                    )
+                                ):
+                                    return
                         source_file.stream.close()
                         tmp_file.replace(source_file.path)
                         if not config.quiet:

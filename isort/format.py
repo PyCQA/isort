@@ -48,7 +48,6 @@ def show_unified_diff(
     file_mtime = str(
         datetime.now() if file_path is None else datetime.fromtimestamp(file_path.stat().st_mtime)
     )
-
     unified_diff_lines = unified_diff(
         file_input.splitlines(keepends=True),
         file_output.splitlines(keepends=True),

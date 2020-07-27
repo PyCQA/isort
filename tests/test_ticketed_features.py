@@ -6,7 +6,7 @@ from io import StringIO
 import pytest
 
 import isort
-from isort import Config
+from isort import Config, exceptions
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
@@ -200,7 +200,7 @@ def test_isort_warns_when_known_sections_dont_match_issue_1331():
         )
 
 
-def test_isort_supports_append_only_imports_727():
+def test_isort_supports_append_only_imports_issue_727():
     """Test to ensure isort provides a way to only add imports as an append.
     See: https://github.com/timothycrosley/isort/issues/727.
     """
@@ -212,3 +212,13 @@ def test_isort_supports_append_only_imports_727():
 import os
 """
     )
+
+
+def test_isort_supports_shared_profiles_issue_970():
+    """Test to ensure isort provides a way to use shared profiles.
+    See: https://github.com/timothycrosley/isort/issues/970.
+    """
+    assert isort.code("import a", profile="example") == "import a\n"  # shared profile
+    assert isort.code("import a", profile="black") == "import a\n"  # bundled profile
+    with pytest.raises(exceptions.ProfileDoesNotExist):
+        assert isort.code("import a", profile="madeupfake") == "import a\n"  # non-existent profile

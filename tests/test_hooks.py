@@ -1,5 +1,4 @@
 import os
-from io import BytesIO
 from unittest.mock import MagicMock, patch
 
 from isort import exceptions, hooks
@@ -11,9 +10,25 @@ def test_git_hook(src_dir):
     # Ensure correct subprocess command is called
     with patch("subprocess.run", MagicMock()) as run_mock:
         hooks.git_hook()
-        assert run_mock.called_with(
-            ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB HEAD"]
-        )
+        assert run_mock.called_once()
+        assert run_mock.call_args[0][0] == [
+            "git",
+            "diff-index",
+            "--cached",
+            "--name-only",
+            "--diff-filter=ACMRTUXB",
+            "HEAD",
+        ]
+
+        hooks.git_hook(lazy=True)
+        assert run_mock.called_once()
+        assert run_mock.call_args[0][0] == [
+            "git",
+            "diff-index",
+            "--name-only",
+            "--diff-filter=ACMRTUXB",
+            "HEAD",
+        ]
 
     # Test with incorrectly sorted file returned from git
     with patch(

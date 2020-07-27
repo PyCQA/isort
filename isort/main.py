@@ -18,7 +18,7 @@ from .profiles import profiles
 from .settings import SUPPORTED_EXTENSIONS, VALID_PY_TARGETS, Config, WrapModes
 
 try:
-    from .setuptools_commands import ISortCommand  # skipcq: PYL-W0611
+    from .setuptools_commands import ISortCommand  # noqa: F401
 except ImportError:
     pass
 
@@ -285,7 +285,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--force-sort-within-sections",
         action="store_true",
         dest="force_sort_within_sections",
-        help="Force imports to be sorted by module, independent of import_type",
+        help="Don't sort straight-style imports (like import sys) before from-style imports "
+        "(like from itertools import groupby). Instead, sort the imports by module, "
+        "independent of import style.",
     )
     parser.add_argument(
         "-i",
@@ -567,9 +569,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--profile",
         dest="profile",
-        choices=list(profiles.keys()),
         type=str,
-        help="Base profile type to use for configuration.",
+        help="Base profile type to use for configuration. "
+        f"Profiles include: {', '.join(profiles.keys())}. As well as any shared profiles.",
     )
     parser.add_argument(
         "--interactive",

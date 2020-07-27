@@ -265,7 +265,7 @@ class Config(_Config):
                 import pkg_resources
 
                 for plugin in pkg_resources.iter_entry_points("isort.profiles"):
-                    profiles.setdefault(plugin.name, plugin.load().PROFILE)  # pragma: no cover
+                    profiles.setdefault(plugin.name, plugin.load())
 
             if profile_name not in profiles:
                 raise ProfileDoesNotExist(profile_name)
