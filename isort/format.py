@@ -100,7 +100,8 @@ class ColoramaPrinter(BasicPrinter):
         self.ERROR = self.style_text("ERROR", colorama.Fore.RED)
         self.SUCCESS = self.style_text("SUCCESS", colorama.Fore.GREEN)
 
-    def style_text(self, text: str, style: str) -> str:
+    @staticmethod
+    def style_text(text: str, style: str) -> str:
         return style + text + colorama.Style.RESET_ALL
 
 
