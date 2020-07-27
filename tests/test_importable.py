@@ -38,4 +38,4 @@ def test_importable():
     import isort.wrap_modes
 
     with pytest.raises(SystemExit):
-        import isort.__main__
+        import isort.__main__  # noqa: F401

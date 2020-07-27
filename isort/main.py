@@ -18,7 +18,7 @@ from .profiles import profiles
 from .settings import SUPPORTED_EXTENSIONS, VALID_PY_TARGETS, Config, WrapModes
 
 try:
-    from .setuptools_commands import ISortCommand  # skipcq: PYL-W0611
+    from .setuptools_commands import ISortCommand  # noqa: F401
 except ImportError:
     pass
 
