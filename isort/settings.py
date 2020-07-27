@@ -17,7 +17,7 @@ from warnings import warn
 from . import stdlibs
 from ._future import dataclass, field
 from ._vendored import toml
-from .exceptions import InvalidSettingsPath, ProfileDoesNotExist
+from .exceptions import FormattingPluginDoesNotExist, InvalidSettingsPath, ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
@@ -119,6 +119,7 @@ class _Config:
     known_future_library: FrozenSet[str] = frozenset(("__future__",))
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
+    known_local_folder: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
     extra_standard_library: FrozenSet[str] = frozenset()
     known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
@@ -172,6 +173,8 @@ class _Config:
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
     filter_files: bool = False
+    formatter: str = ""
+    formatting_function: Optional[Callable[[str, str, object], str]] = None
     color_output: bool = False
 
     def __post_init__(self):
@@ -301,12 +304,13 @@ class Config(_Config):
                 "known_future_library",
                 "known_third_party",
                 "known_first_party",
+                "known_local_folder",
             ):
                 import_heading = key[len(KNOWN_PREFIX) :].lower()
                 known_other[import_heading] = frozenset(value)
                 if not import_heading.upper() in combined_config.get("sections", ()):
                     warn(
-                        f"`{key}` setting is defined, but not {import_heading.upper} is not"
+                        f"`{key}` setting is defined, but not {import_heading.upper()} is not"
                         " included in `sections` config option:"
                         f" {combined_config.get('sections', SECTION_DEFAULTS)}."
                     )
@@ -346,6 +350,16 @@ class Config(_Config):
             combined_config["src_paths"] = frozenset(
                 path_root / path for path in combined_config.get("src_paths", ())
             )
+
+        if "formatter" in combined_config:
+            import pkg_resources
+
+            for plugin in pkg_resources.iter_entry_points("isort.formatters"):
+                if plugin.name == combined_config["formatter"]:
+                    combined_config["formatting_function"] = plugin.load()
+                    break
+            else:
+                raise FormattingPluginDoesNotExist(combined_config["formatter"])
 
         # Remove any config values that are used for creating config object but
         # aren't defined in dataclass

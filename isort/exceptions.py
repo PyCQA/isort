@@ -77,3 +77,11 @@ class ProfileDoesNotExist(ISortError):
             f"Available profiles: {','.join(profiles)}."
         )
         self.profile = profile
+
+
+class FormattingPluginDoesNotExist(ISortError):
+    """Raised when a formatting plugin is set by the user that doesn't exist"""
+
+    def __init__(self, formatter: str):
+        super().__init__(f"Specified formatting plugin of {formatter} does not exist. ")
+        self.formatter = formatter

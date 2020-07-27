@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "isort"
-version = "5.1.4"
+version = "5.2.0"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -54,7 +54,7 @@ vulture = "^1.0"
 bandit = "^1.6"
 safety = "^1.8"
 flake8-bugbear = "^19.8"
-black = {version = "^18.3-alpha.0", allow-prereleases = true}
+black = {version = "^19.10b0", allow-prereleases = true}
 mypy = "^0.761.0"
 ipython = "^7.7"
 pytest = "^5.0"
@@ -78,6 +78,7 @@ smmap2 = "^3.0.1"
 gitdb2 = "^4.0.2"
 httpx = "^0.13.3"
 example_shared_isort_profile = "^0.0.1"
+example_isort_formatting_plugin = "^0.0.1"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"

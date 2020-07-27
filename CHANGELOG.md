@@ -3,7 +3,7 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.2.0 TBD
+### 5.2.0 July 27, 2020
   - Implemented #1335: Official API for diff capturing.
   - Implemented #1331: Warn when sections don't match up.
   - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
@@ -12,9 +12,12 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented #970: Support for custom sharable isort profiles.
   - Implemented #1214: Added support for git_hook lazy option (Thanks @sztamas!)
   - Implemented #941: Added an additional `multi_line_output` mode for more compact formatting (Thanks @sztamas!)
+  - Implemented #1020: Option for LOCALFOLDER.
+  - Implemented #1353: Added support for output formatting plugins.
   - `# isort: split` can now be used at the end of an import line.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
   - Fixed #1348: `--diff` works incorrectly with files that have CRLF line endings.
+  - Improved code repositories usage of pylint tags (#1350).
 
 ### 5.1.4 July 19, 2020
   - Fixed issue #1333: Use of wrap_length raises an exception about it not being lower or equal to line_length.

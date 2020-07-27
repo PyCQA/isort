@@ -76,6 +76,7 @@ def test_ascii_art(capsys):
 def test_preconvert():
     assert main._preconvert(frozenset([1, 1, 2])) == [1, 2]
     assert main._preconvert(WrapModes.GRID) == "GRID"
+    assert main._preconvert(main._preconvert) == "_preconvert"
     with pytest.raises(TypeError):
         main._preconvert(datetime.now())
 
