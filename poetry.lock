@@ -1536,11 +1536,12 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [extras]
+colors = ["colorama"]
 pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 
 [metadata]
-content-hash = "8165d934e932435bf4742b9198674202413b43524911713d5c7c55cb8d314618"
+content-hash = "d3e80ae0d5bb87916c6ab758738e841a77d010f3c225d0ff54f30c1a25ae9892"
 python-versions = "^3.6"
 
 [metadata.files]

@@ -937,6 +937,17 @@ See isort's determined config, as well as sources of config options.
 
 - --show-config
 
+## Color Terminal Output
+
+Tells isort to use color in terminal output.
+
+**Type:** Bool
+**Default:** `False`
+**Python & Config File Name:** color_output
+**CLI Flags:**
+
+- --color
+
 ## Deprecated Flags
 
 ==SUPPRESS==

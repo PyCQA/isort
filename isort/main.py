@@ -609,6 +609,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--color",
+        dest="color_output",
+        action="store_true",
+        help="Tells isort to use color in terminal output.",
+    )
+    parser.add_argument(
         "--float-to-top",
         dest="float_to_top",
         action="store_true",

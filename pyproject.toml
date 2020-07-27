@@ -42,11 +42,12 @@ pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 tomlkit = {version = ">=0.5.3", optional = true}
 pip-api = {version = "*", optional = true}
-colorama = "^0.4.3"
+colorama = {version = "^0.4.3", optional = true}
 
 [tool.poetry.extras]
 pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib", "pip-shims<=0.3.4"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
+colors = ["colorama"]
 
 [tool.poetry.dev-dependencies]
 vulture = "^1.0"

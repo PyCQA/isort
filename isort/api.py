@@ -16,11 +16,10 @@ from .exceptions import (
 )
 from .format import (
     ask_whether_to_apply_changes_to_file,
+    create_terminal_printer,
     format_natural,
     remove_whitespace,
     show_unified_diff,
-    style_error,
-    style_success,
 )
 from .io import Empty
 from .place import module as place_module  # noqa: F401
@@ -218,16 +217,13 @@ def check_stream(
         file_path=file_path,
         disregard_skip=disregard_skip,
     )
-
+    printer = create_terminal_printer(color=config.color_output)
     if not changed:
         if config.verbose:
-            print(f"{style_success('SUCCESS')}: {file_path or ''} Everything Looks Good!")
+            printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
     else:
-        print(
-            f"{style_error('ERROR')}: "
-            f"{file_path or ''} Imports are incorrectly sorted and/or formatted."
-        )
+        printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
         if show_diff:
             output_stream = StringIO()
             input_stream.seek(0)

@@ -172,6 +172,7 @@ class _Config:
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
     filter_files: bool = False
+    color_output: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

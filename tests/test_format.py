@@ -19,15 +19,39 @@ def test_ask_whether_to_apply_changes_to_file():
             assert isort.format.ask_whether_to_apply_changes_to_file("")
 
 
-def test_style_error():
-    message = "ERROR"
-    styled = isort.format.style_error(message)
-    assert message in styled
-    assert styled == colorama.Fore.RED + message + colorama.Style.RESET_ALL
+def test_basic_printer(capsys):
+    printer = isort.format.create_terminal_printer(color=False)
+    printer.success("All good!")
+    out, _ = capsys.readouterr()
+    assert out == "SUCCESS: All good!\n"
+    printer.error("Some error")
+    out, _ = capsys.readouterr()
+    assert out == "ERROR: Some error\n"
 
 
-def test_style_success():
-    message = "OK"
-    styled = isort.format.style_success(message)
-    assert message in styled
-    assert styled == colorama.Fore.GREEN + message + colorama.Style.RESET_ALL
+def test_colored_printer_success(capsys):
+    printer = isort.format.create_terminal_printer(color=True)
+    printer.success("All good!")
+    out, _ = capsys.readouterr()
+    assert "SUCCESS" in out
+    assert "All good!" in out
+    assert colorama.Fore.GREEN in out
+
+
+def test_colored_printer_error(capsys):
+    printer = isort.format.create_terminal_printer(color=True)
+    printer.error("Some error")
+    out, _ = capsys.readouterr()
+    assert "ERROR" in out
+    assert "Some error" in out
+    assert colorama.Fore.RED in out
+
+
+@patch("isort.format.colorama_unavailable", True)
+def test_colorama_not_available_handled_gracefully(capsys):
+    with pytest.raises(SystemExit) as system_exit:
+        _ = isort.format.create_terminal_printer(color=True)
+    assert system_exit.value.code > 0
+    _, err = capsys.readouterr()
+    assert "colorama" in err
+    assert "colors extra" in err
