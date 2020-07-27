@@ -21,8 +21,8 @@ from .format import (
     show_unified_diff,
 )
 from .io import Empty
-from .place import module as place_module  # skipcq: PYL-W0611 (intended export of public API)
-from .place import module_with_reason as place_module_with_reason  # skipcq: PYL-W0611 (^)
+from .place import module as place_module  # noqa: F401
+from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, FILE_SKIP_COMMENTS, Config
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")

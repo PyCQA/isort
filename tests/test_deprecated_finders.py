@@ -4,8 +4,6 @@ import posixpath
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from isort import sections, settings
 from isort.deprecated import finders
 from isort.deprecated.finders import FindersManager
