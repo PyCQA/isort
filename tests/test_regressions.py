@@ -1,4 +1,6 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
+from io import StringIO
+
 import isort
 
 
@@ -477,4 +479,16 @@ def test_isort_skipped_nested_imports_issue_1339():
         )
     """,
         show_diff=True,
+    )
+
+
+def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
+    """Ensure isort handles windows files correctly when it come to producing a diff with --diff.
+    See: https://github.com/timothycrosley/isort/issues/1348
+    """
+    diff_output = StringIO()
+    isort.file(test_path / "example_crlf_file.py", show_diff=diff_output)
+    diff_output.seek(0)
+    assert diff_output.read().endswith(
+        "-1,5 +1,5 @@\n+import a\r\n import b\r\n" "-import a\r\n \r\n \r\n def func():\r\n"
     )

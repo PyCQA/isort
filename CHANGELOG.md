@@ -14,6 +14,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Implemented #941: Added an additional `multi_line_output` mode for more compact formatting (Thanks @sztamas!)
   - `# isort: split` can now be used at the end of an import line.
   - Fixed #1339: Extra indent is not preserved when isort:skip is used in nested imports.
+  - Fixed #1348: `--diff` works incorrectly with files that have CRLF line endings.
 
 ### 5.1.4 July 19, 2020
   - Fixed issue #1333: Use of wrap_length raises an exception about it not being lower or equal to line_length.
