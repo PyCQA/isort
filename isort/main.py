@@ -388,6 +388,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Force isort to recognize a module as being part of the current python project.",
     )
     parser.add_argument(
+        "--known-local-folder",
+        dest="known_local_folder",
+        action="append",
+        help="Force isort to recognize a module as being a local folder. "
+        "Generally, this is reserved for relative imports (from . import module).",
+    )
+    parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",

@@ -119,6 +119,7 @@ class _Config:
     known_future_library: FrozenSet[str] = frozenset(("__future__",))
     known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
     known_first_party: FrozenSet[str] = frozenset()
+    known_local_folder: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
     extra_standard_library: FrozenSet[str] = frozenset()
     known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
@@ -300,12 +301,13 @@ class Config(_Config):
                 "known_future_library",
                 "known_third_party",
                 "known_first_party",
+                "known_local_folder",
             ):
                 import_heading = key[len(KNOWN_PREFIX) :].lower()
                 known_other[import_heading] = frozenset(value)
                 if not import_heading.upper() in combined_config.get("sections", ()):
                     warn(
-                        f"`{key}` setting is defined, but not {import_heading.upper} is not"
+                        f"`{key}` setting is defined, but not {import_heading.upper()} is not"
                         " included in `sections` config option:"
                         f" {combined_config.get('sections', SECTION_DEFAULTS)}."
                     )
