@@ -222,3 +222,12 @@ def test_isort_supports_shared_profiles_issue_970():
     assert isort.code("import a", profile="black") == "import a\n"  # bundled profile
     with pytest.raises(exceptions.ProfileDoesNotExist):
         assert isort.code("import a", profile="madeupfake") == "import a\n"  # non-existent profile
+
+
+def test_isort_supports_formatting_plugins_issue_1353():
+    """Test to ensure isort provides a way to create and share formatting plugins.
+    See: https://github.com/timothycrosley/isort/issues/1353.
+    """
+    assert isort.code("import a", formatter="example") == "import a\n"  # formatting plugin
+    with pytest.raises(exceptions.FormattingPluginDoesNotExist):
+        assert isort.code("import a", formatter="madeupfake") == "import a\n"  # non-existent plugin

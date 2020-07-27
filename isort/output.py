@@ -171,6 +171,11 @@ def sorted_imports(
     while output and output[0].strip() == "":
         output.pop(0)
 
+    if config.formatting_function:
+        output = config.formatting_function(
+            parsed.line_separator.join(output), extension, config
+        ).splitlines()
+
     output_at = 0
     if parsed.import_index < parsed.original_line_count:
         output_at = parsed.import_index

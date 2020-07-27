@@ -625,6 +625,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "Still it can be a great shortcut for collecting imports every once in a while when you put"
         " them in the middle of a file.",
     )
+    parser.add_argument(
+        "--formatter",
+        dest="formatter",
+        type=str,
+        help="Specifies the name of a formatting plugin to use when producing output.",
+    )
+
     # deprecated options
     parser.add_argument(
         "--recursive",
@@ -686,6 +693,8 @@ def _preconvert(item):
         return item.name
     elif isinstance(item, Path):
         return str(item)
+    elif callable(item) and hasattr(item, "__name__"):
+        return item.__name__
     else:
         raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
