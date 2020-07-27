@@ -3,7 +3,7 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.2.0 TBD
+### 5.2.0 July 27, 2020
   - Implemented #1335: Official API for diff capturing.
   - Implemented #1331: Warn when sections don't match up.
   - Implemented #1261: By popular demand, `filter_files` can now be set in the config option.
