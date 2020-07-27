@@ -1,5 +1,5 @@
 """Defines the public isort interface"""
-from . import settings  # noqa: F401
+from . import settings
 from ._version import __version__
 from .api import check_code_string as check_code
 from .api import check_file, check_stream, place_module, place_module_with_reason

@@ -7,7 +7,6 @@ import os.path
 from pathlib import Path
 import subprocess
 import sys
-import sysconfig
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, Iterator, List, Set, Tuple
 

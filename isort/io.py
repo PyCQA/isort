@@ -4,7 +4,7 @@ import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Iterator, List, NamedTuple, Optional, TextIO, Tuple, Union
+from typing import Iterator, NamedTuple, TextIO, Union
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 

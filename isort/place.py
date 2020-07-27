@@ -3,7 +3,7 @@ import importlib
 from fnmatch import fnmatch
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 
 from isort import sections
 from isort.settings import DEFAULT_CONFIG, Config
