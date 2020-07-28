@@ -175,6 +175,7 @@ class _Config:
     filter_files: bool = False
     formatter: str = ""
     formatting_function: Optional[Callable[[str, str, object], str]] = None
+    color_output: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

@@ -1574,6 +1574,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [extras]
+colors = ["colorama"]
 pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 

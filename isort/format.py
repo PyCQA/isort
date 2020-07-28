@@ -4,6 +4,14 @@ from difflib import unified_diff
 from pathlib import Path
 from typing import Optional, TextIO
 
+try:
+    import colorama
+except ImportError:
+    colorama_unavailable = True
+else:
+    colorama_unavailable = False
+    colorama.init()
+
 
 def format_simplified(import_line: str) -> str:
     import_line = import_line.strip()
@@ -70,3 +78,44 @@ def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
 def remove_whitespace(content: str, line_separator: str = "\n") -> str:
     content = content.replace(line_separator, "").replace(" ", "").replace("\x0c", "")
     return content
+
+
+class BasicPrinter:
+    ERROR = "ERROR"
+    SUCCESS = "SUCCESS"
+
+    def success(self, message: str) -> None:
+        print(f"{self.SUCCESS}: {message}")
+
+    def error(self, message: str) -> None:
+        print(
+            f"{self.ERROR}: {message}",
+            # TODO this should print to stderr, but don't want to make it backward incompatible now
+            # file=sys.stderr
+        )
+
+
+class ColoramaPrinter(BasicPrinter):
+    def __init__(self):
+        self.ERROR = self.style_text("ERROR", colorama.Fore.RED)
+        self.SUCCESS = self.style_text("SUCCESS", colorama.Fore.GREEN)
+
+    @staticmethod
+    def style_text(text: str, style: str) -> str:
+        return style + text + colorama.Style.RESET_ALL
+
+
+def create_terminal_printer(color: bool):
+    if color and colorama_unavailable:
+        no_colorama_message = (
+            "\n"
+            "Sorry, but to use --color (color_output) the colorama python package is required.\n\n"
+            "Reference: https://pypi.org/project/colorama/\n\n"
+            "You can either install it separately on your system or as the colors extra "
+            "for isort. Ex: \n\n"
+            "$ pip install isort[colors]\n"
+        )
+        print(no_colorama_message, file=sys.stderr)
+        sys.exit(1)
+
+    return ColoramaPrinter() if color else BasicPrinter()
