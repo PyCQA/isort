@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.3.0 TBD
+  - Implemented #1177: Support for color output using `--color`.
+
 ### 5.2.0 July 27, 2020
   - Implemented #1335: Official API for diff capturing.
   - Implemented #1331: Warn when sections don't match up.
