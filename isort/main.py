@@ -8,7 +8,7 @@ import stat
 import sys
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set
 from warnings import warn
 
 from . import __version__, api, sections
@@ -107,14 +107,25 @@ def sort_imports(
 
 def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
+    visited_dirs: Set[Path] = set()
+
     for path in paths:
         if os.path.isdir(path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
                 base_path = Path(dirpath)
                 for dirname in list(dirnames):
-                    if config.is_skipped(base_path / dirname):
+                    full_path = base_path / dirname
+                    if config.is_skipped(full_path):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
+
+                    resolved_path = full_path.resolve()
+                    if resolved_path in visited_dirs:  # pragma: no cover
+                        warn(f"Likely recursive symlink detected to {resolved_path}")
+                        dirnames.remove(dirname)
+                    else:
+                        visited_dirs.add(resolved_path)
+
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if is_python_file(filepath):

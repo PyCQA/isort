@@ -3,8 +3,12 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.3.0 TBD
+### 5.2.1 July 28, 2020
+  - Update precommit to default to filtering files that are defined in skip.
+  - Improved relative path detection for `skip` config usage.
+  - Added recursive symbolic link protection.
   - Implemented #1177: Support for color output using `--color`.
+  - Implemented recursive symlink detection support.
 
 ### 5.2.0 July 27, 2020
   - Implemented #1335: Official API for diff capturing.
