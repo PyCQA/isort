@@ -2358,9 +2358,7 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to filter files even when they are explicitly passed in as &quot;</span>
 
-        <span class="s2">&quot;part of the CLI command. Note that while this can be set as part of the config file it &quot;</span>
-
-        <span class="s2">&quot;only affects CLI operation.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;part of the CLI command.&quot;</span>
 
     <span class="p">)</span>
 
@@ -2475,6 +2473,18 @@
             <span class="s2">&quot; aliases to signify intent and change behaviour.&quot;</span>
 
         <span class="p">),</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--color&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;color_output&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to use color in terminal output.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 

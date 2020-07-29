@@ -385,6 +385,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-local-folder" class="md-nav__link">
+    Known Local Folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-standard-library" class="md-nav__link">
     Known Standard Library
   </a>
@@ -791,6 +798,27 @@
         <li class="md-nav__item">
   <a href="#filter-files" class="md-nav__link">
     Filter Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatter" class="md-nav__link">
+    Formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-function" class="md-nav__link">
+    Formatting Function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-output" class="md-nav__link">
+    Color Output
   </a>
   
 </li>
@@ -1801,6 +1829,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-local-folder" class="md-nav__link">
+    Known Local Folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#known-standard-library" class="md-nav__link">
     Known Standard Library
   </a>
@@ -2212,6 +2247,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#formatter" class="md-nav__link">
+    Formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-function" class="md-nav__link">
+    Formatting Function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-output" class="md-nav__link">
+    Color Output
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2461,6 +2517,15 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>-p</li>
 <li>--project</li>
+</ul>
+<h2 id="known-local-folder">Known Local Folder</h2>
+<p>Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> known_local_folder<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--known-local-folder</li>
 </ul>
 <h2 id="known-standard-library">Known Standard Library</h2>
 <p>Force isort to recognize a module as part of Python's standard library.</p>
@@ -2909,7 +2974,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>Python &amp; Config File Name:</strong> directory<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="profile">Profile</h2>
-<p>Base profile type to use for configuration.</p>
+<p>Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug. As well as any shared profiles.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> ``<br />
 <strong>Python &amp; Config File Name:</strong> profile<br />
@@ -2965,13 +3030,37 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--float-to-top</li>
 </ul>
 <h2 id="filter-files">Filter Files</h2>
-<p>Tells isort to filter files even when they are explicitly passed in as part of the CLI command. Note that while this can be set as part of the config file it only affects CLI operation.</p>
+<p>Tells isort to filter files even when they are explicitly passed in as part of the CLI command.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> filter_files<br />
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--filter-files</li>
+</ul>
+<h2 id="formatter">Formatter</h2>
+<p>Specifies the name of a formatting plugin to use when producing output.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> formatter<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--formatter</li>
+</ul>
+<h2 id="formatting-function">Formatting Function</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Nonetype<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> formatting_function<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="color-output">Color Output</h2>
+<p>Tells isort to use color in terminal output.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> color_output<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--color</li>
 </ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
