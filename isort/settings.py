@@ -389,8 +389,8 @@ class Config(_Config):
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
-        if self.directory and Path(self.directory) in file_path.parents:
-            file_name = os.path.relpath(file_path, self.directory)
+        if self.directory and Path(self.directory) in file_path.resolve().parents:
+            file_name = os.path.relpath(file_path.resolve(), self.directory)
         else:
             file_name = str(file_path)
 
