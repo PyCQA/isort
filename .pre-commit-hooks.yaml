@@ -4,3 +4,4 @@
     require_serial: true
     language: python
     types: [python]
+    args: ['--filter-files']
