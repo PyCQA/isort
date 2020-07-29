@@ -555,7 +555,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="filter_files",
         action="store_true",
         help="Tells isort to filter files even when they are explicitly passed in as "
-        "part of the CLI command."
+        "part of the CLI command.",
     )
     parser.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
