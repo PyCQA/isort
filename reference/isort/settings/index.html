@@ -1975,9 +1975,9 @@
 
         <span class="sd">&quot;&quot;&quot;Returns True if the file and/or folder should be skipped based on current settings.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
 
-            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
 
@@ -2763,9 +2763,9 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="ss">&quot;&quot;&quot;Returns True if the file and/or folder should be skipped based on current settings.&quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">Path</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="nl">parents</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">Path</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">().</span><span class="nl">parents</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="nf">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="nf">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
@@ -3203,9 +3203,9 @@ dynamically determined later on.</p>
 
         <span class="ss">&quot;&quot;&quot;Returns True if the file and/or folder should be skipped based on current settings.&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="k">self</span><span class="p">.</span><span class="n">directory</span> <span class="k">and</span> <span class="n">Path</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span> <span class="k">in</span> <span class="n">file_path</span><span class="p">.</span><span class="n">parents</span><span class="p">:</span>
+        <span class="k">if</span> <span class="k">self</span><span class="p">.</span><span class="n">directory</span> <span class="k">and</span> <span class="n">Path</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span> <span class="k">in</span> <span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">().</span><span class="n">parents</span><span class="p">:</span>
 
-            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="k">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="k">self</span><span class="p">.</span><span class="n">directory</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
 
