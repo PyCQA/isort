@@ -162,6 +162,17 @@ Force isort to recognize a module as being part of the current python project.
 - -p
 - --project
 
+## Known Local Folder
+
+Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** known_local_folder  
+**CLI Flags:**
+
+- --known-local-folder
+
 ## Known Standard Library
 
 Force isort to recognize a module as part of Python's standard library.
@@ -719,7 +730,7 @@ Inserts a blank line before a comment following an import.
 
 ## Profile
 
-Base profile type to use for configuration.
+Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug. As well as any shared profiles.
 
 **Type:** String  
 **Default:** ``  
@@ -787,7 +798,7 @@ Causes all non indented imports to float to the top of the file having its impor
 
 ## Filter Files
 
-Tells isort to filter files even when they are explicitly passed in as part of the CLI command. Note that while this can be set as part of the config file it only affects CLI operation.
+Tells isort to filter files even when they are explicitly passed in as part of the CLI command.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -795,6 +806,37 @@ Tells isort to filter files even when they are explicitly passed in as part of t
 **CLI Flags:**
 
 - --filter-files
+
+## Formatter
+
+Specifies the name of a formatting plugin to use when producing output.
+
+**Type:** String  
+**Default:** ``  
+**Python & Config File Name:** formatter  
+**CLI Flags:**
+
+- --formatter
+
+## Formatting Function
+
+**No Description**
+
+**Type:** Nonetype  
+**Default:** `None`  
+**Python & Config File Name:** formatting_function  
+**CLI Flags:** **Not Supported**
+
+## Color Output
+
+Tells isort to use color in terminal output.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** color_output  
+**CLI Flags:**
+
+- --color
 
 ## Check
 
@@ -936,17 +978,6 @@ See isort's determined config, as well as sources of config options.
 **CLI Flags:**
 
 - --show-config
-
-## Color Terminal Output
-
-Tells isort to use color in terminal output.
-
-**Type:** Bool
-**Default:** `False`
-**Python & Config File Name:** color_output
-**CLI Flags:**
-
-- --color
 
 ## Deprecated Flags
 
