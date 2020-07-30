@@ -644,6 +644,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#migrating-pre-commit" class="md-nav__link">
+    Migrating pre-commit
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrating pre-commit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seed-isort-config" class="md-nav__link">
+    seed-isort-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isort-pre-commit-step" class="md-nav__link">
+    isort pre-commit step
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1286,6 +1313,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#migrating-pre-commit" class="md-nav__link">
+    Migrating pre-commit
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrating pre-commit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seed-isort-config" class="md-nav__link">
+    seed-isort-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isort-pre-commit-step" class="md-nav__link">
+    isort pre-commit step
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1314,6 +1368,10 @@ This guide is meant to help migrate projects from using isort 4.x.x unto the 5.0
 <li><a href="https://timothycrosley.github.io/isort/CHANGELOG/#500-penny-july-4-2020">isort 5.0.0 changelog</a></li>
 <li><a href="https://timothycrosley.github.io/isort/docs/major_releases/introducing_isort_5/">isort 5 release document</a></li>
 </ul>
+<div class="admonition important -">
+<p class="admonition-title">If you use pre-commit remove seed-isort-config.</p>
+<p>If you currently use pre-commit, make sure to see the pre-commit section of this document. In particular, make sure to remove any <code>seed-isort-config</code> pre-step.</p>
+</div>
 <h2 id="migrating-cli-options">Migrating CLI options</h2>
 <h3 id="-dont-skip-or-ns"><code>--dont-skip</code> or <code>-ns</code></h3>
 <p>In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the command line option. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
@@ -1344,6 +1402,19 @@ In isort 5, you can still get this behavior by moving your extra modules from th
 The TL;DR of which is that isort has now changed from <code>default_section=FIRSTPARTY</code> to <code>default_section=THIRDPARTY</code>. If you all already setting the default section to third party, your config is probably in good shape.
 If not, you can either use the old finding approach with <code>--magic-placement</code> in the CLI or <code>old_finders=True</code> in your config, or preferably, you are able to remove all placement options and isort will determine it correctly.
 If it doesn't, you should be able to just specify your projects modules with <code>known_first_party</code> and be done with it.</p>
+<h2 id="migrating-pre-commit">Migrating pre-commit</h2>
+<h3 id="seed-isort-config">seed-isort-config</h3>
+<p>If you have a step in your precommit called <code>seed-isort-config</code> or similar, it is highly recommend that you remove this. It is unnecessary in 5.x.x, is guaranteed to slow things down, and worse can conflict with isort's own module placement logic.</p>
+<h3 id="isort-pre-commit-step">isort pre-commit step</h3>
+<p>isort now includes an optimized precommit configuration in the repo itself. To use it you can replace any existing isort precommit step with:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">  - repo: https://github.com/timothycrosley/isort</span>
+<span class="err">    rev: master</span>
+<span class="err">    hooks:</span>
+<span class="err">      - id: isort</span>
+</code></pre></div>
+
+
+<p>under the <code>repos</code> section of your projects <code>.pre-commit-config.yaml</code> config.</p>
                 
               
               
