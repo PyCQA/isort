@@ -739,7 +739,10 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     file_names = arguments.pop("files", [])
     if not file_names and not show_config:
         print(QUICK_GUIDE)
-        return
+        if arguments:
+            sys.exit(f"Error: arguments passed in without any paths or content.")
+        else:
+            return
     elif file_names == ["-"] and not show_config:
         arguments.setdefault("settings_path", os.getcwd())
         api.sort_stream(

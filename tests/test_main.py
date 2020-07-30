@@ -99,11 +99,17 @@ def test_main(capsys, tmpdir):
     ]
     tmpdir.mkdir(".git")
 
-    # If no files are passed in the quick guide is returned
-    main.main(base_args)
+    # If nothing is passed in the quick guide is returned without erroring
+    main.main([])
     out, error = capsys.readouterr()
     assert main.QUICK_GUIDE in out
     assert not error
+
+    # If no files are passed in but arguments are the quick guide is returned, alongside an error.
+    with pytest.raises(SystemExit):
+        main.main(base_args)
+    out, error = capsys.readouterr()
+    assert main.QUICK_GUIDE in out
 
     # Unless the config is requested, in which case it will be returned alone as JSON
     main.main(base_args + ["--show-config"])

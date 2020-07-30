@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.2.2 July 30, 2020
+  - Fixed #1356: return status when arguments are passed in without files or a content stream.
+
 ### 5.2.1 July 28, 2020
   - Update precommit to default to filtering files that are defined in skip.
   - Improved relative path detection for `skip` config usage.
