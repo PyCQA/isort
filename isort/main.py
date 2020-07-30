@@ -740,7 +740,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     if not file_names and not show_config:
         print(QUICK_GUIDE)
         if arguments:
-            sys.exit(f"Error: arguments passed in without any paths or content.")
+            sys.exit("Error: arguments passed in without any paths or content.")
         else:
             return
     elif file_names == ["-"] and not show_config:
