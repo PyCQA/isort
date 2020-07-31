@@ -438,7 +438,9 @@ def _sort_imports(
                 if line == "# isort: on\n":
                     isort_off = False
                 new_input += line
-            elif line in ("# isort: split\n", "# isort: off\n", None):
+            elif line in ("# isort: split\n", "# isort: off\n", None) or str(line).endswith(
+                "# isort: split\n"
+            ):
                 if line == "# isort: off\n":
                     isort_off = True
                 if current:
@@ -448,9 +450,12 @@ def _sort_imports(
                         extra_space += "\n"
                         current = current[:-1]
                     extra_space = extra_space.replace("\n", "", 1)
-                    new_input += output.sorted_imports(
+                    sorted_output = output.sorted_imports(
                         parsed, config, extension, import_type="import"
                     )
+                    if sorted_output.strip() != output.strip():
+                        made_changes = True
+                    new_input += sorted_output
                     new_input += extra_space
                     current = ""
                 new_input += line or ""
@@ -541,6 +546,8 @@ def _sort_imports(
                     not stripped_line
                     or stripped_line.startswith("#")
                     and (not indent or indent + line.lstrip() == line)
+                    and not config.treat_all_comments_as_code
+                    and stripped_line not in config.treat_comments_as_code
                 ):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):

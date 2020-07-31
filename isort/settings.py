@@ -176,6 +176,8 @@ class _Config:
     formatter: str = ""
     formatting_function: Optional[Callable[[str, str, object], str]] = None
     color_output: bool = False
+    treat_comments_as_code: FrozenSet[str] = frozenset()
+    treat_all_comments_as_code: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

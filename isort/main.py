@@ -642,6 +642,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         " them in the middle of a file.",
     )
     parser.add_argument(
+        "--treat-comment-as-code",
+        dest="treat_comments_as_code",
+        action="append",
+        help="Tells isort to treat the specified single line comment(s) as if they are code.",
+    )
+    parser.add_argument(
+        "--treat-all-comment-as-code",
+        dest="treat_all_comments_as_code",
+        action="store_true",
+        help="Tells isort to treat all single line comments as if they are code.",
+    )
+    parser.add_argument(
         "--formatter",
         dest="formatter",
         type=str,

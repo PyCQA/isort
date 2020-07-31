@@ -231,3 +231,98 @@ def test_isort_supports_formatting_plugins_issue_1353():
     assert isort.code("import a", formatter="example") == "import a\n"  # formatting plugin
     with pytest.raises(exceptions.FormattingPluginDoesNotExist):
         assert isort.code("import a", formatter="madeupfake") == "import a\n"  # non-existent plugin
+
+
+def test_treating_comments_as_code_issue_1357():
+    """Test to ensure isort provides a way to treat comments as code.
+    See: https://github.com/timothycrosley/isort/issues/1357
+    """
+    assert isort.code("""# %%
+import numpy as np
+np.array([1,2,3])
+
+# %%
+import pandas as pd
+pd.Series([1,2,3])
+
+# %%
+# This is a comment on the second import
+import pandas as pd
+pd.Series([4,5,6])""", treat_comments_as_code=["# comment1", "# %%"]) == """# %%
+import numpy as np
+
+np.array([1,2,3])
+
+# %%
+import pandas as pd
+
+pd.Series([1,2,3])
+
+# %%
+# This is a comment on the second import
+import pandas as pd
+
+pd.Series([4,5,6])
+"""
+    assert isort.code("""# %%
+import numpy as np
+np.array([1,2,3])
+
+# %%
+import pandas as pd
+pd.Series([1,2,3])
+
+# %%
+# This is a comment on the second import
+import pandas as pd
+pd.Series([4,5,6])""", treat_comments_as_code=["# comment1", "# %%"], float_to_top=True) == """# %%
+import numpy as np
+# This is a comment on the second import
+import pandas as pd
+
+np.array([1,2,3])
+
+# %%
+pd.Series([1,2,3])
+
+# %%
+pd.Series([4,5,6])
+"""
+    assert isort.code("""# %%
+import numpy as np
+np.array([1,2,3])
+
+# %%
+import pandas as pd
+pd.Series([1,2,3])
+
+# %%
+# This is a comment on the second import
+import pandas as pd
+pd.Series([4,5,6])""", treat_all_comments_as_code=True) == """# %%
+import numpy as np
+
+np.array([1,2,3])
+
+# %%
+import pandas as pd
+
+pd.Series([1,2,3])
+
+# %%
+# This is a comment on the second import
+import pandas as pd
+
+pd.Series([4,5,6])
+"""
+    assert isort.code("""import b
+
+# these are special imports that have to do with installing X plugin
+import c
+import a
+""", treat_all_comments_as_code=True) == """import b
+
+# these are special imports that have to do with installing X plugin
+import a
+import c
+"""
