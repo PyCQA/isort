@@ -453,7 +453,7 @@ def _sort_imports(
                     sorted_output = output.sorted_imports(
                         parsed, config, extension, import_type="import"
                     )
-                    if sorted_output.strip() != output.strip():
+                    if sorted_output.strip() != current.strip():
                         made_changes = True
                     new_input += sorted_output
                     new_input += extra_space
