@@ -587,7 +587,7 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                 settings["indent"] = "\t" * (indent_size and int(indent_size) or 1)
 
             max_line_length = settings.pop("max_line_length", "").strip()
-            if max_line_length:
+            if (max_line_length and (max_line_length == "off" or isinstance(max_line_length, int) or max_line_length.isdigit())):
                 settings["line_length"] = (
                     float("inf") if max_line_length == "off" else int(max_line_length)
                 )
