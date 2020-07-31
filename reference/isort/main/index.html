@@ -2524,6 +2524,30 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--treat-comment-as-code&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;treat_comments_as_code&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to treat the specified single line comment(s) as if they are code.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--treat-all-comment-as-code&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;treat_all_comments_as_code&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to treat all single line comments as if they are code.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;--formatter&quot;</span><span class="p">,</span>
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;formatter&quot;</span><span class="p">,</span>
@@ -2698,7 +2722,7 @@
 
         <span class="k">if</span> <span class="n">arguments</span><span class="p">:</span>
 
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
 
@@ -3094,7 +3118,7 @@
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 

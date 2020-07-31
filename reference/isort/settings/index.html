@@ -1613,6 +1613,10 @@
 
     <span class="n">color_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="n">treat_comments_as_code</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">treat_all_comments_as_code</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -3159,6 +3163,14 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">src_paths</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">treat_all_comments_as_code</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">treat_comments_as_code</span>
 </code></pre></div>
 
 
