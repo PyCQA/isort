@@ -143,7 +143,7 @@ class ParsedContent(NamedTuple):
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
-    in_lines = contents.split(line_separator)
+    in_lines = contents.splitlines()
     out_lines = []
     original_line_count = len(in_lines)
     if config.old_finders:

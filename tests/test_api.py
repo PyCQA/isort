@@ -49,3 +49,7 @@ def test_diff_stream() -> None:
     assert api.sort_stream(StringIO("import b\nimport a\n"), output, show_diff=True)
     output.seek(0)
     assert "import a\n import b\n" in output.read()
+
+
+def test_sort_code_string_mixed_newlines():
+    assert api.sort_code_string("import A\n\r\nimportA\n\n") == "import A\r\n\r\nimportA\r\n\n"

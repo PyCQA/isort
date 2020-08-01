@@ -6,6 +6,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 ### 5.3.0 TBD
   - Implemented ability to treat all or select comments as code (issue #1357)
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)
+  - Improved handling of mixed newline forms within same source file.
 
 ### 5.2.2 July 30, 2020
   - Fixed #1356: return status when arguments are passed in without files or a content stream.
