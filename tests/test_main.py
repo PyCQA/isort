@@ -90,7 +90,7 @@ def test_is_python_file_fifo(tmpdir):
 
 def test_main(capsys, tmpdir):
     base_args = [
-        "--settings-path",
+        "-sp",
         str(tmpdir),
         "--virtual-env",
         str(tmpdir),

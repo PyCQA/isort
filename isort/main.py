@@ -23,6 +23,35 @@ except ImportError:
     pass
 
 shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
+DEPRECATED_SINGLE_DASH_ARGS = {
+    "-ac",
+    "-af",
+    "-ca",
+    "-cs",
+    "-df",
+    "-ds",
+    "-dt",
+    "-fas",
+    "-fass",
+    "-ff",
+    "-fgw",
+    "-fss",
+    "-lai",
+    "-lbt",
+    "-le",
+    "-ls",
+    "-nis",
+    "-nlb",
+    "-ot",
+    "-rr",
+    "-sd",
+    "-sg",
+    "-sl",
+    "-sp",
+    "-tc",
+    "-wl",
+    "-ws",
+}
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
@@ -696,10 +725,24 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         const="--keep-direct-and-as",
         help=argparse.SUPPRESS,
     )
+
     return parser
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+    argv = sys.argv[1:] if argv is None else list(argv)
+    for index, arg in enumerate(argv):
+        if arg in DEPRECATED_SINGLE_DASH_ARGS:
+            warn(
+                f"\n\nThe following deprecated single dash CLI flags was used: {arg}!\n"
+                f"It is being auto translated to -{arg} to maintain backward compatibility.\n"
+                f"This behavior will be REMOVED in the 6.x.x release and is not guaranteed across"
+                f" 5.x.x releases.\n\n"
+                "Please see the 5.0.0 upgrade guide:\n"
+                "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
+            )
+            argv[index] = f"-{arg}"
+
     parser = _build_arg_parser()
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
     if "dont_order_by_type" in arguments:
