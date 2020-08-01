@@ -144,6 +144,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
     in_lines = contents.splitlines()
+    if contents and contents[-1] in ("\n", "\r"):
+        in_lines.append("")
+
     out_lines = []
     original_line_count = len(in_lines)
     if config.old_finders:

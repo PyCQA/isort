@@ -225,7 +225,10 @@ def sorted_imports(
             new_out_lines.append(line)
             if line in parsed.import_placements:
                 new_out_lines.extend(parsed.place_imports[parsed.import_placements[line]])
-                if len(formatted_output) <= index or formatted_output[index + 1].strip() != "":
+                if (
+                    len(formatted_output) <= (index + 1)
+                    or formatted_output[index + 1].strip() != ""
+                ):
                     new_out_lines.append("")
         formatted_output = new_out_lines
 
