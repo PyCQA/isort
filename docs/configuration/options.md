@@ -787,7 +787,9 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 ## Float To Top
 
-Causes all non indented imports to float to the top of the file having its imports sorted. *NOTE*: This is an **experimental** feature. It currently doesn't work with cimports and is guaranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.
+Causes all non-indented imports to float to the top of the file having its imports sorted.  It can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.
+
+*NOTE*: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -837,6 +839,28 @@ Tells isort to use color in terminal output.
 **CLI Flags:**
 
 - --color
+
+## Treat Comments As Code
+
+Tells isort to treat the specified single line comment(s) as if they are code.
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** treat_comments_as_code  
+**CLI Flags:**
+
+- --treat-comment-as-code
+
+## Treat All Comments As Code
+
+Tells isort to treat all single line comments as if they are code.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** treat_all_comments_as_code  
+**CLI Flags:**
+
+- --treat-all-comment-as-code
 
 ## Check
 
