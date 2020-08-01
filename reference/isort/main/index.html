@@ -1326,6 +1326,64 @@
 
 <span class="n">shebang_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;^#!.*\bpython[23w]?\b&quot;</span><span class="p">)</span>
 
+<span class="n">DEPRECATED_SINGLE_DASH_ARGS</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="s2">&quot;-ac&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-af&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ca&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-cs&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-df&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ds&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-dt&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-fas&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-fass&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ff&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-fgw&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-fss&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-lai&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-lbt&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-le&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ls&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-nis&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-nlb&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ot&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-rr&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-sd&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-sg&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-sl&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-sp&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-tc&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-wl&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;-ws&quot;</span><span class="p">,</span>
+
+<span class="p">}</span>
+
 <span class="n">QUICK_GUIDE</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">{ASCII_ART}</span>
@@ -2510,15 +2568,15 @@
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes all non indented imports to float to the top of the file having its imports &quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes all non-indented imports to float to the top of the file having its imports &quot;</span>
 
-        <span class="s2">&quot;sorted. *NOTE*: This is an **experimental** feature. It currently doesn&#39;t work with &quot;</span>
+        <span class="s2">&quot;sorted.  It can be an excellent shortcut for collecting imports every once in a while &quot;</span>
 
-        <span class="s2">&quot;cimports and is guaranteed to run much slower and use much more memory than the default. &quot;</span>
+        <span class="s2">&quot;when you place them in the middle of a file to avoid context switching.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
-        <span class="s2">&quot;Still it can be a great shortcut for collecting imports every once in a while when you put&quot;</span>
+        <span class="s2">&quot;*NOTE*: It currently doesn&#39;t work with cimports and introduces some extra over-head &quot;</span>
 
-        <span class="s2">&quot; them in the middle of a file.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;and a performance penalty.&quot;</span>
 
     <span class="p">)</span>
 
@@ -2633,6 +2691,30 @@
     <span class="k">return</span> <span class="n">parser</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">argv</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">DEPRECATED_SINGLE_DASH_ARGS</span><span class="p">:</span>
+
+            <span class="n">warn</span><span class="p">(</span>
+
+                <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">The following deprecated single dash CLI flags was used: {arg}!</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                <span class="n">f</span><span class="s2">&quot;It is being auto translated to -{arg} to maintain backward compatibility.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                <span class="n">f</span><span class="s2">&quot;This behavior will be REMOVED in the 6.x.x release and is not guaranteed across&quot;</span>
+
+                <span class="n">f</span><span class="s2">&quot; 5.x.x releases.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+                <span class="s2">&quot;Please see the 5.0.0 upgrade guide:</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="p">)</span>
+
+            <span class="n">argv</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;-{arg}&quot;</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_build_arg_parser</span><span class="p">()</span>
 
@@ -2925,6 +3007,10 @@
 </details>
 <h2 id="variables">Variables</h2>
 <div class="codehilite"><pre><span></span><code><span class="n">ASCII_ART</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">DEPRECATED_SINGLE_DASH_ARGS</span>
 </code></pre></div>
 
 
@@ -3323,6 +3409,30 @@
 
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">parse_args</span><span class="p">(</span><span class="nl">argv</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Sequence[str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">argv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="o">[</span><span class="n">1:</span><span class="o">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">argv</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="k">index</span><span class="p">,</span><span class="w"> </span><span class="n">arg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">enumerate</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">arg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">DEPRECATED_SINGLE_DASH_ARGS</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;\n\nThe following deprecated single dash CLI flags was used: {arg}!\n&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;It is being auto translated to -{arg} to maintain backward compatibility.\n&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot;This behavior will be REMOVED in the 6.x.x release and is not guaranteed across&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">f</span><span class="ss">&quot; 5.x.x releases.\n\n&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="ss">&quot;Please see the 5.0.0 upgrade guide:\n&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="ss">&quot;\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">argv</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;-{arg}&quot;</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">parser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_build_arg_parser</span><span class="p">()</span><span class="w"></span>
 

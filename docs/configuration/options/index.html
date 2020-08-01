@@ -822,6 +822,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#treat-comments-as-code" class="md-nav__link">
+    Treat Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-all-comments-as-code" class="md-nav__link">
+    Treat All Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2266,6 +2280,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#treat-comments-as-code" class="md-nav__link">
+    Treat Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-all-comments-as-code" class="md-nav__link">
+    Treat All Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -3019,7 +3047,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--remove-redundant-aliases</li>
 </ul>
 <h2 id="float-to-top">Float To Top</h2>
-<p>Causes all non indented imports to float to the top of the file having its imports sorted. <em>NOTE</em>: This is an <strong>experimental</strong> feature. It currently doesn't work with cimports and is guaranteed to run much slower and use much more memory than the default. Still it can be a great shortcut for collecting imports every once in a while when you put them in the middle of a file.</p>
+<p>Causes all non-indented imports to float to the top of the file having its imports sorted.  It can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.</p>
+<p><em>NOTE</em>: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> float_to_top<br />
@@ -3059,6 +3088,24 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--color</li>
+</ul>
+<h2 id="treat-comments-as-code">Treat Comments As Code</h2>
+<p>Tells isort to treat the specified single line comment(s) as if they are code.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> treat_comments_as_code<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--treat-comment-as-code</li>
+</ul>
+<h2 id="treat-all-comments-as-code">Treat All Comments As Code</h2>
+<p>Tells isort to treat all single line comments as if they are code.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> treat_all_comments_as_code<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--treat-all-comment-as-code</li>
 </ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
