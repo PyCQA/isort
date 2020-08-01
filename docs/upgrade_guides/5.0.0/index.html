@@ -1405,7 +1405,7 @@ This guide is meant to help migrate projects from using isort 4.x.x unto the 5.0
 The great thing about this is that it means that isort can safely run against complex code bases that need to place side effects between import sections without needing any comments, flags, or configs. It's also part of the rearchitecting that allows it to sort within type checking conditionals and functions. However, it can be a jarring change
 for those of us who have gotten used to placing imports right above their usage in code to avoid context switching. No need to worry! isort still supports this work mode.</p>
 <p>If you want to move all imports to the top, you can use the new<code>--float-to-top</code> flag in the CLI or <code>float_to_top=true</code> option in your config file.</p>
-<p>See: https://timothycrosley.github.io/isort/docs/configuration/options/#float-to-top</p>
+<p>See: <a href="https://timothycrosley.github.io/isort/docs/configuration/options/#float-to-top">https://timothycrosley.github.io/isort/docs/configuration/options/#float-to-top</a></p>
 <h2 id="migrating-cli-options">Migrating CLI options</h2>
 <h3 id="-dont-skip-or-ns"><code>--dont-skip</code> or <code>-ns</code></h3>
 <p>In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the command line option. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
