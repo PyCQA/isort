@@ -668,7 +668,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "sorted.  It can be an excellent shortcut for collecting imports every once in a while "
         "when you place them in the middle of a file to avoid context switching.\n\n"
         "*NOTE*: It currently doesn't work with cimports and introduces some extra over-head "
-        "and a performance penalty."
+        "and a performance penalty.",
     )
     parser.add_argument(
         "--treat-comment-as-code",
