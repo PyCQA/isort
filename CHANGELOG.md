@@ -8,6 +8,9 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)
   - Improved handling of mixed newline forms within same source file.
 
+Internal Development:
+  - Initial hypothesmith powered test to help catch unexpected syntax parsing and output errors (thanks @Zac-HD!)
+
 ### 5.2.2 July 30, 2020
   - Fixed #1356: return status when arguments are passed in without files or a content stream.
 
