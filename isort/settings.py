@@ -26,8 +26,8 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
-SUPPORTED_EXTENSIONS = frozenset({".py", ".pyi", ".pyx"})
-BLOCKED_EXTENSIONS = frozenset({".pex"})
+SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", "pyx"})
+BLOCKED_EXTENSIONS = frozenset({"pex"})
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",
     "isort: " + "skip_file",
@@ -396,6 +396,7 @@ class Config(_Config):
 
     def is_supported_filetype(self, file_name: str):
         _root, ext = os.path.splitext(file_name)
+        ext = ext.lstrip(".")
         if ext in self.supported_extensions:
             return True
         elif ext in self.blocked_extensions:

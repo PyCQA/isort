@@ -58,7 +58,7 @@ class TestConfig:
         assert self.instance.is_supported_filetype(str(tmpdir.join("source.pyx")))
 
     def test_is_supported_filetype_configuration(self, tmpdir):
-        config = Config(supported_extensions=(".pyx",), blocked_extensions=(".py",))
+        config = Config(supported_extensions=("pyx",), blocked_extensions=("py",))
         assert config.is_supported_filetype(str(tmpdir.join("stub.pyx")))
         assert not config.is_supported_filetype(str(tmpdir.join("stub.py")))
 

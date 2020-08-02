@@ -20,11 +20,6 @@ def test_invalid_sort_type():
         isort.literal.assignment("x = [1, 2, 3", "tuple-list-not-exist", "py")
 
 
-def test_invalid_sort_type():
-    with pytest.raises(ValueError):
-        isort.literal.assignment("x = [1, 2, 3", "tuple-list-not-exist", "py")
-
-
 def test_value_assignment():
     assert isort.literal.assignment("x = ['b', 'a']", "list", "py") == "x = ['a', 'b']"
     assert (
