@@ -351,3 +351,53 @@ import a
 import c
 """
     )
+
+
+def test_isort_literals_issue_1358():
+    assert (
+        isort.code(
+            """
+import x
+import a
+
+
+# isort: list
+__all__ = ["b", "a", "b"]
+
+# isort: unique-list
+__all__ = ["b", "a", "b"]
+
+# isort: tuple
+__all__ = ("b", "a", "b")
+
+# isort: unique-tuple
+__all__ = ("b", "a", "b")
+
+# isort: set
+__all__ = {"b", "a", "b"}
+
+# isort: dict
+y = {"z": "z", "b": "b", "b": "c"}"""
+        )
+        == """
+import a
+import x
+
+# isort: list
+__all__ = ['a', 'b', 'b']
+
+# isort: unique-list
+__all__ = ['a', 'b']
+
+# isort: tuple
+__all__ = ('a', 'b', 'b')
+
+# isort: unique-tuple
+__all__ = ('a', 'b')
+
+# isort: set
+__all__ = {'a', 'b'}
+
+# isort: dict
+y = {'b': 'c', 'z': 'z'}"""
+    )

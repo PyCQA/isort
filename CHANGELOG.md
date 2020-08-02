@@ -6,6 +6,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 ### 5.3.0 TBD
   - Implemented ability to treat all or select comments as code (issue #1357)
   - Implemented ability to use different configs for different file extensions (issue #1162)
+  - Added experimental support for sorting literals (issue #1358)
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)
   - Improved handling of mixed newline forms within same source file.
 

@@ -56,3 +56,21 @@ class TestProfileDoesNotExist(TestISortError):
 
     def test_variables(self):
         assert self.instance.profile == "profile"
+
+
+class TestLiteralParsingFailure(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.LiteralParsingFailure("x = [", SyntaxError)
+
+    def test_variables(self):
+        assert self.instance.code == "x = ["
+        assert self.instance.original_error == SyntaxError
+
+
+class TestLiteralSortTypeMismatch(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.LiteralSortTypeMismatch(tuple, list)
+
+    def test_variables(self):
+        assert self.instance.kind == tuple
+        assert self.instance.expected_kind == list

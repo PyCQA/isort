@@ -85,3 +85,32 @@ class FormattingPluginDoesNotExist(ISortError):
     def __init__(self, formatter: str):
         super().__init__(f"Specified formatting plugin of {formatter} does not exist. ")
         self.formatter = formatter
+
+
+class LiteralParsingFailure(ISortError):
+    """Raised when one of isorts literal sorting comments is used but isort can't parse the
+    the given data structure.
+    """
+
+    def __init__(self, code: str, original_error: Exception):
+        super().__init__(
+            f"isort failed to parse the given literal {code}. It's important to note "
+            "that isort literal sorting only supports simple literals parsable by "
+            f"ast.literal_eval which gave the exception of {original_error}."
+        )
+        self.code = code
+        self.original_error = original_error
+
+
+class LiteralSortTypeMismatch(ISortError):
+    """Raised when an isort literal sorting comment is used, with a type that doesn't match the
+    supplied data structure's type.
+    """
+
+    def __init__(self, kind: type, expected_kind: type):
+        super().__init__(
+            f"isort was told to sort a literal of type {expected_kind} but was given "
+            f"a literal of type {kind}."
+        )
+        self.kind = kind
+        self.expected_kind = expected_kind
