@@ -143,7 +143,7 @@ Force isort to recognize a module as part of the future compatibility libraries.
 Force isort to recognize a module as being part of a third party library.
 
 **Type:** Frozenset  
-**Default:** `('google.appengine.api',)`  
+**Default:** `frozenset()`  
 **Python & Config File Name:** known_third_party  
 **CLI Flags:**
 
@@ -861,6 +861,30 @@ Tells isort to treat all single line comments as if they are code.
 **CLI Flags:**
 
 - --treat-all-comment-as-code
+
+## Supported Extensions
+
+Specifies what extensions isort can be ran against.
+
+**Type:** Frozenset  
+**Default:** `('.py', '.pyi', '.pyx')`  
+**Python & Config File Name:** supported_extensions  
+**CLI Flags:**
+
+- --ext
+- --extension
+- --supported-extension
+
+## Blocked Extensions
+
+Specifies what extensions isort can never be ran against.
+
+**Type:** Frozenset  
+**Default:** `('.pex',)`  
+**Python & Config File Name:** blocked_extensions  
+**CLI Flags:**
+
+- --blocked-extension
 
 ## Check
 

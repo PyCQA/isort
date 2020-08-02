@@ -14,7 +14,6 @@ import py
 import pytest
 import isort
 from isort import main, api, sections
-from isort.main import is_python_file
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
@@ -2998,28 +2997,6 @@ def test_escaped_no_parens_sort_with_first_comment() -> None:
     test_input = "from foo import a, \\\nb, \\\nc # comment\n"
     expected = "from foo import c  # comment\nfrom foo import a, b\n"
     assert isort.code(test_input) == expected
-
-
-def test_is_python_file_ioerror(tmpdir) -> None:
-    does_not_exist = tmpdir.join("fake.txt")
-    assert is_python_file(str(does_not_exist)) is False
-
-
-def test_is_python_file_shebang(tmpdir) -> None:
-    path = tmpdir.join("myscript")
-    path.write("#!/usr/bin/env python\n")
-    assert is_python_file(str(path)) is True
-
-
-def test_is_python_file_editor_backup(tmpdir) -> None:
-    path = tmpdir.join("myscript~")
-    path.write("#!/usr/bin/env python\n")
-    assert is_python_file(str(path)) is False
-
-
-def test_is_python_typing_stub(tmpdir) -> None:
-    stub = tmpdir.join("stub.pyi")
-    assert is_python_file(str(stub)) is True
 
 
 @pytest.mark.skip(reason="TODO: Duplicates currently not handled.")

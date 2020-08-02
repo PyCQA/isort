@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -7,6 +9,8 @@ from isort.settings import Config
 
 
 class TestConfig:
+    instance = Config()
+
     def test_init(self):
         assert Config()
 
@@ -25,6 +29,46 @@ class TestConfig:
     def test_is_skipped(self):
         assert Config().is_skipped(Path("C:\\path\\isort.py"))
         assert Config(skip=["/path/isort.py"]).is_skipped(Path("C:\\path\\isort.py"))
+
+    def test_is_supported_filetype(self):
+        assert self.instance.is_supported_filetype("file.py")
+        assert self.instance.is_supported_filetype("file.pyi")
+        assert self.instance.is_supported_filetype("file.pyx")
+        assert not self.instance.is_supported_filetype("file.pyc")
+        assert not self.instance.is_supported_filetype("file.txt")
+        assert not self.instance.is_supported_filetype("file.pex")
+
+    def test_is_supported_filetype_ioerror(self, tmpdir):
+        does_not_exist = tmpdir.join("fake.txt")
+        assert not self.instance.is_supported_filetype(str(does_not_exist))
+
+    def test_is_supported_filetype_shebang(self, tmpdir):
+        path = tmpdir.join("myscript")
+        path.write("#!/usr/bin/env python\n")
+        assert self.instance.is_supported_filetype(str(path))
+
+    def test_is_supported_filetype_editor_backup(self, tmpdir):
+        path = tmpdir.join("myscript~")
+        path.write("#!/usr/bin/env python\n")
+        assert not self.instance.is_supported_filetype(str(path))
+
+    def test_is_supported_filetype_defaults(self, tmpdir):
+        assert self.instance.is_supported_filetype(str(tmpdir.join("stub.pyi")))
+        assert self.instance.is_supported_filetype(str(tmpdir.join("source.py")))
+        assert self.instance.is_supported_filetype(str(tmpdir.join("source.pyx")))
+
+    def test_is_supported_filetype_configuration(self, tmpdir):
+        config = Config(supported_extensions=(".pyx",), blocked_extensions=(".py",))
+        assert config.is_supported_filetype(str(tmpdir.join("stub.pyx")))
+        assert not config.is_supported_filetype(str(tmpdir.join("stub.py")))
+
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="cannot create fifo file on Windows platform"
+    )
+    def test_is_supported_filetype_fifo(self, tmpdir):
+        fifo_file = os.path.join(tmpdir, "fifo_file")
+        os.mkfifo(fifo_file)
+        assert not self.instance.is_supported_filetype(fifo_file)
 
 
 def test_as_list():

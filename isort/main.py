@@ -3,8 +3,6 @@ import argparse
 import functools
 import json
 import os
-import re
-import stat
 import sys
 from io import TextIOWrapper
 from pathlib import Path
@@ -15,14 +13,13 @@ from . import __version__, api, sections
 from .exceptions import FileSkipped
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import SUPPORTED_EXTENSIONS, VALID_PY_TARGETS, Config, WrapModes
+from .settings import VALID_PY_TARGETS, Config, WrapModes
 
 try:
     from .setuptools_commands import ISortCommand  # noqa: F401
 except ImportError:
     pass
 
-shebang_re = re.compile(br"^#!.*\bpython[23w]?\b")
 DEPRECATED_SINGLE_DASH_ARGS = {
     "-ac",
     "-af",
@@ -66,32 +63,6 @@ Try one of the following:
 
 Visit https://timothycrosley.github.io/isort/ for complete information about how to use isort.
 """
-
-
-def is_python_file(path: str) -> bool:
-    _root, ext = os.path.splitext(path)
-    if ext in SUPPORTED_EXTENSIONS:
-        return True
-    if ext in (".pex",):
-        return False
-
-    # Skip editor backup files.
-    if path.endswith("~"):
-        return False
-
-    try:
-        if stat.S_ISFIFO(os.stat(path).st_mode):
-            return False
-    except OSError:
-        pass
-
-    try:
-        with open(path, "rb") as fp:
-            line = fp.readline(100)
-    except OSError:
-        return False
-    else:
-        return bool(shebang_re.match(line))
 
 
 class SortAttempt:
@@ -157,7 +128,7 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
 
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
-                    if is_python_file(filepath):
+                    if config.is_supported_filetype(filepath):
                         if config.is_skipped(Path(filepath)):
                             skipped.append(filename)
                         else:
@@ -687,6 +658,20 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="formatter",
         type=str,
         help="Specifies the name of a formatting plugin to use when producing output.",
+    )
+    parser.add_argument(
+        "--ext",
+        "--extension",
+        "--supported-extension",
+        dest="supported_extensions",
+        action="append",
+        help="Specifies what extensions isort can be ran against.",
+    )
+    parser.add_argument(
+        "--blocked-extension",
+        dest="blocked_extensions",
+        action="append",
+        help="Specifies what extensions isort can never be ran against.",
     )
 
     # deprecated options

@@ -7,6 +7,7 @@ import fnmatch
 import os
 import posixpath
 import re
+import stat
 import subprocess  # nosec: Needed for gitignore support.
 import sys
 from functools import lru_cache
@@ -24,7 +25,9 @@ from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-SUPPORTED_EXTENSIONS = (".py", ".pyi", ".pyx")
+_SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
+SUPPORTED_EXTENSIONS = frozenset({".py", ".pyi", ".pyx"})
+BLOCKED_EXTENSIONS = frozenset({".pex"})
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",
     "isort: " + "skip_file",
@@ -117,7 +120,7 @@ class _Config:
     sections: Tuple[str, ...] = SECTION_DEFAULTS
     no_sections: bool = False
     known_future_library: FrozenSet[str] = frozenset(("__future__",))
-    known_third_party: FrozenSet[str] = frozenset(("google.appengine.api",))
+    known_third_party: FrozenSet[str] = frozenset()
     known_first_party: FrozenSet[str] = frozenset()
     known_local_folder: FrozenSet[str] = frozenset()
     known_standard_library: FrozenSet[str] = frozenset()
@@ -178,6 +181,8 @@ class _Config:
     color_output: bool = False
     treat_comments_as_code: FrozenSet[str] = frozenset()
     treat_all_comments_as_code: bool = False
+    supported_extensions: FrozenSet[str] = SUPPORTED_EXTENSIONS
+    blocked_extensions: FrozenSet[str] = BLOCKED_EXTENSIONS
 
     def __post_init__(self):
         py_version = self.py_version
@@ -388,6 +393,31 @@ class Config(_Config):
             combined_config["import_headings"] = import_headings
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
+
+    def is_supported_filetype(self, file_name: str):
+        _root, ext = os.path.splitext(file_name)
+        if ext in self.supported_extensions:
+            return True
+        elif ext in self.blocked_extensions:
+            return False
+
+        # Skip editor backup files.
+        if file_name.endswith("~"):
+            return False
+
+        try:
+            if stat.S_ISFIFO(os.stat(file_name).st_mode):
+                return False
+        except OSError:
+            pass
+
+        try:
+            with open(file_name, "rb") as fp:
+                line = fp.readline(100)
+        except OSError:
+            return False
+        else:
+            return bool(_SHEBANG_RE.match(line))
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""

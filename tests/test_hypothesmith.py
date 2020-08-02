@@ -84,6 +84,7 @@ st.register_type_strategy(isort.Config, configs())
     config=st.builds(isort.Config),
     disregard_skip=st.booleans(),
 )
+@hypothesis.seed(235738473415671197623909623354096762459)
 @hypothesis.settings(
     suppress_health_check=[hypothesis.HealthCheck.too_slow, hypothesis.HealthCheck.filter_too_much]
 )

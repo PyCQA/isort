@@ -1,7 +1,5 @@
 import json
-import os
 import subprocess
-import sys
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
 
@@ -37,15 +35,6 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped
 
 
-def test_is_python_file():
-    assert main.is_python_file("file.py")
-    assert main.is_python_file("file.pyi")
-    assert main.is_python_file("file.pyx")
-    assert not main.is_python_file("file.pyc")
-    assert not main.is_python_file("file.txt")
-    assert not main.is_python_file("file.pex")
-
-
 def test_parse_args():
     assert main.parse_args([]) == {}
     assert main.parse_args(["--multi-line", "1"]) == {"multi_line_output": WrapModes.VERTICAL}
@@ -79,13 +68,6 @@ def test_preconvert():
     assert main._preconvert(main._preconvert) == "_preconvert"
     with pytest.raises(TypeError):
         main._preconvert(datetime.now())
-
-
-@pytest.mark.skipif(sys.platform == "win32", reason="cannot create fifo file on Windows platform")
-def test_is_python_file_fifo(tmpdir):
-    fifo_file = os.path.join(tmpdir, "fifo_file")
-    os.mkfifo(fifo_file)
-    assert not main.is_python_file(fifo_file)
 
 
 def test_main(capsys, tmpdir):
