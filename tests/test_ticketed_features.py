@@ -376,6 +376,12 @@ __all__ = ("b", "a", "b")
 # isort: set
 __all__ = {"b", "a", "b"}
 
+
+def method():
+    # isort: list
+    x = ["b", "a"]
+
+
 # isort: dict
 y = {"z": "z", "b": "b", "b": "c"}"""
         )
@@ -398,6 +404,72 @@ __all__ = ('a', 'b')
 # isort: set
 __all__ = {'a', 'b'}
 
+
+def method():
+    # isort: list
+    x = ['a', 'b']
+
+
 # isort: dict
 y = {'b': 'c', 'z': 'z'}"""
+    )
+    assert (
+        isort.code(
+            """
+import x
+import a
+
+
+# isort: list
+__all__ = ["b", "a", "b"]
+
+# isort: unique-list
+__all__ = ["b", "a", "b"]
+
+# isort: tuple
+__all__ = ("b", "a", "b")
+
+# isort: unique-tuple
+__all__ = ("b", "a", "b")
+
+# isort: set
+__all__ = {"b", "a", "b"}
+
+
+def method():
+    # isort: list
+    x = ["b", "a"]
+
+
+# isort: dict
+y = {"z": "z", "b": "b", "b": "c"}""",
+            formatter="example",
+        )
+        == """
+import a
+import x
+
+# isort: list
+__all__ = ["a", "b", "b"]
+
+# isort: unique-list
+__all__ = ["a", "b"]
+
+# isort: tuple
+__all__ = ("a", "b", "b")
+
+# isort: unique-tuple
+__all__ = ("a", "b")
+
+# isort: set
+__all__ = {"a", "b"}
+
+
+def method():
+    # isort: list
+    x = ["a", "b"]
+
+
+# isort: dict
+y = {"b": "c", "z": "z"}"""
     )

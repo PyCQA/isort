@@ -62,6 +62,7 @@ def process(
     isort_off: bool = False
     code_sorting: Union[bool, str] = False
     code_sorting_section: str = ""
+    code_sorting_indent: str = ""
     cimports: bool = False
     made_changes: bool = False
 
@@ -116,7 +117,15 @@ def process(
 
             if code_sorting and code_sorting_section:
                 output_stream.write(
-                    isort.literal.assignment(code_sorting_section, str(code_sorting), extension)
+                    textwrap.indent(
+                        isort.literal.assignment(
+                            code_sorting_section,
+                            str(code_sorting),
+                            extension,
+                            config=_indented_config(config, indent),
+                        ),
+                        code_sorting_indent,
+                    )
                 )
         else:
             stripped_line = line.strip()
@@ -176,17 +185,25 @@ def process(
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
                     code_sorting = stripped_line.split("isort: ")[1].strip()
+                    code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                 elif code_sorting:
                     if not stripped_line:
                         output_stream.write(
-                            isort.literal.assignment(
-                                code_sorting_section, str(code_sorting), extension
+                            textwrap.indent(
+                                isort.literal.assignment(
+                                    code_sorting_section,
+                                    str(code_sorting),
+                                    extension,
+                                    config=_indented_config(config, indent),
+                                ),
+                                code_sorting_indent,
                             )
                         )
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
+                        code_sorting_indent = ""
                     else:
                         code_sorting_section += line
                         line = ""
@@ -301,18 +318,10 @@ def process(
                         import_section = "".join(
                             line[len(indent) :] for line in import_section.splitlines(keepends=True)
                         )
-                        out_config = Config(
-                            config=config,
-                            line_length=max(config.line_length - len(indent), 0),
-                            wrap_length=max(config.wrap_length - len(indent), 0),
-                            lines_after_imports=1,
-                        )
-                    else:
-                        out_config = config
 
                     sorted_import_section = output.sorted_imports(
                         parse.file_contents(import_section, config=config),
-                        out_config,
+                        _indented_config(config, indent),
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
@@ -352,6 +361,18 @@ def process(
                 not_imports = False
 
     return made_changes
+
+
+def _indented_config(config: Config, indent: str):
+    if not indent:
+        return config
+
+    return Config(
+        config=config,
+        line_length=max(config.line_length - len(indent), 0),
+        wrap_length=max(config.wrap_length - len(indent), 0),
+        lines_after_imports=1,
+    )
 
 
 def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace: bool) -> bool:

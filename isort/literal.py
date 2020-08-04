@@ -27,6 +27,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         )
 
     variable_name, literal = code.split(" = ")
+    variable_name = variable_name.lstrip()
     try:
         value = ast.literal_eval(literal)
     except Exception as error:
@@ -37,14 +38,14 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
     printer = ISortPrettyPrinter(config)
-    sorted_value_code = sort_function(value, printer)
+    sorted_value_code = f"{variable_name} = {sort_function(value, printer)}"
     if config.formatting_function:
         sorted_value_code = config.formatting_function(
             sorted_value_code, extension, config
         ).rstrip()
 
     sorted_value_code += code[len(code.rstrip()) :]
-    return f"{variable_name} = {sorted_value_code}"
+    return sorted_value_code
 
 
 def register_type(name: str, kind: type):
