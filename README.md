@@ -341,6 +341,7 @@ capitalization (`known_custom=custom` VS `sections=CUSTOM,...`) for all others r
 following mapping:
 
  - `known_standard_library` : `STANDARD_LIBRARY`
+ - `extra_standard_library` : `STANDARD_LIBRARY` # Like known standard library but appends instead of replacing
  - `known_future_library` : `FUTURE`
  - `known_first_party`: `FIRSTPARTY`
  - `known_third_party`: `THIRDPARTY`
