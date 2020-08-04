@@ -449,7 +449,7 @@ class Config(_Config):
                 return True
 
             result = subprocess.run(  # nosec
-                ["git", "-C", str(file_path.resolve().parent), "check-ignore", "--quiet", os_path]
+                ["git", "-C", str(file_path.parent), "check-ignore", "--quiet", os_path]
             )
             if result.returncode == 0:
                 return True

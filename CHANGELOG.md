@@ -11,6 +11,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Improved handling of mixed newline forms within same source file.
   - Improved error handling for known sections.
   - Fixed #1366: spurious errors when combining skip with --gitignore.
+  - Fixed #1359: --skip-gitignore does not honor ignored symlink
 
 Internal Development:
   - Initial hypothesmith powered test to help catch unexpected syntax parsing and output errors (thanks @Zac-HD!)
