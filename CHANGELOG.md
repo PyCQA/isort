@@ -9,6 +9,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Added experimental support for sorting literals (issue #1358)
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)
   - Improved handling of mixed newline forms within same source file.
+  - Improved error handling for known sections.
 
 Internal Development:
   - Initial hypothesmith powered test to help catch unexpected syntax parsing and output errors (thanks @Zac-HD!)

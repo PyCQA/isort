@@ -14,6 +14,13 @@ class TestConfig:
     def test_init(self):
         assert Config()
 
+    def test_known_settings(self):
+        assert Config(known_third_party=["one"]).known_third_party == frozenset({"one"})
+        assert Config(known_thirdparty=["two"]).known_third_party == frozenset({"two"})
+        assert Config(
+            known_third_party=["one"], known_thirdparty=["two"]
+        ).known_third_party == frozenset({"one"})
+
     def test_invalid_settings_path(self):
         with pytest.raises(exceptions.InvalidSettingsPath):
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")

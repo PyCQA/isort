@@ -304,7 +304,7 @@ class Config(_Config):
 
         known_other = {}
         import_headings = {}
-        for key, value in combined_config.items():
+        for key, value in tuple(combined_config.items()):
             # Collect all known sections beyond those that have direct entries
             if key.startswith(KNOWN_PREFIX) and key not in (
                 "known_standard_library",
@@ -314,13 +314,30 @@ class Config(_Config):
                 "known_local_folder",
             ):
                 import_heading = key[len(KNOWN_PREFIX) :].lower()
-                known_other[import_heading] = frozenset(value)
-                if not import_heading.upper() in combined_config.get("sections", ()):
-                    warn(
-                        f"`{key}` setting is defined, but not {import_heading.upper()} is not"
-                        " included in `sections` config option:"
-                        f" {combined_config.get('sections', SECTION_DEFAULTS)}."
-                    )
+                maps_to_section = import_heading.upper()
+                combined_config.pop(key)
+                if maps_to_section in KNOWN_SECTION_MAPPING:
+                    section_name = f"known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}"
+                    if section_name in combined_config:
+                        warn(
+                            f"Can't set both {key} and {section_name} in the same config file.\n"
+                            f"Default to {section_name} if unsure."
+                            "\n\n"
+                            "See: https://timothycrosley.github.io/isort/"
+                            "#custom-sections-and-ordering."
+                        )
+                    else:
+                        combined_config[section_name] = frozenset(value)
+                else:
+                    known_other[import_heading] = frozenset(value)
+                    if maps_to_section not in combined_config.get("sections", ()):
+                        warn(
+                            f"`{key}` setting is defined, but {maps_to_section} is not"
+                            " included in `sections` config option:"
+                            f" {combined_config.get('sections', SECTION_DEFAULTS)}.\n\n"
+                            "See: https://timothycrosley.github.io/isort/"
+                            "#custom-sections-and-ordering."
+                        )
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
@@ -384,8 +401,6 @@ class Config(_Config):
                 combined_config.pop(deprecated_option)
 
         if known_other:
-            for known_key in known_other:
-                combined_config.pop(f"{KNOWN_PREFIX}{known_key}", None)
             combined_config["known_other"] = known_other
         if import_headings:
             for import_heading_key in import_headings:
