@@ -89,8 +89,12 @@ def process(
                     sorted_output = output.sorted_imports(
                         parsed, config, extension, import_type="import"
                     )
-                    if sorted_output.strip() != current.strip():
-                        made_changes = True
+                    made_changes = made_changes or _has_changed(
+                        before=current,
+                        after=sorted_output,
+                        line_separator=parsed.line_separator,
+                        ignore_whitespace=config.ignore_whitespace,
+                    )
                     new_input += sorted_output
                     new_input += extra_space
                     current = ""
@@ -320,20 +324,12 @@ def process(
                                 + trailing_whitespace
                             )
 
-                        if not made_changes:
-                            if config.ignore_whitespace:
-                                compare_in = remove_whitespace(
-                                    raw_import_section, line_separator=line_separator
-                                ).strip()
-                                compare_out = remove_whitespace(
-                                    sorted_import_section, line_separator=line_separator
-                                ).strip()
-                            else:
-                                compare_in = raw_import_section.strip()
-                                compare_out = sorted_import_section.strip()
-
-                            if compare_out != compare_in:
-                                made_changes = True
+                        made_changes = made_changes or _has_changed(
+                            before=raw_import_section,
+                            after=sorted_import_section,
+                            line_separator=line_separator,
+                            ignore_whitespace=config.ignore_whitespace,
+                        )
 
                         output_stream.write(sorted_import_section)
                         if not line and not indent and next_import_section:
@@ -356,3 +352,13 @@ def process(
                 not_imports = False
 
     return made_changes
+
+
+def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace: bool) -> bool:
+    if ignore_whitespace:
+        return (
+            remove_whitespace(before, line_separator=line_separator).strip()
+            != remove_whitespace(after, line_separator=line_separator).strip()
+        )
+    else:
+        return before.strip() != after.strip()
