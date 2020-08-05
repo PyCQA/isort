@@ -213,7 +213,8 @@ def check_stream(
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
     else:
-        printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
+        if not config.quiet:
+            printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
         if show_diff:
             output_stream = StringIO()
             input_stream.seek(0)
