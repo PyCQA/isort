@@ -614,6 +614,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../exceptions/" title="Exceptions" class="md-nav__link">
       Exceptions
     </a>
@@ -664,6 +676,18 @@
   <li class="md-nav__item">
     <a href="../io/" title="Io" class="md-nav__link">
       Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../literal/" title="Literal" class="md-nav__link">
+      Literal
     </a>
   </li>
 
@@ -734,13 +758,6 @@
   
     <nav class="md-nav" aria-label="Functions">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#is_python_file" class="md-nav__link">
-    is_python_file
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#iter_source_code" class="md-nav__link">
@@ -953,16 +970,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-24" type="checkbox" id="nav-8-1-24">
     
-    <label class="md-nav__link" for="nav-8-1-22">
+    <label class="md-nav__link" for="nav-8-1-24">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-22">
+      <label class="md-nav__title" for="nav-8-1-24">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1007,16 +1024,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-25" type="checkbox" id="nav-8-1-25">
     
-    <label class="md-nav__link" for="nav-8-1-23">
+    <label class="md-nav__link" for="nav-8-1-25">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-23">
+      <label class="md-nav__title" for="nav-8-1-25">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1201,13 +1218,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#is_python_file" class="md-nav__link">
-    is_python_file
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#iter_source_code" class="md-nav__link">
     iter_source_code
   </a>
@@ -1292,10 +1302,6 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-
-<span class="kn">import</span> <span class="nn">stat</span>
-
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOWrapper</span>
@@ -1314,7 +1320,7 @@
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
-<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">SUPPORTED_EXTENSIONS</span><span class="p">,</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">WrapModes</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">WrapModes</span>
 
 <span class="k">try</span><span class="p">:</span>
 
@@ -1323,8 +1329,6 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
 
     <span class="k">pass</span>
-
-<span class="n">shebang_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;^#!.*\bpython[23w]?\b&quot;</span><span class="p">)</span>
 
 <span class="n">DEPRECATED_SINGLE_DASH_ARGS</span> <span class="o">=</span> <span class="p">{</span>
 
@@ -1403,48 +1407,6 @@
 <span class="s2">Visit https://timothycrosley.github.io/isort/ for complete information about how to use isort.</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
-
-<span class="k">def</span> <span class="nf">is_python_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-
-    <span class="n">_root</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">SUPPORTED_EXTENSIONS</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="bp">True</span>
-
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.pex&quot;</span><span class="p">,):</span>
-
-        <span class="k">return</span> <span class="bp">False</span>
-
-    <span class="c1"># Skip editor backup files.</span>
-
-    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">):</span>
-
-        <span class="k">return</span> <span class="bp">False</span>
-
-    <span class="k">try</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span><span class="p">):</span>
-
-            <span class="k">return</span> <span class="bp">False</span>
-
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-
-        <span class="k">pass</span>
-
-    <span class="k">try</span><span class="p">:</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-
-            <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="bp">False</span>
-
-    <span class="k">else</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">shebang_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
 
 <span class="k">class</span> <span class="nc">SortAttempt</span><span class="p">:</span>
 
@@ -1558,7 +1520,7 @@
 
                     <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="n">is_python_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_supported_filetype</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
 
                         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)):</span>
 
@@ -2576,7 +2538,7 @@
 
         <span class="s2">&quot;*NOTE*: It currently doesn&#39;t work with cimports and introduces some extra over-head &quot;</span>
 
-        <span class="s2">&quot;and a performance penalty.&quot;</span>
+        <span class="s2">&quot;and a performance penalty.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -2613,6 +2575,48 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specifies the name of a formatting plugin to use when producing output.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--ext&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--extension&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--supported-extension&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;supported_extensions&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specifies what extensions isort can be ran against.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--blocked-extension&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;blocked_extensions&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specifies what extensions isort can never be ran against.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--dedup-headings&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dedup_headings&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to only show an identical custom import heading comment once, even if&quot;</span>
+
+        <span class="s2">&quot; there are multiple sections with the comment set.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -3018,10 +3022,6 @@
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code><span class="n">SUPPORTED_EXTENSIONS</span>
-</code></pre></div>
-
-
 <div class="codehilite"><pre><span></span><code><span class="n">VALID_PY_TARGETS</span>
 </code></pre></div>
 
@@ -3030,63 +3030,7 @@
 </code></pre></div>
 
 
-<div class="codehilite"><pre><span></span><code><span class="n">shebang_re</span>
-</code></pre></div>
-
-
 <h2 id="functions">Functions</h2>
-<h3 id="is_python_file">is_python_file</h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_python_file</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
-</code></pre></div>
-
-
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">is_python_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span><span class="p">:</span>
-
-    <span class="n">_root</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ext</span> <span class="k">in</span> <span class="n">SUPPORTED_EXTENSIONS</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="k">True</span>
-
-    <span class="k">if</span> <span class="n">ext</span> <span class="k">in</span> <span class="p">(</span><span class="ss">&quot;.pex&quot;</span><span class="p">,):</span>
-
-        <span class="k">return</span> <span class="k">False</span>
-
-    <span class="o">#</span> <span class="n">Skip</span> <span class="n">editor</span> <span class="n">backup</span> <span class="n">files</span><span class="p">.</span>
-
-    <span class="k">if</span> <span class="n">path</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="ss">&quot;~&quot;</span><span class="p">):</span>
-
-        <span class="k">return</span> <span class="k">False</span>
-
-    <span class="n">try</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="n">stat</span><span class="p">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">st_mode</span><span class="p">):</span>
-
-            <span class="k">return</span> <span class="k">False</span>
-
-    <span class="k">except</span> <span class="n">OSError</span><span class="p">:</span>
-
-        <span class="n">pass</span>
-
-    <span class="n">try</span><span class="p">:</span>
-
-        <span class="k">with</span> <span class="k">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="ss">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-
-            <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-
-    <span class="k">except</span> <span class="n">OSError</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="k">False</span>
-
-    <span class="k">else</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="n">bool</span><span class="p">(</span><span class="n">shebang_re</span><span class="p">.</span><span class="k">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-</code></pre></div>
-
-
-</details>
 <h3 id="iter_source_code">iter_source_code</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span>
     <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -3137,7 +3081,7 @@
 
 <span class="w">                    </span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">is_python_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">is_supported_filetype</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span><span class="err">:</span><span class="w"></span>
 

@@ -614,6 +614,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../exceptions/" title="Exceptions" class="md-nav__link">
       Exceptions
     </a>
@@ -664,6 +676,18 @@
   <li class="md-nav__item">
     <a href="../io/" title="Io" class="md-nav__link">
       Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../literal/" title="Literal" class="md-nav__link">
+      Literal
     </a>
   </li>
 
@@ -863,6 +887,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#is_supported_filetype" class="md-nav__link">
+    is_supported_filetype
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -952,16 +983,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-24" type="checkbox" id="nav-8-1-24">
     
-    <label class="md-nav__link" for="nav-8-1-22">
+    <label class="md-nav__link" for="nav-8-1-24">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-22">
+      <label class="md-nav__title" for="nav-8-1-24">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1006,16 +1037,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-25" type="checkbox" id="nav-8-1-25">
     
-    <label class="md-nav__link" for="nav-8-1-23">
+    <label class="md-nav__link" for="nav-8-1-25">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-23">
+      <label class="md-nav__title" for="nav-8-1-25">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1243,6 +1274,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#is_supported_filetype" class="md-nav__link">
+    is_supported_filetype
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1297,6 +1335,8 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">import</span> <span class="nn">stat</span>
+
 <span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c1"># nosec: Needed for gitignore support.</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -1327,7 +1367,11 @@
 
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">from_string</span> <span class="k">as</span> <span class="n">wrap_mode_from_string</span>
 
-<span class="n">SUPPORTED_EXTENSIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;.pyi&quot;</span><span class="p">,</span> <span class="s2">&quot;.pyx&quot;</span><span class="p">)</span>
+<span class="n">_SHEBANG_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;^#!.*\bpython[23w]?\b&quot;</span><span class="p">)</span>
+
+<span class="n">SUPPORTED_EXTENSIONS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pyi&quot;</span><span class="p">,</span> <span class="s2">&quot;pyx&quot;</span><span class="p">})</span>
+
+<span class="n">BLOCKED_EXTENSIONS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;pex&quot;</span><span class="p">})</span>
 
 <span class="n">FILE_SKIP_COMMENTS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
 
@@ -1495,7 +1539,7 @@
 
     <span class="n">known_future_library</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;__future__&quot;</span><span class="p">,))</span>
 
-    <span class="n">known_third_party</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;google.appengine.api&quot;</span><span class="p">,))</span>
+    <span class="n">known_third_party</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
     <span class="n">known_first_party</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
@@ -1616,6 +1660,18 @@
     <span class="n">treat_comments_as_code</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
 
     <span class="n">treat_all_comments_as_code</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">supported_extensions</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">SUPPORTED_EXTENSIONS</span>
+
+    <span class="n">blocked_extensions</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">BLOCKED_EXTENSIONS</span>
+
+    <span class="n">constants</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">classes</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">variables</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">dedup_headings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -1817,7 +1873,7 @@
 
         <span class="n">import_headings</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">combined_config</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
 
             <span class="c1"># Collect all known sections beyond those that have direct entries</span>
 
@@ -1837,19 +1893,53 @@
 
                 <span class="n">import_heading</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">KNOWN_PREFIX</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-                <span class="n">known_other</span><span class="p">[</span><span class="n">import_heading</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">maps_to_section</span> <span class="o">=</span> <span class="n">import_heading</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">import_heading</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">()):</span>
+                <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-                    <span class="n">warn</span><span class="p">(</span>
+                <span class="k">if</span> <span class="n">maps_to_section</span> <span class="ow">in</span> <span class="n">KNOWN_SECTION_MAPPING</span><span class="p">:</span>
 
-                        <span class="n">f</span><span class="s2">&quot;`{key}` setting is defined, but not {import_heading.upper()} is not&quot;</span>
+                    <span class="n">section_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}&quot;</span>
 
-                        <span class="s2">&quot; included in `sections` config option:&quot;</span>
+                    <span class="k">if</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
 
-                        <span class="n">f</span><span class="s2">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.&quot;</span>
+                        <span class="n">warn</span><span class="p">(</span>
 
-                    <span class="p">)</span>
+                            <span class="n">f</span><span class="s2">&quot;Can&#39;t set both {key} and {section_name} in the same config file.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+                            <span class="n">f</span><span class="s2">&quot;Default to {section_name} if unsure.&quot;</span>
+
+                            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+                            <span class="s2">&quot;See: https://timothycrosley.github.io/isort/&quot;</span>
+
+                            <span class="s2">&quot;#custom-sections-and-ordering.&quot;</span>
+
+                        <span class="p">)</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+
+                        <span class="n">combined_config</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">known_other</span><span class="p">[</span><span class="n">import_heading</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">maps_to_section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">()):</span>
+
+                        <span class="n">warn</span><span class="p">(</span>
+
+                            <span class="n">f</span><span class="s2">&quot;`{key}` setting is defined, but {maps_to_section} is not&quot;</span>
+
+                            <span class="s2">&quot; included in `sections` config option:&quot;</span>
+
+                            <span class="n">f</span><span class="s2">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+                            <span class="s2">&quot;See: https://timothycrosley.github.io/isort/&quot;</span>
+
+                            <span class="s2">&quot;#custom-sections-and-ordering.&quot;</span>
+
+                        <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">IMPORT_HEADING_PREFIX</span><span class="p">):</span>
 
@@ -1957,10 +2047,6 @@
 
         <span class="k">if</span> <span class="n">known_other</span><span class="p">:</span>
 
-            <span class="k">for</span> <span class="n">known_key</span> <span class="ow">in</span> <span class="n">known_other</span><span class="p">:</span>
-
-                <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{KNOWN_PREFIX}{known_key}&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;known_other&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">known_other</span>
 
         <span class="k">if</span> <span class="n">import_headings</span><span class="p">:</span>
@@ -1972,6 +2058,50 @@
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;import_headings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_headings</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="nf">is_supported_filetype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="n">_root</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_extensions</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c1"># Skip editor backup files.</span>
+
+        <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+                <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_SHEBANG_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
@@ -1989,9 +2119,13 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
 
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.git&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                <span class="k">return</span> <span class="bp">True</span>
+
             <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># nosec</span>
 
-                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
 
             <span class="p">)</span>
 
@@ -2379,6 +2513,10 @@
 
 </details>
 <h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">BLOCKED_EXTENSIONS</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">CONFIG_SECTIONS</span>
 </code></pre></div>
 
@@ -2605,7 +2743,7 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="n">import_headings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{}</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="n">items</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tuple</span><span class="p">(</span><span class="n">combined_config</span><span class="p">.</span><span class="n">items</span><span class="p">())</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">Collect</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">known</span><span class="w"> </span><span class="n">sections</span><span class="w"> </span><span class="n">beyond</span><span class="w"> </span><span class="n">those</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">direct</span><span class="w"> </span><span class="n">entries</span><span class="w"></span>
 
@@ -2625,19 +2763,53 @@ dynamically determined later on.</p>
 
 <span class="w">                </span><span class="n">import_heading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">key</span><span class="o">[</span><span class="n">len(KNOWN_PREFIX) :</span><span class="o">]</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">known_other</span><span class="o">[</span><span class="n">import_heading</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">maps_to_section</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_heading</span><span class="p">.</span><span class="nf">upper</span><span class="p">()</span><span class="w"></span>
 
-<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">import_heading</span><span class="p">.</span><span class="nf">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">:</span><span class="w"></span>
+<span class="w">                </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="k">key</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">                    </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">maps_to_section</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">KNOWN_SECTION_MAPPING</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">                        </span><span class="n">f</span><span class="ss">&quot;`{key}` setting is defined, but not {import_heading.upper()} is not&quot;</span><span class="w"></span>
+<span class="w">                    </span><span class="n">section_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}&quot;</span><span class="w"></span>
 
-<span class="w">                        </span><span class="ss">&quot; included in `sections` config option:&quot;</span><span class="w"></span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">section_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">                        </span><span class="n">f</span><span class="ss">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.&quot;</span><span class="w"></span>
+<span class="w">                        </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">                    </span><span class="p">)</span><span class="w"></span>
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Can&#39;t set both {key} and {section_name} in the same config file.\n&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;Default to {section_name} if unsure.&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot;\n\n&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot;See: https://timothycrosley.github.io/isort/&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot;#custom-sections-and-ordering.&quot;</span><span class="w"></span>
+
+<span class="w">                        </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">combined_config</span><span class="o">[</span><span class="n">section_name</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">known_other</span><span class="o">[</span><span class="n">import_heading</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">maps_to_section</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot;`{key}` setting is defined, but {maps_to_section} is not&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot; included in `sections` config option:&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">f</span><span class="ss">&quot; {combined_config.get(&#39;sections&#39;, SECTION_DEFAULTS)}.\n\n&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot;See: https://timothycrosley.github.io/isort/&quot;</span><span class="w"></span>
+
+<span class="w">                            </span><span class="ss">&quot;#custom-sections-and-ordering.&quot;</span><span class="w"></span>
+
+<span class="w">                        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="k">key</span><span class="p">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">IMPORT_HEADING_PREFIX</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
@@ -2745,10 +2917,6 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">known_key</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">                </span><span class="n">combined_config</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{KNOWN_PREFIX}{known_key}&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
-
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;known_other&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">known_other</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">import_headings</span><span class="p">:</span><span class="w"></span>
@@ -2760,6 +2928,50 @@ dynamically determined later on.</p>
 <span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;import_headings&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_headings</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span><span class="w"> </span><span class="o">**</span><span class="n">combined_config</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">is_supported_filetype</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nf">file_name</span><span class="err">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">_root</span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="nf">file_name</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ext</span><span class="p">.</span><span class="n">lstrip</span><span class="p">(</span><span class="ss">&quot;.&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">ext</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">supported_extensions</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">ext</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">blocked_extensions</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Skip</span><span class="w"> </span><span class="n">editor</span><span class="w"> </span><span class="k">backup</span><span class="w"> </span><span class="n">files</span><span class="p">.</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nf">file_name</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="ss">&quot;~&quot;</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">stat</span><span class="p">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">stat</span><span class="p">(</span><span class="nf">file_name</span><span class="p">).</span><span class="n">st_mode</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="nl">OSError</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">pass</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">with</span><span class="w"> </span><span class="k">open</span><span class="p">(</span><span class="nf">file_name</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;rb&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">fp</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fp</span><span class="p">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="nl">OSError</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">bool</span><span class="p">(</span><span class="n">_SHEBANG_RE</span><span class="p">.</span><span class="k">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">is_skipped</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">file_path</span><span class="p">:</span><span class="w"> </span><span class="k">Path</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">bool</span><span class="p">:</span><span class="w"></span>
 
@@ -2777,9 +2989,13 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">skip_gitignore</span><span class="p">:</span><span class="w"></span>
 
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;.git&quot;</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
 <span class="w">            </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">nosec</span><span class="w"></span>
 
-<span class="w">                </span><span class="o">[</span><span class="n">&quot;git&quot;, &quot;-C&quot;, str(file_path.resolve().parent), &quot;check-ignore&quot;, &quot;--quiet&quot;, os_path</span><span class="o">]</span><span class="w"></span>
+<span class="w">                </span><span class="o">[</span><span class="n">&quot;git&quot;, &quot;-C&quot;, str(file_path.parent), &quot;check-ignore&quot;, &quot;--quiet&quot;, os_path</span><span class="o">]</span><span class="w"></span>
 
 <span class="w">            </span><span class="p">)</span><span class="w"></span>
 
@@ -2926,7 +3142,15 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">blocked_extensions</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">case_sensitive</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">classes</span>
 </code></pre></div>
 
 
@@ -2947,6 +3171,14 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">conda_env</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">constants</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">dedup_headings</span>
 </code></pre></div>
 
 
@@ -3166,6 +3398,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">supported_extensions</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">treat_all_comments_as_code</span>
 </code></pre></div>
 
@@ -3175,6 +3411,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">use_parentheses</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">variables</span>
 </code></pre></div>
 
 
@@ -3225,9 +3465,13 @@ dynamically determined later on.</p>
 
         <span class="k">if</span> <span class="k">self</span><span class="p">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
 
+            <span class="k">if</span> <span class="n">file_path</span><span class="p">.</span><span class="n">name</span> <span class="o">==</span> <span class="ss">&quot;.git&quot;</span><span class="p">:</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+
+                <span class="k">return</span> <span class="k">True</span>
+
             <span class="k">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span>  <span class="o">#</span> <span class="n">nosec</span>
 
-                <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;-C&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">().</span><span class="n">parent</span><span class="p">),</span> <span class="ss">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="ss">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
+                <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;-C&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">parent</span><span class="p">),</span> <span class="ss">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="ss">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
 
             <span class="p">)</span>
 
@@ -3272,6 +3516,61 @@ dynamically determined later on.</p>
             <span class="k">return</span> <span class="k">True</span>
 
         <span class="k">return</span> <span class="k">False</span>
+</code></pre></div>
+
+
+</details>
+<h5 id="is_supported_filetype">is_supported_filetype</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_supported_filetype</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">is_supported_filetype</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">str</span><span class="p">):</span>
+
+        <span class="n">_root</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="p">.</span><span class="n">lstrip</span><span class="p">(</span><span class="ss">&quot;.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">supported_extensions</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="k">True</span>
+
+        <span class="n">elif</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="k">False</span>
+
+        <span class="o">#</span> <span class="n">Skip</span> <span class="n">editor</span> <span class="n">backup</span> <span class="n">files</span><span class="p">.</span>
+
+        <span class="k">if</span> <span class="n">file_name</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="ss">&quot;~&quot;</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="k">False</span>
+
+        <span class="n">try</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">stat</span><span class="p">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">stat</span><span class="p">(</span><span class="n">file_name</span><span class="p">).</span><span class="n">st_mode</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="k">False</span>
+
+        <span class="k">except</span> <span class="n">OSError</span><span class="p">:</span>
+
+            <span class="n">pass</span>
+
+        <span class="n">try</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="k">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="ss">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+                <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">OSError</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="k">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">bool</span><span class="p">(</span><span class="n">_SHEBANG_RE</span><span class="p">.</span><span class="k">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
 </code></pre></div>
 
 

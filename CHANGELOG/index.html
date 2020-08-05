@@ -229,8 +229,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#530-tbd" class="md-nav__link">
-    5.3.0 TBD
+  <a href="#530-aug-4-2020" class="md-nav__link">
+    5.3.0 Aug 4, 2020
   </a>
   
 </li>
@@ -1051,6 +1051,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../reference/isort/core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../reference/isort/exceptions/" title="Exceptions" class="md-nav__link">
       Exceptions
     </a>
@@ -1101,6 +1113,18 @@
   <li class="md-nav__item">
     <a href="../reference/isort/io/" title="Io" class="md-nav__link">
       Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../reference/isort/literal/" title="Literal" class="md-nav__link">
+      Literal
     </a>
   </li>
 
@@ -1280,16 +1304,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-24" type="checkbox" id="nav-8-1-24">
     
-    <label class="md-nav__link" for="nav-8-1-22">
+    <label class="md-nav__link" for="nav-8-1-24">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-22">
+      <label class="md-nav__title" for="nav-8-1-24">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1334,16 +1358,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-25" type="checkbox" id="nav-8-1-25">
     
-    <label class="md-nav__link" for="nav-8-1-23">
+    <label class="md-nav__link" for="nav-8-1-25">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-23">
+      <label class="md-nav__title" for="nav-8-1-25">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1513,8 +1537,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#530-tbd" class="md-nav__link">
-    5.3.0 TBD
+  <a href="#530-aug-4-2020" class="md-nav__link">
+    5.3.0 Aug 4, 2020
   </a>
   
 </li>
@@ -1940,11 +1964,20 @@
                 
                 <h1 id="changelog">Changelog</h1>
 <p>NOTE: isort follows the <a href="https://semver.org/">semver</a> versioning standard.</p>
-<h3 id="530-tbd">5.3.0 TBD</h3>
+<h3 id="530-aug-4-2020">5.3.0 Aug 4, 2020</h3>
 <ul>
 <li>Implemented ability to treat all or select comments as code (issue #1357)</li>
+<li>Implemented ability to use different configs for different file extensions (issue #1162)</li>
+<li>Implemented ability to specify the types of imports (issue #1181)</li>
+<li>Implemented ability to dedup import headings (issue #953)</li>
+<li>Added experimental support for sorting literals (issue #1358)</li>
+<li>Added experimental support for sorting and deduping groupings of assignments.</li>
 <li>Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)</li>
 <li>Improved handling of mixed newline forms within same source file.</li>
+<li>Improved error handling for known sections.</li>
+<li>Improved API consistency, returning a boolean value for all modification API calls to indicate if changes were made.</li>
+<li>Fixed #1366: spurious errors when combining skip with --gitignore.</li>
+<li>Fixed #1359: --skip-gitignore does not honor ignored symlink</li>
 </ul>
 <p>Internal Development:
   - Initial hypothesmith powered test to help catch unexpected syntax parsing and output errors (thanks @Zac-HD!)</p>

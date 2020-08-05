@@ -836,6 +836,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#supported-extensions" class="md-nav__link">
+    Supported Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blocked-extensions" class="md-nav__link">
+    Blocked Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -1288,6 +1302,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../reference/isort/core/" title="Core" class="md-nav__link">
+      Core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../reference/isort/exceptions/" title="Exceptions" class="md-nav__link">
       Exceptions
     </a>
@@ -1338,6 +1364,18 @@
   <li class="md-nav__item">
     <a href="../../../reference/isort/io/" title="Io" class="md-nav__link">
       Io
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/literal/" title="Literal" class="md-nav__link">
+      Literal
     </a>
   </li>
 
@@ -1517,16 +1555,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-22" type="checkbox" id="nav-8-1-22">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-24" type="checkbox" id="nav-8-1-24">
     
-    <label class="md-nav__link" for="nav-8-1-22">
+    <label class="md-nav__link" for="nav-8-1-24">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-22">
+      <label class="md-nav__title" for="nav-8-1-24">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1571,16 +1609,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-23" type="checkbox" id="nav-8-1-23">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8-1-25" type="checkbox" id="nav-8-1-25">
     
-    <label class="md-nav__link" for="nav-8-1-23">
+    <label class="md-nav__link" for="nav-8-1-25">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-8-1-23">
+      <label class="md-nav__title" for="nav-8-1-25">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -2294,6 +2332,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#supported-extensions" class="md-nav__link">
+    Supported Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blocked-extensions" class="md-nav__link">
+    Blocked Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2527,7 +2579,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="known-third-party">Known Third Party</h2>
 <p>Force isort to recognize a module as being part of a third party library.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('google.appengine.api',)</code><br />
+<strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> known_third_party<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3106,6 +3158,26 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--treat-all-comment-as-code</li>
+</ul>
+<h2 id="supported-extensions">Supported Extensions</h2>
+<p>Specifies what extensions isort can be ran against.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('.py', '.pyi', '.pyx')</code><br />
+<strong>Python &amp; Config File Name:</strong> supported_extensions<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ext</li>
+<li>--extension</li>
+<li>--supported-extension</li>
+</ul>
+<h2 id="blocked-extensions">Blocked Extensions</h2>
+<p>Specifies what extensions isort can never be ran against.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('.pex',)</code><br />
+<strong>Python &amp; Config File Name:</strong> blocked_extensions<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--blocked-extension</li>
 </ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
