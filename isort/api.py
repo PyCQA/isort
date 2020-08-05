@@ -98,9 +98,9 @@ def sort_stream(
     disregard_skip: bool = False,
     show_diff: Union[bool, TextIO] = False,
     **config_kwargs,
-):
+) -> bool:
     """Sorts any imports within the provided code stream, outputs to the provided output stream.
-    Directly returns nothing.
+     Returns `True` if anything is modified from the original input stream, otherwise `False`.
 
     - **input_stream**: The stream of code with imports that need to be sorted.
     - **output_stream**: The stream where sorted imports should be written to.
@@ -280,8 +280,9 @@ def sort_file(
     show_diff: Union[bool, TextIO] = False,
     write_to_stdout: bool = False,
     **config_kwargs,
-):
+) -> bool:
     """Sorts and formats any groups of imports imports within the provided file or Path.
+     Returns `True` if the file has been changed, otherwise `False`.
 
     - **filename**: The name or Path of the file to format.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
@@ -341,7 +342,7 @@ def sort_file(
                                         str(source_file.path)
                                     )
                                 ):
-                                    return
+                                    return False
                         source_file.stream.close()
                         tmp_file.replace(source_file.path)
                         if not config.quiet:
@@ -355,6 +356,8 @@ def sort_file(
             warn(f"{file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
             warn(f"{file_path} unable to sort as isort introduces new syntax errors")
+
+        return changed
 
 
 def _config(

@@ -11,6 +11,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)
   - Improved handling of mixed newline forms within same source file.
   - Improved error handling for known sections.
+  - Improved API consistency, returning a boolean value for all modification API calls to indicate if changes were made.
   - Fixed #1366: spurious errors when combining skip with --gitignore.
   - Fixed #1359: --skip-gitignore does not honor ignored symlink
 
