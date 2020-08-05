@@ -1,7 +1,7 @@
 import copy
 import itertools
 from functools import partial
-from typing import Iterable, List, Tuple
+from typing import Iterable, List, Set, Tuple
 
 from isort.format import format_simplified
 
@@ -46,6 +46,7 @@ def sorted_imports(
         sections = base_sections + ("no_sections",)
 
     output: List[str] = []
+    seen_headings: Set[str] = set()
     pending_lines_before = False
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
@@ -152,7 +153,9 @@ def sorted_imports(
                 continue
 
             section_title = config.import_headings.get(section_name.lower(), "")
-            if section_title:
+            if section_title and section_title not in seen_headings:
+                if config.dedup_headings:
+                    seen_headings.add(section_title)
                 section_comment = f"# {section_title}"
                 if section_comment not in parsed.lines_without_imports[0:1]:
                     section_output.insert(0, section_comment)

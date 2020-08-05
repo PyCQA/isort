@@ -1,6 +1,7 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+from functools import partial
 from io import StringIO
 
 import pytest
@@ -507,3 +508,38 @@ def test_isort_allows_setting_import_types_issue_1181():
         )
         == "from x import Big, variable, AA\n"
     )
+
+
+def test_isort_enables_deduping_section_headers_issue_953():
+    """isort should provide a way to only have identical import headings show up once.
+    See: https://github.com/timothycrosley/isort/issues/953
+    """
+    isort_code = partial(
+        isort.code,
+        config=Config(
+            import_heading_firstparty="Local imports.",
+            import_heading_localfolder="Local imports.",
+            dedup_headings=True,
+            known_first_party=["isort"],
+        ),
+    )
+
+    assert (
+        isort_code("from . import something")
+        == """# Local imports.
+from . import something
+"""
+    )
+    assert (
+        isort_code(
+            """from isort import y
+
+from . import something"""
+        )
+        == """# Local imports.
+from isort import y
+
+from . import something
+"""
+    )
+    assert isort_code("import os") == "import os\n"

@@ -673,6 +673,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="append",
         help="Specifies what extensions isort can never be ran against.",
     )
+    parser.add_argument(
+        "--dedup-headings",
+        dest="dedup_headings",
+        action="store_true",
+        help="Tells isort to only show an identical custom import heading comment once, even if"
+        " there are multiple sections with the comment set.",
+    )
 
     # deprecated options
     parser.add_argument(

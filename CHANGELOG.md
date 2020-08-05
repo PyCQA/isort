@@ -3,10 +3,11 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.3.0 TBD
+### 5.3.0 Aug 4, 2020
   - Implemented ability to treat all or select comments as code (issue #1357)
   - Implemented ability to use different configs for different file extensions (issue #1162)
   - Implemented ability to specify the types of imports (issue #1181)
+  - Implemented ability to dedup import headings (issue #953)
   - Added experimental support for sorting literals (issue #1358)
   - Added experimental support for sorting and deduping groupings of assignments.
   - Improved handling of deprecated single line variables for usage with Visual Studio Code (issue #1363)

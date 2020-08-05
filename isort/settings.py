@@ -186,6 +186,7 @@ class _Config:
     constants: FrozenSet[str] = frozenset()
     classes: FrozenSet[str] = frozenset()
     variables: FrozenSet[str] = frozenset()
+    dedup_headings: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
