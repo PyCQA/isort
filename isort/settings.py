@@ -183,6 +183,9 @@ class _Config:
     treat_all_comments_as_code: bool = False
     supported_extensions: FrozenSet[str] = SUPPORTED_EXTENSIONS
     blocked_extensions: FrozenSet[str] = BLOCKED_EXTENSIONS
+    constants: FrozenSet[str] = frozenset()
+    classes: FrozenSet[str] = frozenset()
+    variables: FrozenSet[str] = frozenset()
 
     def __post_init__(self):
         py_version = self.py_version

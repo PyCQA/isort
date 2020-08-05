@@ -26,9 +26,15 @@ def module_key(
         module_name = str(module_name)
 
     if sub_imports and config.order_by_type:
-        if module_name.isupper() and len(module_name) > 1:  # see issue #376
+        if module_name in config.constants:
             prefix = "A"
-        elif module_name[0:1].isupper():
+        elif module_name in config.classes:
+            prefix = "B"
+        elif module_name in config.variables:
+            prefix = "C"
+        elif module_name.isupper() and len(module_name) > 1:  # see issue #376
+            prefix = "A"
+        elif module_name in config.classes or module_name[0:1].isupper():
             prefix = "B"
         else:
             prefix = "C"

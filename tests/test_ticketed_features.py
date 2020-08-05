@@ -483,3 +483,27 @@ d = x
 # isort: dict
 y = {"b": "c", "z": "z"}"""
     )
+
+
+def test_isort_allows_setting_import_types_issue_1181():
+    """Test to ensure isort provides a way to set the type of imports.
+    See: https://github.com/timothycrosley/isort/issues/1181
+    """
+    assert isort.code("from x import AA, Big, variable") == "from x import AA, Big, variable\n"
+    assert (
+        isort.code("from x import AA, Big, variable", constants=["variable"])
+        == "from x import AA, variable, Big\n"
+    )
+    assert (
+        isort.code("from x import AA, Big, variable", variables=["AA"])
+        == "from x import Big, AA, variable\n"
+    )
+    assert (
+        isort.code(
+            "from x import AA, Big, variable",
+            constants=["Big"],
+            variables=["AA"],
+            classes=["variable"],
+        )
+        == "from x import Big, variable, AA\n"
+    )
