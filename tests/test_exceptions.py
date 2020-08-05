@@ -74,3 +74,11 @@ class TestLiteralSortTypeMismatch(TestISortError):
     def test_variables(self):
         assert self.instance.kind == tuple
         assert self.instance.expected_kind == list
+
+
+class TestAssignmentsFormatMismatch(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.AssignmentsFormatMismatch("print x")
+
+    def test_variables(self):
+        assert self.instance.code == "print x"

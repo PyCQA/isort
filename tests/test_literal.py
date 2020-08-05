@@ -26,3 +26,8 @@ def test_value_assignment():
         isort.literal.assignment("x = ['b', 'a']", "list", "py", Config(formatter="example"))
         == 'x = ["a", "b"]'
     )
+
+
+def test_assignments_invalid_section():
+    with pytest.raises(exceptions.AssignmentsFormatMismatch):
+        isort.literal.assignment("x++", "assignments", "py")

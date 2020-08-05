@@ -441,6 +441,11 @@ def method():
     x = ["b", "a"]
 
 
+# isort: assignments
+d = x
+b = 2
+a = 1
+
 # isort: dict
 y = {"z": "z", "b": "b", "b": "c"}""",
             formatter="example",
@@ -469,6 +474,11 @@ def method():
     # isort: list
     x = ["a", "b"]
 
+
+# isort: assignments
+a = 1
+b = 2
+d = x
 
 # isort: dict
 y = {"b": "c", "z": "z"}"""

@@ -2,7 +2,11 @@ import ast
 from pprint import PrettyPrinter
 from typing import Any, Callable, Dict, List, Set, Tuple
 
-from isort.exceptions import LiteralParsingFailure, LiteralSortTypeMismatch
+from isort.exceptions import (
+    AssignmentsFormatMismatch,
+    LiteralParsingFailure,
+    LiteralSortTypeMismatch,
+)
 from isort.settings import DEFAULT_CONFIG, Config
 
 
@@ -16,11 +20,27 @@ class ISortPrettyPrinter(PrettyPrinter):
 type_mapping: Dict[str, Tuple[type, Callable[[Any, ISortPrettyPrinter], str]]] = {}
 
 
+def assignments(code: str) -> str:
+    sort_assignments = {}
+    for line in code.splitlines(keepends=True):
+        if line:
+            if " = " not in line:
+                raise AssignmentsFormatMismatch(code)
+            else:
+                variable_name, value = line.split(" = ", 1)
+                sort_assignments[variable_name] = value
+
+    sorted_assignments = dict(sorted(sort_assignments.items(), key=lambda item: item[1]))
+    return "".join(f"{key} = {value}" for key, value in sorted_assignments.items())
+
+
 def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAULT_CONFIG) -> str:
     """Sorts the literal present within the provided code against the provided sort type,
     returning the sorted representation of the source code.
     """
-    if sort_type not in type_mapping:
+    if sort_type == "assignments":
+        return assignments(code)
+    elif sort_type not in type_mapping:
         raise ValueError(
             "Trying to sort using an undefined sort_type. "
             f"Defined sort types are {', '.join(type_mapping.keys())}."

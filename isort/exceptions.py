@@ -114,3 +114,21 @@ class LiteralSortTypeMismatch(ISortError):
         )
         self.kind = kind
         self.expected_kind = expected_kind
+
+
+class AssignmentsFormatMismatch(ISortError):
+    """Raised when isort is told to sort assignments but the format of the assignment section
+    doesn't match isort's expectation.
+    """
+
+    def __init__(self, code: str):
+        super().__init__(
+            "isort was told to sort a section of assignments, however the given code:\n\n"
+            f"{code}\n\n"
+            "Does not match isort's strict single line formatting requirement for assignment "
+            "sorting:\n\n"
+            "{variable_name} = {value}\n"
+            "{variable_name2} = {value2}\n"
+            "...\n\n"
+        )
+        self.code = code

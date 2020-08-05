@@ -21,6 +21,7 @@ CODE_SORT_COMMENTS = (
     "# isort: unique-list",
     "# isort: tuple",
     "# isort: unique-tuple",
+    "# isort: assignments",
 )
 
 
