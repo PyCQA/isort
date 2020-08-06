@@ -44,6 +44,24 @@ CONFIG_SOURCES: Tuple[str, ...] = (
     "tox.ini",
     ".editorconfig",
 )
+DEFAULT_SKIP: FrozenSet[str] = frozenset(
+    {
+        ".venv",
+        "venv",
+        ".tox",
+        ".eggs",
+        ".git",
+        ".hg",
+        ".mypy_cache",
+        ".nox",
+        "_build",
+        "buck-out",
+        "build",
+        "dist",
+        ".pants.d",
+        "node_modules",
+    }
+)
 
 CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
     ".isort.cfg": ("settings", "isort"),
@@ -94,24 +112,7 @@ class _Config:
 
     py_version: str = "3"
     force_to_top: FrozenSet[str] = frozenset()
-    skip: FrozenSet[str] = frozenset(
-        {
-            ".venv",
-            "venv",
-            ".tox",
-            ".eggs",
-            ".git",
-            ".hg",
-            ".mypy_cache",
-            ".nox",
-            "_build",
-            "buck-out",
-            "build",
-            "dist",
-            ".pants.d",
-            "node_modules",
-        }
-    )
+    skip: FrozenSet[str] = DEFAULT_SKIP
     skip_glob: FrozenSet[str] = frozenset()
     skip_gitignore: bool = False
     line_length: int = 79
@@ -322,7 +323,7 @@ class Config(_Config):
                 combined_config.pop(key)
                 if maps_to_section in KNOWN_SECTION_MAPPING:
                     section_name = f"known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}"
-                    if section_name in combined_config:
+                    if section_name in combined_config and not self.quiet:
                         warn(
                             f"Can't set both {key} and {section_name} in the same config file.\n"
                             f"Default to {section_name} if unsure."
@@ -334,7 +335,10 @@ class Config(_Config):
                         combined_config[section_name] = frozenset(value)
                 else:
                     known_other[import_heading] = frozenset(value)
-                    if maps_to_section not in combined_config.get("sections", ()):
+                    if (
+                        maps_to_section not in combined_config.get("sections", ())
+                        and not self.quiet
+                    ):
                         warn(
                             f"`{key}` setting is defined, but {maps_to_section} is not"
                             " included in `sections` config option:"
@@ -395,14 +399,18 @@ class Config(_Config):
         combined_config.pop("sources", None)
         combined_config.pop("runtime_src_paths", None)
 
-        for deprecated_option in DEPRECATED_SETTINGS:
-            if deprecated_option in combined_config:
-                warn(
-                    f"\n\nThe following deprecated settings was used: {deprecated_option}!\n"
-                    "Please see the 5.0.0 upgrade guide:\n"
-                    "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
-                )
+        deprecated_options_used = [
+            option for option in combined_config if option in DEPRECATED_SETTINGS
+        ]
+        if deprecated_options_used:
+            for deprecated_option in deprecated_options_used:
                 combined_config.pop(deprecated_option)
+            if not self.quiet:
+                warn(
+                    "W503: Deprecated config options were used: "
+                    f"{', '.join(deprecated_options_used)}."
+                    "Please see the 5.0.0 upgrade guide: bit.ly/isortv5."
+                )
 
         if known_other:
             combined_config["known_other"] = known_other

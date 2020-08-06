@@ -121,7 +121,8 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
 
                     resolved_path = full_path.resolve()
                     if resolved_path in visited_dirs:  # pragma: no cover
-                        warn(f"Likely recursive symlink detected to {resolved_path}")
+                        if not config.quiet:
+                            warn(f"Likely recursive symlink detected to {resolved_path}")
                         dirnames.remove(dirname)
                     else:
                         visited_dirs.add(resolved_path)
@@ -723,20 +724,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
+    remapped_deprecated_args = []
     for index, arg in enumerate(argv):
         if arg in DEPRECATED_SINGLE_DASH_ARGS:
-            warn(
-                f"\n\nThe following deprecated single dash CLI flags was used: {arg}!\n"
-                f"It is being auto translated to -{arg} to maintain backward compatibility.\n"
-                f"This behavior will be REMOVED in the 6.x.x release and is not guaranteed across"
-                f" 5.x.x releases.\n\n"
-                "Please see the 5.0.0 upgrade guide:\n"
-                "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
-            )
+            remapped_deprecated_args.append(arg)
             argv[index] = f"-{arg}"
 
     parser = _build_arg_parser()
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
+    if remapped_deprecated_args:
+        arguments["remapped_deprecated_args"] = remapped_deprecated_args
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
     multi_line_output = arguments.get("multi_line_output", None)
@@ -790,15 +787,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             sys.exit("Error: arguments passed in without any paths or content.")
         else:
             return
-    elif file_names == ["-"] and not show_config:
-        arguments.setdefault("settings_path", os.getcwd())
-        api.sort_stream(
-            input_stream=sys.stdin if stdin is None else stdin,
-            output_stream=sys.stdout,
-            **arguments,
-        )
-        return
-
     if "settings_path" not in arguments:
         arguments["settings_path"] = (
             os.path.abspath(file_names[0] if file_names else ".") or os.getcwd()
@@ -813,13 +801,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     deprecated_flags = config_dict.pop("deprecated_flags", False)
-
-    if deprecated_flags:  # pragma: no cover
-        warn(
-            f"\n\nThe following deprecated CLI flags were used: {', '.join(deprecated_flags)}!\n"
-            "Please see the 5.0.0 upgrade guide:\n"
-            "\thttps://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/\n"
-        )
+    remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
+    wrong_sorted_files = False
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -830,73 +813,97 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     if show_config:
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
-
-    wrong_sorted_files = False
-    skipped: List[str] = []
-
-    if config.filter_files:
-        filtered_files = []
-        for file_name in file_names:
-            if config.is_skipped(Path(file_name)):
-                skipped.append(file_name)
-            else:
-                filtered_files.append(file_name)
-        file_names = filtered_files
-
-    file_names = iter_source_code(file_names, config, skipped)
-    num_skipped = 0
-    if config.verbose:
-        print(ASCII_ART)
-
-    if jobs:
-        import multiprocessing
-
-        executor = multiprocessing.Pool(jobs)
-        attempt_iterator = executor.imap(
-            functools.partial(
-                sort_imports,
-                config=config,
-                check=check,
-                ask_to_apply=ask_to_apply,
-                write_to_stdout=write_to_stdout,
-            ),
-            file_names,
+    elif file_names == ["-"]:
+        arguments.setdefault("settings_path", os.getcwd())
+        api.sort_stream(
+            input_stream=sys.stdin if stdin is None else stdin,
+            output_stream=sys.stdout,
+            **arguments,
         )
     else:
-        # https://github.com/python/typeshed/pull/2814
-        attempt_iterator = (
-            sort_imports(  # type: ignore
-                file_name,
-                config=config,
-                check=check,
-                ask_to_apply=ask_to_apply,
-                show_diff=show_diff,
-                write_to_stdout=write_to_stdout,
-            )
-            for file_name in file_names
-        )
+        skipped: List[str] = []
 
-    for sort_attempt in attempt_iterator:
-        if not sort_attempt:
-            continue  # pragma: no cover - shouldn't happen, satisfies type constraint
-        incorrectly_sorted = sort_attempt.incorrectly_sorted
-        if arguments.get("check", False) and incorrectly_sorted:
-            wrong_sorted_files = True
-        if sort_attempt.skipped:
-            num_skipped += 1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+        if config.filter_files:
+            filtered_files = []
+            for file_name in file_names:
+                if config.is_skipped(Path(file_name)):
+                    skipped.append(file_name)
+                else:
+                    filtered_files.append(file_name)
+            file_names = filtered_files
+
+        file_names = iter_source_code(file_names, config, skipped)
+        num_skipped = 0
+        if config.verbose:
+            print(ASCII_ART)
+
+        if jobs:
+            import multiprocessing
+
+            executor = multiprocessing.Pool(jobs)
+            attempt_iterator = executor.imap(
+                functools.partial(
+                    sort_imports,
+                    config=config,
+                    check=check,
+                    ask_to_apply=ask_to_apply,
+                    write_to_stdout=write_to_stdout,
+                ),
+                file_names,
+            )
+        else:
+            # https://github.com/python/typeshed/pull/2814
+            attempt_iterator = (
+                sort_imports(  # type: ignore
+                    file_name,
+                    config=config,
+                    check=check,
+                    ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
+                    write_to_stdout=write_to_stdout,
+                )
+                for file_name in file_names
+            )
+
+        for sort_attempt in attempt_iterator:
+            if not sort_attempt:
+                continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+            incorrectly_sorted = sort_attempt.incorrectly_sorted
+            if arguments.get("check", False) and incorrectly_sorted:
+                wrong_sorted_files = True
+            if sort_attempt.skipped:
+                num_skipped += (
+                    1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+                )
+
+        num_skipped += len(skipped)
+        if num_skipped and not arguments.get("quiet", False):
+            if config.verbose:
+                for was_skipped in skipped:
+                    warn(
+                        f"{was_skipped} was skipped as it's listed in 'skip' setting"
+                        " or matches a glob in 'skip_glob' setting"
+                    )
+            print(f"Skipped {num_skipped} files")
+
+    if not config.quiet and (remapped_deprecated_args or deprecated_flags):  # pragma: no cover
+        if remapped_deprecated_args:
+            warn(
+                "W0502: The following deprecated single dash CLI flags were used and translated: "
+                f"{', '.join(remapped_deprecated_args)}!"
+            )
+        if deprecated_flags:
+            warn(
+                "W0501: The following deprecated CLI flags were used and ignored: "
+                f"{', '.join(deprecated_flags)}!"
+            )
+        warn(
+            "W0500: Please see the 5.0.0 Upgrade guide: "
+            "https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/"
+        )
 
     if wrong_sorted_files:
         sys.exit(1)
-
-    num_skipped += len(skipped)
-    if num_skipped and not arguments.get("quiet", False):
-        if config.verbose:
-            for was_skipped in skipped:
-                warn(
-                    f"{was_skipped} was skipped as it's listed in 'skip' setting"
-                    " or matches a glob in 'skip_glob' setting"
-                )
-        print(f"Skipped {num_skipped} files")
 
 
 if __name__ == "__main__":

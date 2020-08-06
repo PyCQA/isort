@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.3.1 TBD
+  - Improve upgrade warnings to be less noisy and point to error codes for easy interoperability with Visual Studio Code (see: #1363).
+
 ### 5.3.0 Aug 4, 2020
   - Implemented ability to treat all or select comments as code (issue #1357)
   - Implemented ability to use different configs for different file extensions (issue #1162)
