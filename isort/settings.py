@@ -407,7 +407,7 @@ class Config(_Config):
                 combined_config.pop(deprecated_option)
             if not self.quiet:
                 warn(
-                    "W503: Deprecated config options were used: "
+                    "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
                     "Please see the 5.0.0 upgrade guide: bit.ly/isortv5."
                 )

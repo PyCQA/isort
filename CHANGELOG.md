@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.3.2 [Hotfix] Aug 7, 2020
+  - Fixed incorrect warning code (W503->W0503).
+
 ### 5.3.1 Aug 7, 2020
   - Improve upgrade warnings to be less noisy and point to error codes for easy interoperability with Visual Studio Code (see: #1363).
 
