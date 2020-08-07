@@ -3,7 +3,7 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.3.1 TBD
+### 5.3.1 Aug 7, 2020
   - Improve upgrade warnings to be less noisy and point to error codes for easy interoperability with Visual Studio Code (see: #1363).
 
 ### 5.3.0 Aug 4, 2020
