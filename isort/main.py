@@ -886,7 +886,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     )
             print(f"Skipped {num_skipped} files")
 
-    if not config.quiet and (remapped_deprecated_args or deprecated_flags):  # pragma: no cover
+    if not config.quiet and (remapped_deprecated_args or deprecated_flags):
         if remapped_deprecated_args:
             warn(
                 "W0502: The following deprecated single dash CLI flags were used and translated: "

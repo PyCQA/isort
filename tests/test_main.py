@@ -231,6 +231,10 @@ import b
     out, error = capsys.readouterr()
     assert "Skipped" in out
 
+    # warnings should be displayed if old flags are used
+    with pytest.warns(UserWarning):
+        main.main([str(python_file), "--recursive", "-fss"])
+    
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
