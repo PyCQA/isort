@@ -335,7 +335,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         + [str(mode.value) for mode in WrapModes.__members__.values()],
         type=str,
         help="Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, "
-        "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).",
+        "5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, "
+        "8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, "
+        "10-hanging-indent-with-parentheses).",
     )
     parser.add_argument(
         "-n",
