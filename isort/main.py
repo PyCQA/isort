@@ -328,6 +328,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     parser.add_argument(
+        "--lss",
+        "--length-sort-straight",
+        help="Sort straight imports by their string length.",
+        dest="length_sort_straight",
+        action="store_true",
+    )
+    parser.add_argument(
         "-m",
         "--multi-line",
         dest="multi_line_output",

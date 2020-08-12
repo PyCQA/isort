@@ -605,11 +605,33 @@ def test_length_sort() -> None:
     )
 
 
+def test_length_sort_straight() -> None:
+    """Test setting isort to sort straight imports on length instead of alphabetically."""
+    test_input = (
+        "import medium_sizeeeeeeeeeeeeee\n"
+        "import shortie\n"
+        "import looooooooooooooooooooooooooooooooooooooong\n"
+        "from medium_sizeeeeeeeeeeeeee import b\n"
+        "from shortie import c\n"
+        "from looooooooooooooooooooooooooooooooooooooong import a\n"
+    )
+    test_output = isort.code(test_input, length_sort_straight=True)
+    assert test_output == (
+        "import shortie\n"
+        "import medium_sizeeeeeeeeeeeeee\n"
+        "import looooooooooooooooooooooooooooooooooooooong\n"
+        "from looooooooooooooooooooooooooooooooooooooong import a\n"
+        "from medium_sizeeeeeeeeeeeeee import b\n"
+        "from shortie import c\n"
+    )
+
+
 def test_length_sort_section() -> None:
     """Test setting isort to sort on length instead of alphabetically for a specific section."""
     test_input = (
         "import medium_sizeeeeeeeeeeeeee\n"
         "import shortie\n"
+        "import datetime\n"
         "import sys\n"
         "import os\n"
         "import looooooooooooooooooooooooooooooooooooooong\n"
@@ -619,6 +641,7 @@ def test_length_sort_section() -> None:
     assert test_output == (
         "import os\n"
         "import sys\n"
+        "import datetime\n"
         "\n"
         "import looooooooooooooooooooooooooooooooooooooong\n"
         "import medium_sizeeeeeeeeeeeeea\n"

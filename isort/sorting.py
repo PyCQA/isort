@@ -13,6 +13,7 @@ def module_key(
     sub_imports: bool = False,
     ignore_case: bool = False,
     section_name: Optional[Any] = None,
+    straight_import: Optional[bool] = False,
 ) -> str:
     match = re.match(r"^(\.+)\s*(.*)", module_name)
     if match:
@@ -41,7 +42,11 @@ def module_key(
     if not config.case_sensitive:
         module_name = module_name.lower()
 
-    length_sort = config.length_sort or str(section_name).lower() in config.length_sort_sections
+    length_sort = (
+        config.length_sort
+        or (config.length_sort_straight and straight_import)
+        or str(section_name).lower() in config.length_sort_sections
+    )
     _length_sort_maybe = length_sort and (str(len(module_name)) + ":" + module_name) or module_name
     return f"{module_name in config.force_to_top and 'A' or 'B'}{prefix}{_length_sort_maybe}"
 

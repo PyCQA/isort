@@ -293,6 +293,19 @@ Sort imports by their string length.
 - --ls
 - --length-sort
 
+## Length Sort Straight Imports
+
+Sort straight imports by their string length. Similar to `length_sort` but applies only to
+straight imports and doesn't affect from imports.
+
+**Type:** Bool
+**Default:** `False`
+**Python & Config File Name:** length_sort_straight
+**CLI Flags:**
+
+- --lss
+- --length-sort-straight
+
 ## Length Sort Sections
 
 **No Description**
