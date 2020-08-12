@@ -225,7 +225,7 @@ known_airflow = ['airflow']
 
 ## Multi Line Output
 
-Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).
+Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).
 
 **Type:** Wrapmodes  
 **Default:** `WrapModes.GRID`  
@@ -292,6 +292,19 @@ Sort imports by their string length.
 
 - --ls
 - --length-sort
+
+## Length Sort Straight Imports
+
+Sort straight imports by their string length. Similar to `length_sort` but applies only to
+straight imports and doesn't affect from imports.
+
+**Type:** Bool
+**Default:** `False`
+**Python & Config File Name:** length_sort_straight
+**CLI Flags:**
+
+- --lss
+- --length-sort-straight
 
 ## Length Sort Sections
 

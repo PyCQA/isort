@@ -51,7 +51,10 @@ def sorted_imports(
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
         straight_modules = sorting.naturally(
-            straight_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
+            straight_modules,
+            key=lambda key: sorting.module_key(
+                key, config, section_name=section, straight_import=True
+            ),
         )
         from_modules = parsed.imports[section]["from"]
         from_modules = sorting.naturally(
