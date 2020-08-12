@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.4.0 TBD
+  - Implemented #1373: support for length sort only of direct (AKA straight) imports.
+
 ### 5.3.2 [Hotfix] Aug 7, 2020
   - Fixed incorrect warning code (W503->W0503).
 
