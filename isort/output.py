@@ -301,6 +301,11 @@ def _with_from_imports(
                 new_section_output.extend(above_comments)
 
             if "*" in from_imports and config.combine_star:
+                if config.combine_as_imports:
+                    comments = list(comments or ())
+                    comments += parsed.categorized_comments["from"].pop(
+                        f"{module}.__combined_as__", []
+                    )
                 import_statement = wrap.line(
                     with_comments(
                         comments,
@@ -385,7 +390,6 @@ def _with_from_imports(
                         for as_import in as_imports[from_import]
                     )
 
-                star_import = False
                 if "*" in from_imports:
                     new_section_output.append(
                         with_comments(
@@ -396,7 +400,6 @@ def _with_from_imports(
                         )
                     )
                     from_imports.remove("*")
-                    star_import = True
                     comments = None
 
                 for from_import in copy.copy(from_imports):
@@ -428,15 +431,16 @@ def _with_from_imports(
                     )
                 ):
                     from_import_section.append(from_imports.pop(0))
-                if star_import:
-                    import_statement = import_start + (", ").join(from_import_section)
-                else:
-                    import_statement = with_comments(
-                        comments,
-                        import_start + (", ").join(from_import_section),
-                        removed=config.ignore_comments,
-                        comment_prefix=config.comment_prefix,
+                if config.combine_as_imports:
+                    comments = parsed.categorized_comments["from"].pop(
+                        f"{module}.__combined_as__", ()
                     )
+                import_statement = with_comments(
+                    comments,
+                    import_start + (", ").join(from_import_section),
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
+                )
                 if not from_import_section:
                     import_statement = ""
 
