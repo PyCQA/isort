@@ -251,6 +251,40 @@ from third_party import lib3
 ...
 ```
 
+**8 - Vertical Hanging Indent Bracket**
+
+Same as Mode 3 - _Vertical Hanging Indent_ but the closing parentheses
+on the last line is indented.
+
+```python
+from third_party import (
+    lib1,
+    lib2,
+    lib3,
+    lib4,
+    )
+```
+
+**9 - Vertical Prefix From Module Import**
+
+Starts a new line with the same `from MODULE import ` prefix when lines are longer than the line length limit.
+
+```python
+from third_party import lib1, lib2, lib3
+from third_party import lib4, lib5, lib6
+```
+
+**10 - Hanging Indent With Parentheses**
+
+Same as Mode 2 - _Hanging Indent_ but uses parentheses instead of backslash
+for wrapping long lines.
+
+```python
+from third_party import (
+    lib1, lib2, lib3,
+    lib4, lib5, lib6)
+```
+
 Note: to change the how constant indents appear - simply change the
 indent property with the following accepted formats:
 
