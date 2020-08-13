@@ -520,3 +520,18 @@ from foo import bar as quux, x as a  # other; noqa
 """
 
     assert isort.code(test_input, combine_as_imports=True) == expected_output
+
+
+def test_combine_as_does_not_lose_comments_issue_1381():
+    """Test to ensure isort doesn't lose comments when --combine-as is used.
+    See: https://github.com/timothycrosley/isort/issues/1381
+    """
+    test_input = """
+from smtplib import SMTPConnectError, SMTPNotSupportedError  # important comment
+"""
+    assert "# important comment" in isort.code(test_input, combine_as_imports=True)
+
+    test_input = """
+from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignore
+"""
+    assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)

@@ -432,8 +432,8 @@ def _with_from_imports(
                 ):
                     from_import_section.append(from_imports.pop(0))
                 if config.combine_as_imports:
-                    comments = parsed.categorized_comments["from"].pop(
-                        f"{module}.__combined_as__", ()
+                    comments = (comments or []) + list(
+                        parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())
                     )
                 import_statement = with_comments(
                     comments,

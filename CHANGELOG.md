@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.4.1 [Hotfix] Aug 13, 2020
+  - Fixed #1381: --combine-as loses # noqa in different circumstances.
+
 ### 5.4.0 Aug 12, 2020
   - Implemented #1373: support for length sort only of direct (AKA straight) imports.
   - Fixed #1380: --combine-as loses # noqa.
