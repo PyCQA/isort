@@ -745,6 +745,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         arguments["remapped_deprecated_args"] = remapped_deprecated_args
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
+        del arguments["dont_order_by_type"]
     multi_line_output = arguments.get("multi_line_output", None)
     if multi_line_output:
         if multi_line_output.isdigit():
