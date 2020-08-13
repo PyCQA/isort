@@ -492,3 +492,31 @@ def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
     assert diff_output.read().endswith(
         "-1,5 +1,5 @@\n+import a\r\n import b\r\n" "-import a\r\n \r\n \r\n def func():\r\n"
     )
+
+
+def test_combine_as_does_not_lose_comments_issue_1321():
+    """Test to ensure isort doesn't lose comments when --combine-as is used.
+    See: https://github.com/timothycrosley/isort/issues/1321
+    """
+    test_input = """
+from foo import *  # noqa
+from foo import bar as quux  # other
+from foo import x as a  # noqa
+
+import operator as op  # op comment
+import datetime as dtime  # dtime comment
+
+from datetime import date as d  # dcomm
+from datetime import datetime as dt  # dtcomm
+"""
+
+    expected_output = """
+import datetime as dtime  # dtime comment
+import operator as op  # op comment
+from datetime import date as d, datetime as dt  # dcomm; dtcomm
+
+from foo import *  # noqa
+from foo import bar as quux, x as a  # other; noqa
+"""
+
+    assert isort.code(test_input, combine_as_imports=True) == expected_output
