@@ -486,6 +486,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#length-sort-straight-imports" class="md-nav__link">
+    Length Sort Straight Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#length-sort-sections" class="md-nav__link">
     Length Sort Sections
   </a>
@@ -2024,6 +2031,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#length-sort-straight-imports" class="md-nav__link">
+    Length Sort Straight Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#length-sort-sections" class="md-nav__link">
     Length Sort Sections
   </a>
@@ -2688,7 +2702,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 
 <h2 id="multi-line-output">Multi Line Output</h2>
-<p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).</p>
+<p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).</p>
 <p><strong>Type:</strong> Wrapmodes<br />
 <strong>Default:</strong> <code>WrapModes.GRID</code><br />
 <strong>Python &amp; Config File Name:</strong> multi_line_output<br />
@@ -2741,6 +2755,17 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--ls</li>
 <li>--length-sort</li>
+</ul>
+<h2 id="length-sort-straight-imports">Length Sort Straight Imports</h2>
+<p>Sort straight imports by their string length. Similar to <code>length_sort</code> but applies only to
+straight imports and doesn't affect from imports.</p>
+<p><strong>Type:</strong> Bool
+<strong>Default:</strong> <code>False</code>
+<strong>Python &amp; Config File Name:</strong> length_sort_straight
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--lss</li>
+<li>--length-sort-straight</li>
 </ul>
 <h2 id="length-sort-sections">Length Sort Sections</h2>
 <p><strong>No Description</strong></p>

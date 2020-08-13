@@ -1958,6 +1958,20 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--lss&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--length-sort-straight&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sort straight imports by their string length.&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;length_sort_straight&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
 
         <span class="s2">&quot;--multi-line&quot;</span><span class="p">,</span>
@@ -1972,7 +1986,11 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, &quot;</span>
 
-        <span class="s2">&quot;5-vert-grid-grouped, 6-vert-grid-grouped-no-comma).&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, &quot;</span>
+
+        <span class="s2">&quot;8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, &quot;</span>
+
+        <span class="s2">&quot;10-hanging-indent-with-parentheses).&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -2764,6 +2782,8 @@
 
         <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;order_by_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
 
+        <span class="k">del</span> <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;dont_order_by_type&quot;</span><span class="p">]</span>
+
     <span class="n">multi_line_output</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multi_line_output&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">multi_line_output</span><span class="p">:</span>
@@ -3463,6 +3483,8 @@
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;dont_order_by_type&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;order_by_type&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">del</span><span class="w"> </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;dont_order_by_type&quot;</span><span class="o">]</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">multi_line_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;multi_line_output&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
 

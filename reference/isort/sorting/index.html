@@ -1287,6 +1287,8 @@
 
     <span class="n">section_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
 
+    <span class="n">straight_import</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">module_name</span><span class="p">)</span>
@@ -1337,7 +1339,15 @@
 
         <span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="n">length_sort</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort_sections</span>
+    <span class="n">length_sort</span> <span class="o">=</span> <span class="p">(</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">length_sort</span>
+
+        <span class="ow">or</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">length_sort_straight</span> <span class="ow">and</span> <span class="n">straight_import</span><span class="p">)</span>
+
+        <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort_sections</span>
+
+    <span class="p">)</span>
 
     <span class="n">_length_sort_maybe</span> <span class="o">=</span> <span class="n">length_sort</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">module_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">module_name</span>
 
@@ -1413,7 +1423,8 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span>
     <span class="n">sub_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">ignore_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">section_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">section_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">straight_import</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -1429,6 +1440,8 @@
 <span class="w">    </span><span class="nl">ignore_case</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">    </span><span class="nl">section_name</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Any</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">straight_import</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">bool</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
 <span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
@@ -1480,7 +1493,15 @@
 
 <span class="w">        </span><span class="n">module_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module_name</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">length_sort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">length_sort</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">).</span><span class="nf">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">length_sort_sections</span><span class="w"></span>
+<span class="w">    </span><span class="n">length_sort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="n">length_sort</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">length_sort_straight</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">straight_import</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">or</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">section_name</span><span class="p">).</span><span class="nf">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">length_sort_sections</span><span class="w"></span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">_length_sort_maybe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length_sort</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">module_name</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">module_name</span><span class="w"></span>
 
