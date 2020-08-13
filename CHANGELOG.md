@@ -3,8 +3,10 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.4.0 TBD
+### 5.4.0 Aug 12, 2020
   - Implemented #1373: support for length sort only of direct (AKA straight) imports.
+  - Fixed #1380: --combine-as loses # noqa.
+  - Fixed #1375: --dont-order-by-type CLI broken.
 
 ### 5.3.2 [Hotfix] Aug 7, 2020
   - Fixed incorrect warning code (W503->W0503).
