@@ -3,6 +3,9 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.4.2 Aug 13, 2020
+  - Fixed #1383: Known other does not work anymore with .editorconfig.
+
 ### 5.4.1 [Hotfix] Aug 13, 2020
   - Fixed #1381: --combine-as loses # noqa in different circumstances.
 

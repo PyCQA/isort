@@ -654,7 +654,9 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                     float("inf") if max_line_length == "off" else int(max_line_length)
                 )
             settings = {
-                key: value for key, value in settings.items() if key in _DEFAULT_SETTINGS.keys()
+                key: value
+                for key, value in settings.items()
+                if key in _DEFAULT_SETTINGS.keys() or key.startswith(KNOWN_PREFIX)
             }
 
         for key, value in settings.items():
