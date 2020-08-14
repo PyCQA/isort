@@ -54,8 +54,11 @@ REALLY_LONG_IMPORT_WITH_COMMENT = (
 def default_settings_path(tmpdir_factory) -> Iterator[str]:
     config_dir = tmpdir_factory.mktemp("config")
     config_file = config_dir.join(".editorconfig").strpath
+
     with open(config_file, "w") as editorconfig:
         editorconfig.write(TEST_DEFAULT_CONFIG)
+
+    assert Config(config_file).known_other
 
     with config_dir.as_cwd():
         yield config_dir.strpath
