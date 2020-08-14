@@ -1072,27 +1072,33 @@ def test_thirdy_party_overrides_standard_section() -> None:
     assert test_output == "import os\nimport sys\n\nimport profile.test\n"
 
 
-def test_known_pattern_path_expansion() -> None:
+def test_known_pattern_path_expansion(tmpdir) -> None:
     """Test to ensure patterns ending with path sep gets expanded
     and nested packages treated as known patterns.
     """
+    src_dir = tmpdir.mkdir("src")
+    src_dir.mkdir("foo")
+    src_dir.mkdir("bar")
     test_input = (
         "from kate_plugin import isort_plugin\n"
         "import sys\n"
-        "import isort.settings\n"
+        "from foo import settings\n"
+        "import bar\n"
         "import this\n"
         "import os\n"
     )
     test_output = isort.code(
         code=test_input,
         default_section="THIRDPARTY",
-        known_first_party=["./", "this", "kate_plugin", "isort"],
+        known_first_party=["src/", "this", "kate_plugin"],
+        directory=str(tmpdir),
     )
     test_output_old_finder = isort.code(
         code=test_input,
         default_section="FIRSTPARTY",
         old_finders=True,
-        known_first_party=["./", "this", "kate_plugin", "isort"],
+        known_first_party=["src/", "this", "kate_plugin"],
+        directory=str(tmpdir),
     )
     assert (
         test_output_old_finder
@@ -1101,8 +1107,9 @@ def test_known_pattern_path_expansion() -> None:
             "import os\n"
             "import sys\n"
             "\n"
-            "import isort.settings\n"
+            "import bar\n"
             "import this\n"
+            "from foo import settings\n"
             "from kate_plugin import isort_plugin\n"
         )
     )
