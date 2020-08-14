@@ -56,7 +56,7 @@ Files that sort imports should skip over.
 
 ## Skip Gitignore
 
-Treat project as a git respository and ignore files listed in .gitignore
+Treat project as a git repository and ignore files listed in .gitignore
 
 **Type:** Bool  
 **Default:** `False`  
