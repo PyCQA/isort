@@ -85,14 +85,13 @@ class KnownPatternFinder(BaseFinder):
                 regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
                 self.known_patterns.append((re.compile(regexp), placement))
 
-    @staticmethod
-    def _parse_known_pattern(pattern: str) -> List[str]:
+    def _parse_known_pattern(self, pattern: str) -> List[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
                 filename
-                for filename in os.listdir(pattern)
-                if os.path.isdir(os.path.join(pattern, filename))
+                for filename in os.listdir(os.path.join(self.config.directory, pattern))
+                if os.path.isdir(os.path.join(self.config.directory, pattern, filename))
             ]
         else:
             patterns = [pattern]
