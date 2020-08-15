@@ -3,7 +3,7 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
-### 5.4.2 Aug 13, 2020
+### 5.4.2 Aug 14, 2020
   - Fixed #1383: Known other does not work anymore with .editorconfig.
   - Fixed: Regression in first known party path expansion.
 

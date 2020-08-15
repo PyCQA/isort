@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "isort"
-version = "5.4.1"
+version = "5.4.2"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
