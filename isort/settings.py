@@ -523,14 +523,13 @@ class Config(_Config):
         self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
         return self._section_comments
 
-    @staticmethod
-    def _parse_known_pattern(pattern: str) -> List[str]:
+    def _parse_known_pattern(self, pattern: str) -> List[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
                 filename
-                for filename in os.listdir(pattern)
-                if os.path.isdir(os.path.join(pattern, filename))
+                for filename in os.listdir(os.path.join(self.directory, pattern))
+                if os.path.isdir(os.path.join(self.directory, pattern, filename))
             ]
         else:
             patterns = [pattern]
