@@ -462,7 +462,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--skip-gitignore",
         action="store_true",
         dest="skip_gitignore",
-        help="Treat project as a git respository and ignore files listed in .gitignore",
+        help="Treat project as a git repository and ignore files listed in .gitignore",
     )
     inline_args_group.add_argument(
         "--sl",
