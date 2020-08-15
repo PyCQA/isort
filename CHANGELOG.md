@@ -5,13 +5,14 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
 ### 5.4.2 Aug 13, 2020
   - Fixed #1383: Known other does not work anymore with .editorconfig.
+  - Fixed: Regression in first known party path expansion.
 
 ### 5.4.1 [Hotfix] Aug 13, 2020
   - Fixed #1381: --combine-as loses # noqa in different circumstances.
 
 ### 5.4.0 Aug 12, 2020
   - Implemented #1373: support for length sort only of direct (AKA straight) imports.
-  - Fixed #1380: --combine-as loses # noqa.
+  - Fixed #1321: --combine-as loses # noqa.
   - Fixed #1375: --dont-order-by-type CLI broken.
 
 ### 5.3.2 [Hotfix] Aug 7, 2020
