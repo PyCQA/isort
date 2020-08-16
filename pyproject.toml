@@ -64,7 +64,7 @@ pep8-naming = "^0.8.2"
 hypothesis-auto = { version = "^1.0.0" }
 hypothesmith = "^0.1.3"
 examples = { version = "^1.0.0" }
-cruft = { version = "^1.1" }
+cruft = { version = "^2.2" }
 portray = { version = "^1.3.0" }
 pipfile = "^0.0.2"
 requirementslib = "^1.5"
