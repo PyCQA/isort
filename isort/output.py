@@ -138,12 +138,6 @@ def sorted_imports(
             for line in new_section_output:
                 comments = getattr(line, "comments", ())
                 if comments:
-                    if (
-                        config.ensure_newline_before_comments
-                        and section_output
-                        and section_output[-1]
-                    ):
-                        section_output.append("")
                     section_output.extend(comments)
                 section_output.append(str(line))
 
@@ -171,6 +165,9 @@ def sorted_imports(
             pending_lines_before = False
         else:
             pending_lines_before = pending_lines_before or not no_lines_before
+
+    if config.ensure_newline_before_comments:
+        output = _ensure_newline_before_comment(output)
 
     while output and output[-1].strip() == "":
         output.pop()  # pragma: no cover
@@ -296,8 +293,6 @@ def _with_from_imports(
             comments = parsed.categorized_comments["from"].pop(module, ())
             above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
             if above_comments:
-                if new_section_output and config.ensure_newline_before_comments:
-                    new_section_output.append("")
                 new_section_output.extend(above_comments)
 
             if "*" in from_imports and config.combine_star:
@@ -550,3 +545,16 @@ class _LineWithComments(str):
         instance = super().__new__(cls, value)  # type: ignore
         instance.comments = comments
         return instance
+
+
+def _ensure_newline_before_comment(output):
+    new_output: List[str] = []
+
+    def is_comment(line):
+        return line and line.startswith("#")
+
+    for line, prev_line in zip(output, [None] + output):
+        if is_comment(line) and prev_line != "" and not is_comment(prev_line):
+            new_output.append("")
+        new_output.append(line)
+    return new_output
