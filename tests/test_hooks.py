@@ -62,7 +62,7 @@ def test_git_hook_uses_the_configuration_file_specified_in_settings_path(tmp_pat
 
     # Inserting the modified file in the parent directory of the configuration file ensures that it
     # will not be found by the normal search routine
-    modified_file_path = configuration_file_path.parent / "somefile.py"
+    modified_file_path = configuration_file_path.parent.parent / "somefile.py"
 
     # This section will be used to check that the configuration file was indeed loaded
     section = "testsection"
