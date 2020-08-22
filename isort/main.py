@@ -115,17 +115,16 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
                 base_path = Path(dirpath)
                 for dirname in list(dirnames):
                     full_path = base_path / dirname
+                    resolved_path = full_path.resolve()
                     if config.is_skipped(full_path):
                         skipped.append(dirname)
                         dirnames.remove(dirname)
-
-                    resolved_path = full_path.resolve()
-                    if resolved_path in visited_dirs:  # pragma: no cover
-                        if not config.quiet:
-                            warn(f"Likely recursive symlink detected to {resolved_path}")
-                        dirnames.remove(dirname)
                     else:
-                        visited_dirs.add(resolved_path)
+                        if resolved_path in visited_dirs:  # pragma: no cover
+                            if not config.quiet:
+                                warn(f"Likely recursive symlink detected to {resolved_path}")
+                            dirnames.remove(dirname)
+                    visited_dirs.add(resolved_path)
 
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
