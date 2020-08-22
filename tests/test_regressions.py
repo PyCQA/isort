@@ -535,3 +535,32 @@ from smtplib import SMTPConnectError, SMTPNotSupportedError  # important comment
 from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignore
 """
     assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)
+
+
+def test_incorrect_grouping_when_comments_issue_1396():
+    """Test to ensure isort groups import correct independent of the comments present.
+    See: https://github.com/timothycrosley/isort/issues/1396
+    """
+    assert isort.code(
+        """from django.shortcuts import render
+from apps.profiler.models import Project
+from django.contrib.auth.decorators import login_required
+from django.views.generic import (
+    # ListView, 
+    # DetailView,
+    TemplateView,
+    # CreateView,
+    # View
+)
+""",
+    line_length=88,
+    known_first_party=["apps"],
+    known_django=["django"],
+    sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+    ) == """from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.views.generic import \\
+    TemplateView  # ListView,; DetailView,; CreateView,; View
+
+from apps.profiler.models import Project
+"""
