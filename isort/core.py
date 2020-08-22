@@ -137,6 +137,9 @@ def process(
                 if file_skip_comment in line:
                     raise FileSkipComment("Passed in content")
 
+            if not in_quote and stripped_line == "# isort: off":
+                isort_off = True
+
             if (
                 (index == 0 or (index in (1, 2) and not contains_imports))
                 and stripped_line.startswith("#")
@@ -175,13 +178,9 @@ def process(
 
             not_imports = bool(in_quote) or in_top_comment or isort_off
             if not (in_quote or in_top_comment):
-                stripped_line = line.strip()
                 if isort_off:
                     if stripped_line == "# isort: on":
                         isort_off = False
-                elif stripped_line == "# isort: off":
-                    not_imports = True
-                    isort_off = True
                 elif stripped_line.endswith("# isort: split"):
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
