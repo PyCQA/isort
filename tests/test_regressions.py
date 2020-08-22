@@ -541,26 +541,49 @@ def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/timothycrosley/isort/issues/1396
     """
-    assert isort.code(
-        """from django.shortcuts import render
+    assert (
+        isort.code(
+            """from django.shortcuts import render
 from apps.profiler.models import Project
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    # ListView, 
+    # ListView,
     # DetailView,
     TemplateView,
     # CreateView,
     # View
 )
 """,
-    line_length=88,
-    known_first_party=["apps"],
-    known_django=["django"],
-    sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
-    ) == """from django.contrib.auth.decorators import login_required
+            line_length=88,
+            known_first_party=["apps"],
+            known_django=["django"],
+            sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"],
+        )
+        == """from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.generic import \\
     TemplateView  # ListView,; DetailView,; CreateView,; View
 
 from apps.profiler.models import Project
 """
+    )
+
+
+def test_reverse_relative_combined_with_force_sort_within_sections_issue_1395():
+    """Test to ensure reverse relative combines well with other common isort settings.
+    See: https://github.com/timothycrosley/isort/issues/1395.
+    """
+    assert isort.check_code(
+        """from .fileA import a_var
+from ..fileB import b_var
+""",
+        show_diff=True,
+        reverse_relative=True,
+        force_sort_within_sections=True,
+        order_by_type=False,
+        case_sensitive=False,
+        multi_line_output=5,
+        sections=["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "APPLICATION", "LOCALFOLDER"],
+        lines_after_imports=2,
+        no_lines_before="LOCALFOLDER",
+    )

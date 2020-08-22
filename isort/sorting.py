@@ -57,8 +57,14 @@ def section_key(
     force_to_top: List[str],
     lexicographical: bool = False,
     length_sort: bool = False,
+    reverse_relative: bool = False,
 ) -> str:
     section = "B"
+
+    if reverse_relative and line.startswith("from ."):
+        match = re.match(r"^from (\.+)\s*(.*)", line)
+        if match:
+            line = f"from {' '.join(match.groups())}"
 
     if lexicographical:
         line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))

@@ -3,6 +3,10 @@ Changelog
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 
+### 5.5.0 TBD
+  - Fixed #1398: isort: off comment doesn't work, if it's the top comment in the file.
+  - Fixed #1395: reverse_relative setting doesn't have any effect when combined with force_sort_within_sections.
+
 ### 5.4.2 Aug 14, 2020
   - Fixed #1383: Known other does not work anymore with .editorconfig.
   - Fixed: Regression in first known party path expansion.
