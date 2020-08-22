@@ -33,7 +33,9 @@ def get_lines(command: List[str]) -> List[str]:
     return [line.strip() for line in stdout.splitlines()]
 
 
-def git_hook(strict: bool = False, modify: bool = False, lazy: bool = False) -> int:
+def git_hook(
+    strict: bool = False, modify: bool = False, lazy: bool = False, settings_file: str = ""
+) -> int:
     """
     Git pre-commit hook to check staged files for isort errors
 
@@ -46,6 +48,11 @@ def git_hook(strict: bool = False, modify: bool = False, lazy: bool = False) -> 
     :param bool lazy - if True, also check/fix unstaged files.
         This is useful if you frequently use ``git commit -a`` for example.
         If False, ony check/fix the staged files for isort errors.
+    :param str settings_file - A path to a file to be used as
+                               the configuration file for this run.
+        When settings_file is the empty string, the configuration file
+        will be searched starting at the directory containing the first
+        staged file, if any, and going upward in the directory structure.
 
     :return number of errors if in strict mode, 0 otherwise.
     """
@@ -60,7 +67,10 @@ def git_hook(strict: bool = False, modify: bool = False, lazy: bool = False) -> 
         return 0
 
     errors = 0
-    config = Config(settings_path=os.path.dirname(os.path.abspath(files_modified[0])))
+    config = Config(
+        settings_file=settings_file,
+        settings_path=os.path.dirname(os.path.abspath(files_modified[0])),
+    )
     for filename in files_modified:
         if filename.endswith(".py"):
             # Get the staged contents of the file
