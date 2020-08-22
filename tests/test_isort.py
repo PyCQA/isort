@@ -3816,6 +3816,7 @@ def test_isort_keeps_comments_issue_691() -> None:
 def test_isort_ensures_blank_line_between_import_and_comment() -> None:
     config = {
         "ensure_newline_before_comments": True,
+        "lines_between_sections": 0,
         "known_one": ["one"],
         "known_two": ["two"],
         "known_three": ["three"],
