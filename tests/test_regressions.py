@@ -567,6 +567,36 @@ from django.views.generic import \\
 from apps.profiler.models import Project
 """
     )
+    assert (
+        isort.code(
+            """from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+from apps.profiler.models import Project
+
+from django.views.generic import ( # ListView,; DetailView,; CreateView,; View
+    TemplateView,
+)
+""",
+            line_length=88,
+            known_first_party=["apps"],
+            known_django=["django"],
+            sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"],
+            include_trailing_comma=True,
+            multi_line_output=3,
+            force_grid_wrap=0,
+            use_parentheses=True,
+            ensure_newline_before_comments=True,
+        )
+        == """from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.views.generic import (  # ListView,; DetailView,; CreateView,; View
+    TemplateView,
+)
+
+from apps.profiler.models import Project
+"""
+    )
 
 
 def test_reverse_relative_combined_with_force_sort_within_sections_issue_1395():

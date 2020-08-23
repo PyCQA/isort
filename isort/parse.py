@@ -113,7 +113,7 @@ def skip_line(
                 break
             char_index += 1
 
-    if ";" in line and needs_import:
+    if ";" in line.split("#")[0] and needs_import:
         for part in (part.strip() for part in line.split(";")):
             if (
                 part
@@ -201,10 +201,16 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             out_lines.append(line)
             continue
 
-        for line in (
-            (line.strip() for line in line.split(";")) if ";" in line else (line,)  # type: ignore
-        ):
-            line, raw_line = _normalize_line(line)
+        line, *end_of_line_comment = line.split("#", 1)
+        if ";" in line:
+            statements = [line.strip() for line in line.split(";")]
+        else:
+            statements = [line]
+        if end_of_line_comment:
+            statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+
+        for statement in statements:
+            line, raw_line = _normalize_line(statement)
             type_of_import = import_type(line, config) or ""
             if not type_of_import:
                 out_lines.append(raw_line)
@@ -224,7 +230,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             ):
                 nested_comments[line_parts[-1]] = comments[0]
 
-            if "(" in line.split("#")[0] and index < line_count:
+            if "(" in line.split("#", 1)[0] and index < line_count:
                 while not line.split("#")[0].strip().endswith(")") and index < line_count:
                     line, new_comment = parse_comments(in_lines[index])
                     index += 1

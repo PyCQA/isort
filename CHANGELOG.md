@@ -8,6 +8,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
   - Fixed #1395: reverse_relative setting doesn't have any effect when combined with force_sort_within_sections.
   - Fixed #1399: --skip can error in the case of projects that contain recursive symlinks.
   - Fixed #1389: ensure_newline_before_comments doesn't work if comment is at top of section and sections don't have lines between them.
+  - Fixed #1396: comments in imports with ";" can keep isort from recognizing import line.
   - Implemented #1397: Added support for specifying config file when using git hook (thanks @diseraluca!).
   
 ### 5.4.2 Aug 14, 2020
