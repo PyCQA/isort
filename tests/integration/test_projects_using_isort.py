@@ -1,5 +1,6 @@
-"""Tests a projects that use isort to see if any differences are found between their current imports and
-what isort suggest they be. This is an important early warning single of regressions.
+"""Tests a projects that use isort to see if any differences are found between
+their current imports and what isort suggest on the develop branch.
+This is an important early warning signal of regressions.
 
 NOTE: If you use isort within a public repository, please feel empowered to add your project here!
 It is important to isort that as few regressions as possible are experienced by our users.
@@ -19,25 +20,27 @@ def test_django(tmpdir):
 
 
 def test_plone(tmpdir):
-    check_call(["git", "clone", "https://github.com/plone/plone.app.multilingualindexes.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "https://github.com/plone/plone.app.multilingualindexes.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir / "src")])
 
 
 def test_pandas(tmpdir):
     check_call(["git", "clone", "https://github.com/pandas-dev/pandas.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"])
-    
-    
+
+
 def test_fastapi(tmpdir):
     check_call(["git", "clone", "https://github.com/tiangolo/fastapi.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir / "fastapi")])
-    
-    
+
+
 def test_zulip(tmpdir):
     check_call(["git", "clone", "https://github.com/zulip/zulip.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir), "--skip", "__init__.pyi"])
-    
-    
+
+
 def test_habitat_lab(tmpdir):
     check_call(["git", "clone", "https://github.com/facebookresearch/habitat-lab.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir)])
@@ -50,7 +53,19 @@ def test_tmuxp(tmpdir):
 
 def test_websockets(tmpdir):
     check_call(["git", "clone", "https://github.com/aaugustin/websockets.git", str(tmpdir)])
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "example", "--skip", "docs", "--skip", "compliance"])
+    main(
+        [
+            "--check-only",
+            "--diff",
+            str(tmpdir),
+            "--skip",
+            "example",
+            "--skip",
+            "docs",
+            "--skip",
+            "compliance",
+        ]
+    )
 
 
 def test_airflow(tmpdir):
@@ -60,7 +75,19 @@ def test_airflow(tmpdir):
 
 def test_typeshed(tmpdir):
     check_call(["git", "clone", "https://github.com/python/typeshed.git", str(tmpdir)])
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "tests", "--skip", "scripts", "--skip", f"{tmpdir}/third_party/2and3/yaml/__init__.pyi"])
+    main(
+        [
+            "--check-only",
+            "--diff",
+            str(tmpdir),
+            "--skip",
+            "tests",
+            "--skip",
+            "scripts",
+            "--skip",
+            f"{tmpdir}/third_party/2and3/yaml/__init__.pyi",
+        ]
+    )
 
 
 def test_pylint(tmpdir):
@@ -72,7 +99,7 @@ def test_poetry(tmpdir):
     check_call(["git", "clone", "https://github.com/python-poetry/poetry.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
 
-    
+
 def test_hypothesis(tmpdir):
     check_call(["git", "clone", "https://github.com/HypothesisWorks/hypothesis.git", str(tmpdir)])
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
