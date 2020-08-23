@@ -1,4 +1,4 @@
-name: Lint
+name: Integration
 
 on: [push, pull_request]
 
