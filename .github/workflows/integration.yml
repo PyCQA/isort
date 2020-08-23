@@ -16,9 +16,9 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: lint-pip-${{ hashFiles('**/pyproject.toml') }}
+          key: integration-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
-            lint-pip-
+            integration-pip-
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
@@ -31,5 +31,5 @@ jobs:
           python -m pip install --upgrade poetry
           poetry install
 
-      - name: Lint
-        run: ./scripts/lint.sh
+      - name: Test integration
+        run: ./scripts/test_integration.sh
