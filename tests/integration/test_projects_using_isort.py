@@ -1,4 +1,4 @@
-"""Tests a projects that use isort to see if any differences are found between
+"""Tests projects that use isort to see if any differences are found between
 their current imports and what isort suggest on the develop branch.
 This is an important early warning signal of regressions.
 
