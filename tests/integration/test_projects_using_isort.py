@@ -12,7 +12,9 @@ from isort.main import main
 
 
 def test_django(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/django/django.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/django/django.git", str(tmpdir)]
+    )
     isort_target_dirs = [
         str(target_dir) for target_dir in (tmpdir / "django", tmpdir / "tests", tmpdir / "scripts")
     ]
@@ -21,18 +23,29 @@ def test_django(tmpdir):
 
 def test_plone(tmpdir):
     check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/plone/plone.app.multilingualindexes.git", str(tmpdir)]
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "https://github.com/plone/plone.app.multilingualindexes.git",
+            str(tmpdir),
+        ]
     )
     main(["--check-only", "--diff", str(tmpdir / "src")])
 
 
 def test_pandas(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/pandas-dev/pandas.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/pandas-dev/pandas.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"])
 
 
 def test_fastapi(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/tiangolo/fastapi.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/tiangolo/fastapi.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir / "fastapi")])
 
 
@@ -42,17 +55,30 @@ def test_zulip(tmpdir):
 
 
 def test_habitat_lab(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/facebookresearch/habitat-lab.git", str(tmpdir)])
+    check_call(
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "https://github.com/facebookresearch/habitat-lab.git",
+            str(tmpdir),
+        ]
+    )
     main(["--check-only", "--diff", str(tmpdir)])
 
 
 def test_tmuxp(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/tmux-python/tmuxp.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/tmux-python/tmuxp.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir)])
 
 
 def test_websockets(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/aaugustin/websockets.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/aaugustin/websockets.git", str(tmpdir)]
+    )
     main(
         [
             "--check-only",
@@ -69,12 +95,16 @@ def test_websockets(tmpdir):
 
 
 def test_airflow(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/apache/airflow.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/apache/airflow.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir)])
 
 
 def test_typeshed(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/python/typeshed.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/python/typeshed.git", str(tmpdir)]
+    )
     main(
         [
             "--check-only",
@@ -96,15 +126,28 @@ def test_pylint(tmpdir):
 
 
 def test_poetry(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/python-poetry/poetry.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/python-poetry/poetry.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
 
 
 def test_hypothesis(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/HypothesisWorks/hypothesis.git", str(tmpdir)])
+    check_call(
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "https://github.com/HypothesisWorks/hypothesis.git",
+            str(tmpdir),
+        ]
+    )
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
 
 
 def test_pillow(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/python-pillow/Pillow.git", str(tmpdir)])
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/python-pillow/Pillow.git", str(tmpdir)]
+    )
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
