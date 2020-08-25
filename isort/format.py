@@ -1,3 +1,4 @@
+import re
 import sys
 from datetime import datetime
 from difflib import unified_diff
@@ -11,6 +12,10 @@ except ImportError:
 else:
     colorama_unavailable = False
     colorama.init()
+
+
+ADDED_LINE_PATTERN = re.compile(r"\+[^+]")
+REMOVED_LINE_PATTERN = re.compile(r"-[^-]")
 
 
 def format_simplified(import_line: str) -> str:
@@ -37,7 +42,12 @@ def format_natural(import_line: str) -> str:
 
 
 def show_unified_diff(
-    *, file_input: str, file_output: str, file_path: Optional[Path], output: Optional[TextIO] = None
+    *,
+    file_input: str,
+    file_output: str,
+    file_path: Optional[Path],
+    output: Optional[TextIO] = None,
+    color_output: bool = False,
 ):
     """Shows a unified_diff for the provided input and output against the provided file path.
 
@@ -45,8 +55,9 @@ def show_unified_diff(
     - **file_output**: A string that represents the contents of a file after changes.
     - **file_path**: A Path object that represents the file path of the file being changed.
     - **output**: A stream to output the diff to. If non is provided uses sys.stdout.
+    - **color_output**: Use color in output if True.
     """
-    output = sys.stdout if output is None else output
+    printer = create_terminal_printer(color_output, output)
     file_name = "" if file_path is None else str(file_path)
     file_mtime = str(
         datetime.now() if file_path is None else datetime.fromtimestamp(file_path.stat().st_mtime)
@@ -60,7 +71,7 @@ def show_unified_diff(
         tofiledate=str(datetime.now()),
     )
     for line in unified_diff_lines:
-        output.write(line)
+        printer.diff_line(line)
 
 
 def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
@@ -84,28 +95,49 @@ class BasicPrinter:
     ERROR = "ERROR"
     SUCCESS = "SUCCESS"
 
+    def __init__(self, output: Optional[TextIO] = None):
+        self.output = output or sys.stdout
+
     def success(self, message: str) -> None:
-        print(f"{self.SUCCESS}: {message}")
+        print(f"{self.SUCCESS}: {message}", file=self.output)
 
     def error(self, message: str) -> None:
         print(
             f"{self.ERROR}: {message}",
+            file=self.output,
             # TODO this should print to stderr, but don't want to make it backward incompatible now
             # file=sys.stderr
         )
 
+    def diff_line(self, line: str) -> None:
+        self.output.write(line)
+
 
 class ColoramaPrinter(BasicPrinter):
-    def __init__(self):
+    ADDED_LINE = colorama.Fore.GREEN
+    REMOVED_LINE = colorama.Fore.RED
+
+    def __init__(self, output: Optional[TextIO] = None):
+        self.output = output or sys.stdout
         self.ERROR = self.style_text("ERROR", colorama.Fore.RED)
         self.SUCCESS = self.style_text("SUCCESS", colorama.Fore.GREEN)
 
     @staticmethod
-    def style_text(text: str, style: str) -> str:
+    def style_text(text: str, style: Optional[str] = None) -> str:
+        if style is None:
+            return text
         return style + text + colorama.Style.RESET_ALL
 
+    def diff_line(self, line: str) -> None:
+        style = None
+        if re.match(ADDED_LINE_PATTERN, line):
+            style = self.ADDED_LINE
+        elif re.match(REMOVED_LINE_PATTERN, line):
+            style = self.REMOVED_LINE
+        self.output.write(self.style_text(line, style))
 
-def create_terminal_printer(color: bool):
+
+def create_terminal_printer(color: bool, output: Optional[TextIO] = None):
     if color and colorama_unavailable:
         no_colorama_message = (
             "\n"
@@ -118,4 +150,4 @@ def create_terminal_printer(color: bool):
         print(no_colorama_message, file=sys.stderr)
         sys.exit(1)
 
-    return ColoramaPrinter() if color else BasicPrinter()
+    return ColoramaPrinter(output) if color else BasicPrinter(output)
