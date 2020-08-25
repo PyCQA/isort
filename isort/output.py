@@ -9,7 +9,7 @@ from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
 from .settings import DEFAULT_CONFIG, Config
 
-STATEMENT_DECLERATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
+STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 def sorted_imports(
@@ -186,7 +186,7 @@ def sorted_imports(
 
         if config.lines_after_imports != -1:
             formatted_output[imports_tail:0] = ["" for line in range(config.lines_after_imports)]
-        elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLERATIONS):
+        elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
             formatted_output[imports_tail:0] = ["", ""]
         else:
             formatted_output[imports_tail:0] = [""]
