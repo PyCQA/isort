@@ -8,8 +8,6 @@ Having your project tested here is the most sure way to keep those regressions f
 """
 from subprocess import check_call
 
-import pytest
-
 from isort.main import main
 
 
@@ -96,9 +94,6 @@ def test_websockets(tmpdir):
     )
 
 
-# TODO Re-enable when airflow updates their isort config
-# Reference: https://github.com/apache/airflow/pull/10543#issuecomment-680231216
-@pytest.mark.skip(reason="Airflow isort config currently broken")
 def test_airflow(tmpdir):
     check_call(
         ["git", "clone", "--depth", "1", "https://github.com/apache/airflow.git", str(tmpdir)]
