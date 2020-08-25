@@ -8,9 +8,9 @@ description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/timothycrosley/isort"
-homepage = "https://timothycrosley.github.io/isort/"
-documentation = "https://timothycrosley.github.io/isort/"
+repository = "https://github.com/pycqa/isort"
+homepage = "https://pycqa.github.io/isort/"
+documentation = "https://pycqa.github.io/isort/"
 keywords = ["Refactor", "Lint", "Imports", "Sort", "Clean"]
 classifiers = [
     "Development Status :: 6 - Mature",
@@ -30,7 +30,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-urls = { Changelog = "https://github.com/timothycrosley/isort/blob/master/CHANGELOG.md" }
+urls = { Changelog = "https://github.com/pycqa/isort/blob/master/CHANGELOG.md" }
 packages = [
     { include = "isort" },
     { include = "tests", format = "sdist" },
@@ -91,7 +91,7 @@ isort = "isort.main:ISortCommand"
 isort = "isort = isort.pylama_isort:Linter"
 
 [tool.portray.mkdocs]
-edit_uri = "https://github.com/timothycrosley/isort/edit/develop/"
+edit_uri = "https://github.com/pycqa/isort/edit/develop/"
 extra_css = ["art/stylesheets/extra.css"]
 
 [tool.portray.mkdocs.theme]

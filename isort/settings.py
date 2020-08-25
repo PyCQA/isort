@@ -329,7 +329,7 @@ class Config(_Config):
                             f"Can't set both {key} and {section_name} in the same config file.\n"
                             f"Default to {section_name} if unsure."
                             "\n\n"
-                            "See: https://timothycrosley.github.io/isort/"
+                            "See: https://pycqa.github.io/isort/"
                             "#custom-sections-and-ordering."
                         )
                     else:
@@ -344,7 +344,7 @@ class Config(_Config):
                             f"`{key}` setting is defined, but {maps_to_section} is not"
                             " included in `sections` config option:"
                             f" {combined_config.get('sections', SECTION_DEFAULTS)}.\n\n"
-                            "See: https://timothycrosley.github.io/isort/"
+                            "See: https://pycqa.github.io/isort/"
                             "#custom-sections-and-ordering."
                         )
             if key.startswith(IMPORT_HEADING_PREFIX):

@@ -134,7 +134,7 @@ Internal Development:
   - Added warning for deprecated CLI flags and linked to upgrade guide.
 
 ### 5.0.3 - July 4, 2020
-  - Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/timothycrosley/isort/issues/1258)
+  - Fixed setup.py command incorrectly passing check=True as a configuration parameter (see: https://github.com/pycqa/isort/issues/1258)
   - Fixed missing patch version
   - Fixed issue #1253: Atomic fails when passed in not readable output stream
 
@@ -177,7 +177,7 @@ Internal:
 
 - profile support for common project types (black, django, google, etc)
 
-- Much much more. There is some difficulty in fully capturing the extent of changes in this release - just because of how all encompassing the release is. See: [Github Issues](https://github.com/timothycrosley/isort/issues?q=is%3Aissue+is%3Aclosed) for more.
+- Much much more. There is some difficulty in fully capturing the extent of changes in this release - just because of how all encompassing the release is. See: [Github Issues](https://github.com/pycqa/isort/issues?q=is%3Aissue+is%3Aclosed) for more.
 
 ### 4.3.21 - June 25, 2019 - hot fix release
 - Fixed issue #957 - Long aliases and use_parentheses generates invalid syntax

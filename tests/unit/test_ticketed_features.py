@@ -13,7 +13,7 @@ from isort import Config, exceptions
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
     """Test to ensure even if a semicolon is in the decorator in the line following an import
     the correct line spacing detrmination will be made.
-    See: https://github.com/timothycrosley/isort/issues/1178.
+    See: https://github.com/pycqa/isort/issues/1178.
     """
     assert isort.check_code(
         """
@@ -29,7 +29,7 @@ def test_thing(): pass
 
 def test_isort_automatically_removes_duplicate_aliases_issue_1193():
     """Test to ensure isort can automatically remove duplicate aliases.
-    See: https://github.com/timothycrosley/isort/issues/1281
+    See: https://github.com/pycqa/isort/issues/1281
     """
     assert isort.check_code("from urllib import parse as parse\n", show_diff=True)
     assert (
@@ -42,7 +42,7 @@ def test_isort_automatically_removes_duplicate_aliases_issue_1193():
 
 def test_isort_enables_floating_imports_to_top_of_module_issue_1228():
     """Test to ensure isort will allow floating all non-indented imports to the top of a file.
-    See: https://github.com/timothycrosley/isort/issues/1228.
+    See: https://github.com/pycqa/isort/issues/1228.
     """
     assert (
         isort.code(
@@ -159,7 +159,7 @@ def my_function_2():
 
 def test_isort_provides_official_api_for_diff_output_issue_1335():
     """Test to ensure isort API for diff capturing allows capturing diff without sys.stdout.
-    See: https://github.com/timothycrosley/isort/issues/1335.
+    See: https://github.com/pycqa/isort/issues/1335.
     """
     diff_output = StringIO()
     isort.code("import b\nimport a\n", show_diff=diff_output)
@@ -169,7 +169,7 @@ def test_isort_provides_official_api_for_diff_output_issue_1335():
 
 def test_isort_warns_when_known_sections_dont_match_issue_1331():
     """Test to ensure that isort warns if there is a mismatch between sections and known_sections.
-    See: https://github.com/timothycrosley/isort/issues/1331.
+    See: https://github.com/pycqa/isort/issues/1331.
     """
     assert (
         isort.place_module(
@@ -203,7 +203,7 @@ def test_isort_warns_when_known_sections_dont_match_issue_1331():
 
 def test_isort_supports_append_only_imports_issue_727():
     """Test to ensure isort provides a way to only add imports as an append.
-    See: https://github.com/timothycrosley/isort/issues/727.
+    See: https://github.com/pycqa/isort/issues/727.
     """
     assert isort.code("", add_imports=["from __future__ import absolute_imports"]) == ""
     assert (
@@ -217,7 +217,7 @@ import os
 
 def test_isort_supports_shared_profiles_issue_970():
     """Test to ensure isort provides a way to use shared profiles.
-    See: https://github.com/timothycrosley/isort/issues/970.
+    See: https://github.com/pycqa/isort/issues/970.
     """
     assert isort.code("import a", profile="example") == "import a\n"  # shared profile
     assert isort.code("import a", profile="black") == "import a\n"  # bundled profile
@@ -227,7 +227,7 @@ def test_isort_supports_shared_profiles_issue_970():
 
 def test_isort_supports_formatting_plugins_issue_1353():
     """Test to ensure isort provides a way to create and share formatting plugins.
-    See: https://github.com/timothycrosley/isort/issues/1353.
+    See: https://github.com/pycqa/isort/issues/1353.
     """
     assert isort.code("import a", formatter="example") == "import a\n"  # formatting plugin
     with pytest.raises(exceptions.FormattingPluginDoesNotExist):
@@ -236,7 +236,7 @@ def test_isort_supports_formatting_plugins_issue_1353():
 
 def test_treating_comments_as_code_issue_1357():
     """Test to ensure isort provides a way to treat comments as code.
-    See: https://github.com/timothycrosley/isort/issues/1357
+    See: https://github.com/pycqa/isort/issues/1357
     """
     assert (
         isort.code(
@@ -488,7 +488,7 @@ y = {"b": "c", "z": "z"}"""
 
 def test_isort_allows_setting_import_types_issue_1181():
     """Test to ensure isort provides a way to set the type of imports.
-    See: https://github.com/timothycrosley/isort/issues/1181
+    See: https://github.com/pycqa/isort/issues/1181
     """
     assert isort.code("from x import AA, Big, variable") == "from x import AA, Big, variable\n"
     assert (
@@ -512,7 +512,7 @@ def test_isort_allows_setting_import_types_issue_1181():
 
 def test_isort_enables_deduping_section_headers_issue_953():
     """isort should provide a way to only have identical import headings show up once.
-    See: https://github.com/timothycrosley/isort/issues/953
+    See: https://github.com/pycqa/isort/issues/953
     """
     isort_code = partial(
         isort.code,
