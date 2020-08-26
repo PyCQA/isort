@@ -3425,6 +3425,13 @@ def test_all_imports_from_single_module() -> None:
         "from a import i as j\n"
         "from a import w, x, y, z\n"
     )
+    test_input = (
+        "import a\n"
+        "from a import *\n"
+        "from a import z, x, y\n"
+        "from a import b\n"
+        "from a import w\n"
+    )
     test_output = isort.code(
         code=test_input,
         combine_star=True,
@@ -3433,6 +3440,13 @@ def test_all_imports_from_single_module() -> None:
         no_inline_sort=False,
     )
     assert test_output == "import a\nfrom a import *\n"
+    test_input += """
+from a import b as c
+from a import b as d
+from a import e as f
+from a import g as h
+from a import i as j
+"""
     test_output = isort.code(
         code=test_input,
         combine_star=False,
@@ -3466,6 +3480,17 @@ def test_all_imports_from_single_module() -> None:
         "from a import y\n"
         "from a import z\n"
     )
+    test_input = (
+        "import a\n"
+        "from a import *\n"
+        "from a import b\n"
+        "from a import b as d\n"
+        "from a import b as c\n"
+        "from a import z, x, y, w\n"
+        "from a import i as j\n"
+        "from a import g as h\n"
+        "from a import e as f\n"
+    )
     test_output = isort.code(
         code=test_input,
         combine_star=False,
@@ -3484,6 +3509,13 @@ def test_all_imports_from_single_module() -> None:
         "from a import g as h\n"
         "from a import e as f\n"
     )
+    test_input = (
+        "import a\n"
+        "from a import *\n"
+        "from a import z, x, y\n"
+        "from a import b\n"
+        "from a import w\n"
+    )
     test_output = isort.code(
         code=test_input,
         combine_star=True,
@@ -3519,15 +3551,21 @@ def test_all_imports_from_single_module() -> None:
         "import a\n"
         "from a import *\n"
         "from a import b\n"
-        "from a import b as c\n"
-        "from a import b as d\n"
-        "from a import e as f\n"
-        "from a import g as h\n"
-        "from a import i as j\n"
         "from a import w\n"
         "from a import x\n"
         "from a import y\n"
         "from a import z\n"
+    )
+    test_input = (
+        "import a\n"
+        "from a import *\n"
+        "from a import b\n"
+        "from a import b as d\n"
+        "from a import b as c\n"
+        "from a import z, x, y, w\n"
+        "from a import i as j\n"
+        "from a import g as h\n"
+        "from a import e as f\n"
     )
     test_output = isort.code(
         code=test_input,
@@ -3561,6 +3599,13 @@ def test_all_imports_from_single_module() -> None:
         "from a import x\n"
         "from a import y\n"
         "from a import z\n"
+    )
+    test_input = (
+        "import a\n"
+        "from a import *\n"
+        "from a import z, x, y\n"
+        "from a import b\n"
+        "from a import w\n"
     )
     test_output = isort.code(
         code=test_input,

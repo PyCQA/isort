@@ -257,18 +257,15 @@ def _with_from_imports(
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
+        only_show_as_imports = False
+        comments = parsed.categorized_comments["from"].pop(module, ())
+        above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
         while from_imports:
-            comments = parsed.categorized_comments["from"].pop(module, ())
-            above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
             if above_comments:
                 output.extend(above_comments)
+                above_comments = None
 
             if "*" in from_imports and config.combine_star:
-                if config.combine_as_imports:
-                    comments = list(comments or ())
-                    comments += parsed.categorized_comments["from"].pop(
-                        f"{module}.__combined_as__", []
-                    )
                 import_statement = wrap.line(
                     with_comments(
                         comments,
@@ -279,7 +276,10 @@ def _with_from_imports(
                     parsed.line_separator,
                     config,
                 )
-                from_imports = []
+                from_imports = [
+                    from_import for from_import in from_imports if from_import in as_imports
+                ]
+                only_show_as_imports = True
             elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
                 while from_imports:
@@ -298,7 +298,10 @@ def _with_from_imports(
                             f"{comments and ';' or config.comment_prefix} " f"{comment}"
                         )
                     if from_import in as_imports:
-                        if parsed.imports[section]["from"][module][from_import]:
+                        if (
+                            parsed.imports[section]["from"][module][from_import]
+                            and not only_show_as_imports
+                        ):
                             output.append(
                                 wrap.line(single_import_line, parsed.line_separator, config)
                             )
@@ -324,7 +327,10 @@ def _with_from_imports(
                     from_comments = parsed.categorized_comments["straight"].get(
                         f"{module}.{from_import}"
                     )
-                    if parsed.imports[section]["from"][module][from_import]:
+                    if (
+                        parsed.imports[section]["from"][module][from_import]
+                        and not only_show_as_imports
+                    ):
                         output.append(
                             wrap.line(
                                 with_comments(
