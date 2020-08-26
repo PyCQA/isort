@@ -114,13 +114,14 @@ class BasicPrinter:
 
 
 class ColoramaPrinter(BasicPrinter):
-    ADDED_LINE = colorama.Fore.GREEN
-    REMOVED_LINE = colorama.Fore.RED
-
     def __init__(self, output: Optional[TextIO] = None):
         self.output = output or sys.stdout
+        # Note: this constants are instance variables instead ofs class variables
+        # because they refer to colorama which might not be installed.
         self.ERROR = self.style_text("ERROR", colorama.Fore.RED)
         self.SUCCESS = self.style_text("SUCCESS", colorama.Fore.GREEN)
+        self.ADDED_LINE = colorama.Fore.GREEN
+        self.REMOVED_LINE = colorama.Fore.RED
 
     @staticmethod
     def style_text(text: str, style: Optional[str] = None) -> str:
