@@ -258,11 +258,12 @@ def _with_from_imports(
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
         only_show_as_imports = False
+        comments = parsed.categorized_comments["from"].pop(module, ())
+        above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
         while from_imports:
-            comments = parsed.categorized_comments["from"].pop(module, ())
-            above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
             if above_comments:
                 output.extend(above_comments)
+                above_comments = None
 
             if "*" in from_imports and config.combine_star:
                 import_statement = wrap.line(
