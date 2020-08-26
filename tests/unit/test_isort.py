@@ -1209,7 +1209,7 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
     )
 
     # Ensure force_sort_within_sections can work with length sort
-    # See: https://github.com/timothycrosley/isort/issues/1038
+    # See: https://github.com/pycqa/isort/issues/1038
     test_input = """import sympy
 import numpy as np
 import pandas as pd
@@ -3964,7 +3964,7 @@ def test_isort_with_single_character_import() -> None:
     """Tests to ensure isort handles single capatilized single character imports
     as class objects by default
 
-    See Issue #376: https://github.com/timothycrosley/isort/issues/376
+    See Issue #376: https://github.com/pycqa/isort/issues/376
     """
     test_input = "from django.db.models import CASCADE, SET_NULL, Q\n"
     assert isort.code(test_input) == test_input

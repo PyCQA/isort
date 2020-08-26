@@ -5,7 +5,7 @@
         "cookiecutter": {
             "full_name": "Timothy Crosley",
             "email": "timothy.crosley@gmail.com",
-            "github_username": "timothycrosley",
+            "github_username": "pycqa",
             "project_name": "isort",
             "description": "A Python utility / library to sort Python imports.",
             "version": "4.3.21",

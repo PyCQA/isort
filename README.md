@@ -1,21 +1,21 @@
-[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/timothycrosley/isort/develop/art/logo_large.png)](https://timothycrosley.github.io/isort/)
+[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/pycqa/isort/develop/art/logo_large.png)](https://pycqa.github.io/isort/)
 
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
-[![Test Status](https://github.com/timothycrosley/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ATest)
-[![Lint Status](https://github.com/timothycrosley/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/timothycrosley/isort/actions?query=workflow%3ALint)
-[![Code coverage Status](https://codecov.io/gh/timothycrosley/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/timothycrosley/isort)
+[![Test Status](https://github.com/pycqa/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ATest)
+[![Lint Status](https://github.com/pycqa/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ALint)
+[![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
 [![Maintainability](https://api.codeclimate.com/v1/badges/060372d3e77573072609/maintainability)](https://codeclimate.com/github/timothycrosley/isort/maintainability)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/isort/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Downloads](https://pepy.tech/badge/isort)](https://pepy.tech/project/isort)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/timothycrosley/isort/?ref=repository-badge)
 _________________
 
-[Read Latest Documentation](https://timothycrosley.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/timothycrosley/isort/)
+[Read Latest Documentation](https://pycqa.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/pycqa/isort/)
 _________________
 
 isort your imports, so you don't have to.
@@ -23,13 +23,13 @@ isort your imports, so you don't have to.
 isort is a Python utility / library to sort imports alphabetically, and
 automatically separated into sections and by type. It provides a command line
 utility, Python library and [plugins for various
-editors](https://github.com/timothycrosley/isort/wiki/isort-Plugins) to
+editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
-[Try isort now from your browser!](https://timothycrosley.github.io/isort/docs/quick_start/0.-try/)
+[Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
 
-![Example Usage](https://raw.github.com/timothycrosley/isort/develop/example.gif)
+![Example Usage](https://raw.github.com/pycqa/isort/develop/example.gif)
 
 Before isort:
 
@@ -155,7 +155,7 @@ sorted_code = isort.code("import b\nimport a\n")
 
 Several plugins have been written that enable to use isort from within a
 variety of text-editors. You can find a full list of them [on the isort
-wiki](https://github.com/timothycrosley/isort/wiki/isort-Plugins).
+wiki](https://github.com/pycqa/isort/wiki/isort-Plugins).
 Additionally, I will enthusiastically accept pull requests that include
 plugins for other text editors and add documentation for them as I am
 notified.
@@ -443,7 +443,7 @@ import b
 from a import a  # This will always appear below because it is a from import.
 ```
 
-However, if you prefer to keep strict alphabetical sorting you can set [force sort within sections](https://timothycrosley.github.io/isort/docs/configuration/options/#force-sort-within-sections) to true. Resulting in:
+However, if you prefer to keep strict alphabetical sorting you can set [force sort within sections](https://pycqa.github.io/isort/docs/configuration/options/#force-sort-within-sections) to true. Resulting in:
 
 
 ```python
@@ -451,7 +451,7 @@ from a import a  # This will now appear at top because a appears in the alphabet
 import b
 ```
 
-You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](https://timothycrosley.github.io/isort/docs/configuration/options/#from-first).
+You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](https://pycqa.github.io/isort/docs/configuration/options/#from-first).
 
 ```python
 from b import b # If from first is set to True, all from imports will be placed before non-from imports.
@@ -608,21 +608,21 @@ setup(
 
 ## Spread the word
 
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 Place this badge at the top of your repository to let others know your project uses isort.
 
 For README.md:
 
 ```markdown
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://timothycrosley.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 ```
 
 Or README.rst:
 
 ```rst
 .. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
-    :target: https://timothycrosley.github.io/isort/
+    :target: https://pycqa.github.io/isort/
 ```
 
 ## Security contact information

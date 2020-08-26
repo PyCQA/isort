@@ -10,7 +10,7 @@ import hug
 
 IGNORED_AUTHOR_LOGINS = {"deepsource-autofix[bot]"}
 
-REPO = "timothycrosley/isort"
+REPO = "pycqa/isort"
 GITHUB_API_CONTRIBUTORS = f"https://api.github.com/repos/{REPO}/contributors"
 GITHUB_USER_CONTRIBUTIONS = f"https://github.com/{REPO}/commits?author="
 GITHUB_USER_TYPE = "User"

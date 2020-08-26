@@ -61,7 +61,7 @@ Try one of the following:
     `isort . --check --diff` - Check to see if imports are correctly sorted within this project.
     `isort --help` - In-depth information about isort's available command-line options.
 
-Visit https://timothycrosley.github.io/isort/ for complete information about how to use isort.
+Visit https://pycqa.github.io/isort/ for complete information about how to use isort.
 """
 
 
@@ -146,7 +146,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "interactive behavior."
         ""
         "If you've used isort 4 but are new to isort 5, see the upgrading guide:"
-        "https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/."
+        "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/."
     )
     inline_args_group = parser.add_mutually_exclusive_group()
     parser.add_argument(
@@ -908,7 +908,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             )
         warn(
             "W0500: Please see the 5.0.0 Upgrade guide: "
-            "https://timothycrosley.github.io/isort/docs/upgrade_guides/5.0.0/"
+            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/"
         )
 
     if wrong_sorted_files:
