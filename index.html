@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
     
     
       
@@ -19,9 +19,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.b5d04df8.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.01afc2df.min.css">
       
-        <link rel="stylesheet" href="assets/stylesheets/palette.9ab2c1f8.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.83bccb1f.min.css">
       
       
     
@@ -1916,7 +1916,7 @@ include the following in <code>.git/hooks/pre-commit</code>:</p>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">isort.hooks</span> <span class="kn">import</span> <span class="n">git_hook</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">settings_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
 </code></pre></div>
 
 
@@ -1929,6 +1929,14 @@ individually to the index and tend to use <code>git commit -a</code> instead.
 Set it to <code>True</code> to ensure all tracked files are properly isorted,
 leave it out or set it to <code>False</code> to check only files added to your
 index.</p>
+<p>If you want to use a specific configuration file for the hook, you can pass its
+path to settings_file. If no path is specifically requested, <code>git_hook</code> will
+search for the configuration file starting at the directory containing the first
+staged file, as per <code>git diff-index</code> ordering, and going upward in the directory
+structure until a valid configuration file is found or
+<a href="src/config.py:35"><code>MAX_CONFIG_SEARCH_DEPTH</code></a> directories are checked.
+The settings_file parameter is used to support users who keep their configuration
+file in a directory that might not be a parent of all the other files.</p>
 <h2 id="setuptools-integration">Setuptools integration</h2>
 <p>Upon installation, isort enables a <code>setuptools</code> command that checks
 Python files declared by your project.</p>
@@ -2047,15 +2055,15 @@ tools.</p>
       
     </div>
     
-      <script src="assets/javascripts/vendor.92ffa368.min.js"></script>
-      <script src="assets/javascripts/bundle.5123e3d4.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="assets/javascripts/vendor.df0def68.min.js"></script>
+      <script src="assets/javascripts/bundle.ba57d267.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: ".",
           features: [],
           search: Object.assign({
-            worker: "assets/javascripts/worker/search.a68abb33.min.js"
+            worker: "assets/javascripts/worker/search.fae956e7.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

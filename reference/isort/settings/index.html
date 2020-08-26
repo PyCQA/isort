@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
     
     
       
@@ -19,9 +19,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.b5d04df8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.01afc2df.min.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.9ab2c1f8.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
       
     
@@ -2283,9 +2283,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_comments</span>
 
-    <span class="nd">@staticmethod</span>
-
-    <span class="k">def</span> <span class="nf">_parse_known_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_parse_known_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
         <span class="sd">&quot;&quot;&quot;Expand pattern if identified as a directory and return found sub packages&quot;&quot;&quot;</span>
 
@@ -2295,9 +2293,9 @@
 
                 <span class="n">filename</span>
 
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
 
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
 
             <span class="p">]</span>
 
@@ -2499,7 +2497,11 @@
 
             <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
 
-                <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_DEFAULT_SETTINGS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_DEFAULT_SETTINGS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">KNOWN_PREFIX</span><span class="p">)</span>
 
             <span class="p">}</span>
 
@@ -3171,9 +3173,7 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_section_comments</span><span class="w"></span>
 
-<span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_parse_known_pattern</span><span class="p">(</span><span class="nl">pattern</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">_parse_known_pattern</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">pattern</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="ss">&quot;&quot;&quot;Expand pattern if identified as a directory and return found sub packages&quot;&quot;&quot;</span><span class="w"></span>
 
@@ -3183,9 +3183,9 @@ dynamically determined later on.</p>
 
 <span class="n">                filename</span>
 
-<span class="n">                for filename in os.listdir(pattern)</span>
+<span class="n">                for filename in os.listdir(os.path.join(self.directory, pattern))</span>
 
-<span class="n">                if os.path.isdir(os.path.join(pattern, filename))</span>
+<span class="n">                if os.path.isdir(os.path.join(self.directory, pattern, filename))</span>
 
 <span class="n">            </span><span class="o">]</span><span class="w"></span>
 
@@ -3725,15 +3725,15 @@ dynamically determined later on.</p>
       
     </div>
     
-      <script src="../../../assets/javascripts/vendor.92ffa368.min.js"></script>
-      <script src="../../../assets/javascripts/bundle.5123e3d4.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../assets/javascripts/vendor.df0def68.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.ba57d267.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.a68abb33.min.js"
+            worker: "../../../assets/javascripts/worker/search.fae956e7.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

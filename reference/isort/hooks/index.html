@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
     
     
       
@@ -19,9 +19,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.b5d04df8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.01afc2df.min.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.9ab2c1f8.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
       
     
@@ -1318,7 +1318,11 @@
 
     <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdout</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
 
-<span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
+
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -1342,6 +1346,16 @@
 
 <span class="sd">        If False, ony check/fix the staged files for isort errors.</span>
 
+<span class="sd">    :param str settings_file - A path to a file to be used as</span>
+
+<span class="sd">                               the configuration file for this run.</span>
+
+<span class="sd">        When settings_file is the empty string, the configuration file</span>
+
+<span class="sd">        will be searched starting at the directory containing the first</span>
+
+<span class="sd">        staged file, if any, and going upward in the directory structure.</span>
+
 <span class="sd">    :return number of errors if in strict mode, 0 otherwise.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1362,7 +1376,13 @@
 
     <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+
+        <span class="n">settings_file</span><span class="o">=</span><span class="n">settings_file</span><span class="p">,</span>
+
+        <span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+
+    <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files_modified</span><span class="p">:</span>
 
@@ -1460,7 +1480,8 @@
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
@@ -1474,9 +1495,18 @@
     modifying anything.
 :param bool lazy - if True, also check/fix unstaged files.
     This is useful if you frequently use <code>git commit -a</code> for example.
-    If False, ony check/fix the staged files for isort errors.</p>
+    If False, ony check/fix the staged files for isort errors.
+:param str settings_file - A path to a file to be used as
+                           the configuration file for this run.
+    When settings_file is the empty string, the configuration file
+    will be searched starting at the directory containing the first
+    staged file, if any, and going upward in the directory structure.</p>
 <p>:return number of errors if in strict mode, 0 otherwise.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span><span class="k">strict</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="k">modify</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span>
+
+    <span class="k">strict</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="k">modify</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="ss">&quot;&quot;</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
     <span class="ss">&quot;&quot;&quot;</span>
 
@@ -1500,6 +1530,16 @@
 
 <span class="ss">        If False, ony check/fix the staged files for isort errors.</span>
 
+<span class="ss">    :param str settings_file - A path to a file to be used as</span>
+
+<span class="ss">                               the configuration file for this run.</span>
+
+<span class="ss">        When settings_file is the empty string, the configuration file</span>
+
+<span class="ss">        will be searched starting at the directory containing the first</span>
+
+<span class="ss">        staged file, if any, and going upward in the directory structure.</span>
+
 <span class="ss">    :return number of errors if in strict mode, 0 otherwise.</span>
 
 <span class="ss">    &quot;&quot;&quot;</span>
@@ -1520,7 +1560,13 @@
 
     <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+
+        <span class="n">settings_file</span><span class="o">=</span><span class="n">settings_file</span><span class="p">,</span>
+
+        <span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+
+    <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="k">in</span> <span class="n">files_modified</span><span class="p">:</span>
 
@@ -1623,15 +1669,15 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/vendor.92ffa368.min.js"></script>
-      <script src="../../../assets/javascripts/bundle.5123e3d4.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../assets/javascripts/vendor.df0def68.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.ba57d267.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
           base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.a68abb33.min.js"
+            worker: "../../../assets/javascripts/worker/search.fae956e7.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
