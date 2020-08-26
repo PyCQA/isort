@@ -498,7 +498,8 @@ class Config(_Config):
             return self._known_patterns
 
         self._known_patterns = []
-        for placement in reversed(self.sections):
+        pattern_sections = [STDLIB] + [section for section in self.sections if section != STDLIB]
+        for placement in reversed(pattern_sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"{KNOWN_PREFIX}{known_placement}"
             known_modules = getattr(self, config_key, self.known_other.get(known_placement, ()))
