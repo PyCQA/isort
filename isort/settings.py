@@ -347,7 +347,6 @@ class Config(_Config):
                             "See: https://pycqa.github.io/isort/"
                             "#custom-sections-and-ordering."
                         )
-
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
@@ -505,7 +504,7 @@ class Config(_Config):
             config_key = f"{KNOWN_PREFIX}{known_placement}"
             known_modules = getattr(self, config_key, self.known_other.get(known_placement, ()))
             extra_modules = getattr(self, f"extra_{known_placement}", ())
-            all_modules = set(known_modules).union(extra_modules)
+            all_modules = set(extra_modules).union(known_modules)
             known_patterns = [
                 pattern
                 for known_pattern in all_modules
