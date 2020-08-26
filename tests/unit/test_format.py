@@ -1,3 +1,4 @@
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 import colorama
@@ -29,6 +30,15 @@ def test_basic_printer(capsys):
     assert out == "ERROR: Some error\n"
 
 
+def test_basic_printer_diff(capsys):
+    printer = isort.format.create_terminal_printer(color=False)
+    printer.diff_line("+ added line\n")
+    printer.diff_line("- removed line\n")
+
+    out, _ = capsys.readouterr()
+    assert out == "+ added line\n- removed line\n"
+
+
 def test_colored_printer_success(capsys):
     printer = isort.format.create_terminal_printer(color=True)
     printer.success("All good!")
@@ -45,6 +55,38 @@ def test_colored_printer_error(capsys):
     assert "ERROR" in out
     assert "Some error" in out
     assert colorama.Fore.RED in out
+
+
+def test_colored_printer_diff(capsys):
+    printer = isort.format.create_terminal_printer(color=True)
+    printer.diff_line("+++ file1\n")
+    printer.diff_line("--- file2\n")
+    printer.diff_line("+ added line\n")
+    printer.diff_line("normal line\n")
+    printer.diff_line("- removed line\n")
+    printer.diff_line("normal line\n")
+
+    out, _ = capsys.readouterr()
+    # No color added to lines with multiple + and -'s
+    assert out.startswith("+++ file1\n--- file2\n")
+    # Added lines are green
+    assert colorama.Fore.GREEN + "+ added line" in out
+    # Removed lines are red
+    assert colorama.Fore.RED + "- removed line" in out
+    # Normal lines are resetted back
+    assert colorama.Style.RESET_ALL + "normal line" in out
+
+
+def test_colored_printer_diff_output(capsys):
+    output = StringIO()
+    printer = isort.format.create_terminal_printer(color=True, output=output)
+    printer.diff_line("a line\n")
+
+    out, _ = capsys.readouterr()
+    assert out == ""
+
+    output.seek(0)
+    assert output.read().startswith("a line\n")
 
 
 @patch("isort.format.colorama_unavailable", True)

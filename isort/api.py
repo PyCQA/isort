@@ -131,6 +131,7 @@ def sort_stream(
             file_output=_output_stream.read(),
             file_path=file_path,
             output=output_stream if show_diff is True else cast(TextIO, show_diff),
+            color_output=config.color_output,
         )
         return changed
 
@@ -233,6 +234,7 @@ def check_stream(
                 file_output=output_stream.read(),
                 file_path=file_path,
                 output=None if show_diff is True else cast(TextIO, show_diff),
+                color_output=config.color_output,
             )
         return False
 
@@ -335,6 +337,7 @@ def sort_file(
                                     file_output=tmp_out.read(),
                                     file_path=file_path or source_file.path,
                                     output=None if show_diff is True else cast(TextIO, show_diff),
+                                    color_output=config.color_output,
                                 )
                                 if show_diff or (
                                     ask_to_apply
