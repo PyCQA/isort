@@ -543,3 +543,25 @@ from . import something
 """
     )
     assert isort_code("import os") == "import os\n"
+
+
+def test_isort_doesnt_remove_as_imports_when_combine_star_issue_1380():
+    """Test to ensure isort will not remove as imports along side other imports
+    when requested to combine star imports together.
+    See: https://github.com/PyCQA/isort/issues/1380
+    """
+    assert (
+        isort.code(
+            """
+from a import a
+from a import *
+from a import b as y
+from a import c
+""",
+            combine_star=True,
+        )
+        == """
+from a import *
+from a import b as y
+"""
+    )

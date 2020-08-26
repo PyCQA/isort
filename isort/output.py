@@ -264,11 +264,6 @@ def _with_from_imports(
                 output.extend(above_comments)
 
             if "*" in from_imports and config.combine_star:
-                if config.combine_as_imports:
-                    comments = list(comments or ())
-                    comments += parsed.categorized_comments["from"].pop(
-                        f"{module}.__combined_as__", []
-                    )
                 import_statement = wrap.line(
                     with_comments(
                         comments,
@@ -279,7 +274,9 @@ def _with_from_imports(
                     parsed.line_separator,
                     config,
                 )
-                from_imports = []
+                from_imports = [
+                    from_import for from_import in from_imports if from_import in as_imports
+                ]
             elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
                 while from_imports:
