@@ -347,6 +347,7 @@ class Config(_Config):
                             "See: https://pycqa.github.io/isort/"
                             "#custom-sections-and-ordering."
                         )
+
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
 
@@ -498,12 +499,13 @@ class Config(_Config):
             return self._known_patterns
 
         self._known_patterns = []
-        for placement in reversed(self.sections):
+        pattern_sections = [STDLIB] + [section for section in self.sections if section != STDLIB]
+        for placement in reversed(pattern_sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"{KNOWN_PREFIX}{known_placement}"
             known_modules = getattr(self, config_key, self.known_other.get(known_placement, ()))
             extra_modules = getattr(self, f"extra_{known_placement}", ())
-            all_modules = set(extra_modules).union(known_modules)
+            all_modules = set(known_modules).union(extra_modules)
             known_patterns = [
                 pattern
                 for known_pattern in all_modules

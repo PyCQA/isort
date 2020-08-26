@@ -568,3 +568,22 @@ from a import *
 from a import b as y
 """
     )
+
+
+def test_isort_support_custom_groups_above_stdlib_that_contain_stdlib_modules_issue_1407():
+    """Test to ensure it is possible to declare custom groups above standard library that include
+    modules from the standard library.
+    See: https://github.com/PyCQA/isort/issues/1407
+    """
+    assert isort.check_code(
+        """
+from __future__ import annotations
+from typing import *
+
+from pathlib import Path
+""",
+        known_typing=["typing"],
+        sections=["FUTURE", "TYPING", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"],
+        no_lines_before=["TYPING"],
+        show_diff=True,
+    )
