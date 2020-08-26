@@ -257,6 +257,7 @@ def _with_from_imports(
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
+        only_show_as_imports = False
         while from_imports:
             comments = parsed.categorized_comments["from"].pop(module, ())
             above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
@@ -277,6 +278,7 @@ def _with_from_imports(
                 from_imports = [
                     from_import for from_import in from_imports if from_import in as_imports
                 ]
+                only_show_as_imports = True
             elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
                 while from_imports:
@@ -295,7 +297,10 @@ def _with_from_imports(
                             f"{comments and ';' or config.comment_prefix} " f"{comment}"
                         )
                     if from_import in as_imports:
-                        if parsed.imports[section]["from"][module][from_import]:
+                        if (
+                            parsed.imports[section]["from"][module][from_import]
+                            and not only_show_as_imports
+                        ):
                             output.append(
                                 wrap.line(single_import_line, parsed.line_separator, config)
                             )
@@ -321,7 +326,10 @@ def _with_from_imports(
                     from_comments = parsed.categorized_comments["straight"].get(
                         f"{module}.{from_import}"
                     )
-                    if parsed.imports[section]["from"][module][from_import]:
+                    if (
+                        parsed.imports[section]["from"][module][from_import]
+                        and not only_show_as_imports
+                    ):
                         output.append(
                             wrap.line(
                                 with_comments(

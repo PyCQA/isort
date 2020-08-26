@@ -550,15 +550,18 @@ def test_isort_doesnt_remove_as_imports_when_combine_star_issue_1380():
     when requested to combine star imports together.
     See: https://github.com/PyCQA/isort/issues/1380
     """
-    assert (
-        isort.code(
-            """
+    test_input = """
 from a import a
 from a import *
+from a import b
 from a import b as y
 from a import c
-""",
-            combine_star=True,
+"""
+    assert (
+        isort.code(test_input, combine_star=True,)
+        == isort.code(test_input, combine_star=True, force_single_line=True)
+        == isort.code(
+            test_input, combine_star=True, force_single_line=True, combine_as_imports=True,
         )
         == """
 from a import *
