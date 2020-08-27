@@ -18,9 +18,15 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Co
     skip = {
         "line_ending",
         "sections",
+        "known_standard_library",
         "known_future_library",
+        "known_third_party",
+        "known_first_party",
+        "known_local_folder",
+        "extra_standard_library",
         "forced_separate",
         "lines_after_imports",
+        "add_imports",
         "lines_between_sections",
         "lines_between_types",
         "sources",
@@ -29,6 +35,10 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Co
         "directory",
         "formatter",
         "formatting_function",
+        "comment_prefix",
+        "atomic",
+        "skip",
+        "src_paths",
     }
     inferred_kwargs = {
         k: st.from_type(v)
