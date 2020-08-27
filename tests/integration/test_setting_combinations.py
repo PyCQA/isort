@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 import isort
 
 CODE_SNIPPET = """
-''' Taken from bottle.py
+'''Taken from bottle.py
 
 Copyright (c) 2009-2018, Marcel Hellkamp.
 License: MIT (see LICENSE for details)
@@ -46,7 +46,7 @@ else:  # 2.x
     exec(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))
 """
 SHOULD_RETAIN = [
-    """''' Taken from bottle.py
+    """'''Taken from bottle.py
 
 Copyright (c) 2009-2018, Marcel Hellkamp.
 License: MIT (see LICENSE for details)

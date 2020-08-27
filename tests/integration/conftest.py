@@ -6,6 +6,7 @@ import isort
 
 
 def _as_config(kw) -> isort.Config:
+    kw["atomic"] = False
     if "wrap_length" in kw and "line_length" in kw:
         kw["wrap_length"], kw["line_length"] = sorted([kw["wrap_length"], kw["line_length"]])
     try:
