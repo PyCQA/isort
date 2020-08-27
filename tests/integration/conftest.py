@@ -1,6 +1,8 @@
-import isort
-from hypothesis import strategies as st
 from typing import get_type_hints
+
+from hypothesis import strategies as st
+
+import isort
 
 
 def _as_config(kw) -> isort.Config:

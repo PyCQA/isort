@@ -1,7 +1,7 @@
-import isort
 import hypothesis
-from hypothesis import find, settings, Verbosity
 from hypothesis import strategies as st
+
+import isort
 
 CODE_SNIPPET = """
 ''' Taken from bottle.py
@@ -45,26 +45,27 @@ else:  # 2.x
     json_loads = json_lds
     exec(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))
 """
-SHOULD_RETAIN = ["""''' Taken from bottle.py
+SHOULD_RETAIN = [
+    """''' Taken from bottle.py
 
 Copyright (c) 2009-2018, Marcel Hellkamp.
 License: MIT (see LICENSE for details)
 '''""",
-"# Lots of stdlib and builtin differences.",
-"if py3k:",
-"http.client",
-"_thread",
-"urllib.parse",
-"urlencode",
-"urlunquote = functools.partial(urlunquote, encoding='latin1')",
-"http.cookies",
-"SimpleCookie",
-"collections.abc",
-"pickle",
-"comment number 2",
-"io",
-"configparser",
-"""basestring = str
+    "# Lots of stdlib and builtin differences.",
+    "if py3k:",
+    "http.client",
+    "_thread",
+    "urllib.parse",
+    "urlencode",
+    "urlunquote = functools.partial(urlunquote, encoding='latin1')",
+    "http.cookies",
+    "SimpleCookie",
+    "collections.abc",
+    "pickle",
+    "comment number 2",
+    "io",
+    "configparser",
+    """basestring = str
     unicode = str
     json_loads = lambda s: json_lds(touni(s))
     callable = lambda x: hasattr(x, '__call__')
@@ -87,26 +88,24 @@ else:  # 2.x
     "collections",
     """unicode = unicode
     json_loads = json_lds
-    exec(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))"""
+    exec(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))""",
 ]
 
 
 @hypothesis.given(
-    config=st.from_type(isort.Config),
-    disregard_skip=st.booleans(),
+    config=st.from_type(isort.Config), disregard_skip=st.booleans(),
 )
 def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None:
-    try: 
+    try:
         result = isort.code(CODE_SNIPPET, config=config, disregard_skip=disregard_skip)
         result = isort.code(result, config=config, disregard_skip=disregard_skip)
         assert result == isort.code(result, config=config, disregard_skip=disregard_skip)
     except ValueError:
         pass
-    
-    
+
+
 @hypothesis.given(
-    config=st.from_type(isort.Config),
-    disregard_skip=st.booleans(),
+    config=st.from_type(isort.Config), disregard_skip=st.booleans(),
 )
 def test_isort_doesnt_lose_imports_or_comments(config: isort.Config, disregard_skip: bool) -> None:
     result = isort.code(CODE_SNIPPET, config=config, disregard_skip=disregard_skip)
@@ -114,5 +113,5 @@ def test_isort_doesnt_lose_imports_or_comments(config: isort.Config, disregard_s
         if should_be_retained not in result:
             if config.ignore_comments and should_be_retained.startswith("comment"):
                 continue
-            
+
             assert should_be_retained in result
