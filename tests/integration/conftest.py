@@ -16,7 +16,7 @@ def _as_config(kw) -> isort.Config:
         return isort.Config(**kw)
 
 
-def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Config]:
+def configs() -> st.SearchStrategy[isort.Config]:
     """Generate arbitrary Config objects."""
     skip = {
         "line_ending",
@@ -57,7 +57,7 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Co
         "profile": st.sampled_from(sorted(isort.settings.profiles)),
         "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
     }
-    kwargs = {**inferred_kwargs, **specific, **force_strategies}
+    kwargs = {**inferred_kwargs, **specific}
     return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)
 
 
