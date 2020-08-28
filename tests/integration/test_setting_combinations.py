@@ -154,7 +154,8 @@ else:  # 2.x
 
 
 @hypothesis.given(
-    config=st.from_type(isort.Config), disregard_skip=st.booleans(),
+    config=st.from_type(isort.Config),
+    disregard_skip=st.booleans(),
 )
 def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None:
     try:
@@ -166,7 +167,8 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
 
 
 @hypothesis.given(
-    config=st.from_type(isort.Config), disregard_skip=st.booleans(),
+    config=st.from_type(isort.Config),
+    disregard_skip=st.booleans(),
 )
 def test_isort_doesnt_lose_imports_or_comments(config: isort.Config, disregard_skip: bool) -> None:
     result = isort.code(CODE_SNIPPET, config=config, disregard_skip=disregard_skip)

@@ -558,10 +558,16 @@ from a import b as y
 from a import c
 """
     assert (
-        isort.code(test_input, combine_star=True,)
+        isort.code(
+            test_input,
+            combine_star=True,
+        )
         == isort.code(test_input, combine_star=True, force_single_line=True)
         == isort.code(
-            test_input, combine_star=True, force_single_line=True, combine_as_imports=True,
+            test_input,
+            combine_star=True,
+            force_single_line=True,
+            combine_as_imports=True,
         )
         == """
 from a import *

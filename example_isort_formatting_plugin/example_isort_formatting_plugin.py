@@ -15,7 +15,8 @@ def black_format_import_section(
             contents,
             fast=True,
             mode=black.FileMode(
-                is_pyi=extension.lower() == "pyi", line_length=config.line_length,
+                is_pyi=extension.lower() == "pyi",
+                line_length=config.line_length,
             ),
         )
     except black.NothingChanged:
