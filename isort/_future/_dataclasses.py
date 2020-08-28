@@ -1137,7 +1137,10 @@ def make_dataclass(
             name = item
             tp = "typing.Any"
         elif len(item) == 2:
-            name, tp, = item
+            (
+                name,
+                tp,
+            ) = item
         elif len(item) == 3:
             name, tp, spec = item
             namespace[name] = spec
@@ -1173,7 +1176,7 @@ def replace(obj, **changes):
       c = C(1, 2)
       c1 = replace(c, x=3)
       assert c1.x == 3 and c1.y == 2
-      """
+    """
 
     # We're going to mutate 'changes', but that's okay because it's a
     # new dict, even if called with 'replace(obj, **my_changes)'.

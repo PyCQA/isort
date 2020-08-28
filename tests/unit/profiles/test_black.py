@@ -1,46 +1,49 @@
 import black
+
 import isort
 
 
-def black_format(code: str, is_pyi: bool=False, line_length: int=88) -> str:
+def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
     """Formats the provided code snippet using black"""
     try:
         return black.format_file_contents(
             code,
             fast=True,
             mode=black.FileMode(
-                is_pyi=is_pyi, line_length=line_length,
+                is_pyi=is_pyi,
+                line_length=line_length,
             ),
         )
     except black.NothingChanged:
         return code
 
 
-def black_test(code: str, expected_output: str=""):
+def black_test(code: str, expected_output: str = ""):
     """Tests that the given code:
     - Behaves the same when formatted multiple times with isort.
     - Agrees with black formatting.
     - Matches the desired output or itself if none is provided.
     """
     expected_output = expected_output or code
-    
+
     # output should stay consistent over multiple runs
     output = isort.code(code, profile="black")
     assert output == isort.code(code, profile="black")
-    
+
     # output should agree with black
     black_output = black_format(output)
     assert output == black_output
-    
+
     # output should match expected output
     assert output == expected_output
-    
+
 
 def test_black_snippet_one():
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/tests/test_black.py
     """
-    black_test("""#!/usr/bin/env python3
+    black_test(
+        """#!/usr/bin/env python3
 import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -94,7 +97,7 @@ from .test_primer import PrimerCLITests  # noqa: F401
 
 DEFAULT_MODE = black.FileMode(experimental_string_processing=True)
 """,
-"""#!/usr/bin/env python3
+        """#!/usr/bin/env python3
 import asyncio
 import inspect
 import logging
@@ -145,15 +148,16 @@ from pathspec import PathSpec
 from .test_primer import PrimerCLITests  # noqa: F401
 
 DEFAULT_MODE = black.FileMode(experimental_string_processing=True)
-"""
-)
-    
-    
+""",
+    )
+
+
 def test_black_snippet_two():
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/tests/test_primer.py
     """
-    black_test('''#!/usr/bin/env python3
+    black_test(
+        '''#!/usr/bin/env python3
 
 import asyncio
 import sys
@@ -188,7 +192,7 @@ Failed projects:
 Black didn't work
 """
 ''',
-'''#!/usr/bin/env python3
+        '''#!/usr/bin/env python3
 
 import asyncio
 import sys
@@ -219,14 +223,16 @@ Failed projects:
  - stdout:
 Black didn't work
 """
-'''
-)
-    
+''',
+    )
+
+
 def test_black_snippet_three():
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/src/black/__init__.py
     """
-    black_test('''import ast
+    black_test(
+        """import ast
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
@@ -293,8 +299,8 @@ if TYPE_CHECKING:
     import colorama  # noqa: F401
 
 DEFAULT_LINE_LENGTH = 88
-''',
-'''import ast
+""",
+        """import ast
 import asyncio
 import io
 import itertools
@@ -360,4 +366,5 @@ if TYPE_CHECKING:
     import colorama  # noqa: F401
 
 DEFAULT_LINE_LENGTH = 88
-''')
+""",
+    )
