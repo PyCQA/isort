@@ -151,3 +151,22 @@ def test_pillow(tmpdir):
         ["git", "clone", "--depth", "1", "https://github.com/python-pillow/Pillow.git", str(tmpdir)]
     )
     main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
+
+
+def test_attrs(tmpdir):
+    check_call(
+        ["git", "clone", "--depth", "1", "https://github.com/python-attrs/attrs.git", str(tmpdir)]
+    )
+    main(
+        [
+            "--check-only",
+            "--diff",
+            str(tmpdir),
+            "--skip",
+            "tests",
+            "--ext",
+            "py",
+            "--skip",
+            "_compat.py",
+        ]
+    )
