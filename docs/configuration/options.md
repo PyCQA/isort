@@ -8,7 +8,7 @@ Too busy to build your perfect isort configuration? For curated common configura
 
 ## Python Version
 
-Tells isort to set the known standard library based on the the specified Python version. Default is to assume any Python 3 version could be the target, and use a union off all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.
+Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.
 
 **Type:** String  
 **Default:** `py3`  
@@ -765,7 +765,7 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 ## Src Paths
 
-Add an explicitly defined source path (modules within src paths have their imports automatically catorgorized as first_party).
+Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party).
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
@@ -948,7 +948,7 @@ Number of files to process in parallel.
 - -j
 - --jobs
 
-## Dont Order By Type
+## Don't Order By Type
 
 Don't order imports by type, which is determined by case, in addition to alphabetically.
 
