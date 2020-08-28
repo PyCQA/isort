@@ -617,3 +617,18 @@ from ..fileB import b_var
         lines_after_imports=2,
         no_lines_before="LOCALFOLDER",
     )
+
+
+def test_isort_should_be_able_to_add_independent_of_doc_string_placement_issue_1420():
+    """isort should be able to know when an import requested to be added is sucesfully added,
+    independent of where the top doc string is located.
+    See: https://github.com/PyCQA/isort/issues/1420
+    """
+    assert isort.check_code(
+        '''"""module docstring"""
+
+import os
+''',
+        show_diff=True,
+        add_imports=["os"],
+    )

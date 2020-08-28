@@ -215,9 +215,7 @@ def process(
                         if not import_section:
                             output_stream.write(line)
                             line = ""
-                        import_section += line_separator.join(add_imports) + line_separator
                         contains_imports = True
-                        add_imports = []
                     else:
                         not_imports = True
                 elif (
