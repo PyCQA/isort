@@ -632,3 +632,16 @@ import os
         show_diff=True,
         add_imports=["os"],
     )
+
+
+def test_comments_should_never_be_moved_between_imports_issue_1427():
+    """isort should never move comments to different import statement.
+    See: https://github.com/PyCQA/isort/issues/1427
+    """
+    assert isort.check_code(
+        """from package import CONSTANT
+from package import *  # noqa
+        """,
+        force_single_line=True,
+        show_diff=True,
+    )
