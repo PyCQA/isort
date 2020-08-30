@@ -318,6 +318,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for item in _strip_syntax(import_string).split()
             ]
             straight_import = True
+            attach_comments_to: Optional[List[Any]] = None
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -349,15 +350,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
 
-                    if nested_module and config.combine_as_imports:
-                        categorized_comments["from"].setdefault(
-                            f"{top_level_module}.__combined_as__", []
-                        ).extend(comments)
-                        comments = []
-                    else:
-                        categorized_comments["straight"][module] = comments
-                        comments = []
+                    if comments and attach_comments_to is None:
+                        if nested_module and config.combine_as_imports:
+                            attach_comments_to = categorized_comments["from"].setdefault(
+                                f"{top_level_module}.__combined_as__", []
+                            )
+                        else:
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                module, []
+                            )
                     del just_imports[as_index : as_index + 2]
+
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
@@ -377,8 +380,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         ] = associated_comment
                         if associated_comment in comments:
                             comments.pop(comments.index(associated_comment))
-                if comments:
-                    categorized_comments["from"].setdefault(import_from, []).extend(comments)
+                if comments and attach_comments_to is None:
+                    attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
                 if len(out_lines) > max(import_index, 1) - 1:
                     last = out_lines and out_lines[-1].rstrip() or ""
@@ -412,7 +415,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         (module, straight_import | root[import_from].get(module, False))
                         for module in just_imports
                     )
+
+                if comments and attach_comments_to is not None:
+                    attach_comments_to.extend(comments)
             else:
+                if attach_comments_to:
+                    attach_comments_to.extend(comments)
+                    comments = []
+
                 for module in just_imports:
                     if comments:
                         categorized_comments["straight"][module] = comments
