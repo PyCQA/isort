@@ -222,12 +222,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             import_string, comment = parse_comments(line)
             comments = [comment] if comment else []
             line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
-            if (
-                type_of_import == "from"
-                and len(line_parts) == 2
-                and line_parts[1] != "*"
-                and comments
-            ):
+            if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
             if "(" in line.split("#", 1)[0] and index < line_count:
