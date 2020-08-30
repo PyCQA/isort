@@ -272,7 +272,7 @@ def _with_from_imports(
             if "*" in from_imports and config.combine_star:
                 import_statement = wrap.line(
                     with_comments(
-                        comments,
+                        _with_star_comments(parsed, module, list(comments or ())),
                         f"{import_start}*",
                         removed=config.ignore_comments,
                         comment_prefix=config.comment_prefix,
@@ -364,7 +364,7 @@ def _with_from_imports(
                 if "*" in from_imports:
                     output.append(
                         with_comments(
-                            comments,
+                            _with_star_comments(parsed, module, list(comments or ())),
                             f"{import_start}*",
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
@@ -529,3 +529,11 @@ def _ensure_newline_before_comment(output):
             new_output.append("")
         new_output.append(line)
     return new_output
+
+
+def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List[str]) -> List[str]:
+    star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
+    if star_comment:
+        return comments + [star_comment]
+    else:
+        return comments
