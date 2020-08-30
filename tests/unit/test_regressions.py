@@ -645,3 +645,17 @@ from package import *  # noqa
         force_single_line=True,
         show_diff=True,
     )
+
+
+def test_isort_doesnt_misplace_comments_issue_1431():
+    """Test to ensure isort wont misplace comments.
+    See: https://github.com/PyCQA/isort/issues/1431
+    """
+    input_text = """from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
+    MyLovelyCompanyTeamProjectComponent,  # NOT DRY
+)
+from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
+    MyLovelyCompanyTeamProjectComponent as component,  # DRY
+)
+"""
+    assert isort.code(input_text, profile="black") == input_text

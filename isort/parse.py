@@ -235,7 +235,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if (
                         type_of_import == "from"
                         and stripped_line
-                        and " " not in stripped_line
+                        and " " not in stripped_line.replace(" as ", "")
                         and new_comment
                     ):
                         nested_comments[stripped_line] = comments[-1]
@@ -257,7 +257,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         if (
                             type_of_import == "from"
                             and stripped_line
-                            and " " not in stripped_line
+                            and " " not in stripped_line.replace(" as ", "")
                             and new_comment
                         ):
                             nested_comments[stripped_line] = comments[-1]
@@ -272,7 +272,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             if (
                                 type_of_import == "from"
                                 and stripped_line
-                                and " " not in stripped_line
+                                and " " not in stripped_line.replace(" as ", "")
                                 and new_comment
                             ):
                                 nested_comments[stripped_line] = comments[-1]
@@ -282,7 +282,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if (
                         type_of_import == "from"
                         and stripped_line
-                        and " " not in stripped_line
+                        and " " not in stripped_line.replace(" as ", "")
                         and new_comment
                     ):
                         nested_comments[stripped_line] = comments[-1]
@@ -332,6 +332,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             pass
                         elif as_name not in as_map["from"][module]:
                             as_map["from"][module].append(as_name)
+
+                        full_name = f"{nested_module} as {as_name}"
+                        associated_comment = nested_comments.get(full_name)
+                        if associated_comment:
+                            categorized_comments["nested"].setdefault(top_level_module, {})[
+                                full_name
+                            ] = associated_comment
+                            if associated_comment in comments:
+                                comments.pop(comments.index(associated_comment))
                     else:
                         module = just_imports[as_index - 1]
                         as_name = just_imports[as_index + 1]
@@ -340,7 +349,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
 
-                    if config.combine_as_imports and nested_module:
+                    if nested_module and config.combine_as_imports:
                         categorized_comments["from"].setdefault(
                             f"{top_level_module}.__combined_as__", []
                         ).extend(comments)
