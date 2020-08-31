@@ -1656,11 +1656,12 @@ testing = ["jaraco.itertools", "func-timeout"]
 
 [extras]
 colors = ["colorama"]
-pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 
 [metadata]
-content-hash = "c366831acb4de815d36de7d6072c341ae3a1a1cca409490b5c81fe1159977597"
+content-hash = "b0253934829c50ca3694ad1b04e96761dd3122140ccf34b251e8b1b91dea4ca6"
+lock-version = "1.0"
 python-versions = "^3.6"
 
 [metadata.files]
