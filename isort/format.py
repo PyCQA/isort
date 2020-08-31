@@ -102,12 +102,7 @@ class BasicPrinter:
         print(f"{self.SUCCESS}: {message}", file=self.output)
 
     def error(self, message: str) -> None:
-        print(
-            f"{self.ERROR}: {message}",
-            file=self.output,
-            # TODO this should print to stderr, but don't want to make it backward incompatible now
-            # file=sys.stderr
-        )
+        print(f"{self.ERROR}: {message}", file=sys.stderr)
 
     def diff_line(self, line: str) -> None:
         self.output.write(line)

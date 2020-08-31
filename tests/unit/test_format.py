@@ -26,8 +26,8 @@ def test_basic_printer(capsys):
     out, _ = capsys.readouterr()
     assert out == "SUCCESS: All good!\n"
     printer.error("Some error")
-    out, _ = capsys.readouterr()
-    assert out == "ERROR: Some error\n"
+    _, err = capsys.readouterr()
+    assert err == "ERROR: Some error\n"
 
 
 def test_basic_printer_diff(capsys):
@@ -51,10 +51,10 @@ def test_colored_printer_success(capsys):
 def test_colored_printer_error(capsys):
     printer = isort.format.create_terminal_printer(color=True)
     printer.error("Some error")
-    out, _ = capsys.readouterr()
-    assert "ERROR" in out
-    assert "Some error" in out
-    assert colorama.Fore.RED in out
+    _, err = capsys.readouterr()
+    assert "ERROR" in err
+    assert "Some error" in err
+    assert colorama.Fore.RED in err
 
 
 def test_colored_printer_diff(capsys):
