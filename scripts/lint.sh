@@ -9,4 +9,4 @@ poetry run isort --profile hug --check --diff isort/ tests/
 poetry run isort --profile hug --check --diff example_isort_formatting_plugin/
 poetry run flake8 isort/ tests/
 poetry run safety check
-poetry run bandit -r isort/ -x isort/_vendored
+poetry run bandit -r isort/

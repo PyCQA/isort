@@ -1660,7 +1660,8 @@ pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 
 [metadata]
-content-hash = "c366831acb4de815d36de7d6072c341ae3a1a1cca409490b5c81fe1159977597"
+content-hash = "24f4257bf77731cc49e1c2b81fe3c21e201322d119a7ddb8c07e12ed65e95f17"
+lock-version = "1.0"
 python-versions = "^3.6"
 
 [metadata.files]

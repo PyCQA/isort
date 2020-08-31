@@ -1,7 +1,6 @@
 [run]
 omit =
   isort/_future/*
-  isort/_vendored/*
   except ImportError:
   tests/*
 

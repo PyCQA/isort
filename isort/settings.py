@@ -15,9 +15,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
 from warnings import warn
 
+import toml
+
 from . import stdlibs
 from ._future import dataclass, field
-from ._vendored import toml
 from .exceptions import FormattingPluginDoesNotExist, InvalidSettingsPath, ProfileDoesNotExist
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
