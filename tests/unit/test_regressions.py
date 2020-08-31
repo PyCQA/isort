@@ -617,3 +617,45 @@ from ..fileB import b_var
         lines_after_imports=2,
         no_lines_before="LOCALFOLDER",
     )
+
+
+def test_isort_should_be_able_to_add_independent_of_doc_string_placement_issue_1420():
+    """isort should be able to know when an import requested to be added is sucesfully added,
+    independent of where the top doc string is located.
+    See: https://github.com/PyCQA/isort/issues/1420
+    """
+    assert isort.check_code(
+        '''"""module docstring"""
+
+import os
+''',
+        show_diff=True,
+        add_imports=["os"],
+    )
+
+
+def test_comments_should_never_be_moved_between_imports_issue_1427():
+    """isort should never move comments to different import statement.
+    See: https://github.com/PyCQA/isort/issues/1427
+    """
+    assert isort.check_code(
+        """from package import CONSTANT
+from package import *  # noqa
+        """,
+        force_single_line=True,
+        show_diff=True,
+    )
+
+
+def test_isort_doesnt_misplace_comments_issue_1431():
+    """Test to ensure isort wont misplace comments.
+    See: https://github.com/PyCQA/isort/issues/1431
+    """
+    input_text = """from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
+    MyLovelyCompanyTeamProjectComponent,  # NOT DRY
+)
+from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
+    MyLovelyCompanyTeamProjectComponent as component,  # DRY
+)
+"""
+    assert isort.code(input_text, profile="black") == input_text

@@ -144,7 +144,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "start guide, otherwise, one or more files/directories/stdin must be provided. "
         "Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 "
         "interactive behavior."
-        ""
+        " "
         "If you've used isort 4 but are new to isort 5, see the upgrading guide:"
         "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/."
     )
@@ -155,7 +155,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="src_paths",
         action="append",
         help="Add an explicitly defined source path "
-        "(modules within src paths have their imports automatically catorgorized as first_party).",
+        "(modules within src paths have their imports automatically categorized as first_party).",
     )
     parser.add_argument(
         "-a",
@@ -586,9 +586,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store",
         dest="py_version",
         choices=tuple(VALID_PY_TARGETS) + ("auto",),
-        help="Tells isort to set the known standard library based on the the specified Python "
+        help="Tells isort to set the known standard library based on the specified Python "
         "version. Default is to assume any Python 3 version could be the target, and use a union "
-        "off all stdlib modules across versions. If auto is specified, the version of the "
+        "of all stdlib modules across versions. If auto is specified, the version of the "
         "interpreter used to run isort "
         f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )

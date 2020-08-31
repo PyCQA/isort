@@ -229,7 +229,11 @@ def _with_from_imports(
             from_imports = sorting.naturally(
                 from_imports,
                 key=lambda key: sorting.module_key(
-                    key, config, True, ignore_case, section_name=section,
+                    key,
+                    config,
+                    True,
+                    ignore_case,
+                    section_name=section,
                 ),
             )
         if remove_imports:
@@ -268,7 +272,7 @@ def _with_from_imports(
             if "*" in from_imports and config.combine_star:
                 import_statement = wrap.line(
                     with_comments(
-                        comments,
+                        _with_star_comments(parsed, module, list(comments or ())),
                         f"{import_start}*",
                         removed=config.ignore_comments,
                         comment_prefix=config.comment_prefix,
@@ -324,13 +328,20 @@ def _with_from_imports(
                 while from_imports and from_imports[0] in as_imports:
                     from_import = from_imports.pop(0)
                     as_imports[from_import] = sorting.naturally(as_imports[from_import])
-                    from_comments = parsed.categorized_comments["straight"].get(
-                        f"{module}.{from_import}"
+                    from_comments = (
+                        parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
                     )
                     if (
                         parsed.imports[section]["from"][module][from_import]
                         and not only_show_as_imports
                     ):
+                        specific_comment = (
+                            parsed.categorized_comments["nested"]
+                            .get(module, {})
+                            .pop(from_import, None)
+                        )
+                        if specific_comment:
+                            from_comments.append(specific_comment)
                         output.append(
                             wrap.line(
                                 with_comments(
@@ -343,24 +354,36 @@ def _with_from_imports(
                                 config,
                             )
                         )
-                    output.extend(
-                        wrap.line(
-                            with_comments(
-                                from_comments,
-                                import_start + as_import,
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
-                            ),
-                            parsed.line_separator,
-                            config,
+                        from_comments = []
+
+                    for as_import in as_imports[from_import]:
+                        specific_comment = (
+                            parsed.categorized_comments["nested"]
+                            .get(module, {})
+                            .pop(as_import, None)
                         )
-                        for as_import in as_imports[from_import]
-                    )
+                        if specific_comment:
+                            from_comments.append(specific_comment)
+
+                        output.append(
+                            wrap.line(
+                                with_comments(
+                                    from_comments,
+                                    import_start + as_import,
+                                    removed=config.ignore_comments,
+                                    comment_prefix=config.comment_prefix,
+                                ),
+                                parsed.line_separator,
+                                config,
+                            )
+                        )
+
+                        from_comments = []
 
                 if "*" in from_imports:
                     output.append(
                         with_comments(
-                            comments,
+                            _with_star_comments(parsed, module, list(comments or ())),
                             f"{import_start}*",
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
@@ -525,3 +548,11 @@ def _ensure_newline_before_comment(output):
             new_output.append("")
         new_output.append(line)
     return new_output
+
+
+def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List[str]) -> List[str]:
+    star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
+    if star_comment:
+        return comments + [star_comment]
+    else:
+        return comments

@@ -298,6 +298,7 @@ def sort_file(
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
+        actual_file_path = file_path or source_file.path
         changed: bool = False
         try:
             if write_to_stdout:
@@ -305,7 +306,7 @@ def sort_file(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
                     config=config,
-                    file_path=file_path or source_file.path,
+                    file_path=actual_file_path,
                     disregard_skip=disregard_skip,
                     extension=extension,
                     **config_kwargs,
@@ -321,7 +322,7 @@ def sort_file(
                             input_stream=source_file.stream,
                             output_stream=output_stream,
                             config=config,
-                            file_path=file_path or source_file.path,
+                            file_path=actual_file_path,
                             disregard_skip=disregard_skip,
                             extension=extension,
                             **config_kwargs,
@@ -335,7 +336,7 @@ def sort_file(
                                 show_unified_diff(
                                     file_input=source_file.stream.read(),
                                     file_output=tmp_out.read(),
-                                    file_path=file_path or source_file.path,
+                                    file_path=actual_file_path,
                                     output=None if show_diff is True else cast(TextIO, show_diff),
                                     color_output=config.color_output,
                                 )
@@ -356,9 +357,9 @@ def sort_file(
                     except FileNotFoundError:
                         pass
         except ExistingSyntaxErrors:
-            warn(f"{file_path} unable to sort due to existing syntax errors")
+            warn(f"{actual_file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
-            warn(f"{file_path} unable to sort as isort introduces new syntax errors")
+            warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
 
         return changed
 
