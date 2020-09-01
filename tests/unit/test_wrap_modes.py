@@ -1,5 +1,6 @@
 from hypothesis_auto import auto_pytest_magic
 
+import isort
 from isort import wrap_modes
 
 auto_pytest_magic(wrap_modes.grid, auto_allow_exceptions_=(ValueError,))
@@ -21,6 +22,7 @@ auto_pytest_magic(
     imports=["one", "two"],
 )
 auto_pytest_magic(wrap_modes.hanging_indent_with_parentheses, auto_allow_exceptions_=(ValueError,))
+auto_pytest_magic(wrap_modes.backslash_grid, auto_allow_exceptions_=(ValueError,))
 
 
 def test_wrap_mode_interface():
@@ -65,3 +67,22 @@ def test_auto_saved():
         )
         == '*\x12\x07\U0009e994🁣"\U000ae787\x0e \x00\U0001ae99\U0005c3e7\U0004d08e \x1e  '
     )
+
+
+def test_backslash_grid():
+    """Tests the backslash_grid grid wrap mode, ensuring it matches formatting expectations.
+    See: https://github.com/PyCQA/isort/issues/1434
+    """
+    assert isort.code("""
+from kopf.engines import loggers, posting
+from kopf.reactor import causation, daemons, effects, handling, lifecycles, registries
+from kopf.storage import finalizers, states
+from kopf.structs import (bodies, configuration, containers, diffs,
+                          handlers as handlers_, patches, resources)
+""", multi_line_output=11, line_length=88, combine_as_imports=True) == """
+from kopf.engines import loggers, posting
+from kopf.reactor import causation, daemons, effects, handling, lifecycles, registries
+from kopf.storage import finalizers, states
+from kopf.structs import bodies, configuration, containers, diffs, \\
+                         handlers as handlers_, patches, resources
+"""
