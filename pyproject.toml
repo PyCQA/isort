@@ -40,12 +40,11 @@ packages = [
 python = "^3.6"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
-tomlkit = {version = ">=0.5.3", optional = true}
 pip-api = {version = "*", optional = true}
 colorama = {version = "^0.4.3", optional = true}
 
 [tool.poetry.extras]
-pipfile_deprecated_finder = ["pipreqs", "tomlkit", "requirementslib", "pip-shims<=0.3.4"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims<=0.3.4"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama"]
 
@@ -69,7 +68,6 @@ portray = { version = "^1.3.0" }
 pipfile = "^0.0.2"
 requirementslib = "^1.5"
 pipreqs = "^0.4.9"
-tomlkit = ">=0.5.3"
 pip_api = "^0.0.12"
 numpy = "^1.16.0"
 pylama = "^7.7"
