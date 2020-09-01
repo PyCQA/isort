@@ -60,11 +60,11 @@ def grid(**interface):
             len(next_statement.split(interface["line_separator"])[-1]) + 1
             > interface["line_length"]
         ):
-            lines = [f"{white_space}{next_import.split(' ')[0]}"]
+            lines = [f"{interface['white_space']}{next_import.split(' ')[0]}"]
             for part in next_import.split(" ")[1:]:
                 new_line = f"{lines[-1]} {part}"
                 if len(new_line) + 1 > interface["line_length"]:
-                    lines.append(f"{white_space}{part}")
+                    lines.append(f"{interface['white_space']}{part}")
                 else:
                     lines[-1] = new_line
             next_import = interface["line_separator"].join(lines)

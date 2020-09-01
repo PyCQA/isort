@@ -73,16 +73,24 @@ def test_backslash_grid():
     """Tests the backslash_grid grid wrap mode, ensuring it matches formatting expectations.
     See: https://github.com/PyCQA/isort/issues/1434
     """
-    assert isort.code("""
+    assert (
+        isort.code(
+            """
 from kopf.engines import loggers, posting
 from kopf.reactor import causation, daemons, effects, handling, lifecycles, registries
 from kopf.storage import finalizers, states
 from kopf.structs import (bodies, configuration, containers, diffs,
                           handlers as handlers_, patches, resources)
-""", multi_line_output=11, line_length=88, combine_as_imports=True) == """
+""",
+            multi_line_output=11,
+            line_length=88,
+            combine_as_imports=True,
+        )
+        == """
 from kopf.engines import loggers, posting
 from kopf.reactor import causation, daemons, effects, handling, lifecycles, registries
 from kopf.storage import finalizers, states
 from kopf.structs import bodies, configuration, containers, diffs, \\
                          handlers as handlers_, patches, resources
 """
+    )
