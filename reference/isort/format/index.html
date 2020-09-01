@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.9">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.01afc2df.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.36ee6aaa.min.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
@@ -1797,17 +1797,7 @@
 
     <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
 
-        <span class="k">print</span><span class="p">(</span>
-
-            <span class="n">f</span><span class="s2">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span>
-
-            <span class="nb">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
-
-            <span class="c1"># TODO this should print to stderr, but don&#39;t want to make it backward incompatible now</span>
-
-            <span class="c1"># file=sys.stderr</span>
-
-        <span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">diff_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
 
@@ -1815,17 +1805,21 @@
 
 <span class="k">class</span> <span class="nc">ColoramaPrinter</span><span class="p">(</span><span class="n">BasicPrinter</span><span class="p">):</span>
 
-    <span class="n">ADDED_LINE</span> <span class="o">=</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span>
-
-    <span class="n">REMOVED_LINE</span> <span class="o">=</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
 
+        <span class="c1"># Note: this constants are instance variables instead ofs class variables</span>
+
+        <span class="c1"># because they refer to colorama which might not be installed.</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_text</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">SUCCESS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_text</span><span class="p">(</span><span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ADDED_LINE</span> <span class="o">=</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">REMOVED_LINE</span> <span class="o">=</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span>
 
     <span class="nd">@staticmethod</span>
 
@@ -2139,17 +2133,7 @@
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">error</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">message</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">file</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="k">output</span><span class="p">,</span><span class="w"></span>
-
-<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="n">TODO</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">don</span><span class="err">&#39;</span><span class="n">t</span><span class="w"> </span><span class="n">want</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">backward</span><span class="w"> </span><span class="n">incompatible</span><span class="w"> </span><span class="n">now</span><span class="w"></span>
-
-<span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="w"></span>
-
-<span class="w">        </span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">diff_line</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">line</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
@@ -2198,17 +2182,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">error</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
 
-        <span class="n">print</span><span class="p">(</span>
-
-            <span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span>
-
-            <span class="n">file</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="k">output</span><span class="p">,</span>
-
-            <span class="o">#</span> <span class="n">TODO</span> <span class="n">this</span> <span class="n">should</span> <span class="n">print</span> <span class="k">to</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">but</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">want</span> <span class="k">to</span> <span class="n">make</span> <span class="n">it</span> <span class="k">backward</span> <span class="n">incompatible</span> <span class="n">now</span>
-
-            <span class="o">#</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span>
-
-        <span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -2237,17 +2211,21 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ColoramaPrinter</span><span class="p">(</span><span class="n">BasicPrinter</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">ADDED_LINE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">GREEN</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">REMOVED_LINE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">RED</span><span class="w"></span>
-
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="k">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"></span>
 
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="nl">Note</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">constants</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="n">instead</span><span class="w"> </span><span class="n">ofs</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">variables</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">because</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">refer</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">colorama</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">might</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">installed</span><span class="p">.</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">style_text</span><span class="p">(</span><span class="ss">&quot;ERROR&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">RED</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">SUCCESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">style_text</span><span class="p">(</span><span class="ss">&quot;SUCCESS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">GREEN</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">ADDED_LINE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">GREEN</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">REMOVED_LINE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Fore</span><span class="p">.</span><span class="n">RED</span><span class="w"></span>
 
 <span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
 
@@ -2282,15 +2260,7 @@
 <li>isort.format.BasicPrinter</li>
 </ul>
 <h4 id="class-variables_1">Class variables</h4>
-<div class="codehilite"><pre><span></span><code><span class="n">ADDED_LINE</span>
-</code></pre></div>
-
-
 <div class="codehilite"><pre><span></span><code><span class="n">ERROR</span>
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code><span class="n">REMOVED_LINE</span>
 </code></pre></div>
 
 
@@ -2356,17 +2326,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">error</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
 
-        <span class="n">print</span><span class="p">(</span>
-
-            <span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span>
-
-            <span class="n">file</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="k">output</span><span class="p">,</span>
-
-            <span class="o">#</span> <span class="n">TODO</span> <span class="n">this</span> <span class="n">should</span> <span class="n">print</span> <span class="k">to</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">but</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">want</span> <span class="k">to</span> <span class="n">make</span> <span class="n">it</span> <span class="k">backward</span> <span class="n">incompatible</span> <span class="n">now</span>
-
-            <span class="o">#</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span>
-
-        <span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -2462,7 +2422,7 @@
           base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.fae956e7.min.js"
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

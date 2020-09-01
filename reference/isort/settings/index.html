@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.9">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.01afc2df.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.36ee6aaa.min.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
@@ -2241,7 +2241,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_known_patterns</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">placement</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">):</span>
+        <span class="n">pattern_sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">STDLIB</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">section</span> <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="k">if</span> <span class="n">section</span> <span class="o">!=</span> <span class="n">STDLIB</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">placement</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">pattern_sections</span><span class="p">):</span>
 
             <span class="n">known_placement</span> <span class="o">=</span> <span class="n">KNOWN_SECTION_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">placement</span><span class="p">,</span> <span class="n">placement</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
@@ -2251,7 +2253,7 @@
 
             <span class="n">extra_modules</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;extra_{known_placement}&quot;</span><span class="p">,</span> <span class="p">())</span>
 
-            <span class="n">all_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">known_modules</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">)</span>
+            <span class="n">all_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">known_modules</span><span class="p">)</span>
 
             <span class="n">known_patterns</span> <span class="o">=</span> <span class="p">[</span>
 
@@ -3131,7 +3133,9 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">_known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">placement</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">reversed</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">sections</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="n">pattern_sections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">STDLIB</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">[</span><span class="n">section for section in self.sections if section != STDLIB</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">placement</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">reversed</span><span class="p">(</span><span class="n">pattern_sections</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">known_placement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KNOWN_SECTION_MAPPING</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">placement</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="p">).</span><span class="nf">lower</span><span class="p">()</span><span class="w"></span>
 
@@ -3141,7 +3145,7 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">extra_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;extra_{known_placement}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">all_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">(</span><span class="n">known_modules</span><span class="p">).</span><span class="ow">union</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">all_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">(</span><span class="n">extra_modules</span><span class="p">).</span><span class="ow">union</span><span class="p">(</span><span class="n">known_modules</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">known_patterns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n"></span>
 
@@ -3733,7 +3737,7 @@ dynamically determined later on.</p>
           base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.fae956e7.min.js"
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

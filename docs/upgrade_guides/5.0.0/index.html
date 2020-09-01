@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.8">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.9">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.01afc2df.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.36ee6aaa.min.css">
       
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
@@ -1488,7 +1488,7 @@ The option was originally added to allow working around this, and was then turne
 <p>The <code>-v</code> (previously for version now for verbose) and <code>-V</code> (previously for verbose and now for version) options have been swapped to be more consistent with tools across the CLI and in particular Python ecosystem.</p>
 <h2 id="migrating-config-options">Migrating Config options</h2>
 <p>The first thing to keep in mind is how isort loads config options has changed in isort 5. It will no longer merge multiple config files, instead you must have 1 isort config per a project.
-If you have multiple configs, they will need to be merged into 1 single one. You can see the priority order of configuration files and the manor in which they are loaded on the
+If you have multiple configs, they will need to be merged into 1 single one. You can see the priority order of configuration files and the manner in which they are loaded on the
 <a href="https://pycqa.github.io/isort/docs/configuration/config_files/">config files documentation page</a>.</p>
 <h3 id="not_skip"><code>not_skip</code></h3>
 <p>This is the same as the <code>--dont-skip</code> CLI option above. In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the setting. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
@@ -1593,7 +1593,7 @@ If it doesn't, you should be able to just specify your projects modules with <co
           base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../assets/javascripts/worker/search.fae956e7.min.js"
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
