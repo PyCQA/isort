@@ -164,7 +164,7 @@ notified.
 
 You will notice above the \"multi\_line\_output\" setting. This setting
 defines how from imports wrap when they extend past the line\_length
-limit and has 6 possible settings:
+limit and has 12 possible settings:
 
 **0 - Grid**
 
@@ -285,7 +285,18 @@ from third_party import (
     lib4, lib5, lib6)
 ```
 
-Note: to change the how constant indents appear - simply change the
+**11 - Backslash Grid**
+
+Same as Mode 0 - _Grid_ but uses backslashes instead of parentheses to group imports.
+
+```python
+from third_party import lib1, lib2, lib3, \
+                        lib4, lib5
+```
+
+## Indentation
+
+To change the how constant indents appear - simply change the
 indent property with the following accepted formats:
 
 -   Number of spaces you would like. For example: 4 would cause standard

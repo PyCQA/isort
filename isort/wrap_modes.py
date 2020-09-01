@@ -306,6 +306,12 @@ def hanging_indent_with_parentheses(**interface):
     return _hanging_indent_common(use_parentheses=True, **interface)
 
 
+@_wrap_mode
+def backslash_grid(**interface):
+    interface["indent"] = interface["white_space"][:-1]
+    return _hanging_indent_common(use_parentheses=False, **interface)
+
+
 WrapModes = enum.Enum(  # type: ignore
     "WrapModes", {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
 )
