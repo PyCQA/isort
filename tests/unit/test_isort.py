@@ -3180,7 +3180,7 @@ def test_argument_parsing() -> None:
     assert args["force_to_top"] == ["foo"]
     assert args["skip"] == ["bar"]
     assert args["files"] == ["baz.py"]
-    assert args["only_sections"] is False
+    assert args["only_sections"] is True
 
 
 @pytest.mark.parametrize("multiprocess", (False, True))
@@ -4831,6 +4831,6 @@ def test_only_sections() -> None:
     )
 
     # test to ensure that from_imports remain intact with only_sections
-    test_input = "from foo import b, a, c"
+    test_input = "from foo import b, a, c\n"
 
     assert isort.code(test_input, only_sections=True) == test_input
