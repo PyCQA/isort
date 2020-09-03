@@ -241,6 +241,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#indentation" class="md-nav__link">
+    Indentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#intelligently-balanced-multi-line-imports" class="md-nav__link">
     Intelligently Balanced Multi-line Imports
   </a>
@@ -1328,6 +1335,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#indentation" class="md-nav__link">
+    Indentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#intelligently-balanced-multi-line-imports" class="md-nav__link">
     Intelligently Balanced Multi-line Imports
   </a>
@@ -1593,7 +1607,7 @@ notified.</p>
 <h2 id="multi-line-output-modes">Multi line output modes</h2>
 <p>You will notice above the \"multi_line_output\" setting. This setting
 defines how from imports wrap when they extend past the line_length
-limit and has 6 possible settings:</p>
+limit and has 12 possible settings:</p>
 <p><strong>0 - Grid</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span><span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span>
                          <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
@@ -1697,7 +1711,15 @@ for wrapping long lines.</p>
 </code></pre></div>
 
 
-<p>Note: to change the how constant indents appear - simply change the
+<p><strong>11 - Backslash Grid</strong></p>
+<p>Same as Mode 0 - <em>Grid</em> but uses backslashes instead of parentheses to group imports.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> \
+                        <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span>
+</code></pre></div>
+
+
+<h2 id="indentation">Indentation</h2>
+<p>To change the how constant indents appear - simply change the
 indent property with the following accepted formats:</p>
 <ul>
 <li>Number of spaces you would like. For example: 4 would cause standard

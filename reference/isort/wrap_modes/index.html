@@ -939,6 +939,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#backslash_grid" class="md-nav__link">
+    backslash_grid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#formatter_from_string" class="md-nav__link">
     formatter_from_string
   </a>
@@ -1327,6 +1334,13 @@
   
     <nav class="md-nav" aria-label="Functions">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backslash_grid" class="md-nav__link">
+    backslash_grid
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#formatter_from_string" class="md-nav__link">
@@ -2014,6 +2028,14 @@
 
 <span class="s2">    return _hanging_indent_common(use_parentheses=True, **interface)</span>
 
+<span class="s2">@_wrap_mode</span>
+
+<span class="s2">def backslash_grid(**interface):</span>
+
+<span class="s2">    interface[&quot;</span><span class="s s-Atom">indent</span><span class="s2">&quot;] = interface[&quot;</span><span class="s s-Atom">white_space</span><span class="s2">&quot;][:-1]</span>
+
+<span class="s2">    return _hanging_indent_common(use_parentheses=False, **interface)</span>
+
 <span class="s2">WrapModes = enum.Enum(  # type: ignore</span>
 
 <span class="s2">    &quot;</span><span class="nv">WrapModes</span><span class="err">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s s-Atom">wrap_mode:</span> <span class="s s-Atom">index</span> <span class="s s-Atom">for</span> <span class="s s-Atom">index</span><span class="p">,</span> <span class="s s-Atom">wrap_mode</span> <span class="s s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="k">_</span><span class="s s-Atom">wrap_modes</span><span class="p">.</span><span class="nf">keys</span><span class="p">())}</span>
@@ -2024,6 +2046,33 @@
 
 </details>
 <h2 id="functions">Functions</h2>
+<h3 id="backslash_grid">backslash_grid</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">backslash_grid</span><span class="p">(</span>
+    <span class="n">statement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">white_space</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">line_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">line_separator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">comment_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">include_trailing_comma</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">remove_comments</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="s s-Atom">@</span><span class="k">_</span><span class="s s-Atom">wrap_mode</span>
+
+<span class="s s-Atom">def</span> <span class="nf">backslash_grid</span><span class="p">(</span><span class="s s-Atom">**interface</span><span class="p">)</span><span class="s s-Atom">:</span>
+
+    <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;indent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;white_space&quot;</span><span class="p">][:-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="s s-Atom">return</span> <span class="k">_</span><span class="nf">hanging_indent_common</span><span class="p">(</span><span class="s s-Atom">use_parentheses</span><span class="o">=</span><span class="nv">False</span><span class="p">,</span> <span class="s s-Atom">**interface</span><span class="p">)</span>
+</code></pre></div>
+
+
+</details>
 <h3 id="formatter_from_string">formatter_from_string</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">formatter_from_string</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -2577,6 +2626,10 @@
 <li>enum.Enum</li>
 </ul>
 <h4 id="class-variables">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">BACKSLASH_GRID</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">GRID</span>
 </code></pre></div>
 

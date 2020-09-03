@@ -2918,15 +2918,13 @@
 
     <span class="k">elif</span> <span class="n">file_names</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]:</span>
 
-        <span class="n">arguments</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;settings_path&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
-
         <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
 
             <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
 
             <span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
 
-            <span class="o">**</span><span class="n">arguments</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
 
         <span class="p">)</span>
 
@@ -3284,15 +3282,13 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">[</span><span class="n">&quot;-&quot;</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">arguments</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="ss">&quot;settings_path&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">())</span><span class="w"></span>
-
 <span class="w">        </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">            </span><span class="o">**</span><span class="n">arguments</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 
