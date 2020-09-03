@@ -189,6 +189,7 @@ class _Config:
     classes: FrozenSet[str] = frozenset()
     variables: FrozenSet[str] = frozenset()
     dedup_headings: bool = False
+    only_sections: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
