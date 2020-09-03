@@ -234,7 +234,11 @@ def _with_from_imports(
                 from_imports = sorting.naturally(
                     from_imports,
                     key=lambda key: sorting.module_key(
-                        key, config, True, ignore_case, section_name=section,
+                        key,
+                        config,
+                        True,
+                        ignore_case,
+                        section_name=section,
                     ),
                 )
         if remove_imports:
