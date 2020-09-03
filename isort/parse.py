@@ -200,7 +200,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         if skipping_line:
             out_lines.append(line)
             continue
-        elif config.float_to_top and import_index == -1 and line and not in_quote and not line.strip().startswith("#"):
+        elif (
+            config.float_to_top
+            and import_index == -1
+            and line
+            and not in_quote
+            and not line.strip().startswith("#")
+        ):
             import_index = index - 1
             while import_index and not in_lines[import_index - 1]:
                 import_index -= 1
