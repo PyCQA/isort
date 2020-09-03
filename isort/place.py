@@ -61,7 +61,39 @@ def _known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
 
 
 def _src_path(name: str, config: Config) -> Optional[Tuple[str, str]]:
+    search_paths = zip(config.src_paths, config.src_paths)
+    for index, module_part in enumerate(name.split(".")):
+        if index == len(module_parts):
+            for search_path, src_path in search_paths:
+                module_path = (search_path / module_part).resolve()
+                if (
+                    _is_module(module_path)
+                    or _is_package(module_path)
+                    or _src_path_is_module(search_path, module_part)
+                ):
+                    return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
+        else:
+            new_search_paths = []
+            for search_path, src_path in search_paths:
+                if
+
+            search_paths = [search_path for search_path in search_paths if
+                            _is_package((src_path / root_module_name).resolve()) or
+                            index == 0 and _src_path_is_module
+
+            for src_path in config.src_paths:
+                root_module_name = name.split(".")[0]
+                module_path =
+                if (
+                    or
+                    or _src_path_is_module(src_path, root_module_name)
+                ):
+                    return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
+
+
     for src_path in config.src_paths:
+
+        for part in
         root_module_name = name.split(".")[0]
         module_path = (src_path / root_module_name).resolve()
         if (
