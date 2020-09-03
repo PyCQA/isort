@@ -41,6 +41,8 @@ def test_parse_args():
     assert main.parse_args(["--multi-line", "GRID"]) == {"multi_line_output": WrapModes.GRID}
     assert main.parse_args(["--dont-order-by-type"]) == {"order_by_type": False}
     assert main.parse_args(["--dt"]) == {"order_by_type": False}
+    assert main.parse_args(["--only-sections"]) == {"only_sections": True}
+    assert main.parse_args(["--os"]) == {"only_sections": True}
 
 
 def test_ascii_art(capsys):
