@@ -237,6 +237,9 @@ import b
     with pytest.warns(UserWarning):
         main.main([str(python_file), "--recursive", "-fss"])
 
+    # warnings should be displayed when streaming input is provided with old flags as well
+    with pytest.warns(UserWarning):
+        main.main(["-sp", str(config_file), "-"], stdin=input_content)
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
