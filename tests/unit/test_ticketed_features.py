@@ -60,8 +60,7 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """
-import os
+        == """import os
 import sys
 
 
@@ -91,8 +90,7 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """
-import os
+        == """import os
 
 
 def my_function_1():
@@ -133,8 +131,7 @@ import a
 """,
         float_to_top=True,
     )
-    == """
-import os
+    == """import os
 
 
 def my_function_1():

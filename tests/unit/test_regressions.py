@@ -714,3 +714,200 @@ def test_isort_doesnt_mangle_code_when_adding_imports_issue_1444():
 import os
 '''
     )
+
+
+def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
+    """isort should float existing imports to the top, if they are currently below the top.
+    See: https://github.com/PyCQA/isort/issues/1382
+    """
+    assert (
+        isort.code(
+            """
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+"""
+    )
+
+    assert (
+        isort.code(
+            """
+
+
+
+
+
+
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+"""
+    )
+
+    assert (
+        isort.code(
+            '''"""My comment
+
+
+"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == '''"""My comment
+
+
+"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+    )
+
+    assert (
+        isort.code(
+            '''
+"""My comment
+
+
+"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == '''
+"""My comment
+
+
+"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+    )
+
+    assert (
+        isort.code(
+            '''#!/bin/bash
+"""My comment
+
+
+"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == '''#!/bin/bash
+"""My comment
+
+
+"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+    )
+
+    assert (
+        isort.code(
+            '''#!/bin/bash
+
+"""My comment
+
+
+"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == '''#!/bin/bash
+
+"""My comment
+
+
+"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+    )
