@@ -2,15 +2,33 @@ Changelog
 =========
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
+Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.5.0 TBD
+### 5.5.0 September 3, 2020
   - Fixed #1398: isort: off comment doesn't work, if it's the top comment in the file.
   - Fixed #1395: reverse_relative setting doesn't have any effect when combined with force_sort_within_sections.
   - Fixed #1399: --skip can error in the case of projects that contain recursive symlinks.
   - Fixed #1389: ensure_newline_before_comments doesn't work if comment is at top of section and sections don't have lines between them.
   - Fixed #1396: comments in imports with ";" can keep isort from recognizing import line.
+  - Fixed #1380: As imports removed when `combine_star` is set.
+  - Fixed #1382: --float-to-top has no effect if no import is already at the top.
+  - Fixed #1420: isort never settles on module docstring + add import.
+  - Fixed #1421: Error raised when repo contains circular symlinks.
+  - Fixed #1427: noqa comment is moved from star import to constant import.
+  - Fixed #1444 & 1445: Incorrect placement of import additions.
+  - Fixed #1447: isort5 throws error when stdin used on Windows with deprecated args.
   - Implemented #1397: Added support for specifying config file when using git hook (thanks @diseraluca!).
-  
+  - Implemented #1405: Added support for coloring diff output.
+  - Implemented #1434: New multi-line grid mode without parentheses.
+
+Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1392: Extensive profile testing.
+  - Implemented #1393: Proprety based testing applied to code snippets.
+  - Implemented #1391: Create automated integration test that includes full code base of largest OpenSource isort users.
+
+Potentially breaking changes:
+  - Fixed #1429: --check doesn't print to stderr as the documentation says. This means if you were looking for `ERROR:` messages for files that contain incorrect imports within stdout you will now need to look in stderr.
+
 ### 5.4.2 Aug 14, 2020
   - Fixed #1383: Known other does not work anymore with .editorconfig.
   - Fixed: Regression in first known party path expansion.
