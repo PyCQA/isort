@@ -823,11 +823,10 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
     elif file_names == ["-"]:
-        arguments.setdefault("settings_path", os.getcwd())
         api.sort_stream(
             input_stream=sys.stdin if stdin is None else stdin,
             output_stream=sys.stdout,
-            **arguments,
+            config=config,
         )
     else:
         skipped: List[str] = []
