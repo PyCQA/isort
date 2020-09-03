@@ -659,3 +659,58 @@ from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component 
 )
 """
     assert isort.code(input_text, profile="black") == input_text
+
+
+def test_isort_doesnt_misplace_add_import_issue_1445():
+    """Test to ensure isort won't misplace an added import depending on docstring position
+    See: https://github.com/PyCQA/isort/issues/1445
+    """
+    assert (
+        isort.code(
+            '''#!/usr/bin/env python
+
+"""module docstring"""
+''',
+            add_imports=["import os"],
+        )
+        == '''#!/usr/bin/env python
+
+"""module docstring"""
+
+import os
+'''
+    )
+
+    assert isort.check_code(
+        '''#!/usr/bin/env python
+
+"""module docstring"""
+
+import os
+    ''',
+        add_imports=["import os"],
+        show_diff=True,
+    )
+
+
+def test_isort_doesnt_mangle_code_when_adding_imports_issue_1444():
+    """isort should NEVER mangle code. This particularly nasty and easy to reproduce bug,
+    caused isort to produce invalid code just by adding a single import statement depending
+    on comment placement.
+    See: https://github.com/PyCQA/isort/issues/1444
+    """
+    assert (
+        isort.code(
+            '''
+
+"""module docstring"""
+''',
+            add_imports=["import os"],
+        )
+        == '''
+
+"""module docstring"""
+
+import os
+'''
+    )
