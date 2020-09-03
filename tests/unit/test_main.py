@@ -241,6 +241,7 @@ import b
     with pytest.warns(UserWarning):
         main.main(["-sp", str(config_file), "-"], stdin=input_content)
 
+
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
     assert main.ISortCommand
