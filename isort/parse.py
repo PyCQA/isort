@@ -380,6 +380,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         ] = associated_comment
                         if associated_comment in comments:
                             comments.pop(comments.index(associated_comment))
+
                 if comments and attach_comments_to is None:
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
@@ -419,7 +420,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
             else:
-                if attach_comments_to:
+                if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
 
