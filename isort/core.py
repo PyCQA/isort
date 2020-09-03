@@ -66,6 +66,8 @@ def process(
     code_sorting_indent: str = ""
     cimports: bool = False
     made_changes: bool = False
+    stripped_line: str = ""
+    end_of_file: bool = False
 
     if config.float_to_top:
         new_input = ""
@@ -112,6 +114,7 @@ def process(
                 return False
 
             not_imports = True
+            end_of_file = True
             line = ""
             if not line_separator:
                 line_separator = "\n"
@@ -211,13 +214,7 @@ def process(
                     import_section += line
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
-                    if add_imports and not indent and not config.append_only:
-                        if not import_section:
-                            output_stream.write(line)
-                            line = ""
-                        contains_imports = True
-                    else:
-                        not_imports = True
+                    not_imports = True
                 elif (
                     not stripped_line
                     or stripped_line.startswith("#")
@@ -275,6 +272,7 @@ def process(
             raw_import_section: str = import_section
             if (
                 add_imports
+                and (stripped_line or end_of_file)
                 and not config.append_only
                 and not in_top_comment
                 and not in_quote
@@ -282,6 +280,8 @@ def process(
                 and not line.lstrip().startswith(COMMENT_INDICATORS)
             ):
                 import_section = line_separator.join(add_imports) + line_separator
+                if end_of_file and index != 0:
+                    output_stream.write(line_separator)
                 contains_imports = True
                 add_imports = []
 
