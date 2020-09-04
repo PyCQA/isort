@@ -75,11 +75,13 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 splitter
             ):
                 line_parts = re.split(exp, line_without_comment)
-                if comment:
+                if comment and not (config.use_parentheses and "noqa" in comment):
                     _comma_maybe = (
                         "," if (config.include_trailing_comma and config.use_parentheses) else ""
                     )
-                    line_parts[-1] = f"{line_parts[-1].strip()}{_comma_maybe}  #{comment}"
+                    line_parts[
+                        -1
+                    ] = f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
                 next_line = []
                 while (len(content) + 2) > (
                     config.wrap_length or config.line_length
@@ -104,8 +106,14 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                             _separator = line_separator
                         else:
                             _separator = ""
+                        _comment = ""
+                        if comment and "noqa" in comment:
+                            _comment = f"{config.comment_prefix}{comment}"
+                            cont_line = cont_line.rstrip()
+                            _comma = "," if config.include_trailing_comma else ""
                         output = (
-                            f"{content}{splitter}({line_separator}{cont_line}{_comma}{_separator})"
+                            f"{content}{splitter}({_comment}"
+                            f"{line_separator}{cont_line}{_comma}{_separator})"
                         )
                     lines = output.split(line_separator)
                     if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):

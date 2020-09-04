@@ -590,3 +590,70 @@ from pathlib import Path
         no_lines_before=["TYPING"],
         show_diff=True,
     )
+
+
+def test_isort_intelligently_places_noqa_comments_issue_1456():
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (  # noqa
+    my_symbol,
+)
+""",
+        force_single_line=True,
+        show_diff=True,
+        multi_line_output=3,
+        include_trailing_comma=True,
+        force_grid_wrap=0,
+        use_parentheses=True,
+        line_length=79,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (
+    my_symbol,
+)
+""",
+        force_single_line=True,
+        show_diff=True,
+        multi_line_output=3,
+        include_trailing_comma=True,
+        force_grid_wrap=0,
+        use_parentheses=True,
+        line_length=79,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (  # noqa
+    my_symbol
+)
+""",
+        force_single_line=True,
+        use_parentheses=True,
+        multi_line_output=3,
+        line_length=79,
+        show_diff=True,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (
+    my_symbol
+)
+""",
+        force_single_line=True,
+        use_parentheses=True,
+        multi_line_output=3,
+        line_length=79,
+        show_diff=True,
+    )
+
+    # see: https://github.com/PyCQA/isort/issues/1415
+    assert isort.check_code(
+        "from dials.test.algorithms.spot_prediction."
+        "test_scan_static_reflection_predictor import (  # noqa: F401\n"
+        "    data as static_test,\n)\n",
+        profile="black",
+        show_diff=True,
+    )
