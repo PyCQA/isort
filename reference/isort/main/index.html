@@ -1358,6 +1358,8 @@
 
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">FileSkipped</span>
 
+<span class="kn">from</span> <span class="nn">.format</span> <span class="kn">import</span> <span class="n">create_terminal_printer</span>
+
 <span class="kn">from</span> <span class="nn">.logo</span> <span class="kn">import</span> <span class="n">ASCII_ART</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
@@ -1521,6 +1523,22 @@
         <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to parse file {file_name} due to {error}&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">)</span>
+
+        <span class="n">printer</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+
+            <span class="n">f</span><span class="s2">&quot;Unrecoverable exception thrown when parsing {file_name}! &quot;</span>
+
+            <span class="s2">&quot;This should NEVER happen.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+            <span class="s2">&quot;If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new&quot;</span>
+
+        <span class="p">)</span>
+
+        <span class="k">raise</span>
 
 <span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
@@ -3574,6 +3592,22 @@
 <span class="w">        </span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Unable to parse file {file_name} due to {error}&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
+
+<span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="k">Exception</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">printer</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;Unrecoverable exception thrown when parsing {file_name}! &quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;This should NEVER happen.\n&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"></span>
 </code></pre></div>
 
 
