@@ -926,3 +926,26 @@ def test_empty_float_to_top_shouldnt_error_issue_1453():
 """,
         show_diff=True,
     )
+
+
+def test_import_sorting_shouldnt_be_endless_with_headers_issue_1454():
+    """isort should never enter an endless sorting loop.
+    See: https://github.com/PyCQA/isort/issues/1454
+    """
+    assert isort.check_code(
+        """
+
+# standard library imports
+import sys
+
+try:
+    # Comment about local lib
+    # related third party imports
+    from local_lib import stuff
+except ImportError as e:
+    pass
+""",
+        known_third_party=["local_lib"],
+        import_heading_thirdparty="related third party imports",
+        show_diff=True,
+    )

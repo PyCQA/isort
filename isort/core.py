@@ -58,7 +58,6 @@ def process(
     contains_imports: bool = False
     in_top_comment: bool = False
     first_import_section: bool = True
-    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     indent: str = ""
     isort_off: bool = False
     code_sorting: Union[bool, str] = False
@@ -146,11 +145,11 @@ def process(
             if (
                 (index == 0 or (index in (1, 2) and not contains_imports))
                 and stripped_line.startswith("#")
-                and stripped_line not in section_comments
+                and stripped_line not in config.section_comments
             ):
                 in_top_comment = True
             elif in_top_comment:
-                if not line.startswith("#") or stripped_line in section_comments:
+                if not line.startswith("#") or stripped_line in config.section_comments:
                     in_top_comment = False
                     first_comment_index_end = index - 1
 
@@ -210,8 +209,13 @@ def process(
                     else:
                         code_sorting_section += line
                         line = ""
-                elif stripped_line in config.section_comments and not import_section:
-                    import_section += line
+                elif stripped_line in config.section_comments:
+                    if import_section and not contains_imports:
+                        output_stream.write(import_section)
+                        import_section = line
+                        not_imports = False
+                    else:
+                        import_section += line
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
                     not_imports = True
@@ -337,7 +341,6 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-
                         output_stream.write(sorted_import_section)
                         if not line and not indent and next_import_section:
                             output_stream.write(line_separator)
