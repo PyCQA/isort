@@ -11,6 +11,7 @@ from warnings import warn
 
 from . import __version__, api, sections
 from .exceptions import FileSkipped
+from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
 from .settings import VALID_PY_TARGETS, Config, WrapModes
@@ -103,6 +104,14 @@ def sort_imports(
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
+    except Exception:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error(
+            f"Unrecoverable exception thrown when parsing {file_name}! "
+            "This should NEVER happen.\n"
+            "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
+        )
+        raise
 
 
 def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
