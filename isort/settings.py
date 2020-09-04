@@ -54,11 +54,14 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".hg",
         ".mypy_cache",
         ".nox",
+        ".svn",
+        ".bzr",
         "_build",
         "buck-out",
         "build",
         "dist",
         ".pants.d",
+        ".direnv",
         "node_modules",
     }
 )
