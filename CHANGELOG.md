@@ -4,6 +4,12 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.5.1 September 4, 2020
+  - Fixed #1454: Ensure indented import sections with import heading and a preceding comment don't cause import sorting loops.
+  - Fixed #1453: isort error when float to top on almost empty file.
+  - Fixed #1456 and #1415: noqa comment moved to where flake8 cant see it.
+  - Fixed #1460: .svn missing from default ignore list.
+
 ### 5.5.0 September 3, 2020
   - Fixed #1398: isort: off comment doesn't work, if it's the top comment in the file.
   - Fixed #1395: reverse_relative setting doesn't have any effect when combined with force_sort_within_sections.
