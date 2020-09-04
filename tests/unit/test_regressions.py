@@ -911,3 +911,18 @@ def bar():
     pass
 '''
     )
+
+
+def test_empty_float_to_top_shouldnt_error_issue_1453():
+    """isort shouldn't error when float to top is set with a mostly empty file"""
+    assert isort.check_code(
+        """
+""",
+        show_diff=True,
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """
+""",
+        show_diff=True,
+    )

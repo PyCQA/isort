@@ -35,6 +35,17 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped
 
 
+def test_sort_imports_error_handling(tmpdir, mocker, capsys):
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import os, sys\n")
+    mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
+    with pytest.raises(IndexError):
+        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+
+    out, error = capsys.readouterr()
+    assert "Unrecoverable exception thrown when parsing" in error
+
+
 def test_parse_args():
     assert main.parse_args([]) == {}
     assert main.parse_args(["--multi-line", "1"]) == {"multi_line_output": WrapModes.VERTICAL}

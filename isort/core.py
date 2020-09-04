@@ -86,7 +86,7 @@ def process(
                 if current:
                     parsed = parse.file_contents(current, config=config)
                     extra_space = ""
-                    while current[-1] == "\n":
+                    while current and current[-1] == "\n":
                         extra_space += "\n"
                         current = current[:-1]
                     extra_space = extra_space.replace("\n", "", 1)
