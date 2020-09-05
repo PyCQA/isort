@@ -4806,13 +4806,14 @@ def test_deprecated_settings():
 
 
 def test_only_sections() -> None:
-    # test to ensure that the within sections relative position of imports are maintained
+    """Test to ensure that the within sections relative position of imports are maintained"""
     test_input = (
         "import sys\n"
         "\n"
         "import numpy as np\n"
         "\n"
         "import os\n"
+        "from os import path as ospath\n"
         "\n"
         "import pandas as pd\n"
         "\n"
@@ -4821,16 +4822,21 @@ def test_only_sections() -> None:
         "from collections import defaultdict\n"
     )
 
-    assert isort.code(test_input, only_sections=True) == (
-        "import sys\n"
-        "import os\n"
-        "import math\n"
-        "from collections import defaultdict\n"
-        "\n"
-        "import numpy as np\n"
-        "import pandas as pd\n"
-        "\n"
-        "import .views\n"
+    assert (
+        isort.code(test_input, only_sections=True)
+        == (
+            "import sys\n"
+            "import os\n"
+            "import math\n"
+            "from os import path as ospath\n"
+            "from collections import defaultdict\n"
+            "\n"
+            "import numpy as np\n"
+            "import pandas as pd\n"
+            "\n"
+            "import .views\n"
+        )
+        == isort.code(test_input, only_sections=True, force_single_line=True)
     )
 
     # test to ensure that from_imports remain intact with only_sections
