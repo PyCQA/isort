@@ -1725,6 +1725,8 @@
 
     <span class="n">dedup_headings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="n">only_sections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -1850,6 +1852,22 @@
             <span class="p">)</span>
 
             <span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config_settings</span><span class="p">:</span>
+
+                <span class="n">warn</span><span class="p">(</span>
+
+                    <span class="n">f</span><span class="s2">&quot;A custom settings file was specified: {settings_file} but no configuration &quot;</span>
+
+                    <span class="s2">&quot;was found inside. This can happen when [settings] is used as the config &quot;</span>
+
+                    <span class="s2">&quot;header instead of [isort]. &quot;</span>
+
+                    <span class="s2">&quot;See: https://pycqa.github.io/isort/docs/configuration/config_files&quot;</span>
+
+                    <span class="s2">&quot;/#custom_config_files for more information.&quot;</span>
+
+                <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">settings_path</span><span class="p">:</span>
 
@@ -2743,6 +2761,22 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">project_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span><span class="w"></span>
 
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">config_settings</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">f</span><span class="ss">&quot;A custom settings file was specified: {settings_file} but no configuration &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;was found inside. This can happen when [settings] is used as the config &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;header instead of [isort]. &quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;See: https://pycqa.github.io/isort/docs/configuration/config_files&quot;</span><span class="w"></span>
+
+<span class="w">                    </span><span class="ss">&quot;/#custom_config_files for more information.&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="nl">settings_path</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="ow">exists</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
@@ -3431,6 +3465,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">old_finders</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">only_sections</span>
 </code></pre></div>
 
 

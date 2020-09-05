@@ -314,6 +314,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-config-files" class="md-nav__link">
+    Custom config files
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1244,6 +1251,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-config-files" class="md-nav__link">
+    Custom config files
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1324,6 +1338,16 @@ as well.</p>
 <span class="n">skip</span> <span class="o">=</span> <span class="n">build</span><span class="p">,.</span><span class="n">tox</span><span class="p">,</span><span class="n">venv</span>
 <span class="n">src_paths</span><span class="o">=</span><span class="n">isort</span><span class="p">,</span><span class="n">test</span>
 </code></pre></div>
+
+
+<h2 id="custom-config-files">Custom config files</h2>
+<p>Optionally, you can also create a config file with a custom name, or directly point isort to a config file that falls lower in the priority order, by using <a href="https://pycqa.github.io/isort/docs/configuration/options/#settings-path">--settings-file</a>.
+This can be useful, for instance, if you want to have one configuration for <code>.py</code> files and another for <code>.pyx</code> - while keeping the config files at the root of your repository.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Custom config files should place their configuration options inside an <code>[isort]</code> section and never a generic <code>[settings]</code> section. This is because isort can't know for sure
+how other tools are utilizing the config file.</p>
+</div>
                 
               
               
