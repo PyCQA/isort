@@ -267,7 +267,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--future",
         dest="known_future_library",
         action="append",
-        help="Force isort to recognize a module as part of the future compatibility libraries.",
+        help="Force isort to recognize a module as part of Python's internal future compatibility "
+        "libraries. WARNING: this overrides the behavior of __future__ handling and therefore"
+        " can result in code that can't execute. If you're looking to add dependencies such "
+        "as six a better option is to create a another section below --future using custom "
+        "sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the "
+        "discussion here: https://github.com/PyCQA/isort/issues/1463.",
     )
     parser.add_argument(
         "--fas",
