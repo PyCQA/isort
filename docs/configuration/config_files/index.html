@@ -1279,11 +1279,13 @@
                 
                 
                 <h1 id="supported-config-files">Supported Config Files</h1>
-<p>isort supports a variety of standard config formats, to allow customizations to easily be integrated into any project.
+<p>isort supports various standard config formats to allow customizations to be integrated into any project quickly.
 When applying configurations, isort looks for the closest supported config file, in the order files are listed below.
-You can manually specify the settings file or path by setting <code>--settings-path</code> from the commandline, otherwise isort will
+You can manually specify the settings file or path by setting <code>--settings-path</code> from the command-line. Otherwise, isort will
 traverse up to 25 parent directories until it finds a suitable config file.
-As soon as it finds a file, it stops looking. isort <strong>never</strong> merges config files together due to the confusion it can cause.</p>
+As soon as it finds a file, it stops looking. The config file search is done relative to the current directory if <code>isort .</code>
+or a file stream is passed in, or relative to the first path passed in if multiple paths are passed in.
+isort <strong>never</strong> merges config files together due to the confusion it can cause.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You can always introspect the configuration settings isort determined, and find out which config file it picked up, by running <code>isort . --show-config</code></p>
