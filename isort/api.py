@@ -299,6 +299,7 @@ def sort_file(
     """
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path
+        config = _config(path=actual_file_path, config=config, **config_kwargs)
         changed: bool = False
         try:
             if write_to_stdout:
@@ -309,7 +310,6 @@ def sort_file(
                     file_path=actual_file_path,
                     disregard_skip=disregard_skip,
                     extension=extension,
-                    **config_kwargs,
                 )
             else:
                 tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
@@ -325,7 +325,6 @@ def sort_file(
                             file_path=actual_file_path,
                             disregard_skip=disregard_skip,
                             extension=extension,
-                            **config_kwargs,
                         )
                     if changed:
                         if show_diff or ask_to_apply:

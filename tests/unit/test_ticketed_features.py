@@ -657,3 +657,65 @@ from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going i
         profile="black",
         show_diff=True,
     )
+
+
+def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
+    """Test to ensure isort respects the quiet API parameter when passed in via the API.
+    See: https://github.com/PyCQA/isort/issues/1461.
+    """
+    settings_file = tmpdir.join(".isort.cfg")
+    custom_settings_file = tmpdir.join(".custom.isort.cfg")
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file)
+
+    out, error = capsys.readouterr()
+    assert not error
+    assert "Fixing" in out
+
+    # When passed in directly as a setting override
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file, quiet=True)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # Present in an automatically loaded configuration file
+    isort.settings._find_config.cache_clear()
+    settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # In a custom configuration file
+    settings_file.write(
+        """
+[isort]
+quiet = false
+"""
+    )
+    custom_settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file, settings_file=str(custom_settings_file))
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # Reused configuration object
+    custom_config = Config(settings_file=str(custom_settings_file))
+    isort.file(tmp_file, config=custom_config)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
