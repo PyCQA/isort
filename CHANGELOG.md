@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
 ### 5.6.0 TBD
+  - Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.
   - Fixed #1463: Better interactive documentation for future option.
   - Fixed #1461: Quiet config option not respected by file API in some circumstances.
 

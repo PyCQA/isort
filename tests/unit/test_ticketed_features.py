@@ -719,3 +719,30 @@ quiet = true
     out, error = capsys.readouterr()
     assert not error
     assert not out
+
+
+def test_isort_should_warn_on_empty_custom_config_issue_1433(tmpdir):
+    """Feedback should be provided when a user provides a custom settings file that has no
+    discoverable configuration.
+    See: https://github.com/PyCQA/isort/issues/1433
+    """
+    settings_file = tmpdir.join(".custom.cfg")
+    settings_file.write(
+        """
+[settings]
+quiet = true
+"""
+    )
+    with pytest.warns(UserWarning):
+        assert not Config(settings_file=str(settings_file)).quiet
+
+    isort.settings._get_config_data.cache_clear()
+    settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    with pytest.warns(None) as warning:
+        assert Config(settings_file=str(settings_file)).quiet
+    assert not warning

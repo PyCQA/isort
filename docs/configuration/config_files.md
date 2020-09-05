@@ -75,3 +75,12 @@ indent_size = 4
 skip = build,.tox,venv
 src_paths=isort,test
 ```
+
+## Custom config files
+
+Optionally, you can also create a config file with a custom name, or directly point isort to a config file that falls lower in the priority order, by using [--settings-file](https://pycqa.github.io/isort/docs/configuration/options/#settings-path).
+This can be useful, for instance, if you want to have one configuration for `.py` files and another for `.pyx` - while keeping the config files at the root of your repository.
+
+!!! tip
+    Custom config files should place their configuration options inside an `[isort]` section and never a generic `[settings]` section. This is because isort can't know for sure
+    how other tools are utilizing the config file.

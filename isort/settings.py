@@ -269,6 +269,14 @@ class Config(_Config):
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
             project_root = os.path.dirname(settings_file)
+            if not config_settings:
+                warn(
+                    f"A custom settings file was specified: {settings_file} but no configuration "
+                    "was found inside. This can happen when [settings] is used as the config "
+                    "header instead of [isort]. "
+                    "See: https://pycqa.github.io/isort/docs/configuration/config_files"
+                    "/#custom_config_files for more information."
+                )
         elif settings_path:
             if not os.path.exists(settings_path):
                 raise InvalidSettingsPath(settings_path)
