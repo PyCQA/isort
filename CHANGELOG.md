@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.6.0 TBD
   - Fixed #1463: Better interactive documentation for future option.
+  - Fixed #1461: Quiet config option not respected by file API in some circumstances.
 
 ### 5.5.1 September 4, 2020
   - Fixed #1454: Ensure indented import sections with import heading and a preceding comment don't cause import sorting loops.
