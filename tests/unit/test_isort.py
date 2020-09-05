@@ -3178,11 +3178,12 @@ def test_monkey_patched_urllib() -> None:
 def test_argument_parsing() -> None:
     from isort.main import parse_args
 
-    args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py"])
+    args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py", "--os"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
     assert args["skip"] == ["bar"]
     assert args["files"] == ["baz.py"]
+    assert args["only_sections"] is True
 
 
 @pytest.mark.parametrize("multiprocess", (False, True))
@@ -4802,3 +4803,37 @@ def test_deprecated_settings():
     """Test to ensure isort warns when deprecated settings are used, but doesn't fail to run"""
     with pytest.warns(UserWarning):
         assert isort.code("hi", not_skip=True)
+
+
+def test_only_sections() -> None:
+    # test to ensure that the within sections relative position of imports are maintained
+    test_input = (
+        "import sys\n"
+        "\n"
+        "import numpy as np\n"
+        "\n"
+        "import os\n"
+        "\n"
+        "import pandas as pd\n"
+        "\n"
+        "import math\n"
+        "import .views\n"
+        "from collections import defaultdict\n"
+    )
+
+    assert isort.code(test_input, only_sections=True) == (
+        "import sys\n"
+        "import os\n"
+        "import math\n"
+        "from collections import defaultdict\n"
+        "\n"
+        "import numpy as np\n"
+        "import pandas as pd\n"
+        "\n"
+        "import .views\n"
+    )
+
+    # test to ensure that from_imports remain intact with only_sections
+    test_input = "from foo import b, a, c\n"
+
+    assert isort.code(test_input, only_sections=True) == test_input
