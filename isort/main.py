@@ -741,6 +741,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help=argparse.SUPPRESS,
     )
 
+    parser.add_argument(
+        "--only-sections",
+        "--os",
+        dest="only_sections",
+        action="store_true",
+        help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
+        "Imports are unaltered and keep their relative positions within the different sections.",
+    )
+
     return parser
 
 
