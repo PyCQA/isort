@@ -184,4 +184,4 @@ def test_datadog_integrations_core(tmpdir):
         ]
     )
 
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
+    main(["--check-only", "--diff", str(tmpdir)])
