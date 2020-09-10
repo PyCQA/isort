@@ -165,6 +165,23 @@ import b
 """
     )
 
+    # Should be able to stream diff
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+    main.main(config_args + ["-", "--diff"], stdin=input_content)
+    out, error = capsys.readouterr()
+    assert not error
+    assert "+" in out
+    assert "-" in out
+    assert "import a" in out
+    assert "import b" in out
+
     # Should be able to run with just a file
     python_file = tmpdir.join("has_imports.py")
     python_file.write(

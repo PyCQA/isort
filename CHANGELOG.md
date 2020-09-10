@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.5.2 [Hotfix] September 9, 2020
+  - Fixed #1469: --diff option is ignored when input is from stdin.
+
 ### 5.5.1 September 4, 2020
   - Fixed #1454: Ensure indented import sections with import heading and a preceding comment don't cause import sorting loops.
   - Fixed #1453: isort error when float to top on almost empty file.
