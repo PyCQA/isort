@@ -302,7 +302,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         const=2,
         type=int,
         dest="force_grid_wrap",
-        help="Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line "
+        help="Force number of from imports (defaults to 2 when passed as CLI flag without value)"
+        "to be grid wrapped regardless of line "
         "length. If 0 is passed in (the global default) only line length is considered.",
     )
     parser.add_argument(
@@ -344,7 +345,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--lss",
         "--length-sort-straight",
         help="Sort straight imports by their string length. Similar to `length_sort` "
-             "but applies only to straight imports and doesn't affect from imports.",
+        "but applies only to straight imports and doesn't affect from imports.",
         dest="length_sort_straight",
         action="store_true",
     )
