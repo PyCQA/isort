@@ -1,4 +1,6 @@
 """All isort specific exception classes should be defined here"""
+from typing import Any, Dict
+
 from .profiles import profiles
 
 
@@ -132,3 +134,25 @@ class AssignmentsFormatMismatch(ISortError):
             "...\n\n"
         )
         self.code = code
+
+
+class UnsupportedSettings(ISortError):
+    """Raised when settings are passed into isort (either from config, CLI, or runtime)
+    that it doesn't support.
+    """
+
+    def _format_option(self, name: str, value: Any, source: str) -> str:
+        return f"\t- {name} = {value}  (source: '{source}')"
+
+    def __init__(self, unsupported_settings: Dict[str, Dict[str, str]]):
+        errors = "\n".join(
+            self._format_option(name, **option) for name, option in unsupported_settings.items()
+        )
+
+        super().__init__(
+            "isort was provided settings that it doesn't support:\n\n"
+            f"{errors}\n\n"
+            "For a complete and up-to-date listing of supported settings see: "
+            "https://pycqa.github.io/isort/docs/configuration/options/.\n"
+        )
+        self.unsupported_settings = unsupported_settings
