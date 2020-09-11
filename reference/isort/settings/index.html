@@ -1397,7 +1397,17 @@
 
 <span class="kn">from</span> <span class="nn">._vendored</span> <span class="kn">import</span> <span class="n">toml</span>
 
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">FormattingPluginDoesNotExist</span><span class="p">,</span> <span class="n">InvalidSettingsPath</span><span class="p">,</span> <span class="n">ProfileDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">FormattingPluginDoesNotExist</span><span class="p">,</span>
+
+    <span class="n">InvalidSettingsPath</span><span class="p">,</span>
+
+    <span class="n">ProfileDoesNotExist</span><span class="p">,</span>
+
+    <span class="n">UnsupportedSettings</span><span class="p">,</span>
+
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
@@ -2140,6 +2150,30 @@
                 <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{IMPORT_HEADING_PREFIX}{import_heading_key}&quot;</span><span class="p">)</span>
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;import_headings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_headings</span>
+
+        <span class="n">unsupported_config_errors</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">combined_config</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span>
+
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">_Config</span><span class="p">,</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sources</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+
+                    <span class="n">unsupported_config_errors</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+
+                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">[</span><span class="n">option</span><span class="p">],</span>
+
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span>
+
+                    <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">unsupported_config_errors</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="n">UnsupportedSettings</span><span class="p">(</span><span class="n">unsupported_config_errors</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sources</span><span class="p">),</span> <span class="o">**</span><span class="n">combined_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
@@ -3048,6 +3082,30 @@ dynamically determined later on.</p>
 <span class="ss">                combined_config.pop(f&quot;</span><span class="err">{</span><span class="n">IMPORT_HEADING_PREFIX</span><span class="err">}{</span><span class="n">import_heading_key</span><span class="err">}</span><span class="ss">&quot;)</span>
 
 <span class="ss">            combined_config[&quot;</span><span class="n">import_headings</span><span class="ss">&quot;] = import_headings</span>
+
+<span class="ss">        unsupported_config_errors = {}</span>
+
+<span class="ss">        for option in set(combined_config.keys()).difference(</span>
+
+<span class="ss">            getattr(_Config, &quot;</span><span class="n">__dataclass_fields__</span><span class="ss">&quot;, {}).keys()</span>
+
+<span class="ss">        ):</span>
+
+<span class="ss">            for source in reversed(sources):</span>
+
+<span class="ss">                if option in source:</span>
+
+<span class="ss">                    unsupported_config_errors[option] = {</span>
+
+<span class="ss">                        &quot;</span><span class="k">value</span><span class="ss">&quot;: source[option],</span>
+
+<span class="ss">                        &quot;</span><span class="n">source</span><span class="ss">&quot;: source[&quot;</span><span class="n">source</span><span class="ss">&quot;],</span>
+
+<span class="ss">                    }</span>
+
+<span class="ss">        if unsupported_config_errors:</span>
+
+<span class="ss">            raise UnsupportedSettings(unsupported_config_errors)</span>
 
 <span class="ss">        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore</span>
 

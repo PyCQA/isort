@@ -486,8 +486,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#length-sort-straight-imports" class="md-nav__link">
-    Length Sort Straight Imports
+  <a href="#length-sort-straight" class="md-nav__link">
+    Length Sort Straight
   </a>
   
 </li>
@@ -857,6 +857,41 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dedup-headings" class="md-nav__link">
+    Dedup Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-sections" class="md-nav__link">
+    Only Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -886,7 +921,7 @@
       
         <li class="md-nav__item">
   <a href="#dont-order-by-type" class="md-nav__link">
-    Don't Order By Type
+    Dont Order By Type
   </a>
   
 </li>
@@ -2031,8 +2066,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#length-sort-straight-imports" class="md-nav__link">
-    Length Sort Straight Imports
+  <a href="#length-sort-straight" class="md-nav__link">
+    Length Sort Straight
   </a>
   
 </li>
@@ -2402,6 +2437,41 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dedup-headings" class="md-nav__link">
+    Dedup Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-sections" class="md-nav__link">
+    Only Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2431,7 +2501,7 @@
       
         <li class="md-nav__item">
   <a href="#dont-order-by-type" class="md-nav__link">
-    Don't Order By Type
+    Dont Order By Type
   </a>
   
 </li>
@@ -2522,7 +2592,8 @@
 <p>As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.</p>
-<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in profiles</a>.</p>
+<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in
+profiles</a>.</p>
 <h2 id="python-version">Python Version</h2>
 <p>Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</p>
 <p><strong>Type:</strong> String<br />
@@ -2546,7 +2617,7 @@ how you want your imports sorted, organized, and formatted.</p>
 <h2 id="skip">Skip</h2>
 <p>Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')</code><br />
+<strong>Default:</strong> <code>('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')</code><br />
 <strong>Python &amp; Config File Name:</strong> skip<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -2623,7 +2694,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--no-sections</li>
 </ul>
 <h2 id="known-future-library">Known Future Library</h2>
-<p>Force isort to recognize a module as part of the future compatibility libraries.</p>
+<p>Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of <strong>future</strong> handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six a better option is to create a another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>('__future__',)</code><br />
 <strong>Python &amp; Config File Name:</strong> known_future_library<br />
@@ -2756,12 +2827,11 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--ls</li>
 <li>--length-sort</li>
 </ul>
-<h2 id="length-sort-straight-imports">Length Sort Straight Imports</h2>
-<p>Sort straight imports by their string length. Similar to <code>length_sort</code> but applies only to
-straight imports and doesn't affect from imports.</p>
-<p><strong>Type:</strong> Bool
-<strong>Default:</strong> <code>False</code>
-<strong>Python &amp; Config File Name:</strong> length_sort_straight
+<h2 id="length-sort-straight">Length Sort Straight</h2>
+<p>Sort straight imports by their string length.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> length_sort_straight<br />
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--lss</li>
@@ -3008,7 +3078,7 @@ straight imports and doesn't affect from imports.</p>
 <li>--force-alphabetical-sort</li>
 </ul>
 <h2 id="force-grid-wrap">Force Grid Wrap</h2>
-<p>Force number of from imports (defaults to 2) to be grid wrapped regardless of line length</p>
+<p>Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> force_grid_wrap<br />
@@ -3229,7 +3299,7 @@ straight imports and doesn't affect from imports.</p>
 <h2 id="supported-extensions">Supported Extensions</h2>
 <p>Specifies what extensions isort can be ran against.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('.py', '.pyi', '.pyx')</code><br />
+<strong>Default:</strong> <code>('py', 'pyi', 'pyx')</code><br />
 <strong>Python &amp; Config File Name:</strong> supported_extensions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3240,11 +3310,48 @@ straight imports and doesn't affect from imports.</p>
 <h2 id="blocked-extensions">Blocked Extensions</h2>
 <p>Specifies what extensions isort can never be ran against.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('.pex',)</code><br />
+<strong>Default:</strong> <code>('pex',)</code><br />
 <strong>Python &amp; Config File Name:</strong> blocked_extensions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--blocked-extension</li>
+</ul>
+<h2 id="constants">Constants</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> constants<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="classes">Classes</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> classes<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="variables">Variables</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> variables<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="dedup-headings">Dedup Headings</h2>
+<p>Tells isort to only show an identical custom import heading comment once, even if there are multiple sections with the comment set.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> dedup_headings<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--dedup-headings</li>
+</ul>
+<h2 id="only-sections">Only Sections</h2>
+<p>Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. Imports are unaltered and keep their relative positions within the different sections.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> only_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--only-sections</li>
+<li>--os</li>
 </ul>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
@@ -3287,7 +3394,7 @@ straight imports and doesn't affect from imports.</p>
 <li>-j</li>
 <li>--jobs</li>
 </ul>
-<h2 id="dont-order-by-type">Don't Order By Type</h2>
+<h2 id="dont-order-by-type">Dont Order By Type</h2>
 <p>Don't order imports by type, which is determined by case, in addition to alphabetically.</p>
 <p><strong>NOTE</strong>: type here refers to the implied type from the import name capitalization.
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using <code>--order-by-type</code>.</p>

@@ -1908,9 +1908,9 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;force_grid_wrap&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2) to be grid wrapped regardless of line &quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line &quot;</span>
 
-        <span class="s2">&quot;length&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;length. If 0 is passed in (the global default) only line length is considered.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -1990,7 +1990,9 @@
 
         <span class="s2">&quot;--length-sort-straight&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sort straight imports by their string length.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sort straight imports by their string length. Similar to `length_sort` &quot;</span>
+
+             <span class="s2">&quot;but applies only to straight imports and doesn&#39;t affect from imports.&quot;</span><span class="p">,</span>
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;length_sort_straight&quot;</span><span class="p">,</span>
 
