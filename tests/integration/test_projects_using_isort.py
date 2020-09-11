@@ -170,3 +170,18 @@ def test_attrs(tmpdir):
             "_compat.py",
         ]
     )
+
+
+def test_datadog_integrations_core(tmpdir):
+    check_call(
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "https://github.com/DataDog/integrations-core.git",
+            str(tmpdir),
+        ]
+    )
+
+    main(["--check-only", "--diff", str(tmpdir)])
