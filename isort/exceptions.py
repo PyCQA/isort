@@ -141,7 +141,8 @@ class UnsupportedSettings(ISortError):
     that it doesn't support.
     """
 
-    def _format_option(self, name: str, value: Any, source: str) -> str:
+    @staticmethod
+    def _format_option(name: str, value: Any, source: str) -> str:
         return f"\t- {name} = {value}  (source: '{source}')"
 
     def __init__(self, unsupported_settings: Dict[str, Dict[str, str]]):
