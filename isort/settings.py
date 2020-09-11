@@ -18,7 +18,12 @@ from warnings import warn
 from . import stdlibs
 from ._future import dataclass, field
 from ._vendored import toml
-from .exceptions import FormattingPluginDoesNotExist, InvalidSettingsPath, ProfileDoesNotExist
+from .exceptions import (
+    FormattingPluginDoesNotExist,
+    InvalidSettingsPath,
+    ProfileDoesNotExist,
+    UnsupportedSettings,
+)
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
@@ -431,6 +436,19 @@ class Config(_Config):
             for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
+
+        unsupported_config_errors = {}
+        for option in set(combined_config.keys()).difference(
+            getattr(_Config, "__dataclass_fields__", {}).keys()
+        ):
+            for source in reversed(sources):
+                if option in source:
+                    unsupported_config_errors[option] = {
+                        "value": source[option],
+                        "source": source["source"],
+                    }
+        if unsupported_config_errors:
+            raise UnsupportedSettings(unsupported_config_errors)
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 

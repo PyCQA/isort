@@ -14,6 +14,14 @@ class TestConfig:
     def test_init(self):
         assert Config()
 
+    def test_init_unsupported_settings_fails_gracefully(self):
+        with pytest.raises(exceptions.UnsupportedSettings):
+            Config(apply=True)
+        try:
+            Config(apply=True)
+        except exceptions.UnsupportedSettings as error:
+            assert error.unsupported_settings == {"apply": {"value": True, "source": "runtime"}}
+
     def test_known_settings(self):
         assert Config(known_third_party=["one"]).known_third_party == frozenset({"one"})
         assert Config(known_thirdparty=["two"]).known_third_party == frozenset({"two"})
