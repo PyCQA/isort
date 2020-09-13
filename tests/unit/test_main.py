@@ -4,7 +4,8 @@ from datetime import datetime
 from io import BytesIO, TextIOWrapper
 
 import pytest
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given
+from hypothesis import strategies as st
 
 from isort import main
 from isort._version import __version__
@@ -12,7 +13,25 @@ from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 
-auto_pytest_magic(main.sort_imports)
+# This test code was written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
+
+@given(
+    file_name=st.text(),
+    config=st.builds(Config),
+    check=st.booleans(),
+    ask_to_apply=st.booleans(),
+    write_to_stdout=st.booleans(),
+)
+def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdout):
+    main.sort_imports(
+        file_name=file_name,
+        config=config,
+        check=check,
+        ask_to_apply=ask_to_apply,
+        write_to_stdout=write_to_stdout,
+    )
 
 
 def test_iter_source_code(tmpdir):

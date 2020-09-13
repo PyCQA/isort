@@ -1,5 +1,22 @@
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given, reject
+from hypothesis import strategies as st
 
-from isort import output
+import isort.comments
 
-auto_pytest_magic(output.with_comments, auto_allow_exceptions_=(ValueError,))
+
+@given(
+    comments=st.one_of(st.none(), st.lists(st.text())),
+    original_string=st.text(),
+    removed=st.booleans(),
+    comment_prefix=st.text(),
+)
+def test_fuzz_add_to_line(comments, original_string, removed, comment_prefix):
+    try:
+        isort.comments.add_to_line(
+            comments=comments,
+            original_string=original_string,
+            removed=removed,
+            comment_prefix=comment_prefix,
+        )
+    except ValueError:
+        reject()

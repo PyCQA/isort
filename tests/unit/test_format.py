@@ -1,13 +1,13 @@
 from io import StringIO
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import colorama
 import pytest
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given, reject
+from hypothesis import strategies as st
 
 import isort.format
-
-auto_pytest_magic(isort.format.show_unified_diff, auto_allow_exceptions_=(UnicodeEncodeError,))
 
 
 def test_ask_whether_to_apply_changes_to_file():
@@ -97,3 +97,25 @@ def test_colorama_not_available_handled_gracefully(capsys):
     _, err = capsys.readouterr()
     assert "colorama" in err
     assert "colors extra" in err
+
+
+# This test code was written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
+
+@given(
+    file_input=st.text(),
+    file_output=st.text(),
+    file_path=st.one_of(st.none(), st.builds(Path)),
+    output=st.one_of(st.none(), st.builds(StringIO, st.text())),
+)
+def test_fuzz_show_unified_diff(file_input, file_output, file_path, output):
+    try:
+        isort.format.show_unified_diff(
+            file_input=file_input,
+            file_output=file_output,
+            file_path=file_path,
+            output=output,
+        )
+    except UnicodeEncodeError:
+        reject()
