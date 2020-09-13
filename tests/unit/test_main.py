@@ -292,5 +292,5 @@ import b
 
 
 def test_isort_command():
-    """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
+    """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
     assert main.ISortCommand
