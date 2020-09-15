@@ -86,7 +86,7 @@ isort = "isort.main:main"
 isort = "isort.main:ISortCommand"
 
 [tool.poetry.plugins."pylama.linter"]
-isort = "isort = isort.pylama_isort:Linter"
+isort = "isort.pylama_isort:Linter"
 
 [tool.portray.mkdocs]
 edit_uri = "https://github.com/pycqa/isort/edit/develop/"

@@ -9,6 +9,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Improved handling of unsupported configuration option errors (see #1475).
   - Fixed #1463: Better interactive documentation for future option.
   - Fixed #1461: Quiet config option not respected by file API in some circumstances.
+  - Fixed #1482: pylama integration is not working correctly out-of-the-box.
 
 ### 5.5.2 [Hotfix] September 9, 2020
   - Fixed #1469: --diff option is ignored when input is from stdin.

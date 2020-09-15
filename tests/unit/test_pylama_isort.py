@@ -17,3 +17,8 @@ class TestLinter:
         incorrect = tmpdir.join("incorrect.py")
         incorrect.write("import b\nimport a\n")
         assert self.instance.run(str(incorrect))
+
+    def test_skip(self, src_dir, tmpdir):
+        incorrect = tmpdir.join("incorrect.py")
+        incorrect.write("# isort: skip_file\nimport b\nimport a\n")
+        assert not self.instance.run(str(incorrect))
