@@ -3243,13 +3243,14 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     else:
         config = Config(skip=[], directory=str(tmpdir))
     skipped = []  # type: List[str]
+    broken = []  # type: List[str]
     codes = [str(tmpdir)]
-    main.iter_source_code(codes, config, skipped)
+    main.iter_source_code(codes, config, skipped, broken)
 
     # if enabled files within nested unsafe directories should be skipped
     file_names = {
         os.path.relpath(f, str(tmpdir))
-        for f in main.iter_source_code([str(tmpdir)], config, skipped)
+        for f in main.iter_source_code([str(tmpdir)], config, skipped, broken)
     }
     if enabled:
         assert file_names == {"victim.py"}
@@ -3266,7 +3267,9 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     # directly pointing to files within unsafe directories shouldn't skip them either way
     file_names = {
         os.path.relpath(f, str(toxdir))
-        for f in main.iter_source_code([str(toxdir)], Config(directory=str(toxdir)), skipped)
+        for f in main.iter_source_code(
+            [str(toxdir)], Config(directory=str(toxdir)), skipped, broken
+        )
     }
     assert file_names == {"verysafe.py"}
 
@@ -3287,12 +3290,27 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
     skipped = []  # type: List[str]
+    broken = []  # type: List[str]
     file_names = {
         os.path.relpath(f, str(base_dir))
-        for f in main.iter_source_code([str(base_dir)], config, skipped)
+        for f in main.iter_source_code([str(base_dir)], config, skipped, broken)
     }
     assert len(skipped) == skipped_count
     assert file_names == file_names_expected
+
+
+def test_broken(tmpdir) -> None:
+    base_dir = tmpdir.mkdir("broken")
+
+    config = Config(directory=str(base_dir))
+    skipped = []  # type: List[str]
+    broken = []  # type: List[str]
+    file_names = {
+        os.path.relpath(f, str(base_dir))
+        for f in main.iter_source_code(["not-exist"], config, skipped, broken)
+    }
+    assert len(broken) == 1
+    assert file_names == set()
 
 
 def test_comments_not_removed_issue_576() -> None:
