@@ -3242,8 +3242,8 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         config = Config(directory=str(tmpdir))
     else:
         config = Config(skip=[], directory=str(tmpdir))
-    skipped = []  # type: List[str]
-    broken = []  # type: List[str]
+    skipped: List[str] = []
+    broken: List[str] = []
     codes = [str(tmpdir)]
     main.iter_source_code(codes, config, skipped, broken)
 
@@ -3289,8 +3289,8 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     code_dir.join("file.py").write("import os")
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
-    skipped = []  # type: List[str]
-    broken = []  # type: List[str]
+    skipped: List[str] = []
+    broken: List[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in main.iter_source_code([str(base_dir)], config, skipped, broken)
@@ -3303,8 +3303,8 @@ def test_broken(tmpdir) -> None:
     base_dir = tmpdir.mkdir("broken")
 
     config = Config(directory=str(base_dir))
-    skipped = []  # type: List[str]
-    broken = []  # type: List[str]
+    skipped: List[str] = []
+    broken: List[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in main.iter_source_code(["not-exist"], config, skipped, broken)
