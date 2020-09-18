@@ -37,7 +37,7 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
 def test_iter_source_code(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [])) == (tmp_file,)
+    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [], [])) == (tmp_file,)
 
 
 def test_sort_imports(tmpdir):
@@ -267,6 +267,15 @@ import b
 
     # without filter options passed in should successfully sort files
     main.main([str(python_file), str(should_skip), "--verbose", "--atomic"])
+
+    # Should raise a system exit if all passed path is broken
+    with pytest.raises(SystemExit):
+        main.main(["not-exist", "--check-only"])
+
+    # Should not raise system exit if any of passed path is not broken
+    main.main([str(python_file), "not-exist", "--verbose", "--check-only"])
+    out, error = capsys.readouterr()
+    assert "Broken" in out
 
     # should respect gitignore if requested.
     out, error = capsys.readouterr()  # clear sysoutput before tests

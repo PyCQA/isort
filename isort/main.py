@@ -114,7 +114,9 @@ def sort_imports(
         raise
 
 
-def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
+def iter_source_code(
+    paths: Iterable[str], config: Config, skipped: List[str], broken: List[str]
+) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
     visited_dirs: Set[Path] = set()
 
@@ -142,6 +144,8 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
                             skipped.append(filename)
                         else:
                             yield filepath
+        elif not os.path.exists(path):
+            broken.append(path)
         else:
             yield path
 
@@ -837,6 +841,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     deprecated_flags = config_dict.pop("deprecated_flags", False)
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     wrong_sorted_files = False
+    all_attempt_broken = False
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -856,6 +861,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         )
     else:
         skipped: List[str] = []
+        broken: List[str] = []
 
         if config.filter_files:
             filtered_files = []
@@ -866,8 +872,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     filtered_files.append(file_name)
             file_names = filtered_files
 
-        file_names = iter_source_code(file_names, config, skipped)
+        file_names = iter_source_code(file_names, config, skipped, broken)
         num_skipped = 0
+        num_broken = 0
         if config.verbose:
             print(ASCII_ART)
 
@@ -899,6 +906,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 for file_name in file_names
             )
 
+        # If any files passed in are missing considered as error, should be removed
+        is_no_attempt = True
         for sort_attempt in attempt_iterator:
             if not sort_attempt:
                 continue  # pragma: no cover - shouldn't happen, satisfies type constraint
@@ -909,6 +918,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 num_skipped += (
                     1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
                 )
+            is_no_attempt = False
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get("quiet", False):
@@ -919,6 +929,16 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                         " or matches a glob in 'skip_glob' setting"
                     )
             print(f"Skipped {num_skipped} files")
+
+        num_broken += len(broken)
+        if num_broken and not arguments.get("quite", False):
+            if config.verbose:
+                for was_broken in broken:
+                    warn(f"{was_broken} was broken path, make sure it exists correctly")
+            print(f"Broken {num_broken} paths")
+
+        if num_broken > 0 and is_no_attempt:
+            all_attempt_broken = True
 
     if not config.quiet and (remapped_deprecated_args or deprecated_flags):
         if remapped_deprecated_args:
@@ -937,6 +957,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         )
 
     if wrong_sorted_files:
+        sys.exit(1)
+
+    if all_attempt_broken:
         sys.exit(1)
 
 
