@@ -949,3 +949,21 @@ except ImportError as e:
         import_heading_thirdparty="related third party imports",
         show_diff=True,
     )
+
+
+def test_isort_should_leave_non_import_from_lines_alone():
+    """isort should never mangle non-import from statements.
+    See: https://github.com/PyCQA/isort/issues/1488
+    """
+    raise_from_should_be_ignored = """
+    raise SomeException("Blah") \
+        from exceptionsInfo.popitem()[1]
+"""
+    assert isort.check(raise_from_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored = """
+def generator_function():
+    yield \
+        from []
+"""
+    assert isort.check(raise_from_should_be_ignored, show_diff=True)
