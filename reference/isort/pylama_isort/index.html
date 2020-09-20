@@ -1367,6 +1367,8 @@
 
 <span class="kn">from</span> <span class="nn">pylama.lint</span> <span class="kn">import</span> <span class="n">Linter</span> <span class="k">as</span> <span class="n">BaseLinter</span>
 
+<span class="kn">from</span> <span class="nn">isort.exceptions</span> <span class="kn">import</span> <span class="n">FileSkipped</span>
+
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">api</span>
 
 <span class="nd">@contextmanager</span>
@@ -1397,17 +1399,31 @@
 
         <span class="k">with</span> <span class="n">supress_stdout</span><span class="p">():</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
 
-                <span class="k">return</span> <span class="p">[</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 
-                    <span class="p">{</span><span class="s2">&quot;lnum&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrectly sorted imports.&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ISORT&quot;</span><span class="p">}</span>
+                    <span class="k">return</span> <span class="p">[</span>
 
-                <span class="p">]</span>
+                        <span class="p">{</span>
 
-            <span class="k">else</span><span class="p">:</span>
+                            <span class="s2">&quot;lnum&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 
-                <span class="k">return</span> <span class="p">[]</span>
+                            <span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+                            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrectly sorted imports.&quot;</span><span class="p">,</span>
+
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ISORT&quot;</span><span class="p">,</span>
+
+                        <span class="p">}</span>
+
+                    <span class="p">]</span>
+
+            <span class="k">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+
+                <span class="k">pass</span>
+
+            <span class="k">return</span> <span class="p">[]</span>
 </code></pre></div>
 
 
@@ -1462,17 +1478,31 @@
 
         <span class="k">with</span> <span class="n">supress_stdout</span>():
 
-            <span class="k">if</span> <span class="nb">not</span> <span class="n">api</span>.<span class="n">check_file</span>(<span class="nb">path</span>):
+            <span class="n">try:</span>
 
-                <span class="k">return</span> [
+                <span class="k">if</span> <span class="nb">not</span> <span class="n">api</span>.<span class="n">check_file</span>(<span class="nb">path</span>, <span class="n">disregard_skip</span>=<span class="nb">False</span>):
 
-                    {<span class="s">&quot;lnum&quot;</span>: <span class="mi">0</span>, <span class="s">&quot;col&quot;</span>: <span class="mi">0</span>, <span class="s">&quot;text&quot;</span>: <span class="s">&quot;Incorrectly sorted imports.&quot;</span>, <span class="s">&quot;type&quot;</span>: <span class="s">&quot;ISORT&quot;</span>}
+                    <span class="k">return</span> [
 
-                ]
+                        {
 
-            <span class="n">else:</span>
+                            <span class="s">&quot;lnum&quot;</span>: <span class="mi">0</span>,
 
-                <span class="k">return</span> []
+                            <span class="s">&quot;col&quot;</span>: <span class="mi">0</span>,
+
+                            <span class="s">&quot;text&quot;</span>: <span class="s">&quot;Incorrectly sorted imports.&quot;</span>,
+
+                            <span class="s">&quot;type&quot;</span>: <span class="s">&quot;ISORT&quot;</span>,
+
+                        }
+
+                    ]
+
+            <span class="n">except</span> <span class="n">FileSkipped:</span>
+
+                <span class="nb">pass</span>
+
+            <span class="k">return</span> []
 </code></pre></div>
 
 
@@ -1517,17 +1547,31 @@
 
         <span class="k">with</span> <span class="n">supress_stdout</span><span class="p">():</span>
 
-            <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">try</span><span class="p">:</span>
 
-                <span class="k">return</span> <span class="p">[</span>
+                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
 
-                    <span class="err">{</span><span class="ss">&quot;lnum&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">&quot;col&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">&quot;text&quot;</span><span class="p">:</span> <span class="ss">&quot;Incorrectly sorted imports.&quot;</span><span class="p">,</span> <span class="ss">&quot;type&quot;</span><span class="p">:</span> <span class="ss">&quot;ISORT&quot;</span><span class="err">}</span>
+                    <span class="k">return</span> <span class="p">[</span>
 
-                <span class="p">]</span>
+                        <span class="err">{</span>
 
-            <span class="k">else</span><span class="p">:</span>
+                            <span class="ss">&quot;lnum&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 
-                <span class="k">return</span> <span class="p">[]</span>
+                            <span class="ss">&quot;col&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+
+                            <span class="ss">&quot;text&quot;</span><span class="p">:</span> <span class="ss">&quot;Incorrectly sorted imports.&quot;</span><span class="p">,</span>
+
+                            <span class="ss">&quot;type&quot;</span><span class="p">:</span> <span class="ss">&quot;ISORT&quot;</span><span class="p">,</span>
+
+                        <span class="err">}</span>
+
+                    <span class="p">]</span>
+
+            <span class="k">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+
+                <span class="n">pass</span>
+
+            <span class="k">return</span> <span class="p">[]</span>
 </code></pre></div>
 
 

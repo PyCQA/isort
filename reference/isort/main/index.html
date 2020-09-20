@@ -1540,7 +1540,11 @@
 
         <span class="k">raise</span>
 
-<span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span>
+
+    <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">broken</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
     <span class="sd">&quot;&quot;&quot;Iterate over all Python source files defined in paths.&quot;&quot;&quot;</span>
 
@@ -1591,6 +1595,10 @@
                         <span class="k">else</span><span class="p">:</span>
 
                             <span class="k">yield</span> <span class="n">filepath</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+            <span class="n">broken</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
 
@@ -1908,7 +1916,9 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;force_grid_wrap&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line &quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2 when passed as CLI flag without value)&quot;</span>
+
+        <span class="s2">&quot;to be grid wrapped regardless of line &quot;</span>
 
         <span class="s2">&quot;length. If 0 is passed in (the global default) only line length is considered.&quot;</span><span class="p">,</span>
 
@@ -1992,7 +2002,7 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sort straight imports by their string length. Similar to `length_sort` &quot;</span>
 
-             <span class="s2">&quot;but applies only to straight imports and doesn&#39;t affect from imports.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;but applies only to straight imports and doesn&#39;t affect from imports.&quot;</span><span class="p">,</span>
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;length_sort_straight&quot;</span><span class="p">,</span>
 
@@ -2946,6 +2956,8 @@
 
     <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="n">all_attempt_broken</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="p">:</span>
 
         <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
@@ -2980,6 +2992,8 @@
 
         <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="n">broken</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_files</span><span class="p">:</span>
 
             <span class="n">filtered_files</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2996,9 +3010,11 @@
 
             <span class="n">file_names</span> <span class="o">=</span> <span class="n">filtered_files</span>
 
-        <span class="n">file_names</span> <span class="o">=</span> <span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">)</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="n">broken</span><span class="p">)</span>
 
         <span class="n">num_skipped</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">num_broken</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
 
@@ -3056,6 +3072,10 @@
 
             <span class="p">)</span>
 
+        <span class="c1"># If any files passed in are missing considered as error, should be removed</span>
+
+        <span class="n">is_no_attempt</span> <span class="o">=</span> <span class="bp">True</span>
+
         <span class="k">for</span> <span class="n">sort_attempt</span> <span class="ow">in</span> <span class="n">attempt_iterator</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">sort_attempt</span><span class="p">:</span>
@@ -3076,6 +3096,8 @@
 
                 <span class="p">)</span>
 
+            <span class="n">is_no_attempt</span> <span class="o">=</span> <span class="bp">False</span>
+
         <span class="n">num_skipped</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">skipped</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">num_skipped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
@@ -3093,6 +3115,22 @@
                     <span class="p">)</span>
 
             <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Skipped {num_skipped} files&quot;</span><span class="p">)</span>
+
+        <span class="n">num_broken</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">broken</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_broken</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quite&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">was_broken</span> <span class="ow">in</span> <span class="n">broken</span><span class="p">:</span>
+
+                    <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{was_broken} was broken path, make sure it exists correctly&quot;</span><span class="p">)</span>
+
+            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Broken {num_broken} paths&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_broken</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">is_no_attempt</span><span class="p">:</span>
+
+            <span class="n">all_attempt_broken</span> <span class="o">=</span> <span class="bp">True</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">quiet</span> <span class="ow">and</span> <span class="p">(</span><span class="n">remapped_deprecated_args</span> <span class="ow">or</span> <span class="n">deprecated_flags</span><span class="p">):</span>
 
@@ -3125,6 +3163,10 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">wrong_sorted_files</span><span class="p">:</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">all_attempt_broken</span><span class="p">:</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -3161,13 +3203,18 @@
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span>
     <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span>
-    <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">broken</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
 
 <p>Iterate over all Python source files defined in paths.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">iter_source_code</span><span class="p">(</span><span class="nl">paths</span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">config</span><span class="p">:</span><span class="w"> </span><span class="n">Config</span><span class="p">,</span><span class="w"> </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">iter_source_code</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">paths</span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">config</span><span class="p">:</span><span class="w"> </span><span class="n">Config</span><span class="p">,</span><span class="w"> </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">broken</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"></span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;Iterate over all Python source files defined in paths.&quot;&quot;&quot;</span><span class="w"></span>
 
@@ -3218,6 +3265,10 @@
 <span class="w">                        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">                            </span><span class="n">yield</span><span class="w"> </span><span class="n">filepath</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="ow">exists</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">broken</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
@@ -3312,6 +3363,8 @@
 
 <span class="w">    </span><span class="n">wrong_sorted_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 
+<span class="w">    </span><span class="n">all_attempt_broken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">config_dict</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">config_dict</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
@@ -3346,6 +3399,8 @@
 
 <span class="w">        </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
+<span class="w">        </span><span class="nl">broken</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">filter_files</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">filtered_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
@@ -3362,9 +3417,11 @@
 
 <span class="w">            </span><span class="n">file_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtered_files</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">file_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">file_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="n">broken</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">num_skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">num_broken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">verbose</span><span class="p">:</span><span class="w"></span>
 
@@ -3422,6 +3479,10 @@
 
 <span class="w">            </span><span class="p">)</span><span class="w"></span>
 
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">missing</span><span class="w"> </span><span class="n">considered</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">removed</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">is_no_attempt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">sort_attempt</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">attempt_iterator</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">sort_attempt</span><span class="p">:</span><span class="w"></span>
@@ -3442,6 +3503,8 @@
 
 <span class="w">                </span><span class="p">)</span><span class="w"></span>
 
+<span class="w">            </span><span class="n">is_no_attempt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">num_skipped</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">skipped</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_skipped</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;quiet&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
@@ -3459,6 +3522,22 @@
 <span class="w">                    </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Skipped {num_skipped} files&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">num_broken</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">broken</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_broken</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;quite&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">verbose</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">was_broken</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">broken</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{was_broken} was broken path, make sure it exists correctly&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Broken {num_broken} paths&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_broken</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nl">is_no_attempt</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">all_attempt_broken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">quiet</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="n">remapped_deprecated_args</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">deprecated_flags</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
@@ -3491,6 +3570,10 @@
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">wrong_sorted_files</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">all_attempt_broken</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
