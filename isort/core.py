@@ -306,6 +306,7 @@ def process(
                     raw_import_section += line
                 if not contains_imports:
                     output_stream.write(import_section)
+
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]
                     trailing_whitespace = import_section[len(import_section.rstrip()) :]
@@ -360,6 +361,34 @@ def process(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+            if stripped_line and not in_quote and not import_section and not next_import_section:
+                if stripped_line == "yield":
+                    while not stripped_line or stripped_line == "yield":
+                        new_line = input_stream.readline()
+                        if not new_line:
+                            break
+
+                        output_stream.write(new_line)
+                        stripped_line = new_line.strip().split("#")[0]
+
+                if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
+                    if "(" in stripped_line:
+                        while ")" not in stripped_line:
+                            new_line = input_stream.readline()
+                            if not new_line:
+                                break
+
+                            output_stream.write(new_line)
+                            stripped_line = new_line.strip().split("#")[0]
+
+                    while stripped_line.endswith("\\"):
+                        new_line = input_stream.readline()
+                        if not new_line:
+                            break
+
+                        output_stream.write(new_line)
+                        stripped_line = new_line.strip().split("#")[0]
 
     return made_changes
 

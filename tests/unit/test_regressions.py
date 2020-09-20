@@ -949,3 +949,135 @@ except ImportError as e:
         import_heading_thirdparty="related third party imports",
         show_diff=True,
     )
+
+
+def test_isort_should_leave_non_import_from_lines_alone_issue_1488():
+    """isort should never mangle non-import from statements.
+    See: https://github.com/PyCQA/isort/issues/1488
+    """
+    raise_from_should_be_ignored = """
+raise SomeException("Blah") \\
+    from exceptionsInfo.popitem()[1]
+"""
+    assert isort.check_code(raise_from_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored = """
+def generator_function():
+    yield \\
+        from other_function()[1]
+"""
+    assert isort.check_code(yield_from_should_be_ignored, show_diff=True)
+
+    wont_ignore_comment_contiuation = """
+# one
+
+# two
+
+
+def function():
+    # three \\
+    import b
+    import a
+"""
+    assert (
+        isort.code(wont_ignore_comment_contiuation)
+        == """
+# one
+
+# two
+
+
+def function():
+    # three \\
+    import a
+    import b
+"""
+    )
+
+    will_ignore_if_non_comment_continuation = """
+# one
+
+# two
+
+
+def function():
+    raise \\
+    import b
+    import a
+"""
+    assert isort.check_code(will_ignore_if_non_comment_continuation, show_diff=True)
+
+    yield_from_parens_should_be_ignored = """
+def generator_function():
+    (
+     yield
+     from other_function()[1]
+    )
+"""
+    assert isort.check_code(yield_from_parens_should_be_ignored, show_diff=True)
+
+    yield_from_lots_of_parens_and_space_should_be_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+
+
+
+     from other_function()[1]
+    )))))))))))))
+    )))
+"""
+    assert isort.check_code(yield_from_lots_of_parens_and_space_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored_when_following_import_statement = """
+def generator_function():
+    import os
+
+    yield \\
+    from other_function()[1]
+"""
+    assert isort.check_code(
+        yield_from_should_be_ignored_when_following_import_statement, show_diff=True
+    )
+
+    yield_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+"""
+    assert isort.check_code(yield_at_file_end_ignored, show_diff=True)
+
+    raise_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise (
+"""
+    assert isort.check_code(raise_at_file_end_ignored, show_diff=True)
+
+    raise_from_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise \\
+     from \\
+"""
+    assert isort.check_code(raise_from_at_file_end_ignored, show_diff=True)
