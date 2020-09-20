@@ -67,7 +67,6 @@ def process(
     made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
-    in_line_continuation: bool = False
 
     if config.float_to_top:
         new_input = ""
@@ -229,7 +228,7 @@ def process(
                 ):
                     import_section += line
                 elif (
-                    stripped_line.startswith(IMPORT_START_IDENTIFIERS) and not in_line_continuation
+                    stripped_line.startswith(IMPORT_START_IDENTIFIERS)
                 ):
                     contains_imports = True
 
@@ -273,10 +272,9 @@ def process(
                     indent = new_indent
                     import_section += import_statement
                 else:
-                    if stripped_line.endswith("\\"):
-                        in_line_continuation = True
-                    else:
-                        in_line_continuation = False
+                    while stripped_line.endswith("\\"):
+                        line += input_stream.readline()
+                        stripped_line = line.strip().split("#")[0]
                     not_imports = True
 
         if not_imports:
