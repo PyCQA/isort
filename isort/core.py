@@ -67,6 +67,7 @@ def process(
     made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
+    in_line_continuation: bool = False
 
     if config.float_to_top:
         new_input = ""
@@ -227,7 +228,9 @@ def process(
                     and stripped_line not in config.treat_comments_as_code
                 ):
                     import_section += line
-                elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                elif (
+                    stripped_line.startswith(IMPORT_START_IDENTIFIERS) and not in_line_continuation
+                ):
                     contains_imports = True
 
                     new_indent = line[: -len(line.lstrip())]
@@ -270,6 +273,10 @@ def process(
                     indent = new_indent
                     import_section += import_statement
                 else:
+                    if stripped_line.endswith("\\"):
+                        in_line_continuation = True
+                    else:
+                        in_line_continuation = False
                     not_imports = True
 
         if not_imports:
