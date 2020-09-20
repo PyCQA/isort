@@ -1001,7 +1001,7 @@ def function():
 
 
 def function():
-    print \\
+    raise \\
     import b
     import a
 """
@@ -1015,3 +1015,69 @@ def generator_function():
     )
 """
     assert isort.check_code(yield_from_parens_should_be_ignored, show_diff=True)
+
+    yield_from_lots_of_parens_and_space_should_be_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+
+
+
+     from other_function()[1]
+    )))))))))))))
+    )))
+"""
+    assert isort.check_code(yield_from_lots_of_parens_and_space_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored_when_following_import_statement = """
+def generator_function():
+    import os
+
+    yield \\
+    from other_function()[1]
+"""
+    assert isort.check_code(
+        yield_from_should_be_ignored_when_following_import_statement, show_diff=True
+    )
+
+    yield_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+"""
+    assert isort.check_code(yield_at_file_end_ignored, show_diff=True)
+
+    raise_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise (
+"""
+    assert isort.check_code(raise_at_file_end_ignored, show_diff=True)
+
+    raise_from_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise \\
+     from \\
+"""
+    assert isort.check_code(raise_from_at_file_end_ignored, show_diff=True)
