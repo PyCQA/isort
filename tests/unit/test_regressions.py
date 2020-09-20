@@ -964,23 +964,23 @@ raise SomeException("Blah") \\
     yield_from_should_be_ignored = """
 def generator_function():
     yield \\
-        from []
+        from other_function()[1]
 """
     assert isort.check_code(yield_from_should_be_ignored, show_diff=True)
 
-    comment_should_not_cause_ignore = """
+    wont_ignore_comment_contiuation = """
 # one
 
 # two
 
 
 def function():
-    # one \\
+    # three \\
     import b
     import a
 """
     assert (
-        isort.code(comment_should_not_cause_ignore)
+        isort.code(wont_ignore_comment_contiuation)
         == """
 # one
 
@@ -988,8 +988,31 @@ def function():
 
 
 def function():
-    # one \\
+    # three \\
     import a
     import b
 """
     )
+
+    will_ignore_if_non_comment_continuation = """
+# one
+
+# two
+
+
+def function():
+    print \\
+    import b
+    import a
+"""
+    assert isort.check_code(will_ignore_if_non_comment_continuation, show_diff=True)
+    
+    yield_from_parens_should_be_ignored = """
+def generator_function():
+    (
+     yield
+     from other_function()[1]
+    )
+"""
+    assert isort.check_code(yield_from_parens_should_be_ignored, show_diff=True)
+    
