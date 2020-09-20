@@ -956,14 +956,40 @@ def test_isort_should_leave_non_import_from_lines_alone():
     See: https://github.com/PyCQA/isort/issues/1488
     """
     raise_from_should_be_ignored = """
-    raise SomeException("Blah") \
-        from exceptionsInfo.popitem()[1]
+raise SomeException("Blah") \\
+    from exceptionsInfo.popitem()[1]
 """
-    assert isort.check(raise_from_should_be_ignored, show_diff=True)
+    assert isort.check_code(raise_from_should_be_ignored, show_diff=True)
 
     yield_from_should_be_ignored = """
 def generator_function():
-    yield \
+    yield \\
         from []
 """
-    assert isort.check(raise_from_should_be_ignored, show_diff=True)
+    assert isort.check_code(yield_from_should_be_ignored, show_diff=True)
+
+    comment_should_not_cause_ignore = """
+# one
+
+# two
+
+
+def function():
+    # one \\
+    import b
+    import a
+"""
+    assert (
+        isort.code(comment_should_not_cause_ignore)
+        == """
+# one
+
+# two
+
+
+def function():
+    # one \\
+    import a
+    import b
+"""
+    )
