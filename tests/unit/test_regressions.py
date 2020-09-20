@@ -1006,7 +1006,7 @@ def function():
     import a
 """
     assert isort.check_code(will_ignore_if_non_comment_continuation, show_diff=True)
-    
+
     yield_from_parens_should_be_ignored = """
 def generator_function():
     (
@@ -1015,4 +1015,3 @@ def generator_function():
     )
 """
     assert isort.check_code(yield_from_parens_should_be_ignored, show_diff=True)
-    

@@ -227,9 +227,7 @@ def process(
                     and stripped_line not in config.treat_comments_as_code
                 ):
                     import_section += line
-                elif (
-                    stripped_line.startswith(IMPORT_START_IDENTIFIERS)
-                ):
+                elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     contains_imports = True
 
                     new_indent = line[: -len(line.lstrip())]
@@ -272,9 +270,20 @@ def process(
                     indent = new_indent
                     import_section += import_statement
                 else:
+                    if not import_section and "(" in stripped_line:
+                        while ")" not in stripped_line:
+                            new_line = input_stream.readline()
+                            if not new_line:
+                                break
+
+                            line += new_line
+                            stripped_line = new_line.strip().split("#")[0]
+
                     while stripped_line.endswith("\\"):
-                        line += input_stream.readline()
-                        stripped_line = line.strip().split("#")[0]
+                        new_line = input_stream.readline()
+                        line += new_line
+                        stripped_line = new_line.strip().split("#")[0]
+
                     not_imports = True
 
         if not_imports:
