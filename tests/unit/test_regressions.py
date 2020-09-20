@@ -951,7 +951,7 @@ except ImportError as e:
     )
 
 
-def test_isort_should_leave_non_import_from_lines_alone():
+def test_isort_should_leave_non_import_from_lines_alone_issue_1488():
     """isort should never mangle non-import from statements.
     See: https://github.com/PyCQA/isort/issues/1488
     """
