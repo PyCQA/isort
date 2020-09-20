@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.5.3 [Hotfix] September 20, 2020
+  - Fixed #1488: in rare cases isort can mangle `yield from` or `raise from` statements.
+
 ### 5.5.2 [Hotfix] September 9, 2020
   - Fixed #1469: --diff option is ignored when input is from stdin.
 
