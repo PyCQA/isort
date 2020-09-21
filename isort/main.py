@@ -853,6 +853,15 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
     elif file_names == ["-"]:
+        if check:
+            incorrectly_sorted = not api.check_stream(
+                input_stream=sys.stdin if stdin is None else stdin,
+                config=config,
+                show_diff=show_diff,
+            )
+
+            wrong_sorted_files = incorrectly_sorted
+
         api.sort_stream(
             input_stream=sys.stdin if stdin is None else stdin,
             output_stream=sys.stdout,
