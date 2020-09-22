@@ -203,6 +203,22 @@ import a
     assert "import a" in out
     assert "import b" in out
 
+    # check should work with stdin
+
+    input_content_check = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        main.main(config_args + ["-", "--check-only"], stdin=input_content_check)
+    out, error = capsys.readouterr()
+    assert error == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
+
     # Should be able to run with just a file
     python_file = tmpdir.join("has_imports.py")
     python_file.write(
