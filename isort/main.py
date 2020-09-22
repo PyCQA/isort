@@ -861,13 +861,13 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             )
 
             wrong_sorted_files = incorrectly_sorted
-
-        api.sort_stream(
-            input_stream=sys.stdin if stdin is None else stdin,
-            output_stream=sys.stdout,
-            config=config,
-            show_diff=show_diff,
-        )
+        else:
+            api.sort_stream(
+                input_stream=sys.stdin if stdin is None else stdin,
+                output_stream=sys.stdout,
+                config=config,
+                show_diff=show_diff,
+            )
     else:
         skipped: List[str] = []
         broken: List[str] = []
