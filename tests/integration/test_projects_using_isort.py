@@ -43,7 +43,10 @@ def test_pandas(tmpdir):
     check_call(
         ["git", "clone", "--depth", "1", "https://github.com/pandas-dev/pandas.git", str(tmpdir)]
     )
-    main(["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"] + limit_extensions)
+    main(
+        ["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"]
+        + limit_extensions
+    )
 
 
 def test_fastapi(tmpdir):
