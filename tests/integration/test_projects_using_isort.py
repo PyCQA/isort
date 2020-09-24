@@ -36,10 +36,14 @@ def test_plone(tmpdir):
 
 
 def test_pandas(tmpdir):
+    # Need to limit extensions as isort has just made sorting pxd the default, and pandas
+    # will have not picked it up yet
+    # TODO: Remove below line as soon as these files are sorted on the mainline pandas project
+    limit_extensions = ["--ext", "py", "--ext", "pyi", "--ext", "pyx"]
     check_call(
         ["git", "clone", "--depth", "1", "https://github.com/pandas-dev/pandas.git", str(tmpdir)]
     )
-    main(["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"])
+    main(["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"] + limit_extensions)
 
 
 def test_fastapi(tmpdir):
