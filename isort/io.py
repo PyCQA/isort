@@ -6,6 +6,8 @@ from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
 from typing import Iterator, NamedTuple, TextIO, Union
 
+from .exceptions import UnsupportedEncodingError
+
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
@@ -37,7 +39,7 @@ class File(NamedTuple):
             return text
         except Exception:
             buffer.close()
-            raise
+            raise UnsupportedEncodingError(filename)
 
     @staticmethod
     @contextmanager

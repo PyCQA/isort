@@ -13,6 +13,7 @@ from .exceptions import (
     FileSkipComment,
     FileSkipSetting,
     IntroducedSyntaxErrors,
+    UnsupportedEncodingError,
 )
 from .format import ask_whether_to_apply_changes_to_file, create_terminal_printer, show_unified_diff
 from .io import Empty
@@ -260,16 +261,20 @@ def check_file(
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - ****config_kwargs**: Any config modifications.
     """
-    with io.File.read(filename) as source_file:
-        return check_stream(
-            source_file.stream,
-            show_diff=show_diff,
-            extension=extension,
-            config=config,
-            file_path=file_path or source_file.path,
-            disregard_skip=disregard_skip,
-            **config_kwargs,
-        )
+    try:
+        with io.File.read(filename) as source_file:
+            return check_stream(
+                source_file.stream,
+                show_diff=show_diff,
+                extension=extension,
+                config=config,
+                file_path=file_path or source_file.path,
+                disregard_skip=disregard_skip,
+                **config_kwargs,
+            )
+
+    except UnsupportedEncodingError:
+        raise UnsupportedEncodingError(filename)
 
 
 def sort_file(
@@ -297,70 +302,76 @@ def sort_file(
     - **write_to_stdout**: If `True`, write to stdout instead of the input file.
     - ****config_kwargs**: Any config modifications.
     """
-    with io.File.read(filename) as source_file:
-        actual_file_path = file_path or source_file.path
-        config = _config(path=actual_file_path, config=config, **config_kwargs)
-        changed: bool = False
-        try:
-            if write_to_stdout:
-                changed = sort_stream(
-                    input_stream=source_file.stream,
-                    output_stream=sys.stdout,
-                    config=config,
-                    file_path=actual_file_path,
-                    disregard_skip=disregard_skip,
-                    extension=extension,
-                )
-            else:
-                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
-                try:
-                    with tmp_file.open(
-                        "w", encoding=source_file.encoding, newline=""
-                    ) as output_stream:
-                        shutil.copymode(filename, tmp_file)
-                        changed = sort_stream(
-                            input_stream=source_file.stream,
-                            output_stream=output_stream,
-                            config=config,
-                            file_path=actual_file_path,
-                            disregard_skip=disregard_skip,
-                            extension=extension,
-                        )
-                    if changed:
-                        if show_diff or ask_to_apply:
-                            source_file.stream.seek(0)
-                            with tmp_file.open(
-                                encoding=source_file.encoding, newline=""
-                            ) as tmp_out:
-                                show_unified_diff(
-                                    file_input=source_file.stream.read(),
-                                    file_output=tmp_out.read(),
-                                    file_path=actual_file_path,
-                                    output=None if show_diff is True else cast(TextIO, show_diff),
-                                    color_output=config.color_output,
-                                )
-                                if show_diff or (
-                                    ask_to_apply
-                                    and not ask_whether_to_apply_changes_to_file(
-                                        str(source_file.path)
+    try:
+        with io.File.read(filename) as source_file:
+            actual_file_path = file_path or source_file.path
+            config = _config(path=actual_file_path, config=config, **config_kwargs)
+            changed: bool = False
+            try:
+                if write_to_stdout:
+                    changed = sort_stream(
+                        input_stream=source_file.stream,
+                        output_stream=sys.stdout,
+                        config=config,
+                        file_path=actual_file_path,
+                        disregard_skip=disregard_skip,
+                        extension=extension,
+                    )
+                else:
+                    tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+                    try:
+                        with tmp_file.open(
+                            "w", encoding=source_file.encoding, newline=""
+                        ) as output_stream:
+                            shutil.copymode(filename, tmp_file)
+                            changed = sort_stream(
+                                input_stream=source_file.stream,
+                                output_stream=output_stream,
+                                config=config,
+                                file_path=actual_file_path,
+                                disregard_skip=disregard_skip,
+                                extension=extension,
+                            )
+                        if changed:
+                            if show_diff or ask_to_apply:
+                                source_file.stream.seek(0)
+                                with tmp_file.open(
+                                    encoding=source_file.encoding, newline=""
+                                ) as tmp_out:
+                                    show_unified_diff(
+                                        file_input=source_file.stream.read(),
+                                        file_output=tmp_out.read(),
+                                        file_path=actual_file_path,
+                                        output=None
+                                        if show_diff is True
+                                        else cast(TextIO, show_diff),
+                                        color_output=config.color_output,
                                     )
-                                ):
-                                    return False
-                        source_file.stream.close()
-                        tmp_file.replace(source_file.path)
-                        if not config.quiet:
-                            print(f"Fixing {source_file.path}")
-                finally:
-                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                        tmp_file.unlink()
-                    except FileNotFoundError:
-                        pass
-        except ExistingSyntaxErrors:
-            warn(f"{actual_file_path} unable to sort due to existing syntax errors")
-        except IntroducedSyntaxErrors:  # pragma: no cover
-            warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
+                                    if show_diff or (
+                                        ask_to_apply
+                                        and not ask_whether_to_apply_changes_to_file(
+                                            str(source_file.path)
+                                        )
+                                    ):
+                                        return False
+                            source_file.stream.close()
+                            tmp_file.replace(source_file.path)
+                            if not config.quiet:
+                                print(f"Fixing {source_file.path}")
+                    finally:
+                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                            tmp_file.unlink()
+                        except FileNotFoundError:
+                            pass
+            except ExistingSyntaxErrors:
+                warn(f"{actual_file_path} unable to sort due to existing syntax errors")
+            except IntroducedSyntaxErrors:  # pragma: no cover
+                warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
 
-        return changed
+            return changed
+
+    except UnsupportedEncodingError:
+        raise UnsupportedEncodingError(filename)
 
 
 def _config(

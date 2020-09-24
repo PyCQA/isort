@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set
 from warnings import warn
 
 from . import __version__, api, sections
-from .exceptions import FileSkipped
+from .exceptions import FileSkipped, UnsupportedEncodingError
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
@@ -67,9 +67,12 @@ Visit https://pycqa.github.io/isort/ for complete information about how to use i
 
 
 class SortAttempt:
-    def __init__(self, incorrectly_sorted: bool, skipped: bool) -> None:
+    def __init__(
+        self, incorrectly_sorted: bool, skipped: bool, supported_encoding: bool = True
+    ) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
+        self.supported_encoding = supported_encoding
 
 
 def sort_imports(
@@ -101,6 +104,11 @@ def sort_imports(
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped)
+
+    except UnsupportedEncodingError:
+        if config.verbose:
+            warn(f"Encoding not supported for {file_name}")
+        return SortAttempt(incorrectly_sorted, skipped, False)
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
@@ -842,6 +850,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     wrong_sorted_files = False
     all_attempt_broken = False
+    no_valid_encodings = False
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -917,9 +926,18 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
         # If any files passed in are missing considered as error, should be removed
         is_no_attempt = True
+        unsupported_encodings = 0
+        total_files_scanned = 0
         for sort_attempt in attempt_iterator:
             if not sort_attempt:
                 continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+
+            total_files_scanned += 1
+
+            if not sort_attempt.supported_encoding:
+                unsupported_encodings += 1
+                continue
+
             incorrectly_sorted = sort_attempt.incorrectly_sorted
             if arguments.get("check", False) and incorrectly_sorted:
                 wrong_sorted_files = True
@@ -928,6 +946,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
                 )
             is_no_attempt = False
+
+        if total_files_scanned and unsupported_encodings == total_files_scanned:
+            no_valid_encodings = True
 
         num_skipped += len(skipped)
         if num_skipped and not arguments.get("quiet", False):
@@ -969,6 +990,11 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         sys.exit(1)
 
     if all_attempt_broken:
+        sys.exit(1)
+
+    if no_valid_encodings:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error("No valid encodings.")
         sys.exit(1)
 
 
