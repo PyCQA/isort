@@ -316,6 +316,34 @@ import b
         main.main(["-sp", str(config_file), "-"], stdin=input_content)
 
 
+def test_unsupported_encodings(tmpdir, capsys):
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write(
+        "# [syntax-error]\n"
+        "# -*- coding: IBO-8859-1 -*-\n"
+        '""" check correct unknown encoding declaration\n'
+        '"""\n'
+        "\n"
+        "__revision__ = 'יייי'\n"
+    )
+
+    # should throw an error if only unsupported encoding provided
+    with pytest.raises(SystemExit):
+        main.main([str(tmp_file)])
+    out, error = capsys.readouterr()
+
+    assert "No valid encodings." in error
+
+    # should not throw an error if at least one valid encoding found
+    normal_file = tmpdir.join("file1.py")
+    normal_file.write("import os\nimport sys")
+
+    main.main([str(tmp_file), str(normal_file)])
+    out, error = capsys.readouterr()
+
+    assert not error
+
+
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
     assert main.ISortCommand
