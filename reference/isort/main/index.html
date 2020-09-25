@@ -2634,7 +2634,9 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes all non-indented imports to float to the top of the file having its imports &quot;</span>
 
-        <span class="s2">&quot;sorted.  It can be an excellent shortcut for collecting imports every once in a while &quot;</span>
+        <span class="s2">&quot;sorted (immediately below the top of file comment).</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="s2">&quot;This can be an excellent shortcut for collecting imports every once in a while &quot;</span>
 
         <span class="s2">&quot;when you place them in the middle of a file to avoid context switching.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
@@ -2976,17 +2978,33 @@
 
     <span class="k">elif</span> <span class="n">file_names</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]:</span>
 
-        <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
 
-            <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
+            <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_stream</span><span class="p">(</span>
 
-            <span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+                <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
 
-            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
 
-            <span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span>
+                <span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span>
 
-        <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="n">incorrectly_sorted</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
+
+                <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
+
+                <span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+
+                <span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span>
+
+            <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
 
@@ -3383,17 +3401,33 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">[</span><span class="n">&quot;-&quot;</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">check</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">check_stream</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">        </span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">wrong_sorted_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">incorrectly_sorted</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
