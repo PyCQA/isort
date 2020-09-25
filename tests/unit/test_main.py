@@ -319,12 +319,15 @@ import b
 def test_unsupported_encodings(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write(
-        "# [syntax-error]\n"
-        "# -*- coding: IBO-8859-1 -*-\n"
-        '""" check correct unknown encoding declaration\n'
-        '"""\n'
-        "\n"
-        "__revision__ = 'יייי'\n"
+        # fmt: off
+        u'''
+# [syntax-error]\
+# -*- coding: IBO-8859-1 -*-
+""" check correct unknown encoding declaration
+"""
+__revision__ = 'יייי'
+'''
+        # fmt: on
     )
 
     # should throw an error if only unsupported encoding provided
