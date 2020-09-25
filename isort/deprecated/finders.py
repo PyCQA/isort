@@ -7,6 +7,7 @@ import re
 import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
+from contextlib import contextmanager
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
@@ -15,7 +16,7 @@ from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, 
 
 from isort import sections
 from isort.settings import KNOWN_SECTION_MAPPING, Config
-from isort.utils import chdir, exists_case_sensitive
+from isort.utils import exists_case_sensitive
 
 try:
     from pipreqs import pipreqs
@@ -34,6 +35,17 @@ try:
 
 except ImportError:
     Pipfile = None
+
+
+@contextmanager
+def chdir(path: str) -> Iterator[None]:
+    """Context manager for changing dir and restoring previous workdir after exit."""
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)
 
 
 class BaseFinder(metaclass=ABCMeta):
