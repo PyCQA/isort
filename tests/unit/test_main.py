@@ -318,8 +318,8 @@ import b
 
 def test_unsupported_encodings(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
+    # fmt: off
     tmp_file.write(
-        # fmt: off
         u'''
 # [syntax-error]\
 # -*- coding: IBO-8859-1 -*-
@@ -327,8 +327,8 @@ def test_unsupported_encodings(tmpdir, capsys):
 """
 __revision__ = 'יייי'
 '''
-        # fmt: on
     )
+    # fmt: on
 
     # should throw an error if only unsupported encoding provided
     with pytest.raises(SystemExit):
