@@ -47,6 +47,23 @@ def test_auto_saved():
         )
         == '*\x12\x07\U0009e994🁣"\U000ae787\x0e \x00\U0001ae99\U0005c3e7\U0004d08e \x1e  '
     )
+    assert (
+        wrap_modes.noqa(
+            **{
+                "comment_prefix": "  #",
+                "comments": ["NOQA", "THERE"],
+                "imports": [],
+                "include_trailing_comma": False,
+                "indent": "0\x19",
+                "line_length": -19659,
+                "line_separator": "\n",
+                "remove_comments": False,
+                "statement": "hi",
+                "white_space": " ",
+            }
+        )
+        == "hi  # NOQA THERE"
+    )
 
 
 def test_backslash_grid():

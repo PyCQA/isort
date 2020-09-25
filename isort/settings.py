@@ -31,7 +31,7 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
-SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", "pyx"})
+SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", "pyx", "pxd"})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",

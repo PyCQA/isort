@@ -673,7 +673,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="float_to_top",
         action="store_true",
         help="Causes all non-indented imports to float to the top of the file having its imports "
-        "sorted.  It can be an excellent shortcut for collecting imports every once in a while "
+        "sorted (immediately below the top of file comment).\n"
+        "This can be an excellent shortcut for collecting imports every once in a while "
         "when you place them in the middle of a file to avoid context switching.\n\n"
         "*NOTE*: It currently doesn't work with cimports and introduces some extra over-head "
         "and a performance penalty.",

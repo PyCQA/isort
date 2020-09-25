@@ -49,6 +49,7 @@ class TestConfig:
         assert self.instance.is_supported_filetype("file.py")
         assert self.instance.is_supported_filetype("file.pyi")
         assert self.instance.is_supported_filetype("file.pyx")
+        assert self.instance.is_supported_filetype("file.pxd")
         assert not self.instance.is_supported_filetype("file.pyc")
         assert not self.instance.is_supported_filetype("file.txt")
         assert not self.instance.is_supported_filetype("file.pex")
