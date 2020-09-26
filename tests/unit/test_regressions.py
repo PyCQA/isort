@@ -1081,3 +1081,80 @@ def generator_function():
      from \\
 """
     assert isort.check_code(raise_from_at_file_end_ignored, show_diff=True)
+
+
+def test_isort_float_to_top_correctly_identifies_single_line_comments_1499():
+    """Test to ensure isort correctly handles the case where float to top is used
+    to push imports to the top and the top comment is a multiline type but only
+    one line.
+    See: https://github.com/PyCQA/isort/issues/1499
+    """
+    assert (
+        isort.code(
+            '''#!/bin/bash
+"""My comment"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == (
+            '''#!/bin/bash
+"""My comment"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+        )
+    )
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+""",
+            float_to_top=True,
+        )
+        == (
+            """#!/bin/bash
+'''My comment'''
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+"""
+        )
+    )
+
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
