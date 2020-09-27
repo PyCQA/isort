@@ -83,6 +83,9 @@ def process(
                 if line == "# isort: off\n":
                     isort_off = True
                 if current:
+                    if add_imports:
+                        current += line_separator + line_separator.join(add_imports)
+                        add_imports = []
                     parsed = parse.file_contents(current, config=config)
                     extra_space = ""
                     while current and current[-1] == "\n":

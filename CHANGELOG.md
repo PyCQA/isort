@@ -7,6 +7,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 ### 5.6.0 TBD
   - Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.
   - Implemented #1494: Default to sorting imports within `.pxd` files.
+  - Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.
   - Improved handling of unsupported configuration option errors (see #1475).
   - Fixed #1463: Better interactive documentation for future option.
   - Fixed #1461: Quiet config option not respected by file API in some circumstances.

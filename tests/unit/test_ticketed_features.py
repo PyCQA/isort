@@ -60,7 +60,8 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """import os
+        == """
+import os
 import sys
 
 
@@ -90,7 +91,8 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """import os
+        == """
+import os
 
 
 def my_function_1():
@@ -105,10 +107,9 @@ def my_function_2():
 """
     )
 
-
-assert (
-    isort.code(
-        """
+    assert (
+        isort.code(
+            """
 import os
 
 
@@ -129,9 +130,10 @@ def my_function_2():
 
 import a
 """,
-        float_to_top=True,
-    )
-    == """import os
+            float_to_top=True,
+        )
+        == """
+import os
 
 
 def my_function_1():
@@ -151,7 +153,7 @@ import b
 def my_function_2():
     pass
 """
-)
+    )
 
 
 def test_isort_provides_official_api_for_diff_output_issue_1335():
@@ -746,3 +748,103 @@ quiet = true
     with pytest.warns(None) as warning:
         assert Config(settings_file=str(settings_file)).quiet
     assert not warning
+
+
+def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
+    """When a file has an existing top of file import block before code but after comments
+    isort's float to top feature should respect the existing spacing between the top file comment
+    and the import statements.
+    See: https://github.com/PyCQA/isort/issues/1502
+    """
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+
+
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+import a
+
+x = 1
+""",
+            float_to_top=True,
+            add_imports=["import b"],
+        )
+        == """#!/bin/bash
+'''My comment'''
+
+
+import a
+import b
+
+x = 1
+"""
+    )
+
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+def my_function():
+    pass
+
+
+import a
+""",
+            float_to_top=True,
+        )
+        == """#!/bin/bash
+'''My comment'''
+import a
+
+
+def my_function():
+    pass
+"""
+    )
+
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+def my_function():
+    pass
+""",
+            add_imports=["import os"],
+            float_to_top=True,
+        )
+        == """#!/bin/bash
+'''My comment'''
+import os
+
+
+def my_function():
+    pass
+"""
+    )
