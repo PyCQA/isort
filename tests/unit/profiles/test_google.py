@@ -118,8 +118,8 @@ arrays.
 
 # flake8: noqa: F401
 import collections
-from contextlib import ExitStack
 from contextlib import contextmanager
+from contextlib import ExitStack
 import functools
 import inspect
 import itertools as it
@@ -136,8 +136,8 @@ from . import core
 from . import dtypes
 from . import linear_util as lu
 from .abstract_arrays import ConcreteArray
-from .abstract_arrays import ShapedArray
 from .abstract_arrays import raise_to_shaped
+from .abstract_arrays import ShapedArray
 from .api_util import apply_flat_fun
 from .api_util import argnums_partial
 from .api_util import donation_vector
