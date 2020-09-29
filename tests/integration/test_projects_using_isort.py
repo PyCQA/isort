@@ -6,116 +6,78 @@ NOTE: If you use isort within a public repository, please feel empowered to add 
 It is important to isort that as few regressions as possible are experienced by our users.
 Having your project tested here is the most sure way to keep those regressions form ever happening.
 """
+from pathlib import Path
 from subprocess import check_call
+from typing import Sequence
 
 from isort.main import main
 
 
+def git_clone(repository_url: str, directory: Path):
+    """Clones the given repository into the given directory path"""
+    check_call(["git", "clone", "--depth", "1", repository_url, str(directory)])
+
+
+def run_isort(arguments: Sequence[str]):
+    """Runs isort in diff and check mode with the given arguments"""
+    main(["--check-only", "--diff", *arguments])
+
+
 def test_django(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/django/django.git", str(tmpdir)]
-    )
-    isort_target_dirs = [
+    git_clone("https://github.com/django/django.git", tmpdir)
+    run_isort(
         str(target_dir) for target_dir in (tmpdir / "django", tmpdir / "tests", tmpdir / "scripts")
-    ]
-    main(["--check-only", "--diff", *isort_target_dirs])
+    )
 
 
 def test_plone(tmpdir):
-    check_call(
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            "https://github.com/plone/plone.app.multilingualindexes.git",
-            str(tmpdir),
-        ]
-    )
-    main(["--check-only", "--diff", str(tmpdir / "src")])
+    git_clone("https://github.com/plone/plone.app.multilingualindexes.git", tmpdir)
+    run_isort([str(tmpdir / "src")])
 
 
 def test_pandas(tmpdir):
     # Need to limit extensions as isort has just made sorting pxd the default, and pandas
     # will have not picked it up yet
     # TODO: Remove below line as soon as these files are sorted on the mainline pandas project
-    limit_extensions = ["--ext", "py", "--ext", "pyi", "--ext", "pyx"]
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/pandas-dev/pandas.git", str(tmpdir)]
-    )
-    main(
-        ["--check-only", "--diff", str(tmpdir / "pandas"), "--skip", "__init__.py"]
-        + limit_extensions
-    )
+    git_clone("https://github.com/pandas-dev/pandas.git", tmpdir)
+    limit_extensions = ("--ext", "py", "--ext", "pyi", "--ext", "pyx")
+    run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py", *limit_extensions))
 
 
 def test_fastapi(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/tiangolo/fastapi.git", str(tmpdir)]
-    )
-    main(["--check-only", "--diff", str(tmpdir / "fastapi")])
+    git_clone("https://github.com/tiangolo/fastapi.git", tmpdir)
+    run_isort([str(tmpdir / "fastapi")])
 
 
 def test_zulip(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/zulip/zulip.git", str(tmpdir)])
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "__init__.pyi"])
+    git_clone("https://github.com/zulip/zulip.git", tmpdir)
+    run_isort((str(tmpdir), "--skip", "__init__.pyi"))
 
 
 def test_habitat_lab(tmpdir):
-    check_call(
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            "https://github.com/facebookresearch/habitat-lab.git",
-            str(tmpdir),
-        ]
-    )
-    main(["--check-only", "--diff", str(tmpdir)])
+    git_clone("https://github.com/facebookresearch/habitat-lab.git", tmpdir)
+    run_isort([str(tmpdir)])
 
 
 def test_tmuxp(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/tmux-python/tmuxp.git", str(tmpdir)]
-    )
-    main(["--check-only", "--diff", str(tmpdir)])
+    git_clone("https://github.com/tmux-python/tmuxp.git", tmpdir)
+    run_isort([str(tmpdir)])
 
 
 def test_websockets(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/aaugustin/websockets.git", str(tmpdir)]
-    )
-    main(
-        [
-            "--check-only",
-            "--diff",
-            str(tmpdir),
-            "--skip",
-            "example",
-            "--skip",
-            "docs",
-            "--skip",
-            "compliance",
-        ]
-    )
+    git_clone("https://github.com/aaugustin/websockets.git", tmpdir)
+    run_isort((str(tmpdir), "--skip", "example", "--skip", "docs", "--skip", "compliance"))
 
 
 def test_airflow(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/apache/airflow.git", str(tmpdir)]
-    )
-    main(["--check-only", "--diff", str(tmpdir)])
+    git_clone("https://github.com/apache/airflow.git", tmpdir)
+    run_isort([str(tmpdir)])
 
 
 def test_typeshed(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/python/typeshed.git", str(tmpdir)]
-    )
-    main(
-        [
-            "--check-only",
-            "--diff",
+    git_clone("https://github.com/python/typeshed.git", tmpdir)
+    run_isort(
+        (
             str(tmpdir),
             "--skip",
             "tests",
@@ -123,51 +85,34 @@ def test_typeshed(tmpdir):
             "scripts",
             "--skip",
             f"{tmpdir}/third_party/2and3/yaml/__init__.pyi",
-        ]
+        )
     )
 
 
 def test_pylint(tmpdir):
-    check_call(["git", "clone", "--depth", "1", "https://github.com/PyCQA/pylint.git", str(tmpdir)])
-    main(["--check-only", "--diff", str(tmpdir)])
+    git_clone("https://github.com/PyCQA/pylint.git", tmpdir)
+    run_isort([str(tmpdir)])
 
 
 def test_poetry(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/python-poetry/poetry.git", str(tmpdir)]
-    )
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
+    git_clone("https://github.com/python-poetry/poetry.git", tmpdir)
+    run_isort((str(tmpdir), "--skip", "tests"))
 
 
 def test_hypothesis(tmpdir):
-    check_call(
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            "https://github.com/HypothesisWorks/hypothesis.git",
-            str(tmpdir),
-        ]
-    )
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
+    git_clone("https://github.com/HypothesisWorks/hypothesis.git", tmpdir)
+    run_isort((str(tmpdir), "--skip", "tests"))
 
 
 def test_pillow(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/python-pillow/Pillow.git", str(tmpdir)]
-    )
-    main(["--check-only", "--diff", str(tmpdir), "--skip", "tests"])
+    git_clone("https://github.com/python-pillow/Pillow.git", tmpdir)
+    run_isort((str(tmpdir), "--skip", "tests"))
 
 
 def test_attrs(tmpdir):
-    check_call(
-        ["git", "clone", "--depth", "1", "https://github.com/python-attrs/attrs.git", str(tmpdir)]
-    )
-    main(
-        [
-            "--check-only",
-            "--diff",
+    git_clone("https://github.com/python-attrs/attrs.git", tmpdir)
+    run_isort(
+        (
             str(tmpdir),
             "--skip",
             "tests",
@@ -175,20 +120,10 @@ def test_attrs(tmpdir):
             "py",
             "--skip",
             "_compat.py",
-        ]
+        )
     )
 
 
 def test_datadog_integrations_core(tmpdir):
-    check_call(
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            "https://github.com/DataDog/integrations-core.git",
-            str(tmpdir),
-        ]
-    )
-
-    main(["--check-only", "--diff", str(tmpdir)])
+    git_clone("https://github.com/DataDog/integrations-core.git", tmpdir)
+    run_isort([str(tmpdir)])
