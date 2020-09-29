@@ -127,3 +127,11 @@ def test_attrs(tmpdir):
 def test_datadog_integrations_core(tmpdir):
     git_clone("https://github.com/DataDog/integrations-core.git", tmpdir)
     run_isort([str(tmpdir)])
+
+
+def test_pyramid(tmpdir):
+    git_clone("https://github.com/Pylons/pyramid.git", tmpdir)
+    run_isort(
+        str(target_dir)
+        for target_dir in (tmpdir / "src" / "pyramid", tmpdir / "tests", tmpdir / "setup.py")
+    )
