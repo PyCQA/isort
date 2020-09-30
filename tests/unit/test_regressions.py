@@ -1158,3 +1158,43 @@ x = 1
         float_to_top=True,
         show_diff=True,
     )
+
+
+def test_isort_shouldnt_mangle_from_multi_line_string_issue_1507():
+    """isort was seen mangling lines that happened to contain the word from after
+    a yield happened to be in a file. Clearly this shouldn't happen.
+    See: https://github.com/PyCQA/isort/issues/1507.
+    """
+    assert isort.check_code(
+        '''
+def a():
+    yield f(
+        """
+        select %s from (values %%s) as t(%s)
+        """
+    )
+
+def b():
+    return (
+        """
+        select name
+        from foo
+        """
+        % main_table
+    )
+
+def c():
+    query = (
+        """
+        select {keys}
+        from (values %s) as t(id)
+        """
+    )
+
+def d():
+    query = f"""select t.id
+                from {table} t
+                {extra}"""
+''',
+        show_diff=True,
+    )

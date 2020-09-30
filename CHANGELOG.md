@@ -14,6 +14,9 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1482: pylama integration is not working correctly out-of-the-box.
   - Fixed #1492: --check does not work with stdin source.
   - Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
+
+### 5.5.4 [Hotfix] September 29, 2020
+  - Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.
   - Fixed #1505: Support case where known_SECTION points to a section not listed in sections.
 
 ### 5.5.3 [Hotfix] September 20, 2020
