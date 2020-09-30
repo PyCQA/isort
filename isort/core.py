@@ -373,15 +373,6 @@ def process(
                         stripped_line = new_line.strip().split("#")[0]
 
                 if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
-                    if "(" in stripped_line:
-                        while ")" not in stripped_line:
-                            new_line = input_stream.readline()
-                            if not new_line:
-                                break
-
-                            output_stream.write(new_line)
-                            stripped_line = new_line.strip().split("#")[0]
-
                     while stripped_line.endswith("\\"):
                         new_line = input_stream.readline()
                         if not new_line:
