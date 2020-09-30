@@ -136,7 +136,7 @@ run against code written using a different version of Python)
 
 **From within Python**:
 
-```bash
+```python
 import isort
 
 isort.file("pythonfile.py")
@@ -144,7 +144,7 @@ isort.file("pythonfile.py")
 
 or:
 
-```bash
+```python
 import isort
 
 sorted_code = isort.code("import b\nimport a\n")
