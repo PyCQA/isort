@@ -210,7 +210,7 @@ def check_stream(
     )
     printer = create_terminal_printer(color=config.color_output)
     if not changed:
-        if config.verbose:
+        if config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
     else:
