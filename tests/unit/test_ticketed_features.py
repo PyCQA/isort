@@ -442,9 +442,9 @@ def method():
 
 
 # isort: assignments
-d = x
+d = 1
 b = 2
-a = 1
+a = 3
 
 # isort: dict
 y = {"z": "z", "b": "b", "b": "c"}""",
@@ -476,9 +476,9 @@ def method():
 
 
 # isort: assignments
-a = 1
+a = 3
 b = 2
-d = x
+d = 1
 
 # isort: dict
 y = {"b": "c", "z": "z"}"""
