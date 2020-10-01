@@ -319,3 +319,387 @@ import b
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
     assert main.ISortCommand
+
+
+def test_isort_with_stdin(capsys):
+    # ensures that isort sorts stdin without any flags
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+
+    main.main(["-"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import b
+"""
+    )
+
+    input_content_from = TextIOWrapper(
+        BytesIO(
+            b"""
+import c
+import b
+from a import z, y, x
+"""
+        )
+    )
+
+    main.main(["-"], stdin=input_content_from)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import b
+import c
+from a import x, y, z
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --fas flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import pandas
+from z import abc
+from a import xyz
+"""
+        )
+    )
+
+    main.main(["-", "--fas"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import xyz
+from z import abc
+
+import pandas
+import sys
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --fass flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import Path, abc
+"""
+        )
+    )
+
+    main.main(["-", "--fass"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import abc, Path
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ff flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+from c import x
+from a import y
+"""
+        )
+    )
+
+    main.main(["-", "--ff", "FROM_FIRST"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import y
+from c import x
+import b
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with -fss flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+from a import a
+"""
+        )
+    )
+
+    main.main(["-", "--fss"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import a
+import b
+"""
+    )
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import a
+from b import c
+"""
+        )
+    )
+
+    main.main(["-", "--fss"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+from b import c
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ds flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import pandas
+import a
+"""
+        )
+    )
+
+    main.main(["-", "--ds"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import pandas
+import sys
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --cs flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import b
+from a import *
+"""
+        )
+    )
+
+    main.main(["-", "--cs"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import *
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ca flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import x as X
+from a import y as Y
+"""
+        )
+    )
+
+    main.main(["-", "--ca"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import x as X, y as Y
+"""
+    )
+
+    # ensures that isort works consistently with check and ws flags
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import os
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--check-only", "--ws"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert not error
+
+    # ensures that isort correctly sorts stdin with --ls flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import abcdef
+import x
+"""
+        )
+    )
+
+    main.main(["-", "--ls"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import x
+import abcdef
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --nis flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from z import b, c, a
+"""
+        )
+    )
+
+    main.main(["-", "--nis"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from z import b, c, a
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --sl flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from z import b, c, a
+"""
+        )
+    )
+
+    main.main(["-", "--sl"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from z import a
+from z import b
+from z import c
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --top flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import os
+import sys
+"""
+        )
+    )
+
+    main.main(["-", "--top", "sys"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import sys
+import os
+"""
+    )
+
+    # ensure that isort correctly sorts stdin with --os flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+import z
+from a import b, e, c
+"""
+        )
+    )
+
+    main.main(["-", "--os"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import sys
+import os
+
+import z
+from a import b, e, c
+"""
+    )
+
+    # ensures that isort warns with deprecated flags with stdin
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+"""
+        )
+    )
+
+    with pytest.warns(UserWarning):
+        main.main(["-", "-ns"], stdin=input_content)
+
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import os
+import sys
+"""
+    )
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+"""
+        )
+    )
+
+    with pytest.warns(UserWarning):
+        main.main(["-", "-k"], stdin=input_content)
+
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import os
+import sys
+"""
+    )
