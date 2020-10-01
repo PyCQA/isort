@@ -138,6 +138,7 @@ class ParsedContent(NamedTuple):
     original_line_count: int
     line_separator: str
     sections: Any
+    verbose_output: List[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -163,6 +164,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "from": defaultdict(list),
     }
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+    verbose_output: List[str] = []
+
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments: CommentsDict = {
@@ -380,8 +383,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
-                if config.verbose:
+                if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
+
+                elif config.verbose:
+                    verbose_output.append(
+                        f"from-type place_module for {import_from} returned {placed_module}"
+                    )
                 if placed_module == "":
                     warn(
                         f"could not place module {import_from} of line {line} --"
@@ -469,8 +477,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
                     placed_module = finder(module)
-                    if config.verbose:
+                    if config.verbose and not config.only_modified:
                         print(f"else-type place_module for {module} returned {placed_module}")
+
+                    elif config.verbose:
+                        verbose_output.append(
+                            f"else-type place_module for {module} returned {placed_module}"
+                        )
                     if placed_module == "":
                         warn(
                             f"could not place module {module} of line {line} --"
@@ -497,4 +510,5 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         original_line_count=original_line_count,
         line_separator=line_separator,
         sections=config.sections,
+        verbose_output=verbose_output,
     )
