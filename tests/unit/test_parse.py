@@ -37,6 +37,7 @@ def test_file_contents():
         original_line_count,
         _,
         _,
+        _,
     ) = parse.file_contents(TEST_CONTENTS, config=Config(default_section=""))
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)
