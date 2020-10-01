@@ -13,9 +13,6 @@ from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 
-# This test code was written by the `hypothesis.extra.ghostwriter` module
-# and is provided under the Creative Commons Zero public domain dedication.
-
 
 @given(
     file_name=st.text(),
@@ -102,6 +99,26 @@ def test_preconvert():
     assert main._preconvert(main._preconvert) == "_preconvert"
     with pytest.raises(TypeError):
         main._preconvert(datetime.now())
+
+
+def test_show_files(capsys, tmpdir):
+    tmpdir.join("a.py").write("import a")
+    tmpdir.join("b.py").write("import b")
+
+    # show files should list the files isort would sort
+    main.main([str(tmpdir), "--show-files"])
+    out, error = capsys.readouterr()
+    assert "a.py" in out
+    assert "b.py" in out
+    assert not error
+
+    # can not be used for stream
+    with pytest.raises(SystemExit):
+        main.main(["-", "--show-files"])
+
+    # can not be used with show-config
+    with pytest.raises(SystemExit):
+        main.main([str(tmpdir), "--show-files", "--show-config"])
 
 
 def test_main(capsys, tmpdir):
@@ -661,7 +678,6 @@ from a import b, e, c
     )
 
     # ensures that isort warns with deprecated flags with stdin
-
     input_content = TextIOWrapper(
         BytesIO(
             b"""

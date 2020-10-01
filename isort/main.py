@@ -639,6 +639,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="See isort's determined config, as well as sources of config options.",
     )
     parser.add_argument(
+        "--show-files",
+        dest="show_files",
+        action="store_true",
+        help="See the files isort will be ran against with the current config options.",
+    )
+    parser.add_argument(
         "--honor-noqa",
         dest="honor_noqa",
         action="store_true",
@@ -805,6 +811,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         return
 
     show_config: bool = arguments.pop("show_config", False)
+    show_files: bool = arguments.pop("show_files", False)
+    if show_config and show_files:
+        sys.exit("Error: either specify show-config or show-files not both.")
 
     if "settings_path" in arguments:
         if os.path.isfile(arguments["settings_path"]):
@@ -854,6 +863,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
     elif file_names == ["-"]:
+        if show_files:
+            sys.exit("Error: can't show files for streaming input.")
+
         if check:
             incorrectly_sorted = not api.check_stream(
                 input_stream=sys.stdin if stdin is None else stdin,
@@ -883,6 +895,10 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             file_names = filtered_files
 
         file_names = iter_source_code(file_names, config, skipped, broken)
+        if show_files:
+            for file_name in file_names:
+                print(file_name)
+            return
         num_skipped = 0
         num_broken = 0
         if config.verbose:
