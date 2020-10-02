@@ -3732,6 +3732,7 @@ def test_standard_library_deprecates_user_issue_778() -> None:
     assert isort.code(test_input) == test_input
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
 def test_settings_path_skip_issue_909(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
@@ -3762,6 +3763,7 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
     assert b"skipped 2" in result.stdout.lower()
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
 def test_skip_paths_issue_938(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")

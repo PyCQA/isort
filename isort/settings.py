@@ -169,6 +169,7 @@ class _Config:
     force_grid_wrap: int = 0
     force_sort_within_sections: bool = False
     lexicographical: bool = False
+    group_by_package: bool = False
     ignore_whitespace: bool = False
     no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False

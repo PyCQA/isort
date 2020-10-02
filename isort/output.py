@@ -102,6 +102,7 @@ def sorted_imports(
                     lexicographical=config.lexicographical,
                     length_sort=config.length_sort,
                     reverse_relative=config.reverse_relative,
+                    group_by_package=config.group_by_package,
                 ),
             )
 
