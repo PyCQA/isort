@@ -5,6 +5,22 @@ from ..utils import isort_test
 google_isort_test = partial(isort_test, profile="google")
 
 
+def test_google_code_snippet_shared_example():
+    """Tests snippet examples directly shared with the isort project.
+    See: https://github.com/PyCQA/isort/issues/1486.
+    """
+    google_isort_test(
+        """import collections
+import cProfile
+"""
+    )
+    google_isort_test(
+        """from a import z
+from a.b import c
+"""
+    )
+
+
 def test_google_code_snippet_one():
     google_isort_test(
         '''# coding=utf-8
@@ -156,12 +172,13 @@ from .custom_derivatives import custom_vjp
 from .interpreters import ad
 from .interpreters import batching
 from .interpreters import invertible_ad as iad
-from .interpreters.invertible_ad import custom_ivjp
 from .interpreters import masking
 from .interpreters import partial_eval as pe
 from .interpreters import pxla
 from .interpreters import xla
+from .interpreters.invertible_ad import custom_ivjp
 from .lib import xla_bridge as xb
+from .lib import xla_client as xc
 # Unused imports to be exported
 from .lib.xla_bridge import device_count
 from .lib.xla_bridge import devices
@@ -170,7 +187,6 @@ from .lib.xla_bridge import host_id
 from .lib.xla_bridge import host_ids
 from .lib.xla_bridge import local_device_count
 from .lib.xla_bridge import local_devices
-from .lib import xla_client as xc
 from .traceback_util import api_boundary
 from .tree_util import Partial
 from .tree_util import tree_flatten

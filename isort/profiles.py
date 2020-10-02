@@ -22,6 +22,7 @@ google = {
     "lexicographical": True,
     "single_line_exclusions": ("typing",),
     "order_by_type": False,
+    "group_by_package": True,
 }
 open_stack = {
     "force_single_line": True,
