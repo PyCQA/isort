@@ -1490,6 +1490,10 @@ The option was originally added to allow working around this, and was then turne
 <p>The first thing to keep in mind is how isort loads config options has changed in isort 5. It will no longer merge multiple config files, instead you must have 1 isort config per a project.
 If you have multiple configs, they will need to be merged into 1 single one. You can see the priority order of configuration files and the manner in which they are loaded on the
 <a href="https://pycqa.github.io/isort/docs/configuration/config_files/">config files documentation page</a>.</p>
+<div class="admonition tip -">
+<p class="admonition-title">Config options are loaded relative to the file, not the isort instance.</p>
+<p>isort looks for a config file based on the path of the file you request to sort. If you have your config placed outside of the project, you can use <code>--settings-path</code> to manually specify the config location instead. Full information about how config files are loaded is in the linked config files documentation page.</p>
+</div>
 <h3 id="not_skip"><code>not_skip</code></h3>
 <p>This is the same as the <code>--dont-skip</code> CLI option above. In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the setting. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
 <h3 id="keep_direct_and_as_imports"><code>keep_direct_and_as_imports</code></h3>

@@ -1367,6 +1367,8 @@
 
     <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
 
+    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
@@ -1378,6 +1380,10 @@
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
+
+    <span class="k">if</span> <span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
 
@@ -1555,7 +1561,8 @@
     <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">length_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -1574,6 +1581,8 @@
 
     <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
 
+    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
@@ -1585,6 +1594,10 @@
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
+
+    <span class="k">if</span> <span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
 

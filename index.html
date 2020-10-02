@@ -1583,16 +1583,16 @@ changes if they don't introduce syntax errors do:</p>
 <p>(Note: this is disabled by default as it keeps isort from being able to
 run against code written using a different version of Python)</p>
 <p><strong>From within Python</strong>:</p>
-<div class="codehilite"><pre><span></span><code>import isort
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">isort</span>
 
-isort.file<span class="o">(</span><span class="s2">&quot;pythonfile.py&quot;</span><span class="o">)</span>
+<span class="n">isort</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s2">&quot;pythonfile.py&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 
 <p>or:</p>
-<div class="codehilite"><pre><span></span><code>import isort
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">isort</span>
 
-<span class="nv">sorted_code</span> <span class="o">=</span> isort.code<span class="o">(</span><span class="s2">&quot;import b\nimport a\n&quot;</span><span class="o">)</span>
+<span class="n">sorted_code</span> <span class="o">=</span> <span class="n">isort</span><span class="o">.</span><span class="n">code</span><span class="p">(</span><span class="s2">&quot;import b</span><span class="se">\n</span><span class="s2">import a</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -1913,9 +1913,9 @@ without having to be concerned with how it was originally formatted.</p>
 
 <h2 id="using-isort-to-verify-code">Using isort to verify code</h2>
 <h2 id="the-check-only-option">The <code>--check-only</code> option</h2>
-<p>isort can also be used to used to verify that code is correctly
-formatted by running it with <code>-c</code>. Any files that contain incorrectly
-sorted and/or formatted imports will be outputted to <code>stderr</code>.</p>
+<p>isort can also be used to verify that code is correctly formatted
+by running it with <code>-c</code>. Any files that contain incorrectly sorted
+and/or formatted imports will be outputted to <code>stderr</code>.</p>
 <div class="codehilite"><pre><span></span><code>isort **/*.py -c -v
 
 SUCCESS: /home/timothy/Projects/Open_Source/isort/isort_kate_plugin.py Everything Looks Good!

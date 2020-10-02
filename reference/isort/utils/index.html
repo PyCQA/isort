@@ -915,13 +915,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chdir" class="md-nav__link">
-    chdir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#exists_case_sensitive" class="md-nav__link">
     exists_case_sensitive
   </a>
@@ -1212,13 +1205,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chdir" class="md-nav__link">
-    chdir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#exists_case_sensitive" class="md-nav__link">
     exists_case_sensitive
   </a>
@@ -1255,10 +1241,6 @@
 
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
-
 <span class="k">def</span> <span class="nf">exists_case_sensitive</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;Returns if the given path exists and also matches the case on Windows.</span>
@@ -1280,58 +1262,11 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">basename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
-
-<span class="nd">@contextmanager</span>
-
-<span class="k">def</span> <span class="nf">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="bp">None</span><span class="p">]:</span>
-
-    <span class="sd">&quot;&quot;&quot;Context manager for changing dir and restoring previous workdir after exit.&quot;&quot;&quot;</span>
-
-    <span class="n">curdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-
-        <span class="k">yield</span>
-
-    <span class="k">finally</span><span class="p">:</span>
-
-        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">curdir</span><span class="p">)</span>
 </code></pre></div>
 
 
 </details>
 <h2 id="functions">Functions</h2>
-<h3 id="chdir">chdir</h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">chdir</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]</span>
-</code></pre></div>
-
-
-<p>Context manager for changing dir and restoring previous workdir after exit.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@contextmanager</span><span class="w"></span>
-
-<span class="n">def</span><span class="w"> </span><span class="n">chdir</span><span class="p">(</span><span class="k">path</span><span class="err">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">None</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">    </span><span class="ss">&quot;&quot;&quot;Context manager for changing dir and restoring previous workdir after exit.&quot;&quot;&quot;</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">curdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">()</span><span class="w"></span>
-
-<span class="w">    </span><span class="n">os</span><span class="p">.</span><span class="n">chdir</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="w"></span>
-
-<span class="w">    </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">yield</span><span class="w"></span>
-
-<span class="w">    </span><span class="nl">finally</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">        </span><span class="n">os</span><span class="p">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">curdir</span><span class="p">)</span><span class="w"></span>
-</code></pre></div>
-
-
-</details>
 <h3 id="exists_case_sensitive">exists_case_sensitive</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">exists_case_sensitive</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>

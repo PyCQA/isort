@@ -236,6 +236,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#554-hotfix-september-29-2020" class="md-nav__link">
+    5.5.4 [Hotfix] September 29, 2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#553-hotfix-september-20-2020" class="md-nav__link">
     5.5.3 [Hotfix] September 20, 2020
   </a>
@@ -1656,6 +1663,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#554-hotfix-september-29-2020" class="md-nav__link">
+    5.5.4 [Hotfix] September 29, 2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#553-hotfix-september-20-2020" class="md-nav__link">
     5.5.3 [Hotfix] September 20, 2020
   </a>
@@ -2151,11 +2165,23 @@ Find out more about isort's release policy <a href="https://pycqa.github.io/isor
 <ul>
 <li>Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.</li>
 <li>Implemented #1494: Default to sorting imports within <code>.pxd</code> files.</li>
+<li>Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.</li>
+<li>Implemented #1511: Support for easily seeing all files isort will be ran against using <code>isort . --show-files</code>.</li>
 <li>Improved handling of unsupported configuration option errors (see #1475).</li>
 <li>Fixed #1463: Better interactive documentation for future option.</li>
 <li>Fixed #1461: Quiet config option not respected by file API in some circumstances.</li>
 <li>Fixed #1482: pylama integration is not working correctly out-of-the-box.</li>
 <li>Fixed #1492: --check does not work with stdin source.</li>
+<li>Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
+Potentially breaking changes:</li>
+<li>Fixed #1486: "Google" profile is not quite Google style.</li>
+</ul>
+<p>Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1472: Full testing of stdin CLI Options</p>
+<h3 id="554-hotfix-september-29-2020">5.5.4 [Hotfix] September 29, 2020</h3>
+<ul>
+<li>Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.</li>
+<li>Fixed #1505: Support case where known_SECTION points to a section not listed in sections.</li>
 </ul>
 <h3 id="553-hotfix-september-20-2020">5.5.3 [Hotfix] September 20, 2020</h3>
 <ul>

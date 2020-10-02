@@ -977,6 +977,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chdir" class="md-nav__link">
+    chdir
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
     Classes
   </a>
@@ -1627,6 +1647,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chdir" class="md-nav__link">
+    chdir
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
     Classes
   </a>
@@ -2100,6 +2140,8 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">abc</span> <span class="s s-Atom">import</span> <span class="nv">ABCMeta</span><span class="p">,</span> <span class="s s-Atom">abstractmethod</span>
 
+<span class="s s-Atom">from</span> <span class="s s-Atom">contextlib</span> <span class="s s-Atom">import</span> <span class="s s-Atom">contextmanager</span>
+
 <span class="s s-Atom">from</span> <span class="s s-Atom">fnmatch</span> <span class="s s-Atom">import</span> <span class="s s-Atom">fnmatch</span>
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">functools</span> <span class="s s-Atom">import</span> <span class="s s-Atom">lru_cache</span>
@@ -2114,7 +2156,7 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">settings</span> <span class="s s-Atom">import</span> <span class="nv">KNOWN_SECTION_MAPPING</span><span class="p">,</span> <span class="nv">Config</span>
 
-<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">utils</span> <span class="s s-Atom">import</span> <span class="s s-Atom">chdir</span><span class="p">,</span> <span class="s s-Atom">exists_case_sensitive</span>
+<span class="s s-Atom">from</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">utils</span> <span class="s s-Atom">import</span> <span class="s s-Atom">exists_case_sensitive</span>
 
 <span class="nn">try</span><span class="p">:</span>
 
@@ -2139,6 +2181,24 @@
 <span class="s s-Atom">except</span> <span class="nv">ImportError</span><span class="s s-Atom">:</span>
 
     <span class="nv">Pipfile</span> <span class="o">=</span> <span class="nv">None</span>
+
+<span class="s s-Atom">@contextmanager</span>
+
+<span class="s s-Atom">def</span> <span class="nf">chdir</span><span class="p">(</span><span class="nn">path</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Iterator</span><span class="p">[</span><span class="nv">None</span><span class="p">]</span><span class="s s-Atom">:</span>
+
+    <span class="s2">&quot;&quot;&quot;Context manager for changing dir and restoring previous workdir after exit.&quot;&quot;&quot;</span>
+
+    <span class="s s-Atom">curdir</span> <span class="o">=</span> <span class="s s-Atom">os</span><span class="p">.</span><span class="nf">getcwd</span><span class="p">()</span>
+
+    <span class="s s-Atom">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="s s-Atom">path</span><span class="p">)</span>
+
+    <span class="nn">try</span><span class="p">:</span>
+
+        <span class="s s-Atom">yield</span>
+
+    <span class="nn">finally</span><span class="p">:</span>
+
+        <span class="s s-Atom">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="s s-Atom">curdir</span><span class="p">)</span>
 
 <span class="s s-Atom">class</span> <span class="nv">BaseFinder</span><span class="p">(</span><span class="s s-Atom">metaclass</span><span class="o">=</span><span class="nv">ABCMeta</span><span class="p">)</span><span class="s s-Atom">:</span>
 
@@ -2756,6 +2816,36 @@
 </code></pre></div>
 
 
+<h2 id="functions">Functions</h2>
+<h3 id="chdir">chdir</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">chdir</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]</span>
+</code></pre></div>
+
+
+<p>Context manager for changing dir and restoring previous workdir after exit.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@contextmanager</span><span class="w"></span>
+
+<span class="n">def</span><span class="w"> </span><span class="n">chdir</span><span class="p">(</span><span class="k">path</span><span class="err">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">None</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Context manager for changing dir and restoring previous workdir after exit.&quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">curdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">os</span><span class="p">.</span><span class="n">chdir</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">yield</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">finally</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">os</span><span class="p">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">curdir</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+
+</details>
 <h2 id="classes">Classes</h2>
 <h3 id="basefinder">BaseFinder</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseFinder</span><span class="p">(</span>

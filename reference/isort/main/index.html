@@ -2582,6 +2582,18 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--show-files&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;show_files&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;See the files isort will be ran against with the current config options.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;--honor-noqa&quot;</span><span class="p">,</span>
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;honor_noqa&quot;</span><span class="p">,</span>
@@ -2892,6 +2904,12 @@
 
     <span class="n">show_config</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_config&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
+    <span class="n">show_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_files&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_config</span> <span class="ow">and</span> <span class="n">show_files</span><span class="p">:</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error: either specify show-config or show-files not both.&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="s2">&quot;settings_path&quot;</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;settings_path&quot;</span><span class="p">]):</span>
@@ -2978,6 +2996,10 @@
 
     <span class="k">elif</span> <span class="n">file_names</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]:</span>
 
+        <span class="k">if</span> <span class="n">show_files</span><span class="p">:</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error: can&#39;t show files for streaming input.&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
 
             <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_stream</span><span class="p">(</span>
@@ -3029,6 +3051,14 @@
             <span class="n">file_names</span> <span class="o">=</span> <span class="n">filtered_files</span>
 
         <span class="n">file_names</span> <span class="o">=</span> <span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="n">broken</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_files</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">:</span>
+
+                <span class="k">print</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+            <span class="k">return</span>
 
         <span class="n">num_skipped</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -3315,6 +3345,12 @@
 
 <span class="w">    </span><span class="nl">show_config</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;show_config&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
+<span class="w">    </span><span class="nl">show_files</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="ss">&quot;show_files&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">show_config</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nl">show_files</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Error: either specify show-config or show-files not both.&quot;</span><span class="p">)</span><span class="w"></span>
+
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;settings_path&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;settings_path&quot;</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
@@ -3401,6 +3437,10 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">[</span><span class="n">&quot;-&quot;</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">show_files</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Error: can&#39;t show files for streaming input.&quot;</span><span class="p">)</span><span class="w"></span>
+
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">check</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">check_stream</span><span class="p">(</span><span class="w"></span>
@@ -3452,6 +3492,14 @@
 <span class="w">            </span><span class="n">file_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filtered_files</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">file_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iter_source_code</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="n">broken</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">show_files</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="nf">file_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">file_names</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">print</span><span class="p">(</span><span class="nf">file_name</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">num_skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
 
