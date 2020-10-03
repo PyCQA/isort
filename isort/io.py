@@ -4,7 +4,9 @@ import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Iterator, NamedTuple, TextIO, Union
+from typing import Callable, Iterator, NamedTuple, TextIO, Union
+
+from isort.exceptions import UnsupportedEncoding
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
@@ -15,8 +17,15 @@ class File(NamedTuple):
     encoding: str
 
     @staticmethod
+    def detect_encoding(filename: str, readline: Callable[[], bytes]):
+        try:
+            return tokenize.detect_encoding(readline)[0]
+        except Exception:
+            raise UnsupportedEncoding(filename)
+
+    @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        encoding, _ = tokenize.detect_encoding(BytesIO(contents.encode("utf-8")).readline)
+        encoding = File.detect_encoding(filename, BytesIO(contents.encode("utf-8")).readline)
         return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
 
     @property
@@ -30,7 +39,7 @@ class File(NamedTuple):
         """
         buffer = open(filename, "rb")
         try:
-            encoding, _ = tokenize.detect_encoding(buffer.readline)
+            encoding = File.detect_encoding(filename, buffer.readline)
             buffer.seek(0)
             text = TextIOWrapper(buffer, encoding, line_buffering=True, newline="")
             text.mode = "r"  # type: ignore
