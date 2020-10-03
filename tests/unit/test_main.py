@@ -724,14 +724,15 @@ import sys
 def test_unsupported_encodings(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
     # fmt: off
-    tmp_file.write(
-        u'''
+    tmp_file.write_text(
+        '''
 # [syntax-error]\
 # -*- coding: IBO-8859-1 -*-
 """ check correct unknown encoding declaration
 """
 __revision__ = 'יייי'
-'''
+''',
+        encoding="utf8"
     )
     # fmt: on
 
