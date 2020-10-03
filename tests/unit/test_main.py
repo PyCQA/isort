@@ -70,6 +70,8 @@ def test_parse_args():
     assert main.parse_args(["--dt"]) == {"order_by_type": False}
     assert main.parse_args(["--only-sections"]) == {"only_sections": True}
     assert main.parse_args(["--os"]) == {"only_sections": True}
+    assert main.parse_args(["--om"]) == {"only_modified": True}
+    assert main.parse_args(["--only-modified"]) == {"only_modified": True}
 
 
 def test_ascii_art(capsys):
@@ -749,5 +751,104 @@ __revision__ = 'יייי'
 
     main.main([str(tmp_file), str(normal_file), "--verbose"])
     out, error = capsys.readouterr()
+
+    # ensures that only-modified flag works with stdin
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for a returned THIRDPARTY" not in out
+    assert "else-type place_module for b returned THIRDPARTY" not in out
+
+
+def test_only_modified_flag(tmpdir, capsys):
+    # ensures there is no verbose output for correct files with only-modified flag
+
+    file1 = tmpdir.join("file1.py")
+    file1.write(
+        """
+import a
+import b
+"""
+    )
+
+    file2 = tmpdir.join("file2.py")
+    file2.write(
+        """
+import math
+
+import pandas as pd
+"""
+    )
+
+    main.main([str(file1), str(file2), "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert (
+        out
+        == f"""
+                 _                 _
+                (_) ___  ___  _ __| |_
+                | |/ _/ / _ \\/ '__  _/
+                | |\\__ \\/\\_\\/| |  | |_
+                |_|\\___/\\___/\\_/   \\_/
+
+      isort your imports, so you don't have to.
+
+                    VERSION {__version__}
+
+"""
+    )
+
+    assert not error
+
+    # ensures that verbose output is only for modified file(s) with only-modified flag
+
+    file3 = tmpdir.join("file3.py")
+    file3.write(
+        """
+import sys
+import os
+"""
+    )
+
+    main.main([str(file1), str(file2), str(file3), "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for sys returned STDLIB" in out
+    assert "else-type place_module for os returned STDLIB" in out
+    assert "else-type place_module for math returned STDLIB" not in out
+    assert "else-type place_module for pandas returned THIRDPARTY" not in out
+
+    assert not error
+
+    # ensures that the behaviour is consistent for check flag with only-modified flag
+
+    main.main([str(file1), str(file2), "--check-only", "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert (
+        out
+        == f"""
+                 _                 _
+                (_) ___  ___  _ __| |_
+                | |/ _/ / _ \\/ '__  _/
+                | |\\__ \\/\\_\\/| |  | |_
+                |_|\\___/\\___/\\_/   \\_/
+
+      isort your imports, so you don't have to.
+
+                    VERSION {__version__}
+
+"""
+    )
 
     assert not error

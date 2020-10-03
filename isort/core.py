@@ -67,6 +67,7 @@ def process(
     made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
+    verbose_output: List[str] = []
 
     if config.float_to_top:
         new_input = ""
@@ -87,6 +88,7 @@ def process(
                         current += line_separator + line_separator.join(add_imports)
                         add_imports = []
                     parsed = parse.file_contents(current, config=config)
+                    verbose_output += parsed.verbose_output
                     extra_space = ""
                     while current and current[-1] == "\n":
                         extra_space += "\n"
@@ -325,8 +327,11 @@ def process(
                             line[len(indent) :] for line in import_section.splitlines(keepends=True)
                         )
 
+                    parsed_content = parse.file_contents(import_section, config=config)
+                    verbose_output += parsed_content.verbose_output
+
                     sorted_import_section = output.sorted_imports(
-                        parse.file_contents(import_section, config=config),
+                        parsed_content,
                         _indented_config(config, indent),
                         extension,
                         import_type="cimport" if cimports else "import",
@@ -383,6 +388,10 @@ def process(
 
                         output_stream.write(new_line)
                         stripped_line = new_line.strip().split("#")[0]
+
+    if made_changes and config.only_modified:
+        for output_str in verbose_output:
+            print(output_str)
 
     return made_changes
 

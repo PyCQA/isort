@@ -716,6 +716,81 @@ import os
     )
 
 
+def test_isort_float_to_top_with_sort_on_off_tests():
+    """Characterization test for current behaviour of float-to-top on isort: on/off sections.
+    - imports in isort:off sections stay where they are
+    - imports in isort:on sections float up, but to the top of the isort:on section (not the
+      top of the file)"""
+    assert (
+        isort.code(
+            """
+def foo():
+    pass
+
+import a
+
+# isort: off
+import stays_in_section
+
+x = 1
+
+import stays_in_place
+
+# isort: on
+
+def bar():
+    pass
+
+import floats_to_top_of_section
+
+def baz():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """import a
+
+
+def foo():
+    pass
+
+# isort: off
+import stays_in_section
+
+x = 1
+
+import stays_in_place
+
+# isort: on
+import floats_to_top_of_section
+
+
+def bar():
+    pass
+
+
+def baz():
+    pass
+"""
+    )
+
+    to_sort = """# isort: off
+
+def foo():
+    pass
+
+import stays_in_place
+import no_float_to_to_top
+import no_ordering
+
+def bar():
+    pass
+"""
+
+    # No changes if isort is off
+    assert isort.code(to_sort, float_to_top=True) == to_sort
+
+
 def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
     """isort should float existing imports to the top, if they are currently below the top.
     See: https://github.com/PyCQA/isort/issues/1382

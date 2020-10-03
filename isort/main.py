@@ -768,6 +768,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "Imports are unaltered and keep their relative positions within the different sections.",
     )
 
+    parser.add_argument(
+        "--only-modified",
+        "--om",
+        dest="only_modified",
+        action="store_true",
+        help="Suppresses verbose output for non-modified files.",
+    )
+
     return parser
 
 
