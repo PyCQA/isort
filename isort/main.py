@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set
 from warnings import warn
 
 from . import __version__, api, sections
-from .exceptions import FileSkipped
+from .exceptions import FileSkipped, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
@@ -67,9 +67,10 @@ Visit https://pycqa.github.io/isort/ for complete information about how to use i
 
 
 class SortAttempt:
-    def __init__(self, incorrectly_sorted: bool, skipped: bool) -> None:
+    def __init__(self, incorrectly_sorted: bool, skipped: bool, supported_encoding: bool) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
+        self.supported_encoding = supported_encoding
 
 
 def sort_imports(
@@ -88,7 +89,7 @@ def sort_imports(
                 incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
             except FileSkipped:
                 skipped = True
-            return SortAttempt(incorrectly_sorted, skipped)
+            return SortAttempt(incorrectly_sorted, skipped, True)
         else:
             try:
                 incorrectly_sorted = not api.sort_file(
@@ -100,10 +101,14 @@ def sort_imports(
                 )
             except FileSkipped:
                 skipped = True
-            return SortAttempt(incorrectly_sorted, skipped)
+            return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
+    except UnsupportedEncoding:
+        if config.verbose:
+            warn(f"Encoding not supported for {file_name}")
+        return SortAttempt(incorrectly_sorted, skipped, False)
     except Exception:
         printer = create_terminal_printer(color=config.color_output)
         printer.error(
@@ -860,6 +865,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     wrong_sorted_files = False
     all_attempt_broken = False
+    no_valid_encodings = False
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -909,6 +915,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             return
         num_skipped = 0
         num_broken = 0
+        num_invalid_encoding = 0
         if config.verbose:
             print(ASCII_ART)
 
@@ -942,6 +949,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
         # If any files passed in are missing considered as error, should be removed
         is_no_attempt = True
+        any_encoding_valid = False
         for sort_attempt in attempt_iterator:
             if not sort_attempt:
                 continue  # pragma: no cover - shouldn't happen, satisfies type constraint
@@ -952,6 +960,12 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 num_skipped += (
                     1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
                 )
+
+            if not sort_attempt.supported_encoding:
+                num_invalid_encoding += 1
+            else:
+                any_encoding_valid = True
+
             is_no_attempt = False
 
         num_skipped += len(skipped)
@@ -973,6 +987,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
         if num_broken > 0 and is_no_attempt:
             all_attempt_broken = True
+        if num_invalid_encoding > 0 and not any_encoding_valid:
+            no_valid_encodings = True
 
     if not config.quiet and (remapped_deprecated_args or deprecated_flags):
         if remapped_deprecated_args:
@@ -994,6 +1010,11 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         sys.exit(1)
 
     if all_attempt_broken:
+        sys.exit(1)
+
+    if no_valid_encodings:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error("No valid encodings.")
         sys.exit(1)
 
 

@@ -722,6 +722,36 @@ import sys
 """
     )
 
+
+def test_unsupported_encodings(tmpdir, capsys):
+    tmp_file = tmpdir.join("file.py")
+    # fmt: off
+    tmp_file.write_text(
+        '''
+# [syntax-error]\
+# -*- coding: IBO-8859-1 -*-
+""" check correct unknown encoding declaration
+"""
+__revision__ = 'יייי'
+''',
+        encoding="utf8"
+    )
+    # fmt: on
+
+    # should throw an error if only unsupported encoding provided
+    with pytest.raises(SystemExit):
+        main.main([str(tmp_file)])
+    out, error = capsys.readouterr()
+
+    assert "No valid encodings." in error
+
+    # should not throw an error if at least one valid encoding found
+    normal_file = tmpdir.join("file1.py")
+    normal_file.write("import os\nimport sys")
+
+    main.main([str(tmp_file), str(normal_file), "--verbose"])
+    out, error = capsys.readouterr()
+
     # ensures that only-modified flag works with stdin
     input_content = TextIOWrapper(
         BytesIO(

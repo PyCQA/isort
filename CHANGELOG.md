@@ -9,6 +9,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1494: Default to sorting imports within `.pxd` files.
   - Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.
   - Implemented #1511: Support for easily seeing all files isort will be ran against using `isort . --show-files`.
+  - Implemented #1487: Improved handling of encoding errors.
   - Improved handling of unsupported configuration option errors (see #1475).
   - Fixed #1463: Better interactive documentation for future option.
   - Fixed #1461: Quiet config option not respected by file API in some circumstances.

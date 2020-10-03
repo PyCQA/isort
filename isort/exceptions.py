@@ -1,5 +1,6 @@
 """All isort specific exception classes should be defined here"""
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, Union
 
 from .profiles import profiles
 
@@ -157,3 +158,14 @@ class UnsupportedSettings(ISortError):
             "https://pycqa.github.io/isort/docs/configuration/options/.\n"
         )
         self.unsupported_settings = unsupported_settings
+
+
+class UnsupportedEncoding(ISortError):
+    """Raised when isort encounters an encoding error while trying to read a file"""
+
+    def __init__(
+        self,
+        filename: Union[str, Path],
+    ):
+        super().__init__(f"Unknown or unsupported encoding in {filename}")
+        self.filename = filename
