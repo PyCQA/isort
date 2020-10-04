@@ -722,6 +722,22 @@ import sys
 """
     )
 
+    # ensures that only-modified flag works with stdin
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for a returned THIRDPARTY" not in out
+    assert "else-type place_module for b returned THIRDPARTY" not in out
+
 
 def test_unsupported_encodings(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
@@ -751,22 +767,6 @@ __revision__ = 'יייי'
 
     main.main([str(tmp_file), str(normal_file), "--verbose"])
     out, error = capsys.readouterr()
-
-    # ensures that only-modified flag works with stdin
-    input_content = TextIOWrapper(
-        BytesIO(
-            b"""
-import a
-import b
-"""
-        )
-    )
-
-    main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
-    out, error = capsys.readouterr()
-
-    assert "else-type place_module for a returned THIRDPARTY" not in out
-    assert "else-type place_module for b returned THIRDPARTY" not in out
 
 
 def test_only_modified_flag(tmpdir, capsys):
@@ -852,3 +852,20 @@ import os
     )
 
     assert not error
+
+    file4 = tmpdir.join("file4.py")
+    file4.write(
+        """
+import sys
+import os
+"""
+    )
+
+    with pytest.raises(SystemExit):
+        main.main([str(file2), str(file4), "--check-only", "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for sys returned STDLIB" in out
+    assert "else-type place_module for os returned STDLIB" in out
+    assert "else-type place_module for math returned STDLIB" not in out
+    assert "else-type place_module for pandas returned THIRDPARTY" not in out
