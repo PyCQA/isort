@@ -51,7 +51,7 @@ def test_git_hook(src_dir):
             with patch("isort.api.sort_file", MagicMock(return_value=False)) as api_mock:
                 hooks.git_hook(modify=True)
                 api_mock.assert_called_once()
-                assert api_mock.call_args.args[0] == mock_main_py.return_value[0]
+                assert api_mock.call_args[0][0] == mock_main_py.return_value[0]
 
     # Test with sorted file returned from git and modify=False
     with patch("isort.hooks.get_lines", mock_main_py):
