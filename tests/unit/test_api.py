@@ -1,5 +1,6 @@
 """Tests the isort API module"""
 from io import StringIO
+import os
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,8 +9,8 @@ from isort import api
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
-fixed_content = "import a\nimport b\n"
-fixed_diff = "\n+import a\n import b\n-import a\n"
+fixed_content = "import a\nimport b\n".replace('\n', os.linesep)
+fixed_diff = "\n+import a\n import b\n-import a\n".replace ('\n', os.linesep)
 
 
 @pytest.fixture
