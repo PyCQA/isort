@@ -64,7 +64,7 @@ def section_key(
 
     if reverse_relative and line.startswith("from ."):
         match = re.match(r"^from (\.+)\s*(.*)", line)
-        if match:
+        if match:  # pragma: no cover - regex always matches if line starts with "from ."
             line = f"from {' '.join(match.groups())}"
     if group_by_package and line.strip().startswith("from"):
         line = line.split(" import", 1)[0]

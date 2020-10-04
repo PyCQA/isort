@@ -31,13 +31,13 @@ class ISortCommand(setuptools.Command):
     def distribution_files(self) -> Iterator[str]:
         """Find distribution packages."""
         # This is verbatim from flake8
-        if self.distribution.packages:
+        if self.distribution.packages:  # pragma: no cover
             package_dirs = self.distribution.package_dir or {}
             for package in self.distribution.packages:
                 pkg_dir = package
                 if package in package_dirs:
                     pkg_dir = package_dirs[package]
-                elif "" in package_dirs:
+                elif "" in package_dirs:  # pragma: no cover
                     pkg_dir = package_dirs[""] + os.path.sep + pkg_dir
                 yield pkg_dir.replace(".", os.path.sep)
 
