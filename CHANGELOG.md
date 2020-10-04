@@ -16,8 +16,10 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1482: pylama integration is not working correctly out-of-the-box.
   - Fixed #1492: --check does not work with stdin source.
   - Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
+  - Fixed #1525: Some warnings can't be disabled with --quiet.
 Potentially breaking changes:
   - Fixed #1486: "Google" profile is not quite Google style.
+  - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.
 
   Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1472: Full testing of stdin CLI Options
