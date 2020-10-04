@@ -4825,6 +4825,12 @@ def test_deprecated_settings():
         assert isort.code("hi", not_skip=True)
 
 
+def test_deprecated_settings_no_warn_in_quiet_mode(recwarn):
+    """Test to ensure isort does NOT warn in quiet mode even though settings are deprecated"""
+    assert isort.code("hi", not_skip=True, quiet=True)
+    assert not recwarn
+
+
 def test_only_sections() -> None:
     """Test to ensure that the within sections relative position of imports are maintained"""
     test_input = (

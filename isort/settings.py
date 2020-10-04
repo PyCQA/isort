@@ -266,6 +266,11 @@ class Config(_Config):
             super().__init__(**config_vars)  # type: ignore
             return
 
+        # We can't use self.quiet to conditionally show warnings before super.__init__() is called
+        # at the end of this method. _Config is also frozen so setting self.quiet isn't possible.
+        # Therefore we extract quiet early here in a variable and use that in warning conditions.
+        quiet = config_overrides.get("quiet", False)
+
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
         config_settings: Dict[str, Any]
@@ -276,7 +281,7 @@ class Config(_Config):
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
             project_root = os.path.dirname(settings_file)
-            if not config_settings:
+            if not config_settings and not quiet:
                 warn(
                     f"A custom settings file was specified: {settings_file} but no configuration "
                     "was found inside. This can happen when [settings] is used as the config "
@@ -343,7 +348,7 @@ class Config(_Config):
                 combined_config.pop(key)
                 if maps_to_section in KNOWN_SECTION_MAPPING:
                     section_name = f"known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}"
-                    if section_name in combined_config and not self.quiet:
+                    if section_name in combined_config and not quiet:
                         warn(
                             f"Can't set both {key} and {section_name} in the same config file.\n"
                             f"Default to {section_name} if unsure."
@@ -355,10 +360,7 @@ class Config(_Config):
                         combined_config[section_name] = frozenset(value)
                 else:
                     known_other[import_heading] = frozenset(value)
-                    if (
-                        maps_to_section not in combined_config.get("sections", ())
-                        and not self.quiet
-                    ):
+                    if maps_to_section not in combined_config.get("sections", ()) and not quiet:
                         warn(
                             f"`{key}` setting is defined, but {maps_to_section} is not"
                             " included in `sections` config option:"
@@ -425,7 +427,7 @@ class Config(_Config):
         if deprecated_options_used:
             for deprecated_option in deprecated_options_used:
                 combined_config.pop(deprecated_option)
-            if not self.quiet:
+            if not quiet:
                 warn(
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
