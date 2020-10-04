@@ -31,17 +31,34 @@ def test_git_hook(src_dir):
             "HEAD",
         ]
 
-    # Test with incorrectly sorted file returned from git
+    # Test that non python files aren't processed
     with patch(
-        "isort.hooks.get_lines", MagicMock(return_value=[os.path.join(src_dir, "main.py")])
-    ) as run_mock:
+        "isort.hooks.get_lines",
+        MagicMock(return_value=["README.md", "setup.cfg", "LICDENSE", "mkdocs.yml", "test"]),
+    ):
+        with patch("subprocess.run", MagicMock()) as run_mock:
+            hooks.git_hook(modify=True)
+            run_mock.assert_not_called()
 
-        class FakeProcessResponse(object):
-            stdout = b"import b\nimport a"
+    mock_main_py = MagicMock(return_value=[os.path.join(src_dir, "main.py")])
 
-        with patch("subprocess.run", MagicMock(return_value=FakeProcessResponse())) as run_mock:
-            with patch("isort.api", MagicMock(return_value=False)):
+    mock_imperfect = MagicMock()
+    mock_imperfect.return_value.stdout = b"import b\nimport a"
+
+    # Test with incorrectly sorted file returned from git
+    with patch("isort.hooks.get_lines", mock_main_py):
+        with patch("subprocess.run", mock_imperfect):
+            with patch("isort.api.sort_file", MagicMock(return_value=False)) as api_mock:
                 hooks.git_hook(modify=True)
+                api_mock.assert_called_once()
+                assert api_mock.call_args.args[0] == mock_main_py.return_value[0]
+
+    # Test with sorted file returned from git and modify=False
+    with patch("isort.hooks.get_lines", mock_main_py):
+        with patch("subprocess.run", mock_imperfect):
+            with patch("isort.api.sort_file", MagicMock(return_value=False)) as api_mock:
+                hooks.git_hook(modify=False)
+                api_mock.assert_not_called()
 
     # Test with skipped file returned from git
     with patch(
