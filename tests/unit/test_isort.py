@@ -980,6 +980,7 @@ def test_forced_separate() -> None:
         "from django.db import models\n"
         "from django.db.models.fields import FieldDoesNotExist\n"
         "from django.utils import six\n"
+        "\n"
         "from django.utils.deprecation import RenameMethodsBase\n"
         "from django.utils.encoding import force_str, force_text\n"
         "from django.utils.http import urlencode\n"
@@ -993,7 +994,7 @@ def test_forced_separate() -> None:
     assert (
         isort.code(
             code=test_input,
-            forced_separate=["django.contrib"],
+            forced_separate=["django.utils.*", "django.contrib"],
             known_third_party=["django"],
             line_length=120,
             order_by_type=False,
@@ -1003,7 +1004,7 @@ def test_forced_separate() -> None:
     assert (
         isort.code(
             code=test_input,
-            forced_separate=["django.contrib"],
+            forced_separate=["django.utils.*", "django.contrib"],
             known_third_party=["django"],
             line_length=120,
             order_by_type=False,

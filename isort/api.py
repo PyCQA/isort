@@ -354,7 +354,7 @@ def sort_file(
                     try:  # Python 3.8+: use `missing_ok=True` instead of try except.
                         tmp_file.unlink()
                     except FileNotFoundError:
-                        pass
+                        pass  # pragma: no cover
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
