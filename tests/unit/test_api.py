@@ -64,7 +64,7 @@ def test_check_file_no_changes(capsys, tmpdir) -> None:
 def test_check_file_with_changes(capsys, imperfect) -> None:
     assert not api.check_file(imperfect, show_diff=True)
     out, _ = capsys.readouterr()
-    assert fixed_diff in out
+    assert fixed_diff.replace("\n", os.linesep) in out
 
 
 def test_sorted_imports_multiple_configs() -> None:
