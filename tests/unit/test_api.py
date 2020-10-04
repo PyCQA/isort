@@ -9,8 +9,8 @@ from isort import api
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
-fixed_content = "import a\nimport b\n".replace("\n", os.linesep)
-fixed_diff = "\n+import a\n import b\n-import a\n".replace("\n", os.linesep)
+fixed_content = "import a\nimport b\n"
+fixed_diff = "\n+import a\n import b\n-import a\n"
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def test_sort_file(imperfect) -> None:
 def test_sort_file_to_stdout(capsys, imperfect) -> None:
     assert api.sort_file(imperfect, write_to_stdout=True)
     out, _ = capsys.readouterr()
-    assert out == fixed_content
+    assert out == fixed_content.replace("\n", os.linesep)
 
 
 def test_other_ask_to_apply(imperfect) -> None:
