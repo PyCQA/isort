@@ -30,6 +30,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 
  - **multi_line_output**: `3`
  - **force_grid_wrap**: `2`
+ - **lines_after_imports**: `2`
 
 #google
 
