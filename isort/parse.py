@@ -336,10 +336,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in _strip_syntax(import_string).split()
             ]
-            straight_import = True
+
             attach_comments_to: Optional[List[Any]] = None
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
-                straight_import = False
+                straight_imports = set()
                 while "as" in just_imports:
                     nested_module = None
                     as_index = just_imports.index("as")
@@ -379,6 +379,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 module, []
                             )
                     del just_imports[as_index : as_index + 2]
+            else:
+                straight_imports = set(just_imports[1:])
 
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
