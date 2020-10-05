@@ -17,7 +17,9 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1492: --check does not work with stdin source.
   - Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
   - Fixed #1525: Some warnings can't be disabled with --quiet.
-Potentially breaking changes:
+  - Fixed #1523: in rare cases isort can ignore direct from import if as import is also on same line.
+
+  Potentially breaking changes:
   - Fixed #1486: "Google" profile is not quite Google style.
   - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.
 
