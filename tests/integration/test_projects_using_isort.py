@@ -135,3 +135,8 @@ def test_pyramid(tmpdir):
         str(target_dir)
         for target_dir in (tmpdir / "src" / "pyramid", tmpdir / "tests", tmpdir / "setup.py")
     )
+
+
+def test_products_zopetree(tmpdir):
+    git_clone("https://github.com/jugmac00/Products.ZopeTree.git", tmpdir)
+    run_isort([str(tmpdir)])
