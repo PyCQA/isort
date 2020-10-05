@@ -1273,3 +1273,14 @@ def d():
 ''',
         show_diff=True,
     )
+
+
+def test_isort_should_keep_all_as_and_non_as_imports_issue_1523():
+    """isort should keep as and non-as imports of the same path that happen to exist within the
+    same statement.
+    See: https://github.com/PyCQA/isort/issues/1523.
+    """
+    assert isort.check_code(
+        """
+from selenium.webdriver import Remote, Remote as Driver
+""", show_diff=True, combine_as_imports=True)
