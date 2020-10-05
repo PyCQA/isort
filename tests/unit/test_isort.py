@@ -966,6 +966,29 @@ def test_check_newline_in_imports(capsys) -> None:
     out, _ = capsys.readouterr()
     assert "SUCCESS" in out
 
+    # if the verbose is only on modified outputs no output will be given
+    assert api.check_code_string(
+        code=test_input,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=20,
+        verbose=True,
+        only_modified=True,
+    )
+    out, _ = capsys.readouterr()
+    assert not out
+
+    # we can make the input invalid to again see output
+    test_input = "from lib1 import (\n    sub2,\n    sub1,\n    sub3\n)\n"
+    assert not api.check_code_string(
+        code=test_input,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=20,
+        verbose=True,
+        only_modified=True,
+    )
+    out, _ = capsys.readouterr()
+    assert out
+
 
 def test_forced_separate() -> None:
     """Ensure that forcing certain sub modules to show separately works as expected."""

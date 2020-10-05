@@ -338,8 +338,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             ]
 
             attach_comments_to: Optional[List[Any]] = None
+            direct_imports = just_imports[1:]
+            straight_import = True
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
-                straight_imports = set()
+                straight_import = False
                 while "as" in just_imports:
                     nested_module = None
                     as_index = just_imports.index("as")
@@ -348,6 +350,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         top_level_module = just_imports[0]
                         module = top_level_module + "." + nested_module
                         as_name = just_imports[as_index + 1]
+                        direct_imports.remove(nested_module)
+                        direct_imports.remove(as_name)
+                        direct_imports.remove("as")
                         if nested_module == as_name and config.remove_redundant_aliases:
                             pass
                         elif as_name not in as_map["from"][module]:
@@ -379,8 +384,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 module, []
                             )
                     del just_imports[as_index : as_index + 2]
-            else:
-                straight_imports = set(just_imports[1:])
 
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
@@ -435,11 +438,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 if import_from not in root:
                     root[import_from] = OrderedDict(
-                        (module, straight_import) for module in just_imports
+                        (module, module in direct_imports) for module in just_imports
                     )
                 else:
                     root[import_from].update(
-                        (module, straight_import | root[import_from].get(module, False))
+                        (module, root[import_from].get(module, False) or module in direct_imports)
                         for module in just_imports
                     )
 
