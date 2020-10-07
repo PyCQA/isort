@@ -716,6 +716,81 @@ import os
     )
 
 
+def test_isort_float_to_top_with_sort_on_off_tests():
+    """Characterization test for current behaviour of float-to-top on isort: on/off sections.
+    - imports in isort:off sections stay where they are
+    - imports in isort:on sections float up, but to the top of the isort:on section (not the
+      top of the file)"""
+    assert (
+        isort.code(
+            """
+def foo():
+    pass
+
+import a
+
+# isort: off
+import stays_in_section
+
+x = 1
+
+import stays_in_place
+
+# isort: on
+
+def bar():
+    pass
+
+import floats_to_top_of_section
+
+def baz():
+    pass
+""",
+            float_to_top=True,
+        )
+        == """import a
+
+
+def foo():
+    pass
+
+# isort: off
+import stays_in_section
+
+x = 1
+
+import stays_in_place
+
+# isort: on
+import floats_to_top_of_section
+
+
+def bar():
+    pass
+
+
+def baz():
+    pass
+"""
+    )
+
+    to_sort = """# isort: off
+
+def foo():
+    pass
+
+import stays_in_place
+import no_float_to_to_top
+import no_ordering
+
+def bar():
+    pass
+"""
+
+    # No changes if isort is off
+    assert isort.code(to_sort, float_to_top=True) == to_sort
+
+
 def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
     """isort should float existing imports to the top, if they are currently below the top.
     See: https://github.com/PyCQA/isort/issues/1382
@@ -910,4 +985,305 @@ def foo():
 def bar():
     pass
 '''
+    )
+
+
+def test_empty_float_to_top_shouldnt_error_issue_1453():
+    """isort shouldn't error when float to top is set with a mostly empty file"""
+    assert isort.check_code(
+        """
+""",
+        show_diff=True,
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """
+""",
+        show_diff=True,
+    )
+
+
+def test_import_sorting_shouldnt_be_endless_with_headers_issue_1454():
+    """isort should never enter an endless sorting loop.
+    See: https://github.com/PyCQA/isort/issues/1454
+    """
+    assert isort.check_code(
+        """
+
+# standard library imports
+import sys
+
+try:
+    # Comment about local lib
+    # related third party imports
+    from local_lib import stuff
+except ImportError as e:
+    pass
+""",
+        known_third_party=["local_lib"],
+        import_heading_thirdparty="related third party imports",
+        show_diff=True,
+    )
+
+
+def test_isort_should_leave_non_import_from_lines_alone_issue_1488():
+    """isort should never mangle non-import from statements.
+    See: https://github.com/PyCQA/isort/issues/1488
+    """
+    raise_from_should_be_ignored = """
+raise SomeException("Blah") \\
+    from exceptionsInfo.popitem()[1]
+"""
+    assert isort.check_code(raise_from_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored = """
+def generator_function():
+    yield \\
+        from other_function()[1]
+"""
+    assert isort.check_code(yield_from_should_be_ignored, show_diff=True)
+
+    wont_ignore_comment_contiuation = """
+# one
+
+# two
+
+
+def function():
+    # three \\
+    import b
+    import a
+"""
+    assert (
+        isort.code(wont_ignore_comment_contiuation)
+        == """
+# one
+
+# two
+
+
+def function():
+    # three \\
+    import a
+    import b
+"""
+    )
+
+    will_ignore_if_non_comment_continuation = """
+# one
+
+# two
+
+
+def function():
+    raise \\
+    import b
+    import a
+"""
+    assert isort.check_code(will_ignore_if_non_comment_continuation, show_diff=True)
+
+    yield_from_parens_should_be_ignored = """
+def generator_function():
+    (
+     yield
+     from other_function()[1]
+    )
+"""
+    assert isort.check_code(yield_from_parens_should_be_ignored, show_diff=True)
+
+    yield_from_lots_of_parens_and_space_should_be_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+
+
+
+     from other_function()[1]
+    )))))))))))))
+    )))
+"""
+    assert isort.check_code(yield_from_lots_of_parens_and_space_should_be_ignored, show_diff=True)
+
+    yield_from_should_be_ignored_when_following_import_statement = """
+def generator_function():
+    import os
+
+    yield \\
+    from other_function()[1]
+"""
+    assert isort.check_code(
+        yield_from_should_be_ignored_when_following_import_statement, show_diff=True
+    )
+
+    yield_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     yield
+"""
+    assert isort.check_code(yield_at_file_end_ignored, show_diff=True)
+
+    raise_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise (
+"""
+    assert isort.check_code(raise_at_file_end_ignored, show_diff=True)
+
+    raise_from_at_file_end_ignored = """
+def generator_function():
+    (
+    (
+    ((((
+    (((((
+    ((
+    (((
+     raise \\
+     from \\
+"""
+    assert isort.check_code(raise_from_at_file_end_ignored, show_diff=True)
+
+
+def test_isort_float_to_top_correctly_identifies_single_line_comments_1499():
+    """Test to ensure isort correctly handles the case where float to top is used
+    to push imports to the top and the top comment is a multiline type but only
+    one line.
+    See: https://github.com/PyCQA/isort/issues/1499
+    """
+    assert (
+        isort.code(
+            '''#!/bin/bash
+"""My comment"""
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+''',
+            float_to_top=True,
+        )
+        == (
+            '''#!/bin/bash
+"""My comment"""
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+'''
+        )
+    )
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+def foo():
+    pass
+
+import a
+
+def bar():
+    pass
+""",
+            float_to_top=True,
+        )
+        == (
+            """#!/bin/bash
+'''My comment'''
+import a
+
+
+def foo():
+    pass
+
+
+def bar():
+    pass
+"""
+        )
+    )
+
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
+
+
+def test_isort_shouldnt_mangle_from_multi_line_string_issue_1507():
+    """isort was seen mangling lines that happened to contain the word from after
+    a yield happened to be in a file. Clearly this shouldn't happen.
+    See: https://github.com/PyCQA/isort/issues/1507.
+    """
+    assert isort.check_code(
+        '''
+def a():
+    yield f(
+        """
+        select %s from (values %%s) as t(%s)
+        """
+    )
+
+def b():
+    return (
+        """
+        select name
+        from foo
+        """
+        % main_table
+    )
+
+def c():
+    query = (
+        """
+        select {keys}
+        from (values %s) as t(id)
+        """
+    )
+
+def d():
+    query = f"""select t.id
+                from {table} t
+                {extra}"""
+''',
+        show_diff=True,
+    )
+
+
+def test_isort_should_keep_all_as_and_non_as_imports_issue_1523():
+    """isort should keep as and non-as imports of the same path that happen to exist within the
+    same statement.
+    See: https://github.com/PyCQA/isort/issues/1523.
+    """
+    assert isort.check_code(
+        """
+from selenium.webdriver import Remote, Remote as Driver
+""",
+        show_diff=True,
+        combine_as_imports=True,
     )

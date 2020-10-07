@@ -14,6 +14,14 @@ class TestConfig:
     def test_init(self):
         assert Config()
 
+    def test_init_unsupported_settings_fails_gracefully(self):
+        with pytest.raises(exceptions.UnsupportedSettings):
+            Config(apply=True)
+        try:
+            Config(apply=True)
+        except exceptions.UnsupportedSettings as error:
+            assert error.unsupported_settings == {"apply": {"value": True, "source": "runtime"}}
+
     def test_known_settings(self):
         assert Config(known_third_party=["one"]).known_third_party == frozenset({"one"})
         assert Config(known_thirdparty=["two"]).known_third_party == frozenset({"two"})
@@ -41,6 +49,7 @@ class TestConfig:
         assert self.instance.is_supported_filetype("file.py")
         assert self.instance.is_supported_filetype("file.pyi")
         assert self.instance.is_supported_filetype("file.pyx")
+        assert self.instance.is_supported_filetype("file.pxd")
         assert not self.instance.is_supported_filetype("file.pyc")
         assert not self.instance.is_supported_filetype("file.txt")
         assert not self.instance.is_supported_filetype("file.pex")

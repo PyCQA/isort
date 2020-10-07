@@ -58,7 +58,6 @@ def process(
     contains_imports: bool = False
     in_top_comment: bool = False
     first_import_section: bool = True
-    section_comments = [f"# {heading}" for heading in config.import_headings.values()]
     indent: str = ""
     isort_off: bool = False
     code_sorting: Union[bool, str] = False
@@ -68,6 +67,7 @@ def process(
     made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
+    verbose_output: List[str] = []
 
     if config.float_to_top:
         new_input = ""
@@ -84,9 +84,13 @@ def process(
                 if line == "# isort: off\n":
                     isort_off = True
                 if current:
+                    if add_imports:
+                        current += line_separator + line_separator.join(add_imports)
+                        add_imports = []
                     parsed = parse.file_contents(current, config=config)
+                    verbose_output += parsed.verbose_output
                     extra_space = ""
-                    while current[-1] == "\n":
+                    while current and current[-1] == "\n":
                         extra_space += "\n"
                         current = current[:-1]
                     extra_space = extra_space.replace("\n", "", 1)
@@ -146,11 +150,11 @@ def process(
             if (
                 (index == 0 or (index in (1, 2) and not contains_imports))
                 and stripped_line.startswith("#")
-                and stripped_line not in section_comments
+                and stripped_line not in config.section_comments
             ):
                 in_top_comment = True
             elif in_top_comment:
-                if not line.startswith("#") or stripped_line in section_comments:
+                if not line.startswith("#") or stripped_line in config.section_comments:
                     in_top_comment = False
                     first_comment_index_end = index - 1
 
@@ -210,8 +214,13 @@ def process(
                     else:
                         code_sorting_section += line
                         line = ""
-                elif stripped_line in config.section_comments and not import_section:
-                    import_section += line
+                elif stripped_line in config.section_comments:
+                    if import_section and not contains_imports:
+                        output_stream.write(import_section)
+                        import_section = line
+                        not_imports = False
+                    else:
+                        import_section += line
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
                     not_imports = True
@@ -302,6 +311,7 @@ def process(
                     raw_import_section += line
                 if not contains_imports:
                     output_stream.write(import_section)
+
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]
                     trailing_whitespace = import_section[len(import_section.rstrip()) :]
@@ -317,8 +327,11 @@ def process(
                             line[len(indent) :] for line in import_section.splitlines(keepends=True)
                         )
 
+                    parsed_content = parse.file_contents(import_section, config=config)
+                    verbose_output += parsed_content.verbose_output
+
                     sorted_import_section = output.sorted_imports(
-                        parse.file_contents(import_section, config=config),
+                        parsed_content,
                         _indented_config(config, indent),
                         extension,
                         import_type="cimport" if cimports else "import",
@@ -337,7 +350,6 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-
                         output_stream.write(sorted_import_section)
                         if not line and not indent and next_import_section:
                             output_stream.write(line_separator)
@@ -357,6 +369,29 @@ def process(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+            if stripped_line and not in_quote and not import_section and not next_import_section:
+                if stripped_line == "yield":
+                    while not stripped_line or stripped_line == "yield":
+                        new_line = input_stream.readline()
+                        if not new_line:
+                            break
+
+                        output_stream.write(new_line)
+                        stripped_line = new_line.strip().split("#")[0]
+
+                if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
+                    while stripped_line.endswith("\\"):
+                        new_line = input_stream.readline()
+                        if not new_line:
+                            break
+
+                        output_stream.write(new_line)
+                        stripped_line = new_line.strip().split("#")[0]
+
+    if made_changes and config.only_modified:
+        for output_str in verbose_output:
+            print(output_str)
 
     return made_changes
 

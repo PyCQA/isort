@@ -18,7 +18,12 @@ from warnings import warn
 from . import stdlibs
 from ._future import dataclass, field
 from ._vendored import toml
-from .exceptions import FormattingPluginDoesNotExist, InvalidSettingsPath, ProfileDoesNotExist
+from .exceptions import (
+    FormattingPluginDoesNotExist,
+    InvalidSettingsPath,
+    ProfileDoesNotExist,
+    UnsupportedSettings,
+)
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
@@ -26,7 +31,7 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
-SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", "pyx"})
+SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", "pyx", "pxd"})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
 FILE_SKIP_COMMENTS: Tuple[str, ...] = (
     "isort:" + "skip_file",
@@ -54,11 +59,14 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".hg",
         ".mypy_cache",
         ".nox",
+        ".svn",
+        ".bzr",
         "_build",
         "buck-out",
         "build",
         "dist",
         ".pants.d",
+        ".direnv",
         "node_modules",
     }
 )
@@ -161,6 +169,7 @@ class _Config:
     force_grid_wrap: int = 0
     force_sort_within_sections: bool = False
     lexicographical: bool = False
+    group_by_package: bool = False
     ignore_whitespace: bool = False
     no_lines_before: FrozenSet[str] = frozenset()
     no_inline_sort: bool = False
@@ -189,6 +198,8 @@ class _Config:
     classes: FrozenSet[str] = frozenset()
     variables: FrozenSet[str] = frozenset()
     dedup_headings: bool = False
+    only_sections: bool = False
+    only_modified: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
@@ -255,6 +266,11 @@ class Config(_Config):
             super().__init__(**config_vars)  # type: ignore
             return
 
+        # We can't use self.quiet to conditionally show warnings before super.__init__() is called
+        # at the end of this method. _Config is also frozen so setting self.quiet isn't possible.
+        # Therefore we extract quiet early here in a variable and use that in warning conditions.
+        quiet = config_overrides.get("quiet", False)
+
         sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
 
         config_settings: Dict[str, Any]
@@ -265,6 +281,14 @@ class Config(_Config):
                 CONFIG_SECTIONS.get(os.path.basename(settings_file), FALLBACK_CONFIG_SECTIONS),
             )
             project_root = os.path.dirname(settings_file)
+            if not config_settings and not quiet:
+                warn(
+                    f"A custom settings file was specified: {settings_file} but no configuration "
+                    "was found inside. This can happen when [settings] is used as the config "
+                    "header instead of [isort]. "
+                    "See: https://pycqa.github.io/isort/docs/configuration/config_files"
+                    "/#custom_config_files for more information."
+                )
         elif settings_path:
             if not os.path.exists(settings_path):
                 raise InvalidSettingsPath(settings_path)
@@ -324,7 +348,7 @@ class Config(_Config):
                 combined_config.pop(key)
                 if maps_to_section in KNOWN_SECTION_MAPPING:
                     section_name = f"known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}"
-                    if section_name in combined_config and not self.quiet:
+                    if section_name in combined_config and not quiet:
                         warn(
                             f"Can't set both {key} and {section_name} in the same config file.\n"
                             f"Default to {section_name} if unsure."
@@ -336,10 +360,7 @@ class Config(_Config):
                         combined_config[section_name] = frozenset(value)
                 else:
                     known_other[import_heading] = frozenset(value)
-                    if (
-                        maps_to_section not in combined_config.get("sections", ())
-                        and not self.quiet
-                    ):
+                    if maps_to_section not in combined_config.get("sections", ()) and not quiet:
                         warn(
                             f"`{key}` setting is defined, but {maps_to_section} is not"
                             " included in `sections` config option:"
@@ -406,7 +427,7 @@ class Config(_Config):
         if deprecated_options_used:
             for deprecated_option in deprecated_options_used:
                 combined_config.pop(deprecated_option)
-            if not self.quiet:
+            if not quiet:
                 warn(
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
@@ -419,6 +440,19 @@ class Config(_Config):
             for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
+
+        unsupported_config_errors = {}
+        for option in set(combined_config.keys()).difference(
+            getattr(_Config, "__dataclass_fields__", {}).keys()
+        ):
+            for source in reversed(sources):
+                if option in source:
+                    unsupported_config_errors[option] = {
+                        "value": source[option],
+                        "source": source["source"],
+                    }
+        if unsupported_config_errors:
+            raise UnsupportedSettings(unsupported_config_errors)
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 

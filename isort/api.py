@@ -210,7 +210,7 @@ def check_stream(
     )
     printer = create_terminal_printer(color=config.color_output)
     if not changed:
-        if config.verbose:
+        if config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
     else:
@@ -299,6 +299,7 @@ def sort_file(
     """
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path
+        config = _config(path=actual_file_path, config=config, **config_kwargs)
         changed: bool = False
         try:
             if write_to_stdout:
@@ -309,7 +310,6 @@ def sort_file(
                     file_path=actual_file_path,
                     disregard_skip=disregard_skip,
                     extension=extension,
-                    **config_kwargs,
                 )
             else:
                 tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
@@ -325,7 +325,6 @@ def sort_file(
                             file_path=actual_file_path,
                             disregard_skip=disregard_skip,
                             extension=extension,
-                            **config_kwargs,
                         )
                     if changed:
                         if show_diff or ask_to_apply:
@@ -355,7 +354,7 @@ def sort_file(
                     try:  # Python 3.8+: use `missing_ok=True` instead of try except.
                         tmp_file.unlink()
                     except FileNotFoundError:
-                        pass
+                        pass  # pragma: no cover
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover

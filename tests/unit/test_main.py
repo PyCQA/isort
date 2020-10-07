@@ -4,7 +4,8 @@ from datetime import datetime
 from io import BytesIO, TextIOWrapper
 
 import pytest
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given
+from hypothesis import strategies as st
 
 from isort import main
 from isort._version import __version__
@@ -12,13 +13,28 @@ from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 
-auto_pytest_magic(main.sort_imports)
+
+@given(
+    file_name=st.text(),
+    config=st.builds(Config),
+    check=st.booleans(),
+    ask_to_apply=st.booleans(),
+    write_to_stdout=st.booleans(),
+)
+def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdout):
+    main.sort_imports(
+        file_name=file_name,
+        config=config,
+        check=check,
+        ask_to_apply=ask_to_apply,
+        write_to_stdout=write_to_stdout,
+    )
 
 
 def test_iter_source_code(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [])) == (tmp_file,)
+    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [], [])) == (tmp_file,)
 
 
 def test_sort_imports(tmpdir):
@@ -35,12 +51,27 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped
 
 
+def test_sort_imports_error_handling(tmpdir, mocker, capsys):
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import os, sys\n")
+    mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
+    with pytest.raises(IndexError):
+        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+
+    out, error = capsys.readouterr()
+    assert "Unrecoverable exception thrown when parsing" in error
+
+
 def test_parse_args():
     assert main.parse_args([]) == {}
     assert main.parse_args(["--multi-line", "1"]) == {"multi_line_output": WrapModes.VERTICAL}
     assert main.parse_args(["--multi-line", "GRID"]) == {"multi_line_output": WrapModes.GRID}
     assert main.parse_args(["--dont-order-by-type"]) == {"order_by_type": False}
     assert main.parse_args(["--dt"]) == {"order_by_type": False}
+    assert main.parse_args(["--only-sections"]) == {"only_sections": True}
+    assert main.parse_args(["--os"]) == {"only_sections": True}
+    assert main.parse_args(["--om"]) == {"only_modified": True}
+    assert main.parse_args(["--only-modified"]) == {"only_modified": True}
 
 
 def test_ascii_art(capsys):
@@ -70,6 +101,26 @@ def test_preconvert():
     assert main._preconvert(main._preconvert) == "_preconvert"
     with pytest.raises(TypeError):
         main._preconvert(datetime.now())
+
+
+def test_show_files(capsys, tmpdir):
+    tmpdir.join("a.py").write("import a")
+    tmpdir.join("b.py").write("import b")
+
+    # show files should list the files isort would sort
+    main.main([str(tmpdir), "--show-files"])
+    out, error = capsys.readouterr()
+    assert "a.py" in out
+    assert "b.py" in out
+    assert not error
+
+    # can not be used for stream
+    with pytest.raises(SystemExit):
+        main.main(["-", "--show-files"])
+
+    # can not be used with show-config
+    with pytest.raises(SystemExit):
+        main.main([str(tmpdir), "--show-files", "--show-config"])
 
 
 def test_main(capsys, tmpdir):
@@ -154,6 +205,39 @@ import b
 """
     )
 
+    # Should be able to stream diff
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+    main.main(config_args + ["-", "--diff"], stdin=input_content)
+    out, error = capsys.readouterr()
+    assert not error
+    assert "+" in out
+    assert "-" in out
+    assert "import a" in out
+    assert "import b" in out
+
+    # check should work with stdin
+
+    input_content_check = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        main.main(config_args + ["-", "--check-only"], stdin=input_content_check)
+    out, error = capsys.readouterr()
+    assert error == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
+
     # Should be able to run with just a file
     python_file = tmpdir.join("has_imports.py")
     python_file.write(
@@ -219,6 +303,15 @@ import b
     # without filter options passed in should successfully sort files
     main.main([str(python_file), str(should_skip), "--verbose", "--atomic"])
 
+    # Should raise a system exit if all passed path is broken
+    with pytest.raises(SystemExit):
+        main.main(["not-exist", "--check-only"])
+
+    # Should not raise system exit if any of passed path is not broken
+    main.main([str(python_file), "not-exist", "--verbose", "--check-only"])
+    out, error = capsys.readouterr()
+    assert "Broken" in out
+
     # should respect gitignore if requested.
     out, error = capsys.readouterr()  # clear sysoutput before tests
     subprocess.run(["git", "init", str(tmpdir)])
@@ -243,5 +336,536 @@ import b
 
 
 def test_isort_command():
-    """Ensure ISortCommand got registered, otherwise setuptools error must have occured"""
+    """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
     assert main.ISortCommand
+
+
+def test_isort_with_stdin(capsys):
+    # ensures that isort sorts stdin without any flags
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+
+    main.main(["-"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import b
+"""
+    )
+
+    input_content_from = TextIOWrapper(
+        BytesIO(
+            b"""
+import c
+import b
+from a import z, y, x
+"""
+        )
+    )
+
+    main.main(["-"], stdin=input_content_from)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import b
+import c
+from a import x, y, z
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --fas flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import pandas
+from z import abc
+from a import xyz
+"""
+        )
+    )
+
+    main.main(["-", "--fas"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import xyz
+from z import abc
+
+import pandas
+import sys
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --fass flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import Path, abc
+"""
+        )
+    )
+
+    main.main(["-", "--fass"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import abc, Path
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ff flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+from c import x
+from a import y
+"""
+        )
+    )
+
+    main.main(["-", "--ff", "FROM_FIRST"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import y
+from c import x
+import b
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with -fss flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import b
+from a import a
+"""
+        )
+    )
+
+    main.main(["-", "--fss"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import a
+import b
+"""
+    )
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import a
+from b import c
+"""
+        )
+    )
+
+    main.main(["-", "--fss"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+from b import c
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ds flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import pandas
+import a
+"""
+        )
+    )
+
+    main.main(["-", "--ds"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import pandas
+import sys
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --cs flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import b
+from a import *
+"""
+        )
+    )
+
+    main.main(["-", "--cs"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import *
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --ca flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from a import x as X
+from a import y as Y
+"""
+        )
+    )
+
+    main.main(["-", "--ca"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from a import x as X, y as Y
+"""
+    )
+
+    # ensures that isort works consistently with check and ws flags
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import os
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--check-only", "--ws"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert not error
+
+    # ensures that isort correctly sorts stdin with --ls flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import abcdef
+import x
+"""
+        )
+    )
+
+    main.main(["-", "--ls"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import x
+import abcdef
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --nis flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from z import b, c, a
+"""
+        )
+    )
+
+    main.main(["-", "--nis"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from z import b, c, a
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --sl flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+from z import b, c, a
+"""
+        )
+    )
+
+    main.main(["-", "--sl"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+from z import a
+from z import b
+from z import c
+"""
+    )
+
+    # ensures that isort correctly sorts stdin with --top flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import os
+import sys
+"""
+        )
+    )
+
+    main.main(["-", "--top", "sys"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import sys
+import os
+"""
+    )
+
+    # ensure that isort correctly sorts stdin with --os flag
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+import z
+from a import b, e, c
+"""
+        )
+    )
+
+    main.main(["-", "--os"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import sys
+import os
+
+import z
+from a import b, e, c
+"""
+    )
+
+    # ensures that isort warns with deprecated flags with stdin
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+"""
+        )
+    )
+
+    with pytest.warns(UserWarning):
+        main.main(["-", "-ns"], stdin=input_content)
+
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import os
+import sys
+"""
+    )
+
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import sys
+import os
+"""
+        )
+    )
+
+    with pytest.warns(UserWarning):
+        main.main(["-", "-k"], stdin=input_content)
+
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import os
+import sys
+"""
+    )
+
+    # ensures that only-modified flag works with stdin
+    input_content = TextIOWrapper(
+        BytesIO(
+            b"""
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for a returned THIRDPARTY" not in out
+    assert "else-type place_module for b returned THIRDPARTY" not in out
+
+
+def test_unsupported_encodings(tmpdir, capsys):
+    tmp_file = tmpdir.join("file.py")
+    # fmt: off
+    tmp_file.write_text(
+        '''
+# [syntax-error]\
+# -*- coding: IBO-8859-1 -*-
+""" check correct unknown encoding declaration
+"""
+__revision__ = 'יייי'
+''',
+        encoding="utf8"
+    )
+    # fmt: on
+
+    # should throw an error if only unsupported encoding provided
+    with pytest.raises(SystemExit):
+        main.main([str(tmp_file)])
+    out, error = capsys.readouterr()
+
+    assert "No valid encodings." in error
+
+    # should not throw an error if at least one valid encoding found
+    normal_file = tmpdir.join("file1.py")
+    normal_file.write("import os\nimport sys")
+
+    main.main([str(tmp_file), str(normal_file), "--verbose"])
+    out, error = capsys.readouterr()
+
+
+def test_only_modified_flag(tmpdir, capsys):
+    # ensures there is no verbose output for correct files with only-modified flag
+
+    file1 = tmpdir.join("file1.py")
+    file1.write(
+        """
+import a
+import b
+"""
+    )
+
+    file2 = tmpdir.join("file2.py")
+    file2.write(
+        """
+import math
+
+import pandas as pd
+"""
+    )
+
+    main.main([str(file1), str(file2), "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert (
+        out
+        == f"""
+                 _                 _
+                (_) ___  ___  _ __| |_
+                | |/ _/ / _ \\/ '__  _/
+                | |\\__ \\/\\_\\/| |  | |_
+                |_|\\___/\\___/\\_/   \\_/
+
+      isort your imports, so you don't have to.
+
+                    VERSION {__version__}
+
+"""
+    )
+
+    assert not error
+
+    # ensures that verbose output is only for modified file(s) with only-modified flag
+
+    file3 = tmpdir.join("file3.py")
+    file3.write(
+        """
+import sys
+import os
+"""
+    )
+
+    main.main([str(file1), str(file2), str(file3), "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for sys returned STDLIB" in out
+    assert "else-type place_module for os returned STDLIB" in out
+    assert "else-type place_module for math returned STDLIB" not in out
+    assert "else-type place_module for pandas returned THIRDPARTY" not in out
+
+    assert not error
+
+    # ensures that the behaviour is consistent for check flag with only-modified flag
+
+    main.main([str(file1), str(file2), "--check-only", "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert (
+        out
+        == f"""
+                 _                 _
+                (_) ___  ___  _ __| |_
+                | |/ _/ / _ \\/ '__  _/
+                | |\\__ \\/\\_\\/| |  | |_
+                |_|\\___/\\___/\\_/   \\_/
+
+      isort your imports, so you don't have to.
+
+                    VERSION {__version__}
+
+"""
+    )
+
+    assert not error
+
+    file4 = tmpdir.join("file4.py")
+    file4.write(
+        """
+import sys
+import os
+"""
+    )
+
+    with pytest.raises(SystemExit):
+        main.main([str(file2), str(file4), "--check-only", "--verbose", "--only-modified"])
+    out, error = capsys.readouterr()
+
+    assert "else-type place_module for sys returned STDLIB" in out
+    assert "else-type place_module for os returned STDLIB" in out
+    assert "else-type place_module for math returned STDLIB" not in out
+    assert "else-type place_module for pandas returned THIRDPARTY" not in out

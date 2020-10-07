@@ -2,15 +2,71 @@ Changelog
 =========
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
+Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.5.0 TBD
+### 5.6.0 TBD
+  - Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.
+  - Implemented #1494: Default to sorting imports within `.pxd` files.
+  - Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.
+  - Implemented #1511: Support for easily seeing all files isort will be ran against using `isort . --show-files`.
+  - Implemented #1487: Improved handling of encoding errors.
+  - Improved handling of unsupported configuration option errors (see #1475).
+  - Fixed #1463: Better interactive documentation for future option.
+  - Fixed #1461: Quiet config option not respected by file API in some circumstances.
+  - Fixed #1482: pylama integration is not working correctly out-of-the-box.
+  - Fixed #1492: --check does not work with stdin source.
+  - Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
+  - Fixed #1525: Some warnings can't be disabled with --quiet.
+  - Fixed #1523: in rare cases isort can ignore direct from import if as import is also on same line.
+
+  Potentially breaking changes:
+  - Fixed #1486: "Google" profile is not quite Google style.
+  - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.
+
+  Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1472: Full testing of stdin CLI Options
+
+### 5.5.4 [Hotfix] September 29, 2020
+  - Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.
+  - Fixed #1505: Support case where known_SECTION points to a section not listed in sections.
+
+### 5.5.3 [Hotfix] September 20, 2020
+  - Fixed #1488: in rare cases isort can mangle `yield from` or `raise from` statements.
+
+### 5.5.2 [Hotfix] September 9, 2020
+  - Fixed #1469: --diff option is ignored when input is from stdin.
+
+### 5.5.1 September 4, 2020
+  - Fixed #1454: Ensure indented import sections with import heading and a preceding comment don't cause import sorting loops.
+  - Fixed #1453: isort error when float to top on almost empty file.
+  - Fixed #1456 and #1415: noqa comment moved to where flake8 cant see it.
+  - Fixed #1460: .svn missing from default ignore list.
+
+### 5.5.0 September 3, 2020
   - Fixed #1398: isort: off comment doesn't work, if it's the top comment in the file.
   - Fixed #1395: reverse_relative setting doesn't have any effect when combined with force_sort_within_sections.
   - Fixed #1399: --skip can error in the case of projects that contain recursive symlinks.
   - Fixed #1389: ensure_newline_before_comments doesn't work if comment is at top of section and sections don't have lines between them.
   - Fixed #1396: comments in imports with ";" can keep isort from recognizing import line.
+  - Fixed #1380: As imports removed when `combine_star` is set.
+  - Fixed #1382: --float-to-top has no effect if no import is already at the top.
+  - Fixed #1420: isort never settles on module docstring + add import.
+  - Fixed #1421: Error raised when repo contains circular symlinks.
+  - Fixed #1427: noqa comment is moved from star import to constant import.
+  - Fixed #1444 & 1445: Incorrect placement of import additions.
+  - Fixed #1447: isort5 throws error when stdin used on Windows with deprecated args.
   - Implemented #1397: Added support for specifying config file when using git hook (thanks @diseraluca!).
-  
+  - Implemented #1405: Added support for coloring diff output.
+  - Implemented #1434: New multi-line grid mode without parentheses.
+
+Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1392: Extensive profile testing.
+  - Implemented #1393: Proprety based testing applied to code snippets.
+  - Implemented #1391: Create automated integration test that includes full code base of largest OpenSource isort users.
+
+Potentially breaking changes:
+  - Fixed #1429: --check doesn't print to stderr as the documentation says. This means if you were looking for `ERROR:` messages for files that contain incorrect imports within stdout you will now need to look in stderr.
+
 ### 5.4.2 Aug 14, 2020
   - Fixed #1383: Known other does not work anymore with .editorconfig.
   - Fixed: Regression in first known party path expansion.

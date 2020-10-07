@@ -4,7 +4,8 @@ As a code formatter isort has opinions. However, it also allows you to have your
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.
 
-Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in profiles](https://pycqa.github.io/isort/docs/configuration/profiles/).
+Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in
+profiles](https://pycqa.github.io/isort/docs/configuration/profiles/).
 
 ## Python Version
 
@@ -35,7 +36,7 @@ Force specific imports to the top of their appropriate section.
 Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.
 
 **Type:** Frozenset  
-**Default:** `('.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
+**Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -128,7 +129,7 @@ Put all imports into the same section bucket
 
 ## Known Future Library
 
-Force isort to recognize a module as part of the future compatibility libraries.
+Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of __future__ handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six a better option is to create a another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
 
 **Type:** Frozenset  
 **Default:** `('__future__',)`  
@@ -293,14 +294,13 @@ Sort imports by their string length.
 - --ls
 - --length-sort
 
-## Length Sort Straight Imports
+## Length Sort Straight
 
-Sort straight imports by their string length. Similar to `length_sort` but applies only to
-straight imports and doesn't affect from imports.
+Sort straight imports by their string length.
 
-**Type:** Bool
-**Default:** `False`
-**Python & Config File Name:** length_sort_straight
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** length_sort_straight  
 **CLI Flags:**
 
 - --lss
@@ -602,7 +602,7 @@ Force all imports to be sorted as a single section
 
 ## Force Grid Wrap
 
-Force number of from imports (defaults to 2) to be grid wrapped regardless of line length
+Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.
 
 **Type:** Int  
 **Default:** `0`  
@@ -880,7 +880,7 @@ Tells isort to treat all single line comments as if they are code.
 Specifies what extensions isort can be ran against.
 
 **Type:** Frozenset  
-**Default:** `('.py', '.pyi', '.pyx')`  
+**Default:** `('py', 'pyi', 'pyx')`  
 **Python & Config File Name:** supported_extensions  
 **CLI Flags:**
 
@@ -893,11 +893,61 @@ Specifies what extensions isort can be ran against.
 Specifies what extensions isort can never be ran against.
 
 **Type:** Frozenset  
-**Default:** `('.pex',)`  
+**Default:** `('pex',)`  
 **Python & Config File Name:** blocked_extensions  
 **CLI Flags:**
 
 - --blocked-extension
+
+## Constants
+
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** constants  
+**CLI Flags:** **Not Supported**
+
+## Classes
+
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** classes  
+**CLI Flags:** **Not Supported**
+
+## Variables
+
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** variables  
+**CLI Flags:** **Not Supported**
+
+## Dedup Headings
+
+Tells isort to only show an identical custom import heading comment once, even if there are multiple sections with the comment set.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** dedup_headings  
+**CLI Flags:**
+
+- --dedup-headings
+
+## Only Sections
+
+Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. Imports are unaltered and keep their relative positions within the different sections.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** only_sections  
+**CLI Flags:**
+
+- --only-sections
+- --os
 
 ## Check
 
@@ -948,7 +998,7 @@ Number of files to process in parallel.
 - -j
 - --jobs
 
-## Don't Order By Type
+## Dont Order By Type
 
 Don't order imports by type, which is determined by case, in addition to alphabetically.
 

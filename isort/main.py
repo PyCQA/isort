@@ -10,7 +10,8 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set
 from warnings import warn
 
 from . import __version__, api, sections
-from .exceptions import FileSkipped
+from .exceptions import FileSkipped, UnsupportedEncoding
+from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
 from .settings import VALID_PY_TARGETS, Config, WrapModes
@@ -66,9 +67,10 @@ Visit https://pycqa.github.io/isort/ for complete information about how to use i
 
 
 class SortAttempt:
-    def __init__(self, incorrectly_sorted: bool, skipped: bool) -> None:
+    def __init__(self, incorrectly_sorted: bool, skipped: bool, supported_encoding: bool) -> None:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
+        self.supported_encoding = supported_encoding
 
 
 def sort_imports(
@@ -87,7 +89,7 @@ def sort_imports(
                 incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
             except FileSkipped:
                 skipped = True
-            return SortAttempt(incorrectly_sorted, skipped)
+            return SortAttempt(incorrectly_sorted, skipped, True)
         else:
             try:
                 incorrectly_sorted = not api.sort_file(
@@ -99,13 +101,27 @@ def sort_imports(
                 )
             except FileSkipped:
                 skipped = True
-            return SortAttempt(incorrectly_sorted, skipped)
+            return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
+    except UnsupportedEncoding:
+        if config.verbose:
+            warn(f"Encoding not supported for {file_name}")
+        return SortAttempt(incorrectly_sorted, skipped, False)
+    except Exception:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error(
+            f"Unrecoverable exception thrown when parsing {file_name}! "
+            "This should NEVER happen.\n"
+            "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
+        )
+        raise
 
 
-def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -> Iterator[str]:
+def iter_source_code(
+    paths: Iterable[str], config: Config, skipped: List[str], broken: List[str]
+) -> Iterator[str]:
     """Iterate over all Python source files defined in paths."""
     visited_dirs: Set[Path] = set()
 
@@ -133,6 +149,8 @@ def iter_source_code(paths: Iterable[str], config: Config, skipped: List[str]) -
                             skipped.append(filename)
                         else:
                             yield filepath
+        elif not os.path.exists(path):
+            broken.append(path)
         else:
             yield path
 
@@ -258,7 +276,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--future",
         dest="known_future_library",
         action="append",
-        help="Force isort to recognize a module as part of the future compatibility libraries.",
+        help="Force isort to recognize a module as part of Python's internal future compatibility "
+        "libraries. WARNING: this overrides the behavior of __future__ handling and therefore"
+        " can result in code that can't execute. If you're looking to add dependencies such "
+        "as six a better option is to create a another section below --future using custom "
+        "sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the "
+        "discussion here: https://github.com/PyCQA/isort/issues/1463.",
     )
     parser.add_argument(
         "--fas",
@@ -288,8 +311,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         const=2,
         type=int,
         dest="force_grid_wrap",
-        help="Force number of from imports (defaults to 2) to be grid wrapped regardless of line "
-        "length",
+        help="Force number of from imports (defaults to 2 when passed as CLI flag without value)"
+        "to be grid wrapped regardless of line "
+        "length. If 0 is passed in (the global default) only line length is considered.",
     )
     parser.add_argument(
         "--fss",
@@ -329,7 +353,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--lss",
         "--length-sort-straight",
-        help="Sort straight imports by their string length.",
+        help="Sort straight imports by their string length. Similar to `length_sort` "
+        "but applies only to straight imports and doesn't affect from imports.",
         dest="length_sort_straight",
         action="store_true",
     )
@@ -619,6 +644,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="See isort's determined config, as well as sources of config options.",
     )
     parser.add_argument(
+        "--show-files",
+        dest="show_files",
+        action="store_true",
+        help="See the files isort will be ran against with the current config options.",
+    )
+    parser.add_argument(
         "--honor-noqa",
         dest="honor_noqa",
         action="store_true",
@@ -645,7 +676,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="float_to_top",
         action="store_true",
         help="Causes all non-indented imports to float to the top of the file having its imports "
-        "sorted.  It can be an excellent shortcut for collecting imports every once in a while "
+        "sorted (immediately below the top of file comment).\n"
+        "This can be an excellent shortcut for collecting imports every once in a while "
         "when you place them in the middle of a file to avoid context switching.\n\n"
         "*NOTE*: It currently doesn't work with cimports and introduces some extra over-head "
         "and a performance penalty.",
@@ -727,6 +759,23 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help=argparse.SUPPRESS,
     )
 
+    parser.add_argument(
+        "--only-sections",
+        "--os",
+        dest="only_sections",
+        action="store_true",
+        help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
+        "Imports are unaltered and keep their relative positions within the different sections.",
+    )
+
+    parser.add_argument(
+        "--only-modified",
+        "--om",
+        dest="only_modified",
+        action="store_true",
+        help="Suppresses verbose output for non-modified files.",
+    )
+
     return parser
 
 
@@ -775,6 +824,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         return
 
     show_config: bool = arguments.pop("show_config", False)
+    show_files: bool = arguments.pop("show_files", False)
+    if show_config and show_files:
+        sys.exit("Error: either specify show-config or show-files not both.")
 
     if "settings_path" in arguments:
         if os.path.isfile(arguments["settings_path"]):
@@ -812,6 +864,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     deprecated_flags = config_dict.pop("deprecated_flags", False)
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     wrong_sorted_files = False
+    all_attempt_broken = False
+    no_valid_encodings = False
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -823,13 +877,27 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
     elif file_names == ["-"]:
-        api.sort_stream(
-            input_stream=sys.stdin if stdin is None else stdin,
-            output_stream=sys.stdout,
-            config=config,
-        )
+        if show_files:
+            sys.exit("Error: can't show files for streaming input.")
+
+        if check:
+            incorrectly_sorted = not api.check_stream(
+                input_stream=sys.stdin if stdin is None else stdin,
+                config=config,
+                show_diff=show_diff,
+            )
+
+            wrong_sorted_files = incorrectly_sorted
+        else:
+            api.sort_stream(
+                input_stream=sys.stdin if stdin is None else stdin,
+                output_stream=sys.stdout,
+                config=config,
+                show_diff=show_diff,
+            )
     else:
         skipped: List[str] = []
+        broken: List[str] = []
 
         if config.filter_files:
             filtered_files = []
@@ -840,8 +908,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     filtered_files.append(file_name)
             file_names = filtered_files
 
-        file_names = iter_source_code(file_names, config, skipped)
+        file_names = iter_source_code(file_names, config, skipped, broken)
+        if show_files:
+            for file_name in file_names:
+                print(file_name)
+            return
         num_skipped = 0
+        num_broken = 0
+        num_invalid_encoding = 0
         if config.verbose:
             print(ASCII_ART)
 
@@ -873,6 +947,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 for file_name in file_names
             )
 
+        # If any files passed in are missing considered as error, should be removed
+        is_no_attempt = True
+        any_encoding_valid = False
         for sort_attempt in attempt_iterator:
             if not sort_attempt:
                 continue  # pragma: no cover - shouldn't happen, satisfies type constraint
@@ -884,6 +961,13 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
                 )
 
+            if not sort_attempt.supported_encoding:
+                num_invalid_encoding += 1
+            else:
+                any_encoding_valid = True
+
+            is_no_attempt = False
+
         num_skipped += len(skipped)
         if num_skipped and not arguments.get("quiet", False):
             if config.verbose:
@@ -893,6 +977,18 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                         " or matches a glob in 'skip_glob' setting"
                     )
             print(f"Skipped {num_skipped} files")
+
+        num_broken += len(broken)
+        if num_broken and not arguments.get("quite", False):
+            if config.verbose:
+                for was_broken in broken:
+                    warn(f"{was_broken} was broken path, make sure it exists correctly")
+            print(f"Broken {num_broken} paths")
+
+        if num_broken > 0 and is_no_attempt:
+            all_attempt_broken = True
+        if num_invalid_encoding > 0 and not any_encoding_valid:
+            no_valid_encodings = True
 
     if not config.quiet and (remapped_deprecated_args or deprecated_flags):
         if remapped_deprecated_args:
@@ -911,6 +1007,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         )
 
     if wrong_sorted_files:
+        sys.exit(1)
+
+    if all_attempt_broken:
+        sys.exit(1)
+
+    if no_valid_encodings:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error("No valid encodings.")
         sys.exit(1)
 
 

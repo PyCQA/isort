@@ -966,6 +966,29 @@ def test_check_newline_in_imports(capsys) -> None:
     out, _ = capsys.readouterr()
     assert "SUCCESS" in out
 
+    # if the verbose is only on modified outputs no output will be given
+    assert api.check_code_string(
+        code=test_input,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=20,
+        verbose=True,
+        only_modified=True,
+    )
+    out, _ = capsys.readouterr()
+    assert not out
+
+    # we can make the input invalid to again see output
+    test_input = "from lib1 import (\n    sub2,\n    sub1,\n    sub3\n)\n"
+    assert not api.check_code_string(
+        code=test_input,
+        multi_line_output=WrapModes.VERTICAL_HANGING_INDENT,
+        line_length=20,
+        verbose=True,
+        only_modified=True,
+    )
+    out, _ = capsys.readouterr()
+    assert out
+
 
 def test_forced_separate() -> None:
     """Ensure that forcing certain sub modules to show separately works as expected."""
@@ -980,6 +1003,7 @@ def test_forced_separate() -> None:
         "from django.db import models\n"
         "from django.db.models.fields import FieldDoesNotExist\n"
         "from django.utils import six\n"
+        "\n"
         "from django.utils.deprecation import RenameMethodsBase\n"
         "from django.utils.encoding import force_str, force_text\n"
         "from django.utils.http import urlencode\n"
@@ -993,7 +1017,7 @@ def test_forced_separate() -> None:
     assert (
         isort.code(
             code=test_input,
-            forced_separate=["django.contrib"],
+            forced_separate=["django.utils.*", "django.contrib"],
             known_third_party=["django"],
             line_length=120,
             order_by_type=False,
@@ -1003,7 +1027,7 @@ def test_forced_separate() -> None:
     assert (
         isort.code(
             code=test_input,
-            forced_separate=["django.contrib"],
+            forced_separate=["django.utils.*", "django.contrib"],
             known_third_party=["django"],
             line_length=120,
             order_by_type=False,
@@ -3178,11 +3202,12 @@ def test_monkey_patched_urllib() -> None:
 def test_argument_parsing() -> None:
     from isort.main import parse_args
 
-    args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py"])
+    args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py", "--os"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
     assert args["skip"] == ["bar"]
     assert args["files"] == ["baz.py"]
+    assert args["only_sections"] is True
 
 
 @pytest.mark.parametrize("multiprocess", (False, True))
@@ -3241,14 +3266,15 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         config = Config(directory=str(tmpdir))
     else:
         config = Config(skip=[], directory=str(tmpdir))
-    skipped = []  # type: List[str]
+    skipped: List[str] = []
+    broken: List[str] = []
     codes = [str(tmpdir)]
-    main.iter_source_code(codes, config, skipped)
+    main.iter_source_code(codes, config, skipped, broken)
 
     # if enabled files within nested unsafe directories should be skipped
     file_names = {
         os.path.relpath(f, str(tmpdir))
-        for f in main.iter_source_code([str(tmpdir)], config, skipped)
+        for f in main.iter_source_code([str(tmpdir)], config, skipped, broken)
     }
     if enabled:
         assert file_names == {"victim.py"}
@@ -3265,7 +3291,9 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     # directly pointing to files within unsafe directories shouldn't skip them either way
     file_names = {
         os.path.relpath(f, str(toxdir))
-        for f in main.iter_source_code([str(toxdir)], Config(directory=str(toxdir)), skipped)
+        for f in main.iter_source_code(
+            [str(toxdir)], Config(directory=str(toxdir)), skipped, broken
+        )
     }
     assert file_names == {"verysafe.py"}
 
@@ -3285,13 +3313,28 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     code_dir.join("file.py").write("import os")
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
-    skipped = []  # type: List[str]
+    skipped: List[str] = []
+    broken: List[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
-        for f in main.iter_source_code([str(base_dir)], config, skipped)
+        for f in main.iter_source_code([str(base_dir)], config, skipped, broken)
     }
     assert len(skipped) == skipped_count
     assert file_names == file_names_expected
+
+
+def test_broken(tmpdir) -> None:
+    base_dir = tmpdir.mkdir("broken")
+
+    config = Config(directory=str(base_dir))
+    skipped: List[str] = []
+    broken: List[str] = []
+    file_names = {
+        os.path.relpath(f, str(base_dir))
+        for f in main.iter_source_code(["not-exist"], config, skipped, broken)
+    }
+    assert len(broken) == 1
+    assert file_names == set()
 
 
 def test_comments_not_removed_issue_576() -> None:
@@ -3713,6 +3756,7 @@ def test_standard_library_deprecates_user_issue_778() -> None:
     assert isort.code(test_input) == test_input
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
 def test_settings_path_skip_issue_909(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
@@ -3743,6 +3787,7 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
     assert b"skipped 2" in result.stdout.lower()
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
 def test_skip_paths_issue_938(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
@@ -4802,3 +4847,49 @@ def test_deprecated_settings():
     """Test to ensure isort warns when deprecated settings are used, but doesn't fail to run"""
     with pytest.warns(UserWarning):
         assert isort.code("hi", not_skip=True)
+
+
+def test_deprecated_settings_no_warn_in_quiet_mode(recwarn):
+    """Test to ensure isort does NOT warn in quiet mode even though settings are deprecated"""
+    assert isort.code("hi", not_skip=True, quiet=True)
+    assert not recwarn
+
+
+def test_only_sections() -> None:
+    """Test to ensure that the within sections relative position of imports are maintained"""
+    test_input = (
+        "import sys\n"
+        "\n"
+        "import numpy as np\n"
+        "\n"
+        "import os\n"
+        "from os import path as ospath\n"
+        "\n"
+        "import pandas as pd\n"
+        "\n"
+        "import math\n"
+        "import .views\n"
+        "from collections import defaultdict\n"
+    )
+
+    assert (
+        isort.code(test_input, only_sections=True)
+        == (
+            "import sys\n"
+            "import os\n"
+            "import math\n"
+            "from os import path as ospath\n"
+            "from collections import defaultdict\n"
+            "\n"
+            "import numpy as np\n"
+            "import pandas as pd\n"
+            "\n"
+            "import .views\n"
+        )
+        == isort.code(test_input, only_sections=True, force_single_line=True)
+    )
+
+    # test to ensure that from_imports remain intact with only_sections
+    test_input = "from foo import b, a, c\n"
+
+    assert isort.code(test_input, only_sections=True) == test_input

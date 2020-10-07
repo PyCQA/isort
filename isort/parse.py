@@ -138,6 +138,7 @@ class ParsedContent(NamedTuple):
     original_line_count: int
     line_separator: str
     sections: Any
+    verbose_output: List[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -163,6 +164,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "from": defaultdict(list),
     }
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+    verbose_output: List[str] = []
+
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments: CommentsDict = {
@@ -200,12 +203,18 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         if skipping_line:
             out_lines.append(line)
             continue
-        elif (
+
+        lstripped_line = line.lstrip()
+        if (
             config.float_to_top
             and import_index == -1
             and line
             and not in_quote
-            and not line.strip().startswith("#")
+            and not lstripped_line.startswith("#")
+            and not lstripped_line.startswith("'''")
+            and not lstripped_line.startswith('"""')
+            and not lstripped_line.startswith("import")
+            and not lstripped_line.startswith("from")
         ):
             import_index = index - 1
             while import_index and not in_lines[import_index - 1]:
@@ -327,8 +336,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in _strip_syntax(import_string).split()
             ]
-            straight_import = True
+
             attach_comments_to: Optional[List[Any]] = None
+            direct_imports = just_imports[1:]
+            straight_import = True
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -339,6 +350,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         top_level_module = just_imports[0]
                         module = top_level_module + "." + nested_module
                         as_name = just_imports[as_index + 1]
+                        direct_imports.remove(nested_module)
+                        direct_imports.remove(as_name)
+                        direct_imports.remove("as")
                         if nested_module == as_name and config.remove_redundant_aliases:
                             pass
                         elif as_name not in as_map["from"][module]:
@@ -374,8 +388,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
-                if config.verbose:
+                if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
+
+                elif config.verbose:
+                    verbose_output.append(
+                        f"from-type place_module for {import_from} returned {placed_module}"
+                    )
                 if placed_module == "":
                     warn(
                         f"could not place module {import_from} of line {line} --"
@@ -419,11 +438,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 if import_from not in root:
                     root[import_from] = OrderedDict(
-                        (module, straight_import) for module in just_imports
+                        (module, module in direct_imports) for module in just_imports
                     )
                 else:
                     root[import_from].update(
-                        (module, straight_import | root[import_from].get(module, False))
+                        (module, root[import_from].get(module, False) or module in direct_imports)
                         for module in just_imports
                     )
 
@@ -463,8 +482,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
                     placed_module = finder(module)
-                    if config.verbose:
+                    if config.verbose and not config.only_modified:
                         print(f"else-type place_module for {module} returned {placed_module}")
+
+                    elif config.verbose:
+                        verbose_output.append(
+                            f"else-type place_module for {module} returned {placed_module}"
+                        )
                     if placed_module == "":
                         warn(
                             f"could not place module {module} of line {line} --"
@@ -491,4 +515,5 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         original_line_count=original_line_count,
         line_separator=line_separator,
         sections=config.sections,
+        verbose_output=verbose_output,
     )

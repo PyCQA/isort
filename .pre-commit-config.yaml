@@ -1,5 +1,8 @@
 repos:
   - repo: https://github.com/pycqa/isort
-    rev: 5.3.0
+    rev: 5.5.2
     hooks:
       - id: isort
+        files: 'isort/.*'
+      - id: isort
+        files: 'tests/.*'

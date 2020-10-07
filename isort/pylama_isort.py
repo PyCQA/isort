@@ -5,6 +5,8 @@ from typing import Any, Dict, List
 
 from pylama.lint import Linter as BaseLinter
 
+from isort.exceptions import FileSkipped
+
 from . import api
 
 
@@ -25,9 +27,17 @@ class Linter(BaseLinter):
     def run(self, path: str, **meta: Any) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with supress_stdout():
-            if not api.check_file(path):
-                return [
-                    {"lnum": 0, "col": 0, "text": "Incorrectly sorted imports.", "type": "ISORT"}
-                ]
-            else:
-                return []
+            try:
+                if not api.check_file(path, disregard_skip=False):
+                    return [
+                        {
+                            "lnum": 0,
+                            "col": 0,
+                            "text": "Incorrectly sorted imports.",
+                            "type": "ISORT",
+                        }
+                    ]
+            except FileSkipped:
+                pass
+
+            return []

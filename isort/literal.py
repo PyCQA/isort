@@ -21,17 +21,18 @@ type_mapping: Dict[str, Tuple[type, Callable[[Any, ISortPrettyPrinter], str]]] =
 
 
 def assignments(code: str) -> str:
-    sort_assignments = {}
+    values = {}
     for line in code.splitlines(keepends=True):
-        if line:
-            if " = " not in line:
-                raise AssignmentsFormatMismatch(code)
-            else:
-                variable_name, value = line.split(" = ", 1)
-                sort_assignments[variable_name] = value
+        if not line.strip():
+            continue
+        if " = " not in line:
+            raise AssignmentsFormatMismatch(code)
+        variable_name, value = line.split(" = ", 1)
+        values[variable_name] = value
 
-    sorted_assignments = dict(sorted(sort_assignments.items(), key=lambda item: item[1]))
-    return "".join(f"{key} = {value}" for key, value in sorted_assignments.items())
+    return "".join(
+        f"{variable_name} = {values[variable_name]}" for variable_name in sorted(values.keys())
+    )
 
 
 def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAULT_CONFIG) -> str:

@@ -1,28 +1,8 @@
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given, reject
+from hypothesis import strategies as st
 
 import isort
 from isort import wrap_modes
-
-auto_pytest_magic(wrap_modes.grid, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.vertical, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.hanging_indent, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.vertical_hanging_indent, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.vertical_grid, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.vertical_grid_grouped, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.vertical_grid_grouped_no_comma, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.noqa, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.noqa, auto_allow_exceptions_=(ValueError,), comments=["NOQA"])
-auto_pytest_magic(
-    wrap_modes.vertical_prefix_from_module_import, auto_allow_exceptions_=(ValueError,)
-)
-auto_pytest_magic(wrap_modes.vertical_hanging_indent_bracket, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(
-    wrap_modes.vertical_hanging_indent_bracket,
-    auto_allow_exceptions_=(ValueError,),
-    imports=["one", "two"],
-)
-auto_pytest_magic(wrap_modes.hanging_indent_with_parentheses, auto_allow_exceptions_=(ValueError,))
-auto_pytest_magic(wrap_modes.backslash_grid, auto_allow_exceptions_=(ValueError,))
 
 
 def test_wrap_mode_interface():
@@ -67,6 +47,23 @@ def test_auto_saved():
         )
         == '*\x12\x07\U0009e994🁣"\U000ae787\x0e \x00\U0001ae99\U0005c3e7\U0004d08e \x1e  '
     )
+    assert (
+        wrap_modes.noqa(
+            **{
+                "comment_prefix": "  #",
+                "comments": ["NOQA", "THERE"],
+                "imports": [],
+                "include_trailing_comma": False,
+                "indent": "0\x19",
+                "line_length": -19659,
+                "line_separator": "\n",
+                "remove_comments": False,
+                "statement": "hi",
+                "white_space": " ",
+            }
+        )
+        == "hi  # NOQA THERE"
+    )
 
 
 def test_backslash_grid():
@@ -94,3 +91,499 @@ from kopf.structs import bodies, configuration, containers, diffs, \\
                          handlers as handlers_, patches, resources
 """
     )
+
+
+# This test code was written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_backslash_grid(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.backslash_grid(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_grid(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.grid(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_hanging_indent(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.hanging_indent(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_hanging_indent_with_parentheses(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.hanging_indent_with_parentheses(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_noqa(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.noqa(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_grid(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_grid(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_grid_grouped(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_grid_grouped(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_grid_grouped_no_comma(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_grid_grouped_no_comma(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_hanging_indent(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_hanging_indent(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_hanging_indent_bracket(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_hanging_indent_bracket(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()
+
+
+@given(
+    statement=st.text(),
+    imports=st.lists(st.text()),
+    white_space=st.text(),
+    indent=st.text(),
+    line_length=st.integers(),
+    comments=st.lists(st.text()),
+    line_separator=st.text(),
+    comment_prefix=st.text(),
+    include_trailing_comma=st.booleans(),
+    remove_comments=st.booleans(),
+)
+def test_fuzz_vertical_prefix_from_module_import(
+    statement,
+    imports,
+    white_space,
+    indent,
+    line_length,
+    comments,
+    line_separator,
+    comment_prefix,
+    include_trailing_comma,
+    remove_comments,
+):
+    try:
+        isort.wrap_modes.vertical_prefix_from_module_import(
+            statement=statement,
+            imports=imports,
+            white_space=white_space,
+            indent=indent,
+            line_length=line_length,
+            comments=comments,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+        )
+    except ValueError:
+        reject()

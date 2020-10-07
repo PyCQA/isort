@@ -49,16 +49,19 @@ def sorted_imports(
     pending_lines_before = False
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
-        straight_modules = sorting.naturally(
-            straight_modules,
-            key=lambda key: sorting.module_key(
-                key, config, section_name=section, straight_import=True
-            ),
-        )
+        if not config.only_sections:
+            straight_modules = sorting.naturally(
+                straight_modules,
+                key=lambda key: sorting.module_key(
+                    key, config, section_name=section, straight_import=True
+                ),
+            )
+
         from_modules = parsed.imports[section]["from"]
-        from_modules = sorting.naturally(
-            from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
-        )
+        if not config.only_sections:
+            from_modules = sorting.naturally(
+                from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
+            )
 
         straight_imports = _with_straight_imports(
             parsed, config, straight_modules, section, remove_imports, import_type
@@ -89,7 +92,7 @@ def sorted_imports(
                     comments_above = []
                 else:
                     new_section_output.append(line)
-
+            # only_sections options is not imposed if force_sort_within_sections is True
             new_section_output = sorting.naturally(
                 new_section_output,
                 key=partial(
@@ -99,6 +102,7 @@ def sorted_imports(
                     lexicographical=config.lexicographical,
                     length_sort=config.length_sort,
                     reverse_relative=config.reverse_relative,
+                    group_by_package=config.group_by_package,
                 ),
             )
 
@@ -226,16 +230,18 @@ def _with_from_imports(
             config.force_single_line and module not in config.single_line_exclusions
         ):
             ignore_case = config.force_alphabetical_sort_within_sections
-            from_imports = sorting.naturally(
-                from_imports,
-                key=lambda key: sorting.module_key(
-                    key,
-                    config,
-                    True,
-                    ignore_case,
-                    section_name=section,
-                ),
-            )
+
+            if not config.only_sections:
+                from_imports = sorting.naturally(
+                    from_imports,
+                    key=lambda key: sorting.module_key(
+                        key,
+                        config,
+                        True,
+                        ignore_case,
+                        section_name=section,
+                    ),
+                )
         if remove_imports:
             from_imports = [
                 line for line in from_imports if f"{module}.{line}" not in remove_imports
@@ -252,7 +258,8 @@ def _with_from_imports(
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
             if not config.no_inline_sort:
                 for as_import in as_imports:
-                    as_imports[as_import] = sorting.naturally(as_imports[as_import])
+                    if not config.only_sections:
+                        as_imports[as_import] = sorting.naturally(as_imports[as_import])
             for from_import in copy.copy(from_imports):
                 if from_import in as_imports:
                     idx = from_imports.index(from_import)
@@ -312,22 +319,41 @@ def _with_from_imports(
                         from_comments = parsed.categorized_comments["straight"].get(
                             f"{module}.{from_import}"
                         )
-                        output.extend(
-                            with_comments(
-                                from_comments,
-                                wrap.line(import_start + as_import, parsed.line_separator, config),
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
+
+                        if not config.only_sections:
+                            output.extend(
+                                with_comments(
+                                    from_comments,
+                                    wrap.line(
+                                        import_start + as_import, parsed.line_separator, config
+                                    ),
+                                    removed=config.ignore_comments,
+                                    comment_prefix=config.comment_prefix,
+                                )
+                                for as_import in sorting.naturally(as_imports[from_import])
                             )
-                            for as_import in sorting.naturally(as_imports[from_import])
-                        )
+
+                        else:
+                            output.extend(
+                                with_comments(
+                                    from_comments,
+                                    wrap.line(
+                                        import_start + as_import, parsed.line_separator, config
+                                    ),
+                                    removed=config.ignore_comments,
+                                    comment_prefix=config.comment_prefix,
+                                )
+                                for as_import in as_imports[from_import]
+                            )
                     else:
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
                     comments = None
             else:
                 while from_imports and from_imports[0] in as_imports:
                     from_import = from_imports.pop(0)
-                    as_imports[from_import] = sorting.naturally(as_imports[from_import])
+
+                    if not config.only_sections:
+                        as_imports[from_import] = sorting.naturally(as_imports[from_import])
                     from_comments = (
                         parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
                     )

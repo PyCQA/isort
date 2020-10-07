@@ -82,3 +82,19 @@ class TestAssignmentsFormatMismatch(TestISortError):
 
     def test_variables(self):
         assert self.instance.code == "print x"
+
+
+class TestUnsupportedSettings(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.UnsupportedSettings({"apply": {"value": "true", "source": "/"}})
+
+    def test_variables(self):
+        assert self.instance.unsupported_settings == {"apply": {"value": "true", "source": "/"}}
+
+
+class TestUnsupportedEncoding(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.UnsupportedEncoding("file.py")
+
+    def test_variables(self):
+        assert self.instance.filename == "file.py"

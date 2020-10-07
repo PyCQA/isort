@@ -1,4 +1,5 @@
-from hypothesis_auto import auto_pytest_magic
+from hypothesis import given
+from hypothesis import strategies as st
 
 from isort import parse
 from isort.settings import Config
@@ -36,6 +37,7 @@ def test_file_contents():
         original_line_count,
         _,
         _,
+        _,
     ) = parse.file_contents(TEST_CONTENTS, config=Config(default_section=""))
     assert "\n".join(in_lines) == TEST_CONTENTS
     assert "import" not in "\n".join(out_lines)
@@ -44,7 +46,37 @@ def test_file_contents():
     assert original_line_count == len(in_lines)
 
 
-auto_pytest_magic(parse.import_type)
-auto_pytest_magic(parse.skip_line)
-auto_pytest_magic(parse._strip_syntax)
-auto_pytest_magic(parse._infer_line_separator)
+# These tests were written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
+
+@given(contents=st.text())
+def test_fuzz__infer_line_separator(contents):
+    parse._infer_line_separator(contents=contents)
+
+
+@given(import_string=st.text())
+def test_fuzz__strip_syntax(import_string):
+    parse._strip_syntax(import_string=import_string)
+
+
+@given(line=st.text(), config=st.builds(Config))
+def test_fuzz_import_type(line, config):
+    parse.import_type(line=line, config=config)
+
+
+@given(
+    line=st.text(),
+    in_quote=st.text(),
+    index=st.integers(),
+    section_comments=st.lists(st.text()).map(tuple),
+    needs_import=st.booleans(),
+)
+def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
+    parse.skip_line(
+        line=line,
+        in_quote=in_quote,
+        index=index,
+        section_comments=section_comments,
+        needs_import=needs_import,
+    )

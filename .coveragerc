@@ -4,6 +4,7 @@ omit =
   isort/_vendored/*
   except ImportError:
   tests/*
+  isort/deprecated/*
 
 [report]
 exclude_lines =

@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "isort"
-version = "5.4.2"
+version = "5.5.4"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -86,7 +86,7 @@ isort = "isort.main:main"
 isort = "isort.main:ISortCommand"
 
 [tool.poetry.plugins."pylama.linter"]
-isort = "isort = isort.pylama_isort:Linter"
+isort = "isort.pylama_isort:Linter"
 
 [tool.portray.mkdocs]
 edit_uri = "https://github.com/pycqa/isort/edit/develop/"

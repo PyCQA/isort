@@ -60,7 +60,8 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """import os
+        == """
+import os
 import sys
 
 
@@ -90,7 +91,8 @@ def my_function_2():
 """,
             float_to_top=True,
         )
-        == """import os
+        == """
+import os
 
 
 def my_function_1():
@@ -105,10 +107,9 @@ def my_function_2():
 """
     )
 
-
-assert (
-    isort.code(
-        """
+    assert (
+        isort.code(
+            """
 import os
 
 
@@ -129,9 +130,10 @@ def my_function_2():
 
 import a
 """,
-        float_to_top=True,
-    )
-    == """import os
+            float_to_top=True,
+        )
+        == """
+import os
 
 
 def my_function_1():
@@ -151,7 +153,7 @@ import b
 def my_function_2():
     pass
 """
-)
+    )
 
 
 def test_isort_provides_official_api_for_diff_output_issue_1335():
@@ -440,9 +442,9 @@ def method():
 
 
 # isort: assignments
-d = x
+d = 1
 b = 2
-a = 1
+a = 3
 
 # isort: dict
 y = {"z": "z", "b": "b", "b": "c"}""",
@@ -474,9 +476,9 @@ def method():
 
 
 # isort: assignments
-a = 1
+a = 3
 b = 2
-d = x
+d = 1
 
 # isort: dict
 y = {"b": "c", "z": "z"}"""
@@ -589,4 +591,260 @@ from pathlib import Path
         sections=["FUTURE", "TYPING", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"],
         no_lines_before=["TYPING"],
         show_diff=True,
+    )
+
+
+def test_isort_intelligently_places_noqa_comments_issue_1456():
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (  # noqa
+    my_symbol,
+)
+""",
+        force_single_line=True,
+        show_diff=True,
+        multi_line_output=3,
+        include_trailing_comma=True,
+        force_grid_wrap=0,
+        use_parentheses=True,
+        line_length=79,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (
+    my_symbol,
+)
+""",
+        force_single_line=True,
+        show_diff=True,
+        multi_line_output=3,
+        include_trailing_comma=True,
+        force_grid_wrap=0,
+        use_parentheses=True,
+        line_length=79,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (  # noqa
+    my_symbol
+)
+""",
+        force_single_line=True,
+        use_parentheses=True,
+        multi_line_output=3,
+        line_length=79,
+        show_diff=True,
+    )
+
+    assert isort.check_code(
+        """
+from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (
+    my_symbol
+)
+""",
+        force_single_line=True,
+        use_parentheses=True,
+        multi_line_output=3,
+        line_length=79,
+        show_diff=True,
+    )
+
+    # see: https://github.com/PyCQA/isort/issues/1415
+    assert isort.check_code(
+        "from dials.test.algorithms.spot_prediction."
+        "test_scan_static_reflection_predictor import (  # noqa: F401\n"
+        "    data as static_test,\n)\n",
+        profile="black",
+        show_diff=True,
+    )
+
+
+def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
+    """Test to ensure isort respects the quiet API parameter when passed in via the API.
+    See: https://github.com/PyCQA/isort/issues/1461.
+    """
+    settings_file = tmpdir.join(".isort.cfg")
+    custom_settings_file = tmpdir.join(".custom.isort.cfg")
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file)
+
+    out, error = capsys.readouterr()
+    assert not error
+    assert "Fixing" in out
+
+    # When passed in directly as a setting override
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file, quiet=True)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # Present in an automatically loaded configuration file
+    isort.settings._find_config.cache_clear()
+    settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # In a custom configuration file
+    settings_file.write(
+        """
+[isort]
+quiet = false
+"""
+    )
+    custom_settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    tmp_file.write("import b\nimport a\n")
+    isort.file(tmp_file, settings_file=str(custom_settings_file))
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+    # Reused configuration object
+    custom_config = Config(settings_file=str(custom_settings_file))
+    isort.file(tmp_file, config=custom_config)
+    out, error = capsys.readouterr()
+    assert not error
+    assert not out
+
+
+def test_isort_should_warn_on_empty_custom_config_issue_1433(tmpdir):
+    """Feedback should be provided when a user provides a custom settings file that has no
+    discoverable configuration.
+    See: https://github.com/PyCQA/isort/issues/1433
+    """
+    settings_file = tmpdir.join(".custom.cfg")
+    settings_file.write(
+        """
+[settings]
+quiet = true
+"""
+    )
+    with pytest.warns(UserWarning):
+        assert not Config(settings_file=str(settings_file)).quiet
+
+    isort.settings._get_config_data.cache_clear()
+    settings_file.write(
+        """
+[isort]
+quiet = true
+"""
+    )
+    with pytest.warns(None) as warning:
+        assert Config(settings_file=str(settings_file)).quiet
+    assert not warning
+
+
+def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
+    """When a file has an existing top of file import block before code but after comments
+    isort's float to top feature should respect the existing spacing between the top file comment
+    and the import statements.
+    See: https://github.com/PyCQA/isort/issues/1502
+    """
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
+    assert isort.check_code(
+        """#!/bin/bash
+'''My comment'''
+
+
+import a
+
+x = 1
+""",
+        float_to_top=True,
+        show_diff=True,
+    )
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+import a
+
+x = 1
+""",
+            float_to_top=True,
+            add_imports=["import b"],
+        )
+        == """#!/bin/bash
+'''My comment'''
+
+
+import a
+import b
+
+x = 1
+"""
+    )
+
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+def my_function():
+    pass
+
+
+import a
+""",
+            float_to_top=True,
+        )
+        == """#!/bin/bash
+'''My comment'''
+import a
+
+
+def my_function():
+    pass
+"""
+    )
+
+    assert (
+        isort.code(
+            """#!/bin/bash
+'''My comment'''
+
+
+def my_function():
+    pass
+""",
+            add_imports=["import os"],
+            float_to_top=True,
+        )
+        == """#!/bin/bash
+'''My comment'''
+import os
+
+
+def my_function():
+    pass
+"""
     )

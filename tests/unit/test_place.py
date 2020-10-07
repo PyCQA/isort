@@ -20,3 +20,10 @@ def test_extra_standard_library(src_path):
     )
     assert place_tester("os") == sections.STDLIB
     assert place_tester("hug") == sections.STDLIB
+
+
+def test_no_standard_library_placement():
+    assert place.module_with_reason(
+        "pathlib", config=Config(sections=["THIRDPARTY"], default_section="THIRDPARTY")
+    ) == ("THIRDPARTY", "Default option in Config or universal default.")
+    assert place.module("pathlib") == "STDLIB"
