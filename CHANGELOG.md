@@ -20,6 +20,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1523: in rare cases isort can ignore direct from import if as import is also on same line.
 
   Potentially breaking changes:
+  - Fixed #1443: Incorrect third vs first party categorization - namespace packages.
   - Fixed #1486: "Google" profile is not quite Google style.
   - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.
 
