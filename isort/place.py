@@ -85,7 +85,7 @@ def _src_path(
             )
         ):
             return _src_path(nested_module[0], config, (module_path,), new_prefix)
-        elif (
+        if (
             _is_module(module_path)
             or _is_package(module_path)
             or _src_path_is_module(src_path, root_module_name)
