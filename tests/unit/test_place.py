@@ -31,7 +31,7 @@ def test_no_standard_library_placement():
 
 def test_namespace_package_placement(examples_path):
     namespace_examples = examples_path / "namespaces"
-    
+
     implicit = namespace_examples / "implicit"
     pkg_resource = namespace_examples / "pkg_resource"
     pkgutil = namespace_examples / "pkgutil"
@@ -46,13 +46,11 @@ def test_namespace_package_placement(examples_path):
         assert place.module("root.name", config=namespace_override) == "FIRSTPARTY"
 
     no_namespace = namespace_examples / "none"
-    config = Config(settings_path=no_namespace)
-    manual_namespace = Config(settings_path=no_namespace, namespace_packages=["root"])
-    assert place.module("root.name", config=config) == "FIRSTPARTY"
-    assert place.module("root.nested", config=config) == "FIRSTPARTY"
-    assert place.module("root.name", config=manual_namespace) == "THIRDPARTY"
-    assert place.module("root.nested", config=config) == "FIRSTPARTY"
-        
-    
-    
-    
+    almost_implicit = namespace_examples / "almost-implicit"
+    for lacks_namespace in (no_namespace, almost_implicit):
+        config = Config(settings_path=lacks_namespace)
+        manual_namespace = Config(settings_path=lacks_namespace, namespace_packages=["root"])
+        assert place.module("root.name", config=config) == "FIRSTPARTY"
+        assert place.module("root.nested", config=config) == "FIRSTPARTY"
+        assert place.module("root.name", config=manual_namespace) == "THIRDPARTY"
+        assert place.module("root.nested", config=config) == "FIRSTPARTY"

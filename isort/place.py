@@ -116,7 +116,10 @@ def _is_namespace_package(path: Path, src_extensions: FrozenSet[str]) -> bool:
 
     init_file = path / "__init__.py"
     if not init_file.exists():
-        if [filename for filename in path.iterdir() if filename.suffix in src_extensions]:
+        filenames = [
+            filename for filename in path.iterdir() if filename.suffix.lstrip(".") in src_extensions
+        ]
+        if filenames:
             return False
     else:
         with init_file.open("rb") as open_init_file:
