@@ -26,3 +26,8 @@ def test_path():
 @pytest.fixture
 def src_path():
     return Path(SRC_DIR).resolve()
+
+
+@pytest.fixture
+def examples_path():
+    return Path(TEST_DIR).resolve() / "example_projects"
