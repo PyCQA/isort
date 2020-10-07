@@ -200,6 +200,8 @@ class _Config:
     dedup_headings: bool = False
     only_sections: bool = False
     only_modified: bool = False
+    auto_identify_namespace_packages: bool = True
+    namespace_packages: FrozenSet[str] = frozenset()
 
     def __post_init__(self):
         py_version = self.py_version

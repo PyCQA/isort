@@ -3,7 +3,7 @@ import importlib
 from fnmatch import fnmatch
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import FrozenSet, Iterable, Optional, Tuple
 
 from isort import sections
 from isort.settings import DEFAULT_CONFIG, Config
@@ -60,43 +60,32 @@ def _known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
     return None
 
 
-def _src_path(name: str, config: Config) -> Optional[Tuple[str, str]]:
-    search_paths = zip(config.src_paths, config.src_paths)
-    for index, module_part in enumerate(name.split(".")):
-        if index == len(module_parts):
-            for search_path, src_path in search_paths:
-                module_path = (search_path / module_part).resolve()
-                if (
-                    _is_module(module_path)
-                    or _is_package(module_path)
-                    or _src_path_is_module(search_path, module_part)
-                ):
-                    return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
-        else:
-            new_search_paths = []
-            for search_path, src_path in search_paths:
-                if
+def _src_path(
+    name: str,
+    config: Config,
+    src_paths: Optional[Iterable[Path]] = None,
+    prefix: Tuple[str, ...] = (),
+) -> Optional[Tuple[str, str]]:
+    if src_paths is None:
+        src_paths = config.src_paths
 
-            search_paths = [search_path for search_path in search_paths if
-                            _is_package((src_path / root_module_name).resolve()) or
-                            index == 0 and _src_path_is_module
+    root_module_name, *nested_module = name.split(".", 1)
+    new_prefix = prefix + (root_module_name,)
+    namespace = ".".join(new_prefix)
 
-            for src_path in config.src_paths:
-                root_module_name = name.split(".")[0]
-                module_path =
-                if (
-                    or
-                    or _src_path_is_module(src_path, root_module_name)
-                ):
-                    return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
-
-
-    for src_path in config.src_paths:
-
-        for part in
-        root_module_name = name.split(".")[0]
+    for src_path in src_paths:
         module_path = (src_path / root_module_name).resolve()
-        if (
+        if not prefix and not module_path.is_dir() and src_path.name == root_module_name:
+            module_path = src_path.resolve()
+        if nested_module and (
+            namespace in config.namespace_packages
+            or (
+                config.auto_identify_namespace_packages
+                and _is_namespace_package(module_path, config.supported_extensions)
+            )
+        ):
+            return _src_path(nested_module[0], config, (module_path,), new_prefix)
+        elif (
             _is_module(module_path)
             or _is_package(module_path)
             or _src_path_is_module(src_path, root_module_name)
@@ -119,6 +108,29 @@ def _is_module(path: Path) -> bool:
 
 def _is_package(path: Path) -> bool:
     return exists_case_sensitive(str(path)) and path.is_dir()
+
+
+def _is_namespace_package(path: Path, src_extensions: FrozenSet[str]) -> bool:
+    if not _is_package(path):
+        return False
+
+    init_file = path / "__init__.py"
+    if not init_file.exists():
+        if [filename for filename in path.iterdir() if filename.suffix in src_extensions]:
+            return False
+    else:
+        with init_file.open("rb") as open_init_file:
+            file_start = open_init_file.read(4096)
+            if (
+                b"__import__('pkg_resources').declare_namespace(__name__)\n" not in file_start
+                and b'__import__("pkg_resources").declare_namespace(__name__)\n' not in file_start
+                and b"__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                not in file_start
+                and b'__path__ = __import__("pkgutil").extend_path(__path__, __name__)'
+                not in file_start
+            ):
+                return False
+    return True
 
 
 def _src_path_is_module(src_path: Path, module_name: str) -> bool:
