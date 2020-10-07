@@ -4913,3 +4913,44 @@ def test_combine_straight_imports() -> None:
     assert isort.code(test_input, combine_straight_imports=True, only_sections=True) == (
         "import sys, os, math\n" "\n" "import a, b\n"
     )
+
+
+def test_get_imports_string() -> None:
+    test_input = (
+        "import first_straight\n"
+        "\n"
+        "import second_straight\n"
+        "from first_from import first_from_function_1, first_from_function_2\n"
+        "import bad_name as good_name\n"
+        "from parent.some_bad_defs import bad_name_1 as ok_name_1, bad_name_2 as ok_name_2\n"
+        "\n"
+        "# isort: list\n"
+        "__all__ = ['b', 'c', 'a']\n"
+        "\n"
+        "def bla():\n"
+        "    import needed_in_bla_2\n"
+        "\n"
+        "\n"
+        "    import needed_in_bla\n"
+        "    pass"
+        "\n"
+        "def bla_bla():\n"
+        "    import needed_in_bla_bla\n"
+        "\n"
+        "    #import not_really_an_import\n"
+        "    pass"
+        "\n"
+        "import needed_in_end\n"
+    )
+    result = api.get_imports_string(test_input)
+    assert result == (
+        "import first_straight\n"
+        "import second_straight\n"
+        "from first_from import first_from_function_1, first_from_function_2\n"
+        "import bad_name as good_name\n"
+        "from parent.some_bad_defs import bad_name_1 as ok_name_1, bad_name_2 as ok_name_2\n"
+        "import needed_in_bla_2\n"
+        "import needed_in_bla\n"
+        "import needed_in_bla_bla\n"
+        "import needed_in_end\n"
+    )

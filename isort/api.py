@@ -366,6 +366,62 @@ def sort_file(
         return changed
 
 
+def get_imports_string(
+    code: str,
+    extension: Optional[str] = None,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    **config_kwargs,
+) -> str:
+    """Finds all imports within the provided code string, returning a new string with them.
+
+    - **code**: The string of code with imports that need to be sorted.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - ****config_kwargs**: Any config modifications.
+    """
+    input_stream = StringIO(code)
+    output_stream = StringIO()
+    config = _config(path=file_path, config=config, **config_kwargs)
+    get_imports_stream(
+        input_stream,
+        output_stream,
+        extension=extension,
+        config=config,
+        file_path=file_path,
+    )
+    output_stream.seek(0)
+    return output_stream.read()
+
+
+def get_imports_stream(
+    input_stream: TextIO,
+    output_stream: TextIO,
+    extension: Optional[str] = None,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    **config_kwargs,
+) -> None:
+    """Finds all imports within the provided code stream, outputs to the provided output stream.
+
+    - **input_stream**: The stream of code with imports that need to be sorted.
+    - **output_stream**: The stream where sorted imports should be written to.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - ****config_kwargs**: Any config modifications.
+    """
+    config = _config(path=file_path, config=config, **config_kwargs)
+    core.process(
+        input_stream,
+        output_stream,
+        extension=extension or (file_path and file_path.suffix.lstrip(".")) or "py",
+        config=config,
+        imports_only=True,
+    )
+
+
 def _config(
     path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
 ) -> Config:
