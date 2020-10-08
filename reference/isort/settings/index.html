@@ -1717,7 +1717,7 @@
 
     <span class="n">honor_noqa</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
-    <span class="n">src_paths</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+    <span class="n">src_paths</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="n">old_finders</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
@@ -2101,15 +2101,21 @@
 
         <span class="k">if</span> <span class="s2">&quot;src_paths&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
 
-            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">path_root</span><span class="p">,</span> <span class="n">path_root</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span><span class="p">))</span>
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">path_root</span> <span class="o">/</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="n">path_root</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
 
-            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+            <span class="n">src_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="n">path_root</span> <span class="o">/</span> <span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">())</span>
+            <span class="k">for</span> <span class="n">src_path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">()):</span>
 
-            <span class="p">)</span>
+                <span class="n">full_path</span> <span class="o">=</span> <span class="n">path_root</span> <span class="o">/</span> <span class="n">src_path</span>
+
+                <span class="k">if</span> <span class="n">full_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_paths</span><span class="p">:</span>
+
+                    <span class="n">src_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+            <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;formatter&quot;</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="p">:</span>
 
@@ -3035,15 +3041,21 @@ dynamically determined later on.</p>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;src_paths&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">((</span><span class="n">path_root</span><span class="p">,</span><span class="w"> </span><span class="n">path_root</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="ss">&quot;src&quot;</span><span class="p">))</span><span class="w"></span>
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">path_root</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="ss">&quot;src&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">path_root</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="nl">src_paths</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">path_root</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">src_path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;src_paths&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="n">full_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path_root</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">src_path</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">full_path</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">src_paths</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">src_paths</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">combined_config</span><span class="o">[</span><span class="n">&quot;src_paths&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tuple</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;formatter&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">combined_config</span><span class="p">:</span><span class="w"></span>
 
