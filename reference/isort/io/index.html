@@ -255,6 +255,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -796,6 +808,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#detect_encoding" class="md-nav__link">
+    detect_encoding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#from_contents" class="md-nav__link">
     from_contents
   </a>
@@ -1330,6 +1349,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#detect_encoding" class="md-nav__link">
+    detect_encoding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#from_contents" class="md-nav__link">
     from_contents
   </a>
@@ -1426,7 +1452,9 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">isort.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedEncoding</span>
 
 <span class="n">_ENCODING_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)&quot;</span><span class="p">)</span>
 
@@ -1440,9 +1468,21 @@
 
     <span class="nd">@staticmethod</span>
 
+    <span class="k">def</span> <span class="nf">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">readline</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">bytes</span><span class="p">]):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">readline</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="n">UnsupportedEncoding</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+
     <span class="k">def</span> <span class="nf">from_contents</span><span class="p">(</span><span class="n">contents</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;File&quot;</span><span class="p">:</span>
 
-        <span class="n">encoding</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 
@@ -1466,7 +1506,7 @@
 
         <span class="k">try</span><span class="p">:</span>
 
-            <span class="n">encoding</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="nb">buffer</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">buffer</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
 
             <span class="nb">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
@@ -1541,9 +1581,21 @@
 
 <span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
 
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detect_encoding</span><span class="p">(</span><span class="nl">filename</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">readline</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="err">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tokenize</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">readline</span><span class="p">)</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="k">Exception</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">UnsupportedEncoding</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
+
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_contents</span><span class="p">(</span><span class="nl">contents</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">filename</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">&quot;File&quot;</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">encoding</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokenize</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
 
@@ -1567,7 +1619,7 @@
 
 <span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">encoding</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokenize</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">buffer</span><span class="p">.</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">buffer</span><span class="p">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
 
@@ -1627,6 +1679,29 @@
 
 
 <h4 id="static-methods">Static methods</h4>
+<h5 id="detect_encoding">detect_encoding</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">detect_encoding</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">readline</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">bytes</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@staticmethod</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">detect_encoding</span><span class="p">(</span><span class="nl">filename</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">readline</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">[</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="err">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tokenize</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">readline</span><span class="p">)</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="k">Exception</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">UnsupportedEncoding</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+
+</details>
 <h5 id="from_contents">from_contents</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">from_contents</span><span class="p">(</span>
     <span class="n">contents</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1639,7 +1714,7 @@
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">from_contents</span><span class="p">(</span><span class="nl">contents</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">filename</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">&quot;File&quot;</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">encoding</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokenize</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>

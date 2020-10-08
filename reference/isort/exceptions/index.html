@@ -255,6 +255,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1296,11 +1308,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedsettings" class="md-nav__link">
-    UnsupportedSettings
+  <a href="#unsupportedencoding" class="md-nav__link">
+    UnsupportedEncoding
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedSettings">
+    <nav class="md-nav" aria-label="UnsupportedEncoding">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1327,6 +1339,53 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_12" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupportedsettings" class="md-nav__link">
+    UnsupportedSettings
+  </a>
+  
+    <nav class="md-nav" aria-label="UnsupportedSettings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_13" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_13" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_13" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_13" class="md-nav__link">
     with_traceback
   </a>
   
@@ -2415,11 +2474,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedsettings" class="md-nav__link">
-    UnsupportedSettings
+  <a href="#unsupportedencoding" class="md-nav__link">
+    UnsupportedEncoding
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedSettings">
+    <nav class="md-nav" aria-label="UnsupportedEncoding">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2446,6 +2505,53 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_12" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupportedsettings" class="md-nav__link">
+    UnsupportedSettings
+  </a>
+  
+    <nav class="md-nav" aria-label="UnsupportedSettings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_13" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_13" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_13" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_13" class="md-nav__link">
     with_traceback
   </a>
   
@@ -2490,7 +2596,9 @@
 <p>All isort specific exception classes should be defined here</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;All isort specific exception classes should be defined here&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
@@ -2723,6 +2831,22 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">unsupported_settings</span> <span class="o">=</span> <span class="n">unsupported_settings</span>
+
+<span class="k">class</span> <span class="nc">UnsupportedEncoding</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Raised when isort encounters an encoding error while trying to read a file&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+
+        <span class="bp">self</span><span class="p">,</span>
+
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+
+    <span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unknown or unsupported encoding in {filename}&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
 </code></pre></div>
 
 
@@ -3069,6 +3193,7 @@ set self.<strong>traceback</strong> to tb and return self.</p>
 <li>isort.exceptions.LiteralSortTypeMismatch</li>
 <li>isort.exceptions.AssignmentsFormatMismatch</li>
 <li>isort.exceptions.UnsupportedSettings</li>
+<li>isort.exceptions.UnsupportedEncoding</li>
 </ul>
 <h4 id="class-variables_6">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">args</span>
@@ -3350,6 +3475,55 @@ set self.<strong>traceback</strong> to tb and return self.</p>
 
 <p>Exception.with_traceback(tb) --
 set self.<strong>traceback</strong> to tb and return self.</p>
+<h3 id="unsupportedencoding">UnsupportedEncoding</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">UnsupportedEncoding</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<p>Raised when isort encounters an encoding error while trying to read a file</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">UnsupportedEncoding</span>(<span class="n">ISortError</span>):
+
+    <span class="s">&quot;&quot;&quot;Raised when isort encounters an encoding error while trying to read a file&quot;&quot;&quot;</span>
+
+    <span class="n">def</span> <span class="n">__init__</span>(
+
+        <span class="nb">self</span>,
+
+        <span class="n">filename:</span> <span class="n">Union</span>[<span class="n">str</span>, <span class="n">Path</span>],
+
+    ):
+
+        <span class="n">super</span>().<span class="n">__init__</span>(<span class="nb">f</span><span class="s">&quot;Unknown or unsupported encoding in {filename}&quot;</span>)
+
+        <span class="nb">self</span>.<span class="nb">filename</span> = <span class="nb">filename</span>
+</code></pre></div>
+
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro_12">Ancestors (in MRO)</h4>
+<ul>
+<li>isort.exceptions.ISortError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h4 id="class-variables_12">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">args</span>
+</code></pre></div>
+
+
+<h4 id="methods_12">Methods</h4>
+<h5 id="with_traceback_12">with_traceback</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<p>Exception.with_traceback(tb) --
+set self.<strong>traceback</strong> to tb and return self.</p>
 <h3 id="unsupportedsettings">UnsupportedSettings</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">UnsupportedSettings</span><span class="p">(</span>
     <span class="n">unsupported_settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
@@ -3399,19 +3573,19 @@ that it doesn't support.</p>
 
 </details>
 <hr />
-<h4 id="ancestors-in-mro_12">Ancestors (in MRO)</h4>
+<h4 id="ancestors-in-mro_13">Ancestors (in MRO)</h4>
 <ul>
 <li>isort.exceptions.ISortError</li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
-<h4 id="class-variables_12">Class variables</h4>
+<h4 id="class-variables_13">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">args</span>
 </code></pre></div>
 
 
-<h4 id="methods_12">Methods</h4>
-<h5 id="with_traceback_12">with_traceback</h5>
+<h4 id="methods_13">Methods</h4>
+<h5 id="with_traceback_13">with_traceback</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
     <span class="o">...</span>
 <span class="p">)</span>

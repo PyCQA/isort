@@ -255,6 +255,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1377,7 +1389,7 @@
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from (\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>  <span class="c1"># pragma: no cover - regex always matches if line starts with &quot;from .&quot;</span>
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
 
@@ -1591,7 +1603,7 @@
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from (\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>  <span class="c1"># pragma: no cover - regex always matches if line starts with &quot;from .&quot;</span>
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
 

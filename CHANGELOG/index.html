@@ -229,8 +229,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#560-tbd" class="md-nav__link">
-    5.6.0 TBD
+  <a href="#560-october-7-2020" class="md-nav__link">
+    5.6.0 October 7, 2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#555-hotfix-october-7-2020" class="md-nav__link">
+    5.5.5 [Hotfix] October 7, 2020
   </a>
   
 </li>
@@ -763,6 +770,18 @@
   <li class="md-nav__item">
     <a href="../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
     </a>
   </li>
 
@@ -1656,8 +1675,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#560-tbd" class="md-nav__link">
-    5.6.0 TBD
+  <a href="#560-october-7-2020" class="md-nav__link">
+    5.6.0 October 7, 2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#555-hotfix-october-7-2020" class="md-nav__link">
+    5.5.5 [Hotfix] October 7, 2020
   </a>
   
 </li>
@@ -2161,23 +2187,35 @@
                 <h1 id="changelog">Changelog</h1>
 <p>NOTE: isort follows the <a href="https://semver.org/">semver</a> versioning standard.
 Find out more about isort's release policy <a href="https://pycqa.github.io/isort/docs/major_releases/release_policy/">here</a>.</p>
-<h3 id="560-tbd">5.6.0 TBD</h3>
+<h3 id="560-october-7-2020">5.6.0 October 7, 2020</h3>
 <ul>
 <li>Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.</li>
 <li>Implemented #1494: Default to sorting imports within <code>.pxd</code> files.</li>
 <li>Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.</li>
 <li>Implemented #1511: Support for easily seeing all files isort will be ran against using <code>isort . --show-files</code>.</li>
+<li>Implemented #1487: Improved handling of encoding errors.</li>
 <li>Improved handling of unsupported configuration option errors (see #1475).</li>
 <li>Fixed #1463: Better interactive documentation for future option.</li>
 <li>Fixed #1461: Quiet config option not respected by file API in some circumstances.</li>
 <li>Fixed #1482: pylama integration is not working correctly out-of-the-box.</li>
 <li>Fixed #1492: --check does not work with stdin source.</li>
-<li>Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.
-Potentially breaking changes:</li>
-<li>Fixed #1486: "Google" profile is not quite Google style.</li>
+<li>Fixed #1499: isort gets confused by single line, multi-line style comments when using float-to-top.</li>
+<li>Fixed #1525: Some warnings can't be disabled with --quiet.</li>
+<li>Fixed #1523: in rare cases isort can ignore direct from import if as import is also on same line.</li>
 </ul>
+<p>Potentially breaking changes:
+  - Implemented #1540: Officially support Python 3.9 stdlib imports by default.
+  - Fixed #1443: Incorrect third vs first party categorization - namespace packages.
+  - Fixed #1486: "Google" profile is not quite Google style.
+  - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.</p>
 <p>Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
-  - Implemented #1472: Full testing of stdin CLI Options</p>
+  - Implemented #1472: Full testing of stdin CLI Options
+  - Added additional branch coverage.
+  - More projects added to integration test suite.</p>
+<h3 id="555-hotfix-october-7-2020">5.5.5 [Hotfix] October 7, 2020</h3>
+<ul>
+<li>Fixed #1539: in extremely rare cases isort 5.5.4 introduces syntax error by removing closing paren.</li>
+</ul>
 <h3 id="554-hotfix-september-29-2020">5.5.4 [Hotfix] September 29, 2020</h3>
 <ul>
 <li>Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.</li>

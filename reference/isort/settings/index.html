@@ -255,6 +255,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1739,6 +1751,12 @@
 
     <span class="n">only_sections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="n">only_modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">auto_identify_namespace_packages</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">namespace_packages</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -1847,6 +1865,14 @@
 
             <span class="k">return</span>
 
+        <span class="c1"># We can&#39;t use self.quiet to conditionally show warnings before super.__init__() is called</span>
+
+        <span class="c1"># at the end of this method. _Config is also frozen so setting self.quiet isn&#39;t possible.</span>
+
+        <span class="c1"># Therefore we extract quiet early here in a variable and use that in warning conditions.</span>
+
+        <span class="n">quiet</span> <span class="o">=</span> <span class="n">config_overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
         <span class="n">sources</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_DEFAULT_SETTINGS</span><span class="p">]</span>
 
         <span class="n">config_settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -1865,7 +1891,7 @@
 
             <span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">config_settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config_settings</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
 
                 <span class="n">warn</span><span class="p">(</span>
 
@@ -1983,7 +2009,7 @@
 
                     <span class="n">section_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}&quot;</span>
 
-                    <span class="k">if</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="n">combined_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="n">combined_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
 
                         <span class="n">warn</span><span class="p">(</span>
 
@@ -2007,13 +2033,7 @@
 
                     <span class="n">known_other</span><span class="p">[</span><span class="n">import_heading</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="p">(</span>
-
-                        <span class="n">maps_to_section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">())</span>
-
-                        <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span>
-
-                    <span class="p">):</span>
+                    <span class="k">if</span> <span class="n">maps_to_section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">())</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
 
                         <span class="n">warn</span><span class="p">(</span>
 
@@ -2129,7 +2149,7 @@
 
                 <span class="n">combined_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">deprecated_option</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
 
                 <span class="n">warn</span><span class="p">(</span>
 
@@ -2779,6 +2799,14 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="k">return</span><span class="w"></span>
 
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">We</span><span class="w"> </span><span class="n">can</span><span class="s1">&#39;t use self.quiet to conditionally show warnings before super.__init__() is called</span>
+
+<span class="s1">        # at the end of this method. _Config is also frozen so setting self.quiet isn&#39;</span><span class="n">t</span><span class="w"> </span><span class="n">possible</span><span class="p">.</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Therefore</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="k">extract</span><span class="w"> </span><span class="n">quiet</span><span class="w"> </span><span class="n">early</span><span class="w"> </span><span class="n">here</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">variable</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="n">conditions</span><span class="p">.</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">quiet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config_overrides</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;quiet&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
+
 <span class="w">        </span><span class="nl">sources</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">Dict[str, Any</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">_DEFAULT_SETTINGS</span><span class="o">]</span><span class="w"></span>
 
 <span class="w">        </span><span class="nl">config_settings</span><span class="p">:</span><span class="w"> </span><span class="n">Dict</span><span class="o">[</span><span class="n">str, Any</span><span class="o">]</span><span class="w"></span>
@@ -2797,7 +2825,7 @@ dynamically determined later on.</p>
 
 <span class="w">            </span><span class="n">project_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">config_settings</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">config_settings</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">                </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
 
@@ -2915,7 +2943,7 @@ dynamically determined later on.</p>
 
 <span class="w">                    </span><span class="n">section_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;known_{KNOWN_SECTION_MAPPING[maps_to_section].lower()}&quot;</span><span class="w"></span>
 
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">section_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">section_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">                        </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
 
@@ -2939,13 +2967,7 @@ dynamically determined later on.</p>
 
 <span class="w">                    </span><span class="n">known_other</span><span class="o">[</span><span class="n">import_heading</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frozenset</span><span class="p">(</span><span class="k">value</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-
-<span class="w">                        </span><span class="n">maps_to_section</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"></span>
-
-<span class="w">                        </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">quiet</span><span class="w"></span>
-
-<span class="w">                    </span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">maps_to_section</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">combined_config</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;sections&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">())</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">                        </span><span class="n">warn</span><span class="p">(</span><span class="w"></span>
 
@@ -3061,7 +3083,7 @@ dynamically determined later on.</p>
 
 <span class="s1">                combined_config.pop(deprecated_option)</span>
 
-<span class="s1">            if not self.quiet:</span>
+<span class="s1">            if not quiet:</span>
 
 <span class="s1">                warn(</span>
 
@@ -3320,6 +3342,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">auto_identify_namespace_packages</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">balanced_wrapping</span>
 </code></pre></div>
 
@@ -3516,6 +3542,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">namespace_packages</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">no_inline_sort</span>
 </code></pre></div>
 
@@ -3529,6 +3559,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">old_finders</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">only_modified</span>
 </code></pre></div>
 
 
