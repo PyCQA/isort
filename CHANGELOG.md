@@ -27,6 +27,9 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1472: Full testing of stdin CLI Options
 
+### 5.5.5 [Hotfix] October 7, 2020
+  - Fixed #1539: in extremely rare cases isort 5.5.4 introduces syntax error by removing closing paren.
+
 ### 5.5.4 [Hotfix] September 29, 2020
   - Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.
   - Fixed #1505: Support case where known_SECTION points to a section not listed in sections.
