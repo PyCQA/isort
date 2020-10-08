@@ -3,5 +3,6 @@
     entry: isort
     require_serial: true
     language: python
-    types: [python]
+    files: '.pxd$|.py$'
+    types: [file]
     args: ['--filter-files']
