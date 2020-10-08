@@ -140,3 +140,8 @@ def test_pyramid(tmpdir):
 def test_products_zopetree(tmpdir):
     git_clone("https://github.com/jugmac00/Products.ZopeTree.git", tmpdir)
     run_isort([str(tmpdir)])
+
+
+def test_dobby(tmpdir):
+    git_clone("https://github.com/rocketDuck/dobby.git", tmpdir)
+    run_isort([str(tmpdir / "tests"), str(tmpdir / "src")])

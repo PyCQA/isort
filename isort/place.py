@@ -117,7 +117,10 @@ def _is_namespace_package(path: Path, src_extensions: FrozenSet[str]) -> bool:
     init_file = path / "__init__.py"
     if not init_file.exists():
         filenames = [
-            filename for filename in path.iterdir() if filename.suffix.lstrip(".") in src_extensions
+            filepath
+            for filepath in path.iterdir()
+            if filepath.suffix.lstrip(".") in src_extensions
+            or filepath.name.lower() in ("setup.cfg", "pyproject.toml")
         ]
         if filenames:
             return False

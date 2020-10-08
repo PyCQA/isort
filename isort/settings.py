@@ -182,7 +182,7 @@ class _Config:
     directory: str = ""
     profile: str = ""
     honor_noqa: bool = False
-    src_paths: FrozenSet[Path] = frozenset()
+    src_paths: Tuple[Path, ...] = tuple()
     old_finders: bool = False
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
@@ -401,11 +401,15 @@ class Config(_Config):
         path_root = Path(combined_config.get("directory", project_root)).resolve()
         path_root = path_root if path_root.is_dir() else path_root.parent
         if "src_paths" not in combined_config:
-            combined_config["src_paths"] = frozenset((path_root, path_root / "src"))
+            combined_config["src_paths"] = (path_root / "src", path_root)
         else:
-            combined_config["src_paths"] = frozenset(
-                path_root / path for path in combined_config.get("src_paths", ())
-            )
+            src_paths: List[Path] = []
+            for src_path in combined_config.get("src_paths", ()):
+                full_path = path_root / src_path
+                if full_path not in src_paths:
+                    src_paths.append(full_path)
+
+            combined_config["src_paths"] = tuple(src_paths)
 
         if "formatter" in combined_config:
             import pkg_resources
