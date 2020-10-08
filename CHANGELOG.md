@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.6.0 TBD
+### 5.6.0 October 7, 2020
   - Implemented #1433: Provide helpful feedback in case a custom config file is specified without a configuration.
   - Implemented #1494: Default to sorting imports within `.pxd` files.
   - Implemented #1502: Improved float-to-top behavior when there is an existing import section present at top-of-file.
@@ -27,6 +27,8 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
   Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1472: Full testing of stdin CLI Options
+  - Added additional branch coverage.
+  - More projects added to integration test suite.
 
 ### 5.5.5 [Hotfix] October 7, 2020
   - Fixed #1539: in extremely rare cases isort 5.5.4 introduces syntax error by removing closing paren.
