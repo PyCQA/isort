@@ -19,13 +19,13 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1525: Some warnings can't be disabled with --quiet.
   - Fixed #1523: in rare cases isort can ignore direct from import if as import is also on same line.
 
-  Potentially breaking changes:
+#### Potentially breaking changes:
   - Implemented #1540: Officially support Python 3.9 stdlib imports by default.
   - Fixed #1443: Incorrect third vs first party categorization - namespace packages.
   - Fixed #1486: "Google" profile is not quite Google style.
   - Fixed "PyCharm" profile to always add 2 lines to be consistent with what PyCharm "Optimize Imports" does.
 
-  Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+#### Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1472: Full testing of stdin CLI Options
   - Added additional branch coverage.
   - More projects added to integration test suite.
@@ -66,12 +66,12 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1405: Added support for coloring diff output.
   - Implemented #1434: New multi-line grid mode without parentheses.
 
-Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+#### Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1392: Extensive profile testing.
   - Implemented #1393: Proprety based testing applied to code snippets.
   - Implemented #1391: Create automated integration test that includes full code base of largest OpenSource isort users.
 
-Potentially breaking changes:
+#### Potentially breaking changes:
   - Fixed #1429: --check doesn't print to stderr as the documentation says. This means if you were looking for `ERROR:` messages for files that contain incorrect imports within stdout you will now need to look in stderr.
 
 ### 5.4.2 Aug 14, 2020
@@ -106,7 +106,7 @@ Potentially breaking changes:
   - Fixed #1366: spurious errors when combining skip with --gitignore.
   - Fixed #1359: --skip-gitignore does not honor ignored symlink
 
-Internal Development:
+#### Internal Development:
   - Initial hypothesmith powered test to help catch unexpected syntax parsing and output errors (thanks @Zac-HD!)
 
 ### 5.2.2 July 30, 2020
@@ -158,7 +158,7 @@ Internal Development:
   - Fixed #1315: Extra newline before comment with -n + --fss.
   - Fixed #1192: `-k` or `--keep-direct-and-as-imports` option has been deprecated as it is now always on.
 
-**Formatting changes implied:**
+#### Formatting changes implied:
   - Fixed #1280: rewrite of as imports changes the behavior of the imports.
 
 ### 5.0.9 July 11, 2020
