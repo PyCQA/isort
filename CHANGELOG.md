@@ -5,7 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
 ### 5.5.5 [Hotfix] October 7, 2020
-  - Fixed #1539: isort 5.5.4 introduces syntax error by removing closing paren.
+  - Fixed #1539: in extremely rare cases isort 5.5.4 introduces syntax error by removing closing paren.
 
 ### 5.5.4 [Hotfix] September 29, 2020
   - Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.
