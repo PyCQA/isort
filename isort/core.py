@@ -153,6 +153,7 @@ def process(
                     in_top_comment = False
                     first_comment_index_end = index - 1
 
+            was_in_quote = bool(in_quote)
             if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
                 char_index = 0
                 if first_comment_index_start == -1 and (
@@ -178,8 +179,8 @@ def process(
                         break
                     char_index += 1
 
-            not_imports = bool(in_quote) or in_top_comment or isort_off
-            if not (in_quote or in_top_comment):
+            not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
+            if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
                     if stripped_line == "# isort: on":
                         isort_off = False

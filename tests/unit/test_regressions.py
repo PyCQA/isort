@@ -1121,3 +1121,52 @@ def d():
 ''',
         show_diff=True,
     )
+
+
+def test_isort_shouldnt_introduce_syntax_error_issue_1539():
+    """isort should NEVER introduce syntax errors.
+    In 5.5.4 some strings that contained a line starting with from could lead to no empty paren.
+    See: https://github.com/PyCQA/isort/issues/1539.
+    """
+    assert isort.check_code(
+        '''"""Foobar
+    from {}""".format(
+    "bar",
+)
+''',
+        show_diff=True,
+    )
+    assert isort.check_code(
+        '''"""Foobar
+    import {}""".format(
+    "bar",
+)
+''',
+        show_diff=True,
+    )
+    assert (
+        isort.code(
+            '''"""Foobar
+    from {}"""
+    from a import b, a
+''',
+        )
+        == '''"""Foobar
+    from {}"""
+    from a import a, b
+'''
+    )
+    assert (
+        isort.code(
+            '''"""Foobar
+    from {}"""
+    import b
+    import a
+''',
+        )
+        == '''"""Foobar
+    from {}"""
+    import a
+    import b
+'''
+    )

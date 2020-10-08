@@ -4,9 +4,12 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.5.5 [Hotfix] October 7, 2020
+  - Fixed #1539: isort 5.5.4 introduces syntax error by removing closing paren.
+
 ### 5.5.4 [Hotfix] September 29, 2020
   - Fixed #1507: in rare cases isort changes the content of multiline strings after a yield statement.
-  - Fixed #1505: Support case where known_SECTION points to a section not listed in sections. 
+  - Fixed #1505: Support case where known_SECTION points to a section not listed in sections.
 
 ### 5.5.3 [Hotfix] September 20, 2020
   - Fixed #1488: in rare cases isort can mangle `yield from` or `raise from` statements.
