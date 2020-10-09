@@ -3,5 +3,5 @@
     entry: isort
     require_serial: true
     language: python
-    files: '.pxd$|.py$'
+    types: [python, cython, pyi]
     args: ['--filter-files']
