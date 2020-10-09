@@ -145,3 +145,8 @@ def test_products_zopetree(tmpdir):
 def test_dobby(tmpdir):
     git_clone("https://github.com/rocketDuck/dobby.git", tmpdir)
     run_isort([str(tmpdir / "tests"), str(tmpdir / "src")])
+
+
+def test_zope(tmpdir):
+    git_clone("https://github.com/zopefoundation/Zope.git", tmpdir)
+    run_isort([str(tmpdir)])
