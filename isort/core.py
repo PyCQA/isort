@@ -85,7 +85,8 @@ def process(
                     isort_off = True
                 if current:
                     if add_imports:
-                        current += line_separator + line_separator.join(add_imports)
+                        add_line_separator = line_separator or "\n"
+                        current += add_line_separator + add_line_separator.join(add_imports)
                         add_imports = []
                     parsed = parse.file_contents(current, config=config)
                     verbose_output += parsed.verbose_output

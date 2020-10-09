@@ -1336,3 +1336,89 @@ def test_isort_shouldnt_introduce_syntax_error_issue_1539():
     import b
 '''
     )
+
+
+def test_isort_shouldnt_split_skip_issue_1548():
+    """Ensure isort doesn't add a spurious new line if isort: skip is combined with float to top.
+    See: https://github.com/PyCQA/isort/issues/1548.
+    """
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+    prune_dependencies,
+)
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+    prune_dependencies,
+)
+import a
+import b
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import  # isort:skip
+import a
+import b
+""",
+        show_diff=True,
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+    a
+)
+import b
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+        )
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+)""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert (
+        isort.code(
+            """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+)
+""",
+            profile="black",
+            float_to_top=True,
+            add_imports=["import os"],
+        )
+        == """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+)
+import os
+"""
+    )
+    assert (
+        isort.code(
+            """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+)""",
+            profile="black",
+            float_to_top=True,
+            add_imports=["import os"],
+        )
+        == """from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+)
+import os
+"""
+    )

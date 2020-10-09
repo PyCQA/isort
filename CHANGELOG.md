@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.6.2 TBD
+  - Fixed #1548: On rare occasions an unecessary empty line can be added when an import is marked as skipped.
+
 ### 5.6.1 [Hotfix] October 8, 2020
   - Fixed #1546: Unstable (non-idempotent) behavior with certain src trees.
 

@@ -213,12 +213,22 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             and not lstripped_line.startswith("#")
             and not lstripped_line.startswith("'''")
             and not lstripped_line.startswith('"""')
-            and not lstripped_line.startswith("import")
-            and not lstripped_line.startswith("from")
         ):
-            import_index = index - 1
-            while import_index and not in_lines[import_index - 1]:
-                import_index -= 1
+            if not lstripped_line.startswith("import") and not lstripped_line.startswith("from"):
+                import_index = index - 1
+                while import_index and not in_lines[import_index - 1]:
+                    import_index -= 1
+            elif "isort:skip" in line or "isort: skip" in line:
+                commentless = line.split("#", 1)[0]
+                if (
+                    "(" in commentless
+                    and not commentless.rstrip().endswith(")")
+                    and import_index < line_count
+                ):
+                    import_index = index
+                    while import_index < line_count and not commentless.rstrip().endswith(")"):
+                        commentless = in_lines[import_index].split("#", 1)[0]
+                        import_index += 1
 
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line:
