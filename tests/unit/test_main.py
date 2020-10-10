@@ -779,7 +779,7 @@ import b
 
     assert out == (
         """
-import a b
+import a, b
 """
     )
 

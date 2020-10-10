@@ -531,7 +531,7 @@ def _with_straight_imports(
         for module in parsed.categorized_comments["straight"]:
             inline_comments.extend(parsed.categorized_comments["straight"][module])
 
-        combined_straight_imports = " ".join(straight_modules)
+        combined_straight_imports = ", ".join(straight_modules)
         if inline_comments:
             combined_inline_comments = " ".join(inline_comments)
         else:
