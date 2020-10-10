@@ -512,15 +512,15 @@ def _with_straight_imports(
     remove_imports: List[str],
     import_type: str,
 ) -> List[str]:
+    if not straight_modules:
+        return []
+
     output: List[str] = []
 
-    as_imports = any([module in parsed.as_map["straight"] for module in straight_modules])
+    as_imports = any((module in parsed.as_map["straight"] for module in straight_modules))
 
     # combine_straight_imports only works for bare imports, 'as' imports not included
     if config.combine_straight_imports and not as_imports:
-        if not straight_modules:
-            return []
-
         above_comments: List[str] = []
         inline_comments: List[str] = []
 
