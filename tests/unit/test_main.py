@@ -575,7 +575,7 @@ import b
     out, error = capsys.readouterr()
 
     assert not error
-    
+
     # ensures that isort works consistently with check and diff flags
 
     input_content = UnseekableTextIOWrapper(
@@ -593,7 +593,7 @@ import a
 
     assert error
     assert not "underlying stream is not seekable" in error
-    assert not "underlying stream is not seekable" in error 
+    assert not "underlying stream is not seekable" in error
 
     # ensures that isort correctly sorts stdin with --ls flag
 
