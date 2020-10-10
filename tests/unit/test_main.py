@@ -77,6 +77,8 @@ def test_parse_args():
     assert main.parse_args(["--os"]) == {"only_sections": True}
     assert main.parse_args(["--om"]) == {"only_modified": True}
     assert main.parse_args(["--only-modified"]) == {"only_modified": True}
+    assert main.parse_args(["--csi"]) == {"combine_straight_imports": True}
+    assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
 
 
 def test_ascii_art(capsys):
@@ -761,6 +763,25 @@ import b
 
     assert "else-type place_module for a returned THIRDPARTY" not in out
     assert "else-type place_module for b returned THIRDPARTY" not in out
+
+    # ensures that combine-straight-imports flag works with stdin
+    input_content = UnseekableTextIOWrapper(
+        BytesIO(
+            b"""
+import a
+import b
+"""
+        )
+    )
+
+    main.main(["-", "--combine-straight-imports"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a, b
+"""
+    )
 
 
 def test_unsupported_encodings(tmpdir, capsys):

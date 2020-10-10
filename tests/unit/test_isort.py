@@ -4893,3 +4893,23 @@ def test_only_sections() -> None:
     test_input = "from foo import b, a, c\n"
 
     assert isort.code(test_input, only_sections=True) == test_input
+
+
+def test_combine_straight_imports() -> None:
+    """ Tests to ensure that combine_straight_imports works correctly """
+
+    test_input = (
+        "import os\n" "import sys\n" "# this is a comment\n" "import math  # inline comment\n"
+    )
+
+    assert isort.code(test_input, combine_straight_imports=True) == (
+        "# this is a comment\n" "import math, os, sys  # inline comment\n"
+    )
+
+    # test to ensure that combine_straight_import works with only_sections
+
+    test_input = "import sys, os\n" "import a\n" "import math\n" "import b\n"
+
+    assert isort.code(test_input, combine_straight_imports=True, only_sections=True) == (
+        "import sys, os, math\n" "\n" "import a, b\n"
+    )

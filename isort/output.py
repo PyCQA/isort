@@ -513,6 +513,41 @@ def _with_straight_imports(
     import_type: str,
 ) -> List[str]:
     output: List[str] = []
+
+    as_imports = any((module in parsed.as_map["straight"] for module in straight_modules))
+
+    # combine_straight_imports only works for bare imports, 'as' imports not included
+    if config.combine_straight_imports and not as_imports:
+        if not straight_modules:
+            return []
+
+        above_comments: List[str] = []
+        inline_comments: List[str] = []
+
+        for module in straight_modules:
+            if module in parsed.categorized_comments["above"]["straight"]:
+                above_comments.extend(parsed.categorized_comments["above"]["straight"].pop(module))
+
+        for module in parsed.categorized_comments["straight"]:
+            inline_comments.extend(parsed.categorized_comments["straight"][module])
+
+        combined_straight_imports = ", ".join(straight_modules)
+        if inline_comments:
+            combined_inline_comments = " ".join(inline_comments)
+        else:
+            combined_inline_comments = ""
+
+        output.extend(above_comments)
+
+        if combined_inline_comments:
+            output.append(
+                f"{import_type} {combined_straight_imports}  # {combined_inline_comments}"
+            )
+        else:
+            output.append(f"{import_type} {combined_straight_imports}")
+
+        return output
+
     for module in straight_modules:
         if module in remove_imports:
             continue
