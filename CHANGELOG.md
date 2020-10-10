@@ -7,6 +7,11 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 ### 5.6.2 TBD
   - Fixed #1548: On rare occasions an unecessary empty line can be added when an import is marked as skipped.
   - Fixed #1542: Bug in VERTICAL_PREFIX_FROM_MODULE_IMPORT wrap mode.
+  - Fixed #1552: Pylama test dependent on source layout.
+
+#### Goal Zero: (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Zope added to integration test suite
+  - Additional testing of CLI (simulate unseekable streams)
 
 ### 5.6.1 [Hotfix] October 8, 2020
   - Fixed #1546: Unstable (non-idempotent) behavior with certain src trees.
