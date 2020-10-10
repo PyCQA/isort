@@ -200,6 +200,7 @@ class _Config:
     dedup_headings: bool = False
     only_sections: bool = False
     only_modified: bool = False
+    combine_straight_imports: bool = False
     auto_identify_namespace_packages: bool = True
     namespace_packages: FrozenSet[str] = frozenset()
 
