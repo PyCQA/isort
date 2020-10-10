@@ -14,6 +14,11 @@ from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
 
 
+class UnseekableTextIOWrapper(TextIOWrapper):
+    def seek(self, *args, **kwargs):
+        raise ValueError("underlying stream is not seekable")
+
+
 @given(
     file_name=st.text(),
     config=st.builds(Config),
@@ -343,7 +348,7 @@ def test_isort_command():
 def test_isort_with_stdin(capsys):
     # ensures that isort sorts stdin without any flags
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import b
@@ -362,7 +367,7 @@ import b
 """
     )
 
-    input_content_from = TextIOWrapper(
+    input_content_from = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import c
@@ -385,7 +390,7 @@ from a import x, y, z
 
     # ensures that isort correctly sorts stdin with --fas flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import sys
@@ -411,7 +416,7 @@ import sys
 
     # ensures that isort correctly sorts stdin with --fass flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 from a import Path, abc
@@ -430,7 +435,7 @@ from a import abc, Path
 
     # ensures that isort correctly sorts stdin with --ff flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import b
@@ -453,7 +458,7 @@ import b
 
     # ensures that isort correctly sorts stdin with -fss flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import b
@@ -472,7 +477,7 @@ import b
 """
     )
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import a
@@ -493,7 +498,7 @@ from b import c
 
     # ensures that isort correctly sorts stdin with --ds flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import sys
@@ -516,7 +521,7 @@ import sys
 
     # ensures that isort correctly sorts stdin with --cs flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 from a import b
@@ -536,7 +541,7 @@ from a import *
 
     # ensures that isort correctly sorts stdin with --ca flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 from a import x as X
@@ -556,7 +561,7 @@ from a import x as X, y as Y
 
     # ensures that isort works consistently with check and ws flags
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import os
@@ -570,10 +575,29 @@ import b
     out, error = capsys.readouterr()
 
     assert not error
+    
+    # ensures that isort works consistently with check and diff flags
+
+    input_content = UnseekableTextIOWrapper(
+        BytesIO(
+            b"""
+import b
+import a
+"""
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        main.main(["-", "--check", "--diff"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert error
+    assert not "underlying stream is not seekable" in error
+    assert not "underlying stream is not seekable" in error 
 
     # ensures that isort correctly sorts stdin with --ls flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import abcdef
@@ -594,7 +618,7 @@ import abcdef
 
     # ensures that isort correctly sorts stdin with --nis flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 from z import b, c, a
@@ -613,7 +637,7 @@ from z import b, c, a
 
     # ensures that isort correctly sorts stdin with --sl flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 from z import b, c, a
@@ -634,7 +658,7 @@ from z import c
 
     # ensures that isort correctly sorts stdin with --top flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import os
@@ -655,7 +679,7 @@ import os
 
     # ensure that isort correctly sorts stdin with --os flag
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import sys
@@ -680,7 +704,7 @@ from a import b, e, c
     )
 
     # ensures that isort warns with deprecated flags with stdin
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import sys
@@ -701,7 +725,7 @@ import sys
 """
     )
 
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import sys
@@ -723,7 +747,7 @@ import sys
     )
 
     # ensures that only-modified flag works with stdin
-    input_content = TextIOWrapper(
+    input_content = UnseekableTextIOWrapper(
         BytesIO(
             b"""
 import a

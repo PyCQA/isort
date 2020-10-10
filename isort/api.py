@@ -200,6 +200,9 @@ def check_stream(
     """
     config = _config(path=file_path, config=config, **config_kwargs)
 
+    if show_diff:
+        input_stream = StringIO(input_stream.read())
+
     changed: bool = sort_stream(
         input_stream=input_stream,
         output_stream=Empty,
