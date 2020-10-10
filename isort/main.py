@@ -722,6 +722,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         " there are multiple sections with the comment set.",
     )
 
+    parser.add_argument(
+        "--only-sections",
+        "--os",
+        dest="only_sections",
+        action="store_true",
+        help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
+        "Imports are unaltered and keep their relative positions within the different sections.",
+    )
+
+    parser.add_argument(
+        "--only-modified",
+        "--om",
+        dest="only_modified",
+        action="store_true",
+        help="Suppresses verbose output for non-modified files.",
+    )
+
+    parser.add_argument(
+        "--combine-straight-imports",
+        "--csi",
+        dest="combine_straight_imports",
+        action="store_true",
+        help="Combines all the bare straight imports of the same section in a single line. "
+        "Won't work with sections which have 'as' imports",
+    )
+
     # deprecated options
     parser.add_argument(
         "--recursive",
@@ -757,23 +783,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="append_const",
         const="--keep-direct-and-as",
         help=argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        "--only-sections",
-        "--os",
-        dest="only_sections",
-        action="store_true",
-        help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
-        "Imports are unaltered and keep their relative positions within the different sections.",
-    )
-
-    parser.add_argument(
-        "--only-modified",
-        "--om",
-        dest="only_modified",
-        action="store_true",
-        help="Suppresses verbose output for non-modified files.",
     )
 
     return parser
