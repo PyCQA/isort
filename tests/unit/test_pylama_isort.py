@@ -1,5 +1,3 @@
-import os
-
 from isort.pylama_isort import Linter
 
 

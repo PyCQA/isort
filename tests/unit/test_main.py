@@ -592,8 +592,8 @@ import a
     out, error = capsys.readouterr()
 
     assert error
-    assert not "underlying stream is not seekable" in error
-    assert not "underlying stream is not seekable" in error
+    assert "underlying stream is not seekable" not in error
+    assert "underlying stream is not seekable" not in error
 
     # ensures that isort correctly sorts stdin with --ls flag
 
