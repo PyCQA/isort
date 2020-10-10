@@ -1422,3 +1422,39 @@ import os
 import os
 """
     )
+
+
+def test_isort_losing_imports_vertical_prefix_from_module_import_wrap_mode_issue_1542():
+    """Ensure isort doesnt lose imports when a comment is combined with an import and
+    wrap mode VERTICAL_PREFIX_FROM_MODULE_IMPORT is used.
+    See: https://github.com/PyCQA/isort/issues/1542.
+    """
+    assert (
+        isort.code(
+            """
+from xxxxxxxxxxxxxxxx import AAAAAAAAAA, BBBBBBBBBB
+from xxxxxxxxxxxxxxxx import CCCCCCCCC, DDDDDDDDD  # xxxxxxxxxxxxxxxxxx
+
+print(CCCCCCCCC)
+""",
+            multi_line_output=9,
+        )
+        == """
+from xxxxxxxxxxxxxxxx import AAAAAAAAAA, BBBBBBBBBB  # xxxxxxxxxxxxxxxxxx
+from xxxxxxxxxxxxxxxx import CCCCCCCCC, DDDDDDDDD
+
+print(CCCCCCCCC)
+"""
+    )
+
+    assert isort.check_code(
+        """
+from xxxxxxxxxxxxxxxx import AAAAAAAAAA, BBBBBBBBBB
+
+from xxxxxxxxxxxxxxxx import CCCCCCCCC, DDDDDDDDD  # xxxxxxxxxxxxxxxxxx isort: skip
+
+print(CCCCCCCCC)
+""",
+        show_diff=True,
+        multi_line_output=9,
+    )

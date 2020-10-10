@@ -273,32 +273,40 @@ def vertical_hanging_indent_bracket(**interface):
 def vertical_prefix_from_module_import(**interface):
     if not interface["imports"]:
         return ""
+
     prefix_statement = interface["statement"]
-    interface["statement"] += interface["imports"].pop(0)
-    while interface["imports"]:
-        next_import = interface["imports"].pop(0)
-        next_statement = isort.comments.add_to_line(
-            interface["comments"],
-            interface["statement"] + ", " + next_import,
+    output_statement = prefix_statement + interface["imports"].pop(0)
+    comments = interface["comments"]
+
+    statement = output_statement
+    statement_with_comments = ""
+    for next_import in interface["imports"]:
+        statement = statement + ", " + next_import
+        statement_with_comments = isort.comments.add_to_line(
+            comments,
+            statement,
             removed=interface["remove_comments"],
             comment_prefix=interface["comment_prefix"],
         )
         if (
-            len(next_statement.split(interface["line_separator"])[-1]) + 1
+            len(statement_with_comments.split(interface["line_separator"])[-1]) + 1
             > interface["line_length"]
         ):
-            next_statement = (
+            statement = (
                 isort.comments.add_to_line(
-                    interface["comments"],
-                    f"{interface['statement']}",
+                    comments,
+                    output_statement,
                     removed=interface["remove_comments"],
                     comment_prefix=interface["comment_prefix"],
                 )
                 + f"{interface['line_separator']}{prefix_statement}{next_import}"
             )
-            interface["comments"] = []
-        interface["statement"] = next_statement
-    return interface["statement"]
+            comments = []
+        output_statement = statement
+
+    if comments and statement_with_comments:
+        output_statement = statement_with_comments
+    return output_statement
 
 
 @_wrap_mode
