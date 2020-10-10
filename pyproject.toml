@@ -33,7 +33,9 @@ classifiers = [
 urls = { Changelog = "https://github.com/pycqa/isort/blob/master/CHANGELOG.md" }
 packages = [
     { include = "isort" },
-    { include = "tests", format = "sdist" },
+]
+include = [
+    { path = "tests", format = "sdist" },
 ]
 
 [tool.poetry.dependencies]
