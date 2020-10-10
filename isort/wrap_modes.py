@@ -273,11 +273,11 @@ def vertical_hanging_indent_bracket(**interface):
 def vertical_prefix_from_module_import(**interface):
     if not interface["imports"]:
         return ""
-    
+
     prefix_statement = interface["statement"]
     output_statement = prefix_statement + interface["imports"].pop(0)
     comments = interface["comments"]
-    
+
     statement = output_statement
     statement_with_comments = ""
     for next_import in interface["imports"]:
@@ -294,7 +294,7 @@ def vertical_prefix_from_module_import(**interface):
         ):
             statement = (
                 isort.comments.add_to_line(
-                    interface["comments"],
+                    comments,
                     output_statement,
                     removed=interface["remove_comments"],
                     comment_prefix=interface["comment_prefix"],
@@ -303,11 +303,11 @@ def vertical_prefix_from_module_import(**interface):
             )
             comments = []
         output_statement = statement
-        
+
     if comments and statement_with_comments:
         output_statement = statement_with_comments
     return output_statement
-    
+
 
 @_wrap_mode
 def hanging_indent_with_parentheses(**interface):
