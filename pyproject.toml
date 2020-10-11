@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "isort"
-version = "5.6.2"
+version = "5.6.3"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -33,7 +33,9 @@ classifiers = [
 urls = { Changelog = "https://github.com/pycqa/isort/blob/master/CHANGELOG.md" }
 packages = [
     { include = "isort" },
-    { include = "tests", format = "sdist" },
+]
+include = [
+    { path = "tests", format = "sdist" },
 ]
 
 [tool.poetry.dependencies]
@@ -99,5 +101,5 @@ logo = "art/logo.png"
 palette = {scheme = "isort"}
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
