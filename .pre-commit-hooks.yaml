@@ -3,5 +3,5 @@
     entry: isort
     require_serial: true
     language: python
-    types: [python, cython, pyi]
+    types: [python]
     args: ['--filter-files']
