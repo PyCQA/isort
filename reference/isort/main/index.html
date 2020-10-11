@@ -2758,6 +2758,52 @@
 
     <span class="p">)</span>
 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--only-sections&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--os&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;only_sections&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. &quot;</span>
+
+        <span class="s2">&quot;Imports are unaltered and keep their relative positions within the different sections.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--only-modified&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--om&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;only_modified&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suppresses verbose output for non-modified files.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--combine-straight-imports&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--csi&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;combine_straight_imports&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Combines all the bare straight imports of the same section in a single line. &quot;</span>
+
+        <span class="s2">&quot;Won&#39;t work with sections which have &#39;as&#39; imports&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
     <span class="c1"># deprecated options</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -2827,36 +2873,6 @@
         <span class="n">const</span><span class="o">=</span><span class="s2">&quot;--keep-direct-and-as&quot;</span><span class="p">,</span>
 
         <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
-
-    <span class="p">)</span>
-
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-
-        <span class="s2">&quot;--only-sections&quot;</span><span class="p">,</span>
-
-        <span class="s2">&quot;--os&quot;</span><span class="p">,</span>
-
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;only_sections&quot;</span><span class="p">,</span>
-
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. &quot;</span>
-
-        <span class="s2">&quot;Imports are unaltered and keep their relative positions within the different sections.&quot;</span><span class="p">,</span>
-
-    <span class="p">)</span>
-
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-
-        <span class="s2">&quot;--only-modified&quot;</span><span class="p">,</span>
-
-        <span class="s2">&quot;--om&quot;</span><span class="p">,</span>
-
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;only_modified&quot;</span><span class="p">,</span>
-
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suppresses verbose output for non-modified files.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 

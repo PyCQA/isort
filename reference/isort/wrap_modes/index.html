@@ -1984,17 +1984,23 @@
 
 <span class="s2">    prefix_statement = interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
 
-<span class="s2">    interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;] += interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;].pop(0)</span>
+<span class="s2">    output_statement = prefix_statement + interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;].pop(0)</span>
 
-<span class="s2">    while interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
+<span class="s2">    comments = interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;]</span>
 
-<span class="s2">        next_import = interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;].pop(0)</span>
+<span class="s2">    statement = output_statement</span>
 
-<span class="s2">        next_statement = isort.comments.add_to_line(</span>
+<span class="s2">    statement_with_comments = &quot;&quot;</span>
 
-<span class="s2">            interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;],</span>
+<span class="s2">    for next_import in interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
-<span class="s2">            interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;] + &quot;</span><span class="p">,</span> <span class="s2">&quot; + next_import,</span>
+<span class="s2">        statement = statement + &quot;</span><span class="p">,</span> <span class="s2">&quot; + next_import</span>
+
+<span class="s2">        statement_with_comments = isort.comments.add_to_line(</span>
+
+<span class="s2">            comments,</span>
+
+<span class="s2">            statement,</span>
 
 <span class="s2">            removed=interface[&quot;</span><span class="s s-Atom">remove_comments</span><span class="s2">&quot;],</span>
 
@@ -2004,19 +2010,19 @@
 
 <span class="s2">        if (</span>
 
-<span class="s2">            len(next_statement.split(interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;])[-1]) + 1</span>
+<span class="s2">            len(statement_with_comments.split(interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;])[-1]) + 1</span>
 
 <span class="s2">            &gt; interface[&quot;</span><span class="s s-Atom">line_length</span><span class="s2">&quot;]</span>
 
 <span class="s2">        ):</span>
 
-<span class="s2">            next_statement = (</span>
+<span class="s2">            statement = (</span>
 
 <span class="s2">                isort.comments.add_to_line(</span>
 
-<span class="s2">                    interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;],</span>
+<span class="s2">                    comments,</span>
 
-<span class="s2">                    f&quot;</span><span class="p">{</span><span class="s s-Atom">interface</span><span class="p">[</span><span class="s s-Atom">&#39;statement&#39;</span><span class="p">]}</span><span class="s2">&quot;,</span>
+<span class="s2">                    output_statement,</span>
 
 <span class="s2">                    removed=interface[&quot;</span><span class="s s-Atom">remove_comments</span><span class="s2">&quot;],</span>
 
@@ -2028,11 +2034,15 @@
 
 <span class="s2">            )</span>
 
-<span class="s2">            interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;] = []</span>
+<span class="s2">            comments = []</span>
 
-<span class="s2">        interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;] = next_statement</span>
+<span class="s2">        output_statement = statement</span>
 
-<span class="s2">    return interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
+<span class="s2">    if comments and statement_with_comments:</span>
+
+<span class="s2">        output_statement = statement_with_comments</span>
+
+<span class="s2">    return output_statement</span>
 
 <span class="s2">@_wrap_mode</span>
 
@@ -2569,17 +2579,23 @@
 
     <span class="n">prefix_statement</span> <span class="o">=</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span>
 
-    <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">output_statement</span> <span class="o">=</span> <span class="n">prefix_statement</span> <span class="o">+</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">while</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">]</span>
 
-        <span class="n">next_import</span> <span class="o">=</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">statement</span> <span class="o">=</span> <span class="n">output_statement</span>
 
-        <span class="n">next_statement</span> <span class="o">=</span> <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
+    <span class="n">statement_with_comments</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-            <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
+    <span class="k">for</span> <span class="n">next_import</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
-            <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">next_import</span><span class="p">,</span>
+        <span class="n">statement</span> <span class="o">=</span> <span class="n">statement</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">next_import</span>
+
+        <span class="n">statement_with_comments</span> <span class="o">=</span> <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
+
+            <span class="n">comments</span><span class="p">,</span>
+
+            <span class="n">statement</span><span class="p">,</span>
 
             <span class="n">removed</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;remove_comments&quot;</span><span class="p">],</span>
 
@@ -2589,19 +2605,19 @@
 
         <span class="k">if</span> <span class="p">(</span>
 
-            <span class="nb">len</span><span class="p">(</span><span class="n">next_statement</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">statement_with_comments</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
 
             <span class="o">&gt;</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_length&quot;</span><span class="p">]</span>
 
         <span class="p">):</span>
 
-            <span class="n">next_statement</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
 
                 <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
 
-                    <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
+                    <span class="n">comments</span><span class="p">,</span>
 
-                    <span class="n">f</span><span class="s2">&quot;{interface[&#39;statement&#39;]}&quot;</span><span class="p">,</span>
+                    <span class="n">output_statement</span><span class="p">,</span>
 
                     <span class="n">removed</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;remove_comments&quot;</span><span class="p">],</span>
 
@@ -2613,11 +2629,15 @@
 
             <span class="p">)</span>
 
-            <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">comments</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_statement</span>
+        <span class="n">output_statement</span> <span class="o">=</span> <span class="n">statement</span>
 
-    <span class="k">return</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">comments</span> <span class="ow">and</span> <span class="n">statement_with_comments</span><span class="p">:</span>
+
+        <span class="n">output_statement</span> <span class="o">=</span> <span class="n">statement_with_comments</span>
+
+    <span class="k">return</span> <span class="n">output_statement</span>
 </code></pre></div>
 
 
