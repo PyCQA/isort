@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.6.4 October TBD, 2020
+### 5.6.4 October 12, 2020
   - Fixed #1556: Empty line added between imports that should be skipped.
 
 ### 5.6.3 October 11, 2020
