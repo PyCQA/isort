@@ -221,8 +221,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             else:
                 commentless = line.split("#", 1)[0].strip()
                 if (
-                    ("isort:skip" in line
-                    or "isort: skip" in line)
+                    ("isort:skip" in line or "isort: skip" in line)
                     and "(" in commentless
                     and ")" not in commentless
                 ):
@@ -237,7 +236,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and import_index < line_count
                         ):
 
-                            while import_index < line_count and not commentless.rstrip().endswith(")"):
+                            while import_index < line_count and not commentless.rstrip().endswith(
+                                ")"
+                            ):
                                 commentless = in_lines[import_index].split("#", 1)[0]
                                 import_index += 1
                         else:
