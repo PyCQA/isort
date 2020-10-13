@@ -218,17 +218,36 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 import_index = index - 1
                 while import_index and not in_lines[import_index - 1]:
                     import_index -= 1
-            elif "isort:skip" in line or "isort: skip" in line:
-                commentless = line.split("#", 1)[0]
+            else:
+                commentless = line.split("#", 1)[0].strip()
                 if (
-                    "(" in commentless
-                    and not commentless.rstrip().endswith(")")
-                    and import_index < line_count
+                    ("isort:skip" in line or "isort: skip" in line)
+                    and "(" in commentless
+                    and ")" not in commentless
                 ):
                     import_index = index
-                    while import_index < line_count and not commentless.rstrip().endswith(")"):
-                        commentless = in_lines[import_index].split("#", 1)[0]
-                        import_index += 1
+
+                    starting_line = line
+                    while "isort:skip" in starting_line or "isort: skip" in starting_line:
+                        commentless = starting_line.split("#", 1)[0]
+                        if (
+                            "(" in commentless
+                            and not commentless.rstrip().endswith(")")
+                            and import_index < line_count
+                        ):
+
+                            while import_index < line_count and not commentless.rstrip().endswith(
+                                ")"
+                            ):
+                                commentless = in_lines[import_index].split("#", 1)[0]
+                                import_index += 1
+                        else:
+                            import_index += 1
+
+                        if import_index >= line_count:
+                            break
+                        else:
+                            starting_line = in_lines[import_index]
 
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line:

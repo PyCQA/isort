@@ -1424,6 +1424,33 @@ import os
     )
 
 
+def test_isort_shouldnt_split_skip_issue_1556():
+    assert isort.check_code(
+        """
+from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+    prune_dependencies,
+)
+from tools.developer_pruning.prune_developers import (  # isort:skip
+    prune_developers,
+)
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+    assert isort.check_code(
+        """
+from tools.dependency_pruning.prune_dependencies import (  # isort:skip
+    prune_dependencies,
+)
+from tools.developer_pruning.prune_developers import x  # isort:skip
+""",
+        show_diff=True,
+        profile="black",
+        float_to_top=True,
+    )
+
+
 def test_isort_losing_imports_vertical_prefix_from_module_import_wrap_mode_issue_1542():
     """Ensure isort doesnt lose imports when a comment is combined with an import and
     wrap mode VERTICAL_PREFIX_FROM_MODULE_IMPORT is used.
