@@ -1525,10 +1525,17 @@ If it doesn't, you should be able to just specify your projects modules with <co
 <p>If you have a step in your precommit called <code>seed-isort-config</code> or similar, it is highly recommend that you remove this. It is unnecessary in 5.x.x, is guaranteed to slow things down, and worse can conflict with isort's own module placement logic.</p>
 <h3 id="isort-pre-commit-step">isort pre-commit step</h3>
 <p>isort now includes an optimized precommit configuration in the repo itself. To use it you can replace any existing isort precommit step with:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">  - repo: https://github.com/pycqa/isort</span>
-<span class="err">    rev: 5.3.2</span>
-<span class="err">    hooks:</span>
-<span class="err">      - id: isort</span>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="nl">repo</span><span class="p">:</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">pycqa</span><span class="o">/</span><span class="n">isort</span><span class="w"></span>
+<span class="w">    </span><span class="nl">rev</span><span class="p">:</span><span class="w"> </span><span class="mf">5.6.3</span><span class="w"></span>
+<span class="w">    </span><span class="nl">hooks</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"></span>
+<span class="w">        </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"> </span><span class="p">(</span><span class="n">python</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"></span>
+<span class="w">        </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"> </span><span class="p">(</span><span class="n">cython</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="nl">types</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">cython</span><span class="o">]</span><span class="w"></span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"></span>
+<span class="w">        </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">isort</span><span class="w"> </span><span class="p">(</span><span class="n">pyi</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="nl">types</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">pyi</span><span class="o">]</span><span class="w"></span>
 </code></pre></div>
 
 
