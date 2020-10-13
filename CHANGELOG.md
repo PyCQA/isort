@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.6.3 October TBD, 2020
+  - Fixed #1556: Empty line added between imports that should be skipped.
+
 ### 5.6.2 October 10, 2020
   - Fixed #1548: On rare occasions an unecessary empty line can be added when an import is marked as skipped.
   - Fixed #1542: Bug in VERTICAL_PREFIX_FROM_MODULE_IMPORT wrap mode.
