@@ -4,7 +4,7 @@ Compatibility with black
 black and isort sometimes don't agree on some rules. Although you can configure isort to behave nicely with black.
 
 
-#Basic compatibility
+## Basic compatibility
 
 Use the profile option while using isort, `isort --profile black`.
 
@@ -32,7 +32,7 @@ after_success:
 
 See [built-in profiles](https://pycqa.github.io/isort/docs/configuration/profiles/) for more profiles.
 
-#Integration with pre-commit
+## Integration with pre-commit
 
 isort can be easily used with your pre-commit hooks.
 
@@ -44,7 +44,7 @@ isort can be easily used with your pre-commit hooks.
         args: ["--profile", "black"]
 ```
 
-#Using a config file (.isort.cfg)
+## Using a config file (.isort.cfg)
 
 The easiest way to configure black with isort is to use a config file.
 
