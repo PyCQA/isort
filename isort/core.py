@@ -1,3 +1,4 @@
+import os
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -70,6 +71,9 @@ def process(
     end_of_file: bool = False
     verbose_output: List[str] = []
     all_imports: List[str] = []
+    if imports_only:
+        _output_stream = output_stream
+        output_stream = open(os.devnull, "wt")
 
     if config.float_to_top:
         new_input = ""
@@ -403,9 +407,8 @@ def process(
             print(output_str)
 
     if imports_only:
-        output_stream.seek(0)
-        output_stream.truncate(0)
-        output_stream.write(line_separator.join(all_imports) + line_separator)
+        result = line_separator.join(all_imports) + line_separator
+        _output_stream.write(result)
 
     return made_changes
 
