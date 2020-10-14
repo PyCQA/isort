@@ -86,10 +86,25 @@ class TestConfig:
         os.mkfifo(fifo_file)
         assert not self.instance.is_supported_filetype(fifo_file)
 
+    def test_src_paths_are_combined_and_deduplicated(self):
+        src_paths = ["src", "tests"]
+        src_full_paths = (Path(os.getcwd()) / f for f in src_paths)
+        assert Config(src_paths=src_paths * 2).src_paths == tuple(src_full_paths)
+
 
 def test_as_list():
     assert settings._as_list([" one "]) == ["one"]
     assert settings._as_list("one,two") == ["one", "two"]
+
+
+def _write_simple_settings(tmp_file):
+    tmp_file.write_text(
+        """
+[isort]
+force_grid_wrap=true
+""",
+        "utf8",
+    )
 
 
 def test_find_config(tmpdir):
@@ -116,14 +131,22 @@ force_grid_wrap=true
     # can when it has either a file format, or generic relevant section
     settings._find_config.cache_clear()
     settings._get_config_data.cache_clear()
-    tmp_config.write_text(
-        """
-[isort]
-force_grid_wrap=true
-""",
-        "utf8",
-    )
+    _write_simple_settings(tmp_config)
     assert settings._find_config(str(tmpdir))[1]
+
+
+def test_find_config_deep(tmpdir):
+    # can't find config if it is further up than MAX_CONFIG_SEARCH_DEPTH
+    dirs = [f"dir{i}" for i in range(settings.MAX_CONFIG_SEARCH_DEPTH + 1)]
+    tmp_dirs = tmpdir.ensure(*dirs, dirs=True)
+    tmp_config = tmpdir.join("dir0", ".isort.cfg")
+    settings._find_config.cache_clear()
+    settings._get_config_data.cache_clear()
+    _write_simple_settings(tmp_config)
+    assert not settings._find_config(str(tmp_dirs))[1]
+    # but can find config if it is MAX_CONFIG_SEARCH_DEPTH up
+    one_parent_up = os.path.split(str(tmp_dirs))[0]
+    assert settings._find_config(one_parent_up)[1]
 
 
 def test_get_config_data(tmpdir):
@@ -132,20 +155,34 @@ def test_get_config_data(tmpdir):
         """
 root = true
 
-[*.py]
+[*.{js,py}]
 indent_style=tab
 indent_size=tab
+
+[*.py]
 force_grid_wrap=false
 comment_prefix="text"
+
+[*.{java}]
+indent_style = space
 """,
         "utf8",
     )
-    loaded_settings = settings._get_config_data(str(test_config), sections=("*.py",))
+    loaded_settings = settings._get_config_data(
+        str(test_config), sections=settings.CONFIG_SECTIONS[".editorconfig"]
+    )
     assert loaded_settings
     assert loaded_settings["comment_prefix"] == "text"
     assert loaded_settings["force_grid_wrap"] == 0
     assert loaded_settings["indent"] == "\t"
     assert str(tmpdir) in loaded_settings["source"]
+
+
+def test_editorconfig_without_sections(tmpdir):
+    test_config = tmpdir.join("test_config.editorconfig")
+    test_config.write_text("\nroot = true\n", "utf8")
+    loaded_settings = settings._get_config_data(str(test_config), sections=("*.py",))
+    assert not loaded_settings
 
 
 def test_as_bool():
