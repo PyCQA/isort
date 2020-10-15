@@ -184,7 +184,7 @@ def sorted_imports(
                     continue
                 next_construct = line
                 break
-            elif in_quote:
+            if in_quote:
                 next_construct = line
                 break
 
