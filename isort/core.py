@@ -30,6 +30,7 @@ def process(
     output_stream: TextIO,
     extension: str = "py",
     config: Config = DEFAULT_CONFIG,
+    imports_only: bool = False,
 ) -> bool:
     """Parses stream identifying sections of contiguous imports and sorting them
 
@@ -68,6 +69,15 @@ def process(
     stripped_line: str = ""
     end_of_file: bool = False
     verbose_output: List[str] = []
+    all_imports: List[str] = []
+    if imports_only:
+        _output_stream = output_stream
+
+        class DevNull(StringIO):
+            def write(self, *a, **kw):
+                pass
+
+        output_stream = DevNull()
 
     if config.float_to_top:
         new_input = ""
@@ -331,6 +341,11 @@ def process(
 
                     parsed_content = parse.file_contents(import_section, config=config)
                     verbose_output += parsed_content.verbose_output
+                    all_imports.extend(
+                        li
+                        for li in parsed_content.in_lines
+                        if li and li not in set(parsed_content.lines_without_imports)
+                    )
 
                     sorted_import_section = output.sorted_imports(
                         parsed_content,
@@ -394,6 +409,10 @@ def process(
     if made_changes and config.only_modified:
         for output_str in verbose_output:
             print(output_str)
+
+    if imports_only:
+        result = line_separator.join(all_imports) + line_separator
+        _output_stream.write(result)
 
     return made_changes
 
