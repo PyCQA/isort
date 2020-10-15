@@ -1,4 +1,3 @@
-import os
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -73,7 +72,12 @@ def process(
     all_imports: List[str] = []
     if imports_only:
         _output_stream = output_stream
-        output_stream = open(os.devnull, "wt")
+
+        class DevNull(StringIO):
+            def write(self, *a, **kw):
+                pass
+
+        output_stream = DevNull()
 
     if config.float_to_top:
         new_input = ""

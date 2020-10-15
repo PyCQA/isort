@@ -4969,7 +4969,7 @@ def test_get_imports_stdout() -> None:
         def seekable(self):
             return False
 
-        def write(self, s):
+        def write(self, s, *a, **kw):
             global_output.append(s)
 
     test_input = StringIO("import m2\n" "import m1\n" "not_import = 7")
