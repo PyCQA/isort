@@ -246,8 +246,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                         if import_index >= line_count:
                             break
-                        else:
-                            starting_line = in_lines[import_index]
+
+                        starting_line = in_lines[import_index]
 
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line:
