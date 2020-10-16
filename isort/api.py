@@ -422,6 +422,34 @@ def get_imports_stream(
     )
 
 
+def get_imports_file(
+    filename: Union[str, Path],
+    output_stream: TextIO,
+    extension: Optional[str] = None,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    **config_kwargs,
+) -> None:
+    """Finds all imports within the provided file, outputs to the provided output stream.
+
+    - **filename**: The name or Path of the file to check.
+    - **output_stream**: The stream where sorted imports should be written to.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - ****config_kwargs**: Any config modifications.
+    """
+    with io.File.read(filename) as source_file:
+        get_imports_stream(
+            source_file.stream,
+            output_stream,
+            extension,
+            config,
+            file_path,
+            **config_kwargs,
+        )
+
+
 def _config(
     path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
 ) -> Config:
