@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
@@ -925,4 +926,4 @@ def test_identify_imports_main(tmpdir, capsys):
     main.identify_imports_main([str(some_file)])
 
     out, error = capsys.readouterr()
-    assert out == file_imports
+    assert out == file_imports.replace("\n", os.linesep)

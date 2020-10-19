@@ -87,4 +87,4 @@ def test_sort_code_string_mixed_newlines():
 def test_get_import_file(imperfect, capsys):
     api.get_imports_file(imperfect, sys.stdout)
     out, _ = capsys.readouterr()
-    assert out == imperfect_content
+    assert out == imperfect_content.replace("\n", os.linesep)
