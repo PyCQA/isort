@@ -70,8 +70,9 @@ def process(
     end_of_file: bool = False
     verbose_output: List[str] = []
     all_imports: List[str] = []
+
+    _output_stream = output_stream  # Used if imports_only == True
     if imports_only:
-        _output_stream = output_stream
 
         class DevNull(StringIO):
             def write(self, *a, **kw):
@@ -435,5 +436,4 @@ def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace
             remove_whitespace(before, line_separator=line_separator).strip()
             != remove_whitespace(after, line_separator=line_separator).strip()
         )
-    else:
-        return before.strip() != after.strip()
+    return before.strip() != after.strip()

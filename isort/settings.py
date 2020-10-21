@@ -468,7 +468,7 @@ class Config(_Config):
         ext = ext.lstrip(".")
         if ext in self.supported_extensions:
             return True
-        elif ext in self.blocked_extensions:
+        if ext in self.blocked_extensions:
             return False
 
         # Skip editor backup files.

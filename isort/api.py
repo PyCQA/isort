@@ -216,30 +216,30 @@ def check_stream(
         if config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
-    else:
-        printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
-        if show_diff:
-            output_stream = StringIO()
-            input_stream.seek(0)
-            file_contents = input_stream.read()
-            sort_stream(
-                input_stream=StringIO(file_contents),
-                output_stream=output_stream,
-                extension=extension,
-                config=config,
-                file_path=file_path,
-                disregard_skip=disregard_skip,
-            )
-            output_stream.seek(0)
 
-            show_unified_diff(
-                file_input=file_contents,
-                file_output=output_stream.read(),
-                file_path=file_path,
-                output=None if show_diff is True else cast(TextIO, show_diff),
-                color_output=config.color_output,
-            )
-        return False
+    printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
+    if show_diff:
+        output_stream = StringIO()
+        input_stream.seek(0)
+        file_contents = input_stream.read()
+        sort_stream(
+            input_stream=StringIO(file_contents),
+            output_stream=output_stream,
+            extension=extension,
+            config=config,
+            file_path=file_path,
+            disregard_skip=disregard_skip,
+        )
+        output_stream.seek(0)
+
+        show_unified_diff(
+            file_input=file_contents,
+            file_output=output_stream.read(),
+            file_path=file_path,
+            output=None if show_diff is True else cast(TextIO, show_diff),
+            color_output=config.color_output,
+        )
+    return False
 
 
 def check_file(

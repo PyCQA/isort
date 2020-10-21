@@ -31,10 +31,9 @@ if TYPE_CHECKING:
 def _infer_line_separator(contents: str) -> str:
     if "\r\n" in contents:
         return "\r\n"
-    elif "\r" in contents:
+    if "\r" in contents:
         return "\r"
-    else:
-        return "\n"
+    return "\n"
 
 
 def _normalize_line(raw_line: str) -> Tuple[str, str]:
@@ -55,11 +54,11 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
-    elif "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
+    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
         return None
-    elif line.startswith(("import ", "cimport ")):
+    if line.startswith(("import ", "cimport ")):
         return "straight"
-    elif line.startswith("from "):
+    if line.startswith("from "):
         return "from"
     return None
 
@@ -369,6 +368,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             attach_comments_to: Optional[List[Any]] = None
             direct_imports = just_imports[1:]
             straight_import = True
+            top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -443,7 +443,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
                 if len(out_lines) > max(import_index, 1) - 1:
-                    last = out_lines and out_lines[-1].rstrip() or ""
+                    last = out_lines[-1].rstrip() if out_lines else ""
                     while (
                         last.startswith("#")
                         and not last.endswith('"""')
@@ -489,7 +489,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                     if len(out_lines) > max(import_index, +1, 1) - 1:
 
-                        last = out_lines and out_lines[-1].rstrip() or ""
+                        last = out_lines[-1].rstrip() if out_lines else ""
                         while (
                             last.startswith("#")
                             and not last.endswith('"""')
