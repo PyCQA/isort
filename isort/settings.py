@@ -381,9 +381,11 @@ class Config(_Config):
 
             combined_config[key] = type(default_value)(value)
 
-        for section in combined_config.get("sections", ()):
+        missing_sections = list(SECTION_DEFAULTS)
+        defined_sections = combined_config.get("sections", ())
+        for section in defined_sections:
             if section in SECTION_DEFAULTS:
-                continue
+                missing_sections.remove(section)
             elif not section.lower() in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
@@ -391,6 +393,12 @@ class Config(_Config):
                     "is defined. "
                     f"The following known_SECTION config options are defined: {config_keys}."
                 )
+        if defined_sections and missing_sections:
+            combined_config["sections"] = defined_sections + tuple(missing_sections)
+            warn(
+                "`sections` setting was defined without the default sections "
+                f"{tuple(missing_sections)}. These have now been appended."
+            )
 
         if "directory" not in combined_config:
             combined_config["directory"] = (
