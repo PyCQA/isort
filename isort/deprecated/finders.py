@@ -188,9 +188,9 @@ class PathFinder(BaseFinder):
                     or (self.virtual_env and self.virtual_env_src in prefix)
                 ):
                     return sections.THIRDPARTY
-                elif os.path.normcase(prefix) == self.stdlib_lib_prefix:
+                if os.path.normcase(prefix) == self.stdlib_lib_prefix:
                     return sections.STDLIB
-                elif self.conda_env and self.conda_env in prefix:
+                if self.conda_env and self.conda_env in prefix:
                     return sections.THIRDPARTY
                 for src_path in self.config.src_paths:
                     if src_path in path_obj.parents and not self.config.is_skipped(path_obj):

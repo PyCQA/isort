@@ -81,27 +81,27 @@ def sort_imports(
     write_to_stdout: bool = False,
     **kwargs: Any,
 ) -> Optional[SortAttempt]:
+    incorrectly_sorted: bool = False
+    skipped: bool = False
     try:
-        incorrectly_sorted: bool = False
-        skipped: bool = False
         if check:
             try:
                 incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
             except FileSkipped:
                 skipped = True
             return SortAttempt(incorrectly_sorted, skipped, True)
-        else:
-            try:
-                incorrectly_sorted = not api.sort_file(
-                    file_name,
-                    config=config,
-                    ask_to_apply=ask_to_apply,
-                    write_to_stdout=write_to_stdout,
-                    **kwargs,
-                )
-            except FileSkipped:
-                skipped = True
-            return SortAttempt(incorrectly_sorted, skipped, True)
+
+        try:
+            incorrectly_sorted = not api.sort_file(
+                file_name,
+                config=config,
+                ask_to_apply=ask_to_apply,
+                write_to_stdout=write_to_stdout,
+                **kwargs,
+            )
+        except FileSkipped:
+            skipped = True
+        return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
         warn(f"Unable to parse file {file_name} due to {error}")
         return None
@@ -816,14 +816,13 @@ def _preconvert(item):
     """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
-    elif isinstance(item, WrapModes):
+    if isinstance(item, WrapModes):
         return item.name
-    elif isinstance(item, Path):
+    if isinstance(item, Path):
         return str(item)
-    elif callable(item) and hasattr(item, "__name__"):
+    if callable(item) and hasattr(item, "__name__"):
         return item.__name__
-    else:
-        raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
+    raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
 
 def identify_imports_main(argv: Optional[Sequence[str]] = None) -> None:
@@ -872,8 +871,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(QUICK_GUIDE)
         if arguments:
             sys.exit("Error: arguments passed in without any paths or content.")
-        else:
-            return
+        return
     if "settings_path" not in arguments:
         arguments["settings_path"] = (
             os.path.abspath(file_names[0] if file_names else ".") or os.getcwd()

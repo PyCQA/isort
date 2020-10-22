@@ -615,5 +615,4 @@ def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
     if star_comment:
         return comments + [star_comment]
-    else:
-        return comments
+    return comments

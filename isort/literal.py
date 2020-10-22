@@ -41,7 +41,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     """
     if sort_type == "assignments":
         return assignments(code)
-    elif sort_type not in type_mapping:
+    if sort_type not in type_mapping:
         raise ValueError(
             "Trying to sort using an undefined sort_type. "
             f"Defined sort types are {', '.join(type_mapping.keys())}."

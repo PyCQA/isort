@@ -250,15 +250,13 @@ def noqa(**interface):
             <= interface["line_length"]
         ):
             return f"{retval}{interface['comment_prefix']} {comment_str}"
-        elif "NOQA" in interface["comments"]:
+        if "NOQA" in interface["comments"]:
             return f"{retval}{interface['comment_prefix']} {comment_str}"
-        else:
-            return f"{retval}{interface['comment_prefix']} NOQA {comment_str}"
-    else:
-        if len(retval) <= interface["line_length"]:
-            return retval
-        else:
-            return f"{retval}{interface['comment_prefix']} NOQA"
+        return f"{retval}{interface['comment_prefix']} NOQA {comment_str}"
+
+    if len(retval) <= interface["line_length"]:
+        return retval
+    return f"{retval}{interface['comment_prefix']} NOQA"
 
 
 @_wrap_mode
