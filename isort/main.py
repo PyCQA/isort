@@ -826,6 +826,23 @@ def _preconvert(item):
         raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
 
+def identify_imports_main(argv: Optional[Sequence[str]] = None) -> None:
+    parser = argparse.ArgumentParser(
+        description="Get all import definitions from a given file."
+        "Use `-` as the first argument to represent stdin."
+    )
+    parser.add_argument("file", help="Python source file to get imports from.")
+    arguments = parser.parse_args(argv)
+
+    file_name = arguments.file
+    if file_name == "-":
+        api.get_imports_stream(sys.stdin, sys.stdout)
+    else:
+        if os.path.isdir(file_name):
+            sys.exit("Path must be a file, not a directory")
+        api.get_imports_file(file_name, sys.stdout)
+
+
 def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):

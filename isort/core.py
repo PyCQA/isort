@@ -341,11 +341,13 @@ def process(
 
                     parsed_content = parse.file_contents(import_section, config=config)
                     verbose_output += parsed_content.verbose_output
-                    all_imports.extend(
-                        li
-                        for li in parsed_content.in_lines
-                        if li and li not in set(parsed_content.lines_without_imports)
-                    )
+                    if imports_only:
+                        lines_without_imports_set = set(parsed_content.lines_without_imports)
+                        all_imports.extend(
+                            li
+                            for li in parsed_content.in_lines
+                            if li and li not in lines_without_imports_set
+                        )
 
                     sorted_import_section = output.sorted_imports(
                         parsed_content,

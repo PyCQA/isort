@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
@@ -914,3 +915,15 @@ import os
     assert "else-type place_module for os returned STDLIB" in out
     assert "else-type place_module for math returned STDLIB" not in out
     assert "else-type place_module for pandas returned THIRDPARTY" not in out
+
+
+def test_identify_imports_main(tmpdir, capsys):
+    file_content = "import mod2\n" "a = 1\n" "import mod1\n"
+    file_imports = "import mod2\n" "import mod1\n"
+    some_file = tmpdir.join("some_file.py")
+    some_file.write(file_content)
+
+    main.identify_imports_main([str(some_file)])
+
+    out, error = capsys.readouterr()
+    assert out == file_imports.replace("\n", os.linesep)

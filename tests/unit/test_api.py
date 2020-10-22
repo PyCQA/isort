@@ -1,5 +1,6 @@
 """Tests the isort API module"""
 import os
+import sys
 from io import StringIO
 from unittest.mock import MagicMock, patch
 
@@ -81,3 +82,9 @@ def test_diff_stream() -> None:
 
 def test_sort_code_string_mixed_newlines():
     assert api.sort_code_string("import A\n\r\nimportA\n\n") == "import A\r\n\r\nimportA\r\n\n"
+
+
+def test_get_import_file(imperfect, capsys):
+    api.get_imports_file(imperfect, sys.stdout)
+    out, _ = capsys.readouterr()
+    assert out == imperfect_content.replace("\n", os.linesep)
