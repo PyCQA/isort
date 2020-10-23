@@ -12,7 +12,7 @@ from isort.api import detect_newline
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
-fixed_content = f"import a\nimport b\n"
+fixed_content = "import a\nimport b\n"
 fixed_diff = "+import a\n import b\n-import a\n"
 
 
