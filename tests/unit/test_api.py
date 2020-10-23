@@ -2,6 +2,7 @@
 import os
 import sys
 from io import StringIO
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -10,14 +11,15 @@ from isort import api
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
-fixed_content = "import a\nimport b\n"
+fixed_content = f"import a\nimport b\n"
 fixed_diff = "+import a\n import b\n-import a\n"
 
 
 @pytest.fixture
-def imperfect(tmpdir) -> None:
+def imperfect(tmpdir) -> Path:
     imperfect_file = tmpdir.join("test_needs_changes.py")
-    imperfect_file.write_text(imperfect_content, "utf8")
+    with open(imperfect_file, mode="w", encoding="utf-8", newline=os.linesep) as f:
+        f.write(imperfect_content)
     return imperfect_file
 
 

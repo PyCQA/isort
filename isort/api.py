@@ -318,7 +318,7 @@ def sort_file(
                 tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
                 try:
                     with tmp_file.open(
-                        "w", encoding=source_file.encoding, newline=""
+                        "w", encoding=source_file.encoding, newline=source_file.newline
                     ) as output_stream:
                         shutil.copymode(filename, tmp_file)
                         changed = sort_stream(
@@ -333,7 +333,7 @@ def sort_file(
                         if show_diff or ask_to_apply:
                             source_file.stream.seek(0)
                             with tmp_file.open(
-                                encoding=source_file.encoding, newline=""
+                                encoding=source_file.encoding, newline=source_file.newline
                             ) as tmp_out:
                                 show_unified_diff(
                                     file_input=source_file.stream.read(),

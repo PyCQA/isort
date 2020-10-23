@@ -1,10 +1,13 @@
 """Defines any IO utilities used by isort"""
+import io
 import re
 import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Callable, Iterator, NamedTuple, TextIO, Union
+from typing import BinaryIO
+from typing import Iterator, NamedTuple, TextIO, Union
+from typing import Tuple
 
 from isort.exceptions import UnsupportedEncoding
 
@@ -15,50 +18,45 @@ class File(NamedTuple):
     stream: TextIO
     path: Path
     encoding: str
+    newline: str
 
     @staticmethod
-    def detect_encoding(filename: str, readline: Callable[[], bytes]):
-        try:
-            return tokenize.detect_encoding(readline)[0]
-        except Exception:
-            raise UnsupportedEncoding(filename)
+    def decode_bytes(buffer: BinaryIO) -> Tuple[TextIO, str, str]:
+        encoding, lines = tokenize.detect_encoding(buffer.readline)
+        if not lines:
+            newline = "\n"
+        elif b"\r\n" == lines[0][-2:]:
+            newline = "\r\n"
+        elif b"\r" == lines[0][-1:]:
+            newline = "\r"
+        else:
+            newline = "\n"
+
+        buffer.seek(0)
+        text = io.TextIOWrapper(buffer, encoding, line_buffering=True)
+        return text, encoding, newline
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        encoding = File.detect_encoding(filename, BytesIO(contents.encode("utf-8")).readline)
-        return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
+        text, encoding, newline = File.decode_bytes(BytesIO(contents.encode("utf-8")))
+        return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding, newline=newline)
 
     @property
     def extension(self):
         return self.path.suffix.lstrip(".")
 
     @staticmethod
-    def _open(filename):
-        """Open a file in read only mode using the encoding detected by
-        detect_encoding().
-        """
-        buffer = open(filename, "rb")
-        try:
-            encoding = File.detect_encoding(filename, buffer.readline)
-            buffer.seek(0)
-            text = TextIOWrapper(buffer, encoding, line_buffering=True, newline="")
-            text.mode = "r"  # type: ignore
-            return text
-        except Exception:
-            buffer.close()
-            raise
-
-    @staticmethod
     @contextmanager
     def read(filename: Union[str, Path]) -> Iterator["File"]:
         file_path = Path(filename).resolve()
-        stream = None
+        buffer = None
         try:
-            stream = File._open(file_path)
-            yield File(stream=stream, path=file_path, encoding=stream.encoding)
+            buffer = open(filename, "rb")
+            stream, encoding, newline = File.decode_bytes(buffer)
+            yield File(stream=stream, path=file_path, encoding=encoding, newline=newline)
         finally:
-            if stream is not None:
-                stream.close()
+            if buffer is not None:
+                buffer.close()
 
 
 class _EmptyIO(StringIO):
