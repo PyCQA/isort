@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from isort import api
+from isort.api import detect_newline
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
@@ -21,6 +22,18 @@ def imperfect(tmpdir) -> Path:
     with open(imperfect_file, mode="w", encoding="utf-8", newline=os.linesep) as f:
         f.write(imperfect_content)
     return imperfect_file
+
+
+def test_detect_newline():
+    lf: str = "a\nb"
+    crlf: str = "a\r\nb"
+    cr: str = "a\rb"
+    empty: str = ""
+
+    assert "\n" == detect_newline(lf)
+    assert "\r\n" == detect_newline(crlf)
+    assert "\r" == detect_newline(cr)
+    assert "\n" == detect_newline(empty)
 
 
 def test_sort_file_with_bad_syntax(tmpdir) -> None:

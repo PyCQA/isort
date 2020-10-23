@@ -21,8 +21,12 @@ class File(NamedTuple):
     newline: str
 
     @staticmethod
-    def decode_bytes(buffer: BinaryIO) -> Tuple[TextIO, str, str]:
-        encoding, lines = tokenize.detect_encoding(buffer.readline)
+    def decode_bytes(filename: str, buffer: BinaryIO) -> Tuple[TextIO, str, str]:
+        try:
+            encoding, lines = tokenize.detect_encoding(buffer.readline)
+        except Exception:
+            raise UnsupportedEncoding(filename)
+
         if not lines:
             newline = "\n"
         elif b"\r\n" == lines[0][-2:]:
@@ -38,7 +42,7 @@ class File(NamedTuple):
 
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
-        text, encoding, newline = File.decode_bytes(BytesIO(contents.encode("utf-8")))
+        text, encoding, newline = File.decode_bytes(filename, BytesIO(contents.encode("utf-8")))
         return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding, newline=newline)
 
     @property
@@ -52,7 +56,7 @@ class File(NamedTuple):
         buffer = None
         try:
             buffer = open(filename, "rb")
-            stream, encoding, newline = File.decode_bytes(buffer)
+            stream, encoding, newline = File.decode_bytes(filename, buffer)
             yield File(stream=stream, path=file_path, encoding=encoding, newline=newline)
         finally:
             if buffer is not None:

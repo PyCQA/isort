@@ -21,6 +21,20 @@ from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, Config
 
 
+def detect_newline(code: str) -> str:
+    stream = StringIO(code, newline="")
+    line = stream.readline()
+    if not line:
+        newline = "\n"
+    elif "\r\n" == line[-2:]:
+        newline = "\r\n"
+    elif "\r" == line[-1:]:
+        newline = "\r"
+    else:
+        newline = "\n"
+    return newline
+
+
 def sort_code_string(
     code: str,
     extension: Optional[str] = None,
@@ -41,8 +55,9 @@ def sort_code_string(
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
-    input_stream = StringIO(code)
-    output_stream = StringIO()
+    newline = detect_newline(code)
+    input_stream = StringIO(code, newline=None)
+    output_stream = StringIO(newline=newline)
     config = _config(path=file_path, config=config, **config_kwargs)
     sort_stream(
         input_stream,
@@ -92,6 +107,7 @@ def check_code_string(
 def sort_stream(
     input_stream: TextIO,
     output_stream: TextIO,
+    newline: str,
     extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -113,7 +129,7 @@ def sort_stream(
     - ****config_kwargs**: Any config modifications.
     """
     if show_diff:
-        _output_stream = StringIO()
+        _output_stream = StringIO(newline=newline)
         _input_stream = StringIO(input_stream.read())
         changed = sort_stream(
             input_stream=_input_stream,
@@ -152,7 +168,7 @@ def sort_stream(
             raise ExistingSyntaxErrors(content_source)
 
         if not output_stream.readable():
-            _internal_output = StringIO()
+            _internal_output = StringIO(newline=newline)
 
     try:
         changed = core.process(
@@ -309,6 +325,7 @@ def sort_file(
                 changed = sort_stream(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
+                    newline=source_file.newline,
                     config=config,
                     file_path=actual_file_path,
                     disregard_skip=disregard_skip,
