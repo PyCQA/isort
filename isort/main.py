@@ -1003,7 +1003,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             print(f"Skipped {num_skipped} files")
 
         num_broken += len(broken)
-        if num_broken and not arguments.get("quite", False):
+        if num_broken and not arguments.get("quiet", False):
             if config.verbose:
                 for was_broken in broken:
                     warn(f"{was_broken} was broken path, make sure it exists correctly")
