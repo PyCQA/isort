@@ -108,7 +108,9 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 ## Sections
 
-**No Description**
+Specifies a custom ordering for sections. Any custom defined sections should also be
+included in this ordering. Omitting any of the default sections from this tuple may
+result in unexpected sorting or an exception being raised.
 
 **Type:** Tuple  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  

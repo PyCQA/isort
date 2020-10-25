@@ -348,7 +348,7 @@ of:
 FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 ```
 
-to your preference:
+to your preference (if defined, omitting a default section may cause errors):
 
 ```ini
 sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER
