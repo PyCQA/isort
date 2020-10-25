@@ -110,13 +110,21 @@ def sort_imports(
             warn(f"Encoding not supported for {file_name}")
         return SortAttempt(incorrectly_sorted, skipped, False)
     except Exception:
-        printer = create_terminal_printer(color=config.color_output)
-        printer.error(
-            f"Unrecoverable exception thrown when parsing {file_name}! "
-            "This should NEVER happen.\n"
-            "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
-        )
+        _print_hard_fail(config, offending_file=file_name)
         raise
+
+
+def _print_hard_fail(
+    config: Config, offending_file: Optional[str] = None, message: Optional[str] = None
+) -> None:
+    """Fail on unrecoverable exception with custom message."""
+    message = message or (
+        f"Unrecoverable exception thrown when parsing {offending_file or ''}!"
+        "This should NEVER happen.\n"
+        "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
+    )
+    printer = create_terminal_printer(color=config.color_output)
+    printer.error(message)
 
 
 def iter_source_code(
