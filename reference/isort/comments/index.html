@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -1303,17 +1315,15 @@
 
         <span class="k">return</span> <span class="n">original_string</span>
 
-    <span class="k">else</span><span class="p">:</span>
+    <span class="n">unique_comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">unique_comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">comments</span><span class="p">:</span>
 
-        <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">comments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">comment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_comments</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="n">comment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_comments</span><span class="p">:</span>
+            <span class="n">unique_comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
-                <span class="n">unique_comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{parse(original_string)[0]}{comment_prefix} {&#39;; &#39;.join(unique_comments)}&quot;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{parse(original_string)[0]}{comment_prefix} {&#39;; &#39;.join(unique_comments)}&quot;</span>
 </code></pre></div>
 
 
@@ -1352,17 +1362,15 @@
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">original_string</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="nl">unique_comments</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
 
-<span class="w">        </span><span class="nl">unique_comments</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">[]</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">comments</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">comments</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">unique_comments</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">unique_comments</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="n">unique_comments</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">unique_comments</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span><span class="w"></span>
-
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{parse(original_string)[0]}{comment_prefix} {&#39;; &#39;.join(unique_comments)}&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{parse(original_string)[0]}{comment_prefix} {&#39;; &#39;.join(unique_comments)}&quot;</span><span class="w"></span>
 </code></pre></div>
 
 

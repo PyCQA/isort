@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -2217,7 +2229,7 @@
 
             <span class="k">return</span> <span class="bp">True</span>
 
-        <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="bp">False</span>
 
@@ -3157,7 +3169,7 @@ dynamically determined later on.</p>
 
 <span class="ss">            return True</span>
 
-<span class="ss">        elif ext in self.blocked_extensions:</span>
+<span class="ss">        if ext in self.blocked_extensions:</span>
 
 <span class="ss">            return False</span>
 
@@ -3784,7 +3796,7 @@ dynamically determined later on.</p>
 
             <span class="k">return</span> <span class="k">True</span>
 
-        <span class="n">elif</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="k">False</span>
 

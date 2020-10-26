@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -2452,11 +2464,11 @@
 
                     <span class="s s-Atom">return</span> <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">THIRDPARTY</span>
 
-                <span class="s s-Atom">elif</span> <span class="s s-Atom">os</span><span class="p">.</span><span class="s s-Atom">path</span><span class="p">.</span><span class="nf">normcase</span><span class="p">(</span><span class="s s-Atom">prefix</span><span class="p">)</span> <span class="o">==</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">stdlib_lib_prefix:</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">os</span><span class="p">.</span><span class="s s-Atom">path</span><span class="p">.</span><span class="nf">normcase</span><span class="p">(</span><span class="s s-Atom">prefix</span><span class="p">)</span> <span class="o">==</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">stdlib_lib_prefix:</span>
 
                     <span class="s s-Atom">return</span> <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">STDLIB</span>
 
-                <span class="s s-Atom">elif</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">conda_env</span> <span class="s s-Atom">and</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">conda_env</span> <span class="s s-Atom">in</span> <span class="nn">prefix</span><span class="p">:</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">conda_env</span> <span class="s s-Atom">and</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">conda_env</span> <span class="s s-Atom">in</span> <span class="nn">prefix</span><span class="p">:</span>
 
                     <span class="s s-Atom">return</span> <span class="s s-Atom">sections</span><span class="p">.</span><span class="nv">THIRDPARTY</span>
 
@@ -3451,11 +3463,11 @@
 
                     <span class="k">return</span> <span class="n">sections</span><span class="o">.</span><span class="n">THIRDPARTY</span>
 
-                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdlib_lib_prefix</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdlib_lib_prefix</span><span class="p">:</span>
 
                     <span class="k">return</span> <span class="n">sections</span><span class="o">.</span><span class="n">STDLIB</span>
 
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">conda_env</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conda_env</span> <span class="ow">in</span> <span class="n">prefix</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conda_env</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conda_env</span> <span class="ow">in</span> <span class="n">prefix</span><span class="p">:</span>
 
                     <span class="k">return</span> <span class="n">sections</span><span class="o">.</span><span class="n">THIRDPARTY</span>
 
@@ -3530,11 +3542,11 @@
 
 <span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">sections</span><span class="p">.</span><span class="n">THIRDPARTY</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">elif</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">normcase</span><span class="p">(</span><span class="k">prefix</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">stdlib_lib_prefix</span><span class="p">:</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">normcase</span><span class="p">(</span><span class="k">prefix</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">stdlib_lib_prefix</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">sections</span><span class="p">.</span><span class="n">STDLIB</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">elif</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">conda_env</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">conda_env</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">prefix</span><span class="err">:</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">conda_env</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">conda_env</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">prefix</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">sections</span><span class="p">.</span><span class="n">THIRDPARTY</span><span class="w"></span>
 

@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -814,6 +826,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#identify_imports_main" class="md-nav__link">
+    identify_imports_main
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#iter_source_code" class="md-nav__link">
     iter_source_code
   </a>
@@ -1272,6 +1291,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#identify_imports_main" class="md-nav__link">
+    identify_imports_main
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#iter_source_code" class="md-nav__link">
     iter_source_code
   </a>
@@ -1490,11 +1516,11 @@
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortAttempt</span><span class="p">]:</span>
 
+    <span class="n">incorrectly_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">skipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">try</span><span class="p">:</span>
-
-        <span class="n">incorrectly_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
-
-        <span class="n">skipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
 
@@ -1508,29 +1534,27 @@
 
             <span class="k">return</span> <span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
 
-            <span class="k">try</span><span class="p">:</span>
+            <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span>
 
-                <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span>
+                <span class="n">file_name</span><span class="p">,</span>
 
-                    <span class="n">file_name</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
 
-                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span>
 
-                    <span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span>
+                <span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span>
 
-                    <span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
 
-                <span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
 
-            <span class="k">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+            <span class="n">skipped</span> <span class="o">=</span> <span class="bp">True</span>
 
-                <span class="n">skipped</span> <span class="o">=</span> <span class="bp">True</span>
-
-            <span class="k">return</span> <span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
 
@@ -2928,21 +2952,47 @@
 
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">WrapModes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">WrapModes</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__name__</span>
 
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unserializable object {} of type {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Get all import definitions from a given file.&quot;</span>
+
+        <span class="s2">&quot;Use `-` as the first argument to represent stdin.&quot;</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Python source file to get imports from.&quot;</span><span class="p">)</span>
+
+    <span class="n">arguments</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">file</span>
+
+    <span class="k">if</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unserializable object {} of type {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Path must be a file, not a directory&quot;</span><span class="p">)</span>
+
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">stdin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIOWrapper</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
 
@@ -2994,9 +3044,7 @@
 
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="k">return</span>
+        <span class="k">return</span>
 
     <span class="k">if</span> <span class="s2">&quot;settings_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
 
@@ -3325,6 +3373,44 @@
 
 
 <h2 id="functions">Functions</h2>
+<h3 id="identify_imports_main">identify_imports_main</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Get all import definitions from a given file.&quot;</span>
+
+        <span class="s2">&quot;Use `-` as the first argument to represent stdin.&quot;</span>
+
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Python source file to get imports from.&quot;</span><span class="p">)</span>
+
+    <span class="n">arguments</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">file</span>
+
+    <span class="k">if</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Path must be a file, not a directory&quot;</span><span class="p">)</span>
+
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</code></pre></div>
+
+
+</details>
 <h3 id="iter_source_code">iter_source_code</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">iter_source_code</span><span class="p">(</span>
     <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -3461,9 +3547,7 @@
 
 <span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Error: arguments passed in without any paths or content.&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">return</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;settings_path&quot;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
 
@@ -3846,11 +3930,11 @@
 
 <span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">SortAttempt</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
+<span class="w">    </span><span class="nl">incorrectly_sorted</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
 <span class="w">    </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">        </span><span class="nl">incorrectly_sorted</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
-
-<span class="w">        </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">check</span><span class="err">:</span><span class="w"></span>
 
@@ -3864,29 +3948,27 @@
 
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
+<span class="w">            </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="w"></span>
+<span class="w">                </span><span class="nf">file_name</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                    </span><span class="nf">file_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                    </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                    </span><span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                    </span><span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                    </span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
-<span class="w">                </span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="nl">FileSkipped</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="ow">except</span><span class="w"> </span><span class="nl">FileSkipped</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="n">skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="p">(</span><span class="n">OSError</span><span class="p">,</span><span class="w"> </span><span class="n">ValueError</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"></span>
 
