@@ -14,7 +14,7 @@ from .exceptions import FileSkipped, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config, WrapModes
+from .settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
 
 try:
     from .setuptools_commands import ISortCommand  # noqa: F401
@@ -109,14 +109,34 @@ def sort_imports(
         if config.verbose:
             warn(f"Encoding not supported for {file_name}")
         return SortAttempt(incorrectly_sorted, skipped, False)
-    except Exception:
-        printer = create_terminal_printer(color=config.color_output)
-        printer.error(
-            f"Unrecoverable exception thrown when parsing {file_name}! "
-            "This should NEVER happen.\n"
-            "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
+    except KeyError as error:
+        if error.args[0] not in DEFAULT_CONFIG.sections:
+            _print_hard_fail(config, offending_file=file_name)
+            raise
+        msg = (
+            f"Found {error} imports while parsing, but {error} was not included "
+            "in the `sections` setting of your config. Please add it before continuing\n"
+            "See https://pycqa.github.io/isort/#custom-sections-and-ordering "
+            "for more info."
         )
+        _print_hard_fail(config, message=msg)
+        sys.exit(os.EX_CONFIG)
+    except Exception:
+        _print_hard_fail(config, offending_file=file_name)
         raise
+
+
+def _print_hard_fail(
+    config: Config, offending_file: Optional[str] = None, message: Optional[str] = None
+) -> None:
+    """Fail on unrecoverable exception with custom message."""
+    message = message or (
+        f"Unrecoverable exception thrown when parsing {offending_file or ''}!"
+        "This should NEVER happen.\n"
+        "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
+    )
+    printer = create_terminal_printer(color=config.color_output)
+    printer.error(message)
 
 
 def iter_source_code(
