@@ -147,7 +147,9 @@ def iter_source_code(
 
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=config.follow_links):
+            for dirpath, dirnames, filenames in os.walk(
+                path, topdown=True, followlinks=config.follow_links
+            ):
                 base_path = Path(dirpath)
                 for dirname in list(dirnames):
                     full_path = base_path / dirname
