@@ -767,7 +767,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--dont-follow-links",
         dest="dont_follow_links",
-        action="store_true"
+        action="store_true",
+        help="Tells isort not to follow symlinks that are encountered when running recursively.",
     )
 
     # deprecated options
