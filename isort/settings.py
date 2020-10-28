@@ -203,6 +203,7 @@ class _Config:
     combine_straight_imports: bool = False
     auto_identify_namespace_packages: bool = True
     namespace_packages: FrozenSet[str] = frozenset()
+    follow_links: bool = True
 
     def __post_init__(self):
         py_version = self.py_version

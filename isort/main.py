@@ -147,7 +147,7 @@ def iter_source_code(
 
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=True):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True, followlinks=config.follow_links):
                 base_path = Path(dirpath)
                 for dirname in list(dirnames):
                     full_path = base_path / dirname
@@ -741,7 +741,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Tells isort to only show an identical custom import heading comment once, even if"
         " there are multiple sections with the comment set.",
     )
-
     parser.add_argument(
         "--only-sections",
         "--os",
@@ -750,7 +749,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
         "Imports are unaltered and keep their relative positions within the different sections.",
     )
-
     parser.add_argument(
         "--only-modified",
         "--om",
@@ -758,7 +756,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Suppresses verbose output for non-modified files.",
     )
-
     parser.add_argument(
         "--combine-straight-imports",
         "--csi",
@@ -766,6 +763,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Combines all the bare straight imports of the same section in a single line. "
         "Won't work with sections which have 'as' imports",
+    )
+    parser.add_argument(
+        "--dont-follow-links",
+        dest="dont_follow_links",
+        action="store_true"
     )
 
     # deprecated options
@@ -823,6 +825,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
         del arguments["dont_order_by_type"]
+    if "dont_follow_links" in arguments:
+        arguments["follow_links"] = False
     multi_line_output = arguments.get("multi_line_output", None)
     if multi_line_output:
         if multi_line_output.isdigit():
