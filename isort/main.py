@@ -203,7 +203,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--help",
         action="help",
         default=argparse.SUPPRESS,
-        help=_('show this help message and exit'),
+        help=_("show this help message and exit"),
     )
     general_group.add_argument(
         "-V",
