@@ -284,6 +284,7 @@ def sort_file(
     ask_to_apply: bool = False,
     show_diff: Union[bool, TextIO] = False,
     write_to_stdout: bool = False,
+    output: Optional[TextIO] = None,
     **config_kwargs,
 ) -> bool:
     """Sorts and formats any groups of imports imports within the provided file or Path.
@@ -298,6 +299,8 @@ def sort_file(
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **write_to_stdout**: If `True`, write to stdout instead of the input file.
+    - **output**: If a TextIO is provided, results will be written there rather than replacing
+    the original file content.
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
@@ -315,49 +318,74 @@ def sort_file(
                     extension=extension,
                 )
             else:
-                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
-                try:
-                    with tmp_file.open(
-                        "w", encoding=source_file.encoding, newline=""
-                    ) as output_stream:
-                        shutil.copymode(filename, tmp_file)
-                        changed = sort_stream(
-                            input_stream=source_file.stream,
-                            output_stream=output_stream,
-                            config=config,
-                            file_path=actual_file_path,
-                            disregard_skip=disregard_skip,
-                            extension=extension,
-                        )
-                    if changed:
-                        if show_diff or ask_to_apply:
-                            source_file.stream.seek(0)
-                            with tmp_file.open(
-                                encoding=source_file.encoding, newline=""
-                            ) as tmp_out:
-                                show_unified_diff(
-                                    file_input=source_file.stream.read(),
-                                    file_output=tmp_out.read(),
-                                    file_path=actual_file_path,
-                                    output=None if show_diff is True else cast(TextIO, show_diff),
-                                    color_output=config.color_output,
-                                )
-                                if show_diff or (
-                                    ask_to_apply
-                                    and not ask_whether_to_apply_changes_to_file(
-                                        str(source_file.path)
+                if output is None:
+                    tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+                    try:
+                        with tmp_file.open(
+                            "w", encoding=source_file.encoding, newline=""
+                        ) as output_stream:
+                            shutil.copymode(filename, tmp_file)
+                            changed = sort_stream(
+                                input_stream=source_file.stream,
+                                output_stream=output_stream,
+                                config=config,
+                                file_path=actual_file_path,
+                                disregard_skip=disregard_skip,
+                                extension=extension,
+                            )
+                        if changed:
+                            if show_diff or ask_to_apply:
+                                source_file.stream.seek(0)
+                                with tmp_file.open(
+                                    encoding=source_file.encoding, newline=""
+                                ) as tmp_out:
+                                    show_unified_diff(
+                                        file_input=source_file.stream.read(),
+                                        file_output=tmp_out.read(),
+                                        file_path=actual_file_path,
+                                        output=None
+                                        if show_diff is True
+                                        else cast(TextIO, show_diff),
+                                        color_output=config.color_output,
                                     )
-                                ):
-                                    return False
-                        source_file.stream.close()
-                        tmp_file.replace(source_file.path)
-                        if not config.quiet:
-                            print(f"Fixing {source_file.path}")
-                finally:
-                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                        tmp_file.unlink()
-                    except FileNotFoundError:
-                        pass  # pragma: no cover
+                                    if show_diff or (
+                                        ask_to_apply
+                                        and not ask_whether_to_apply_changes_to_file(
+                                            str(source_file.path)
+                                        )
+                                    ):
+                                        return False
+                            source_file.stream.close()
+                            tmp_file.replace(source_file.path)
+                            if not config.quiet:
+                                print(f"Fixing {source_file.path}")
+                    finally:
+                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                            tmp_file.unlink()
+                        except FileNotFoundError:
+                            pass  # pragma: no cover
+                else:
+                    changed = sort_stream(
+                        input_stream=source_file.stream,
+                        output_stream=output,
+                        config=config,
+                        file_path=actual_file_path,
+                        disregard_skip=disregard_skip,
+                        extension=extension,
+                    )
+                    if changed:
+                        if show_diff:
+                            source_file.stream.seek(0)
+                            output.seek(0)
+                            show_unified_diff(
+                                file_input=source_file.stream.read(),
+                                file_output=output.read(),
+                                file_path=actual_file_path,
+                                output=None if show_diff is True else cast(TextIO, show_diff),
+                                color_output=config.color_output,
+                            )
+                    source_file.stream.close()
+
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
