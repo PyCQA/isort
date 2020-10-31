@@ -1005,7 +1005,7 @@ Combines all the bare straight imports of the same section in a single line. Won
 
 ## Check
 
-Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.
+Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file. Returns 0 when nothing would change and returns 1 when the file would be reformatted.
 
 **Type:** Bool  
 **Default:** `False`  

@@ -281,7 +281,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         dest="check",
         help="Checks the file for unsorted / unformatted imports and prints them to the "
-        "command line without modifying the file.",
+        "command line without modifying the file. Returns 0 when nothing would change and "
+        "returns 1 when the file would be reformatted.",
     )
     general_group.add_argument(
         "--ws",
