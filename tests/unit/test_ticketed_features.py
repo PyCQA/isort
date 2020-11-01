@@ -869,7 +869,10 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
     assert not error
 
     isort_diff.seek(0)
-    assert "+import a\n import b\n-import a\n" in isort_diff.read()
-
+    isort_diff_content = isort_diff.read()
+    assert "+import a" in isort_diff_content
+    assert " import b" in isort_diff_content
+    assert "-import a" in isort_diff_content
+    
     isort_output.seek(0)
     assert isort_output.read() == "import a\nimport b\n"
