@@ -993,6 +993,13 @@ else:  # 2.x
     ),
     disregard_skip=True,
 )
+@hypothesis.example(
+    config=isort.Config(
+        py_version="2",
+        combine_straight_imports=True,
+    ),
+    disregard_skip=True,
+)
 @hypothesis.given(
     config=st.from_type(isort.Config),
     disregard_skip=st.booleans(),
