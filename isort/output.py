@@ -527,9 +527,8 @@ def _with_straight_imports(
         for module in straight_modules:
             if module in parsed.categorized_comments["above"]["straight"]:
                 above_comments.extend(parsed.categorized_comments["above"]["straight"].pop(module))
-
-        for module in parsed.categorized_comments["straight"]:
-            inline_comments.extend(parsed.categorized_comments["straight"][module])
+            if module in parsed.categorized_comments["straight"]:
+                inline_comments.extend(parsed.categorized_comments["straight"][module])
 
         combined_straight_imports = ", ".join(straight_modules)
         if inline_comments:
