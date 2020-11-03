@@ -876,3 +876,18 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
 
     isort_output.seek(0)
     assert isort_output.read().splitlines() == ["import a", "import b"]
+    
+
+def test_autofix_mixed_indent_imports_1575():
+    """isort should automatically fix import statements that are sent in
+    with incorrect mixed indentation.
+    See: https://github.com/PyCQA/isort/issues/1575
+    """
+    assert isort.code("""
+import os
+  import os
+  """) == """
+import os
+"""
+
+

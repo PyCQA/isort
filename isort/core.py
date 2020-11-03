@@ -275,7 +275,7 @@ def process(
                     ):
                         cimport_statement = True
 
-                    if cimport_statement != cimports or (new_indent != indent and import_section):
+                    if cimport_statement != cimports and import_section:
                         if import_section:
                             next_cimports = cimport_statement
                             next_import_section = import_statement
@@ -284,8 +284,12 @@ def process(
                             line = ""
                         else:
                             cimports = cimport_statement
-
-                    indent = new_indent
+                    else:
+                        if new_indent != indent:
+                            if import_section:
+                                import_statement = import_statement.lstrip()
+                            else:
+                                indent = new_indent
                     import_section += import_statement
                 else:
                     not_imports = True
