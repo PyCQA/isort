@@ -894,3 +894,32 @@ import os
 import os
 """
     )
+    assert (
+        isort.code(
+            """
+def one():
+    import os
+import os
+    """
+        )
+        == """
+def one():
+    import os
+
+import os
+"""
+    )
+    assert (
+        isort.code(
+            """
+import os
+    import os
+        import os
+    import os
+import os
+"""
+        )
+        == """
+import os
+"""
+    )
