@@ -246,6 +246,7 @@ def process(
                 ):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                    did_contain_imports = contains_imports
                     contains_imports = True
 
                     new_indent = line[: -len(line.lstrip())]
@@ -286,7 +287,7 @@ def process(
                             cimports = cimport_statement
                     else:
                         if new_indent != indent:
-                            if import_section:
+                            if import_section and did_contain_imports:
                                 import_statement = import_statement.lstrip()
                             else:
                                 indent = new_indent
