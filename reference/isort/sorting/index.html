@@ -243,18 +243,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
-      Compatibility Black
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -1373,7 +1361,7 @@
 
     <span class="p">)</span>
 
-    <span class="n">_length_sort_maybe</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">module_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">length_sort</span> <span class="k">else</span> <span class="n">module_name</span>
+    <span class="n">_length_sort_maybe</span> <span class="o">=</span> <span class="n">length_sort</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">module_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">module_name</span>
 
     <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{module_name in config.force_to_top and &#39;A&#39; or &#39;B&#39;}{prefix}{_length_sort_maybe}&quot;</span>
 
@@ -1543,7 +1531,7 @@
 
 <span class="w">    </span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">_length_sort_maybe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">module_name</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">length_sort</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">module_name</span><span class="w"></span>
+<span class="w">    </span><span class="n">_length_sort_maybe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length_sort</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">module_name</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">module_name</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="ss">&quot;{module_name in config.force_to_top and &#39;A&#39; or &#39;B&#39;}{prefix}{_length_sort_maybe}&quot;</span><span class="w"></span>
 </code></pre></div>
