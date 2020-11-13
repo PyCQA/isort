@@ -348,6 +348,66 @@ def test_isort_command():
     assert main.ISortCommand
 
 
+def test_isort_filename_overrides(tmpdir, capsys):
+    """Tests isorts available approaches for overriding filename and extension based behavior"""
+    input_text = """
+import b
+import a
+
+def function():
+    pass
+"""
+
+    def build_input_content():
+        return UnseekableTextIOWrapper(BytesIO(input_text.encode("utf8")))
+
+    main.main(["-"], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+
+def function():
+    pass
+"""
+    )
+
+    main.main(["-", "--ext-format", "pyi"], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+def function():
+    pass
+"""
+    )
+
+    tmp_file = tmpdir.join("tmp.pyi")
+    tmp_file.write_text(input_text, encoding="utf8")
+    main.main(["-", "--filename", str(tmp_file)], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+def function():
+    pass
+"""
+    )
+
+    # setting a filename override when file is passed in as non-stream is not supported.
+    with pytest.raises(SystemExit):
+        main.main([str(tmp_file), "--filename", str(tmp_file)], stdin=build_input_content())
+
+
 def test_isort_with_stdin(capsys):
     # ensures that isort sorts stdin without any flags
 

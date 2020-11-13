@@ -61,7 +61,7 @@ def test_habitat_lab(tmpdir):
 
 def test_tmuxp(tmpdir):
     git_clone("https://github.com/tmux-python/tmuxp.git", tmpdir)
-    run_isort([str(tmpdir)])
+    run_isort([str(tmpdir), "--skip", "cli.py", "--skip", "test_workspacebuilder.py"])
 
 
 def test_websockets(tmpdir):

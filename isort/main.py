@@ -383,6 +383,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Tells isort not to follow symlinks that are encountered when running recursively.",
     )
+    target_group.add_argument(
+        "--filename",
+        dest="filename",
+        help="Provide the filename associated with a stream.",
+    )
 
     output_group.add_argument(
         "-a",
@@ -652,6 +657,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="color_output",
         action="store_true",
         help="Tells isort to use color in terminal output.",
+    )
+    output_group.add_argument(
+        "--ext-format",
+        dest="ext_format",
+        help="Tells isort to format the given files according to an extensions formatting rules.",
     )
 
     section_group.add_argument(
@@ -938,6 +948,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     deprecated_flags = config_dict.pop("deprecated_flags", False)
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
+    stream_filename = config_dict.pop("filename", None)
+    ext_format = config_dict.pop("ext_format", None)
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
@@ -952,6 +964,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
     elif file_names == ["-"]:
+        file_path = Path(stream_filename) if stream_filename else None
         if show_files:
             sys.exit("Error: can't show files for streaming input.")
 
@@ -960,6 +973,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 input_stream=sys.stdin if stdin is None else stdin,
                 config=config,
                 show_diff=show_diff,
+                file_path=file_path,
+                extension=ext_format,
             )
 
             wrong_sorted_files = incorrectly_sorted
@@ -969,8 +984,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 output_stream=sys.stdout,
                 config=config,
                 show_diff=show_diff,
+                file_path=file_path,
+                extension=ext_format,
             )
     else:
+        if stream_filename:
+            printer = create_terminal_printer(color=config.color_output)
+            printer.error("Filename override is intended only for stream (-) sorting.")
+            sys.exit(1)
         skipped: List[str] = []
         broken: List[str] = []
 
@@ -1005,6 +1026,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     check=check,
                     ask_to_apply=ask_to_apply,
                     write_to_stdout=write_to_stdout,
+                    extension=ext_format,
                 ),
                 file_names,
             )
@@ -1018,6 +1040,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     ask_to_apply=ask_to_apply,
                     show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
+                    extension=ext_format,
                 )
                 for file_name in file_names
             )
