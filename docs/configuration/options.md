@@ -179,7 +179,7 @@ Force isort to recognize a module as being a local folder. Generally, this is re
 Force isort to recognize a module as part of Python's standard library.
 
 **Type:** Frozenset  
-**Default:** `('_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib')`  
+**Default:** `('_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo')`  
 **Python & Config File Name:** known_standard_library  
 **CLI Flags:**
 
@@ -296,7 +296,7 @@ Sort imports by their string length.
 
 ## Length Sort Straight
 
-Sort straight imports by their string length.
+Sort straight imports by their string length. Similar to `length_sort` but applies only to straight imports and doesn't affect from imports.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -602,7 +602,7 @@ Force all imports to be sorted as a single section
 
 ## Force Grid Wrap
 
-Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.
+Force number of from imports (defaults to 2 when passed as CLI flag without value)to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.
 
 **Type:** Int  
 **Default:** `0`  
@@ -631,6 +631,15 @@ Don't sort straight-style imports (like import sys) before from-style imports (l
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** lexicographical  
+**CLI Flags:** **Not Supported**
+
+## Group By Package
+
+**No Description**
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** group_by_package  
 **CLI Flags:** **Not Supported**
 
 ## Ignore Whitespace
@@ -767,8 +776,8 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party).
 
-**Type:** Frozenset  
-**Default:** `frozenset()`  
+**Type:** Tuple  
+**Default:** `()`  
 **Python & Config File Name:** src_paths  
 **CLI Flags:**
 
@@ -800,7 +809,8 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 ## Float To Top
 
-Causes all non-indented imports to float to the top of the file having its imports sorted.  It can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.
+Causes all non-indented imports to float to the top of the file having its imports sorted (immediately below the top of file comment).
+This can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.
 
 *NOTE*: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.
 
@@ -880,7 +890,7 @@ Tells isort to treat all single line comments as if they are code.
 Specifies what extensions isort can be ran against.
 
 **Type:** Frozenset  
-**Default:** `('py', 'pyi', 'pyx')`  
+**Default:** `('pxd', 'py', 'pyi', 'pyx')`  
 **Python & Config File Name:** supported_extensions  
 **CLI Flags:**
 
@@ -948,6 +958,36 @@ Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY 
 
 - --only-sections
 - --os
+
+## Only Modified
+
+Suppresses verbose output for non-modified files.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** only_modified  
+**CLI Flags:**
+
+- --only-modified
+- --om
+
+## Auto Identify Namespace Packages
+
+**No Description**
+
+**Type:** Bool  
+**Default:** `True`  
+**Python & Config File Name:** auto_identify_namespace_packages  
+**CLI Flags:** **Not Supported**
+
+## Namespace Packages
+
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** namespace_packages  
+**CLI Flags:** **Not Supported**
 
 ## Check
 
@@ -1089,6 +1129,17 @@ See isort's determined config, as well as sources of config options.
 **CLI Flags:**
 
 - --show-config
+
+## Show Files
+
+See the files isort will be ran against with the current config options.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --show-files
 
 ## Deprecated Flags
 
