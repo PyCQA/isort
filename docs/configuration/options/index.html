@@ -701,6 +701,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#group-by-package" class="md-nav__link">
+    Group By Package
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ignore-whitespace" class="md-nav__link">
     Ignore Whitespace
   </a>
@@ -904,6 +911,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#only-modified" class="md-nav__link">
+    Only Modified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-identify-namespace-packages" class="md-nav__link">
+    Auto Identify Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#namespace-packages" class="md-nav__link">
+    Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -989,6 +1017,13 @@
         <li class="md-nav__item">
   <a href="#show-config" class="md-nav__link">
     Show Config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-files" class="md-nav__link">
+    Show Files
   </a>
   
 </li>
@@ -2281,6 +2316,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#group-by-package" class="md-nav__link">
+    Group By Package
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ignore-whitespace" class="md-nav__link">
     Ignore Whitespace
   </a>
@@ -2484,6 +2526,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#only-modified" class="md-nav__link">
+    Only Modified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-identify-namespace-packages" class="md-nav__link">
+    Auto Identify Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#namespace-packages" class="md-nav__link">
+    Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check" class="md-nav__link">
     Check
   </a>
@@ -2569,6 +2632,13 @@
         <li class="md-nav__item">
   <a href="#show-config" class="md-nav__link">
     Show Config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-files" class="md-nav__link">
+    Show Files
   </a>
   
 </li>
@@ -2747,7 +2817,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="known-standard-library">Known Standard Library</h2>
 <p>Force isort to recognize a module as part of Python's standard library.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib')</code><br />
+<strong>Default:</strong> <code>('_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo')</code><br />
 <strong>Python &amp; Config File Name:</strong> known_standard_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -2840,7 +2910,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--length-sort</li>
 </ul>
 <h2 id="length-sort-straight">Length Sort Straight</h2>
-<p>Sort straight imports by their string length.</p>
+<p>Sort straight imports by their string length. Similar to <code>length_sort</code> but applies only to straight imports and doesn't affect from imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> length_sort_straight<br />
@@ -3090,7 +3160,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--force-alphabetical-sort</li>
 </ul>
 <h2 id="force-grid-wrap">Force Grid Wrap</h2>
-<p>Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.</p>
+<p>Force number of from imports (defaults to 2 when passed as CLI flag without value)to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> force_grid_wrap<br />
@@ -3114,6 +3184,12 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> lexicographical<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="group-by-package">Group By Package</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> group_by_package<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="ignore-whitespace">Ignore Whitespace</h2>
 <p>Tells isort to ignore whitespace differences when --check-only is being used.</p>
@@ -3220,8 +3296,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="src-paths">Src Paths</h2>
 <p>Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party).</p>
-<p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>frozenset()</code><br />
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>()</code><br />
 <strong>Python &amp; Config File Name:</strong> src_paths<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3248,7 +3324,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--remove-redundant-aliases</li>
 </ul>
 <h2 id="float-to-top">Float To Top</h2>
-<p>Causes all non-indented imports to float to the top of the file having its imports sorted.  It can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.</p>
+<p>Causes all non-indented imports to float to the top of the file having its imports sorted (immediately below the top of file comment).
+This can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.</p>
 <p><em>NOTE</em>: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
@@ -3311,7 +3388,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="supported-extensions">Supported Extensions</h2>
 <p>Specifies what extensions isort can be ran against.</p>
 <p><strong>Type:</strong> Frozenset<br />
-<strong>Default:</strong> <code>('py', 'pyi', 'pyx')</code><br />
+<strong>Default:</strong> <code>('pxd', 'py', 'pyi', 'pyx')</code><br />
 <strong>Python &amp; Config File Name:</strong> supported_extensions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3365,6 +3442,28 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--only-sections</li>
 <li>--os</li>
 </ul>
+<h2 id="only-modified">Only Modified</h2>
+<p>Suppresses verbose output for non-modified files.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> only_modified<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--only-modified</li>
+<li>--om</li>
+</ul>
+<h2 id="auto-identify-namespace-packages">Auto Identify Namespace Packages</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>True</code><br />
+<strong>Python &amp; Config File Name:</strong> auto_identify_namespace_packages<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="namespace-packages">Namespace Packages</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> namespace_packages<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="check">Check</h2>
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -3479,6 +3578,15 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--show-config</li>
+</ul>
+<h2 id="show-files">Show Files</h2>
+<p>See the files isort will be ran against with the current config options.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--show-files</li>
 </ul>
 <h2 id="deprecated-flags">Deprecated Flags</h2>
 <p>==SUPPRESS==</p>
