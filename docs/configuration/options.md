@@ -108,9 +108,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 ## Sections
 
-Specifies a custom ordering for sections. Any custom defined sections should also be
-included in this ordering. Omitting any of the default sections from this tuple may
-result in unexpected sorting or an exception being raised.
+**No Description**
 
 **Type:** Tuple  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  
@@ -343,7 +341,7 @@ Removes the specified import from all files.
 
 ## Append Only
 
-Only adds the imports specified in --add-imports if the file contains existing imports.
+Only adds the imports specified in --add-import if the file contains existing imports.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1003,83 +1001,14 @@ Combines all the bare straight imports of the same section in a single line. Won
 **Python & Config File Name:** namespace_packages  
 **CLI Flags:** **Not Supported**
 
-## Check
+## Follow Links
 
-Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file. Returns 0 when nothing would change and returns 1 when the file would be reformatted.
-
-**Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- -c
-- --check-only
-- --check
-
-## Write To Stdout
-
-Force resulting output to stdout, instead of in-place.
+**No Description**
 
 **Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- -d
-- --stdout
-
-## Show Diff
-
-Prints a diff of all the changes isort would make to a file, instead of changing it in place
-
-**Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- --df
-- --diff
-
-## Jobs
-
-Number of files to process in parallel.
-
-**Type:** Int  
-**Default:** `None`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- -j
-- --jobs
-
-## Dont Order By Type
-
-Don't order imports by type, which is determined by case, in addition to alphabetically.
-
-**NOTE**: type here refers to the implied type from the import name capitalization.
- isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using `--order-by-type`.
-
-**Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- --dt
-- --dont-order-by-type
-
-## Settings Path
-
-Explicitly set the settings path or file instead of auto determining based on file location.
-
-**Type:** String  
-**Default:** `None`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- --sp
-- --settings-path
-- --settings-file
-- --settings
+**Default:** `True`  
+**Python & Config File Name:** follow_links  
+**CLI Flags:** **Not Supported**
 
 ## Show Version
 
@@ -1111,27 +1040,17 @@ Returns just the current version number without the logo
 - --vn
 - --version-number
 
-## Files
+## Write To Stdout
 
-One or more Python source files that need their imports sorted.
-
-**Type:** String  
-**Default:** `None`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- 
-
-## Ask To Apply
-
-Tells isort to apply changes interactively.
+Force resulting output to stdout, instead of in-place.
 
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
-- --interactive
+- -d
+- --stdout
 
 ## Show Config
 
@@ -1154,6 +1073,127 @@ See the files isort will be ran against with the current config options.
 **CLI Flags:**
 
 - --show-files
+
+## Show Diff
+
+Prints a diff of all the changes isort would make to a file, instead of changing it in place
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --df
+- --diff
+
+## Check
+
+Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file. Returns 0 when nothing would change and returns 1 when the file would be reformatted.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- -c
+- --check-only
+- --check
+
+## Settings Path
+
+Explicitly set the settings path or file instead of auto determining based on file location.
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --sp
+- --settings-path
+- --settings-file
+- --settings
+
+## Jobs
+
+Number of files to process in parallel.
+
+**Type:** Int  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- -j
+- --jobs
+
+## Ask To Apply
+
+Tells isort to apply changes interactively.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --interactive
+
+## Files
+
+One or more Python source files that need their imports sorted.
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- 
+
+## Dont Follow Links
+
+Tells isort not to follow symlinks that are encountered when running recursively.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --dont-follow-links
+
+## Filename
+
+Provide the filename associated with a stream.
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --filename
+
+## Dont Order By Type
+
+Don't order imports by type, which is determined by case, in addition to alphabetically.
+
+**NOTE**: type here refers to the implied type from the import name capitalization.
+ isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using `--order-by-type`.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --dt
+- --dont-order-by-type
+
+## Ext Format
+
+Tells isort to format the given files according to an extensions formatting rules.
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --ext-format
 
 ## Deprecated Flags
 
