@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -1753,9 +1765,13 @@
 
     <span class="n">only_modified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="n">combine_straight_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="n">auto_identify_namespace_packages</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
 
     <span class="n">namespace_packages</span><span class="p">:</span> <span class="n">FrozenSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+    <span class="n">follow_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -2215,7 +2231,7 @@
 
             <span class="k">return</span> <span class="bp">True</span>
 
-        <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="bp">False</span>
 
@@ -3155,7 +3171,7 @@ dynamically determined later on.</p>
 
 <span class="ss">            return True</span>
 
-<span class="ss">        elif ext in self.blocked_extensions:</span>
+<span class="ss">        if ext in self.blocked_extensions:</span>
 
 <span class="ss">            return False</span>
 
@@ -3386,6 +3402,10 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 
+<div class="codehilite"><pre><span></span><code><span class="n">combine_straight_imports</span>
+</code></pre></div>
+
+
 <div class="codehilite"><pre><span></span><code><span class="n">comment_prefix</span>
 </code></pre></div>
 
@@ -3423,6 +3443,10 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">float_to_top</span>
+</code></pre></div>
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">follow_links</span>
 </code></pre></div>
 
 
@@ -3778,7 +3802,7 @@ dynamically determined later on.</p>
 
             <span class="k">return</span> <span class="k">True</span>
 
-        <span class="n">elif</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="k">False</span>
 

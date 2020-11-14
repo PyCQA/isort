@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -1232,7 +1244,23 @@
 
 <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">check_code_string</span> <span class="k">as</span> <span class="n">check_code</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">check_file</span><span class="p">,</span> <span class="n">check_stream</span><span class="p">,</span> <span class="n">place_module</span><span class="p">,</span> <span class="n">place_module_with_reason</span>
+<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="p">(</span>
+
+    <span class="n">check_file</span><span class="p">,</span>
+
+    <span class="n">check_stream</span><span class="p">,</span>
+
+    <span class="n">get_imports_file</span><span class="p">,</span>
+
+    <span class="n">get_imports_stream</span><span class="p">,</span>
+
+    <span class="n">get_imports_string</span><span class="p">,</span>
+
+    <span class="n">place_module</span><span class="p">,</span>
+
+    <span class="n">place_module_with_reason</span><span class="p">,</span>
+
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_code_string</span> <span class="k">as</span> <span class="n">code</span>
 

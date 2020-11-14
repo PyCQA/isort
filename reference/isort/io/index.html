@@ -243,6 +243,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+      Compatibility Black
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
@@ -786,20 +798,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ancestors-in-mro" class="md-nav__link">
-    Ancestors (in MRO)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#class-variables" class="md-nav__link">
-    Class variables
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#static-methods" class="md-nav__link">
     Static methods
   </a>
@@ -837,33 +835,6 @@
   <a href="#instance-variables" class="md-nav__link">
     Instance variables
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#count" class="md-nav__link">
-    count
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#index" class="md-nav__link">
-    index
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1327,20 +1298,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ancestors-in-mro" class="md-nav__link">
-    Ancestors (in MRO)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#class-variables" class="md-nav__link">
-    Class variables
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#static-methods" class="md-nav__link">
     Static methods
   </a>
@@ -1378,33 +1335,6 @@
   <a href="#instance-variables" class="md-nav__link">
     Instance variables
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#count" class="md-nav__link">
-    count
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#index" class="md-nav__link">
-    index
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1452,13 +1382,17 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">isort._future</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">isort.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedEncoding</span>
 
 <span class="n">_ENCODING_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)&quot;</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">File</span><span class="p">:</span>
 
     <span class="n">stream</span><span class="p">:</span> <span class="n">TextIO</span>
 
@@ -1484,7 +1418,11 @@
 
         <span class="n">encoding</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">File</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+
+            <span class="n">stream</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span>
+
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
 
@@ -1536,7 +1474,7 @@
 
             <span class="n">stream</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
-            <span class="k">yield</span> <span class="n">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
         <span class="k">finally</span><span class="p">:</span>
 
@@ -1563,15 +1501,15 @@
 <h2 id="classes">Classes</h2>
 <h3 id="file">File</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">File</span><span class="p">(</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="o">&lt;</span><span class="k">class</span> <span class="err">&#39;</span><span class="nc">TextIO</span><span class="s1">&#39;&gt;,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
-<p>File(stream, path, encoding)</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<p>File(stream: <class 'TextIO'>, path: pathlib.Path, encoding: str)</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="k">File</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="nl">stream</span><span class="p">:</span><span class="w"> </span><span class="n">TextIO</span><span class="w"></span>
 
@@ -1597,7 +1535,11 @@
 
 <span class="w">        </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">stream</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="nv">@property</span><span class="w"></span>
 
@@ -1649,7 +1591,7 @@
 
 <span class="w">            </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">_open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">yield</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="p">.</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">yield</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="p">.</span><span class="n">encoding</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">        </span><span class="nl">finally</span><span class="p">:</span><span class="w"></span>
 
@@ -1661,23 +1603,6 @@
 
 </details>
 <hr />
-<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
-<ul>
-<li>builtins.tuple</li>
-</ul>
-<h4 id="class-variables">Class variables</h4>
-<div class="codehilite"><pre><span></span><code><span class="n">encoding</span>
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code><span class="n">path</span>
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code><span class="n">stream</span>
-</code></pre></div>
-
-
 <h4 id="static-methods">Static methods</h4>
 <h5 id="detect_encoding">detect_encoding</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">detect_encoding</span><span class="p">(</span>
@@ -1716,7 +1641,11 @@
 
 <span class="w">        </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">BytesIO</span><span class="p">(</span><span class="n">contents</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="ss">&quot;utf-8&quot;</span><span class="p">)).</span><span class="n">readline</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">stream</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">contents</span><span class="p">),</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="k">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="n">resolve</span><span class="p">(),</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 
@@ -1742,7 +1671,7 @@
 
 <span class="w">            </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">File</span><span class="p">.</span><span class="n">_open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">yield</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="p">.</span><span class="n">encoding</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">yield</span><span class="w"> </span><span class="k">File</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="k">path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="n">stream</span><span class="p">.</span><span class="n">encoding</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">        </span><span class="nl">finally</span><span class="p">:</span><span class="w"></span>
 
@@ -1756,32 +1685,6 @@
 <h4 id="instance-variables">Instance variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">extension</span>
 </code></pre></div>
-
-
-<h4 id="methods">Methods</h4>
-<h5 id="count">count</h5>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">count</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">,</span>
-    <span class="o">/</span>
-<span class="p">)</span>
-</code></pre></div>
-
-
-<p>Return number of occurrences of value.</p>
-<h5 id="index">index</h5>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">index</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">,</span>
-    <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">stop</span><span class="o">=</span><span class="mi">9223372036854775807</span><span class="p">,</span>
-    <span class="o">/</span>
-<span class="p">)</span>
-</code></pre></div>
-
-
-<p>Return first index of value.</p>
-<p>Raises ValueError if the value is not present.</p>
                 
               
               

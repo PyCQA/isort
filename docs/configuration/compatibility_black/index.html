@@ -10,18 +10,18 @@
       
       
       
-      <link rel="shortcut icon" href="../../../../art/logo.png">
+      <link rel="shortcut icon" href="../../../art/logo.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.9">
     
     
       
-        <title>Py3 - isort</title>
+        <title>Compatibility Black - isort</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.36ee6aaa.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.36ee6aaa.min.css">
       
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.83bccb1f.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.83bccb1f.min.css">
       
       
     
@@ -35,7 +35,7 @@
     
     
     
-      <link rel="stylesheet" href="../../../../art/stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../art/stylesheets/extra.css">
     
     
       
@@ -56,7 +56,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#module-isortstdlibspy3" class="md-skip">
+        <a href="#compatibility-with-black" class="md-skip">
           Skip to content
         </a>
       
@@ -67,9 +67,9 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="../../../.." title="isort" class="md-header-nav__button md-logo" aria-label="isort">
+    <a href="../../.." title="isort" class="md-header-nav__button md-logo" aria-label="isort">
       
-  <img src="../../../../art/logo.png" alt="logo">
+  <img src="../../../art/logo.png" alt="logo">
 
     </a>
     <label class="md-header-nav__button md-icon" for="__drawer">
@@ -83,7 +83,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Py3
+              Compatibility Black
             
           </span>
         </div>
@@ -153,9 +153,9 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="isort" class="md-nav__button md-logo" aria-label="isort">
+    <a href="../../.." title="isort" class="md-nav__button md-logo" aria-label="isort">
       
-  <img src="../../../../art/logo.png" alt="logo">
+  <img src="../../../art/logo.png" alt="logo">
 
     </a>
     isort
@@ -182,7 +182,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../.." title="Home" class="md-nav__link">
+    <a href="../../.." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -194,7 +194,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../CHANGELOG/" title="Changelog" class="md-nav__link">
+    <a href="../../../CHANGELOG/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
   </li>
@@ -204,10 +204,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Configuration
@@ -231,7 +233,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/configuration/action_comments/" title="Action Comments" class="md-nav__link">
+    <a href="../action_comments/" title="Action Comments" class="md-nav__link">
       Action Comments
     </a>
   </li>
@@ -241,11 +243,67 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Compatibility Black
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Compatibility Black" class="md-nav__link md-nav__link--active">
       Compatibility Black
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-compatibility" class="md-nav__link">
+    Basic compatibility
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-pre-commit" class="md-nav__link">
+    Integration with pre-commit
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-config-file-isortcfg" class="md-nav__link">
+    Using a config file (.isort.cfg)
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -255,7 +313,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/configuration/config_files/" title="Config Files" class="md-nav__link">
+    <a href="../config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
   </li>
@@ -267,7 +325,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+    <a href="../github_action/" title="Github Action" class="md-nav__link">
       Github Action
     </a>
   </li>
@@ -279,7 +337,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/configuration/options/" title="Options" class="md-nav__link">
+    <a href="../options/" title="Options" class="md-nav__link">
       Options
     </a>
   </li>
@@ -291,7 +349,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/configuration/profiles/" title="Profiles" class="md-nav__link">
+    <a href="../profiles/" title="Profiles" class="md-nav__link">
       Profiles
     </a>
   </li>
@@ -333,7 +391,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+    <a href="../../contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
       1. Contributing Guide
     </a>
   </li>
@@ -345,7 +403,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+    <a href="../../contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
       2. Coding Standard
     </a>
   </li>
@@ -357,7 +415,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
+    <a href="../../contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
       3. Code Of Conduct
     </a>
   </li>
@@ -369,7 +427,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+    <a href="../../contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
       4. Acknowledgements
     </a>
   </li>
@@ -411,7 +469,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/major_releases/introducing_isort_5/" title="Introducing Isort 5" class="md-nav__link">
+    <a href="../../major_releases/introducing_isort_5/" title="Introducing Isort 5" class="md-nav__link">
       Introducing Isort 5
     </a>
   </li>
@@ -423,7 +481,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/major_releases/release_policy/" title="Release Policy" class="md-nav__link">
+    <a href="../../major_releases/release_policy/" title="Release Policy" class="md-nav__link">
       Release Policy
     </a>
   </li>
@@ -465,7 +523,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/quick_start/0.-try/" title="0. Try" class="md-nav__link">
+    <a href="../../quick_start/0.-try/" title="0. Try" class="md-nav__link">
       0. Try
     </a>
   </li>
@@ -477,7 +535,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/quick_start/1.-install/" title="1. Install" class="md-nav__link">
+    <a href="../../quick_start/1.-install/" title="1. Install" class="md-nav__link">
       1. Install
     </a>
   </li>
@@ -489,7 +547,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/quick_start/2.-cli/" title="2. Cli" class="md-nav__link">
+    <a href="../../quick_start/2.-cli/" title="2. Cli" class="md-nav__link">
       2. Cli
     </a>
   </li>
@@ -501,7 +559,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/quick_start/3.-api/" title="3. Api" class="md-nav__link">
+    <a href="../../quick_start/3.-api/" title="3. Api" class="md-nav__link">
       3. Api
     </a>
   </li>
@@ -543,7 +601,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/upgrade_guides/5.0.0/" title="5.0.0" class="md-nav__link">
+    <a href="../../upgrade_guides/5.0.0/" title="5.0.0" class="md-nav__link">
       5.0.0
     </a>
   </li>
@@ -585,7 +643,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../docs/warning_and_error_codes/W0500/" title="W0500" class="md-nav__link">
+    <a href="../../warning_and_error_codes/W0500/" title="W0500" class="md-nav__link">
       W0500
     </a>
   </li>
@@ -600,12 +658,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
     
     <label class="md-nav__link" for="nav-9">
       Reference
@@ -627,12 +683,10 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1" type="checkbox" id="nav-9-1" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1" type="checkbox" id="nav-9-1">
     
     <label class="md-nav__link" for="nav-9-1">
       Isort
@@ -656,7 +710,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../api/" title="API" class="md-nav__link">
+    <a href="../../../reference/isort/api/" title="API" class="md-nav__link">
       API
     </a>
   </li>
@@ -668,7 +722,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../comments/" title="Comments" class="md-nav__link">
+    <a href="../../../reference/isort/comments/" title="Comments" class="md-nav__link">
       Comments
     </a>
   </li>
@@ -680,7 +734,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../core/" title="Core" class="md-nav__link">
+    <a href="../../../reference/isort/core/" title="Core" class="md-nav__link">
       Core
     </a>
   </li>
@@ -692,7 +746,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../exceptions/" title="Exceptions" class="md-nav__link">
+    <a href="../../../reference/isort/exceptions/" title="Exceptions" class="md-nav__link">
       Exceptions
     </a>
   </li>
@@ -704,7 +758,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../format/" title="Format" class="md-nav__link">
+    <a href="../../../reference/isort/format/" title="Format" class="md-nav__link">
       Format
     </a>
   </li>
@@ -716,7 +770,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../hooks/" title="Hooks" class="md-nav__link">
+    <a href="../../../reference/isort/hooks/" title="Hooks" class="md-nav__link">
       Hooks
     </a>
   </li>
@@ -728,7 +782,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../" title="Index" class="md-nav__link">
+    <a href="../../../reference/isort/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -740,7 +794,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../io/" title="Io" class="md-nav__link">
+    <a href="../../../reference/isort/io/" title="Io" class="md-nav__link">
       Io
     </a>
   </li>
@@ -752,7 +806,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../literal/" title="Literal" class="md-nav__link">
+    <a href="../../../reference/isort/literal/" title="Literal" class="md-nav__link">
       Literal
     </a>
   </li>
@@ -764,7 +818,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../logo/" title="Logo" class="md-nav__link">
+    <a href="../../../reference/isort/logo/" title="Logo" class="md-nav__link">
       Logo
     </a>
   </li>
@@ -776,7 +830,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../main/" title="Main" class="md-nav__link">
+    <a href="../../../reference/isort/main/" title="Main" class="md-nav__link">
       Main
     </a>
   </li>
@@ -788,7 +842,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../output/" title="Output" class="md-nav__link">
+    <a href="../../../reference/isort/output/" title="Output" class="md-nav__link">
       Output
     </a>
   </li>
@@ -800,7 +854,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../parse/" title="Parse" class="md-nav__link">
+    <a href="../../../reference/isort/parse/" title="Parse" class="md-nav__link">
       Parse
     </a>
   </li>
@@ -812,7 +866,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../place/" title="Place" class="md-nav__link">
+    <a href="../../../reference/isort/place/" title="Place" class="md-nav__link">
       Place
     </a>
   </li>
@@ -824,7 +878,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../profiles/" title="Profiles" class="md-nav__link">
+    <a href="../../../reference/isort/profiles/" title="Profiles" class="md-nav__link">
       Profiles
     </a>
   </li>
@@ -836,7 +890,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../pylama_isort/" title="Pylama Isort" class="md-nav__link">
+    <a href="../../../reference/isort/pylama_isort/" title="Pylama Isort" class="md-nav__link">
       Pylama Isort
     </a>
   </li>
@@ -848,7 +902,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../sections/" title="Sections" class="md-nav__link">
+    <a href="../../../reference/isort/sections/" title="Sections" class="md-nav__link">
       Sections
     </a>
   </li>
@@ -860,7 +914,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../settings/" title="Settings" class="md-nav__link">
+    <a href="../../../reference/isort/settings/" title="Settings" class="md-nav__link">
       Settings
     </a>
   </li>
@@ -872,7 +926,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../setuptools_commands/" title="Setuptools Commands" class="md-nav__link">
+    <a href="../../../reference/isort/setuptools_commands/" title="Setuptools Commands" class="md-nav__link">
       Setuptools Commands
     </a>
   </li>
@@ -884,7 +938,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../sorting/" title="Sorting" class="md-nav__link">
+    <a href="../../../reference/isort/sorting/" title="Sorting" class="md-nav__link">
       Sorting
     </a>
   </li>
@@ -896,7 +950,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utils/" title="Utils" class="md-nav__link">
+    <a href="../../../reference/isort/utils/" title="Utils" class="md-nav__link">
       Utils
     </a>
   </li>
@@ -908,7 +962,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../wrap/" title="Wrap" class="md-nav__link">
+    <a href="../../../reference/isort/wrap/" title="Wrap" class="md-nav__link">
       Wrap
     </a>
   </li>
@@ -920,7 +974,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../wrap_modes/" title="Wrap Modes" class="md-nav__link">
+    <a href="../../../reference/isort/wrap_modes/" title="Wrap Modes" class="md-nav__link">
       Wrap Modes
     </a>
   </li>
@@ -957,7 +1011,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../deprecated/finders/" title="Finders" class="md-nav__link">
+    <a href="../../../reference/isort/deprecated/finders/" title="Finders" class="md-nav__link">
       Finders
     </a>
   </li>
@@ -969,7 +1023,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../deprecated/" title="Index" class="md-nav__link">
+    <a href="../../../reference/isort/deprecated/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -984,12 +1038,10 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-25" type="checkbox" id="nav-9-1-25" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-25" type="checkbox" id="nav-9-1-25">
     
     <label class="md-nav__link" for="nav-9-1-25">
       Stdlibs
@@ -1013,7 +1065,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../all/" title="All" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/all/" title="All" class="md-nav__link">
       All
     </a>
   </li>
@@ -1025,7 +1077,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../" title="Index" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -1037,7 +1089,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py2/" title="Py2" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py2/" title="Py2" class="md-nav__link">
       Py2
     </a>
   </li>
@@ -1049,7 +1101,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py27/" title="Py27" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py27/" title="Py27" class="md-nav__link">
       Py27
     </a>
   </li>
@@ -1059,53 +1111,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Py3
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Py3" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../../../reference/isort/stdlibs/py3/" title="Py3" class="md-nav__link">
       Py3
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
-    Variables
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1115,7 +1125,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py35/" title="Py35" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py35/" title="Py35" class="md-nav__link">
       Py35
     </a>
   </li>
@@ -1127,7 +1137,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py36/" title="Py36" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py36/" title="Py36" class="md-nav__link">
       Py36
     </a>
   </li>
@@ -1139,7 +1149,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py37/" title="Py37" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py37/" title="Py37" class="md-nav__link">
       Py37
     </a>
   </li>
@@ -1151,7 +1161,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py38/" title="Py38" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py38/" title="Py38" class="md-nav__link">
       Py38
     </a>
   </li>
@@ -1163,7 +1173,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../py39/" title="Py39" class="md-nav__link">
+    <a href="../../../reference/isort/stdlibs/py39/" title="Py39" class="md-nav__link">
       Py39
     </a>
   </li>
@@ -1210,8 +1220,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
-    Variables
+  <a href="#basic-compatibility" class="md-nav__link">
+    Basic compatibility
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-pre-commit" class="md-nav__link">
+    Integration with pre-commit
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-config-file-isortcfg" class="md-nav__link">
+    Using a config file (.isort.cfg)
   </a>
   
 </li>
@@ -1228,7 +1252,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/pycqa/isort/edit/develop/reference/isort/stdlibs/py3.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/pycqa/isort/edit/develop/docs/configuration/compatibility_black.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1236,17 +1260,50 @@
                   
                 
                 
-                <h1 id="module-isortstdlibspy3">Module isort.stdlibs.py3</h1>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">py35</span><span class="p">,</span> <span class="n">py36</span><span class="p">,</span> <span class="n">py37</span><span class="p">,</span> <span class="n">py38</span><span class="p">,</span> <span class="n">py39</span>
+                <h1 id="compatibility-with-black">Compatibility with black</h1>
+<p>black and isort sometimes don't agree on some rules. Although you can configure isort to behave nicely with black.</p>
+<h2 id="basic-compatibility">Basic compatibility</h2>
+<p>Use the profile option while using isort, <code>isort --profile black</code>.</p>
+<p>A demo of how this would look like in your <em>.travis.yml</em></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="nt">python</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;3.6&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;3.7&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;3.8&quot;</span>
 
-<span class="n">stdlib</span> <span class="o">=</span> <span class="n">py35</span><span class="o">.</span><span class="n">stdlib</span> <span class="o">|</span> <span class="n">py36</span><span class="o">.</span><span class="n">stdlib</span> <span class="o">|</span> <span class="n">py37</span><span class="o">.</span><span class="n">stdlib</span> <span class="o">|</span> <span class="n">py38</span><span class="o">.</span><span class="n">stdlib</span> <span class="o">|</span> <span class="n">py39</span><span class="o">.</span><span class="n">stdlib</span>
+<span class="nt">install</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install -r requirements-dev.txt</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install isort black</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install coveralls</span>
+<span class="nt">script</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pytest my-package</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">isort --profile black my-package</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">black --check --diff my-package</span>
+<span class="nt">after_success</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">coveralls</span>
 </code></pre></div>
 
 
-</details>
-<h2 id="variables">Variables</h2>
-<div class="codehilite"><pre><span></span><code><span class="n">stdlib</span>
+<p>See <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in profiles</a> for more profiles.</p>
+<h2 id="integration-with-pre-commit">Integration with pre-commit</h2>
+<p>isort can be easily used with your pre-commit hooks.</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">-</span> <span class="nt">repo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/pycqa/isort</span>
+    <span class="l l-Scalar l-Scalar-Plain">rev</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5.6.4</span>
+    <span class="l l-Scalar l-Scalar-Plain">hooks</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">isort</span>
+        <span class="nt">args</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;--profile&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;black&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
+
+
+<h2 id="using-a-config-file-isortcfg">Using a config file (.isort.cfg)</h2>
+<p>The easiest way to configure black with isort is to use a config file.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
+<span class="na">profile</span> <span class="o">=</span> <span class="s">&quot;black&quot;</span>
+<span class="na">multi_line_output</span> <span class="o">=</span> <span class="s">3</span>
+</code></pre></div>
+
+
+<p>Read More about supported <a href="https://pycqa.github.io/isort/docs/configuration/config_files/">config files</a>.</p>
                 
               
               
@@ -1265,7 +1322,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../py27/" title="Py27" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../action_comments/" title="Action Comments" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1274,19 +1331,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Py27
+                Action Comments
               </span>
             </div>
           </a>
         
         
-          <a href="../py35/" title="Py35" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../config_files/" title="Config Files" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Py35
+                Config Files
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -1315,15 +1372,15 @@
       
     </div>
     
-      <script src="../../../../assets/javascripts/vendor.df0def68.min.js"></script>
-      <script src="../../../../assets/javascripts/bundle.ba57d267.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../../assets/javascripts/vendor.df0def68.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.ba57d267.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
-          base: "../../../..",
+          base: "../../..",
           features: [],
           search: Object.assign({
-            worker: "../../../../assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
