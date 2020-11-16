@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.7.0 TBD
   - Implemented #1596: Provide ways for extension formatting and file paths to be specified when using streaming input from CLI.
+  - Implemented #1583: Ability to output and diff within a single API call to isort.file.
 
 ### 5.6.4 October 12, 2020
   - Fixed #1556: Empty line added between imports that should be skipped.
