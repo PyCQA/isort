@@ -431,6 +431,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "and a performance penalty.",
     )
     output_group.add_argument(
+        "--dont-float-to-top",
+        dest="dont_float_to_top",
+        action="store_true",
+        help="Forces --float-to-top setting off. See --float-to-top for more information.",
+    )
+    output_group.add_argument(
         "--ca",
         "--combine-as",
         dest="combine_as_imports",
@@ -864,6 +870,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         del arguments["dont_order_by_type"]
     if "dont_follow_links" in arguments:
         arguments["follow_links"] = False
+    if "dont_float_to_top" in arguments:
+        del arguments["dont_float_to_top"]
+        if arguments.get("float_to_top", False):
+            sys.exit("Can't set both --float-to-top and --dont-float-to-top.")
+        else:
+            arguments["float_to_top"] = False
     multi_line_output = arguments.get("multi_line_output", None)
     if multi_line_output:
         if multi_line_output.isdigit():

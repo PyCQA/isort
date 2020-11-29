@@ -408,6 +408,53 @@ def function():
         main.main([str(tmp_file), "--filename", str(tmp_file)], stdin=build_input_content())
 
 
+def test_isort_float_to_top_overrides(tmpdir, capsys):
+    """Tests isorts supports overriding float to top from CLI"""
+    test_input = """
+import b
+
+
+def function():
+    pass
+
+    
+import a
+"""
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+float_to_top=True
+"""
+    )
+    python_file = tmpdir.join("file.py")
+    python_file.write(test_input)
+
+    main.main([str(python_file)])
+    out, error = capsys.readouterr()
+    assert not error
+    assert "Fixing" in out
+    assert python_file.read_text(encoding="utf8") == (
+        """
+import a
+import b
+
+
+def function():
+    pass
+"""
+    )
+    
+    python_file.write(test_input)
+    main.main([str(python_file), "--dont-float-to-top"])
+    _, error = capsys.readouterr()
+    assert not error
+    assert python_file.read_text(encoding="utf8") == test_input
+    
+    with pytest.raises(SystemExit):
+        main.main([str(python_file), "--float-to-top", "--dont-float-to-top"])
+
+
 def test_isort_with_stdin(capsys):
     # ensures that isort sorts stdin without any flags
 
