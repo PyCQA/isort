@@ -444,13 +444,13 @@ def function():
     pass
 """
     )
-    
+
     python_file.write(test_input)
     main.main([str(python_file), "--dont-float-to-top"])
     _, error = capsys.readouterr()
     assert not error
     assert python_file.read_text(encoding="utf8") == test_input
-    
+
     with pytest.raises(SystemExit):
         main.main([str(python_file), "--float-to-top", "--dont-float-to-top"])
 
