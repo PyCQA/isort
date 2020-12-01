@@ -417,7 +417,7 @@ import b
 def function():
     pass
 
-    
+
 import a
 """
     config_file = tmpdir.join(".isort.cfg")
