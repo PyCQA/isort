@@ -80,6 +80,7 @@ def test_parse_args():
     assert main.parse_args(["--only-modified"]) == {"only_modified": True}
     assert main.parse_args(["--csi"]) == {"combine_straight_imports": True}
     assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
+    assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
 
 
 def test_ascii_art(capsys):

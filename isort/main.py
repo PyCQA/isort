@@ -870,6 +870,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         del arguments["dont_order_by_type"]
     if "dont_follow_links" in arguments:
         arguments["follow_links"] = False
+        del arguments["dont_follow_links"]
     if "dont_float_to_top" in arguments:
         del arguments["dont_float_to_top"]
         if arguments.get("float_to_top", False):
