@@ -20,6 +20,10 @@ class UnseekableTextIOWrapper(TextIOWrapper):
         raise ValueError("underlying stream is not seekable")
 
 
+def as_stream(text: str) -> UnseekableTextIOWrapper:
+    return UnseekableTextIOWrapper(BytesIO(text.encode("utf8")))
+
+
 @given(
     file_name=st.text(),
     config=st.builds(Config),
@@ -1033,5 +1037,10 @@ def test_identify_imports_main(tmpdir, capsys):
 
     main.identify_imports_main([str(some_file)])
 
+    out, error = capsys.readouterr()
+    assert out == file_imports.replace("\n", os.linesep)
+    assert not error
+
+    main.identify_imports_main(["-"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
     assert out == file_imports.replace("\n", os.linesep)
