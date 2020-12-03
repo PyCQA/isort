@@ -26,8 +26,8 @@ editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
-[Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
-[Using black? See the isort and black compatiblity guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
+- [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
+- [Using black? See the isort and black compatiblity guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
 
 ![Example Usage](https://raw.github.com/pycqa/isort/develop/example.gif)
 
