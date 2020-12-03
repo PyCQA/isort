@@ -243,8 +243,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../docs/configuration/compatibility_black/" title="Compatibility Black" class="md-nav__link">
-      Compatibility Black
+    <a href="../../../docs/configuration/black_compatibility/" title="Black Compatibility" class="md-nav__link">
+      Black Compatibility
     </a>
   </li>
 
@@ -2190,6 +2190,18 @@
 
     <span class="n">output_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
 
+        <span class="s2">&quot;--dont-float-to-top&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dont_float_to_top&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Forces --float-to-top setting off. See --float-to-top for more information.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">output_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
         <span class="s2">&quot;--ca&quot;</span><span class="p">,</span>
 
         <span class="s2">&quot;--combine-as&quot;</span><span class="p">,</span>
@@ -3044,6 +3056,20 @@
 
         <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;follow_links&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
 
+        <span class="k">del</span> <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;dont_follow_links&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s2">&quot;dont_float_to_top&quot;</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
+
+        <span class="k">del</span> <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;dont_float_to_top&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;float_to_top&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set both --float-to-top and --dont-float-to-top.&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;float_to_top&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="n">multi_line_output</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multi_line_output&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">multi_line_output</span><span class="p">:</span>
@@ -3080,7 +3106,11 @@
 
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unserializable object {} of type {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
 
-<span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span>
+
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">stdin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIOWrapper</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
 
@@ -3098,7 +3128,7 @@
 
     <span class="k">if</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
 
-        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
 
@@ -3515,12 +3545,17 @@
 <h2 id="functions">Functions</h2>
 <h3 id="identify_imports_main">identify_imports_main</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span>
-    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">stdin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span>
+
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">stdin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIOWrapper</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
 
@@ -3538,7 +3573,7 @@
 
     <span class="k">if</span> <span class="n">file_name</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
 
-        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">get_imports_stream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
 
@@ -4058,6 +4093,20 @@
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;dont_follow_links&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;follow_links&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">del</span><span class="w"> </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;dont_follow_links&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;dont_float_to_top&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">arguments</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">del</span><span class="w"> </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;dont_float_to_top&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;float_to_top&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Can&#39;t set both --float-to-top and --dont-float-to-top.&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">arguments</span><span class="o">[</span><span class="n">&quot;float_to_top&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">multi_line_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;multi_line_output&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="w"></span>
 
