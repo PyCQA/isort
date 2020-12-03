@@ -54,6 +54,6 @@ You can also set the profile directly when integrating isort within pre-commit.
     rev: 5.6.4
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        args: ["--profile", "black", "--filter-files"]
 ```
 
