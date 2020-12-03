@@ -1038,9 +1038,9 @@ def test_identify_imports_main(tmpdir, capsys):
     main.identify_imports_main([str(some_file)])
 
     out, error = capsys.readouterr()
-    assert out == file_imports.replace("\n", os.linesep)
+    assert out == file_imports
     assert not error
 
     main.identify_imports_main(["-"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
-    assert out == file_imports.replace("\n", os.linesep)
+    assert out == file_imports
