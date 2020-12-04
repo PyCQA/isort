@@ -363,7 +363,7 @@ def function():
 """
 
     def build_input_content():
-        return UnseekableTextIOWrapper(BytesIO(input_text.encode("utf8")))
+        return as_stream(input_text)
 
     main.main(["-"], stdin=build_input_content())
     out, error = capsys.readouterr()
@@ -462,13 +462,11 @@ def function():
 def test_isort_with_stdin(capsys):
     # ensures that isort sorts stdin without any flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 import a
 """
-        )
     )
 
     main.main(["-"], stdin=input_content)
@@ -481,14 +479,12 @@ import b
 """
     )
 
-    input_content_from = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content_from = as_stream(
+        """
 import c
 import b
 from a import z, y, x
 """
-        )
     )
 
     main.main(["-"], stdin=input_content_from)
@@ -504,15 +500,13 @@ from a import x, y, z
 
     # ensures that isort correctly sorts stdin with --fas flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import pandas
 from z import abc
 from a import xyz
 """
-        )
     )
 
     main.main(["-", "--fas"], stdin=input_content)
@@ -530,12 +524,10 @@ import sys
 
     # ensures that isort correctly sorts stdin with --fass flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import Path, abc
 """
-        )
     )
 
     main.main(["-", "--fass"], stdin=input_content)
@@ -549,14 +541,12 @@ from a import abc, Path
 
     # ensures that isort correctly sorts stdin with --ff flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 from c import x
 from a import y
 """
-        )
     )
 
     main.main(["-", "--ff", "FROM_FIRST"], stdin=input_content)
@@ -572,13 +562,11 @@ import b
 
     # ensures that isort correctly sorts stdin with -fss flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 from a import a
 """
-        )
     )
 
     main.main(["-", "--fss"], stdin=input_content)
@@ -591,13 +579,11 @@ import b
 """
     )
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import a
 from b import c
 """
-        )
     )
 
     main.main(["-", "--fss"], stdin=input_content)
@@ -612,14 +598,12 @@ from b import c
 
     # ensures that isort correctly sorts stdin with --ds flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import pandas
 import a
 """
-        )
     )
 
     main.main(["-", "--ds"], stdin=input_content)
@@ -635,13 +619,11 @@ import sys
 
     # ensures that isort correctly sorts stdin with --cs flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import b
 from a import *
 """
-        )
     )
 
     main.main(["-", "--cs"], stdin=input_content)
@@ -655,13 +637,11 @@ from a import *
 
     # ensures that isort correctly sorts stdin with --ca flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import x as X
 from a import y as Y
 """
-        )
     )
 
     main.main(["-", "--ca"], stdin=input_content)
@@ -675,14 +655,12 @@ from a import x as X, y as Y
 
     # ensures that isort works consistently with check and ws flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import os
 import a
 import b
 """
-        )
     )
 
     main.main(["-", "--check-only", "--ws"], stdin=input_content)
@@ -692,13 +670,11 @@ import b
 
     # ensures that isort works consistently with check and diff flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 import a
 """
-        )
     )
 
     with pytest.raises(SystemExit):
@@ -711,13 +687,11 @@ import a
 
     # ensures that isort correctly sorts stdin with --ls flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import abcdef
 import x
 """
-        )
     )
 
     main.main(["-", "--ls"], stdin=input_content)
@@ -732,12 +706,10 @@ import abcdef
 
     # ensures that isort correctly sorts stdin with --nis flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from z import b, c, a
 """
-        )
     )
 
     main.main(["-", "--nis"], stdin=input_content)
@@ -751,12 +723,10 @@ from z import b, c, a
 
     # ensures that isort correctly sorts stdin with --sl flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from z import b, c, a
 """
-        )
     )
 
     main.main(["-", "--sl"], stdin=input_content)
@@ -772,15 +742,12 @@ from z import c
 
     # ensures that isort correctly sorts stdin with --top flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import os
 import sys
 """
-        )
     )
-
     main.main(["-", "--top", "sys"], stdin=input_content)
     out, error = capsys.readouterr()
 
@@ -793,17 +760,14 @@ import os
 
     # ensure that isort correctly sorts stdin with --os flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 import z
 from a import b, e, c
 """
-        )
     )
-
     main.main(["-", "--os"], stdin=input_content)
     out, error = capsys.readouterr()
 
@@ -818,13 +782,11 @@ from a import b, e, c
     )
 
     # ensures that isort warns with deprecated flags with stdin
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 """
-        )
     )
 
     with pytest.warns(UserWarning):
@@ -839,13 +801,11 @@ import sys
 """
     )
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 """
-        )
     )
 
     with pytest.warns(UserWarning):
@@ -861,13 +821,11 @@ import sys
     )
 
     # ensures that only-modified flag works with stdin
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import a
 import b
 """
-        )
     )
 
     main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
@@ -877,13 +835,11 @@ import b
     assert "else-type place_module for b returned THIRDPARTY" not in out
 
     # ensures that combine-straight-imports flag works with stdin
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import a
 import b
 """
-        )
     )
 
     main.main(["-", "--combine-straight-imports"], stdin=input_content)
