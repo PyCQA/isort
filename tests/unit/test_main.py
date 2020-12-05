@@ -999,3 +999,6 @@ def test_identify_imports_main(tmpdir, capsys):
     main.identify_imports_main(["-"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
     assert out.replace("\r\n", "\n") == file_imports
+
+    with pytest.raises(SystemExit):
+        main.identify_imports_main([str(tmpdir)])
