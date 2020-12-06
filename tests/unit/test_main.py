@@ -135,6 +135,22 @@ def test_show_files(capsys, tmpdir):
         main.main([str(tmpdir), "--show-files", "--show-config"])
 
 
+def test_missing_default_section(tmpdir):
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+sections=MADEUP
+"""
+    )
+
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    with pytest.raises(SystemExit):
+        main.main([str(python_file)])
+
+
 def test_main(capsys, tmpdir):
     base_args = [
         "-sp",
