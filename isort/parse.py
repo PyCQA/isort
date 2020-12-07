@@ -8,6 +8,7 @@ from warnings import warn
 from . import place
 from .comments import parse as parse_comments
 from .deprecated.finders import FindersManager
+from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
@@ -524,6 +525,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             " Do you need to define a default section?"
                         )
                         imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
+
+                    if placed_module and placed_module not in imports:
+                        raise MissingSection(import_module=module, section=placed_module)
+
                     straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
                         module, False
                     )

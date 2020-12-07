@@ -163,9 +163,18 @@ class UnsupportedSettings(ISortError):
 class UnsupportedEncoding(ISortError):
     """Raised when isort encounters an encoding error while trying to read a file"""
 
-    def __init__(
-        self,
-        filename: Union[str, Path],
-    ):
+    def __init__(self, filename: Union[str, Path]):
         super().__init__(f"Unknown or unsupported encoding in {filename}")
         self.filename = filename
+
+
+class MissingSection(ISortError):
+    """Raised when isort encounters an import that matches a section that is not defined"""
+
+    def __init__(self, import_module: str, section: str):
+        super().__init__(
+            f"Found {import_module} import while parsing, but {section} was not included "
+            "in the `sections` setting of your config. Please add it before continuing\n"
+            "See https://pycqa.github.io/isort/#custom-sections-and-ordering "
+            "for more info."
+        )
