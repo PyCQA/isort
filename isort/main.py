@@ -112,7 +112,7 @@ def sort_imports(
         return SortAttempt(incorrectly_sorted, skipped, False)
     except ISortError as error:
         _print_hard_fail(config, message=str(error))
-        sys.exit(os.EX_CONFIG)
+        sys.exit(1)
     except Exception:
         _print_hard_fail(config, offending_file=file_name)
         raise
