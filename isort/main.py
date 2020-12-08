@@ -660,6 +660,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="ext_format",
         help="Tells isort to format the given files according to an extensions formatting rules.",
     )
+    output_group.add_argument(
+        "--dedupe-imports",
+        dest="dedupe_imports",
+        help="Tells isort to dedupe duplicated imports that are seen at the root across import blocks."
+        action="store_true"
+    )
 
     section_group.add_argument(
         "--sd",
