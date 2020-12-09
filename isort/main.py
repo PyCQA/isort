@@ -663,7 +663,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--dedupe-imports",
         dest="dedupe_imports",
-        help="Tells isort to dedupe duplicated imports that are seen at the root across import blocks."
+        help="Tells isort to dedupe duplicated imports that are seen at the root across import blocks.",
         action="store_true"
     )
 
