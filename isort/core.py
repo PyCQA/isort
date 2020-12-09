@@ -358,6 +358,7 @@ def process(
                             li
                             for li in parsed_content.in_lines
                             if li and li not in lines_without_imports_set
+                            and not li.lstrip().startswith("#")
                         )
 
                     sorted_import_section = output.sorted_imports(
