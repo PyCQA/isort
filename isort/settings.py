@@ -205,6 +205,7 @@ class _Config:
     namespace_packages: FrozenSet[str] = frozenset()
     follow_links: bool = True
     dedupe_imports: bool = True
+    indented_import_headings: bool = True
 
     def __post_init__(self):
         py_version = self.py_version
