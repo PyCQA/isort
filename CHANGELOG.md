@@ -11,6 +11,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1575: Support for automatically fixing mixed indentation of import sections.
   - Implemented #1582: Added a CLI option for skipping symlinks.
   - Implemented #1603: Support for disabling float_to_top from the command line.
+  - Implemented #1604: Allow toggling section comments on and off for indented import sections.
 
 ### 5.6.4 October 12, 2020
   - Fixed #1556: Empty line added between imports that should be skipped.
