@@ -1396,7 +1396,7 @@
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">sections</span>
 
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">FileSkipped</span><span class="p">,</span> <span class="n">UnsupportedEncoding</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">FileSkipped</span><span class="p">,</span> <span class="n">ISortError</span><span class="p">,</span> <span class="n">UnsupportedEncoding</span>
 
 <span class="kn">from</span> <span class="nn">.format</span> <span class="kn">import</span> <span class="n">create_terminal_printer</span>
 
@@ -1404,7 +1404,7 @@
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
-<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">WrapModes</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">WrapModes</span>
 
 <span class="k">try</span><span class="p">:</span>
 
@@ -1572,29 +1572,11 @@
 
         <span class="k">return</span> <span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
-    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">ISortError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
 
-        <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DEFAULT_CONFIG</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+        <span class="n">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
 
-            <span class="n">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">offending_file</span><span class="o">=</span><span class="n">file_name</span><span class="p">)</span>
-
-            <span class="k">raise</span>
-
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-
-            <span class="n">f</span><span class="s2">&quot;Found {error} imports while parsing, but {error} was not included &quot;</span>
-
-            <span class="s2">&quot;in the `sections` setting of your config. Please add it before continuing</span><span class="se">\n</span><span class="s2">&quot;</span>
-
-            <span class="s2">&quot;See https://pycqa.github.io/isort/#custom-sections-and-ordering &quot;</span>
-
-            <span class="s2">&quot;for more info.&quot;</span>
-
-        <span class="p">)</span>
-
-        <span class="n">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">EX_CONFIG</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
 
@@ -2663,6 +2645,20 @@
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;ext_format&quot;</span><span class="p">,</span>
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to format the given files according to an extensions formatting rules.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">output_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--dedupe-imports&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dedupe_imports&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to dedupe duplicated imports that are seen at the root across &quot;</span>
+
+        <span class="s2">&quot;import blocks.&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -4137,105 +4133,87 @@
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="nf">sort_imports</span><span class="p">(</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">sort_imports</span><span class="p">(</span><span class="w"></span>
 
-    <span class="n">file_name</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+<span class="w">    </span><span class="nf">file_name</span><span class="err">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"></span>
 
-    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">config</span><span class="p">:</span><span class="w"> </span><span class="n">Config</span><span class="p">,</span><span class="w"></span>
 
-    <span class="k">check</span><span class="p">:</span> <span class="kt">bool</span> <span class="o">=</span> <span class="no">False</span><span class="p">,</span>
+<span class="w">    </span><span class="k">check</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
-    <span class="n">ask_to_apply</span><span class="p">:</span> <span class="kt">bool</span> <span class="o">=</span> <span class="no">False</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">ask_to_apply</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
-    <span class="n">write_to_stdout</span><span class="p">:</span> <span class="kt">bool</span> <span class="o">=</span> <span class="no">False</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">write_to_stdout</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="w">    </span><span class="o">**</span><span class="nl">kwargs</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">,</span><span class="w"></span>
 
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortAttempt</span><span class="p">]:</span>
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">SortAttempt</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
-    <span class="n">incorrectly_sorted</span><span class="p">:</span> <span class="kt">bool</span> <span class="o">=</span> <span class="no">False</span>
+<span class="w">    </span><span class="nl">incorrectly_sorted</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 
-    <span class="n">skipped</span><span class="p">:</span> <span class="kt">bool</span> <span class="o">=</span> <span class="no">False</span>
+<span class="w">    </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 
-    <span class="n">try</span><span class="p">:</span>
+<span class="w">    </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-        <span class="k">if</span> <span class="k">check</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">check</span><span class="err">:</span><span class="w"></span>
 
-            <span class="n">try</span><span class="p">:</span>
+<span class="w">            </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-                <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="nf">check_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="w">                </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="nf">file_name</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="w"></span>
 
-            <span class="n">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+<span class="w">            </span><span class="ow">except</span><span class="w"> </span><span class="nl">FileSkipped</span><span class="p">:</span><span class="w"></span>
 
-                <span class="n">skipped</span> <span class="o">=</span> <span class="no">True</span>
+<span class="w">                </span><span class="n">skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
-            <span class="k">return</span> <span class="nf">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="no">True</span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="w"></span>
 
-        <span class="n">try</span><span class="p">:</span>
+<span class="w">        </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-            <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="nf">sort_file</span><span class="p">(</span>
+<span class="w">            </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="w"></span>
 
-                <span class="n">file_name</span><span class="p">,</span>
+<span class="w">                </span><span class="nf">file_name</span><span class="p">,</span><span class="w"></span>
 
-                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+<span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
-                <span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span>
+<span class="w">                </span><span class="n">ask_to_apply</span><span class="o">=</span><span class="n">ask_to_apply</span><span class="p">,</span><span class="w"></span>
 
-                <span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span>
+<span class="w">                </span><span class="n">write_to_stdout</span><span class="o">=</span><span class="n">write_to_stdout</span><span class="p">,</span><span class="w"></span>
 
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="w">                </span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span><span class="w"></span>
 
-            <span class="p">)</span>
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
-        <span class="n">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+<span class="w">        </span><span class="ow">except</span><span class="w"> </span><span class="nl">FileSkipped</span><span class="p">:</span><span class="w"></span>
 
-            <span class="n">skipped</span> <span class="o">=</span> <span class="no">True</span>
+<span class="w">            </span><span class="n">skipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
-        <span class="k">return</span> <span class="nf">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="no">True</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">True</span><span class="p">)</span><span class="w"></span>
 
-    <span class="nf">except</span> <span class="p">(</span><span class="n">OSError</span><span class="p">,</span> <span class="n">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="p">(</span><span class="n">OSError</span><span class="p">,</span><span class="w"> </span><span class="n">ValueError</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"></span>
 
-        <span class="nf">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to parse file {file_name} due to {error}&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Unable to parse file {file_name} due to {error}&quot;</span><span class="p">)</span><span class="w"></span>
 
-        <span class="k">return</span> <span class="n">None</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
 
-    <span class="n">except</span> <span class="n">UnsupportedEncoding</span><span class="p">:</span>
+<span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="nl">UnsupportedEncoding</span><span class="p">:</span><span class="w"></span>
 
-        <span class="k">if</span> <span class="n">config</span><span class="p">.</span><span class="n">verbose</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">verbose</span><span class="p">:</span><span class="w"></span>
 
-            <span class="nf">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Encoding not supported for {file_name}&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Encoding not supported for {file_name}&quot;</span><span class="p">)</span><span class="w"></span>
 
-        <span class="k">return</span> <span class="nf">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span> <span class="n">skipped</span><span class="p">,</span> <span class="no">False</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">SortAttempt</span><span class="p">(</span><span class="n">incorrectly_sorted</span><span class="p">,</span><span class="w"> </span><span class="n">skipped</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="w"></span>
 
-    <span class="n">except</span> <span class="n">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="n">ISortError</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"></span>
 
-        <span class="k">if</span> <span class="n">error</span><span class="p">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">not</span> <span class="k">in</span> <span class="n">DEFAULT_CONFIG</span><span class="p">.</span><span class="n">sections</span><span class="p">:</span>
+<span class="w">        </span><span class="n">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="o">=</span><span class="nf">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span><span class="w"></span>
 
-            <span class="nf">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">offending_file</span><span class="o">=</span><span class="n">file_name</span><span class="p">)</span>
+<span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 
-            <span class="n">raise</span>
+<span class="w">    </span><span class="ow">except</span><span class="w"> </span><span class="k">Exception</span><span class="err">:</span><span class="w"></span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+<span class="w">        </span><span class="n">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">offending_file</span><span class="o">=</span><span class="nf">file_name</span><span class="p">)</span><span class="w"></span>
 
-            <span class="n">f</span><span class="s2">&quot;Found {error} imports while parsing, but {error} was not included &quot;</span>
-
-            <span class="s2">&quot;in the `sections` setting of your config. Please add it before continuing\n&quot;</span>
-
-            <span class="s2">&quot;See https://pycqa.github.io/isort/#custom-sections-and-ordering &quot;</span>
-
-            <span class="s2">&quot;for more info.&quot;</span>
-
-        <span class="p">)</span>
-
-        <span class="nf">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">EX_CONFIG</span><span class="p">)</span>
-
-    <span class="n">except</span> <span class="n">Exception</span><span class="p">:</span>
-
-        <span class="nf">_print_hard_fail</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">offending_file</span><span class="o">=</span><span class="n">file_name</span><span class="p">)</span>
-
-        <span class="n">raise</span>
+<span class="w">        </span><span class="n">raise</span><span class="w"></span>
 </code></pre></div>
 
 
