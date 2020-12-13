@@ -126,7 +126,7 @@ def test_attrs(tmpdir):
 
 def test_datadog_integrations_core(tmpdir):
     git_clone("https://github.com/DataDog/integrations-core.git", tmpdir)
-    run_isort([str(tmpdir), '--skip', 'docs'])
+    run_isort([str(tmpdir), "--skip", "docs"])
 
 
 def test_pyramid(tmpdir):
