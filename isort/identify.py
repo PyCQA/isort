@@ -188,7 +188,6 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
             else:
 
                 for module in just_imports:
-
                     placed_module = finder(module)
                     if config.verbose and not config.only_modified:
                         print(f"else-type place_module for {module} returned {placed_module}")
@@ -203,10 +202,6 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                             " Do you need to define a default section?"
                         )
                         imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
-
-                    if placed_module and placed_module not in imports:
-                        raise MissingSection(import_module=module, section=placed_module)
-
                     straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
                         module, False
                     )
