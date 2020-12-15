@@ -7,7 +7,6 @@ from warnings import warn
 
 from . import place
 from .comments import parse as parse_comments
-from .deprecated.finders import FindersManager
 from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
@@ -25,9 +24,12 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 
 
 class ImportIdentified(NamedTuple):
-    from_file: Optional[Path]
     line: int
-
+    module: str
+    import_type: str
+    alias: Optional[str] = None
+    src: Optional[Path] = None
+    
 
 def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
     """Parses a python file taking out and categorizing imports."""
@@ -186,23 +188,5 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                     )
 
             else:
-
                 for module in just_imports:
-                    placed_module = finder(module)
-                    if config.verbose and not config.only_modified:
-                        print(f"else-type place_module for {module} returned {placed_module}")
-
-                    elif config.verbose:
-                        verbose_output.append(
-                            f"else-type place_module for {module} returned {placed_module}"
-                        )
-                    if placed_module == "":
-                        warn(
-                            f"could not place module {module} of line {line} --"
-                            " Do you need to define a default section?"
-                        )
-                        imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
-                    straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
-                        module, False
-                    )
-                    imports[placed_module][type_of_import][module] = straight_import  # type: ignore
+                    yield ImportIdentified(index, module, import_type)
