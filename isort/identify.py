@@ -1,17 +1,13 @@
 """"""
-from collections import OrderedDict, defaultdict
-from functools import partial
-from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
+from typing import NamedTuple, Optional
 from warnings import warn
-
-from . import place
 from .comments import parse as parse_comments
-from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
+from pathlib import Path
 
+from isort.parse import _normalize_line, _strip_syntax, skip_line
 
-from isort.parse import _infer_line_separator, _normalize_line, _strip_syntax, skip_line
+from typing import TextIO
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
@@ -36,7 +32,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
     in_quote = ""
 
     indexed_input = enumerate(input_stream)
-    for index, line in indexed_input
+    for index, line in indexed_input:
         statement_index = index
         (skipping_line, in_quote) = skip_line(
             line, in_quote=in_quote, index=index, section_comments=config.section_comments
@@ -129,10 +125,8 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
             ]
 
             direct_imports = just_imports[1:]
-            straight_import = True
             top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
-                straight_import = False
                 while "as" in just_imports:
                     nested_module = None
                     as_index = just_imports.index("as")
