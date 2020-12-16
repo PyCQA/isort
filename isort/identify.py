@@ -24,6 +24,7 @@ class ImportIdentified(NamedTuple):
     attribute: str = None
     alias: Optional[str] = None
     src: Optional[Path] = None
+    cimport: bool = False
 
 
 def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
@@ -120,20 +121,25 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
             top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 while "as" in just_imports:
-                    nested_module = None
+                    attribute = None
                     as_index = just_imports.index("as")
                     if type_of_import == "from":
-                        nested_module = just_imports[as_index - 1]
+                        attribute = just_imports[as_index - 1]
                         top_level_module = just_imports[0]
-                        module = top_level_module + "." + nested_module
-                        as_name = just_imports[as_index + 1]
-                        direct_imports.remove(nested_module)
-                        direct_imports.remove(as_name)
+                        module = top_level_module + "." + attribute
+                        alias = just_imports[as_index + 1]
+                        direct_imports.remove(attribute)
+                        direct_imports.remove(alias)
                         direct_imports.remove("as")
-                        if nested_module == as_name and config.remove_redundant_aliases:
+                        if attribute == alias and config.remove_redundant_aliases:
                             pass
-                        elif as_name not in as_map["from"][module]:
-                            as_map["from"][module].append(as_name)
+                        else:
+                            yield ImportIdentified(
+                                index,
+                                top_level_module,
+                                attribute,
+                                alias=alias
+                            )
 
                     else:
                         module = just_imports[as_index - 1]
