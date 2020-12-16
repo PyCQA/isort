@@ -21,7 +21,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 class ImportIdentified(NamedTuple):
     line: int
     module: str
-    import_type: str
+    attribute: str = None
     alias: Optional[str] = None
     src: Optional[Path] = None
 
@@ -146,9 +146,9 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                     del just_imports[as_index : as_index + 2]
 
             if type_of_import == "from":
-                import_from = just_imports.pop(0)
-                for import_part in just_imports:
-                    yield ImportIdentified(index, f"{import_from}.{import_part}", import_type)
+                module = just_imports.pop(0)
+                for attribute in just_imports:
+                    yield ImportIdentified(index, module, attribute)
             else:
                 for module in just_imports:
-                    yield ImportIdentified(index, module, import_type)
+                    yield ImportIdentified(index, module)
