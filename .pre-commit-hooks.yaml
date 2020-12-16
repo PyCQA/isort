@@ -3,5 +3,6 @@
     entry: isort
     require_serial: true
     language: python
+    language_version: python3
     types: [python]
     args: ['--filter-files']
