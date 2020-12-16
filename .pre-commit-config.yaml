@@ -3,6 +3,3 @@ repos:
     rev: 5.5.2
     hooks:
       - id: isort
-        files: 'isort/.*'
-      - id: isort
-        files: 'tests/.*'
