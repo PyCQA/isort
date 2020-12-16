@@ -1,13 +1,12 @@
 """"""
 from typing import NamedTuple, Optional
-from warnings import warn
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 from pathlib import Path
 
 from isort.parse import _normalize_line, _strip_syntax, skip_line
 
-from typing import TextIO
+from typing import TextIO, Iterator
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
@@ -25,7 +24,7 @@ class ImportIdentified(NamedTuple):
     import_type: str
     alias: Optional[str] = None
     src: Optional[Path] = None
-    
+
 
 def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
     """Parses a python file taking out and categorizing imports."""
@@ -33,7 +32,6 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
 
     indexed_input = enumerate(input_stream)
     for index, line in indexed_input:
-        statement_index = index
         (skipping_line, in_quote) = skip_line(
             line, in_quote=in_quote, index=index, section_comments=config.section_comments
         )
@@ -53,11 +51,9 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
             line, raw_line = _normalize_line(statement)
             type_of_import = import_type(line, config) or ""
             if not type_of_import:
-                out_lines.append(raw_line)
                 continue
 
             import_string, _ = parse_comments(line)
-            line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
 
             if "(" in line.split("#", 1)[0]:
                 while not line.split("#")[0].strip().endswith(")"):
@@ -67,8 +63,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         break
 
                     line, _ = parse_comments(next_line)
-                    stripped_line = _strip_syntax(line).strip()
-                    import_string += line_separator + line
+                    import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
                     index, next_line = next(indexed_input)
@@ -79,8 +74,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         "(" in line.split("#")[0]
                         and ")" not in line.split("#")[0]
                     ):
-                        stripped_line = _strip_syntax(line).strip()
-                        import_string += line_separator + line
+                        import_string += "\n" + line
 
                         while not line.split("#")[0].strip().endswith(")"):
                             try:
@@ -88,14 +82,12 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                             except StopIteration:
                                 break
                             line, _ = parse_comments(next_line)
-                            stripped_line = _strip_syntax(line).strip()
-                            import_string += line_separator + line
+                            import_string += "\n" + line
 
-                    stripped_line = _strip_syntax(line).strip()
                     if import_string.strip().endswith(
                         (" import", " cimport")
                     ) or line.strip().startswith(("import ", "cimport ")):
-                        import_string += line_separator + line
+                        import_string += "\n" + line
                     else:
                         import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
@@ -143,7 +135,6 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         elif as_name not in as_map["from"][module]:
                             as_map["from"][module].append(as_name)
 
-                        full_name = f"{nested_module} as {as_name}"
                     else:
                         module = just_imports[as_index - 1]
                         as_name = just_imports[as_index + 1]
@@ -156,31 +147,8 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
 
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
-                placed_module = finder(import_from)
-                if config.verbose and not config.only_modified:
-                    print(f"from-type place_module for {import_from} returned {placed_module}")
-
-                elif config.verbose:
-                    verbose_output.append(
-                        f"from-type place_module for {import_from} returned {placed_module}"
-                    )
-                if placed_module == "":
-                    warn(
-                        f"could not place module {import_from} of line {line} --"
-                        " Do you need to define a default section?"
-                    )
-                root = imports[placed_module][type_of_import]  # type: ignore
-
-                if import_from not in root:
-                    root[import_from] = OrderedDict(
-                        (module, module in direct_imports) for module in just_imports
-                    )
-                else:
-                    root[import_from].update(
-                        (module, root[import_from].get(module, False) or module in direct_imports)
-                        for module in just_imports
-                    )
-
+                for import_part in just_imports:
+                    yield ImportIdentified(index, f"{import_from}.{import_part}", import_type)
             else:
                 for module in just_imports:
                     yield ImportIdentified(index, module, import_type)
