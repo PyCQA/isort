@@ -23,7 +23,7 @@ class ImportIdentified(NamedTuple):
     attribute: Optional[str] = None
     alias: Optional[str] = None
     src: Optional[Path] = None
-    cimport: Optional[bool] = False
+    cimport: bool = False
 
 
 def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
@@ -142,7 +142,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield ImportIdentified(index, module, alias, cimports)
+                            yield ImportIdentified(index, module, alias, cimport=cimports)
 
             else:
                 if type_of_import == "from":
