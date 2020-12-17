@@ -20,10 +20,10 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 class ImportIdentified(NamedTuple):
     line_number: int
     module: str
-    attribute: str = None
+    attribute: Optional[str] = None
     alias: Optional[str] = None
     src: Optional[Path] = None
-    cimport: bool = False
+    cimport: Optional[bool] = False
 
 
 def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
