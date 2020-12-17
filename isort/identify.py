@@ -1,12 +1,11 @@
 """"""
-from typing import NamedTuple, Optional
-from .comments import parse as parse_comments
-from .settings import DEFAULT_CONFIG, Config
 from pathlib import Path
+from typing import Iterator, NamedTuple, Optional, TextIO
 
 from isort.parse import _normalize_line, _strip_syntax, skip_line
 
-from typing import TextIO, Iterator
+from .comments import parse as parse_comments
+from .settings import DEFAULT_CONFIG, Config
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
@@ -55,8 +54,13 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                 continue
 
             import_string, _ = parse_comments(line)
-            normalized_import_string = import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
-            cimports: bool = " cimport " in normalized_import_string or normalized_import_string.startswith("cimport")
+            normalized_import_string = (
+                import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
+            )
+            cimports: bool = (
+                " cimport " in normalized_import_string
+                or normalized_import_string.startswith("cimport")
+            )
 
             if "(" in line.split("#", 1)[0]:
                 while not line.split("#")[0].strip().endswith(")"):
@@ -73,10 +77,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                     line, _ = parse_comments(next_line)
 
                     # Still need to check for parentheses after an escaped line
-                    if (
-                        "(" in line.split("#")[0]
-                        and ")" not in line.split("#")[0]
-                    ):
+                    if "(" in line.split("#")[0] and ")" not in line.split("#")[0]:
                         import_string += "\n" + line
 
                         while not line.split("#")[0].strip().endswith(")"):
