@@ -143,18 +143,15 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
 
                     else:
                         module = just_imports[as_index - 1]
-                        as_name = just_imports[as_index + 1]
-                        if module == as_name and config.remove_redundant_aliases:
-                            pass
-                        elif as_name not in as_map["straight"][module]:
-                            as_map["straight"][module].append(as_name)
+                        alias = just_imports[as_index + 1]
+                        if not (module == alias and config.remove_redundant_aliases):
+                            yield ImportIdentified(index, module, alias)
 
-                    del just_imports[as_index : as_index + 2]
-
-            if type_of_import == "from":
-                module = just_imports.pop(0)
-                for attribute in just_imports:
-                    yield ImportIdentified(index, module, attribute)
             else:
-                for module in just_imports:
-                    yield ImportIdentified(index, module)
+                if type_of_import == "from":
+                    module = just_imports.pop(0)
+                    for attribute in just_imports:
+                        yield ImportIdentified(index, module, attribute)
+                else:
+                    for module in just_imports:
+                        yield ImportIdentified(index, module)
