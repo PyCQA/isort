@@ -19,7 +19,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 
 
 class ImportIdentified(NamedTuple):
-    line: int
+    line_number: int
     module: str
     attribute: str = None
     alias: Optional[str] = None
@@ -55,6 +55,8 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                 continue
 
             import_string, _ = parse_comments(line)
+            normalized_import_string = import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
+            cimports: bool = " cimport " in normalized_import_string or normalized_import_string.startswith("cimport")
 
             if "(" in line.split("#", 1)[0]:
                 while not line.split("#")[0].strip().endswith(")"):
@@ -93,19 +95,12 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
 
             if type_of_import == "from":
-                cimports: bool
                 import_string = (
                     import_string.replace("import(", "import (")
                     .replace("\\", " ")
                     .replace("\n", " ")
                 )
-                if " cimport " in import_string:
-                    parts = import_string.split(" cimport ")
-                    cimports = True
-
-                else:
-                    parts = import_string.split(" import ")
-                    cimports = False
+                parts = import_string.split(" cimport " if cimports else " import ")
 
                 from_import = parts[0].split(" ")
                 import_string = (" cimport " if cimports else " import ").join(
@@ -138,14 +133,15 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                                 index,
                                 top_level_module,
                                 attribute,
-                                alias=alias
+                                alias=alias,
+                                cimport=cimports,
                             )
 
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield ImportIdentified(index, module, alias)
+                            yield ImportIdentified(index, module, alias, cimports)
 
             else:
                 if type_of_import == "from":
@@ -154,4 +150,4 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         yield ImportIdentified(index, module, attribute)
                 else:
                     for module in just_imports:
-                        yield ImportIdentified(index, module)
+                        yield ImportIdentified(index, module, cimport=cimports)
