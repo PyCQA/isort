@@ -21,6 +21,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 class IdentifiedImport(NamedTuple):
     line_number: int
     indented: bool
+    statement: str
     module: str
     attribute: Optional[str] = None
     alias: Optional[str] = None
@@ -44,12 +45,6 @@ def imports(
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
-        identified_import = partial(
-            IdentifiedImport,
-            index,
-            line.startswith(" ") or line.startswith("\n"),
-            file_path=file_path,
-        )
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
@@ -67,6 +62,14 @@ def imports(
             cimports: bool = (
                 " cimport " in normalized_import_string
                 or normalized_import_string.startswith("cimport")
+            )
+            identified_import = partial(
+                IdentifiedImport,
+                index,
+                line.startswith(" ") or line.startswith("\n"),
+                statement,
+                cimport=cimports,
+                file_path=file_path,
             )
 
             if "(" in line.split("#", 1)[0]:
@@ -139,20 +142,20 @@ def imports(
                             pass
                         else:
                             yield identified_import(
-                                top_level_module, attribute, alias=alias, cimport=cimports
+                                top_level_module, attribute, alias=alias
                             )
 
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield identified_import(module, alias, cimport=cimports)
+                            yield identified_import(module, alias)
 
-            else:
+            if just_imports:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
                         yield identified_import(module, attribute)
                 else:
                     for module in just_imports:
-                        yield identified_import(module, cimport=cimports)
+                        yield identified_import(module)
