@@ -19,6 +19,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
 
 class IdentifiedImport(NamedTuple):
     line_number: int
+    indented: bool
     module: str
     attribute: Optional[str] = None
     alias: Optional[str] = None
@@ -40,10 +41,8 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
-        if ";" in line:
-            statements = [line.strip() for line in line.split(";")]
-        else:
-            statements = [line]
+        indented = line.startswith(" ") or line.startswith("\n")
+        statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
@@ -133,6 +132,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         else:
                             yield IdentifiedImport(
                                 index,
+                                indented,
                                 top_level_module,
                                 attribute,
                                 alias=alias,
@@ -143,13 +143,13 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield IdentifiedImport(index, module, alias, cimport=cimports)
+                            yield IdentifiedImport(index, indented, module, alias, cimport=cimports)
 
             else:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
-                        yield IdentifiedImport(index, module, attribute)
+                        yield IdentifiedImport(index, indented, module, attribute)
                 else:
                     for module in just_imports:
-                        yield IdentifiedImport(index, module, cimport=cimports)
+                        yield IdentifiedImport(index, indented, module, cimport=cimports)
