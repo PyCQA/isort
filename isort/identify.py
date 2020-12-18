@@ -10,9 +10,9 @@ from .settings import DEFAULT_CONFIG, Config
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
-    if line.startswith(("import ", "cimport ")):
+    if line.lstrip().startswith(("import ", "cimport ")):
         return "straight"
-    if line.startswith("from "):
+    if line.lstrip().startswith("from "):
         return "from"
     return None
 
@@ -127,6 +127,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         direct_imports.remove(attribute)
                         direct_imports.remove(alias)
                         direct_imports.remove("as")
+                        just_imports[1:] = direct_imports
                         if attribute == alias and config.remove_redundant_aliases:
                             pass
                         else:
