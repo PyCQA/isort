@@ -1,11 +1,11 @@
 """"""
+from functools import partial
 from pathlib import Path
 from typing import Iterator, NamedTuple, Optional, TextIO
 
 from isort.parse import _normalize_line, _strip_syntax, skip_line
 
 from .comments import parse as parse_comments
-from functools import partial
 from .settings import DEFAULT_CONFIG, Config
 
 
@@ -44,7 +44,12 @@ def imports(
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
-        identified_import = partial(IdentifiedImport, index, line.startswith(" ") or line.startswith("\n"), file_path=file_path)
+        identified_import = partial(
+            IdentifiedImport,
+            index,
+            line.startswith(" ") or line.startswith("\n"),
+            file_path=file_path,
+        )
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
@@ -134,33 +139,20 @@ def imports(
                             pass
                         else:
                             yield identified_import(
-                                top_level_module,
-                                attribute,
-                                alias=alias,
-                                cimport=cimports
+                                top_level_module, attribute, alias=alias, cimport=cimports
                             )
 
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield identified_import(
-                                module,
-                                alias,
-                                cimport=cimports
-                            )
+                            yield identified_import(module, alias, cimport=cimports)
 
             else:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
-                        yield identified_import(
-                            module,
-                            attribute
-                        )
+                        yield identified_import(module, attribute)
                 else:
                     for module in just_imports:
-                        yield identified_import(
-                            module,
-                            cimport=cimports
-                        )
+                        yield identified_import(module, cimport=cimports)
