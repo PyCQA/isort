@@ -27,7 +27,9 @@ class IdentifiedImport(NamedTuple):
     file_path: Optional[Path] = None
 
 
-def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Optional[Path]=None) -> Iterator[IdentifiedImport]:
+def imports(
+    input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Optional[Path] = None
+) -> Iterator[IdentifiedImport]:
     """Parses a python file taking out and categorizing imports."""
     in_quote = ""
 
@@ -144,13 +146,32 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Op
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield IdentifiedImport(index, indented, module, alias, cimport=cimports, file_path=file_path,)
+                            yield IdentifiedImport(
+                                index,
+                                indented,
+                                module,
+                                alias,
+                                cimport=cimports,
+                                file_path=file_path,
+                            )
 
             else:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
-                        yield IdentifiedImport(index, indented, module, attribute, file_path=file_path,)
+                        yield IdentifiedImport(
+                            index,
+                            indented,
+                            module,
+                            attribute,
+                            file_path=file_path,
+                        )
                 else:
                     for module in just_imports:
-                        yield IdentifiedImport(index, indented, module, cimport=cimports, file_path=file_path,)
+                        yield IdentifiedImport(
+                            index,
+                            indented,
+                            module,
+                            cimport=cimports,
+                            file_path=file_path,
+                        )
