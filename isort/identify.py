@@ -9,15 +9,6 @@ from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
 
-def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
-    """If the current line is an import line it will return its type (from or straight)"""
-    if line.lstrip().startswith(("import ", "cimport ")):
-        return "straight"
-    if line.lstrip().startswith("from "):
-        return "from"
-    return None
-
-
 class IdentifiedImport(NamedTuple):
     line_number: int
     indented: bool
@@ -51,8 +42,11 @@ def imports(
 
         for statement in statements:
             line, raw_line = _normalize_line(statement)
-            type_of_import = import_type(line, config) or ""
-            if not type_of_import:
+            if line.lstrip().startswith(("import ", "cimport ")):
+                type_of_import = "straight"
+            if line.lstrip().startswith("from "):
+                type_of_import = "from"
+            else:
                 continue
 
             import_string, _ = parse_comments(line)
