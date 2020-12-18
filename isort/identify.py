@@ -5,6 +5,7 @@ from typing import Iterator, NamedTuple, Optional, TextIO
 from isort.parse import _normalize_line, _strip_syntax, skip_line
 
 from .comments import parse as parse_comments
+from functools import partial
 from .settings import DEFAULT_CONFIG, Config
 
 
@@ -43,7 +44,7 @@ def imports(
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
-        indented = line.startswith(" ") or line.startswith("\n")
+        identified_import = partial(IdentifiedImport, index, line.startswith(" ") or line.startswith("\n"), file_path=file_path)
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
@@ -132,46 +133,34 @@ def imports(
                         if attribute == alias and config.remove_redundant_aliases:
                             pass
                         else:
-                            yield IdentifiedImport(
-                                index,
-                                indented,
+                            yield identified_import(
                                 top_level_module,
                                 attribute,
                                 alias=alias,
-                                cimport=cimports,
-                                file_path=file_path,
+                                cimport=cimports
                             )
 
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield IdentifiedImport(
-                                index,
-                                indented,
+                            yield identified_import(
                                 module,
                                 alias,
-                                cimport=cimports,
-                                file_path=file_path,
+                                cimport=cimports
                             )
 
             else:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
-                        yield IdentifiedImport(
-                            index,
-                            indented,
+                        yield identified_import(
                             module,
-                            attribute,
-                            file_path=file_path,
+                            attribute
                         )
                 else:
                     for module in just_imports:
-                        yield IdentifiedImport(
-                            index,
-                            indented,
+                        yield identified_import(
                             module,
-                            cimport=cimports,
-                            file_path=file_path,
+                            cimport=cimports
                         )
