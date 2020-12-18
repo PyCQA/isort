@@ -21,6 +21,16 @@ class IdentifiedImport(NamedTuple):
     cimport: bool = False
     file_path: Optional[Path] = None
 
+    def __str__(self):
+        full_path = ".".join(self.module.split(".") + self.attribute.split("."))
+        if self.alias:
+            full_path = f"{full_path} as {self.alias}"
+        return (
+            f"{self.file_path or ''}:{self.line_number} "
+            f"{'indented ' if self.indented else ''}"
+            f"{'cimport' if self.cimport else 'import'} {full_path}"
+        )
+
 
 def imports(
     input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Optional[Path] = None
@@ -137,9 +147,7 @@ def imports(
                         if attribute == alias and config.remove_redundant_aliases:
                             pass
                         else:
-                            yield identified_import(
-                                top_level_module, attribute, alias=alias
-                            )
+                            yield identified_import(top_level_module, attribute, alias=alias)
 
                     else:
                         module = just_imports[as_index - 1]
