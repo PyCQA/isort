@@ -17,7 +17,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     return None
 
 
-class ImportIdentified(NamedTuple):
+class IdentifiedImport(NamedTuple):
     line_number: int
     module: str
     attribute: Optional[str] = None
@@ -26,7 +26,7 @@ class ImportIdentified(NamedTuple):
     cimport: bool = False
 
 
-def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[ImportIdentified]:
+def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[IdentifiedImport]:
     """Parses a python file taking out and categorizing imports."""
     in_quote = ""
 
@@ -131,7 +131,7 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         if attribute == alias and config.remove_redundant_aliases:
                             pass
                         else:
-                            yield ImportIdentified(
+                            yield IdentifiedImport(
                                 index,
                                 top_level_module,
                                 attribute,
@@ -143,13 +143,13 @@ def imports(input_stream: TextIO, config: Config = DEFAULT_CONFIG) -> Iterator[I
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
                         if not (module == alias and config.remove_redundant_aliases):
-                            yield ImportIdentified(index, module, alias, cimport=cimports)
+                            yield IdentifiedImport(index, module, alias, cimport=cimports)
 
             else:
                 if type_of_import == "from":
                     module = just_imports.pop(0)
                     for attribute in just_imports:
-                        yield ImportIdentified(index, module, attribute)
+                        yield IdentifiedImport(index, module, attribute)
                 else:
                     for module in just_imports:
-                        yield ImportIdentified(index, module, cimport=cimports)
+                        yield IdentifiedImport(index, module, cimport=cimports)
