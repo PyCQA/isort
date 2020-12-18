@@ -22,9 +22,11 @@ class IdentifiedImport(NamedTuple):
     file_path: Optional[Path] = None
 
     def __str__(self):
-        full_path = ".".join(self.module.split(".") + self.attribute.split("."))
+        full_path = self.module
+        if self.attribute:
+            full_path += f".{self.attribute}"
         if self.alias:
-            full_path = f"{full_path} as {self.alias}"
+            full_path += " as {self.alias}"
         return (
             f"{self.file_path or ''}:{self.line_number} "
             f"{'indented ' if self.indented else ''}"
