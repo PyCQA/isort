@@ -7,10 +7,10 @@ import sys
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set
+from typing import Any, Dict, List, Optional, Sequence
 from warnings import warn
 
-from . import __version__, api, sections
+from . import __version__, api, sections, files
 from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
@@ -129,44 +129,6 @@ def _print_hard_fail(
     )
     printer = create_terminal_printer(color=config.color_output)
     printer.error(message)
-
-
-def iter_source_code(
-    paths: Iterable[str], config: Config, skipped: List[str], broken: List[str]
-) -> Iterator[str]:
-    """Iterate over all Python source files defined in paths."""
-    visited_dirs: Set[Path] = set()
-
-    for path in paths:
-        if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(
-                path, topdown=True, followlinks=config.follow_links
-            ):
-                base_path = Path(dirpath)
-                for dirname in list(dirnames):
-                    full_path = base_path / dirname
-                    resolved_path = full_path.resolve()
-                    if config.is_skipped(full_path):
-                        skipped.append(dirname)
-                        dirnames.remove(dirname)
-                    else:
-                        if resolved_path in visited_dirs:  # pragma: no cover
-                            if not config.quiet:
-                                warn(f"Likely recursive symlink detected to {resolved_path}")
-                            dirnames.remove(dirname)
-                    visited_dirs.add(resolved_path)
-
-                for filename in filenames:
-                    filepath = os.path.join(dirpath, filename)
-                    if config.is_supported_filetype(filepath):
-                        if config.is_skipped(Path(filepath)):
-                            skipped.append(filename)
-                        else:
-                            yield filepath
-        elif not os.path.exists(path):
-            broken.append(path)
-        else:
-            yield path
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -1017,7 +979,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     filtered_files.append(file_name)
             file_names = filtered_files
 
-        file_names = iter_source_code(file_names, config, skipped, broken)
+        file_names = files.find(file_names, config, skipped, broken)
         if show_files:
             for file_name in file_names:
                 print(file_name)
