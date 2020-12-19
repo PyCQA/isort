@@ -14,7 +14,6 @@ from .settings import DEFAULT_CONFIG, Config
 class IdentifiedImport(NamedTuple):
     line_number: int
     indented: bool
-    statement: str
     module: str
     attribute: Optional[str] = None
     alias: Optional[str] = None
@@ -75,7 +74,6 @@ def imports(
                 IdentifiedImport,
                 index,
                 line.startswith(" ") or line.startswith("\n"),
-                statement,
                 cimport=cimports,
                 file_path=file_path,
             )
