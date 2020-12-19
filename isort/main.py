@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 from warnings import warn
 
-from . import __version__, api, sections, files
+from . import __version__, api, files, sections
 from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART

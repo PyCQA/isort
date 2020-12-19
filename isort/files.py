@@ -1,7 +1,8 @@
 import os
-from typing import Iterable,List,Iterator,Set
-from isort.settings import Config
 from pathlib import Path
+from typing import Iterable, Iterator, List, Set
+
+from isort.settings import Config
 
 
 def find(
@@ -40,4 +41,3 @@ def find(
             broken.append(path)
         else:
             yield path
-
