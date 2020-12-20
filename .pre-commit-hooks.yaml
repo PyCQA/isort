@@ -4,5 +4,5 @@
     require_serial: true
     language: python
     language_version: python3
-    types: [python]
+    types_or: [cython, pyi, python]
     args: ['--filter-files']
