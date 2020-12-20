@@ -25,7 +25,7 @@ class Import(NamedTuple):
         if self.attribute:
             full_path += f".{self.attribute}"
         if self.alias:
-            full_path += " as {self.alias}"
+            full_path += f" as {self.alias}"
         return f"{'cimport' if self.cimport else 'import'} {full_path}"
 
     def __str__(self):
