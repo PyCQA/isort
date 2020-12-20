@@ -871,11 +871,14 @@ def identify_imports_main(
 
     file_name = arguments.file
     if file_name == "-":
-        api.get_imports_stream(sys.stdin if stdin is None else stdin, sys.stdout)
+        identified_imports = api.imports_in_stream(sys.stdin if stdin is None else stdin)
     else:
         if os.path.isdir(file_name):
             sys.exit("Path must be a file, not a directory")
-        api.get_imports_file(file_name, sys.stdout)
+        identified_imports = api.imports_in_file(file_name)
+
+    for identified_import in identified_imports:
+        print(str(identified_import))
 
 
 def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:

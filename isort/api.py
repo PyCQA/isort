@@ -2,12 +2,12 @@ import shutil
 import sys
 from io import StringIO
 from pathlib import Path
-from typing import Optional, TextIO, Union, cast, Iterator
+from typing import Iterator, Optional, Set, TextIO, Union, cast
 from warnings import warn
 
 from isort import core
 
-from . import io, identify
+from . import identify, io
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -409,7 +409,13 @@ def imports_in_code(
     - **unique**: If True, only the first instance of an import is returned.
     - ****config_kwargs**: Any config modifications.
     """
-    yield from imports_in_stream(input_stream=StringIO(code), config=config, file_path=file_path, unique=unique, **config_kwargs)
+    yield from imports_in_stream(
+        input_stream=StringIO(code),
+        config=config,
+        file_path=file_path,
+        unique=unique,
+        **config_kwargs,
+    )
 
 
 def imports_in_stream(
@@ -432,7 +438,7 @@ def imports_in_stream(
     if not unique:
         yield from identified_imports
 
-    seen = set()
+    seen: Set[str] = set()
     for identified_import in identified_imports:
         key = identified_import.statement()
         if key not in seen:
@@ -460,7 +466,7 @@ def imports_in_file(
         yield from imports_in_stream(
             input_stream=source_file.stream,
             config=config,
-            file_path=file_path,
+            file_path=file_path or source_file.path,
             unique=unique,
             **config_kwargs,
         )

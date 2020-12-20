@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import Iterable, Iterator, List, Set
+from warnings import warn
 
 from isort.settings import Config
 
