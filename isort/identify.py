@@ -11,7 +11,7 @@ from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
 
-class IdentifiedImport(NamedTuple):
+class Import(NamedTuple):
     line_number: int
     indented: bool
     module: str
@@ -35,7 +35,7 @@ class IdentifiedImport(NamedTuple):
 
 def imports(
     input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Optional[Path] = None
-) -> Iterator[IdentifiedImport]:
+) -> Iterator[Import]:
     """Parses a python file taking out and categorizing imports."""
     in_quote = ""
 
@@ -71,7 +71,7 @@ def imports(
                 or normalized_import_string.startswith("cimport")
             )
             identified_import = partial(
-                IdentifiedImport,
+                Import,
                 index,
                 line.startswith(" ") or line.startswith("\n"),
                 cimport=cimports,
