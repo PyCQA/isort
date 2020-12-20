@@ -397,7 +397,7 @@ def sort_file(
 def imports_in_code_string(
     code: str,
     config: Config = DEFAULT_CONFIG,
-    file_path: Opitonal[Path] = None,
+    file_path: Optional[Path] = None,
     unique: bool = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
