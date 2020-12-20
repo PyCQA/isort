@@ -2,12 +2,12 @@ import shutil
 import sys
 from io import StringIO
 from pathlib import Path
-from typing import Optional, TextIO, Union, cast
+from typing import Optional, TextIO, Union, cast, Iterator
 from warnings import warn
 
 from isort import core
 
-from . import io
+from . import io, identify
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -394,86 +394,74 @@ def sort_file(
         return changed
 
 
-def get_imports_string(
+def imports_in_code_string(
     code: str,
-    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
-    file_path: Optional[Path] = None,
+    file_path: Opitonal[Path] = None,
+    unique: bool = False,
     **config_kwargs,
-) -> str:
-    """Finds all imports within the provided code string, returning a new string with them.
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided code string.
 
     - **code**: The string of code with imports that need to be sorted.
-    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
     - ****config_kwargs**: Any config modifications.
     """
-    input_stream = StringIO(code)
-    output_stream = StringIO()
-    config = _config(path=file_path, config=config, **config_kwargs)
-    get_imports_stream(
-        input_stream,
-        output_stream,
-        extension=extension,
-        config=config,
-        file_path=file_path,
-    )
-    output_stream.seek(0)
-    return output_stream.read()
+    yield from imports_in_stream(input_stream=StringIO(code), config=config, file_path=file_path, unique=unique, **config_kwargs)
 
 
-def get_imports_stream(
+def imports_in_stream(
     input_stream: TextIO,
-    output_stream: TextIO,
-    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
+    unique: bool = False,
     **config_kwargs,
-) -> None:
-    """Finds all imports within the provided code stream, outputs to the provided output stream.
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided code stream.
 
     - **input_stream**: The stream of code with imports that need to be sorted.
-    - **output_stream**: The stream where sorted imports should be written to.
-    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
-    core.process(
-        input_stream,
-        output_stream,
-        extension=extension or (file_path and file_path.suffix.lstrip(".")) or "py",
-        config=config,
-        imports_only=True,
-    )
+    identified_imports = identify.imports(input_stream, config=config, file_path=file_path)
+    if not unique:
+        yield from identified_imports
+
+    seen = set()
+    for identified_import in identified_imports:
+        key = identified_import.statement()
+        if key not in seen:
+            seen.add(key)
+            yield identified_import
 
 
-def get_imports_file(
+def imports_in_file(
     filename: Union[str, Path],
-    output_stream: TextIO,
-    extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
+    unique: bool = False,
     **config_kwargs,
-) -> None:
-    """Finds all imports within the provided file, outputs to the provided output stream.
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided source file.
 
-    - **filename**: The name or Path of the file to check.
-    - **output_stream**: The stream where sorted imports should be written to.
+    - **filename**: The name or Path of the file to look for imports in.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
-        get_imports_stream(
-            source_file.stream,
-            output_stream,
-            extension,
-            config,
-            file_path,
+        yield from imports_in_stream(
+            input_stream=source_file.stream,
+            config=config,
+            file_path=file_path,
+            unique=unique,
             **config_kwargs,
         )
 

@@ -20,16 +20,18 @@ class Import(NamedTuple):
     cimport: bool = False
     file_path: Optional[Path] = None
 
-    def __str__(self):
+    def statement(self) -> str:
         full_path = self.module
         if self.attribute:
             full_path += f".{self.attribute}"
         if self.alias:
             full_path += " as {self.alias}"
+        return f"{'cimport' if self.cimport else 'import'} {full_path}"
+
+    def __str__(self):
         return (
             f"{self.file_path or ''}:{self.line_number} "
-            f"{'indented ' if self.indented else ''}"
-            f"{'cimport' if self.cimport else 'import'} {full_path}"
+            f"{'indented ' if self.indented else ''}{self.statement()}"
         )
 
 
