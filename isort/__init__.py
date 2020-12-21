@@ -5,9 +5,9 @@ from .api import check_code_string as check_code
 from .api import (
     check_file,
     check_stream,
-    imports_in_code,
-    imports_in_file,
-    imports_in_stream,
+    find_imports_in_code,
+    find_imports_in_file,
+    find_imports_in_stream,
     place_module,
     place_module_with_reason,
 )

@@ -394,7 +394,7 @@ def sort_file(
         return changed
 
 
-def imports_in_code(
+def find_find_imports_in_code(
     code: str,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -409,7 +409,7 @@ def imports_in_code(
     - **unique**: If True, only the first instance of an import is returned.
     - ****config_kwargs**: Any config modifications.
     """
-    yield from imports_in_stream(
+    yield from find_imports_in_stream(
         input_stream=StringIO(code),
         config=config,
         file_path=file_path,
@@ -418,7 +418,7 @@ def imports_in_code(
     )
 
 
-def imports_in_stream(
+def find_imports_in_stream(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -446,7 +446,7 @@ def imports_in_stream(
             yield identified_import
 
 
-def imports_in_file(
+def find_imports_in_file(
     filename: Union[str, Path],
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
@@ -463,7 +463,7 @@ def imports_in_file(
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
-        yield from imports_in_stream(
+        yield from find_imports_in_stream(
             input_stream=source_file.stream,
             config=config,
             file_path=file_path or source_file.path,
