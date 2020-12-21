@@ -6,6 +6,7 @@ import os
 import sys
 from gettext import gettext as _
 from io import TextIOWrapper
+from itertools import chain
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 from warnings import warn
@@ -15,7 +16,7 @@ from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config, WrapModes
+from .settings import DEFAULT_CONFIG, VALID_PY_TARGETS, Config, WrapModes
 
 try:
     from .setuptools_commands import ISortCommand  # noqa: F401
@@ -866,16 +867,24 @@ def identify_imports_main(
         description="Get all import definitions from a given file."
         "Use `-` as the first argument to represent stdin."
     )
-    parser.add_argument("file", help="Python source file to get imports from.")
+    parser.add_argument(
+        "files", nargs="*", help="One or more Python source files that need their imports sorted."
+    )
     arguments = parser.parse_args(argv)
 
-    file_name = arguments.file
-    if file_name == "-":
+    file_names = arguments.files
+    if file_names == ["-"]:
         identified_imports = api.find_imports_in_stream(sys.stdin if stdin is None else stdin)
     else:
-        if os.path.isdir(file_name):
-            sys.exit("Path must be a file, not a directory")
-        identified_imports = api.find_imports_in_file(file_name)
+        skipped: List[str] = []
+        broken: List[str] = []
+        config = DEFAULT_CONFIG
+        identified_imports = chain(
+            *(
+                api.find_imports_in_file(file_name)
+                for file_name in files.find(file_names, config, skipped, broken)
+            )
+        )
 
     for identified_import in identified_imports:
         print(str(identified_import))

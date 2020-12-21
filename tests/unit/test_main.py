@@ -1010,5 +1010,4 @@ def test_identify_imports_main(tmpdir, capsys):
     out, error = capsys.readouterr()
     assert out.replace("\r\n", "\n") == file_imports.replace(str(some_file), "")
 
-    with pytest.raises(SystemExit):
-        main.identify_imports_main([str(tmpdir)])
+    main.identify_imports_main([str(tmpdir)])
