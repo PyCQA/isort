@@ -154,6 +154,9 @@ def imports(
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
+                        direct_imports.remove(alias)
+                        direct_imports.remove("as")
+                        just_imports[1:] = direct_imports
                         if not (module == alias and config.remove_redundant_aliases):
                             yield identified_import(module, alias)
 
