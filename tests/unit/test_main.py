@@ -40,12 +40,6 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
     )
 
 
-def test_iter_source_code(tmpdir):
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import os, sys\n")
-    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [], [])) == (tmp_file,)
-
-
 def test_sort_imports(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
@@ -1002,9 +996,9 @@ import os
 
 def test_identify_imports_main(tmpdir, capsys):
     file_content = "import mod2\n" "a = 1\n" "import mod1\n"
-    file_imports = "import mod2\n" "import mod1\n"
     some_file = tmpdir.join("some_file.py")
     some_file.write(file_content)
+    file_imports = f"{some_file}:0 import mod2\n{some_file}:2 import mod1\n"
 
     main.identify_imports_main([str(some_file)])
 
@@ -1014,7 +1008,7 @@ def test_identify_imports_main(tmpdir, capsys):
 
     main.identify_imports_main(["-"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
-    assert out.replace("\r\n", "\n") == file_imports
+    assert out.replace("\r\n", "\n") == file_imports.replace(str(some_file), "")
 
     with pytest.raises(SystemExit):
         main.identify_imports_main([str(tmpdir)])

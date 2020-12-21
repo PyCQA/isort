@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 import py
 import pytest
 import isort
-from isort import main, api, sections
+from isort import api, sections, files
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
@@ -3270,12 +3270,11 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     skipped: List[str] = []
     broken: List[str] = []
     codes = [str(tmpdir)]
-    main.iter_source_code(codes, config, skipped, broken)
+    files.find(codes, config, skipped, broken)
 
     # if enabled files within nested unsafe directories should be skipped
     file_names = {
-        os.path.relpath(f, str(tmpdir))
-        for f in main.iter_source_code([str(tmpdir)], config, skipped, broken)
+        os.path.relpath(f, str(tmpdir)) for f in files.find([str(tmpdir)], config, skipped, broken)
     }
     if enabled:
         assert file_names == {"victim.py"}
@@ -3292,9 +3291,7 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
     # directly pointing to files within unsafe directories shouldn't skip them either way
     file_names = {
         os.path.relpath(f, str(toxdir))
-        for f in main.iter_source_code(
-            [str(toxdir)], Config(directory=str(toxdir)), skipped, broken
-        )
+        for f in files.find([str(toxdir)], Config(directory=str(toxdir)), skipped, broken)
     }
     assert file_names == {"verysafe.py"}
 
@@ -3318,7 +3315,7 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     broken: List[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
-        for f in main.iter_source_code([str(base_dir)], config, skipped, broken)
+        for f in files.find([str(base_dir)], config, skipped, broken)
     }
     assert len(skipped) == skipped_count
     assert file_names == file_names_expected
@@ -3332,7 +3329,7 @@ def test_broken(tmpdir) -> None:
     broken: List[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
-        for f in main.iter_source_code(["not-exist"], config, skipped, broken)
+        for f in files.find(["not-exist"], config, skipped, broken)
     }
     assert len(broken) == 1
     assert file_names == set()
@@ -4916,7 +4913,7 @@ def test_combine_straight_imports() -> None:
     )
 
 
-def test_get_imports_string() -> None:
+def test_find_imports_in_code() -> None:
     test_input = (
         "import first_straight\n"
         "\n"
@@ -4943,24 +4940,25 @@ def test_get_imports_string() -> None:
         "\n"
         "import needed_in_end\n"
     )
-    result = api.get_imports_string(test_input)
-    assert result == (
-        "import first_straight\n"
-        "import second_straight\n"
-        "from first_from import first_from_function_1, first_from_function_2\n"
-        "import bad_name as good_name\n"
-        "from parent.some_bad_defs import bad_name_1 as ok_name_1, bad_name_2 as ok_name_2\n"
-        "import needed_in_bla_2\n"
-        "import needed_in_bla\n"
-        "import needed_in_bla_bla\n"
-        "import needed_in_end\n"
-    )
+    identified_imports = list(map(str, api.find_imports_in_code(test_input)))
+    assert identified_imports == [
+        ":0 import first_straight",
+        ":2 import second_straight",
+        ":3 import first_from.first_from_function_1",
+        ":3 import first_from.first_from_function_2",
+        ":4 import bad_name.good_name",
+        ":4 import bad_name",
+        ":5 import parent.some_bad_defs.bad_name_1 as ok_name_1",
+        ":5 import parent.some_bad_defs.bad_name_2 as ok_name_2",
+        ":11 import needed_in_bla_2",
+        ":14 import needed_in_bla",
+        ":17 import needed_in_bla_bla",
+        ":21 import needed_in_end",
+    ]
 
 
-def test_get_imports_stdout() -> None:
-    """Ensure that get_imports_stream can work with nonseekable streams like STDOUT"""
-
-    global_output = []
+def test_find_imports_in_stream() -> None:
+    """Ensure that find_imports_in_stream can work with nonseekable streams like STDOUT"""
 
     class NonSeekableTestStream(StringIO):
         def seek(self, position):
@@ -4969,10 +4967,6 @@ def test_get_imports_stdout() -> None:
         def seekable(self):
             return False
 
-        def write(self, s, *a, **kw):
-            global_output.append(s)
-
-    test_input = StringIO("import m2\n" "import m1\n" "not_import = 7")
-    test_output = NonSeekableTestStream()
-    api.get_imports_stream(test_input, test_output)
-    assert "".join(global_output) == "import m2\nimport m1\n"
+    test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
+    identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
+    assert identified_imports == [":0 import m2", ":1 import m1"]
