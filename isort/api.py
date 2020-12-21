@@ -394,7 +394,7 @@ def sort_file(
         return changed
 
 
-def find_find_imports_in_code(
+def find_imports_in_code(
     code: str,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
