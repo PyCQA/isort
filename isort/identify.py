@@ -56,7 +56,7 @@ def imports(
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
-            line, raw_line = _normalize_line(statement)
+            line, _raw_line = _normalize_line(statement)
             if line.lstrip().startswith(("import ", "cimport ")):
                 type_of_import = "straight"
             elif line.lstrip().startswith("from "):
