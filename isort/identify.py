@@ -59,7 +59,7 @@ def imports(
             line, raw_line = _normalize_line(statement)
             if line.lstrip().startswith(("import ", "cimport ")):
                 type_of_import = "straight"
-            if line.lstrip().startswith("from "):
+            elif line.lstrip().startswith("from "):
                 type_of_import = "from"
             else:
                 continue
