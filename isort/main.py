@@ -870,18 +870,22 @@ def identify_imports_main(
     parser.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
+    parser.add_argument(
+        "--unique", action="store_true", default=False,
+        help="If true, isort will only identify unique imports."
+    )
     arguments = parser.parse_args(argv)
 
     file_names = arguments.files
     if file_names == ["-"]:
-        identified_imports = api.find_imports_in_stream(sys.stdin if stdin is None else stdin)
+        identified_imports = api.find_imports_in_stream(sys.stdin if stdin is None else stdin, unique=arguments.unique)
     else:
         skipped: List[str] = []
         broken: List[str] = []
         config = DEFAULT_CONFIG
         identified_imports = chain(
             *(
-                api.find_imports_in_file(file_name)
+                api.find_imports_in_file(file_name, unique=arguments.unique)
                 for file_name in files.find(file_names, config, skipped, broken)
             )
         )
