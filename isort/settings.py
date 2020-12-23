@@ -387,7 +387,8 @@ class Config(_Config):
         for section in combined_config.get("sections", ()):
             if section in SECTION_DEFAULTS:
                 continue
-            elif not section.lower() in known_other:
+            
+            if not section.lower() in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
