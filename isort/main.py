@@ -958,7 +958,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     if show_config:
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
-    elif file_names == ["-"]:
+    if file_names == ["-"]:
         file_path = Path(stream_filename) if stream_filename else None
         if show_files:
             sys.exit("Error: can't show files for streaming input.")
