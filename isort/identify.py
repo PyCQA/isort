@@ -91,7 +91,11 @@ def imports(
                     import_string += "\n" + line
             else:
                 while line.strip().endswith("\\"):
-                    index, next_line = next(indexed_input)
+                    try:
+                        index, next_line = next(indexed_input)
+                    except StopIteration:
+                        break
+
                     line, _ = parse_comments(next_line)
 
                     # Still need to check for parentheses after an escaped line
