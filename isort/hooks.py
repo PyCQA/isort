@@ -12,8 +12,7 @@ from isort import Config, api, exceptions
 
 
 def get_output(command: List[str]) -> str:
-    """
-    Run a command and return raw output
+    """Run a command and return raw output
 
     :param str command: the command to run
     :returns: the stdout output of the command
@@ -23,8 +22,7 @@ def get_output(command: List[str]) -> str:
 
 
 def get_lines(command: List[str]) -> List[str]:
-    """
-    Run a command and return lines of output
+    """Run a command and return lines of output
 
     :param str command: the command to run
     :returns: list of whitespace-stripped lines output by command
@@ -36,8 +34,7 @@ def get_lines(command: List[str]) -> List[str]:
 def git_hook(
     strict: bool = False, modify: bool = False, lazy: bool = False, settings_file: str = ""
 ) -> int:
-    """
-    Git pre-commit hook to check staged files for isort errors
+    """Git pre-commit hook to check staged files for isort errors
 
     :param bool strict - if True, return number of errors on exit,
         causing the hook to fail. If False, return zero so it will
