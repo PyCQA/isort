@@ -1491,6 +1491,14 @@ def test_isort_adding_second_comma_issue_1621():
     """Ensure isort doesnt add a second comma when very long comment is present
     See: https://github.com/PyCQA/isort/issues/1621.
     """
+    assert isort.check_code(
+        """from .test import (
+    TestTestTestTestTestTest2 as TestTestTestTestTestTest1,  # Some really long comment bla bla bla bla bla
+)
+""",
+        profile="black",
+        show_diff=True,
+    )
     assert isort.code(
         """from .test import (
     TestTestTestTestTestTest2 as TestTestTestTestTestTest1  # Some really long comment bla bla bla bla bla
@@ -1501,3 +1509,4 @@ def test_isort_adding_second_comma_issue_1621():
     TestTestTestTestTestTest2 as TestTestTestTestTestTest1,  # Some really long comment bla bla bla bla bla
 )
 """
+    
