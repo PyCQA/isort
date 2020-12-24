@@ -506,7 +506,7 @@ class Config(_Config):
             if file_path.name == ".git":  # pragma: no cover
                 return True
 
-            result = subprocess.run(  # nosec
+            result = subprocess.run(  # nosec # skipcq: PYL-W1510
                 ["git", "-C", str(file_path.parent), "check-ignore", "--quiet", os_path]
             )
             if result.returncode == 0:
