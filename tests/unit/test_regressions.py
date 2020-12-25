@@ -1509,4 +1509,3 @@ def test_isort_adding_second_comma_issue_1621():
     TestTestTestTestTestTest2 as TestTestTestTestTestTest1,  # Some really long comment bla bla bla bla bla
 )
 """
-    
