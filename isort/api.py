@@ -1,13 +1,14 @@
 import shutil
 import sys
 from io import StringIO
+from itertools import chain
 from pathlib import Path
 from typing import Iterator, Optional, Set, TextIO, Union, cast
 from warnings import warn
 
 from isort import core
 
-from . import identify, io
+from . import files, identify, io
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -470,6 +471,31 @@ def find_imports_in_file(
             unique=unique,
             **config_kwargs,
         )
+
+
+def find_imports_in_paths(
+    paths: Iterator[Union[str, Path]],
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    unique: bool = False,
+    **config_kwargs,
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided source paths.
+
+    - **paths**: A collection of paths to recursively look for imports within.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
+    - ****config_kwargs**: Any config modifications.
+    """
+    config = _config(path=file_path, config=config, **config_kwargs)
+    yield from chain(
+        *(
+            find_imports_in_file(file_name, unique=unique, config=config)
+            for file_name in files.find(map(str, paths), config, [], [])
+        )
+    )
 
 
 def _config(

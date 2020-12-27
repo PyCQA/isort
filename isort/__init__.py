@@ -7,6 +7,7 @@ from .api import (
     check_stream,
     find_imports_in_code,
     find_imports_in_file,
+    find_imports_in_paths,
     find_imports_in_stream,
     place_module,
     place_module_with_reason,
