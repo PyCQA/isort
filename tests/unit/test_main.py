@@ -995,19 +995,30 @@ import os
 
 
 def test_identify_imports_main(tmpdir, capsys):
-    file_content = "import mod2\n" "a = 1\n" "import mod1\n"
+    file_content = "import mod2\n import mod2\n" "a = 1\n" "import mod1\n"
     some_file = tmpdir.join("some_file.py")
     some_file.write(file_content)
-    file_imports = f"{some_file}:0 import mod2\n{some_file}:2 import mod1\n"
+    file_imports = f"{some_file}:0 import mod2\n{some_file}:3 import mod1\n"
+    file_imports_with_dupes = (
+        f"{some_file}:0 import mod2\n{some_file}:1 import mod2\n" f"{some_file}:3 import mod1\n"
+    )
 
-    main.identify_imports_main([str(some_file)])
-
+    main.identify_imports_main([str(some_file), "--unique"])
     out, error = capsys.readouterr()
     assert out.replace("\r\n", "\n") == file_imports
     assert not error
 
-    main.identify_imports_main(["-"], stdin=as_stream(file_content))
+    main.identify_imports_main([str(some_file)])
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports_with_dupes
+    assert not error
+
+    main.identify_imports_main(["-", "--unique"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
     assert out.replace("\r\n", "\n") == file_imports.replace(str(some_file), "")
+
+    main.identify_imports_main(["-"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports_with_dupes.replace(str(some_file), "")
 
     main.identify_imports_main([str(tmpdir)])
