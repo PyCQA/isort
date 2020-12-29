@@ -424,6 +424,7 @@ def find_imports_in_stream(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     unique: bool = False,
+    _seen: Optional[Set[str]] = None,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code stream.
@@ -432,6 +433,7 @@ def find_imports_in_stream(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **unique**: If True, only the first instance of an import is returned.
+    - **_seen**: An optional set of imports already seen. Generally meant only for internal use.
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
@@ -439,7 +441,7 @@ def find_imports_in_stream(
     if not unique:
         yield from identified_imports
 
-    seen: Set[str] = set()
+    seen: Set[str] = set() if _seen is None else _seen
     for identified_import in identified_imports:
         key = identified_import.statement()
         if key not in seen:
@@ -490,9 +492,10 @@ def find_imports_in_paths(
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
+    seen: Set[str] = set() if unique else None
     yield from chain(
         *(
-            find_imports_in_file(file_name, unique=unique, config=config)
+            find_imports_in_file(file_name, unique=unique, config=config, _seen=seen)
             for file_name in files.find(map(str, paths), config, [], [])
         )
     )
