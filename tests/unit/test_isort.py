@@ -4942,18 +4942,18 @@ def test_find_imports_in_code() -> None:
     )
     identified_imports = list(map(str, api.find_imports_in_code(test_input)))
     assert identified_imports == [
-        ":0 import first_straight",
-        ":2 import second_straight",
-        ":3 import first_from.first_from_function_1",
-        ":3 import first_from.first_from_function_2",
-        ":4 import bad_name.good_name",
-        ":4 import bad_name",
-        ":5 import parent.some_bad_defs.bad_name_1 as ok_name_1",
-        ":5 import parent.some_bad_defs.bad_name_2 as ok_name_2",
-        ":11 import needed_in_bla_2",
-        ":14 import needed_in_bla",
-        ":17 import needed_in_bla_bla",
-        ":21 import needed_in_end",
+        ":1 import first_straight",
+        ":3 import second_straight",
+        ":4 import first_from.first_from_function_1",
+        ":4 import first_from.first_from_function_2",
+        ":5 import bad_name.good_name",
+        ":5 import bad_name",
+        ":6 import parent.some_bad_defs.bad_name_1 as ok_name_1",
+        ":6 import parent.some_bad_defs.bad_name_2 as ok_name_2",
+        ":12 import needed_in_bla_2",
+        ":15 import needed_in_bla",
+        ":18 import needed_in_bla_bla",
+        ":22 import needed_in_end",
     ]
 
 
@@ -4969,4 +4969,4 @@ def test_find_imports_in_stream() -> None:
 
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
-    assert identified_imports == [":0 import m2", ":1 import m1"]
+    assert identified_imports == [":1 import m2", ":2 import m1"]
