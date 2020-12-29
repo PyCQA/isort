@@ -74,7 +74,7 @@ def imports(
             )
             identified_import = partial(
                 Import,
-                index,
+                index + 1,  # line numbers use 1 based indexing
                 line.startswith(" ") or line.startswith("\n"),
                 cimport=cimports,
                 file_path=file_path,
