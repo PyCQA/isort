@@ -492,7 +492,7 @@ def find_imports_in_paths(
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
-    seen: Set[str] = set() if unique else None
+    seen: Optional[Set[str]] = set() if unique else None
     yield from chain(
         *(
             find_imports_in_file(file_name, unique=unique, config=config, _seen=seen)
