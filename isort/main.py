@@ -867,7 +867,7 @@ def identify_imports_main(
         "Use `-` as the first argument to represent stdin."
     )
     parser.add_argument(
-        "files", nargs="*", help="One or more Python source files that need their imports sorted."
+        "files", nargs="+", help="One or more Python source files that need their imports sorted."
     )
     parser.add_argument(
         "--top-only",
