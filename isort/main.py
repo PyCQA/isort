@@ -876,6 +876,14 @@ def identify_imports_main(
         help="Only identify imports that occur in before functions or classes.",
     )
 
+    target_group = parser.add_argument_group("target options")
+    target_group.add_argument(
+        "--follow-links",
+        action="store_true",
+        default=False,
+        help="Tells isort to follow symlinks that are encountered when running recursively.",
+    )
+
     uniqueness = parser.add_mutually_exclusive_group()
     uniqueness.add_argument(
         "--unique",
@@ -916,10 +924,14 @@ def identify_imports_main(
             sys.stdin if stdin is None else stdin,
             unique=arguments.unique,
             top_only=arguments.top_only,
+            follow_links=arguments.follow_links,
         )
     else:
         identified_imports = api.find_imports_in_paths(
-            file_names, unique=arguments.unique, top_only=arguments.top_only
+            file_names,
+            unique=arguments.unique,
+            top_only=arguments.top_only,
+            follow_links=arguments.follow_links,
         )
 
     for identified_import in identified_imports:
