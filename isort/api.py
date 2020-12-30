@@ -1,5 +1,6 @@
 import shutil
 import sys
+from enum import Enum
 from io import StringIO
 from itertools import chain
 from pathlib import Path
@@ -20,6 +21,32 @@ from .io import Empty
 from .place import module as place_module  # noqa: F401
 from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, Config
+
+
+class ImportKey(Enum):
+    """Defines how to key an individual import, generally for deduping.
+
+    Import keys are defined from less to more specific:
+
+    from x.y import z as a
+    ______| |        |    |
+       |    |        |    |
+    PACKAGE |        |    |
+    ________|        |    |
+          |          |    |
+        MODULE       |    |
+    _________________|    |
+              |           |
+           ATTRIBUTE      |
+    ______________________|
+                  |
+                ALIAS
+    """
+
+    PACKAGE = 1
+    MODULE = 2
+    ATTRIBUTE = 3
+    ALIAS = 4
 
 
 def sort_code_string(
@@ -399,7 +426,7 @@ def find_imports_in_code(
     code: str,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    unique: bool = False,
+    unique: Union[bool, ImportKey] = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code string.
@@ -423,7 +450,7 @@ def find_imports_in_stream(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    unique: bool = False,
+    unique: Union[bool, ImportKey] = False,
     _seen: Optional[Set[str]] = None,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
@@ -443,8 +470,16 @@ def find_imports_in_stream(
 
     seen: Set[str] = set() if _seen is None else _seen
     for identified_import in identified_imports:
-        key = identified_import.statement()
-        if key not in seen:
+        if unique in (True, ImportKey.ALIAS):
+            key = identified_import.statement()
+        elif unique == ImportKey.ATTRIBUTE:
+            key = f"{identified_import.module}.{identified_import.attribute}"
+        elif unique == ImportKey.MODULE:
+            key = identified_import.module
+        elif unique == ImportKey.PACKAGE:
+            key = identified_import.module.split(".")[0]
+
+        if key and key not in seen:
             seen.add(key)
             yield identified_import
 
@@ -453,7 +488,7 @@ def find_imports_in_file(
     filename: Union[str, Path],
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    unique: bool = False,
+    unique: Union[bool, ImportKey] = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source file.
@@ -479,7 +514,7 @@ def find_imports_in_paths(
     paths: Iterator[Union[str, Path]],
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
-    unique: bool = False,
+    unique: Union[bool, ImportKey] = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source paths.
