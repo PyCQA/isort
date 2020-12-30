@@ -57,6 +57,25 @@ def imports(
         if skipping_line:
             continue
 
+        stripped_line = line.strip().split("#")[0]
+        if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
+            if stripped_line == "yield":
+                while not stripped_line or stripped_line == "yield":
+                    try:
+                        index, next_line = next(indexed_input)
+                    except StopIteration:
+                        break
+
+                    stripped_line = next_line.strip().split("#")[0]
+            while stripped_line.endswith("\\"):
+                try:
+                    index, next_line = next(indexed_input)
+                except StopIteration:
+                    break
+
+                stripped_line = next_line.strip().split("#")[0]
+            continue
+
         line, *end_of_line_comment = line.split("#", 1)
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
