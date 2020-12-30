@@ -869,12 +869,39 @@ def identify_imports_main(
     parser.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
-    parser.add_argument(
+
+    uniqueness = parser.add_mutually_exclusive_group()
+    uniqueness.add_argument(
         "--unique",
         action="store_true",
         default=False,
         help="If true, isort will only identify unique imports.",
     )
+    uniqueness.add_argument(
+        "--packages",
+        dest="unique",
+        action="store_const",
+        const=api.ImportKey.PACKAGE,
+        default=False,
+        help="If true, isort will only identify the unique top level modules imported.",
+    )
+    uniqueness.add_argument(
+        "--modules",
+        dest="unique",
+        action="store_const",
+        const=api.ImportKey.MODULE,
+        default=False,
+        help="If true, isort will only identify the unique modules imported.",
+    )
+    uniqueness.add_argument(
+        "--attributes",
+        dest="unique",
+        action="store_const",
+        const=api.ImportKey.ATTRIBUTE,
+        default=False,
+        help="If true, isort will only identify the unique attributes imported.",
+    )
+
     arguments = parser.parse_args(argv)
 
     file_names = arguments.files
@@ -886,7 +913,14 @@ def identify_imports_main(
         identified_imports = api.find_imports_in_paths(file_names, unique=arguments.unique)
 
     for identified_import in identified_imports:
-        print(str(identified_import))
+        if arguments.unique == api.ImportKey.PACKAGE:
+            print(identified_import.module.split(".")[0])
+        elif arguments.unique == api.ImportKey.MODULE:
+            print(identified_import.module)
+        elif arguments.unique == api.ImportKey.ATTRIBUTE:
+            print(f"{identified_import.module}.{identified_import.attribute}")
+        else:
+            print(str(identified_import))
 
 
 def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
