@@ -53,6 +53,7 @@ def module_key(
 
 def section_key(
     line: str,
+    case_sensitive: bool,
     order_by_type: bool,
     force_to_top: List[str],
     lexicographical: bool = False,
@@ -76,8 +77,17 @@ def section_key(
         line = re.sub("^import ", "", line)
     if line.split(" ")[0] in force_to_top:
         section = "A"
-    if not order_by_type:
-        line = line.lower()
+    if not case_sensitive or not order_by_type:
+        split_module = line.split(" import ", 1)
+        if len(split_module) > 1:
+            module_name, names = split_module
+            if not case_sensitive:
+                module_name = module_name.lower()
+            if not order_by_type:
+                names = names.lower()
+            line = " import ".join([module_name, names])
+        elif not case_sensitive:
+            line = line.lower()
 
     return f"{section}{len(line) if length_sort else ''}{line}"
 

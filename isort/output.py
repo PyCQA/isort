@@ -96,6 +96,7 @@ def sorted_imports(
                 new_section_output,
                 key=partial(
                     sorting.section_key,
+                    case_sensitive=config.case_sensitive,
                     order_by_type=config.order_by_type,
                     force_to_top=config.force_to_top,
                     lexicographical=config.lexicographical,
