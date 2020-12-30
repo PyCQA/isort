@@ -7,9 +7,8 @@ from isort.format import format_simplified
 
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
+from .identify import STATEMENT_DECLARATIONS
 from .settings import DEFAULT_CONFIG, Config
-
-STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 def sorted_imports(

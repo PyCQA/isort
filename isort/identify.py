@@ -3,12 +3,14 @@ Eventually this will likely replace parse.py
 """
 from functools import partial
 from pathlib import Path
-from typing import Iterator, NamedTuple, Optional, TextIO
+from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
 
 from isort.parse import _normalize_line, _strip_syntax, skip_line
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
+
+STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 class Import(NamedTuple):
@@ -36,7 +38,10 @@ class Import(NamedTuple):
 
 
 def imports(
-    input_stream: TextIO, config: Config = DEFAULT_CONFIG, file_path: Optional[Path] = None
+    input_stream: TextIO,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    top_only: bool = False,
 ) -> Iterator[Import]:
     """Parses a python file taking out and categorizing imports."""
     in_quote = ""
@@ -48,6 +53,8 @@ def imports(
         )
 
         if skipping_line:
+            if top_only and not in_quote and line.startswith(STATEMENT_DECLARATIONS):
+                break
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
