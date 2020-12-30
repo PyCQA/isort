@@ -427,6 +427,7 @@ def find_imports_in_code(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code string.
@@ -435,6 +436,7 @@ def find_imports_in_code(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
     yield from find_imports_in_stream(
@@ -442,6 +444,7 @@ def find_imports_in_code(
         config=config,
         file_path=file_path,
         unique=unique,
+        top_only=top_only,
         **config_kwargs,
     )
 
@@ -451,6 +454,7 @@ def find_imports_in_stream(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
     _seen: Optional[Set[str]] = None,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
@@ -460,6 +464,7 @@ def find_imports_in_stream(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
     - **_seen**: An optional set of imports already seen. Generally meant only for internal use.
     - ****config_kwargs**: Any config modifications.
     """
@@ -489,6 +494,7 @@ def find_imports_in_file(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source file.
@@ -498,6 +504,7 @@ def find_imports_in_file(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
@@ -515,6 +522,7 @@ def find_imports_in_paths(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
     **config_kwargs,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source paths.
@@ -524,6 +532,7 @@ def find_imports_in_paths(
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
