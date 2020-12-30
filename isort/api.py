@@ -468,7 +468,7 @@ def find_imports_in_stream(
     - **_seen**: An optional set of imports already seen. Generally meant only for internal use.
     - ****config_kwargs**: Any config modifications.
     """
-    config = _config(path=file_path, config=config, **config_kwargs)
+    config = _config(config=config, **config_kwargs)
     identified_imports = identify.imports(
         input_stream, config=config, file_path=file_path, top_only=top_only
     )
@@ -538,7 +538,7 @@ def find_imports_in_paths(
     - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
-    config = _config(path=file_path, config=config, **config_kwargs)
+    config = _config(config=config, **config_kwargs)
     seen: Optional[Set[str]] = set() if unique else None
     yield from chain(
         *(
