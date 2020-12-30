@@ -469,7 +469,9 @@ def find_imports_in_stream(
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
-    identified_imports = identify.imports(input_stream, config=config, file_path=file_path)
+    identified_imports = identify.imports(
+        input_stream, config=config, file_path=file_path, top_only=top_only
+    )
     if not unique:
         yield from identified_imports
 
@@ -513,6 +515,7 @@ def find_imports_in_file(
             config=config,
             file_path=file_path or source_file.path,
             unique=unique,
+            top_only=top_only,
             **config_kwargs,
         )
 
@@ -539,7 +542,9 @@ def find_imports_in_paths(
     seen: Optional[Set[str]] = set() if unique else None
     yield from chain(
         *(
-            find_imports_in_file(file_name, unique=unique, config=config, _seen=seen)
+            find_imports_in_file(
+                file_name, unique=unique, config=config, top_only=top_only, _seen=seen
+            )
             for file_name in files.find(map(str, paths), config, [], [])
         )
     )

@@ -52,9 +52,9 @@ def imports(
             line, in_quote=in_quote, index=index, section_comments=config.section_comments
         )
 
+        if top_only and not in_quote and line.startswith(STATEMENT_DECLARATIONS):
+            break
         if skipping_line:
-            if top_only and not in_quote and line.startswith(STATEMENT_DECLARATIONS):
-                break
             continue
 
         line, *end_of_line_comment = line.split("#", 1)
