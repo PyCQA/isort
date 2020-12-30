@@ -869,6 +869,12 @@ def identify_imports_main(
     parser.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
     )
+    parser.add_argument(
+        "--top-only",
+        action="store_true",
+        default=False,
+        help="Only identify imports that occur in before functions or classes.",
+    )
 
     uniqueness = parser.add_mutually_exclusive_group()
     uniqueness.add_argument(
@@ -907,10 +913,14 @@ def identify_imports_main(
     file_names = arguments.files
     if file_names == ["-"]:
         identified_imports = api.find_imports_in_stream(
-            sys.stdin if stdin is None else stdin, unique=arguments.unique
+            sys.stdin if stdin is None else stdin,
+            unique=arguments.unique,
+            top_only=arguments.top_only,
         )
     else:
-        identified_imports = api.find_imports_in_paths(file_names, unique=arguments.unique)
+        identified_imports = api.find_imports_in_paths(
+            file_names, unique=arguments.unique, top_only=arguments.top_only
+        )
 
     for identified_import in identified_imports:
         if arguments.unique == api.ImportKey.PACKAGE:
