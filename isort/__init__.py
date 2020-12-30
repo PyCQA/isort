@@ -1,6 +1,7 @@
 """Defines the public isort interface"""
 from . import settings
 from ._version import __version__
+from .api import ImportKey
 from .api import check_code_string as check_code
 from .api import (
     check_file,
