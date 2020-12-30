@@ -263,10 +263,10 @@ multi_line_output = 3
 
 ## Indent
 
-String to place for indents defaults to "    " (4 spaces).
+String to place for indents defaults to "&nbsp;&nbsp;&nbsp;&nbsp;" (4 spaces).
 
 **Type:** String  
-**Default:** `    `  
+**Default:** <code>&nbsp;&nbsp;&nbsp;&nbsp;</code>  
 **Python & Config File Name:** indent  
 **CLI Flags:**
 
