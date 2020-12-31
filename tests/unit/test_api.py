@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from isort import api
+from isort import ImportKey, api
 from isort.settings import Config
 
 imperfect_content = "import b\nimport a\n"
@@ -86,3 +86,18 @@ def test_sort_code_string_mixed_newlines():
 def test_find_imports_in_file(imperfect):
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]
+
+
+def test_find_imports_in_code():
+    code = """
+from x.y import z as a
+from x.y import z as a
+from x.y import z
+import x.y
+import x
+"""
+    assert len(list(api.find_imports_in_code(code))) == 5
+    assert len(list(api.find_imports_in_code(code, unique=True))) == 4
+    assert len(list(api.find_imports_in_code(code, unique=ImportKey.ATTRIBUTE))) == 3
+    assert len(list(api.find_imports_in_code(code, unique=ImportKey.MODULE))) == 2
+    assert len(list(api.find_imports_in_code(code, unique=ImportKey.PACKAGE))) == 1

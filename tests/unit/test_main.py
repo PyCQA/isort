@@ -1022,3 +1022,15 @@ def test_identify_imports_main(tmpdir, capsys):
     assert out.replace("\r\n", "\n") == file_imports_with_dupes.replace(str(some_file), "")
 
     main.identify_imports_main([str(tmpdir)])
+
+    main.identify_imports_main(["-", "--packages"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
+
+    main.identify_imports_main(["-", "--modules"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
+
+    main.identify_imports_main(["-", "--attributes"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
