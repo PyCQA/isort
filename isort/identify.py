@@ -74,7 +74,7 @@ def imports(
                     break
 
                 stripped_line = next_line.strip().split("#")[0]
-            continue
+            continue  # pragma: no cover
 
         line, *end_of_line_comment = raw_line.split("#", 1)
         statements = [line.strip() for line in line.split(";")]
@@ -88,7 +88,7 @@ def imports(
             elif line.startswith("from "):
                 type_of_import = "from"
             else:
-                continue
+                continue  # pragma: no cover
 
             import_string, _ = parse_comments(line)
             normalized_import_string = (
@@ -135,13 +135,15 @@ def imports(
                                 break
                             line, _ = parse_comments(next_line)
                             import_string += "\n" + line
-
-                    if import_string.strip().endswith(
-                        (" import", " cimport")
-                    ) or line.strip().startswith(("import ", "cimport ")):
-                        import_string += "\n" + line
                     else:
-                        import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+                        if import_string.strip().endswith(
+                            (" import", " cimport")
+                        ) or line.strip().startswith(("import ", "cimport ")):
+                            import_string += "\n" + line
+                        else:
+                            import_string = (
+                                import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+                            )
 
             if type_of_import == "from":
                 import_string = (

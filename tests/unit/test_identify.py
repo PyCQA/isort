@@ -2,6 +2,7 @@ from io import StringIO
 from typing import List
 
 from isort import Config, identify
+from isort.identify import Import
 
 
 def imports_in_code(code: str, **kwargs) -> List[identify.Import]:
@@ -219,12 +220,37 @@ from os \\
 from os (
     import path
 )
+from os import \\
+    path
+from os \\
+    import (
+        path
+    )
 from os import ( \\"""
             )
         )
-        == 7
+        == 9
     )
     assert not imports_in_code("from os import \\")
+    assert (
+        imports_in_code(
+            """
+from os \\
+    import (
+        system"""
+        )
+        == [
+            Import(
+                line_number=2,
+                indented=False,
+                module="os",
+                attribute="system",
+                alias=None,
+                cimport=False,
+                file_path=None,
+            )
+        ]
+    )
 
 
 def test_aliases():
