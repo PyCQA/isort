@@ -4,6 +4,17 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.7.0 December 30th 2020
+  - Fixed #1612: In rare circumstances an extra comma is added after import and before comment.
+  - Fixed #1593: isort encounters bug in Python 3.6.0.
+  - Implemented #1596: Provide ways for extension formatting and file paths to be specified when using streaming input from CLI.
+  - Implemented #1583: Ability to output and diff within a single API call to `isort.file`.
+  - Implemented #1562, #1592 & #1593: Better more useful fatal error messages.
+  - Implemented #1575: Support for automatically fixing mixed indentation of import sections.
+  - Implemented #1582: Added a CLI option for skipping symlinks.
+  - Implemented #1603: Support for disabling float_to_top from the command line.
+  - Implemented #1604: Allow toggling section comments on and off for indented import sections.
+
 ### 5.6.4 October 12, 2020
   - Fixed #1556: Empty line added between imports that should be skipped.
 

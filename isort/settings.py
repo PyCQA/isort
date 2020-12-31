@@ -200,8 +200,11 @@ class _Config:
     dedup_headings: bool = False
     only_sections: bool = False
     only_modified: bool = False
+    combine_straight_imports: bool = False
     auto_identify_namespace_packages: bool = True
     namespace_packages: FrozenSet[str] = frozenset()
+    follow_links: bool = True
+    indented_import_headings: bool = True
 
     def __post_init__(self):
         py_version = self.py_version
@@ -383,7 +386,8 @@ class Config(_Config):
         for section in combined_config.get("sections", ()):
             if section in SECTION_DEFAULTS:
                 continue
-            elif not section.lower() in known_other:
+
+            if not section.lower() in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
@@ -467,7 +471,7 @@ class Config(_Config):
         ext = ext.lstrip(".")
         if ext in self.supported_extensions:
             return True
-        elif ext in self.blocked_extensions:
+        if ext in self.blocked_extensions:
             return False
 
         # Skip editor backup files.
@@ -501,7 +505,7 @@ class Config(_Config):
             if file_path.name == ".git":  # pragma: no cover
                 return True
 
-            result = subprocess.run(  # nosec
+            result = subprocess.run(  # nosec # skipcq: PYL-W1510
                 ["git", "-C", str(file_path.parent), "check-ignore", "--quiet", os_path]
             )
             if result.returncode == 0:

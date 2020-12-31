@@ -848,3 +848,126 @@ def my_function():
     pass
 """
     )
+
+
+def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
+    """isort should provide a way from the Python API to process an existing
+    file and output to a stream the new version of that file, as well as a diff
+    to a different stream.
+    See: https://github.com/PyCQA/isort/issues/1583
+    """
+
+    tmp_file = tmpdir.join("file.py")
+    tmp_file.write("import b\nimport a\n")
+
+    isort_diff = StringIO()
+    isort_output = StringIO()
+
+    isort.file(tmp_file, show_diff=isort_diff, output=isort_output)
+
+    _, error = capsys.readouterr()
+    assert not error
+
+    isort_diff.seek(0)
+    isort_diff_content = isort_diff.read()
+    assert "+import a" in isort_diff_content
+    assert " import b" in isort_diff_content
+    assert "-import a" in isort_diff_content
+
+    isort_output.seek(0)
+    assert isort_output.read().splitlines() == ["import a", "import b"]
+
+
+def test_autofix_mixed_indent_imports_1575():
+    """isort should automatically fix import statements that are sent in
+    with incorrect mixed indentation.
+    See: https://github.com/PyCQA/isort/issues/1575
+    """
+    assert (
+        isort.code(
+            """
+import os
+  import os
+  """
+        )
+        == """
+import os
+"""
+    )
+    assert (
+        isort.code(
+            """
+def one():
+    import os
+import os
+    """
+        )
+        == """
+def one():
+    import os
+
+import os
+"""
+    )
+    assert (
+        isort.code(
+            """
+import os
+    import os
+        import os
+    import os
+import os
+"""
+        )
+        == """
+import os
+"""
+    )
+
+
+def test_indented_import_headings_issue_1604():
+    """Test to ensure it is possible to toggle import headings on indented import sections
+    See: https://github.com/PyCQA/isort/issues/1604
+    """
+    assert (
+        isort.code(
+            """
+import numpy as np
+
+
+def function():
+    import numpy as np
+""",
+            import_heading_thirdparty="External imports",
+        )
+        == """
+# External imports
+import numpy as np
+
+
+def function():
+    # External imports
+    import numpy as np
+"""
+    )
+    assert (
+        isort.code(
+            """
+import numpy as np
+
+
+def function():
+    import numpy as np
+""",
+            import_heading_thirdparty="External imports",
+            indented_import_headings=False,
+        )
+        == """
+# External imports
+import numpy as np
+
+
+def function():
+    import numpy as np
+"""
+    )

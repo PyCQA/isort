@@ -1,13 +1,15 @@
 import shutil
 import sys
+from enum import Enum
 from io import StringIO
+from itertools import chain
 from pathlib import Path
-from typing import Optional, TextIO, Union, cast
+from typing import Iterator, Optional, Set, TextIO, Union, cast
 from warnings import warn
 
 from isort import core
 
-from . import io
+from . import files, identify, io
 from .exceptions import (
     ExistingSyntaxErrors,
     FileSkipComment,
@@ -19,6 +21,32 @@ from .io import Empty
 from .place import module as place_module  # noqa: F401
 from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, Config
+
+
+class ImportKey(Enum):
+    """Defines how to key an individual import, generally for deduping.
+
+    Import keys are defined from less to more specific:
+
+    from x.y import z as a
+    ______| |        |    |
+       |    |        |    |
+    PACKAGE |        |    |
+    ________|        |    |
+          |          |    |
+        MODULE       |    |
+    _________________|    |
+              |           |
+           ATTRIBUTE      |
+    ______________________|
+                  |
+                ALIAS
+    """
+
+    PACKAGE = 1
+    MODULE = 2
+    ATTRIBUTE = 3
+    ALIAS = 4
 
 
 def sort_code_string(
@@ -216,30 +244,30 @@ def check_stream(
         if config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
         return True
-    else:
-        printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
-        if show_diff:
-            output_stream = StringIO()
-            input_stream.seek(0)
-            file_contents = input_stream.read()
-            sort_stream(
-                input_stream=StringIO(file_contents),
-                output_stream=output_stream,
-                extension=extension,
-                config=config,
-                file_path=file_path,
-                disregard_skip=disregard_skip,
-            )
-            output_stream.seek(0)
 
-            show_unified_diff(
-                file_input=file_contents,
-                file_output=output_stream.read(),
-                file_path=file_path,
-                output=None if show_diff is True else cast(TextIO, show_diff),
-                color_output=config.color_output,
-            )
-        return False
+    printer.error(f"{file_path or ''} Imports are incorrectly sorted and/or formatted.")
+    if show_diff:
+        output_stream = StringIO()
+        input_stream.seek(0)
+        file_contents = input_stream.read()
+        sort_stream(
+            input_stream=StringIO(file_contents),
+            output_stream=output_stream,
+            extension=extension,
+            config=config,
+            file_path=file_path,
+            disregard_skip=disregard_skip,
+        )
+        output_stream.seek(0)
+
+        show_unified_diff(
+            file_input=file_contents,
+            file_output=output_stream.read(),
+            file_path=file_path,
+            output=None if show_diff is True else cast(TextIO, show_diff),
+            color_output=config.color_output,
+        )
+    return False
 
 
 def check_file(
@@ -284,6 +312,7 @@ def sort_file(
     ask_to_apply: bool = False,
     show_diff: Union[bool, TextIO] = False,
     write_to_stdout: bool = False,
+    output: Optional[TextIO] = None,
     **config_kwargs,
 ) -> bool:
     """Sorts and formats any groups of imports imports within the provided file or Path.
@@ -298,6 +327,8 @@ def sort_file(
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **write_to_stdout**: If `True`, write to stdout instead of the input file.
+    - **output**: If a TextIO is provided, results will be written there rather than replacing
+    the original file content.
     - ****config_kwargs**: Any config modifications.
     """
     with io.File.read(filename) as source_file:
@@ -315,55 +346,208 @@ def sort_file(
                     extension=extension,
                 )
             else:
-                tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
-                try:
-                    with tmp_file.open(
-                        "w", encoding=source_file.encoding, newline=""
-                    ) as output_stream:
-                        shutil.copymode(filename, tmp_file)
-                        changed = sort_stream(
-                            input_stream=source_file.stream,
-                            output_stream=output_stream,
-                            config=config,
-                            file_path=actual_file_path,
-                            disregard_skip=disregard_skip,
-                            extension=extension,
-                        )
-                    if changed:
-                        if show_diff or ask_to_apply:
-                            source_file.stream.seek(0)
-                            with tmp_file.open(
-                                encoding=source_file.encoding, newline=""
-                            ) as tmp_out:
-                                show_unified_diff(
-                                    file_input=source_file.stream.read(),
-                                    file_output=tmp_out.read(),
-                                    file_path=actual_file_path,
-                                    output=None if show_diff is True else cast(TextIO, show_diff),
-                                    color_output=config.color_output,
-                                )
-                                if show_diff or (
-                                    ask_to_apply
-                                    and not ask_whether_to_apply_changes_to_file(
-                                        str(source_file.path)
+                if output is None:
+                    tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+                    try:
+                        with tmp_file.open(
+                            "w", encoding=source_file.encoding, newline=""
+                        ) as output_stream:
+                            shutil.copymode(filename, tmp_file)
+                            changed = sort_stream(
+                                input_stream=source_file.stream,
+                                output_stream=output_stream,
+                                config=config,
+                                file_path=actual_file_path,
+                                disregard_skip=disregard_skip,
+                                extension=extension,
+                            )
+                        if changed:
+                            if show_diff or ask_to_apply:
+                                source_file.stream.seek(0)
+                                with tmp_file.open(
+                                    encoding=source_file.encoding, newline=""
+                                ) as tmp_out:
+                                    show_unified_diff(
+                                        file_input=source_file.stream.read(),
+                                        file_output=tmp_out.read(),
+                                        file_path=actual_file_path,
+                                        output=None
+                                        if show_diff is True
+                                        else cast(TextIO, show_diff),
+                                        color_output=config.color_output,
                                     )
-                                ):
-                                    return False
-                        source_file.stream.close()
-                        tmp_file.replace(source_file.path)
-                        if not config.quiet:
-                            print(f"Fixing {source_file.path}")
-                finally:
-                    try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                        tmp_file.unlink()
-                    except FileNotFoundError:
-                        pass  # pragma: no cover
+                                    if show_diff or (
+                                        ask_to_apply
+                                        and not ask_whether_to_apply_changes_to_file(
+                                            str(source_file.path)
+                                        )
+                                    ):
+                                        return False
+                            source_file.stream.close()
+                            tmp_file.replace(source_file.path)
+                            if not config.quiet:
+                                print(f"Fixing {source_file.path}")
+                    finally:
+                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
+                            tmp_file.unlink()
+                        except FileNotFoundError:
+                            pass  # pragma: no cover
+                else:
+                    changed = sort_stream(
+                        input_stream=source_file.stream,
+                        output_stream=output,
+                        config=config,
+                        file_path=actual_file_path,
+                        disregard_skip=disregard_skip,
+                        extension=extension,
+                    )
+                    if changed:
+                        if show_diff:
+                            source_file.stream.seek(0)
+                            output.seek(0)
+                            show_unified_diff(
+                                file_input=source_file.stream.read(),
+                                file_output=output.read(),
+                                file_path=actual_file_path,
+                                output=None if show_diff is True else cast(TextIO, show_diff),
+                                color_output=config.color_output,
+                            )
+                    source_file.stream.close()
+
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors")
         except IntroducedSyntaxErrors:  # pragma: no cover
             warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
 
         return changed
+
+
+def find_imports_in_code(
+    code: str,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
+    **config_kwargs,
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided code string.
+
+    - **code**: The string of code with imports that need to be sorted.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
+    - ****config_kwargs**: Any config modifications.
+    """
+    yield from find_imports_in_stream(
+        input_stream=StringIO(code),
+        config=config,
+        file_path=file_path,
+        unique=unique,
+        top_only=top_only,
+        **config_kwargs,
+    )
+
+
+def find_imports_in_stream(
+    input_stream: TextIO,
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
+    _seen: Optional[Set[str]] = None,
+    **config_kwargs,
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided code stream.
+
+    - **input_stream**: The stream of code with imports that need to be sorted.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
+    - **_seen**: An optional set of imports already seen. Generally meant only for internal use.
+    - ****config_kwargs**: Any config modifications.
+    """
+    config = _config(config=config, **config_kwargs)
+    identified_imports = identify.imports(
+        input_stream, config=config, file_path=file_path, top_only=top_only
+    )
+    if not unique:
+        yield from identified_imports
+
+    seen: Set[str] = set() if _seen is None else _seen
+    for identified_import in identified_imports:
+        if unique in (True, ImportKey.ALIAS):
+            key = identified_import.statement()
+        elif unique == ImportKey.ATTRIBUTE:
+            key = f"{identified_import.module}.{identified_import.attribute}"
+        elif unique == ImportKey.MODULE:
+            key = identified_import.module
+        elif unique == ImportKey.PACKAGE:
+            key = identified_import.module.split(".")[0]
+
+        if key and key not in seen:
+            seen.add(key)
+            yield identified_import
+
+
+def find_imports_in_file(
+    filename: Union[str, Path],
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
+    **config_kwargs,
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided source file.
+
+    - **filename**: The name or Path of the file to look for imports in.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
+    - ****config_kwargs**: Any config modifications.
+    """
+    with io.File.read(filename) as source_file:
+        yield from find_imports_in_stream(
+            input_stream=source_file.stream,
+            config=config,
+            file_path=file_path or source_file.path,
+            unique=unique,
+            top_only=top_only,
+            **config_kwargs,
+        )
+
+
+def find_imports_in_paths(
+    paths: Iterator[Union[str, Path]],
+    config: Config = DEFAULT_CONFIG,
+    file_path: Optional[Path] = None,
+    unique: Union[bool, ImportKey] = False,
+    top_only: bool = False,
+    **config_kwargs,
+) -> Iterator[identify.Import]:
+    """Finds and returns all imports within the provided source paths.
+
+    - **paths**: A collection of paths to recursively look for imports within.
+    - **extension**: The file extension that contains imports. Defaults to filename extension or py.
+    - **config**: The config object to use when sorting imports.
+    - **file_path**: The disk location where the code string was pulled from.
+    - **unique**: If True, only the first instance of an import is returned.
+    - **top_only**: If True, only return imports that occur before the first function or class.
+    - ****config_kwargs**: Any config modifications.
+    """
+    config = _config(config=config, **config_kwargs)
+    seen: Optional[Set[str]] = set() if unique else None
+    yield from chain(
+        *(
+            find_imports_in_file(
+                file_name, unique=unique, config=config, top_only=top_only, _seen=seen
+            )
+            for file_name in files.find(map(str, paths), config, [], [])
+        )
+    )
 
 
 def _config(

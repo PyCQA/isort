@@ -8,6 +8,7 @@ from warnings import warn
 from . import place
 from .comments import parse as parse_comments
 from .deprecated.finders import FindersManager
+from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
@@ -31,10 +32,9 @@ if TYPE_CHECKING:
 def _infer_line_separator(contents: str) -> str:
     if "\r\n" in contents:
         return "\r\n"
-    elif "\r" in contents:
+    if "\r" in contents:
         return "\r"
-    else:
-        return "\n"
+    return "\n"
 
 
 def _normalize_line(raw_line: str) -> Tuple[str, str]:
@@ -55,11 +55,11 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     """If the current line is an import line it will return its type (from or straight)"""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
-    elif "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
+    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
         return None
-    elif line.startswith(("import ", "cimport ")):
+    if line.startswith(("import ", "cimport ")):
         return "straight"
-    elif line.startswith("from "):
+    if line.startswith("from "):
         return "from"
     return None
 
@@ -246,8 +246,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                         if import_index >= line_count:
                             break
-                        else:
-                            starting_line = in_lines[import_index]
+
+                        starting_line = in_lines[import_index]
 
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line:
@@ -369,6 +369,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             attach_comments_to: Optional[List[Any]] = None
             direct_imports = just_imports[1:]
             straight_import = True
+            top_level_module = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -443,7 +444,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
                 if len(out_lines) > max(import_index, 1) - 1:
-                    last = out_lines and out_lines[-1].rstrip() or ""
+                    last = out_lines[-1].rstrip() if out_lines else ""
                     while (
                         last.startswith("#")
                         and not last.endswith('"""')
@@ -489,7 +490,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                     if len(out_lines) > max(import_index, +1, 1) - 1:
 
-                        last = out_lines and out_lines[-1].rstrip() or ""
+                        last = out_lines[-1].rstrip() if out_lines else ""
                         while (
                             last.startswith("#")
                             and not last.endswith('"""')
@@ -524,6 +525,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             " Do you need to define a default section?"
                         )
                         imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
+
+                    if placed_module and placed_module not in imports:
+                        raise MissingSection(import_module=module, section=placed_module)
+
                     straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
                         module, False
                     )

@@ -4,14 +4,16 @@ import tokenize
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Callable, Iterator, NamedTuple, TextIO, Union
+from typing import Callable, Iterator, TextIO, Union
 
+from isort._future import dataclass
 from isort.exceptions import UnsupportedEncoding
 
 _ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
-class File(NamedTuple):
+@dataclass(frozen=True)
+class File:
     stream: TextIO
     path: Path
     encoding: str
@@ -26,7 +28,9 @@ class File(NamedTuple):
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
         encoding = File.detect_encoding(filename, BytesIO(contents.encode("utf-8")).readline)
-        return File(StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
+        return File(  # type: ignore
+            stream=StringIO(contents), path=Path(filename).resolve(), encoding=encoding
+        )
 
     @property
     def extension(self):
@@ -55,7 +59,7 @@ class File(NamedTuple):
         stream = None
         try:
             stream = File._open(file_path)
-            yield File(stream=stream, path=file_path, encoding=stream.encoding)
+            yield File(stream=stream, path=file_path, encoding=stream.encoding)  # type: ignore
         finally:
             if stream is not None:
                 stream.close()

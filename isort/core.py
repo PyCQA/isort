@@ -235,6 +235,7 @@ def process(
                 ):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+                    did_contain_imports = contains_imports
                     contains_imports = True
 
                     new_indent = line[: -len(line.lstrip())]
@@ -264,7 +265,12 @@ def process(
                     ):
                         cimport_statement = True
 
-                    if cimport_statement != cimports or (new_indent != indent and import_section):
+                    if cimport_statement != cimports or (
+                        new_indent != indent
+                        and import_section
+                        and (not did_contain_imports or len(new_indent) < len(indent))
+                    ):
+                        indent = new_indent
                         if import_section:
                             next_cimports = cimport_statement
                             next_import_section = import_statement
@@ -273,8 +279,12 @@ def process(
                             line = ""
                         else:
                             cimports = cimport_statement
-
-                    indent = new_indent
+                    else:
+                        if new_indent != indent:
+                            if import_section and did_contain_imports:
+                                import_statement = indent + import_statement.lstrip()
+                            else:
+                                indent = new_indent
                     import_section += import_statement
                 else:
                     not_imports = True
@@ -407,6 +417,7 @@ def _indented_config(config: Config, indent: str):
         line_length=max(config.line_length - len(indent), 0),
         wrap_length=max(config.wrap_length - len(indent), 0),
         lines_after_imports=1,
+        import_headings=config.import_headings if config.indented_import_headings else {},
     )
 
 
@@ -416,5 +427,4 @@ def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace
             remove_whitespace(before, line_separator=line_separator).strip()
             != remove_whitespace(after, line_separator=line_separator).strip()
         )
-    else:
-        return before.strip() != after.strip()
+    return before.strip() != after.strip()

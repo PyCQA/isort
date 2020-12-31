@@ -24,7 +24,7 @@ class ISortCommand(setuptools.Command):
             setattr(self, key, value)
 
     def finalize_options(self) -> None:
-        "Get options from config files."
+        """Get options from config files."""
         self.arguments: Dict[str, Any] = {}  # skipcq: PYL-W0201
         self.arguments["settings_path"] = os.getcwd()
 

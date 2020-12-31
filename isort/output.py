@@ -7,9 +7,8 @@ from isort.format import format_simplified
 
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
+from .identify import STATEMENT_DECLARATIONS
 from .settings import DEFAULT_CONFIG, Config
-
-STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 def sorted_imports(
@@ -184,7 +183,7 @@ def sorted_imports(
                     continue
                 next_construct = line
                 break
-            elif in_quote:
+            if in_quote:
                 next_construct = line
                 break
 
@@ -229,8 +228,6 @@ def _with_from_imports(
         if not config.no_inline_sort or (
             config.force_single_line and module not in config.single_line_exclusions
         ):
-            ignore_case = config.force_alphabetical_sort_within_sections
-
             if not config.only_sections:
                 from_imports = sorting.naturally(
                     from_imports,
@@ -238,7 +235,7 @@ def _with_from_imports(
                         key,
                         config,
                         True,
-                        ignore_case,
+                        config.force_alphabetical_sort_within_sections,
                         section_name=section,
                     ),
                 )
@@ -513,6 +510,40 @@ def _with_straight_imports(
     import_type: str,
 ) -> List[str]:
     output: List[str] = []
+
+    as_imports = any((module in parsed.as_map["straight"] for module in straight_modules))
+
+    # combine_straight_imports only works for bare imports, 'as' imports not included
+    if config.combine_straight_imports and not as_imports:
+        if not straight_modules:
+            return []
+
+        above_comments: List[str] = []
+        inline_comments: List[str] = []
+
+        for module in straight_modules:
+            if module in parsed.categorized_comments["above"]["straight"]:
+                above_comments.extend(parsed.categorized_comments["above"]["straight"].pop(module))
+            if module in parsed.categorized_comments["straight"]:
+                inline_comments.extend(parsed.categorized_comments["straight"][module])
+
+        combined_straight_imports = ", ".join(straight_modules)
+        if inline_comments:
+            combined_inline_comments = " ".join(inline_comments)
+        else:
+            combined_inline_comments = ""
+
+        output.extend(above_comments)
+
+        if combined_inline_comments:
+            output.append(
+                f"{import_type} {combined_straight_imports}  # {combined_inline_comments}"
+            )
+        else:
+            output.append(f"{import_type} {combined_straight_imports}")
+
+        return output
+
     for module in straight_modules:
         if module in remove_imports:
             continue
@@ -580,5 +611,4 @@ def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
     if star_comment:
         return comments + [star_comment]
-    else:
-        return comments
+    return comments

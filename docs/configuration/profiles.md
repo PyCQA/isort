@@ -39,6 +39,8 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
  - **force_sort_within_sections**: `True`
  - **lexicographical**: `True`
  - **single_line_exclusions**: `('typing',)`
+ - **order_by_type**: `False`
+ - **group_by_package**: `True`
 
 #open_stack
 

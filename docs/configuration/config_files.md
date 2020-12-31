@@ -5,6 +5,7 @@ isort supports various standard config formats to allow customizations to be int
 When applying configurations, isort looks for the closest supported config file, in the order files are listed below.
 You can manually specify the settings file or path by setting `--settings-path` from the command-line. Otherwise, isort will
 traverse up to 25 parent directories until it finds a suitable config file.
+Note that isort will not leave a git or Mercurial repository (checking for a `.git` or `.hg` directory).
 As soon as it finds a file, it stops looking. The config file search is done relative to the current directory if `isort .`
 or a file stream is passed in, or relative to the first path passed in if multiple paths are passed in.
 isort **never** merges config files together due to the confusion it can cause.

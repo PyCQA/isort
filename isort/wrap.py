@@ -77,7 +77,13 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 line_parts = re.split(exp, line_without_comment)
                 if comment and not (config.use_parentheses and "noqa" in comment):
                     _comma_maybe = (
-                        "," if (config.include_trailing_comma and config.use_parentheses) else ""
+                        ","
+                        if (
+                            config.include_trailing_comma
+                            and config.use_parentheses
+                            and not line_without_comment.rstrip().endswith(",")
+                        )
+                        else ""
                     )
                     line_parts[
                         -1
@@ -92,13 +98,16 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                     content = next_line.pop()
 
                 cont_line = _wrap_line(
-                    config.indent + splitter.join(next_line).lstrip(), line_separator, config
+                    config.indent + splitter.join(next_line).lstrip(),
+                    line_separator,
+                    config,
                 )
                 if config.use_parentheses:
                     if splitter == "as ":
                         output = f"{content}{splitter}{cont_line.lstrip()}"
                     else:
                         _comma = "," if config.include_trailing_comma and not comment else ""
+
                         if wrap_mode in (
                             Modes.VERTICAL_HANGING_INDENT,  # type: ignore
                             Modes.VERTICAL_GRID_GROUPED,  # type: ignore

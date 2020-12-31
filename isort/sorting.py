@@ -47,7 +47,7 @@ def module_key(
         or (config.length_sort_straight and straight_import)
         or str(section_name).lower() in config.length_sort_sections
     )
-    _length_sort_maybe = length_sort and (str(len(module_name)) + ":" + module_name) or module_name
+    _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
     return f"{module_name in config.force_to_top and 'A' or 'B'}{prefix}{_length_sort_maybe}"
 
 

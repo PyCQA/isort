@@ -110,7 +110,8 @@ class BasicPrinter:
 
 class ColoramaPrinter(BasicPrinter):
     def __init__(self, output: Optional[TextIO] = None):
-        self.output = output or sys.stdout
+        super().__init__(output=output)
+
         # Note: this constants are instance variables instead ofs class variables
         # because they refer to colorama which might not be installed.
         self.ERROR = self.style_text("ERROR", colorama.Fore.RED)

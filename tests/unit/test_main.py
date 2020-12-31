@@ -19,6 +19,10 @@ class UnseekableTextIOWrapper(TextIOWrapper):
         raise ValueError("underlying stream is not seekable")
 
 
+def as_stream(text: str) -> UnseekableTextIOWrapper:
+    return UnseekableTextIOWrapper(BytesIO(text.encode("utf8")))
+
+
 @given(
     file_name=st.text(),
     config=st.builds(Config),
@@ -34,12 +38,6 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
         ask_to_apply=ask_to_apply,
         write_to_stdout=write_to_stdout,
     )
-
-
-def test_iter_source_code(tmpdir):
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import os, sys\n")
-    assert tuple(main.iter_source_code((tmp_file,), DEFAULT_CONFIG, [], [])) == (tmp_file,)
 
 
 def test_sort_imports(tmpdir):
@@ -77,6 +75,9 @@ def test_parse_args():
     assert main.parse_args(["--os"]) == {"only_sections": True}
     assert main.parse_args(["--om"]) == {"only_modified": True}
     assert main.parse_args(["--only-modified"]) == {"only_modified": True}
+    assert main.parse_args(["--csi"]) == {"combine_straight_imports": True}
+    assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
+    assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
 
 
 def test_ascii_art(capsys):
@@ -126,6 +127,22 @@ def test_show_files(capsys, tmpdir):
     # can not be used with show-config
     with pytest.raises(SystemExit):
         main.main([str(tmpdir), "--show-files", "--show-config"])
+
+
+def test_missing_default_section(tmpdir):
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+sections=MADEUP
+"""
+    )
+
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    with pytest.raises(SystemExit):
+        main.main([str(python_file)])
 
 
 def test_main(capsys, tmpdir):
@@ -345,16 +362,121 @@ def test_isort_command():
     assert main.ISortCommand
 
 
+def test_isort_filename_overrides(tmpdir, capsys):
+    """Tests isorts available approaches for overriding filename and extension based behavior"""
+    input_text = """
+import b
+import a
+
+def function():
+    pass
+"""
+
+    def build_input_content():
+        return as_stream(input_text)
+
+    main.main(["-"], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+
+def function():
+    pass
+"""
+    )
+
+    main.main(["-", "--ext-format", "pyi"], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+def function():
+    pass
+"""
+    )
+
+    tmp_file = tmpdir.join("tmp.pyi")
+    tmp_file.write_text(input_text, encoding="utf8")
+    main.main(["-", "--filename", str(tmp_file)], stdin=build_input_content())
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import a
+import b
+
+def function():
+    pass
+"""
+    )
+
+    # setting a filename override when file is passed in as non-stream is not supported.
+    with pytest.raises(SystemExit):
+        main.main([str(tmp_file), "--filename", str(tmp_file)], stdin=build_input_content())
+
+
+def test_isort_float_to_top_overrides(tmpdir, capsys):
+    """Tests isorts supports overriding float to top from CLI"""
+    test_input = """
+import b
+
+
+def function():
+    pass
+
+
+import a
+"""
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+float_to_top=True
+"""
+    )
+    python_file = tmpdir.join("file.py")
+    python_file.write(test_input)
+
+    main.main([str(python_file)])
+    out, error = capsys.readouterr()
+    assert not error
+    assert "Fixing" in out
+    assert python_file.read_text(encoding="utf8") == (
+        """
+import a
+import b
+
+
+def function():
+    pass
+"""
+    )
+
+    python_file.write(test_input)
+    main.main([str(python_file), "--dont-float-to-top"])
+    _, error = capsys.readouterr()
+    assert not error
+    assert python_file.read_text(encoding="utf8") == test_input
+
+    with pytest.raises(SystemExit):
+        main.main([str(python_file), "--float-to-top", "--dont-float-to-top"])
+
+
 def test_isort_with_stdin(capsys):
     # ensures that isort sorts stdin without any flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 import a
 """
-        )
     )
 
     main.main(["-"], stdin=input_content)
@@ -367,14 +489,12 @@ import b
 """
     )
 
-    input_content_from = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content_from = as_stream(
+        """
 import c
 import b
 from a import z, y, x
 """
-        )
     )
 
     main.main(["-"], stdin=input_content_from)
@@ -390,15 +510,13 @@ from a import x, y, z
 
     # ensures that isort correctly sorts stdin with --fas flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import pandas
 from z import abc
 from a import xyz
 """
-        )
     )
 
     main.main(["-", "--fas"], stdin=input_content)
@@ -416,12 +534,10 @@ import sys
 
     # ensures that isort correctly sorts stdin with --fass flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import Path, abc
 """
-        )
     )
 
     main.main(["-", "--fass"], stdin=input_content)
@@ -435,14 +551,12 @@ from a import abc, Path
 
     # ensures that isort correctly sorts stdin with --ff flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 from c import x
 from a import y
 """
-        )
     )
 
     main.main(["-", "--ff", "FROM_FIRST"], stdin=input_content)
@@ -458,13 +572,11 @@ import b
 
     # ensures that isort correctly sorts stdin with -fss flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 from a import a
 """
-        )
     )
 
     main.main(["-", "--fss"], stdin=input_content)
@@ -477,13 +589,11 @@ import b
 """
     )
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import a
 from b import c
 """
-        )
     )
 
     main.main(["-", "--fss"], stdin=input_content)
@@ -498,14 +608,12 @@ from b import c
 
     # ensures that isort correctly sorts stdin with --ds flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import pandas
 import a
 """
-        )
     )
 
     main.main(["-", "--ds"], stdin=input_content)
@@ -521,13 +629,11 @@ import sys
 
     # ensures that isort correctly sorts stdin with --cs flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import b
 from a import *
 """
-        )
     )
 
     main.main(["-", "--cs"], stdin=input_content)
@@ -541,13 +647,11 @@ from a import *
 
     # ensures that isort correctly sorts stdin with --ca flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from a import x as X
 from a import y as Y
 """
-        )
     )
 
     main.main(["-", "--ca"], stdin=input_content)
@@ -561,14 +665,12 @@ from a import x as X, y as Y
 
     # ensures that isort works consistently with check and ws flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import os
 import a
 import b
 """
-        )
     )
 
     main.main(["-", "--check-only", "--ws"], stdin=input_content)
@@ -578,13 +680,11 @@ import b
 
     # ensures that isort works consistently with check and diff flags
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import b
 import a
 """
-        )
     )
 
     with pytest.raises(SystemExit):
@@ -597,13 +697,11 @@ import a
 
     # ensures that isort correctly sorts stdin with --ls flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import abcdef
 import x
 """
-        )
     )
 
     main.main(["-", "--ls"], stdin=input_content)
@@ -618,12 +716,10 @@ import abcdef
 
     # ensures that isort correctly sorts stdin with --nis flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from z import b, c, a
 """
-        )
     )
 
     main.main(["-", "--nis"], stdin=input_content)
@@ -637,12 +733,10 @@ from z import b, c, a
 
     # ensures that isort correctly sorts stdin with --sl flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 from z import b, c, a
 """
-        )
     )
 
     main.main(["-", "--sl"], stdin=input_content)
@@ -658,15 +752,12 @@ from z import c
 
     # ensures that isort correctly sorts stdin with --top flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import os
 import sys
 """
-        )
     )
-
     main.main(["-", "--top", "sys"], stdin=input_content)
     out, error = capsys.readouterr()
 
@@ -679,17 +770,14 @@ import os
 
     # ensure that isort correctly sorts stdin with --os flag
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 import z
 from a import b, e, c
 """
-        )
     )
-
     main.main(["-", "--os"], stdin=input_content)
     out, error = capsys.readouterr()
 
@@ -704,13 +792,11 @@ from a import b, e, c
     )
 
     # ensures that isort warns with deprecated flags with stdin
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 """
-        )
     )
 
     with pytest.warns(UserWarning):
@@ -725,13 +811,11 @@ import sys
 """
     )
 
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import sys
 import os
 """
-        )
     )
 
     with pytest.warns(UserWarning):
@@ -747,13 +831,11 @@ import sys
     )
 
     # ensures that only-modified flag works with stdin
-    input_content = UnseekableTextIOWrapper(
-        BytesIO(
-            b"""
+    input_content = as_stream(
+        """
 import a
 import b
 """
-        )
     )
 
     main.main(["-", "--verbose", "--only-modified"], stdin=input_content)
@@ -761,6 +843,23 @@ import b
 
     assert "else-type place_module for a returned THIRDPARTY" not in out
     assert "else-type place_module for b returned THIRDPARTY" not in out
+
+    # ensures that combine-straight-imports flag works with stdin
+    input_content = as_stream(
+        """
+import a
+import b
+"""
+    )
+
+    main.main(["-", "--combine-straight-imports"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a, b
+"""
+    )
 
 
 def test_unsupported_encodings(tmpdir, capsys):
@@ -893,3 +992,45 @@ import os
     assert "else-type place_module for os returned STDLIB" in out
     assert "else-type place_module for math returned STDLIB" not in out
     assert "else-type place_module for pandas returned THIRDPARTY" not in out
+
+
+def test_identify_imports_main(tmpdir, capsys):
+    file_content = "import mod2\nimport mod2\n" "a = 1\n" "import mod1\n"
+    some_file = tmpdir.join("some_file.py")
+    some_file.write(file_content)
+    file_imports = f"{some_file}:1 import mod2\n{some_file}:4 import mod1\n"
+    file_imports_with_dupes = (
+        f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n" f"{some_file}:4 import mod1\n"
+    )
+
+    main.identify_imports_main([str(some_file), "--unique"])
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports
+    assert not error
+
+    main.identify_imports_main([str(some_file)])
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports_with_dupes
+    assert not error
+
+    main.identify_imports_main(["-", "--unique"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports.replace(str(some_file), "")
+
+    main.identify_imports_main(["-"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    assert out.replace("\r\n", "\n") == file_imports_with_dupes.replace(str(some_file), "")
+
+    main.identify_imports_main([str(tmpdir)])
+
+    main.identify_imports_main(["-", "--packages"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
+
+    main.identify_imports_main(["-", "--modules"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
+
+    main.identify_imports_main(["-", "--attributes"], stdin=as_stream(file_content))
+    out, error = capsys.readouterr()
+    len(out.split("\n")) == 2
