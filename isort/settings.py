@@ -204,7 +204,6 @@ class _Config:
     auto_identify_namespace_packages: bool = True
     namespace_packages: FrozenSet[str] = frozenset()
     follow_links: bool = True
-    dedupe_imports: bool = True
     indented_import_headings: bool = True
 
     def __post_init__(self):

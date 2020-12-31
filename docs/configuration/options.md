@@ -1010,6 +1010,15 @@ Combines all the bare straight imports of the same section in a single line. Won
 **Python & Config File Name:** follow_links  
 **CLI Flags:** **Not Supported**
 
+## Indented Import Headings
+
+**No Description**
+
+**Type:** Bool  
+**Default:** `True`  
+**Python & Config File Name:** indented_import_headings  
+**CLI Flags:** **Not Supported**
+
 ## Show Version
 
 Displays the currently installed version of isort.
@@ -1168,6 +1177,17 @@ Provide the filename associated with a stream.
 **CLI Flags:**
 
 - --filename
+
+## Dont Float To Top
+
+Forces --float-to-top setting off. See --float-to-top for more information.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --dont-float-to-top
 
 ## Dont Order By Type
 
