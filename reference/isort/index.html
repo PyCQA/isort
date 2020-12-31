@@ -704,6 +704,18 @@
 
 
   <li class="md-nav__item">
+    <a href="files/" title="Files" class="md-nav__link">
+      Files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="format/" title="Format" class="md-nav__link">
       Format
     </a>
@@ -718,6 +730,18 @@
   <li class="md-nav__item">
     <a href="hooks/" title="Hooks" class="md-nav__link">
       Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="identify/" title="Identify" class="md-nav__link">
+      Identify
     </a>
   </li>
 
@@ -975,16 +999,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-24" type="checkbox" id="nav-9-1-24">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-26" type="checkbox" id="nav-9-1-26">
     
-    <label class="md-nav__link" for="nav-9-1-24">
+    <label class="md-nav__link" for="nav-9-1-26">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-9-1-24">
+      <label class="md-nav__title" for="nav-9-1-26">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1029,16 +1053,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-25" type="checkbox" id="nav-9-1-25">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-27" type="checkbox" id="nav-9-1-27">
     
-    <label class="md-nav__link" for="nav-9-1-25">
+    <label class="md-nav__link" for="nav-9-1-27">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-9-1-25">
+      <label class="md-nav__title" for="nav-9-1-27">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1242,6 +1266,8 @@
 
 <span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 
+<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">ImportKey</span>
+
 <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">check_code_string</span> <span class="k">as</span> <span class="n">check_code</span>
 
 <span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="p">(</span>
@@ -1250,11 +1276,13 @@
 
     <span class="n">check_stream</span><span class="p">,</span>
 
-    <span class="n">get_imports_file</span><span class="p">,</span>
+    <span class="n">find_imports_in_code</span><span class="p">,</span>
 
-    <span class="n">get_imports_stream</span><span class="p">,</span>
+    <span class="n">find_imports_in_file</span><span class="p">,</span>
 
-    <span class="n">get_imports_string</span><span class="p">,</span>
+    <span class="n">find_imports_in_paths</span><span class="p">,</span>
+
+    <span class="n">find_imports_in_stream</span><span class="p">,</span>
 
     <span class="n">place_module</span><span class="p">,</span>
 
@@ -1280,8 +1308,10 @@
 <li><a href="core/">isort.core</a></li>
 <li><a href="deprecated/">isort.deprecated</a></li>
 <li><a href="exceptions/">isort.exceptions</a></li>
+<li><a href="files/">isort.files</a></li>
 <li><a href="format/">isort.format</a></li>
 <li><a href="hooks/">isort.hooks</a></li>
+<li><a href="identify/">isort.identify</a></li>
 <li><a href="io/">isort.io</a></li>
 <li><a href="literal/">isort.literal</a></li>
 <li><a href="logo/">isort.logo</a></li>
@@ -1318,7 +1348,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="hooks/" title="Hooks" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="identify/" title="Identify" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1327,7 +1357,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Hooks
+                Identify
               </span>
             </div>
           </a>

@@ -704,6 +704,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../files/" title="Files" class="md-nav__link">
+      Files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../format/" title="Format" class="md-nav__link">
       Format
     </a>
@@ -718,6 +730,18 @@
   <li class="md-nav__item">
     <a href="../hooks/" title="Hooks" class="md-nav__link">
       Hooks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../identify/" title="Identify" class="md-nav__link">
+      Identify
     </a>
   </li>
 
@@ -1049,16 +1073,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-24" type="checkbox" id="nav-9-1-24">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-26" type="checkbox" id="nav-9-1-26">
     
-    <label class="md-nav__link" for="nav-9-1-24">
+    <label class="md-nav__link" for="nav-9-1-26">
       Deprecated
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
-      <label class="md-nav__title" for="nav-9-1-24">
+      <label class="md-nav__title" for="nav-9-1-26">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1103,16 +1127,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-25" type="checkbox" id="nav-9-1-25">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9-1-27" type="checkbox" id="nav-9-1-27">
     
-    <label class="md-nav__link" for="nav-9-1-25">
+    <label class="md-nav__link" for="nav-9-1-27">
       Stdlibs
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
-      <label class="md-nav__title" for="nav-9-1-25">
+      <label class="md-nav__title" for="nav-9-1-27">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -1773,8 +1797,6 @@
 
     <span class="n">follow_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
 
-    <span class="n">dedupe_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
-
     <span class="n">indented_import_headings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2089,7 +2111,7 @@
 
                 <span class="k">continue</span>
 
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">known_other</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">known_other</span><span class="p">:</span>
 
                 <span class="n">config_keys</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">known_other</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -2289,7 +2311,7 @@
 
                 <span class="k">return</span> <span class="bp">True</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># nosec</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
 
                 <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
 
@@ -3029,7 +3051,7 @@ dynamically determined later on.</p>
 
 <span class="w">                </span><span class="k">continue</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">elif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">section</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">section</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">known_other</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">                </span><span class="n">config_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;, &quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">known_other</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span><span class="w"></span>
 
@@ -3229,7 +3251,7 @@ dynamically determined later on.</p>
 
 <span class="ss">                return True</span>
 
-<span class="ss">            result = subprocess.run(  # nosec</span>
+<span class="ss">            result = subprocess.run(  # nosec # skipcq: PYL-W1510</span>
 
 <span class="ss">                [&quot;</span><span class="n">git</span><span class="ss">&quot;, &quot;</span><span class="o">-</span><span class="n">C</span><span class="ss">&quot;, str(file_path.parent), &quot;</span><span class="k">check</span><span class="o">-</span><span class="k">ignore</span><span class="ss">&quot;, &quot;</span><span class="c1">--quiet&quot;, os_path]</span>
 
@@ -3423,10 +3445,6 @@ dynamically determined later on.</p>
 
 
 <div class="codehilite"><pre><span></span><code><span class="n">dedup_headings</span>
-</code></pre></div>
-
-
-<div class="codehilite"><pre><span></span><code><span class="n">dedupe_imports</span>
 </code></pre></div>
 
 
@@ -3745,7 +3763,7 @@ dynamically determined later on.</p>
 
                 <span class="k">return</span> <span class="k">True</span>
 
-            <span class="k">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span>  <span class="o">#</span> <span class="n">nosec</span>
+            <span class="k">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span>  <span class="o">#</span> <span class="n">nosec</span> <span class="o">#</span> <span class="n">skipcq</span><span class="p">:</span> <span class="n">PYL</span><span class="o">-</span><span class="n">W1510</span>
 
                 <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;-C&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">parent</span><span class="p">),</span> <span class="ss">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="ss">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">os_path</span><span class="p">]</span>
 
