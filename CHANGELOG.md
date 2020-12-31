@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.7.0 December TBD
+### 5.7.0 December 30th 2020
   - Fixed #1612: In rare circumstances an extra comma is added after import and before comment.
   - Fixed #1593: isort encounters bug in Python 3.6.0.
   - Implemented #1596: Provide ways for extension formatting and file paths to be specified when using streaming input from CLI.
