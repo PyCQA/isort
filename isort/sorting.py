@@ -54,6 +54,7 @@ def module_key(
 def section_key(
     line: str,
     case_sensitive: bool,
+    honor_case_in_force_sorted_sections: bool,
     order_by_type: bool,
     force_to_top: List[str],
     lexicographical: bool = False,
@@ -77,7 +78,11 @@ def section_key(
         line = re.sub("^import ", "", line)
     if line.split(" ")[0] in force_to_top:
         section = "A"
-    if not case_sensitive or not order_by_type:
+    # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
+    #   order_by_type are different, only ignore case in part of the line.
+    # * Otherwise, let order_by_type decide the sorting of the whole line. This
+    #   is only "correct" if case_sensitive and order_by_type have the same value.
+    if honor_case_in_force_sorted_sections and case_sensitive != order_by_type:
         split_module = line.split(" import ", 1)
         if len(split_module) > 1:
             module_name, names = split_module
@@ -88,6 +93,8 @@ def section_key(
             line = " import ".join([module_name, names])
         elif not case_sensitive:
             line = line.lower()
+    elif not order_by_type:
+        line = line.lower()
 
     return f"{section}{len(line) if length_sort else ''}{line}"
 

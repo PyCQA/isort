@@ -2358,10 +2358,10 @@ def test_alphabetic_sorting_no_newlines() -> None:
 def test_sort_within_section() -> None:
     """Test to ensure its possible to force isort to sort within sections"""
     test_input = (
+        "from Foob import ar\n"
         "import foo\n"
         "from foo import bar\n"
         "from foo.bar import Quux, baz\n"
-        "from Foob import ar\n"
     )
     test_output = isort.code(test_input, force_sort_within_sections=True)
     assert test_output == test_input
@@ -2382,11 +2382,11 @@ def test_sort_within_section() -> None:
     assert test_output == test_input
 
     test_input = (
-        "from Foob import ar\n"
         "import foo\n"
         "from foo import bar\n"
         "from foo.bar import baz\n"
         "from foo.bar import Quux\n"
+        "from Foob import ar\n"
     )
     test_output = isort.code(
         code=test_input,
@@ -2404,6 +2404,66 @@ def test_sort_within_section() -> None:
         code=test_input,
         case_sensitive=True,
         force_sort_within_sections=True,
+        order_by_type=True,
+        force_single_line=True,
+    )
+    assert test_output == test_input
+
+
+def test_sort_within_section_case_honored() -> None:
+    """Ensure isort can do partial case-sensitive sorting in force-sorted sections"""
+    test_input = (
+        "import foo\n"
+        "from foo import bar\n"
+        "from foo.bar import Quux, baz\n"
+        "from Foob import ar\n"
+    )
+    test_output = isort.code(
+        test_input, force_sort_within_sections=True, honor_case_in_force_sorted_sections=True
+    )
+    assert test_output == test_input
+
+    test_input = (
+        "import foo\n"
+        "from foo import bar\n"
+        "from foo.bar import baz\n"
+        "from foo.bar import Quux\n"
+        "from Foob import ar\n"
+    )
+    test_output = isort.code(
+        code=test_input,
+        force_sort_within_sections=True,
+        honor_case_in_force_sorted_sections=True,
+        order_by_type=False,
+        force_single_line=True,
+    )
+    assert test_output == test_input
+
+    test_input = (
+        "from Foob import ar\n"
+        "import foo\n"
+        "from foo import bar\n"
+        "from foo.bar import baz\n"
+        "from foo.bar import Quux\n"
+    )
+    test_output = isort.code(
+        code=test_input,
+        case_sensitive=True,
+        force_sort_within_sections=True,
+        honor_case_in_force_sorted_sections=True,
+        order_by_type=False,
+        force_single_line=True,
+    )
+    assert test_output == test_input
+
+    test_input = (
+        "from Foob import ar\n" "import foo\n" "from foo import Quux\n" "from foo import baz\n"
+    )
+    test_output = isort.code(
+        code=test_input,
+        case_sensitive=True,
+        force_sort_within_sections=True,
+        honor_case_in_force_sorted_sections=True,
         order_by_type=True,
         force_single_line=True,
     )

@@ -668,6 +668,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "independent of import style.",
     )
     section_group.add_argument(
+        "--hcss",
+        "--honor-case-in-force-sorted-sections",
+        action="store_true",
+        dest="honor_case_in_force_sorted_sections",
+        help="Honor `--case-sensitive` when `--force-sort-within-sections` is being used. "
+        "Without this option set, `--order-by-type` decides module name ordering too.",
+    )
+    section_group.add_argument(
         "--fass",
         "--force-alphabetical-sort-within-sections",
         action="store_true",
