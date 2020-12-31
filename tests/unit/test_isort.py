@@ -4946,13 +4946,12 @@ def test_find_imports_in_code() -> None:
         ":3 import second_straight",
         ":4 import first_from.first_from_function_1",
         ":4 import first_from.first_from_function_2",
-        ":5 import bad_name.good_name",
-        ":5 import bad_name",
+        ":5 import bad_name as good_name",
         ":6 import parent.some_bad_defs.bad_name_1 as ok_name_1",
         ":6 import parent.some_bad_defs.bad_name_2 as ok_name_2",
-        ":12 import needed_in_bla_2",
-        ":15 import needed_in_bla",
-        ":18 import needed_in_bla_bla",
+        ":12 indented import needed_in_bla_2",
+        ":15 indented import needed_in_bla",
+        ":18 indented import needed_in_bla_bla",
         ":22 import needed_in_end",
     ]
 

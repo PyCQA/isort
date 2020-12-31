@@ -1,7 +1,7 @@
 from io import StringIO
 from typing import List
 
-from isort import identify
+from isort import Config, identify
 
 
 def imports_in_code(code: str, **kwargs) -> List[identify.Import]:
@@ -198,3 +198,51 @@ def generator_function():
         )
         == 2
     )
+
+
+def test_complex_examples():
+    assert (
+        len(
+            imports_in_code(
+                """
+import a, b, c; import n
+
+x = (
+    1,
+    2,
+    3
+)
+
+import x
+from os \\
+    import path
+from os (
+    import path
+)
+from os import ( \\"""
+            )
+        )
+        == 7
+    )
+    assert not imports_in_code("from os import \\")
+
+
+def test_aliases():
+    assert imports_in_code("import os as os")[0].alias == "os"
+    assert not imports_in_code(
+        "import os as os",
+        config=Config(
+            remove_redundant_aliases=True,
+        ),
+    )[0].alias
+
+    assert imports_in_code("from os import path as path")[0].alias == "path"
+    assert not imports_in_code(
+        "from os import path as path", config=Config(remove_redundant_aliases=True)
+    )[0].alias
+
+
+def test_indented():
+    assert not imports_in_code("import os")[0].indented
+    assert imports_in_code("     import os")[0].indented
+    assert imports_in_code("\timport os")[0].indented

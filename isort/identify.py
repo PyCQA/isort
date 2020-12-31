@@ -47,17 +47,17 @@ def imports(
     in_quote = ""
 
     indexed_input = enumerate(input_stream)
-    for index, line in indexed_input:
+    for index, raw_line in indexed_input:
         (skipping_line, in_quote) = skip_line(
-            line, in_quote=in_quote, index=index, section_comments=config.section_comments
+            raw_line, in_quote=in_quote, index=index, section_comments=config.section_comments
         )
 
-        if top_only and not in_quote and line.startswith(STATEMENT_DECLARATIONS):
+        if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
             break
         if skipping_line:
             continue
 
-        stripped_line = line.strip().split("#")[0]
+        stripped_line = raw_line.strip().split("#")[0]
         if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
             if stripped_line == "yield":
                 while not stripped_line or stripped_line == "yield":
@@ -76,16 +76,16 @@ def imports(
                 stripped_line = next_line.strip().split("#")[0]
             continue
 
-        line, *end_of_line_comment = line.split("#", 1)
+        line, *end_of_line_comment = raw_line.split("#", 1)
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
             line, _raw_line = _normalize_line(statement)
-            if line.lstrip().startswith(("import ", "cimport ")):
+            if line.startswith(("import ", "cimport ")):
                 type_of_import = "straight"
-            elif line.lstrip().startswith("from "):
+            elif line.startswith("from "):
                 type_of_import = "from"
             else:
                 continue
@@ -101,7 +101,7 @@ def imports(
             identified_import = partial(
                 Import,
                 index + 1,  # line numbers use 1 based indexing
-                line.startswith(" ") or line.startswith("\n"),
+                raw_line.startswith((" ", "\t")),
                 cimport=cimports,
                 file_path=file_path,
             )
@@ -177,18 +177,20 @@ def imports(
                         direct_imports.remove("as")
                         just_imports[1:] = direct_imports
                         if attribute == alias and config.remove_redundant_aliases:
-                            pass
+                            yield identified_import(top_level_module, attribute)
                         else:
                             yield identified_import(top_level_module, attribute, alias=alias)
 
                     else:
                         module = just_imports[as_index - 1]
                         alias = just_imports[as_index + 1]
-                        direct_imports.remove(alias)
-                        direct_imports.remove("as")
-                        just_imports[1:] = direct_imports
-                        if not (module == alias and config.remove_redundant_aliases):
-                            yield identified_import(module, alias)
+                        just_imports.remove(alias)
+                        just_imports.remove("as")
+                        just_imports.remove(module)
+                        if module == alias and config.remove_redundant_aliases:
+                            yield identified_import(module)
+                        else:
+                            yield identified_import(module, alias=alias)
 
             if just_imports:
                 if type_of_import == "from":
