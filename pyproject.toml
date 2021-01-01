@@ -58,7 +58,7 @@ flake8-bugbear = "^19.8"
 black = {version = "^20.08b1", allow-prereleases = true}
 mypy = "^0.761.0"
 ipython = "^7.7"
-pytest = "^5.0"
+pytest = "^6.0"
 pytest-cov = "^2.7"
 pytest-mock = "^1.10"
 pep8-naming = "^0.8.2"
