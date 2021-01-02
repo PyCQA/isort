@@ -94,17 +94,7 @@ def sorted_imports(
             # only_sections options is not imposed if force_sort_within_sections is True
             new_section_output = sorting.naturally(
                 new_section_output,
-                key=partial(
-                    sorting.section_key,
-                    case_sensitive=config.case_sensitive,
-                    honor_case_in_force_sorted_sections=config.honor_case_in_force_sorted_sections,
-                    order_by_type=config.order_by_type,
-                    force_to_top=config.force_to_top,
-                    lexicographical=config.lexicographical,
-                    length_sort=config.length_sort,
-                    reverse_relative=config.reverse_relative,
-                    group_by_package=config.group_by_package,
-                ),
+                key=partial(sorting.section_key, config=config),
             )
 
             # uncollapse comments
