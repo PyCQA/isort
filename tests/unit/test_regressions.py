@@ -1525,3 +1525,15 @@ import a as b  # b comment
 """,
         show_diff=True,
     )
+    assert (
+        isort.code(
+            """
+import a  # a comment
+import a as a  # b comment
+""",
+            remove_redundant_aliases=True,
+        )
+        == """
+import a  # a comment; b comment
+"""
+    )
