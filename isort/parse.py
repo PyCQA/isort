@@ -410,13 +410,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 f"{top_level_module}.__combined_as__", []
                             )
                         else:
-                            if config.remove_redundant_aliases and as_name == module.split(".")[-1]:
+                            if type_of_import == "from" or (
+                                config.remove_redundant_aliases and as_name == module.split(".")[-1]
+                            ):
                                 attach_comments_to = categorized_comments["straight"].setdefault(
                                     module, []
                                 )
                             else:
                                 attach_comments_to = categorized_comments["straight"].setdefault(
-                                    f"{module} as {as_name}" , []
+                                    f"{module} as {as_name}", []
                                 )
                     del just_imports[as_index : as_index + 2]
 
