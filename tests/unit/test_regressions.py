@@ -1515,3 +1515,25 @@ def test_isort_adding_second_comma_issue_1621():
 )
 """
     )
+
+
+def test_isort_shouldnt_duplicate_comments_issue_1631():
+    assert isort.check_code(
+        """
+import a  # a comment
+import a as b  # b comment
+""",
+        show_diff=True,
+    )
+    assert (
+        isort.code(
+            """
+import a  # a comment
+import a as a  # b comment
+""",
+            remove_redundant_aliases=True,
+        )
+        == """
+import a  # a comment; b comment
+"""
+    )
