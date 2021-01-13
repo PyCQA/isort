@@ -543,25 +543,25 @@ def _with_straight_imports(
         import_definition = []
         if module in parsed.as_map["straight"]:
             if parsed.imports[section]["straight"][module]:
-                import_definition.append(f"{import_type} {module}")
+                import_definition.append((f"{import_type} {module}", module))
             import_definition.extend(
-                f"{import_type} {module} as {as_import}"
+                (f"{import_type} {module} as {as_import}", f"{module} as {as_import}")
                 for as_import in parsed.as_map["straight"][module]
             )
         else:
-            import_definition.append(f"{import_type} {module}")
+            import_definition.append((f"{import_type} {module}", module))
 
         comments_above = parsed.categorized_comments["above"]["straight"].pop(module, None)
         if comments_above:
             output.extend(comments_above)
         output.extend(
             with_comments(
-                parsed.categorized_comments["straight"].get(module),
+                parsed.categorized_comments["straight"].get(imodule),
                 idef,
                 removed=config.ignore_comments,
                 comment_prefix=config.comment_prefix,
             )
-            for idef in import_definition
+            for idef, imodule in import_definition
         )
 
     return output
