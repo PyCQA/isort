@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
+### 5.8.0 TBD
+  - Fixed #1631: as import comments can in some cases be duplicated.
+
 ### 5.7.0 December 30th 2020
   - Fixed #1612: In rare circumstances an extra comma is added after import and before comment.
   - Fixed #1593: isort encounters bug in Python 3.6.0.
