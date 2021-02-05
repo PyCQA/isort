@@ -1,7 +1,7 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
 import enum
 from inspect import signature
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 import isort.comments
 
@@ -182,7 +182,9 @@ def vertical_hanging_indent(**interface):
     )
 
 
-def _vertical_grid_common(need_trailing_char: bool, **interface):
+def _vertical_grid_common(
+    need_trailing_char: bool, count_trailing_comma: Optional[bool] = False, **interface
+):
     if not interface["imports"]:
         return ""
 
@@ -201,10 +203,15 @@ def _vertical_grid_common(need_trailing_char: bool, **interface):
         next_import = interface["imports"].pop(0)
         next_statement = f"{interface['statement']}, {next_import}"
         current_line_length = len(next_statement.split(interface["line_separator"])[-1])
-        if interface["imports"] or need_trailing_char:
+        if interface["imports"]:
             # If we have more interface["imports"] we need to account for a comma after this import
-            # We might also need to account for a closing ) we're going to add.
             current_line_length += 1
+        else:
+            # Otherwise, we might need to account for a closing ")" and trailing ",".
+            if need_trailing_char:
+                current_line_length += 1
+            if count_trailing_comma and interface["include_trailing_comma"]:
+                current_line_length += 1
         if current_line_length > interface["line_length"]:
             next_statement = (
                 f"{interface['statement']},{interface['line_separator']}"
@@ -218,13 +225,17 @@ def _vertical_grid_common(need_trailing_char: bool, **interface):
 
 @_wrap_mode
 def vertical_grid(**interface) -> str:
-    return _vertical_grid_common(need_trailing_char=True, **interface) + ")"
+    return (
+        # Take into account the closing ")" and the trailing comma if there is one.
+        _vertical_grid_common(need_trailing_char=True, count_trailing_comma=True, **interface) + ")"
+    )
 
 
 @_wrap_mode
 def vertical_grid_grouped(**interface):
     return (
-        _vertical_grid_common(need_trailing_char=True, **interface)
+        # Always take into account a trailing comma.
+       _vertical_grid_common(need_trailing_char=True, **interface)
         + interface["line_separator"]
         + ")"
     )
@@ -233,6 +244,7 @@ def vertical_grid_grouped(**interface):
 @_wrap_mode
 def vertical_grid_grouped_no_comma(**interface):
     return (
+        # Never take into account a trailing comma.
         _vertical_grid_common(need_trailing_char=False, **interface)
         + interface["line_separator"]
         + ")"

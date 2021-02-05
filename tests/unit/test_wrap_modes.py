@@ -123,20 +123,15 @@ def test_vertical_grid_size_near_line_length(
         test_input += "\n"
     test_input += ")\n"
 
-    try:
-        assert (
-            isort.code(
-                test_input,
-                multi_line_output=multi_line_output,
-                line_length=line_length,
-                include_trailing_comma=include_trailing_comma,
-            )
-            == test_input
+    assert (
+        isort.code(
+            test_input,
+            multi_line_output=multi_line_output,
+            line_length=line_length,
+            include_trailing_comma=include_trailing_comma,
         )
-    except AssertionError:
-        if multi_line_output == 4 and include_trailing_comma and line_length == 19:
-            pytest.xfail("issue #1640")
-        raise
+        == test_input
+    )
 
 
 # This test code was written by the `hypothesis.extra.ghostwriter` module
