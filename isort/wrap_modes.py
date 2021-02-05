@@ -227,7 +227,8 @@ def _vertical_grid_common(
 def vertical_grid(**interface) -> str:
     return (
         # Take into account the closing ")" and the trailing comma if there is one.
-        _vertical_grid_common(need_trailing_char=True, count_trailing_comma=True, **interface) + ")"
+        _vertical_grid_common(need_trailing_char=True, count_trailing_comma=True, **interface)
+        + ")"
     )
 
 
@@ -235,7 +236,7 @@ def vertical_grid(**interface) -> str:
 def vertical_grid_grouped(**interface):
     return (
         # Always take into account a trailing comma.
-       _vertical_grid_common(need_trailing_char=True, **interface)
+        _vertical_grid_common(need_trailing_char=True, **interface)
         + interface["line_separator"]
         + ")"
     )
