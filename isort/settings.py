@@ -235,7 +235,8 @@ class _Config:
             )
 
         if self.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA:  # type: ignore
-            object.__setattr__(self, "multi_line_output", WrapModes.VERTICAL_GRID_GROUPED)  # type: ignore
+            vertical_grid_grouped = WrapModes.VERTICAL_GRID_GROUPED  # type: ignore
+            object.__setattr__(self, "multi_line_output", vertical_grid_grouped)
         if self.force_alphabetical_sort:
             object.__setattr__(self, "force_alphabetical_sort_within_sections", True)
             object.__setattr__(self, "no_sections", True)
