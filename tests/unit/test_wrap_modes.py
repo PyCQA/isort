@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given, reject
 from hypothesis import strategies as st
 
@@ -91,6 +92,51 @@ from kopf.structs import bodies, configuration, containers, diffs, \\
                          handlers as handlers_, patches, resources
 """
     )
+
+
+@pytest.mark.parametrize("include_trailing_comma", (False, True))
+@pytest.mark.parametrize("line_length", (18, 19))
+@pytest.mark.parametrize("multi_line_output", (4, 5, 6))
+def test_vertical_grid_size_near_line_length(
+    multi_line_output: int,
+    line_length: int,
+    include_trailing_comma: bool,
+):
+    separator = " "
+    # Cases where the input should be wrapped:
+    if (
+        # Mode 4 always adds a closing ")", making the imports line 19 chars,
+        # if include_trailing_comma is True that becomes 20 chars.
+        (multi_line_output == 4 and line_length < 19 + int(include_trailing_comma))
+        # Mode 5 always makes space for a final "," even if include_trailing_comma is False,
+        # (issue #1634) making the line (seem) 19 chars.
+        or (multi_line_output == 5 and line_length < 19)
+        # Mode 6 never makes space for a final "," even if include_trailing_comma is True,
+        # (issue #1634) making the line (seem) 18 chars, so this doesn't wrap.
+    ):
+        separator = "\n    "
+
+    test_input = f"from foo import (\n    aaaa, bbb,{separator}ccc"
+    if include_trailing_comma:
+        test_input += ","
+    if multi_line_output != 4:
+        test_input += "\n"
+    test_input += ")\n"
+
+    try:
+        assert (
+            isort.code(
+                test_input,
+                multi_line_output=multi_line_output,
+                line_length=line_length,
+                include_trailing_comma=include_trailing_comma,
+            )
+            == test_input
+        )
+    except AssertionError:
+        if multi_line_output == 4 and include_trailing_comma and line_length == 19:
+            pytest.xfail("issue #1640")
+        raise
 
 
 # This test code was written by the `hypothesis.extra.ghostwriter` module
