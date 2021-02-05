@@ -1110,7 +1110,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             is_no_attempt = False
 
         num_skipped += len(skipped)
-        if num_skipped and not arguments.get("quiet", False):
+        if num_skipped and not config.quiet:
             if config.verbose:
                 for was_skipped in skipped:
                     warn(
@@ -1120,7 +1120,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             print(f"Skipped {num_skipped} files")
 
         num_broken += len(broken)
-        if num_broken and not arguments.get("quiet", False):
+        if num_broken and not config.quiet:
             if config.verbose:
                 for was_broken in broken:
                     warn(f"{was_broken} was broken path, make sure it exists correctly")
