@@ -221,20 +221,9 @@ from third_party import (
 )
 ```
 
-**6 - Hanging Grid Grouped, No Trailing Comma**
+**6 - Hanging Grid Grouped**
 
-In Mode 5 isort leaves a single extra space to maintain consistency of
-output when a comma is added at the end. Mode 6 is the same - except
-that no extra space is maintained leading to the possibility of lines
-one character longer. You can enforce a trailing comma by using this in
-conjunction with `-tc` or `include_trailing_comma: True`.
-
-```python
-from third_party import (
-    lib1, lib2, lib3, lib4,
-    lib5
-)
-```
+Same as Mode 5. Deprecated.
 
 **7 - NOQA**
 

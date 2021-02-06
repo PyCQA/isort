@@ -96,7 +96,7 @@ from kopf.structs import bodies, configuration, containers, diffs, \\
 
 @pytest.mark.parametrize("include_trailing_comma", (False, True))
 @pytest.mark.parametrize("line_length", (18, 19))
-@pytest.mark.parametrize("multi_line_output", (4, 5, 6))
+@pytest.mark.parametrize("multi_line_output", (4, 5))
 def test_vertical_grid_size_near_line_length(
     multi_line_output: int,
     line_length: int,
@@ -108,11 +108,9 @@ def test_vertical_grid_size_near_line_length(
         # Mode 4 always adds a closing ")", making the imports line 19 chars,
         # if include_trailing_comma is True that becomes 20 chars.
         (multi_line_output == 4 and line_length < 19 + int(include_trailing_comma))
-        # Mode 5 always makes space for a final "," even if include_trailing_comma is False,
-        # (issue #1634) making the line (seem) 19 chars.
-        or (multi_line_output == 5 and line_length < 19)
-        # Mode 6 never makes space for a final "," even if include_trailing_comma is True,
-        # (issue #1634) making the line (seem) 18 chars, so this doesn't wrap.
+        # Modes 5 and 6 only add a comma, if include_trailing_comma is True,
+        # so their lines are 18 or 19 chars long.
+        or (multi_line_output != 4 and line_length < 18 + int(include_trailing_comma))
     ):
         separator = "\n    "
 
@@ -123,20 +121,15 @@ def test_vertical_grid_size_near_line_length(
         test_input += "\n"
     test_input += ")\n"
 
-    try:
-        assert (
-            isort.code(
-                test_input,
-                multi_line_output=multi_line_output,
-                line_length=line_length,
-                include_trailing_comma=include_trailing_comma,
-            )
-            == test_input
+    assert (
+        isort.code(
+            test_input,
+            multi_line_output=multi_line_output,
+            line_length=line_length,
+            include_trailing_comma=include_trailing_comma,
         )
-    except AssertionError:
-        if multi_line_output == 4 and include_trailing_comma and line_length == 19:
-            pytest.xfail("issue #1640")
-        raise
+        == test_input
+    )
 
 
 # This test code was written by the `hypothesis.extra.ghostwriter` module
@@ -456,47 +449,6 @@ def test_fuzz_vertical_grid_grouped(
 ):
     try:
         isort.wrap_modes.vertical_grid_grouped(
-            statement=statement,
-            imports=imports,
-            white_space=white_space,
-            indent=indent,
-            line_length=line_length,
-            comments=comments,
-            line_separator=line_separator,
-            comment_prefix=comment_prefix,
-            include_trailing_comma=include_trailing_comma,
-            remove_comments=remove_comments,
-        )
-    except ValueError:
-        reject()
-
-
-@given(
-    statement=st.text(),
-    imports=st.lists(st.text()),
-    white_space=st.text(),
-    indent=st.text(),
-    line_length=st.integers(),
-    comments=st.lists(st.text()),
-    line_separator=st.text(),
-    comment_prefix=st.text(),
-    include_trailing_comma=st.booleans(),
-    remove_comments=st.booleans(),
-)
-def test_fuzz_vertical_grid_grouped_no_comma(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
-    try:
-        isort.wrap_modes.vertical_grid_grouped_no_comma(
             statement=statement,
             imports=imports,
             white_space=white_space,

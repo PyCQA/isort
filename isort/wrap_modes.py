@@ -201,9 +201,11 @@ def _vertical_grid_common(need_trailing_char: bool, **interface):
         next_import = interface["imports"].pop(0)
         next_statement = f"{interface['statement']}, {next_import}"
         current_line_length = len(next_statement.split(interface["line_separator"])[-1])
-        if interface["imports"] or need_trailing_char:
-            # If we have more interface["imports"] we need to account for a comma after this import
-            # We might also need to account for a closing ) we're going to add.
+        if interface["imports"] or interface["include_trailing_comma"]:
+            # We need to account for a comma after this import.
+            current_line_length += 1
+        if not interface["imports"] and need_trailing_char:
+            # We need to account for a closing ) we're going to add.
             current_line_length += 1
         if current_line_length > interface["line_length"]:
             next_statement = (
@@ -224,7 +226,7 @@ def vertical_grid(**interface) -> str:
 @_wrap_mode
 def vertical_grid_grouped(**interface):
     return (
-        _vertical_grid_common(need_trailing_char=True, **interface)
+        _vertical_grid_common(need_trailing_char=False, **interface)
         + interface["line_separator"]
         + ")"
     )
@@ -232,11 +234,9 @@ def vertical_grid_grouped(**interface):
 
 @_wrap_mode
 def vertical_grid_grouped_no_comma(**interface):
-    return (
-        _vertical_grid_common(need_trailing_char=False, **interface)
-        + interface["line_separator"]
-        + ")"
-    )
+    # This is a deprecated alias for vertical_grid_grouped above. This function
+    # needs to exist for backwards compatibility but should never get called.
+    raise NotImplementedError
 
 
 @_wrap_mode

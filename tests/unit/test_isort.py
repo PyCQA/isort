@@ -481,7 +481,7 @@ def test_output_modes() -> None:
 
     test_case = isort.code(
         code=SINGLE_LINE_LONG_IMPORT,
-        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA,
+        multi_line_output=WrapModes.VERTICAL_GRID_GROUPED,
         line_length=40,
         indent="    ",
     )

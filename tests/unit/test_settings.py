@@ -6,6 +6,7 @@ import pytest
 
 from isort import exceptions, settings
 from isort.settings import Config
+from isort.wrap_modes import WrapModes
 
 
 class TestConfig:
@@ -90,6 +91,9 @@ class TestConfig:
         src_paths = ["src", "tests"]
         src_full_paths = (Path(os.getcwd()) / f for f in src_paths)
         assert Config(src_paths=src_paths * 2).src_paths == tuple(src_full_paths)
+
+    def test_deprecated_multi_line_output(self):
+        assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
 def test_as_list():
