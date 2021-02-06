@@ -672,11 +672,15 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                 if section.startswith("*.{") and section.endswith("}"):
                     extension = section[len("*.{") : -1]
                     for config_key in config.keys():
-                        if config_key.startswith("*.{") and config_key.endswith("}"):
-                            if extension in map(
+                        if (
+                            config_key.startswith("*.{")
+                            and config_key.endswith("}")
+                            and extension
+                            in map(
                                 lambda text: text.strip(), config_key[len("*.{") : -1].split(",")
-                            ):
-                                settings.update(config.items(config_key))
+                            )
+                        ):
+                            settings.update(config.items(config_key))
 
                 elif config.has_section(section):
                     settings.update(config.items(section))
