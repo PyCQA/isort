@@ -23,12 +23,14 @@ class Import(NamedTuple):
     file_path: Optional[Path] = None
 
     def statement(self) -> str:
-        full_path = self.module
+        import_cmd = "cimport" if self.cimport else "import"
         if self.attribute:
-            full_path += f".{self.attribute}"
+            import_string = f"from {self.module} {import_cmd} {self.attribute}"
+        else:
+            import_string = f"{import_cmd} {self.module}"
         if self.alias:
-            full_path += f" as {self.alias}"
-        return f"{'cimport' if self.cimport else 'import'} {full_path}"
+            import_string += f" as {self.alias}"
+        return import_string
 
     def __str__(self):
         return (
