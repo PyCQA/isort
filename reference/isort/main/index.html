@@ -276,6 +276,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+      Multi Line Output Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -2257,7 +2269,7 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, &quot;</span>
 
-        <span class="s2">&quot;5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, &quot;</span>
+        <span class="s2">&quot;5-vert-grid-grouped, 6-deprecated-alias-for-5, 7-noqa, &quot;</span>
 
         <span class="s2">&quot;8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, &quot;</span>
 
@@ -2628,6 +2640,22 @@
         <span class="s2">&quot;(like from itertools import groupby). Instead, sort the imports by module, &quot;</span>
 
         <span class="s2">&quot;independent of import style.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">section_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--hcss&quot;</span><span class="p">,</span>
+
+        <span class="s2">&quot;--honor-case-in-force-sorted-sections&quot;</span><span class="p">,</span>
+
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;honor_case_in_force_sorted_sections&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Honor `--case-sensitive` when `--force-sort-within-sections` is being used. &quot;</span>
+
+        <span class="s2">&quot;Without this option set, `--order-by-type` decides module name ordering too.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -3449,7 +3477,7 @@
 
         <span class="n">num_skipped</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">skipped</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">num_skipped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">num_skipped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
 
@@ -3467,7 +3495,7 @@
 
         <span class="n">num_broken</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">broken</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">num_broken</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">num_broken</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
 
@@ -4022,7 +4050,7 @@
 
 <span class="w">        </span><span class="n">num_skipped</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">skipped</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_skipped</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;quiet&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_skipped</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">verbose</span><span class="p">:</span><span class="w"></span>
 
@@ -4040,7 +4068,7 @@
 
 <span class="w">        </span><span class="n">num_broken</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nf">len</span><span class="p">(</span><span class="n">broken</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_broken</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">arguments</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;quiet&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">False</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">num_broken</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">quiet</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="nl">verbose</span><span class="p">:</span><span class="w"></span>
 

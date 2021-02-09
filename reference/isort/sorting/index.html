@@ -276,6 +276,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+      Multi Line Output Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1368,27 +1380,11 @@
 
     <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{module_name in config.force_to_top and &#39;A&#39; or &#39;B&#39;}{prefix}{_length_sort_maybe}&quot;</span>
 
-<span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
-
-    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-
-    <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-
-    <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-
-    <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">length_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
 
-    <span class="k">if</span> <span class="n">reverse_relative</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from .&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">reverse_relative</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from .&quot;</span><span class="p">):</span>
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from (\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
@@ -1396,11 +1392,11 @@
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
 
-    <span class="k">if</span> <span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">lexicographical</span><span class="p">:</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">_import_line_intro_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_import_line_midline_import_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
 
@@ -1410,15 +1406,45 @@
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^import &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">force_to_top</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">force_to_top</span><span class="p">:</span>
 
         <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">order_by_type</span><span class="p">:</span>
+    <span class="c1"># * If honor_case_in_force_sorted_sections is true, and case_sensitive and</span>
+
+    <span class="c1">#   order_by_type are different, only ignore case in part of the line.</span>
+
+    <span class="c1"># * Otherwise, let order_by_type decide the sorting of the whole line. This</span>
+
+    <span class="c1">#   is only &quot;correct&quot; if case_sensitive and order_by_type have the same value.</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">honor_case_in_force_sorted_sections</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span> <span class="o">!=</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
+
+        <span class="n">split_module</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_module</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">module_name</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">split_module</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+
+                <span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
+
+                <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot; import &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">module_name</span><span class="p">,</span> <span class="n">names</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{len(line) if length_sort else &#39;&#39;}{line}&quot;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{len(line) if config.length_sort else &#39;&#39;}{line}&quot;</span>
 
 <span class="k">def</span> <span class="nf">naturally</span><span class="p">(</span><span class="n">to_sort</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
@@ -1567,36 +1593,15 @@
 <h3 id="section_key">section_key</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
     <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">length_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span>
-
-    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-
-    <span class="n">order_by_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-
-    <span class="n">force_to_top</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-
-    <span class="n">lexicographical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">length_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">reverse_relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-    <span class="n">group_by_package</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
-
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">section_key</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
 
-    <span class="k">if</span> <span class="n">reverse_relative</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from .&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">reverse_relative</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from .&quot;</span><span class="p">):</span>
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from (\.+)\s*(.*)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
@@ -1604,11 +1609,11 @@
 
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;from {&#39; &#39;.join(match.groups())}&quot;</span>
 
-    <span class="k">if</span> <span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">group_by_package</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">):</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">lexicographical</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">lexicographical</span><span class="p">:</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">_import_line_intro_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_import_line_midline_import_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
 
@@ -1618,15 +1623,45 @@
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^import &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">force_to_top</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">force_to_top</span><span class="p">:</span>
 
         <span class="n">section</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">order_by_type</span><span class="p">:</span>
+    <span class="c1"># * If honor_case_in_force_sorted_sections is true, and case_sensitive and</span>
+
+    <span class="c1">#   order_by_type are different, only ignore case in part of the line.</span>
+
+    <span class="c1"># * Otherwise, let order_by_type decide the sorting of the whole line. This</span>
+
+    <span class="c1">#   is only &quot;correct&quot; if case_sensitive and order_by_type have the same value.</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">honor_case_in_force_sorted_sections</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span> <span class="o">!=</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
+
+        <span class="n">split_module</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; import &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_module</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">module_name</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">split_module</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+
+                <span class="n">module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
+
+                <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot; import &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">module_name</span><span class="p">,</span> <span class="n">names</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">order_by_type</span><span class="p">:</span>
 
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{len(line) if length_sort else &#39;&#39;}{line}&quot;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{section}{len(line) if config.length_sort else &#39;&#39;}{line}&quot;</span>
 </code></pre></div>
 
 </details>

@@ -276,6 +276,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+      Multi Line Output Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1766,6 +1778,8 @@
 
     <span class="n">indented_import_headings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span>
 
+    <span class="n">honor_case_in_force_sorted_sections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">py_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span>
@@ -1811,6 +1825,12 @@
                 <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;known_standard_library&quot;</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">stdlibs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span><span class="p">)</span><span class="o">.</span><span class="n">stdlib</span><span class="p">)</span>
 
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_line_output</span> <span class="o">==</span> <span class="n">WrapModes</span><span class="o">.</span><span class="n">VERTICAL_GRID_GROUPED_NO_COMMA</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+
+            <span class="n">vertical_grid_grouped</span> <span class="o">=</span> <span class="n">WrapModes</span><span class="o">.</span><span class="n">VERTICAL_GRID_GROUPED</span>  <span class="c1"># type: ignore</span>
+
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;multi_line_output&quot;</span><span class="p">,</span> <span class="n">vertical_grid_grouped</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_alphabetical_sort</span><span class="p">:</span>
 
@@ -2546,15 +2566,23 @@
 
                     <span class="k">for</span> <span class="n">config_key</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
-                        <span class="k">if</span> <span class="n">config_key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*.{&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">config_key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span>
 
-                            <span class="k">if</span> <span class="n">extension</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span>
+                            <span class="n">config_key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*.{&quot;</span><span class="p">)</span>
+
+                            <span class="ow">and</span> <span class="n">config_key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+
+                            <span class="ow">and</span> <span class="n">extension</span>
+
+                            <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span>
 
                                 <span class="k">lambda</span> <span class="n">text</span><span class="p">:</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">config_key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;*.{&quot;</span><span class="p">)</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
 
-                            <span class="p">):</span>
+                            <span class="p">)</span>
 
-                                <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">config_key</span><span class="p">))</span>
+                        <span class="p">):</span>
+
+                            <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">config_key</span><span class="p">))</span>
 
                 <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
 
@@ -3428,6 +3456,9 @@ dynamically determined later on.</p>
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="n">group_by_package</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">honor_case_in_force_sorted_sections</span>
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="n">honor_noqa</span>

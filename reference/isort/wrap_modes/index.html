@@ -276,6 +276,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+      Multi Line Output Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1865,11 +1877,15 @@
 
 <span class="s2">        current_line_length = len(next_statement.split(interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;])[-1])</span>
 
-<span class="s2">        if interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;] or need_trailing_char:</span>
+<span class="s2">        if interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;] or interface[&quot;</span><span class="s s-Atom">include_trailing_comma</span><span class="s2">&quot;]:</span>
 
-<span class="s2">            # If we have more interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;] we need to account for a comma after this import</span>
+<span class="s2">            # We need to account for a comma after this import.</span>
 
-<span class="s2">            # We might also need to account for a closing ) we&#39;re going to add.</span>
+<span class="s2">            current_line_length += 1</span>
+
+<span class="s2">        if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;] and need_trailing_char:</span>
+
+<span class="s2">            # We need to account for a closing ) we&#39;re going to add.</span>
 
 <span class="s2">            current_line_length += 1</span>
 
@@ -1903,7 +1919,7 @@
 
 <span class="s2">    return (</span>
 
-<span class="s2">        _vertical_grid_common(need_trailing_char=True, **interface)</span>
+<span class="s2">        _vertical_grid_common(need_trailing_char=False, **interface)</span>
 
 <span class="s2">        + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
 
@@ -1915,15 +1931,11 @@
 
 <span class="s2">def vertical_grid_grouped_no_comma(**interface):</span>
 
-<span class="s2">    return (</span>
+<span class="s2">    # This is a deprecated alias for vertical_grid_grouped above. This function</span>
 
-<span class="s2">        _vertical_grid_common(need_trailing_char=False, **interface)</span>
+<span class="s2">    # needs to exist for backwards compatibility but should never get called.</span>
 
-<span class="s2">        + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
-
-<span class="s2">        + &quot;</span><span class="p">)</span><span class="s2">&quot;</span>
-
-<span class="s2">    )</span>
+<span class="s2">    raise NotImplementedError</span>
 
 <span class="s2">@_wrap_mode</span>
 
@@ -2402,7 +2414,7 @@
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">_vertical_grid_common</span><span class="p">(</span><span class="n">need_trailing_char</span><span class="o">=</span><span class="k">True</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">_vertical_grid_common</span><span class="p">(</span><span class="n">need_trailing_char</span><span class="o">=</span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">interface</span><span class="o">[</span><span class="n">&quot;line_separator&quot;</span><span class="o">]</span><span class="w"></span>
 
@@ -2431,15 +2443,11 @@
 
 <span class="n">def</span><span class="w"> </span><span class="n">vertical_grid_grouped_no_comma</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">deprecated</span><span class="w"> </span><span class="k">alias</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">vertical_grid_grouped</span><span class="w"> </span><span class="n">above</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">_vertical_grid_common</span><span class="p">(</span><span class="n">need_trailing_char</span><span class="o">=</span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">exist</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">backwards</span><span class="w"> </span><span class="n">compatibility</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">never</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="k">called</span><span class="p">.</span><span class="w"></span>
 
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">interface</span><span class="o">[</span><span class="n">&quot;line_separator&quot;</span><span class="o">]</span><span class="w"></span>
-
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;)&quot;</span><span class="w"></span>
-
-<span class="w">    </span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="w"></span>
 </code></pre></div>
 
 </details>

@@ -443,6 +443,18 @@
 
 
   <li class="md-nav__item">
+    <a href="docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+      Multi Line Output Modes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="docs/configuration/options/" title="Options" class="md-nav__link">
       Options
     </a>
@@ -1612,104 +1624,7 @@ notified.</p>
 <h2 id="multi-line-output-modes">Multi line output modes</h2>
 <p>You will notice above the \"multi_line_output\" setting. This setting
 defines how from imports wrap when they extend past the line_length
-limit and has 12 possible settings:</p>
-<p><strong>0 - Grid</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span><span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span>
-                         <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-
-<p><strong>1 - Vertical</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span><span class="n">lib1</span><span class="p">,</span>
-                         <span class="n">lib2</span><span class="p">,</span>
-                         <span class="n">lib3</span>
-                         <span class="n">lib4</span><span class="p">,</span>
-                         <span class="n">lib5</span><span class="p">,</span>
-                         <span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-
-<p><strong>2 - Hanging Indent</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> \
-    <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> \
-    <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span><span class="p">,</span> <span class="n">lib6</span>
-</code></pre></div>
-
-<p><strong>3 - Vertical Hanging Indent</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span>
-    <span class="n">lib2</span><span class="p">,</span>
-    <span class="n">lib3</span><span class="p">,</span>
-    <span class="n">lib4</span><span class="p">,</span>
-<span class="p">)</span>
-</code></pre></div>
-
-<p><strong>4 - Hanging Grid</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> <span class="n">lib4</span><span class="p">,</span>
-    <span class="n">lib5</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-
-<p><strong>5 - Hanging Grid Grouped</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> <span class="n">lib4</span><span class="p">,</span>
-    <span class="n">lib5</span><span class="p">,</span> <span class="o">...</span>
-<span class="p">)</span>
-</code></pre></div>
-
-<p><strong>6 - Hanging Grid Grouped, No Trailing Comma</strong></p>
-<p>In Mode 5 isort leaves a single extra space to maintain consistency of
-output when a comma is added at the end. Mode 6 is the same - except
-that no extra space is maintained leading to the possibility of lines
-one character longer. You can enforce a trailing comma by using this in
-conjunction with <code>-tc</code> or <code>include_trailing_comma: True</code>.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> <span class="n">lib4</span><span class="p">,</span>
-    <span class="n">lib5</span>
-<span class="p">)</span>
-</code></pre></div>
-
-<p><strong>7 - NOQA</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> <span class="o">...</span>  <span class="c1"># NOQA</span>
-</code></pre></div>
-
-<p>Alternatively, you can set <code>force_single_line</code> to <code>True</code> (<code>-sl</code> on the
-command line) and every import will appear on its own line:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib1</span>
-<span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib2</span>
-<span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib3</span>
-<span class="o">...</span>
-</code></pre></div>
-
-<p><strong>8 - Vertical Hanging Indent Bracket</strong></p>
-<p>Same as Mode 3 - <em>Vertical Hanging Indent</em> but the closing parentheses
-on the last line is indented.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span>
-    <span class="n">lib2</span><span class="p">,</span>
-    <span class="n">lib3</span><span class="p">,</span>
-    <span class="n">lib4</span><span class="p">,</span>
-    <span class="p">)</span>
-</code></pre></div>
-
-<p><strong>9 - Vertical Prefix From Module Import</strong></p>
-<p>Starts a new line with the same <code>from MODULE import</code> prefix when lines are longer than the line length limit.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span>
-<span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span><span class="p">,</span> <span class="n">lib6</span>
-</code></pre></div>
-
-<p><strong>10 - Hanging Indent With Parentheses</strong></p>
-<p>Same as Mode 2 - <em>Hanging Indent</em> but uses parentheses instead of backslash
-for wrapping long lines.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span>
-    <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span><span class="p">,</span> <span class="n">lib6</span><span class="p">)</span>
-</code></pre></div>
-
-<p><strong>11 - Backslash Grid</strong></p>
-<p>Same as Mode 0 - <em>Grid</em> but uses backslashes instead of parentheses to group imports.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">third_party</span> <span class="kn">import</span> <span class="n">lib1</span><span class="p">,</span> <span class="n">lib2</span><span class="p">,</span> <span class="n">lib3</span><span class="p">,</span> \
-                        <span class="n">lib4</span><span class="p">,</span> <span class="n">lib5</span>
-</code></pre></div>
-
+limit and has <a href="https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes/">12 possible settings</a>.</p>
 <h2 id="indentation">Indentation</h2>
 <p>To change the how constant indents appear - simply change the
 indent property with the following accepted formats:</p>
