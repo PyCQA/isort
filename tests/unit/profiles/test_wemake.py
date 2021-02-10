@@ -7,11 +7,14 @@ from functools import partial
 
 from ..utils import isort_test
 
-wemake_isort_test = partial(isort_test, profile="wemake", known_first_party=["wemake_python_styleguide"])
+wemake_isort_test = partial(
+    isort_test, profile="wemake", known_first_party=["wemake_python_styleguide"]
+)
 
 
 def test_wemake_snippet_one():
-    wemake_isort_test("""
+    wemake_isort_test(
+        """
 import ast
 import tokenize
 import traceback
@@ -37,7 +40,8 @@ VisitorClass = Type[base.BaseVisitor]
 
 
 def test_wemake_snippet_two():
-    wemake_isort_test("""
+    wemake_isort_test(
+        """
 from collections import defaultdict
 from typing import ClassVar, DefaultDict, List
 
@@ -55,11 +59,13 @@ from wemake_python_styleguide.version import pkg_version
 DOCS_URL_TEMPLATE: Final = (
     'https://wemake-python-stylegui.de/en/{0}/pages/usage/violations/'
 )
-""")
+"""
+    )
 
 
 def test_wemake_snippet_three():
-    wemake_isort_test("""
+    wemake_isort_test(
+        """
 import ast
 
 from pep8ext_naming import NamingChecker
@@ -77,4 +83,5 @@ from wemake_python_styleguide.transformations.ast.enhancements import (
 
 @final
 class _ClassVisitor(ast.NodeVisitor):
-""")
+"""
+    )
