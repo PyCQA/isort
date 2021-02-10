@@ -82,6 +82,6 @@ from wemake_python_styleguide.transformations.ast.enhancements import (
 
 
 @final
-class _ClassVisitor(ast.NodeVisitor):
+class _ClassVisitor(ast.NodeVisitor): ...
 """
     )
