@@ -55,6 +55,12 @@ hug = {
     "use_parentheses": True,
     "line_length": 100,
 }
+wemake = {
+    "multi_line_output": 3,
+    "include_trailing_comma": True,
+    "use_parentheses": True,
+    "line_length": 80,
+}
 
 profiles: Dict[str, Dict[str, Any]] = {
     "black": black,
@@ -65,4 +71,5 @@ profiles: Dict[str, Dict[str, Any]] = {
     "plone": plone,
     "attrs": attrs,
     "hug": hug,
+    "wemake": wemake,
 }
