@@ -76,3 +76,11 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
  - **force_grid_wrap**: `0`
  - **use_parentheses**: `True`
  - **line_length**: `100`
+
+#wemake
+
+
+ - **multi_line_output**: `3`
+ - **include_trailing_comma**: `True`
+ - **use_parentheses**: `True`
+ - **line_length**: `80`
