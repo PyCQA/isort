@@ -259,27 +259,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#auto-comment-import-sections" class="md-nav__link">
-    Auto-comment import sections
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ordering-by-import-length" class="md-nav__link">
-    Ordering by import length
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#controlling-how-isort-sections-from-imports" class="md-nav__link">
-    Controlling how isort sections from imports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#skip-processing-of-imports-outside-of-configuration" class="md-nav__link">
     Skip processing of imports (outside of configuration)
   </a>
@@ -431,8 +410,8 @@
 
 
   <li class="md-nav__item">
-    <a href="docs/configuration/github_action/" title="Github Action" class="md-nav__link">
-      Github Action
+    <a href="docs/configuration/custom_sections_and_ordering/" title="Custom Sections And Ordering" class="md-nav__link">
+      Custom Sections And Ordering
     </a>
   </li>
 
@@ -443,8 +422,8 @@
 
 
   <li class="md-nav__item">
-    <a href="docs/configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
-      Multi Line Output Modes
+    <a href="docs/configuration/github_action/" title="Github Action" class="md-nav__link">
+      Github Action
     </a>
   </li>
 
@@ -1383,27 +1362,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#auto-comment-import-sections" class="md-nav__link">
-    Auto-comment import sections
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ordering-by-import-length" class="md-nav__link">
-    Ordering by import length
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#controlling-how-isort-sections-from-imports" class="md-nav__link">
-    Controlling how isort sections from imports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#skip-processing-of-imports-outside-of-configuration" class="md-nav__link">
     Skip processing of imports (outside of configuration)
   </a>
@@ -1660,103 +1618,9 @@ maximum import length defined.</p>
 <p>To enable this set <code>balanced_wrapping</code> to <code>True</code> in your config or pass
 the <code>-e</code> option into the command line utility.</p>
 <h2 id="custom-sections-and-ordering">Custom Sections and Ordering</h2>
-<p>You can change the section order with <code>sections</code> option from the default
-of:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER</span>
-</code></pre></div>
-
-<p>to your preference (if defined, omitting a default section may cause errors):</p>
-<div class="codehilite"><pre><span></span><code><span class="na">sections</span><span class="o">=</span><span class="s">FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER</span>
-</code></pre></div>
-
-<p>You also can define your own sections and their order.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">known_django</span><span class="o">=</span><span class="s">django</span>
-<span class="na">known_pandas</span><span class="o">=</span><span class="s">pandas,numpy</span>
-<span class="na">sections</span><span class="o">=</span><span class="s">FUTURE,STDLIB,DJANGO,THIRDPARTY,PANDAS,FIRSTPARTY,LOCALFOLDER</span>
-</code></pre></div>
-
-<p>would create two new sections with the specified known modules.</p>
-<p>The <code>no_lines_before</code> option will prevent the listed sections from being
-split from the previous section by an empty line.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">sections</span><span class="o">=</span><span class="s">FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER</span>
-<span class="na">no_lines_before</span><span class="o">=</span><span class="s">LOCALFOLDER</span>
-</code></pre></div>
-
-<p>would produce a section with both FIRSTPARTY and LOCALFOLDER modules
-combined.</p>
-<p><strong>IMPORTANT NOTE</strong>: It is very important to know when setting <code>known</code> sections that the naming
-does not directly map for historical reasons. For custom settings, the only difference is
-capitalization (<code>known_custom=custom</code> VS <code>sections=CUSTOM,...</code>) for all others reference the
-following mapping:</p>
-<ul>
-<li><code>known_standard_library</code> : <code>STANDARD_LIBRARY</code></li>
-<li><code>extra_standard_library</code> : <code>STANDARD_LIBRARY</code> # Like known standard library but appends instead of replacing</li>
-<li><code>known_future_library</code> : <code>FUTURE</code></li>
-<li><code>known_first_party</code>: <code>FIRSTPARTY</code></li>
-<li><code>known_third_party</code>: <code>THIRDPARTY</code></li>
-<li><code>known_local_folder</code>: <code>LOCALFOLDER</code></li>
-</ul>
-<p>This will likely be changed in isort 6.0.0+ in a backwards compatible way.</p>
-<h2 id="auto-comment-import-sections">Auto-comment import sections</h2>
-<p>Some projects prefer to have import sections uniquely titled to aid in
-identifying the sections quickly when visually scanning. isort can
-automate this as well. To do this simply set the
-<code>import_heading_{section_name}</code> setting for each section you wish to
-have auto commented - to the desired comment.</p>
-<p>For Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">import_heading_stdlib</span><span class="o">=</span><span class="s">Standard Library</span>
-<span class="na">import_heading_firstparty</span><span class="o">=</span><span class="s">My Stuff</span>
-</code></pre></div>
-
-<p>Would lead to output looking like the following:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Standard Library</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="kn">import</span> <span class="nn">django.settings</span>
-
-<span class="c1"># My Stuff</span>
-<span class="kn">import</span> <span class="nn">myproject.test</span>
-</code></pre></div>
-
-<h2 id="ordering-by-import-length">Ordering by import length</h2>
-<p>isort also makes it easy to sort your imports by length, simply by
-setting the <code>length_sort</code> option to <code>True</code>. This will result in the
-following output style:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">evn.util</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Pool</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">Options</span><span class="p">,</span>
-    <span class="n">Constant</span><span class="p">,</span>
-    <span class="n">DecayDict</span><span class="p">,</span>
-    <span class="n">UnexpectedCodePath</span><span class="p">,</span>
-<span class="p">)</span>
-</code></pre></div>
-
-<p>It is also possible to opt-in to sorting imports by length for only
-specific sections by using <code>length_sort_</code> followed by the section name
-as a configuration item, e.g.:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">length_sort_stdlib=1</span>
-</code></pre></div>
-
-<h2 id="controlling-how-isort-sections-from-imports">Controlling how isort sections <code>from</code> imports</h2>
-<p>By default isort places straight (<code>import y</code>) imports above from imports (<code>from x import y</code>):</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">b</span>
-<span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will always appear below because it is a from import.</span>
-</code></pre></div>
-
-<p>However, if you prefer to keep strict alphabetical sorting you can set <a href="https://pycqa.github.io/isort/docs/configuration/options/#force-sort-within-sections">force sort within sections</a> to true. Resulting in:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will now appear at top because a appears in the alphabet before b</span>
-<span class="kn">import</span> <span class="nn">b</span>
-</code></pre></div>
-
-<p>You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using <a href="https://pycqa.github.io/isort/docs/configuration/options/#from-first">from first</a>.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">b</span> <span class="kn">import</span> <span class="n">b</span> <span class="c1"># If from first is set to True, all from imports will be placed before non-from imports.</span>
-<span class="kn">import</span> <span class="nn">a</span>
-</code></pre></div>
-
+<p>isort provides configuration options to change almost every aspect of how
+imports are organized, ordered, or grouped together in sections.</p>
+<p><a href="https://pycqa.github.io/isort/docs/configuration/custom_sections_and_ordering/">Click here</a> for an overview of all these options.</p>
 <h2 id="skip-processing-of-imports-outside-of-configuration">Skip processing of imports (outside of configuration)</h2>
 <p>To make isort ignore a single import simply add a comment at the end of
 the import line containing the text <code>isort:skip</code>:</p>
