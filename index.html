@@ -422,6 +422,18 @@
 
 
   <li class="md-nav__item">
+    <a href="docs/configuration/git_hook/" title="Git Hook" class="md-nav__link">
+      Git Hook
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="docs/configuration/github_action/" title="Github Action" class="md-nav__link">
       Github Action
     </a>
@@ -1694,32 +1706,7 @@ project.</p>
 <h2 id="git-hook">Git hook</h2>
 <p>isort provides a hook function that can be integrated into your Git
 pre-commit script to check Python code before committing.</p>
-<p>To cause the commit to fail if there are isort errors (strict mode),
-include the following in <code>.git/hooks/pre-commit</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">isort.hooks</span> <span class="kn">import</span> <span class="n">git_hook</span>
-
-<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">git_hook</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">settings_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
-</code></pre></div>
-
-<p>If you just want to display warnings, but allow the commit to happen
-anyway, call <code>git_hook</code> without the strict parameter. If you want to
-display warnings, but not also fix the code, call <code>git_hook</code> without the
-modify parameter.
-The <code>lazy</code> argument is to support users who are "lazy" to add files
-individually to the index and tend to use <code>git commit -a</code> instead.
-Set it to <code>True</code> to ensure all tracked files are properly isorted,
-leave it out or set it to <code>False</code> to check only files added to your
-index.</p>
-<p>If you want to use a specific configuration file for the hook, you can pass its
-path to settings_file. If no path is specifically requested, <code>git_hook</code> will
-search for the configuration file starting at the directory containing the first
-staged file, as per <code>git diff-index</code> ordering, and going upward in the directory
-structure until a valid configuration file is found or
-<a href="src/config.py:35"><code>MAX_CONFIG_SEARCH_DEPTH</code></a> directories are checked.
-The settings_file parameter is used to support users who keep their configuration
-file in a directory that might not be a parent of all the other files.</p>
+<p><a href="https://pycqa.github.io/isort/docs/configuration/git_hook/">More info here.</a></p>
 <h2 id="setuptools-integration">Setuptools integration</h2>
 <p>Upon installation, isort enables a <code>setuptools</code> command that checks
 Python files declared by your project.</p>
