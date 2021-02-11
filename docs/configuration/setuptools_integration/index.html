@@ -16,7 +16,7 @@
     
     
       
-        <title>Action Comments - isort</title>
+        <title>Setuptools Integration - isort</title>
       
     
     
@@ -57,7 +57,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#action-comments" class="md-skip">
+        <a href="#setuptools-integration" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +84,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Action Comments
+              Setuptools Integration
             
           </span>
         </div>
@@ -228,77 +228,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Action Comments
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" title="Action Comments" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../action_comments/" title="Action Comments" class="md-nav__link">
       Action Comments
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#isort-skip_file" class="md-nav__link">
-    isort: skip_file
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-skip" class="md-nav__link">
-    isort: skip
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-off" class="md-nav__link">
-    isort: off
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-on" class="md-nav__link">
-    isort: on
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-split" class="md-nav__link">
-    isort: split
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -426,11 +360,20 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../setuptools_integration/" title="Setuptools Integration" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+    <a href="./" title="Setuptools Integration" class="md-nav__link md-nav__link--active">
       Setuptools Integration
     </a>
+    
   </li>
 
         
@@ -1278,49 +1221,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#isort-skip_file" class="md-nav__link">
-    isort: skip_file
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-skip" class="md-nav__link">
-    isort: skip
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-off" class="md-nav__link">
-    isort: off
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-on" class="md-nav__link">
-    isort: on
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isort-split" class="md-nav__link">
-    isort: split
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1331,7 +1231,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/pycqa/isort/edit/develop/docs/configuration/action_comments.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/pycqa/isort/edit/develop/docs/configuration/setuptools_integration.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1339,89 +1239,27 @@
                   
                 
                 
-                <h1 id="action-comments">Action Comments</h1>
-<p>The most basic way to configure the flow of isort within a single file is action comments. These comments are picked up and interpreted by the isort parser during parsing.</p>
-<h2 id="isort-skip_file">isort: skip_file</h2>
-<p>Tells isort to skip the entire file.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># !/bin/python3</span>
-<span class="c1"># isort: skip_file</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="o">...</span>
+                <h1 id="setuptools-integration">Setuptools integration</h1>
+<p>Upon installation, isort enables a <code>setuptools</code> command that checks
+Python files declared by your project.</p>
+<p>Running <code>python setup.py isort</code> on the command line will check the files
+listed in your <code>py_modules</code> and <code>packages</code>. If any warning is found, the
+command will exit with an error code:</p>
+<div class="codehilite"><pre><span></span><code>$ python setup.py isort
 </code></pre></div>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This should be placed as high in the file as reasonably possible.
-Since isort uses a streaming architecture, it may have already completed some work before it reaches the comment. Usually, this is okay - but can be confusing if --diff or any interactive options are used from the command line.</p>
-</div>
-<h2 id="isort-skip">isort: skip</h2>
-<p>If placed on the same line as (or within the continuation of a) an import statement, isort will not sort this import.
-More specifically, it prevents the import statement from being recognized by isort as an import. In consequence, this line will be treated as code and be pushed down to below the import section of the file.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">b</span>
-<span class="kn">import</span> <span class="nn">a</span> <span class="c1"># isort: skip &lt;- this will now stay below b</span>
+<p>Also, to allow users to be able to use the command without having to
+install isort themselves, add isort to the setup_requires of your
+<code>setup()</code> like so:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">],</span>
+
+    <span class="n">setup_requires</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;isort&quot;</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </code></pre></div>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is recommended to where possible use <code># isort: off</code> and <code># isort: on</code> or <code># isort: split</code> instead as the behavior is more explicit and predictable.</p>
-</div>
-<h2 id="isort-off">isort: off</h2>
-<p>Turns isort parsing off. Every line after an <code># isort: off</code> statement will be passed along unchanged until an <code># isort: on</code> comment or the end of the file.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">e</span>
-<span class="kn">import</span> <span class="nn">f</span>
-
-<span class="c1"># isort: off</span>
-
-<span class="kn">import</span> <span class="nn">b</span>
-<span class="kn">import</span> <span class="nn">a</span>
-</code></pre></div>
-
-<h2 id="isort-on">isort: on</h2>
-<p>Turns isort parsing back on. This only makes sense if an <code># isort: off</code> comment exists higher in the file! This allows you to have blocks of unsorted imports, around otherwise sorted ones.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">e</span>
-<span class="kn">import</span> <span class="nn">f</span>
-
-<span class="c1"># isort: off</span>
-
-<span class="kn">import</span> <span class="nn">b</span>
-<span class="kn">import</span> <span class="nn">a</span>
-
-<span class="c1"># isort: on</span>
-
-<span class="kn">import</span> <span class="nn">c</span>
-<span class="kn">import</span> <span class="nn">d</span>
-</code></pre></div>
-
-<h2 id="isort-split">isort: split</h2>
-<p>Tells isort the current sort section is finished, and all future imports belong to a new sort grouping.</p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">e</span>
-<span class="kn">import</span> <span class="nn">f</span>
-
-<span class="c1"># isort: split</span>
-
-<span class="kn">import</span> <span class="nn">a</span>
-<span class="kn">import</span> <span class="nn">b</span>
-<span class="kn">import</span> <span class="nn">c</span>
-<span class="kn">import</span> <span class="nn">d</span>
-</code></pre></div>
-
-<p>You can also use it inline to keep an import from having imports above or below it swap position:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">c</span>
-<span class="kn">import</span> <span class="nn">b</span>  <span class="c1"># isort: split</span>
-<span class="kn">import</span> <span class="nn">a</span>
-</code></pre></div>
-
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>isort split is exactly the same as placing an <code># isort: on</code> immediately below an <code># isort: off</code></p>
-</div>
                 
               
               
@@ -1440,7 +1278,7 @@ More specifically, it prevents the import statement from being recognized by iso
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../../CHANGELOG/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../profiles/" title="Profiles" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1449,19 +1287,19 @@ More specifically, it prevents the import statement from being recognized by iso
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Changelog
+                Profiles
               </span>
             </div>
           </a>
         
         
-          <a href="../add_or_remove_imports/" title="Add Or Remove Imports" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Add Or Remove Imports
+                1. Contributing Guide
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
