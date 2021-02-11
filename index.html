@@ -266,15 +266,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-an-import-to-multiple-files" class="md-nav__link">
-    Adding an import to multiple files
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#removing-an-import-from-multiple-files" class="md-nav__link">
-    Removing an import from multiple files
+  <a href="#adding-or-removing-an-import-from-multiple-files" class="md-nav__link">
+    Adding or removing an import from multiple files
   </a>
   
 </li>
@@ -376,6 +369,18 @@
   <li class="md-nav__item">
     <a href="docs/configuration/action_comments/" title="Action Comments" class="md-nav__link">
       Action Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="docs/configuration/add_or_remove_imports/" title="Add Or Remove Imports" class="md-nav__link">
+      Add Or Remove Imports
     </a>
   </li>
 
@@ -1393,15 +1398,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-an-import-to-multiple-files" class="md-nav__link">
-    Adding an import to multiple files
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#removing-an-import-from-multiple-files" class="md-nav__link">
-    Removing an import from multiple files
+  <a href="#adding-or-removing-an-import-from-multiple-files" class="md-nav__link">
+    Adding or removing an import from multiple files
   </a>
   
 </li>
@@ -1669,24 +1667,9 @@ module's doc string:</p>
 <span class="kn">import</span> <span class="nn">a</span>
 </code></pre></div>
 
-<h2 id="adding-an-import-to-multiple-files">Adding an import to multiple files</h2>
-<p>isort makes it easy to add an import statement across multiple files,
-while being assured it's correctly placed.</p>
-<p>To add an import to all files:</p>
-<div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> *.py
-</code></pre></div>
-
-<p>To add an import only to files that already have imports:</p>
-<div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> --append-only *.py
-</code></pre></div>
-
-<h2 id="removing-an-import-from-multiple-files">Removing an import from multiple files</h2>
-<p>isort also makes it easy to remove an import from multiple files,
-without having to be concerned with how it was originally formatted.</p>
-<p>From the command line:</p>
-<div class="codehilite"><pre><span></span><code>isort --rm <span class="s2">&quot;os.system&quot;</span> *.py
-</code></pre></div>
-
+<h2 id="adding-or-removing-an-import-from-multiple-files">Adding or removing an import from multiple files</h2>
+<p>isort can be ran or configured to add / remove imports automatically.</p>
+<p>[See a complete guide here.]((https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)</p>
 <h2 id="using-isort-to-verify-code">Using isort to verify code</h2>
 <h2 id="the-check-only-option">The <code>--check-only</code> option</h2>
 <p>isort can also be used to verify that code is correctly formatted

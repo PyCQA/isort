@@ -16,7 +16,7 @@
     
     
       
-        <title>3. Code Of Conduct - isort</title>
+        <title>Add Or Remove Imports - isort</title>
       
     
     
@@ -57,7 +57,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hope-11-code-of-conduct" class="md-skip">
+        <a href="#adding-an-import-to-multiple-files" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +84,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              3. Code Of Conduct
+              Add Or Remove Imports
             
           </span>
         </div>
@@ -205,10 +205,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Configuration
@@ -228,7 +230,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/action_comments/" title="Action Comments" class="md-nav__link">
+    <a href="../action_comments/" title="Action Comments" class="md-nav__link">
       Action Comments
     </a>
   </li>
@@ -238,11 +240,52 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../../configuration/add_or_remove_imports/" title="Add Or Remove Imports" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Add Or Remove Imports
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="Add Or Remove Imports" class="md-nav__link md-nav__link--active">
       Add Or Remove Imports
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adding-an-import-to-multiple-files" class="md-nav__link">
+    Adding an import to multiple files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removing-an-import-from-multiple-files" class="md-nav__link">
+    Removing an import from multiple files
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -252,7 +295,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/black_compatibility/" title="Black Compatibility" class="md-nav__link">
+    <a href="../black_compatibility/" title="Black Compatibility" class="md-nav__link">
       Black Compatibility
     </a>
   </li>
@@ -264,7 +307,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/config_files/" title="Config Files" class="md-nav__link">
+    <a href="../config_files/" title="Config Files" class="md-nav__link">
       Config Files
     </a>
   </li>
@@ -276,7 +319,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/custom_sections_and_ordering/" title="Custom Sections And Ordering" class="md-nav__link">
+    <a href="../custom_sections_and_ordering/" title="Custom Sections And Ordering" class="md-nav__link">
       Custom Sections And Ordering
     </a>
   </li>
@@ -288,7 +331,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/git_hook/" title="Git Hook" class="md-nav__link">
+    <a href="../git_hook/" title="Git Hook" class="md-nav__link">
       Git Hook
     </a>
   </li>
@@ -300,7 +343,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/github_action/" title="Github Action" class="md-nav__link">
+    <a href="../github_action/" title="Github Action" class="md-nav__link">
       Github Action
     </a>
   </li>
@@ -312,7 +355,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
+    <a href="../multi_line_output_modes/" title="Multi Line Output Modes" class="md-nav__link">
       Multi Line Output Modes
     </a>
   </li>
@@ -324,7 +367,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/options/" title="Options" class="md-nav__link">
+    <a href="../options/" title="Options" class="md-nav__link">
       Options
     </a>
   </li>
@@ -336,7 +379,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/pre-commit/" title="Pre Commit" class="md-nav__link">
+    <a href="../pre-commit/" title="Pre Commit" class="md-nav__link">
       Pre Commit
     </a>
   </li>
@@ -348,7 +391,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../configuration/profiles/" title="Profiles" class="md-nav__link">
+    <a href="../profiles/" title="Profiles" class="md-nav__link">
       Profiles
     </a>
   </li>
@@ -363,12 +406,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
     <label class="md-nav__link" for="nav-4">
       Contributing
@@ -388,7 +429,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
+    <a href="../../contributing/1.-contributing-guide/" title="1. Contributing Guide" class="md-nav__link">
       1. Contributing Guide
     </a>
   </li>
@@ -400,7 +441,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
+    <a href="../../contributing/2.-coding-standard/" title="2. Coding Standard" class="md-nav__link">
       2. Coding Standard
     </a>
   </li>
@@ -410,91 +451,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        3. Code Of Conduct
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" title="3. Code Of Conduct" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../../contributing/3.-code-of-conduct/" title="3. Code Of Conduct" class="md-nav__link">
       3. Code Of Conduct
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#abstract" class="md-nav__link">
-    Abstract
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#our-pledge" class="md-nav__link">
-    Our Pledge
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#our-standards" class="md-nav__link">
-    Our Standards
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#our-responsibilities" class="md-nav__link">
-    Our Responsibilities
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scope" class="md-nav__link">
-    Scope
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enforcement" class="md-nav__link">
-    Enforcement
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attribution" class="md-nav__link">
-    Attribution
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -504,7 +465,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
+    <a href="../../contributing/4.-acknowledgements/" title="4. Acknowledgements" class="md-nav__link">
       4. Acknowledgements
     </a>
   </li>
@@ -1277,8 +1238,6 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1287,50 +1246,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#abstract" class="md-nav__link">
-    Abstract
+  <a href="#adding-an-import-to-multiple-files" class="md-nav__link">
+    Adding an import to multiple files
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#our-pledge" class="md-nav__link">
-    Our Pledge
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#our-standards" class="md-nav__link">
-    Our Standards
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#our-responsibilities" class="md-nav__link">
-    Our Responsibilities
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scope" class="md-nav__link">
-    Scope
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enforcement" class="md-nav__link">
-    Enforcement
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attribution" class="md-nav__link">
-    Attribution
+  <a href="#removing-an-import-from-multiple-files" class="md-nav__link">
+    Removing an import from multiple files
   </a>
   
 </li>
@@ -1347,7 +1271,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/pycqa/isort/edit/develop/docs/contributing/3.-code-of-conduct.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/pycqa/isort/edit/develop/docs/configuration/add_or_remove_imports.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1355,106 +1279,25 @@
                   
                 
                 
-                <h1 id="hope-11-code-of-conduct">HOPE 11 -- Code of Conduct</h1>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>HOPE:</td>
-<td>11</td>
-</tr>
-<tr>
-<td>Title:</td>
-<td>Code of Conduct</td>
-</tr>
-<tr>
-<td>Author(s):</td>
-<td>Timothy Crosley <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#116;&#105;&#109;&#111;&#116;&#104;&#121;&#46;&#99;&#114;&#111;&#115;&#108;&#101;&#121;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#116;&#105;&#109;&#111;&#116;&#104;&#121;&#46;&#99;&#114;&#111;&#115;&#108;&#101;&#121;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></td>
-</tr>
-<tr>
-<td>Status:</td>
-<td>Active</td>
-</tr>
-<tr>
-<td>Type:</td>
-<td>Process</td>
-</tr>
-<tr>
-<td>Created:</td>
-<td>17-August-2019</td>
-</tr>
-<tr>
-<td>Updated:</td>
-<td>17-August-2019</td>
-</tr>
-</tbody>
-</table>
-<h2 id="abstract">Abstract</h2>
-<p>Defines the Code of Conduct for Hug and all related projects.</p>
-<h2 id="our-pledge">Our Pledge</h2>
-<p>In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, sex characteristics, gender identity and expression,
-level of experience, education, socio-economic status, nationality, personal
-appearance, race, religion, or sexual identity and orientation.</p>
-<h2 id="our-standards">Our Standards</h2>
-<p>Examples of behavior that contributes to creating a positive environment
-include:</p>
-<ul>
-<li>Using welcoming and inclusive language</li>
-<li>Being respectful of differing viewpoints and experiences</li>
-<li>Gracefully accepting constructive criticism</li>
-<li>Focusing on what is best for the community</li>
-<li>Showing empathy towards other community members</li>
-</ul>
-<p>Examples of unacceptable behavior by participants include:</p>
-<ul>
-<li>The use of sexualized language or imagery and unwelcome sexual attention or
- advances</li>
-<li>Trolling, insulting/derogatory comments, and personal or political attacks</li>
-<li>Public or private harassment</li>
-<li>Publishing others' private information, such as a physical or electronic
- address, without explicit permission</li>
-<li>Other conduct which could reasonably be considered inappropriate in a
- professional setting</li>
-</ul>
-<h2 id="our-responsibilities">Our Responsibilities</h2>
-<p>Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.</p>
-<p>Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.</p>
-<h2 id="scope">Scope</h2>
-<p>This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.</p>
-<h2 id="enforcement">Enforcement</h2>
-<p>Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting <a href="mailto:timothy.crosley@gmail.com">timothy.crosley@gmail.com</a>. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. Confidentiality will be maintained
-with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.</p>
-<p>Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.</p>
-<h2 id="attribution">Attribution</h2>
-<p>This Code of Conduct is adapted from the [Contributor Covenant][https://www.contributor-covenant.org], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html</p>
-<p>For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq</p>
+                  <h1>Add Or Remove Imports</h1>
+                
+                <h2 id="adding-an-import-to-multiple-files">Adding an import to multiple files</h2>
+<p>isort makes it easy to add an import statement across multiple files,
+while being assured it's correctly placed.</p>
+<p>To add an import to all files:</p>
+<div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> *.py
+</code></pre></div>
+
+<p>To add an import only to files that already have imports:</p>
+<div class="codehilite"><pre><span></span><code>isort -a <span class="s2">&quot;from __future__ import print_function&quot;</span> --append-only *.py
+</code></pre></div>
+
+<h2 id="removing-an-import-from-multiple-files">Removing an import from multiple files</h2>
+<p>isort also makes it easy to remove an import from multiple files,
+without having to be concerned with how it was originally formatted.</p>
+<p>From the command line:</p>
+<div class="codehilite"><pre><span></span><code>isort --rm <span class="s2">&quot;os.system&quot;</span> *.py
+</code></pre></div>
                 
               
               
@@ -1473,7 +1316,7 @@ https://www.contributor-covenant.org/faq</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../2.-coding-standard/" title="2. Coding Standard" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../action_comments/" title="Action Comments" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1482,19 +1325,19 @@ https://www.contributor-covenant.org/faq</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                2. Coding Standard
+                Action Comments
               </span>
             </div>
           </a>
         
         
-          <a href="../4.-acknowledgements/" title="4. Acknowledgements" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../black_compatibility/" title="Black Compatibility" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                4. Acknowledgements
+                Black Compatibility
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
