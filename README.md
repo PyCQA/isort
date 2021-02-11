@@ -251,34 +251,11 @@ import b
 import a
 ```
 
-## Adding an import to multiple files
+## Adding or removing an import from multiple files
 
-isort makes it easy to add an import statement across multiple files,
-while being assured it's correctly placed.
+isort can be ran or configured to add / remove imports automatically.
 
-To add an import to all files:
-
-```bash
-isort -a "from __future__ import print_function" *.py
-```
-
-To add an import only to files that already have imports:
-
-```bash
-isort -a "from __future__ import print_function" --append-only *.py
-```
-
-
-## Removing an import from multiple files
-
-isort also makes it easy to remove an import from multiple files,
-without having to be concerned with how it was originally formatted.
-
-From the command line:
-
-```bash
-isort --rm "os.system" *.py
-```
+[See a complete guide here.]((https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
 
 ## Using isort to verify code
 
