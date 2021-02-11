@@ -2914,6 +2914,39 @@ def test_sort_within_sections_with_force_to_top_issue_473() -> None:
     )
 
 
+def test_force_sort_within_sections_with_relative_imports_issue_1659() -> None:
+    """Ensure relative imports are sorted within sections"""
+    assert isort.check_code(
+        """from .. import a
+from ..alpha.beta import b
+from ..omega import c
+import .
+from . import foo
+import .apple as bar
+from .mango import baz
+""",
+        show_diff=True,
+        force_sort_within_sections=True,
+    )
+
+
+def test_force_sort_within_sections_with_reverse_relative_imports_issue_1659() -> None:
+    """Ensure reverse ordered relative imports are sorted within sections"""
+    assert isort.check_code(
+        """import .
+from . import foo
+import .apple as bar
+from .mango import baz
+from .. import a
+from ..alpha.beta import b
+from ..omega import c
+""",
+        show_diff=True,
+        force_sort_within_sections=True,
+        reverse_relative=True,
+    )
+
+
 def test_correct_number_of_new_lines_with_comment_issue_435() -> None:
     """Test to ensure that injecting a comment in-between imports
     doesn't mess up the new line spacing
