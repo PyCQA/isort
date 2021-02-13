@@ -255,7 +255,7 @@ import a
 
 isort can be ran or configured to add / remove imports automatically.
 
-[See a complete guide here.]((https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
+[See a complete guide here.](https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
 
 ## Using isort to verify code
 
