@@ -669,6 +669,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "Without this option set, `--order-by-type` decides module name ordering too.",
     )
     section_group.add_argument(
+        "--srss",
+        "--sort-relative-in-force-sorted-sections",
+        action="store_true",
+        dest="sort_relative_in_force_sorted_sections",
+        help="When using `--force-sort-within-sections`, sort relative imports the same "
+        "way as they are sorted when not using that setting.",
+    )
+    section_group.add_argument(
         "--fass",
         "--force-alphabetical-sort-within-sections",
         action="store_true",

@@ -2914,7 +2914,40 @@ def test_sort_within_sections_with_force_to_top_issue_473() -> None:
     )
 
 
-def test_force_sort_within_sections_with_relative_imports_issue_1659() -> None:
+def test_force_sort_within_sections_with_relative_imports() -> None:
+    """Test sorting of relative imports with force_sort_within_sections=True"""
+    assert isort.check_code(
+        """import .
+from . import foo
+from .. import a
+from ..alpha.beta import b
+from ..omega import c
+import .apple as bar
+from .mango import baz
+""",
+        show_diff=True,
+        force_sort_within_sections=True,
+    )
+
+
+def test_force_sort_within_sections_with_reverse_relative_imports() -> None:
+    """Test reverse sorting of relative imports with force_sort_within_sections=True"""
+    assert isort.check_code(
+        """import .
+from . import foo
+from .mango import baz
+from ..alpha.beta import b
+from .. import a
+from ..omega import c
+import .apple as bar
+""",
+        show_diff=True,
+        force_sort_within_sections=True,
+        reverse_relative=True,
+    )
+
+
+def test_sort_relative_in_force_sorted_sections_issue_1659() -> None:
     """Ensure relative imports are sorted within sections"""
     assert isort.check_code(
         """from .. import a
@@ -2927,10 +2960,11 @@ from .mango import baz
 """,
         show_diff=True,
         force_sort_within_sections=True,
+        sort_relative_in_force_sorted_sections=True,
     )
 
 
-def test_force_sort_within_sections_with_reverse_relative_imports_issue_1659() -> None:
+def test_reverse_sort_relative_in_force_sorted_sections_issue_1659() -> None:
     """Ensure reverse ordered relative imports are sorted within sections"""
     assert isort.check_code(
         """import .
@@ -2943,6 +2977,7 @@ from ..omega import c
 """,
         show_diff=True,
         force_sort_within_sections=True,
+        sort_relative_in_force_sorted_sections=True,
         reverse_relative=True,
     )
 
