@@ -331,18 +331,18 @@ from . import foo
     assert (
         isort.code(
             """
-from .. import foo
-# Comment canary
 from . import foo
+# Comment canary
+from .. import foo
 """,
             ensure_newline_before_comments=True,
             force_sort_within_sections=True,
         )
         == """
-from .. import foo
+from . import foo
 
 # Comment canary
-from . import foo
+from .. import foo
 """
     )
 
