@@ -7,7 +7,7 @@ from io import StringIO
 import pytest
 
 import isort
-from isort import Config, exceptions
+from isort import Config, api, exceptions
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
@@ -482,6 +482,43 @@ d = 1
 
 # isort: dict
 y = {"b": "c", "z": "z"}"""
+    )
+    assert api.sort_stream(
+        input_stream=StringIO(
+            """
+import a
+import x
+
+# isort: list
+__all__ = ["b", "a", "b"]
+
+# isort: unique-list
+__all__ = ["b", "a", "b"]
+
+# isort: tuple
+__all__ = ("b", "a", "b")
+
+# isort: unique-tuple
+__all__ = ("b", "a", "b")
+
+# isort: set
+__all__ = {"b", "a", "b"}
+
+
+def method():
+    # isort: list
+    x = ["b", "a"]
+
+
+# isort: assignments
+d = 1
+b = 2
+a = 3
+
+# isort: dict
+y = {"z": "z", "b": "b", "b": "c"}""",
+        ),
+        output_stream=StringIO(),
     )
 
 
