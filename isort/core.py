@@ -159,10 +159,11 @@ def process(
                 and stripped_line not in config.section_comments
             ):
                 in_top_comment = True
-            elif in_top_comment:
-                if not line.startswith("#") or stripped_line in config.section_comments:
-                    in_top_comment = False
-                    first_comment_index_end = index - 1
+            elif in_top_comment and (
+                not line.startswith("#") or stripped_line in config.section_comments
+            ):
+                in_top_comment = False
+                first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
             if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
