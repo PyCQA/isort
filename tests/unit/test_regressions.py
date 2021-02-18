@@ -1537,3 +1537,34 @@ import a as a  # b comment
 import a  # a comment; b comment
 """
     )
+
+
+def test_isort_shouldnt_add_extra_new_lines_with_import_heading_issue_1670():
+    snippet = """#!/usr/bin/python3 -ttu
+# Standard Library
+import argparse
+import datetime
+
+import attr
+import requests
+
+
+def foo() -> int:
+    print("Hello world")
+    return 0
+
+
+def spam():
+
+
+    # Standard Library
+    import collections
+    import logging
+"""
+    assert (
+        isort.code(
+            snippet,
+            import_heading_stdlib="Standard Library",
+        )
+        == snippet
+    )
