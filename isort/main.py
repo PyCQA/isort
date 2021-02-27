@@ -2,6 +2,7 @@
 import argparse
 import functools
 import json
+import multiprocessing
 import os
 import sys
 from gettext import gettext as _
@@ -268,7 +269,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Use the old deprecated finder logic that relies on environment introspection magic.",
     )
     general_group.add_argument(
-        "-j", "--jobs", help="Number of files to process in parallel.", dest="jobs", type=int
+        "-j",
+        "--jobs",
+        help="Number of files to process in parallel.",
+        dest="jobs",
+        type=int,
+        nargs="?",
+        const=multiprocessing.cpu_count(),
     )
     general_group.add_argument(
         "--ac",
@@ -844,6 +851,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
             arguments["multi_line_output"] = WrapModes(int(multi_line_output))
         else:
             arguments["multi_line_output"] = WrapModes[multi_line_output]
+
     return arguments
 
 
