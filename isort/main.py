@@ -2,7 +2,6 @@
 import argparse
 import functools
 import json
-import multiprocessing
 import os
 import sys
 from gettext import gettext as _
@@ -275,7 +274,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="jobs",
         type=int,
         nargs="?",
-        const=multiprocessing.cpu_count(),
+        const=-1,
     )
     general_group.add_argument(
         "--ac",
@@ -993,7 +992,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     config_dict = arguments.copy()
     ask_to_apply = config_dict.pop("ask_to_apply", False)
-    jobs = config_dict.pop("jobs", ())
+    jobs = config_dict.pop("jobs", None)
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
@@ -1069,7 +1068,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if jobs:
             import multiprocessing
 
-            executor = multiprocessing.Pool(jobs)
+            executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
             attempt_iterator = executor.imap(
                 functools.partial(
                     sort_imports,
