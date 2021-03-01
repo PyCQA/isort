@@ -348,10 +348,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Provide the filename associated with a stream.",
     )
     target_group.add_argument(
-        "--no-preserve-root",
+        "--allow-root",
         action="store_true",
         default=False,
-        help="Tells isort not to treat / specially, allowing it to be ran on the root dir.",
+        help="Tells isort not to treat / specially, allowing it to be ran against the root dir.",
     )
 
     output_group.add_argument(
@@ -1006,7 +1006,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     stream_filename = config_dict.pop("filename", None)
     ext_format = config_dict.pop("ext_format", None)
-    no_preserve_root = config_dict.pop("no_preserve_root", None)
+    allow_root = config_dict.pop("allow_root", None)
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
@@ -1044,18 +1044,16 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 file_path=file_path,
                 extension=ext_format,
             )
-    elif "/" in file_names and not no_preserve_root:
+    elif "/" in file_names and not allow_root:
         printer = create_terminal_printer(color=config.color_output)
         printer.error("it is dangerous to operate recursively on '/'")
-        printer.error("use --no-preserve-root to override this failsafe")
+        printer.error("use --allow-root to override this failsafe")
         sys.exit(1)
     else:
         if stream_filename:
             printer = create_terminal_printer(color=config.color_output)
             printer.error("Filename override is intended only for stream (-) sorting.")
             sys.exit(1)
-        if file_names == ["/"]:
-            input("You've requested to run isort against your entire computer (/) are you sure? ")
         skipped: List[str] = []
         broken: List[str] = []
 
