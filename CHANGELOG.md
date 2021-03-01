@@ -9,7 +9,8 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1648: Export MyPY type hints.
   - Implemented #1641: Identified import statements now return runnable code.
   - Implemented #1661: Added "wemake" profile.
-  - implemented #1669: Parallel (`-j`) now defaults to number of CPU cores if no value is provided.
+  - Implemented #1669: Parallel (`-j`) now defaults to number of CPU cores if no value is provided.
+  - Implemented #1668: Added a safeguard against accidental usage against /.
 
 ### 5.7.0 December 30th 2020
   - Fixed #1612: In rare circumstances an extra comma is added after import and before comment.
