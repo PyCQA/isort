@@ -145,6 +145,11 @@ sections=MADEUP
         main.main([str(python_file)])
 
 
+def test_ran_against_root():
+    with pytest.raises(SystemExit):
+        main.main(["/"])
+
+
 def test_main(capsys, tmpdir):
     base_args = [
         "-sp",
