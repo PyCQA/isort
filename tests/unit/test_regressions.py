@@ -1573,7 +1573,7 @@ def spam():
 def test_isort_shouldnt_add_extra_line_float_to_top_issue_1667():
     assert isort.check_code(
         """
-    import sys
+import sys
 
 sys.path.insert(1, 'path/containing/something_else/..')
 
