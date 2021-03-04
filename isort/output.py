@@ -220,20 +220,20 @@ def _with_from_imports(
 
         import_start = f"from {module} {import_type} "
         from_imports = list(parsed.imports[section]["from"][module])
-        if not config.no_inline_sort or (
-            config.force_single_line and module not in config.single_line_exclusions
-        ):
-            if not config.only_sections:
-                from_imports = sorting.naturally(
-                    from_imports,
-                    key=lambda key: sorting.module_key(
-                        key,
-                        config,
-                        True,
-                        config.force_alphabetical_sort_within_sections,
-                        section_name=section,
-                    ),
-                )
+        if (
+            not config.no_inline_sort
+            or (config.force_single_line and module not in config.single_line_exclusions)
+        ) and not config.only_sections:
+            from_imports = sorting.naturally(
+                from_imports,
+                key=lambda key: sorting.module_key(
+                    key,
+                    config,
+                    True,
+                    config.force_alphabetical_sort_within_sections,
+                    section_name=section,
+                ),
+            )
         if remove_imports:
             from_imports = [
                 line for line in from_imports if f"{module}.{line}" not in remove_imports
