@@ -148,43 +148,46 @@ def sorted_imports(
         output_at = parsed.import_index
     formatted_output[output_at:0] = output
 
-    imports_tail = output_at + len(output)
-    while [
-        character.strip() for character in formatted_output[imports_tail : imports_tail + 1]
-    ] == [""]:
-        formatted_output.pop(imports_tail)
+    if output:
+        imports_tail = output_at + len(output)
+        while [
+            character.strip() for character in formatted_output[imports_tail : imports_tail + 1]
+        ] == [""]:
+            formatted_output.pop(imports_tail)
 
-    if len(formatted_output) > imports_tail:
-        next_construct = ""
-        tail = formatted_output[imports_tail:]
+        if len(formatted_output) > imports_tail:
+            next_construct = ""
+            tail = formatted_output[imports_tail:]
 
-        for index, line in enumerate(tail):
-            should_skip, in_quote, *_ = parse.skip_line(
-                line,
-                in_quote="",
-                index=len(formatted_output),
-                section_comments=config.section_comments,
-                needs_import=False,
-            )
-            if not should_skip and line.strip():
-                if (
-                    line.strip().startswith("#")
-                    and len(tail) > (index + 1)
-                    and tail[index + 1].strip()
-                ):
-                    continue
-                next_construct = line
-                break
-            if in_quote:
-                next_construct = line
-                break
+            for index, line in enumerate(tail):
+                should_skip, in_quote, *_ = parse.skip_line(
+                    line,
+                    in_quote="",
+                    index=len(formatted_output),
+                    section_comments=config.section_comments,
+                    needs_import=False,
+                )
+                if not should_skip and line.strip():
+                    if (
+                        line.strip().startswith("#")
+                        and len(tail) > (index + 1)
+                        and tail[index + 1].strip()
+                    ):
+                        continue
+                    next_construct = line
+                    break
+                if in_quote:
+                    next_construct = line
+                    break
 
-        if config.lines_after_imports != -1:
-            formatted_output[imports_tail:0] = ["" for line in range(config.lines_after_imports)]
-        elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
-            formatted_output[imports_tail:0] = ["", ""]
-        else:
-            formatted_output[imports_tail:0] = [""]
+            if config.lines_after_imports != -1:
+                formatted_output[imports_tail:0] = [
+                    "" for line in range(config.lines_after_imports)
+                ]
+            elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
+                formatted_output[imports_tail:0] = ["", ""]
+            else:
+                formatted_output[imports_tail:0] = [""]
 
     if parsed.place_imports:
         new_out_lines = []
@@ -217,20 +220,20 @@ def _with_from_imports(
 
         import_start = f"from {module} {import_type} "
         from_imports = list(parsed.imports[section]["from"][module])
-        if not config.no_inline_sort or (
-            config.force_single_line and module not in config.single_line_exclusions
-        ):
-            if not config.only_sections:
-                from_imports = sorting.naturally(
-                    from_imports,
-                    key=lambda key: sorting.module_key(
-                        key,
-                        config,
-                        True,
-                        config.force_alphabetical_sort_within_sections,
-                        section_name=section,
-                    ),
-                )
+        if (
+            not config.no_inline_sort
+            or (config.force_single_line and module not in config.single_line_exclusions)
+        ) and not config.only_sections:
+            from_imports = sorting.naturally(
+                from_imports,
+                key=lambda key: sorting.module_key(
+                    key,
+                    config,
+                    True,
+                    config.force_alphabetical_sort_within_sections,
+                    section_name=section,
+                ),
+            )
         if remove_imports:
             from_imports = [
                 line for line in from_imports if f"{module}.{line}" not in remove_imports

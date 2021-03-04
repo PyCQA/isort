@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.8.0 TBD
   - Fixed #1631: as import comments can in some cases be duplicated.
+  - Fixed #1667: extra newline added with float-to-top, after skip, in some cases.
   - Implemented #1648: Export MyPY type hints.
   - Implemented #1641: Identified import statements now return runnable code.
   - Implemented #1661: Added "wemake" profile.
