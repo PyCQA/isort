@@ -206,6 +206,7 @@ class _Config:
     follow_links: bool = True
     indented_import_headings: bool = True
     honor_case_in_force_sorted_sections: bool = False
+    overwrite_in_place: bool = False
 
     def __post_init__(self):
         py_version = self.py_version

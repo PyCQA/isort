@@ -34,6 +34,11 @@ def test_sort_file(imperfect) -> None:
     assert imperfect.read() == fixed_content
 
 
+def test_sort_file_in_place(imperfect) -> None:
+    assert api.sort_file(imperfect, overwrite_in_place=True)
+    assert imperfect.read() == fixed_content
+
+
 def test_sort_file_to_stdout(capsys, imperfect) -> None:
     assert api.sort_file(imperfect, write_to_stdout=True)
     out, _ = capsys.readouterr()

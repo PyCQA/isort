@@ -208,6 +208,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     general_group.add_argument(
+        "--overwrite-in-place",
+        help="Tells isort to overwrite in place using the same file handle."
+        "Comes at a performance and memory usage penalty over it's standard "
+        "approach but ensures all file flags and modes stay unchanged.",
+        dest="overwrite_in_place",
+        action="store_true",
+    )
+    general_group.add_argument(
         "--show-config",
         dest="show_config",
         action="store_true",

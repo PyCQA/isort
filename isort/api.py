@@ -384,7 +384,10 @@ def sort_file(
                                     ):
                                         return False
                             source_file.stream.close()
-                            tmp_file.replace(source_file.path)
+                            if config.overwrite_in_place:
+                                source_file.path.write_bytes(tmp_file.read_bytes())
+                            else:
+                                tmp_file.replace(source_file.path)
                             if not config.quiet:
                                 print(f"Fixing {source_file.path}")
                     finally:
