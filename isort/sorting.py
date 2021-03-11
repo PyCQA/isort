@@ -54,7 +54,11 @@ def module_key(
 def section_key(line: str, config: Config) -> str:
     section = "B"
 
-    if config.reverse_relative and line.startswith("from ."):
+    if (
+        not config.sort_relative_in_force_sorted_sections
+        and config.reverse_relative
+        and line.startswith("from .")
+    ):
         match = re.match(r"^from (\.+)\s*(.*)", line)
         if match:  # pragma: no cover - regex always matches if line starts with "from ."
             line = f"from {' '.join(match.groups())}"
@@ -66,6 +70,9 @@ def section_key(line: str, config: Config) -> str:
     else:
         line = re.sub("^from ", "", line)
         line = re.sub("^import ", "", line)
+    if config.sort_relative_in_force_sorted_sections:
+        sep = " " if config.reverse_relative else "_"
+        line = re.sub(r"^(\.+)", fr"\1{sep}", line)
     if line.split(" ")[0] in config.force_to_top:
         section = "A"
     # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
