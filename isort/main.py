@@ -314,7 +314,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Files that sort imports should skip over. If you want to skip multiple "
         "files you should specify twice: --skip file1 --skip file2. Values can be ",
         "file names, directory names or file paths. To skip all files in a nested path "
-        "use --skip-glob."
+        "use --skip-glob.",
         dest="skip",
         action="append",
     )
