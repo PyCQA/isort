@@ -522,9 +522,9 @@ class Config(_Config):
             normalized_path = normalized_path[2:]
 
         for skip_path in self.skip:
-            if posixpath.abspath(normalized_path) == posixpath.abspath(
-                skip_path.replace("\\", "/")
-            ):
+            skip_abspath = posixpath.abspath(skip_path.replace("\\", "/"))
+            file_abspath = posixpath.abspath(normalized_path)
+            if posixpath.commonpath([file_abspath, skip_abspath]) == skip_abspath:
                 return True
 
         position = os.path.split(file_name)
