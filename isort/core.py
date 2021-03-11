@@ -125,17 +125,22 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
-                output_stream.write(
-                    textwrap.indent(
-                        isort.literal.assignment(
-                            code_sorting_section,
-                            str(code_sorting),
-                            extension,
-                            config=_indented_config(config, indent),
-                        ),
-                        code_sorting_indent,
-                    )
+                sorted_code = textwrap.indent(
+                    isort.literal.assignment(
+                        code_sorting_section,
+                        str(code_sorting),
+                        extension,
+                        config=_indented_config(config, indent),
+                    ),
+                    code_sorting_indent,
                 )
+                made_changes = made_changes or _has_changed(
+                    before=code_sorting_section,
+                    after=sorted_code,
+                    line_separator=line_separator,
+                    ignore_whitespace=config.ignore_whitespace,
+                )
+                output_stream.write(sorted_code)
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -154,10 +159,11 @@ def process(
                 and stripped_line not in config.section_comments
             ):
                 in_top_comment = True
-            elif in_top_comment:
-                if not line.startswith("#") or stripped_line in config.section_comments:
-                    in_top_comment = False
-                    first_comment_index_end = index - 1
+            elif in_top_comment and (
+                not line.startswith("#") or stripped_line in config.section_comments
+            ):
+                in_top_comment = False
+                first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
             if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
@@ -198,17 +204,22 @@ def process(
                     not_imports = True
                 elif code_sorting:
                     if not stripped_line:
-                        output_stream.write(
-                            textwrap.indent(
-                                isort.literal.assignment(
-                                    code_sorting_section,
-                                    str(code_sorting),
-                                    extension,
-                                    config=_indented_config(config, indent),
-                                ),
-                                code_sorting_indent,
-                            )
+                        sorted_code = textwrap.indent(
+                            isort.literal.assignment(
+                                code_sorting_section,
+                                str(code_sorting),
+                                extension,
+                                config=_indented_config(config, indent),
+                            ),
+                            code_sorting_indent,
                         )
+                        made_changes = made_changes or _has_changed(
+                            before=code_sorting_section,
+                            after=sorted_code,
+                            line_separator=line_separator,
+                            ignore_whitespace=config.ignore_whitespace,
+                        )
+                        output_stream.write(sorted_code)
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""

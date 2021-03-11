@@ -189,6 +189,31 @@ def test_editorconfig_without_sections(tmpdir):
     assert not loaded_settings
 
 
+def test_get_config_data_with_toml_and_utf8(tmpdir):
+    test_config = tmpdir.join("pyproject.toml")
+    # Exception: UnicodeDecodeError: 'gbk' codec can't decode byte 0x84 in position 57
+    test_config.write_text(
+        """
+[tool.poetry]
+
+description = "基于FastAPI + Mysql的 TodoList"  # Exception: UnicodeDecodeError
+name = "TodoList"
+version = "0.1.0"
+
+[tool.isort]
+
+multi_line_output = 3
+
+""",
+        "utf8",
+    )
+    loaded_settings = settings._get_config_data(
+        str(test_config), sections=settings.CONFIG_SECTIONS["pyproject.toml"]
+    )
+    assert loaded_settings
+    assert str(tmpdir) in loaded_settings["source"]
+
+
 def test_as_bool():
     assert settings._as_bool("TrUe") is True
     assert settings._as_bool("true") is True

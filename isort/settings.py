@@ -207,6 +207,7 @@ class _Config:
     indented_import_headings: bool = True
     honor_case_in_force_sorted_sections: bool = False
     sort_relative_in_force_sorted_sections: bool = False
+    overwrite_in_place: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
@@ -648,7 +649,7 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
 def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
-    with open(file_path) as config_file:
+    with open(file_path, encoding="utf-8") as config_file:
         if file_path.endswith(".toml"):
             config = toml.load(config_file)
             for section in sections:

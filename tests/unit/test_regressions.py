@@ -1537,3 +1537,51 @@ import a as a  # b comment
 import a  # a comment; b comment
 """
     )
+
+
+def test_isort_shouldnt_add_extra_new_lines_with_import_heading_issue_1670():
+    snippet = """#!/usr/bin/python3 -ttu
+# Standard Library
+import argparse
+import datetime
+
+import attr
+import requests
+
+
+def foo() -> int:
+    print("Hello world")
+    return 0
+
+
+def spam():
+
+
+    # Standard Library
+    import collections
+    import logging
+"""
+    assert (
+        isort.code(
+            snippet,
+            import_heading_stdlib="Standard Library",
+        )
+        == snippet
+    )
+
+
+def test_isort_shouldnt_add_extra_line_float_to_top_issue_1667():
+    assert isort.check_code(
+        """
+import sys
+
+sys.path.insert(1, 'path/containing/something_else/..')
+
+import something_else  # isort:skip
+
+# Some constant
+SOME_CONSTANT = 4
+""",
+        show_diff=True,
+        float_to_top=True,
+    )

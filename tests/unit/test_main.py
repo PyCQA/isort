@@ -78,6 +78,7 @@ def test_parse_args():
     assert main.parse_args(["--csi"]) == {"combine_straight_imports": True}
     assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
     assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
+    assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
 
 
 def test_ascii_art(capsys):
@@ -143,6 +144,11 @@ sections=MADEUP
 
     with pytest.raises(SystemExit):
         main.main([str(python_file)])
+
+
+def test_ran_against_root():
+    with pytest.raises(SystemExit):
+        main.main(["/"])
 
 
 def test_main(capsys, tmpdir):

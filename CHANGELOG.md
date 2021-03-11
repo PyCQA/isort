@@ -6,9 +6,13 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.8.0 TBD
   - Fixed #1631: as import comments can in some cases be duplicated.
+  - Fixed #1667: extra newline added with float-to-top, after skip, in some cases.
   - Implemented #1648: Export MyPY type hints.
   - Implemented #1641: Identified import statements now return runnable code.
   - Implemented #1661: Added "wemake" profile.
+  - Implemented #1669: Parallel (`-j`) now defaults to number of CPU cores if no value is provided.
+  - Implemented #1668: Added a safeguard against accidental usage against /.
+  - Implemented #1638 / #1644: Provide a flag `--overwrite-in-place` to ensure same file handle is used after sorting.
 
 ### 5.7.0 December 30th 2020
   - Fixed #1612: In rare circumstances an extra comma is added after import and before comment.

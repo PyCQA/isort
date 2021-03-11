@@ -104,37 +104,40 @@ pip install isort[requirements_deprecated_finder,pipfile_deprecated_finder]
 
 **From the command line**:
 
+To run on specific files:
+
 ```bash
 isort mypythonfile.py mypythonfile2.py
 ```
 
-or recursively:
+To apply recursively:
 
 ```bash
 isort .
 ```
 
-*which is equivalent to:*
+If [globstar](https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html)
+is enabled, `isort .` is equivalent to:
 
 ```bash
 isort **/*.py
 ```
 
-or to see the proposed changes without applying them:
+To view proposed changes without applying them:
 
 ```bash
 isort mypythonfile.py --diff
 ```
 
 Finally, to atomically run isort against a project, only applying
-changes if they don't introduce syntax errors do:
+changes if they don't introduce syntax errors:
 
 ```bash
 isort --atomic .
 ```
 
-(Note: this is disabled by default as it keeps isort from being able to
-run against code written using a different version of Python)
+(Note: this is disabled by default, as it prevents isort from
+running against code written using a different version of Python.)
 
 **From within Python**:
 
@@ -255,7 +258,7 @@ import a
 
 isort can be ran or configured to add / remove imports automatically.
 
-[See a complete guide here.]((https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
+[See a complete guide here.](https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
 
 ## Using isort to verify code
 

@@ -208,6 +208,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     general_group.add_argument(
+        "--overwrite-in-place",
+        help="Tells isort to overwrite in place using the same file handle."
+        "Comes at a performance and memory usage penalty over it's standard "
+        "approach but ensures all file flags and modes stay unchanged.",
+        dest="overwrite_in_place",
+        action="store_true",
+    )
+    general_group.add_argument(
         "--show-config",
         dest="show_config",
         action="store_true",
@@ -268,7 +276,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Use the old deprecated finder logic that relies on environment introspection magic.",
     )
     general_group.add_argument(
-        "-j", "--jobs", help="Number of files to process in parallel.", dest="jobs", type=int
+        "-j",
+        "--jobs",
+        help="Number of files to process in parallel.",
+        dest="jobs",
+        type=int,
+        nargs="?",
+        const=-1,
     )
     general_group.add_argument(
         "--ac",
@@ -340,6 +354,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--filename",
         dest="filename",
         help="Provide the filename associated with a stream.",
+    )
+    target_group.add_argument(
+        "--allow-root",
+        action="store_true",
+        default=False,
+        help="Tells isort not to treat / specially, allowing it to be ran against the root dir.",
     )
 
     output_group.add_argument(
@@ -852,6 +872,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
             arguments["multi_line_output"] = WrapModes(int(multi_line_output))
         else:
             arguments["multi_line_output"] = WrapModes[multi_line_output]
+
     return arguments
 
 
@@ -993,7 +1014,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     config_dict = arguments.copy()
     ask_to_apply = config_dict.pop("ask_to_apply", False)
-    jobs = config_dict.pop("jobs", ())
+    jobs = config_dict.pop("jobs", None)
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
@@ -1001,6 +1022,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     stream_filename = config_dict.pop("filename", None)
     ext_format = config_dict.pop("ext_format", None)
+    allow_root = config_dict.pop("allow_root", None)
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
@@ -1038,6 +1060,11 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 file_path=file_path,
                 extension=ext_format,
             )
+    elif "/" in file_names and not allow_root:
+        printer = create_terminal_printer(color=config.color_output)
+        printer.error("it is dangerous to operate recursively on '/'")
+        printer.error("use --allow-root to override this failsafe")
+        sys.exit(1)
     else:
         if stream_filename:
             printer = create_terminal_printer(color=config.color_output)
@@ -1069,7 +1096,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if jobs:
             import multiprocessing
 
-            executor = multiprocessing.Pool(jobs)
+            executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
             attempt_iterator = executor.imap(
                 functools.partial(
                     sort_imports,
