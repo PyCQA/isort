@@ -33,7 +33,7 @@ Force specific imports to the top of their appropriate section.
 
 ## Skip
 
-Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2.
+Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
 
 **Type:** Frozenset  
 **Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
@@ -226,7 +226,7 @@ known_airflow = ['airflow']
 
 ## Multi Line Output
 
-Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-vert-grid-grouped-no-comma, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).
+Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-deprecated-alias-for-5, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).
 
 **Type:** Wrapmodes  
 **Default:** `WrapModes.GRID`  
@@ -752,7 +752,7 @@ Inserts a blank line before a comment following an import.
 
 ## Profile
 
-Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug. As well as any shared profiles.
+Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake. As well as any shared profiles.
 
 **Type:** String  
 **Default:** ``  
@@ -1019,6 +1019,41 @@ Combines all the bare straight imports of the same section in a single line. Won
 **Python & Config File Name:** indented_import_headings  
 **CLI Flags:** **Not Supported**
 
+## Honor Case In Force Sorted Sections
+
+Honor `--case-sensitive` when `--force-sort-within-sections` is being used. Without this option set, `--order-by-type` decides module name ordering too.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** honor_case_in_force_sorted_sections  
+**CLI Flags:**
+
+- --hcss
+- --honor-case-in-force-sorted-sections
+
+## Sort Relative In Force Sorted Sections
+
+When using `--force-sort-within-sections`, sort relative imports the same way as they are sorted when not using that setting.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** sort_relative_in_force_sorted_sections  
+**CLI Flags:**
+
+- --srss
+- --sort-relative-in-force-sorted-sections
+
+## Overwrite In Place
+
+Tells isort to overwrite in place using the same file handle.Comes at a performance and memory usage penalty over it's standard approach but ensures all file flags and modes stay unchanged.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** overwrite_in_place  
+**CLI Flags:**
+
+- --overwrite-in-place
+
 ## Show Version
 
 Displays the currently installed version of isort.
@@ -1178,6 +1213,17 @@ Provide the filename associated with a stream.
 
 - --filename
 
+## Allow Root
+
+Tells isort not to treat / specially, allowing it to be ran against the root dir.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --allow-root
+
 ## Dont Float To Top
 
 Forces --float-to-top setting off. See --float-to-top for more information.
@@ -1214,17 +1260,6 @@ Tells isort to format the given files according to an extensions formatting rule
 **CLI Flags:**
 
 - --ext-format
-
-## Show Files
-
-See the files isort will be ran against with the current config options.
-
-**Type:** Bool  
-**Default:** `False`  
-**Python & Config File Name:** **Not Supported**  
-**CLI Flags:**
-
-- --show-files
 
 ## Deprecated Flags
 
