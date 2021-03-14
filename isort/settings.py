@@ -121,7 +121,9 @@ class _Config:
     py_version: str = "3"
     force_to_top: FrozenSet[str] = frozenset()
     skip: FrozenSet[str] = DEFAULT_SKIP
+    extend_skip: FrozenSet[str] = frozenset()
     skip_glob: FrozenSet[str] = frozenset()
+    extend_skip_glob: FrozenSet[str] = frozenset()
     skip_gitignore: bool = False
     line_length: int = 79
     wrap_length: int = 0
@@ -267,6 +269,8 @@ class Config(_Config):
     ):
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         self._section_comments: Optional[Tuple[str, ...]] = None
+        self._skips: Optional[FrozenSet[str]] = None
+        self._skip_globs: Optional[FrozenSet[str]] = None
 
         if config:
             config_vars = vars(config).copy()
@@ -274,6 +278,8 @@ class Config(_Config):
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
             config_vars.pop("_known_patterns")
             config_vars.pop("_section_comments")
+            config_vars.pop("_skips")
+            config_vars.pop("_skip_globs")
             super().__init__(**config_vars)  # type: ignore
             return
 
@@ -521,7 +527,7 @@ class Config(_Config):
         if normalized_path[1:2] == ":":
             normalized_path = normalized_path[2:]
 
-        for skip_path in self.skip:
+        for skip_path in self.skips:
             if posixpath.abspath(normalized_path) == posixpath.abspath(
                 skip_path.replace("\\", "/")
             ):
@@ -529,11 +535,11 @@ class Config(_Config):
 
         position = os.path.split(file_name)
         while position[1]:
-            if position[1] in self.skip:
+            if position[1] in self.skips:
                 return True
             position = os.path.split(position[0])
 
-        for glob in self.skip_glob:
+        for glob in self.skip_globs:
             if fnmatch.fnmatch(file_name, glob) or fnmatch.fnmatch("/" + file_name, glob):
                 return True
 
@@ -573,6 +579,22 @@ class Config(_Config):
 
         self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
         return self._section_comments
+
+    @property
+    def skips(self) -> FrozenSet[str]:
+        if self._skips is not None:
+            return self._skips
+
+        self._skips = self.skip.union(self.extend_skip)
+        return self._skips
+
+    @property
+    def skip_globs(self) -> FrozenSet[str]:
+        if self._skip_globs is not None:
+            return self._skip_globs
+
+        self._skip_globs = self.skip_glob.union(self.extend_skip_glob)
+        return self._skip_globs
 
     def _parse_known_pattern(self, pattern: str) -> List[str]:
         """Expand pattern if identified as a directory and return found sub packages"""

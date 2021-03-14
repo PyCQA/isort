@@ -311,7 +311,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     target_group.add_argument(
         "-s",
         "--skip",
-        help="Files that sort imports should skip over. If you want to skip multiple "
+        help="Files that isort should skip over. If you want to skip multiple "
         "files you should specify twice: --skip file1 --skip file2. Values can be "
         "file names, directory names or file paths. To skip all files in a nested path "
         "use --skip-glob.",
@@ -319,9 +319,25 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="append",
     )
     target_group.add_argument(
+        "--extend-skip",
+        help="Extends --skip to add additional files that isort should skip over. "
+        "If you want to skip multiple "
+        "files you should specify twice: --skip file1 --skip file2. Values can be "
+        "file names, directory names or file paths. To skip all files in a nested path "
+        "use --skip-glob.",
+        dest="extend_skip",
+        action="append",
+    )
+    target_group.add_argument(
         "--sg",
         "--skip-glob",
-        help="Files that sort imports should skip over.",
+        help="Files that isort should skip over.",
+        dest="skip_glob",
+        action="append",
+    )
+    target_group.add_argument(
+        "--extend-skip-glob",
+        help="Additional files that isort should skip over (extending --skip-glob).",
         dest="skip_glob",
         action="append",
     )
