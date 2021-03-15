@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Ubuntu cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         if: startsWith(matrix.os, 'ubuntu')
         with:
           path: ~/.cache/pip
@@ -24,7 +24,7 @@ jobs:
             ${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: macOS cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         if: startsWith(matrix.os, 'macOS')
         with:
           path: ~/Library/Caches/pip
@@ -34,7 +34,7 @@ jobs:
             ${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Windows cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         if: startsWith(matrix.os, 'windows')
         with:
           path: c:\users\runneradmin\appdata\local\pip\cache
@@ -44,7 +44,7 @@ jobs:
             ${{ matrix.os }}-${{ matrix.python-version }}-
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 

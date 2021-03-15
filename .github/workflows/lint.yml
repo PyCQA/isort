@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: pip cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: lint-pip-${{ hashFiles('**/pyproject.toml') }}
@@ -21,7 +21,7 @@ jobs:
             lint-pip-
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
