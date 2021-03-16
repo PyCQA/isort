@@ -246,9 +246,6 @@ def process(
                 ):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
-                    did_contain_imports = contains_imports
-                    contains_imports = True
-
                     new_indent = line[: -len(line.lstrip())]
                     import_statement = line
                     stripped_line = line.strip().split("#")[0]
@@ -266,37 +263,47 @@ def process(
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
 
-                    cimport_statement: bool = False
                     if (
-                        import_statement.lstrip().startswith(CIMPORT_IDENTIFIERS)
-                        or " cimport " in import_statement
-                        or " cimport*" in import_statement
-                        or " cimport(" in import_statement
-                        or ".cimport" in import_statement
+                        import_statement.lstrip().startswith("from")
+                        and "import" not in import_statement
                     ):
-                        cimport_statement = True
-
-                    if cimport_statement != cimports or (
-                        new_indent != indent
-                        and import_section
-                        and (not did_contain_imports or len(new_indent) < len(indent))
-                    ):
-                        indent = new_indent
-                        if import_section:
-                            next_cimports = cimport_statement
-                            next_import_section = import_statement
-                            import_statement = ""
-                            not_imports = True
-                            line = ""
-                        else:
-                            cimports = cimport_statement
+                        line = import_statement
+                        not_imports = True
                     else:
-                        if new_indent != indent:
-                            if import_section and did_contain_imports:
-                                import_statement = indent + import_statement.lstrip()
+                        did_contain_imports = contains_imports
+                        contains_imports = True
+
+                        cimport_statement: bool = False
+                        if (
+                            import_statement.lstrip().startswith(CIMPORT_IDENTIFIERS)
+                            or " cimport " in import_statement
+                            or " cimport*" in import_statement
+                            or " cimport(" in import_statement
+                            or ".cimport" in import_statement
+                        ):
+                            cimport_statement = True
+
+                        if cimport_statement != cimports or (
+                            new_indent != indent
+                            and import_section
+                            and (not did_contain_imports or len(new_indent) < len(indent))
+                        ):
+                            indent = new_indent
+                            if import_section:
+                                next_cimports = cimport_statement
+                                next_import_section = import_statement
+                                import_statement = ""
+                                not_imports = True
+                                line = ""
                             else:
-                                indent = new_indent
-                    import_section += import_statement
+                                cimports = cimport_statement
+                        else:
+                            if new_indent != indent:
+                                if import_section and did_contain_imports:
+                                    import_statement = indent + import_statement.lstrip()
+                                else:
+                                    indent = new_indent
+                        import_section += import_statement
                 else:
                     not_imports = True
 

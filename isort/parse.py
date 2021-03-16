@@ -260,6 +260,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         for statement in statements:
             line, raw_line = _normalize_line(statement)
             type_of_import = import_type(line, config) or ""
+            raw_lines = [raw_line]
             if not type_of_import:
                 out_lines.append(raw_line)
                 continue
@@ -288,6 +289,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     ):
                         nested_comments[stripped_line] = comments[-1]
                     import_string += line_separator + line
+                    raw_lines.append(line)
             else:
                 while line.strip().endswith("\\"):
                     line, new_comment = parse_comments(in_lines[index])
@@ -310,6 +312,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         ):
                             nested_comments[stripped_line] = comments[-1]
                         import_string += line_separator + line
+                        raw_lines.append(line)
 
                         while not line.split("#")[0].strip().endswith(")") and index < line_count:
                             line, new_comment = parse_comments(in_lines[index])
@@ -325,6 +328,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             ):
                                 nested_comments[stripped_line] = comments[-1]
                             import_string += line_separator + line
+                            raw_lines.append(line)
 
                     stripped_line = _strip_syntax(line).strip()
                     if (
@@ -348,6 +352,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     .replace("\\", " ")
                     .replace("\n", " ")
                 )
+                if "import " not in import_string:
+                    out_lines.extend(raw_lines)
+                    continue
+
                 if " cimport " in import_string:
                     parts = import_string.split(" cimport ")
                     cimports = True

@@ -1008,3 +1008,24 @@ def function():
     import numpy as np
 """
     )
+
+
+def test_isort_auto_detects_and_ignores_invalid_from_imports_issue_1688():
+    """isort should automatically detect and ignore incorrectly written from import statements
+    see: https://github.com/PyCQA/isort/issues/1688
+    """
+    assert (
+        isort.code(
+            """
+from package1 import alright
+from package2 imprt and_its_gone
+from package3 import also_ok
+"""
+        )
+        == """
+from package1 import alright
+
+from package2 imprt and_its_gone
+from package3 import also_ok
+"""
+    )
