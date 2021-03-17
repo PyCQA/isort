@@ -15,6 +15,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1638 / #1644: Provide a flag `--overwrite-in-place` to ensure same file handle is used after sorting.
   - Implemented #1684: Added support for extending skips with `--extend-skip` and `--extend-skip-glob`.
   - Implemented #1688: Auto identification and skipping of some invalid import statements.
+  - Implemented #1645: Ability to reverse the import sorting order.
   - Documented #1685: Skip doesn't support plain directory names, but skip_glob does.
 
 ### 5.7.0 December 30th 2020
