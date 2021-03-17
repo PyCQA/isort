@@ -1029,3 +1029,33 @@ from package2 imprt and_its_gone
 from package3 import also_ok
 """
     )
+
+
+def test_isort_allows_reversing_sort_order_issue_1645():
+    """isort allows reversing the sort order for those who prefer Z or longer imports first.
+    see: https://github.com/PyCQA/isort/issues/1688
+    """
+    assert (
+        isort.code(
+            """
+from xxx import (
+    g,
+    hi,
+    def,
+    abcd,
+)
+""",
+            profile="black",
+            reverse_sort=True,
+            length_sort=True,
+            line_length=20,
+        )
+        == """
+from xxx import (
+    abcd,
+    def,
+    hi,
+    g,
+)
+"""
+    )
