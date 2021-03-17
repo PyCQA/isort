@@ -210,6 +210,7 @@ class _Config:
     honor_case_in_force_sorted_sections: bool = False
     sort_relative_in_force_sorted_sections: bool = False
     overwrite_in_place: bool = False
+    reverse_sort: bool = False
 
     def __post_init__(self):
         py_version = self.py_version
