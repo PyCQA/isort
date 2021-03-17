@@ -54,12 +54,15 @@ def sorted_imports(
                 key=lambda key: sorting.module_key(
                     key, config, section_name=section, straight_import=True
                 ),
+                reverse=config.reverse_sort,
             )
 
         from_modules = parsed.imports[section]["from"]
         if not config.only_sections:
             from_modules = sorting.naturally(
-                from_modules, key=lambda key: sorting.module_key(key, config, section_name=section)
+                from_modules,
+                key=lambda key: sorting.module_key(key, config, section_name=section),
+                reverse=config.reverse_sort,
             )
 
         straight_imports = _with_straight_imports(
@@ -233,6 +236,7 @@ def _with_from_imports(
                     config.force_alphabetical_sort_within_sections,
                     section_name=section,
                 ),
+                reverse=config.reverse_sort,
             )
         if remove_imports:
             from_imports = [

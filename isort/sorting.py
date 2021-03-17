@@ -96,7 +96,9 @@ def section_key(line: str, config: Config) -> str:
     return f"{section}{len(line) if config.length_sort else ''}{line}"
 
 
-def naturally(to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None) -> List[str]:
+def naturally(
+    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
+) -> List[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
@@ -105,7 +107,7 @@ def naturally(to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None
         def key_callback(text: str) -> List[Any]:
             return _natural_keys(key(text))  # type: ignore
 
-    return sorted(to_sort, key=key_callback)
+    return sorted(to_sort, key=key_callback, reverse=reverse)
 
 
 def _atoi(text: str) -> Any:
