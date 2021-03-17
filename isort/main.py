@@ -562,6 +562,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Reverse order of relative imports.",
     )
+    output_group.add_argument(
+        "--reverse-sort",
+        dest="reverse_sort",
+        action="store_true",
+        help="Reverses the ordering of imports.",
+    )
     inline_args_group.add_argument(
         "--sl",
         "--force-single-line-imports",
