@@ -1059,3 +1059,26 @@ from xxx import (
 )
 """
     )
+
+
+def test_isort_can_push_star_imports_above_others_issue_1504():
+    """isort should provide a way to push star imports above other imports to avoid explicit
+    imports from being overwritten.
+    see: https://github.com/PyCQA/isort/issues/1504
+    """
+    assert (
+        (
+            isort.code(
+                """
+from ._bar import Any, All, Not
+from ._foo import a, *
+""",
+                star_first=True,
+            )
+        )
+        == """
+from ._foo import *
+from ._foo import a
+from ._bar import All, Any, Not
+"""
+    )

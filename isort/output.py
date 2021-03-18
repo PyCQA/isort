@@ -65,6 +65,16 @@ def sorted_imports(
                 reverse=config.reverse_sort,
             )
 
+            if config.star_first:
+                star_modules = []
+                other_modules = []
+                for module in from_modules:
+                    if "*" in parsed.imports[section]["from"][module]:
+                        star_modules.append(module)
+                    else:
+                        other_modules.append(module)
+                from_modules = star_modules + other_modules
+
         straight_imports = _with_straight_imports(
             parsed, config, straight_modules, section, remove_imports, import_type
         )

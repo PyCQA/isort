@@ -666,6 +666,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="ext_format",
         help="Tells isort to format the given files according to an extensions formatting rules.",
     )
+    output_group.add_argument(
+        "--star-first",
+        help="Forces star imports above others to avoid overriding directly imported variables.",
+        dest="star_first",
+        action="store_true",
+    )
 
     section_group.add_argument(
         "--sd",
