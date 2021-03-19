@@ -429,18 +429,22 @@ def _with_from_imports(
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
                     if comment:
+                        from_imports.remove(from_import)
+                        if from_imports:
+                            use_comments = []
+                        else:
+                            use_comments = comments
+                            comments = None
                         single_import_line = with_comments(
-                            comments,
+                            use_comments,
                             import_start + from_import,
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
                         )
                         single_import_line += (
-                            f"{comments and ';' or config.comment_prefix} " f"{comment}"
+                            f"{use_comments and ';' or config.comment_prefix} " f"{comment}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
-                        from_imports.remove(from_import)
-                        comments = None
 
                 from_import_section = []
                 while from_imports and (

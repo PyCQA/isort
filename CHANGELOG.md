@@ -7,6 +7,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 ### 5.8.0 TBD
   - Fixed #1631: as import comments can in some cases be duplicated.
   - Fixed #1667: extra newline added with float-to-top, after skip, in some cases.
+  - Fixed #1594: incorrect placement of noqa comments with multiple from imports.
   - Implemented #1648: Export MyPY type hints.
   - Implemented #1641: Identified import statements now return runnable code.
   - Implemented #1661: Added "wemake" profile.
@@ -16,7 +17,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1684: Added support for extending skips with `--extend-skip` and `--extend-skip-glob`.
   - Implemented #1688: Auto identification and skipping of some invalid import statements.
   - Implemented #1645: Ability to reverse the import sorting order.
-  - Implemented #1504: Ability to push star imports to the top to avoid overriding explicitly defined imports.
+  - Implemented #1504: Added ability to push star imports to the top to avoid overriding explicitly defined imports.
   - Documented #1685: Skip doesn't support plain directory names, but skip_glob does.
 
 ### 5.7.0 December 30th 2020

@@ -1585,3 +1585,25 @@ SOME_CONSTANT = 4
         show_diff=True,
         float_to_top=True,
     )
+
+
+def test_isort_shouldnt_move_noqa_comment_issue_1594():
+    assert (
+        isort.code(
+            """
+from .test import TestTestTestTestTestTest1  # noqa: F401
+from .test import TestTestTestTestTestTest2, TestTestTestTestTestTest3, """
+            """TestTestTestTestTestTest4, TestTestTestTestTestTest5  # noqa: F401
+""",
+            profile="black",
+        )
+        == """
+from .test import TestTestTestTestTestTest1  # noqa: F401
+from .test import (  # noqa: F401
+    TestTestTestTestTestTest2,
+    TestTestTestTestTestTest3,
+    TestTestTestTestTestTest4,
+    TestTestTestTestTestTest5,
+)
+"""
+    )
