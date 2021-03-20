@@ -1610,12 +1610,12 @@ from .test import (  # noqa: F401
 
 
 def test_isort_correctly_handles_unix_vs_linux_newlines_issue_1566():
-    IMPORT_STATEMENT = (
+    import_statement = (
         "from impacket.smb3structs import (\n"
         "SMB2_CREATE, SMB2_FLAGS_DFS_OPERATIONS, SMB2_IL_IMPERSONATION, "
         "SMB2_OPLOCK_LEVEL_NONE, SMB2Create,"
         "\nSMB2Create_Response, SMB2Packet)\n"
     )
-    assert isort.code(IMPORT_STATEMENT, line_length=120) == isort.code(
-        IMPORT_STATEMENT.replace("\n", "\r\n"), line_length=120
-    )
+    assert isort.code(import_statement, line_length=120) == isort.code(
+        import_statement.replace("\n", "\r\n"), line_length=120
+    ).replace("\r\n", "\n")
