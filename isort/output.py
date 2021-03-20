@@ -504,7 +504,13 @@ def _with_from_imports(
                             config=config,
                             multi_line_output=wrap.Modes.VERTICAL_GRID,  # type: ignore
                         )
-                        if max(len(x) for x in import_statement.split("\n")) > config.line_length:
+                        if (
+                            max(
+                                len(import_line)
+                                for import_line in import_statement.split(parsed.line_separator)
+                            )
+                            > config.line_length
+                        ):
                             import_statement = other_import_statement
                 if not do_multiline_reformat and len(import_statement) > config.line_length:
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)

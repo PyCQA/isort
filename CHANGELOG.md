@@ -8,6 +8,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1631: as import comments can in some cases be duplicated.
   - Fixed #1667: extra newline added with float-to-top, after skip, in some cases.
   - Fixed #1594: incorrect placement of noqa comments with multiple from imports.
+  - Fixed #1566: in some cases different length limits for dos based line endings.
   - Implemented #1648: Export MyPY type hints.
   - Implemented #1641: Identified import statements now return runnable code.
   - Implemented #1661: Added "wemake" profile.
