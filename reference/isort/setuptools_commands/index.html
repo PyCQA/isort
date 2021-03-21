@@ -1002,8 +1002,7 @@
     Methods
   </a>
   
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#announce" class="md-nav__link">
@@ -1191,11 +1190,6 @@
   <a href="#warn" class="md-nav__link">
     warn
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1528,8 +1522,7 @@
     Methods
   </a>
   
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#announce" class="md-nav__link">
@@ -1729,11 +1722,6 @@
     </nav>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
     </ul>
   
@@ -1756,6 +1744,8 @@
                 
                 
                 <h1 id="module-isortsetuptools_commands">Module isort.setuptools_commands</h1>
+<p>None</p>
+<p>None</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">glob</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -1784,7 +1774,7 @@
 
     <span class="n">user_options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">initialize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">initialize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="n">default_settings</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">DEFAULT_CONFIG</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -1792,7 +1782,7 @@
 
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">finalize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">finalize_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="sd">&quot;&quot;&quot;Get options from config files.&quot;&quot;&quot;</span>
 
@@ -1834,11 +1824,11 @@
 
         <span class="k">yield</span> <span class="s2">&quot;setup.py&quot;</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="n">arguments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arguments</span>
 
-        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution_files</span><span class="p">():</span>
 
@@ -1848,11 +1838,11 @@
 
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="o">**</span><span class="n">arguments</span><span class="p">):</span>
 
-                        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c1"># pragma: no cover</span>
+                        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># pragma: no cover</span>
 
                 <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
 
-                    <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to parse file {python_file} due to {error}&quot;</span><span class="p">)</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to parse file </span><span class="si">{</span><span class="n">python_file</span><span class="si">}</span><span class="s2"> due to </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">wrong_sorted_files</span><span class="p">:</span>
 
@@ -1868,8 +1858,6 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<p>The :class:<code>ISortCommand</code> class is used by setuptools to perform
-imports checks on registered modules.</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="p">.</span><span class="n">Command</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;The :class:`ISortCommand` class is used by setuptools to perform</span>
@@ -1978,7 +1966,7 @@ imports checks on registered modules.</p>
 </code></pre></div>
 
 <h4 id="methods">Methods</h4>
-<h5 id="announce">announce</h5>
+<h4 id="announce">announce</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">announce</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">msg</span><span class="p">,</span>
@@ -1986,21 +1974,21 @@ imports checks on registered modules.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>If the current verbosity level is of greater than or equal to
-'level' print 'msg' to stdout.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">announce</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<p>If the current verbosity level is of greater than or equal to</p>
+<p>'level' print 'msg' to stdout.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">announce</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">msg</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;If the current verbosity level is of greater than or equal to</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">If the current verbosity level is of greater than or equal to</span>
 
-<span class="ss">        &#39;level&#39; print &#39;msg&#39; to stdout.</span>
+        <span class="s1">&#39;</span><span class="s">level</span><span class="s1">&#39;</span> <span class="nv">print</span> <span class="s1">&#39;</span><span class="s">msg</span><span class="s1">&#39;</span> <span class="nv">to</span> <span class="nv">stdout</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="n">log</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="k">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="nv">log</span>.<span class="nv">log</span><span class="ss">(</span><span class="nv">level</span>, <span class="nv">msg</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="copy_file">copy_file</h5>
+<h4 id="copy_file">copy_file</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">infile</span><span class="p">,</span>
@@ -2012,28 +2000,28 @@ imports checks on registered modules.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Copy a file respecting verbose, dry-run and force flags.  (The
-former two default to whatever is in the Distribution object, and
+<p>Copy a file respecting verbose, dry-run and force flags.  (The</p>
+<p>former two default to whatever is in the Distribution object, and
 the latter defaults to false for commands that don't define it.)</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">copy_file</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">preserve_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">preserve_times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">copy_file</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span><span class="o">=</span><span class="mi">1</span>, <span class="nv">preserve_times</span><span class="o">=</span><span class="mi">1</span>,
 
-                  <span class="n">link</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                  <span class="nv">link</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Copy a file respecting verbose, dry-run and force flags.  (The</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Copy a file respecting verbose, dry-run and force flags.  (The</span>
 
-<span class="ss">        former two default to whatever is in the Distribution object, and</span>
+        <span class="nv">former</span> <span class="nv">two</span> <span class="nv">default</span> <span class="nv">to</span> <span class="nv">whatever</span> <span class="nv">is</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">Distribution</span> <span class="nv">object</span>, <span class="nv">and</span>
 
-<span class="ss">        the latter defaults to false for commands that don&#39;t define it.)&quot;&quot;&quot;</span>
+        <span class="nv">the</span> <span class="nv">latter</span> <span class="nv">defaults</span> <span class="nv">to</span> <span class="nv">false</span> <span class="k">for</span> <span class="nv">commands</span> <span class="nv">that</span> <span class="nv">don</span><span class="s1">&#39;</span><span class="s">t define it.)&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">file_util</span><span class="p">.</span><span class="n">copy_file</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">preserve_mode</span><span class="p">,</span>
+        <span class="k">return</span> <span class="nv">file_util</span>.<span class="nv">copy_file</span><span class="ss">(</span><span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span>,
 
-                                   <span class="n">preserve_times</span><span class="p">,</span> <span class="k">not</span> <span class="k">self</span><span class="p">.</span><span class="k">force</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span>
+                                   <span class="nv">preserve_times</span>, <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">force</span>, <span class="nv">link</span>,
 
-                                   <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+                                   <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="copy_tree">copy_tree</h5>
+<h4 id="copy_tree">copy_tree</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_tree</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">infile</span><span class="p">,</span>
@@ -2045,35 +2033,35 @@ the latter defaults to false for commands that don't define it.)</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Copy an entire directory tree respecting verbose, dry-run,
-and force flags.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">copy_tree</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">preserve_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">preserve_times</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<p>Copy an entire directory tree respecting verbose, dry-run,</p>
+<p>and force flags.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">copy_tree</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span><span class="o">=</span><span class="mi">1</span>, <span class="nv">preserve_times</span><span class="o">=</span><span class="mi">1</span>,
 
-                   <span class="n">preserve_symlinks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                   <span class="nv">preserve_symlinks</span><span class="o">=</span><span class="mi">0</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Copy an entire directory tree respecting verbose, dry-run,</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Copy an entire directory tree respecting verbose, dry-run,</span>
 
-<span class="ss">        and force flags.</span>
+        <span class="nv">and</span> <span class="nv">force</span> <span class="nv">flags</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">dir_util</span><span class="p">.</span><span class="n">copy_tree</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">preserve_mode</span><span class="p">,</span>
+        <span class="k">return</span> <span class="nv">dir_util</span>.<span class="nv">copy_tree</span><span class="ss">(</span><span class="nv">infile</span>, <span class="nv">outfile</span>, <span class="nv">preserve_mode</span>,
 
-                                  <span class="n">preserve_times</span><span class="p">,</span> <span class="n">preserve_symlinks</span><span class="p">,</span>
+                                  <span class="nv">preserve_times</span>, <span class="nv">preserve_symlinks</span>,
 
-                                  <span class="k">not</span> <span class="k">self</span><span class="p">.</span><span class="k">force</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+                                  <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">force</span>, <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="debug_print">debug_print</h5>
+<h4 id="debug_print">debug_print</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">debug_print</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">msg</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Print 'msg' to stdout if the global DEBUG (taken from the
-DISTUTILS_DEBUG environment variable) flag is true.</p>
+<p>Print 'msg' to stdout if the global DEBUG (taken from the</p>
+<p>DISTUTILS_DEBUG environment variable) flag is true.</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">debug_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;Print &#39;msg&#39; to stdout if the global DEBUG (taken from the</span>
@@ -2086,13 +2074,13 @@ DISTUTILS_DEBUG environment variable) flag is true.</p>
 
         <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
 
-            <span class="k">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 </code></pre></div>
 
 </details>
-<h5 id="distribution_files">distribution_files</h5>
+<h4 id="distribution_files">distribution_files</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">distribution_files</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -2135,7 +2123,7 @@ DISTUTILS_DEBUG environment variable) flag is true.</p>
 </code></pre></div>
 
 </details>
-<h5 id="dump_options">dump_options</h5>
+<h4 id="dump_options">dump_options</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">dump_options</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2171,24 +2159,24 @@ DISTUTILS_DEBUG environment variable) flag is true.</p>
 </code></pre></div>
 
 </details>
-<h5 id="ensure_dirname">ensure_dirname</h5>
+<h4 id="ensure_dirname">ensure_dirname</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_dirname</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">option</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">ensure_dirname</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">option</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    def ensure_dirname(self, option):
 
-        <span class="k">self</span><span class="p">.</span><span class="n">_ensure_tested_string</span><span class="p">(</span><span class="k">option</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">,</span>
+        self._ensure_tested_string(option, os.path.isdir,
 
-                                   <span class="ss">&quot;directory name&quot;</span><span class="p">,</span>
+                                   &quot;directory name&quot;,
 
-                                   <span class="ss">&quot;&#39;%s&#39; does not exist or is not a directory&quot;</span><span class="p">)</span>
+                                   &quot;&#39;%s&#39; does not exist or is not a directory&quot;)
 </code></pre></div>
 
 </details>
-<h5 id="ensure_filename">ensure_filename</h5>
+<h4 id="ensure_filename">ensure_filename</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_filename</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">option</span>
@@ -2196,35 +2184,35 @@ DISTUTILS_DEBUG environment variable) flag is true.</p>
 </code></pre></div>
 
 <p>Ensure that 'option' is the name of an existing file.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">ensure_filename</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">option</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    def ensure_filename(self, option):
 
-        <span class="ss">&quot;&quot;&quot;Ensure that &#39;option&#39; is the name of an existing file.&quot;&quot;&quot;</span>
+        &quot;&quot;&quot;Ensure that &#39;option&#39; is the name of an existing file.&quot;&quot;&quot;
 
-        <span class="k">self</span><span class="p">.</span><span class="n">_ensure_tested_string</span><span class="p">(</span><span class="k">option</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isfile</span><span class="p">,</span>
+        self._ensure_tested_string(option, os.path.isfile,
 
-                                   <span class="ss">&quot;filename&quot;</span><span class="p">,</span>
+                                   &quot;filename&quot;,
 
-                                   <span class="ss">&quot;&#39;%s&#39; does not exist or is not a file&quot;</span><span class="p">)</span>
+                                   &quot;&#39;%s&#39; does not exist or is not a file&quot;)
 </code></pre></div>
 
 </details>
-<h5 id="ensure_finalized">ensure_finalized</h5>
+<h4 id="ensure_finalized">ensure_finalized</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_finalized</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">ensure_finalized</span><span class="p">(</span><span class="k">self</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">ensure_finalized</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
 
-        <span class="k">if</span> <span class="k">not</span> <span class="k">self</span><span class="p">.</span><span class="n">finalized</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nv">not</span> <span class="nv">self</span>.<span class="nv">finalized</span>:
 
-            <span class="k">self</span><span class="p">.</span><span class="n">finalize_options</span><span class="p">()</span>
+            <span class="nv">self</span>.<span class="nv">finalize_options</span><span class="ss">()</span>
 
-        <span class="k">self</span><span class="p">.</span><span class="n">finalized</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="nv">self</span>.<span class="nv">finalized</span> <span class="o">=</span> <span class="mi">1</span>
 </code></pre></div>
 
 </details>
-<h5 id="ensure_string">ensure_string</h5>
+<h4 id="ensure_string">ensure_string</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_string</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">option</span><span class="p">,</span>
@@ -2232,52 +2220,52 @@ DISTUTILS_DEBUG environment variable) flag is true.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Ensure that 'option' is a string; if not defined, set it to
-'default'.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">ensure_string</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">option</span><span class="p">,</span> <span class="k">default</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+<p>Ensure that 'option' is a string; if not defined, set it to</p>
+<p>'default'.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">ensure_string</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">option</span>, <span class="nv">default</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Ensure that &#39;option&#39; is a string; if not defined, set it to</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Ensure that &#39;option&#39; is a string; if not defined, set it to</span>
 
-<span class="ss">        &#39;default&#39;.</span>
+        <span class="s1">&#39;</span><span class="s">default</span><span class="s1">&#39;</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="k">self</span><span class="p">.</span><span class="n">_ensure_stringlike</span><span class="p">(</span><span class="k">option</span><span class="p">,</span> <span class="ss">&quot;string&quot;</span><span class="p">,</span> <span class="k">default</span><span class="p">)</span>
+        <span class="nv">self</span>.<span class="nv">_ensure_stringlike</span><span class="ss">(</span><span class="nv">option</span>, <span class="s2">&quot;</span><span class="s">string</span><span class="s2">&quot;</span>, <span class="nv">default</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="ensure_string_list">ensure_string_list</h5>
+<h4 id="ensure_string_list">ensure_string_list</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">ensure_string_list</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">option</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Ensure that 'option' is a list of strings.  If 'option' is
-currently a string, we split it either on /,\s*/ or /\s+/, so
+<p>Ensure that 'option' is a list of strings.  If 'option' is</p>
+<p>currently a string, we split it either on /,\s*/ or /\s+/, so
 "foo bar baz", "foo,bar,baz", and "foo,   bar baz" all become
 ["foo", "bar", "baz"].</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="s">ensure_string_list(self,</span> <span class="s">option):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="s">ensure_string_list(self,</span><span class="w"> </span><span class="s">option):</span><span class="w"></span>
 
-        <span class="n">r</span><span class="s">&quot;&quot;&quot;Ensure that &#39;option&#39; is a list of strings.  If &#39;option&#39; is</span>
+<span class="w">        </span><span class="n">r</span><span class="s">&quot;&quot;&quot;Ensure that &#39;option&#39; is a list of strings.  If &#39;option&#39; is</span>
 
 <span class="s">        currently a string, we split it either on /,\s*/ or /\s+/, so</span>
 
-<span class="s">        &quot;</span><span class="n">foo</span> <span class="n">bar</span> <span class="n">baz</span><span class="s">&quot;, &quot;</span><span class="n">foo</span><span class="p">,</span><span class="n">bar</span><span class="p">,</span><span class="n">baz</span><span class="s">&quot;, and &quot;</span><span class="n">foo</span><span class="p">,</span>   <span class="n">bar</span> <span class="n">baz</span><span class="s">&quot; all become</span>
+<span class="s">        &quot;</span><span class="n">foo</span><span class="w"> </span><span class="nb">bar</span><span class="w"> </span><span class="n">baz</span><span class="s">&quot;, &quot;</span><span class="n">foo</span><span class="p">,</span><span class="nb">bar</span><span class="p">,</span><span class="n">baz</span><span class="s">&quot;, and &quot;</span><span class="n">foo</span><span class="p">,</span><span class="w">   </span><span class="nb">bar</span><span class="w"> </span><span class="n">baz</span><span class="s">&quot; all become</span>
 
-<span class="s">        [&quot;</span><span class="n">foo</span><span class="s">&quot;, &quot;</span><span class="n">bar</span><span class="s">&quot;, &quot;</span><span class="n">baz</span><span class="s">&quot;].</span>
+<span class="s">        [&quot;</span><span class="n">foo</span><span class="s">&quot;, &quot;</span><span class="nb">bar</span><span class="s">&quot;, &quot;</span><span class="n">baz</span><span class="s">&quot;].</span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="w"></span>
 
-        <span class="n">val</span> <span class="p">=</span> <span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+<span class="w">        </span><span class="n">val</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">getattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">option</span><span class="p">)</span><span class="w"></span>
 
-        <span class="n">if</span> <span class="s">val</span> <span class="s">is</span> <span class="s">None:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">None</span><span class="p">:</span><span class="w"></span>
 
-            <span class="n">return</span>
+<span class="w">            </span><span class="k">return</span><span class="w"></span>
 
-        <span class="s">elif</span> <span class="s">isinstance(val,</span> <span class="s">string_types):</span>
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">string_types</span><span class="p">):</span><span class="w"></span>
 
-            <span class="n">setattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">re</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">r</span><span class="o">&#39;</span><span class="p">,</span><span class="o">\</span><span class="n">s</span><span class="o">*|\</span><span class="n">s</span><span class="o">+</span><span class="s">&#39;, val))</span>
+<span class="w">            </span><span class="n">setattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">option</span><span class="p">,</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">r</span><span class="o">&#39;</span><span class="p">,</span><span class="o">\</span><span class="n">s</span><span class="o">*|\</span><span class="n">s</span><span class="o">+</span><span class="s">&#39;, val))</span>
 
 <span class="s">        else:</span>
 
@@ -2293,13 +2281,13 @@ currently a string, we split it either on /,\s*/ or /\s+/, so
 
 <span class="s">                raise DistutilsOptionError(</span>
 
-<span class="s">                    &quot;&#39;</span><span class="c">%s&#39; must be a list of strings (got %r)&quot;</span>
+<span class="s">                    &quot;&#39;</span><span class="c">%s&#39; must be a list of strings (got %r)&quot;</span><span class="w"></span>
 
-                    <span class="c">% (option, val))</span>
+<span class="w">                    </span><span class="c">% (option, val))</span><span class="w"></span>
 </code></pre></div>
 
 </details>
-<h5 id="execute">execute</h5>
+<h4 id="execute">execute</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
@@ -2309,48 +2297,48 @@ currently a string, we split it either on /,\s*/ or /\s+/, so
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="k">execute</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    def execute(self, func, args, msg=None, level=1):
 
-        <span class="n">util</span><span class="p">.</span><span class="k">execute</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+        util.execute(func, args, msg, dry_run=self.dry_run)
 </code></pre></div>
 
 </details>
-<h5 id="finalize_options">finalize_options</h5>
+<h4 id="finalize_options">finalize_options</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">finalize_options</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
 <p>Get options from config files.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">finalize_options</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">finalize_options</span><span class="p">(</span><span class="kr">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="ss">&quot;&quot;&quot;Get options from config files.&quot;&quot;&quot;</span>
+        <span class="s">&quot;&quot;&quot;Get options from config files.&quot;&quot;&quot;</span>
 
-        <span class="k">self</span><span class="p">.</span><span class="n">arguments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="k">Any</span><span class="p">]</span> <span class="o">=</span> <span class="err">{}</span>  <span class="o">#</span> <span class="n">skipcq</span><span class="p">:</span> <span class="n">PYL</span><span class="o">-</span><span class="n">W0201</span>
+        <span class="kr">self</span><span class="p">.</span><span class="n">arguments</span><span class="o">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="kr">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="err">#</span> <span class="n">skipcq</span><span class="o">:</span> <span class="n">PYL</span><span class="o">-</span><span class="n">W0201</span>
 
-        <span class="k">self</span><span class="p">.</span><span class="n">arguments</span><span class="p">[</span><span class="ss">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="kr">self</span><span class="p">.</span><span class="n">arguments</span><span class="p">[</span><span class="s">&quot;settings_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">getcwd</span><span class="p">()</span>
 </code></pre></div>
 
 </details>
-<h5 id="get_command_name">get_command_name</h5>
+<h4 id="get_command_name">get_command_name</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_command_name</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">get_command_name</span><span class="p">(</span><span class="k">self</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">get_command_name</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
 
-        <span class="k">if</span> <span class="n">hasattr</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="s1">&#39;command_name&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nv">hasattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="s1">&#39;</span><span class="s">command_name</span><span class="s1">&#39;</span><span class="ss">)</span>:
 
-            <span class="k">return</span> <span class="k">self</span><span class="p">.</span><span class="n">command_name</span>
+            <span class="k">return</span> <span class="nv">self</span>.<span class="nv">command_name</span>
 
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">else</span>:
 
-            <span class="k">return</span> <span class="k">self</span><span class="p">.</span><span class="n">__class__</span><span class="p">.</span><span class="n">__name__</span>
+            <span class="k">return</span> <span class="nv">self</span>.<span class="nv">__class__</span>.<span class="nv">__name__</span>
 </code></pre></div>
 
 </details>
-<h5 id="get_finalized_command">get_finalized_command</h5>
+<h4 id="get_finalized_command">get_finalized_command</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_finalized_command</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">command</span><span class="p">,</span>
@@ -2358,75 +2346,75 @@ currently a string, we split it either on /,\s*/ or /\s+/, so
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Wrapper around Distribution's 'get_command_obj()' method: find
-(create if necessary and 'create' is true) the command object for
+<p>Wrapper around Distribution's 'get_command_obj()' method: find</p>
+<p>(create if necessary and 'create' is true) the command object for
 'command', call its 'ensure_finalized()' method, and return the
 finalized command object.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">get_finalized_command</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="k">create</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">get_finalized_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span>, <span class="nv">create</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Wrapper around Distribution&#39;s &#39;get_command_obj()&#39; method: find</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Wrapper around Distribution&#39;s &#39;get_command_obj()&#39; method: find</span>
 
-<span class="ss">        (create if necessary and &#39;create&#39; is true) the command object for</span>
+        <span class="ss">(</span><span class="nv">create</span> <span class="k">if</span> <span class="nv">necessary</span> <span class="nv">and</span> <span class="s1">&#39;</span><span class="s">create</span><span class="s1">&#39;</span> <span class="nv">is</span> <span class="nv">true</span><span class="ss">)</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">object</span> <span class="k">for</span>
 
-<span class="ss">        &#39;command&#39;, call its &#39;ensure_finalized()&#39; method, and return the</span>
+        <span class="s1">&#39;</span><span class="s">command</span><span class="s1">&#39;</span>, <span class="k">call</span> <span class="nl">its</span> <span class="s1">&#39;</span><span class="s">ensure_finalized()</span><span class="s1">&#39;</span> <span class="nv">method</span>, <span class="nv">and</span> <span class="k">return</span> <span class="nv">the</span>
 
-<span class="ss">        finalized command object.</span>
+        <span class="nv">finalized</span> <span class="nv">command</span> <span class="nv">object</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="n">cmd_obj</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">distribution</span><span class="p">.</span><span class="n">get_command_obj</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="k">create</span><span class="p">)</span>
+        <span class="nv">cmd_obj</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">get_command_obj</span><span class="ss">(</span><span class="nv">command</span>, <span class="nv">create</span><span class="ss">)</span>
 
-        <span class="n">cmd_obj</span><span class="p">.</span><span class="n">ensure_finalized</span><span class="p">()</span>
+        <span class="nv">cmd_obj</span>.<span class="nv">ensure_finalized</span><span class="ss">()</span>
 
-        <span class="k">return</span> <span class="n">cmd_obj</span>
+        <span class="k">return</span> <span class="nv">cmd_obj</span>
 </code></pre></div>
 
 </details>
-<h5 id="get_sub_commands">get_sub_commands</h5>
+<h4 id="get_sub_commands">get_sub_commands</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_sub_commands</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Determine the sub-commands that are relevant in the current
-distribution (ie., that need to be run).  This is based on the
+<p>Determine the sub-commands that are relevant in the current</p>
+<p>distribution (ie., that need to be run).  This is based on the
 'sub_commands' class attribute: each tuple in that list may include
 a method that we call to determine if the subcommand needs to be
 run for the current distribution.  Return a list of command names.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">get_sub_commands</span><span class="p">(</span><span class="k">self</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">get_sub_commands</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Determine the sub-commands that are relevant in the current</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Determine the sub-commands that are relevant in the current</span>
 
-<span class="ss">        distribution (ie., that need to be run).  This is based on the</span>
+        <span class="nv">distribution</span> <span class="ss">(</span><span class="nv">ie</span>., <span class="nv">that</span> <span class="nv">need</span> <span class="nv">to</span> <span class="nv">be</span> <span class="nv">run</span><span class="ss">)</span>.  <span class="nv">This</span> <span class="nv">is</span> <span class="nv">based</span> <span class="nv">on</span> <span class="nv">the</span>
 
-<span class="ss">        &#39;sub_commands&#39; class attribute: each tuple in that list may include</span>
+        <span class="s1">&#39;</span><span class="s">sub_commands</span><span class="s1">&#39;</span> <span class="nv">class</span> <span class="nv">attribute</span>: <span class="nv">each</span> <span class="nv">tuple</span> <span class="nv">in</span> <span class="nv">that</span> <span class="nv">list</span> <span class="nv">may</span> <span class="k">include</span>
 
-<span class="ss">        a method that we call to determine if the subcommand needs to be</span>
+        <span class="nv">a</span> <span class="nv">method</span> <span class="nv">that</span> <span class="nv">we</span> <span class="k">call</span> <span class="nl">to</span> <span class="nv">determine</span> <span class="k">if</span> <span class="nv">the</span> <span class="nv">subcommand</span> <span class="nv">needs</span> <span class="nv">to</span> <span class="nv">be</span>
 
-<span class="ss">        run for the current distribution.  Return a list of command names.</span>
+        <span class="nv">run</span> <span class="k">for</span> <span class="nv">the</span> <span class="nv">current</span> <span class="nv">distribution</span>.  <span class="k">Return</span> <span class="nv">a</span> <span class="nv">list</span> <span class="nv">of</span> <span class="nv">command</span> <span class="nv">names</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="n">commands</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nv">commands</span> <span class="o">=</span> []
 
-        <span class="k">for</span> <span class="p">(</span><span class="n">cmd_name</span><span class="p">,</span> <span class="k">method</span><span class="p">)</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">sub_commands</span><span class="p">:</span>
+        <span class="k">for</span> <span class="ss">(</span><span class="nv">cmd_name</span>, <span class="nv">method</span><span class="ss">)</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">sub_commands</span>:
 
-            <span class="k">if</span> <span class="k">method</span> <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">method</span><span class="p">(</span><span class="k">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nv">method</span> <span class="nv">is</span> <span class="nv">None</span> <span class="nv">or</span> <span class="nv">method</span><span class="ss">(</span><span class="nv">self</span><span class="ss">)</span>:
 
-                <span class="n">commands</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd_name</span><span class="p">)</span>
+                <span class="nv">commands</span>.<span class="nv">append</span><span class="ss">(</span><span class="nv">cmd_name</span><span class="ss">)</span>
 
-        <span class="k">return</span> <span class="n">commands</span>
+        <span class="k">return</span> <span class="nv">commands</span>
 </code></pre></div>
 
 </details>
-<h5 id="initialize_options">initialize_options</h5>
+<h4 id="initialize_options">initialize_options</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">initialize_options</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-<p>Set default values for all the options that this command
-supports.  Note that these defaults may be overridden by other
+<p>Set default values for all the options that this command</p>
+<p>supports.  Note that these defaults may be overridden by other
 commands, by the setup script, by config files, or by the
 command-line.  Thus, this is not the place to code dependencies
 between options; generally, 'initialize_options()' implementations
@@ -2442,7 +2430,7 @@ are just a bunch of "self.foo = None" assignments.</p>
 </code></pre></div>
 
 </details>
-<h5 id="make_archive">make_archive</h5>
+<h4 id="make_archive">make_archive</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_archive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">base_name</span><span class="p">,</span>
@@ -2454,19 +2442,19 @@ are just a bunch of "self.foo = None" assignments.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">make_archive</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">base_name</span><span class="p">,</span> <span class="n">format</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="k">None</span><span class="p">,</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">make_archive</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">base_name</span>, <span class="nv">format</span>, <span class="nv">root_dir</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">base_dir</span><span class="o">=</span><span class="nv">None</span>,
 
-                     <span class="k">owner</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="k">group</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+                     <span class="nv">owner</span><span class="o">=</span><span class="nv">None</span>, <span class="nv">group</span><span class="o">=</span><span class="nv">None</span><span class="ss">)</span>:
 
-        <span class="k">return</span> <span class="n">archive_util</span><span class="p">.</span><span class="n">make_archive</span><span class="p">(</span><span class="n">base_name</span><span class="p">,</span> <span class="n">format</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span>
+        <span class="k">return</span> <span class="nv">archive_util</span>.<span class="nv">make_archive</span><span class="ss">(</span><span class="nv">base_name</span>, <span class="nv">format</span>, <span class="nv">root_dir</span>, <span class="nv">base_dir</span>,
 
-                                         <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">,</span>
+                                         <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span>,
 
-                                         <span class="k">owner</span><span class="o">=</span><span class="k">owner</span><span class="p">,</span> <span class="k">group</span><span class="o">=</span><span class="k">group</span><span class="p">)</span>
+                                         <span class="nv">owner</span><span class="o">=</span><span class="nv">owner</span>, <span class="nv">group</span><span class="o">=</span><span class="nv">group</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="make_file">make_file</h5>
+<h4 id="make_file">make_file</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">infiles</span><span class="p">,</span>
@@ -2479,8 +2467,8 @@ are just a bunch of "self.foo = None" assignments.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Special case of 'execute()' for operations that process one or
-more input files and generate one output file.  Works just like
+<p>Special case of 'execute()' for operations that process one or</p>
+<p>more input files and generate one output file.  Works just like
 'execute()', except the operation is skipped and a different
 message printed if 'outfile' already exists and is newer than all
 files listed in 'infiles'.  If the command defined 'self.force',
@@ -2544,7 +2532,7 @@ timestamp checks.</p>
 </code></pre></div>
 
 </details>
-<h5 id="mkpath">mkpath</h5>
+<h4 id="mkpath">mkpath</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">mkpath</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
@@ -2552,13 +2540,13 @@ timestamp checks.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">mkpath</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">mode</span><span class="o">=</span><span class="mi">0</span><span class="n">o777</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    def mkpath(self, name, mode=0o777):
 
-        <span class="n">dir_util</span><span class="p">.</span><span class="n">mkpath</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">mode</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+        dir_util.mkpath(name, mode, dry_run=self.dry_run)
 </code></pre></div>
 
 </details>
-<h5 id="move_file">move_file</h5>
+<h4 id="move_file">move_file</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">src</span><span class="p">,</span>
@@ -2568,15 +2556,15 @@ timestamp checks.</p>
 </code></pre></div>
 
 <p>Move a file respecting dry-run flag.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">move_file</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="k">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">move_file</span> <span class="ss">(</span><span class="nv">self</span>, <span class="nv">src</span>, <span class="nv">dst</span>, <span class="nv">level</span><span class="o">=</span><span class="mi">1</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Move a file respecting dry-run flag.&quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Move a file respecting dry-run flag.</span><span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">file_util</span><span class="p">.</span><span class="n">move_file</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="k">self</span><span class="p">.</span><span class="n">dry_run</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nv">file_util</span>.<span class="nv">move_file</span><span class="ss">(</span><span class="nv">src</span>, <span class="nv">dst</span>, <span class="nv">dry_run</span><span class="o">=</span><span class="nv">self</span>.<span class="nv">dry_run</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="reinitialize_command">reinitialize_command</h5>
+<h4 id="reinitialize_command">reinitialize_command</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">reinitialize_command</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">command</span><span class="p">,</span>
@@ -2595,70 +2583,70 @@ timestamp checks.</p>
 </code></pre></div>
 
 </details>
-<h5 id="run">run</h5>
+<h4 id="run">run</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-<p>A command's raison d'etre: carry out the action it exists to
-perform, controlled by the options initialized in
+<p>A command's raison d'etre: carry out the action it exists to</p>
+<p>perform, controlled by the options initialized in
 'initialize_options()', customized by other commands, the setup
 script, the command-line, and config files, and finalized in
 'finalize_options()'.  All terminal output and filesystem
 interaction should be done by 'run()'.</p>
 <p>This method must be implemented by all command classes.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">run</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">run</span><span class="p">(</span><span class="kr">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="n">arguments</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">arguments</span>
+        <span class="n">arguments</span> <span class="o">=</span> <span class="kr">self</span><span class="p">.</span><span class="n">arguments</span>
 
-        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="k">False</span>
+        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="kr">False</span>
 
-        <span class="k">for</span> <span class="n">path</span> <span class="k">in</span> <span class="k">self</span><span class="p">.</span><span class="n">distribution_files</span><span class="p">():</span>
+        <span class="n">for</span> <span class="n">path</span> <span class="kr">in</span> <span class="kr">self</span><span class="p">.</span><span class="n">distribution_files</span><span class="p">()</span><span class="o">:</span>
 
-            <span class="k">for</span> <span class="n">python_file</span> <span class="k">in</span> <span class="n">glob</span><span class="p">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="ss">&quot;*.py&quot;</span><span class="p">)):</span>
+            <span class="n">for</span> <span class="n">python_file</span> <span class="kr">in</span> <span class="n">glob</span><span class="p">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;*.py&quot;</span><span class="p">))</span><span class="o">:</span>
 
-                <span class="n">try</span><span class="p">:</span>
+                <span class="n">try</span><span class="o">:</span>
 
-                    <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="o">**</span><span class="n">arguments</span><span class="p">):</span>
+                    <span class="nf">if</span> <span class="kr">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="o">**</span><span class="n">arguments</span><span class="p">)</span><span class="o">:</span>
 
-                        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="k">True</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+                        <span class="n">wrong_sorted_files</span> <span class="o">=</span> <span class="kr">True</span>  <span class="err">#</span> <span class="n">pragma</span><span class="o">:</span> <span class="n">no</span> <span class="n">cover</span>
 
-                <span class="k">except</span> <span class="n">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+                <span class="kr">except</span> <span class="n">OSError</span> <span class="kr">as</span> <span class="nf">error</span><span class="o">:</span>  <span class="err">#</span> <span class="n">pragma</span><span class="o">:</span> <span class="n">no</span> <span class="n">cover</span>
 
-                    <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;Unable to parse file {python_file} due to {error}&quot;</span><span class="p">)</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s">&quot;Unable to parse file {python_file} due to {error}&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">wrong_sorted_files</span><span class="p">:</span>
+        <span class="nf">if</span> <span class="n">wrong_sorted_files</span><span class="o">:</span>
 
-            <span class="n">sys</span><span class="p">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+            <span class="n">sys</span><span class="p">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="err">#</span> <span class="n">pragma</span><span class="o">:</span> <span class="n">no</span> <span class="n">cover</span>
 </code></pre></div>
 
 </details>
-<h5 id="run_command">run_command</h5>
+<h4 id="run_command">run_command</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">command</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Run some other command: uses the 'run_command()' method of
-Distribution, which creates and finalizes the command object if
+<p>Run some other command: uses the 'run_command()' method of</p>
+<p>Distribution, which creates and finalizes the command object if
 necessary and then invokes its 'run()' method.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">run_command</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">run_command</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">command</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Run some other command: uses the &#39;run_command()&#39; method of</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Run some other command: uses the &#39;run_command()&#39; method of</span>
 
-<span class="ss">        Distribution, which creates and finalizes the command object if</span>
+        <span class="nv">Distribution</span>, <span class="nv">which</span> <span class="nv">creates</span> <span class="nv">and</span> <span class="nv">finalizes</span> <span class="nv">the</span> <span class="nv">command</span> <span class="nv">object</span> <span class="k">if</span>
 
-<span class="ss">        necessary and then invokes its &#39;run()&#39; method.</span>
+        <span class="nv">necessary</span> <span class="nv">and</span> <span class="k">then</span> <span class="nv">invokes</span> <span class="nv">its</span> <span class="s1">&#39;</span><span class="s">run()</span><span class="s1">&#39;</span> <span class="nv">method</span>.
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="k">self</span><span class="p">.</span><span class="n">distribution</span><span class="p">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">run_command</span><span class="ss">(</span><span class="nv">command</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="set_undefined_options">set_undefined_options</h5>
+<h4 id="set_undefined_options">set_undefined_options</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">set_undefined_options</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">src_cmd</span><span class="p">,</span>
@@ -2666,8 +2654,8 @@ necessary and then invokes its 'run()' method.</p>
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Set the values of any "undefined" options from corresponding
-option values in some other command object.  "Undefined" here means
+<p>Set the values of any "undefined" options from corresponding</p>
+<p>option values in some other command object.  "Undefined" here means
 "is None", which is the convention used to indicate that an option
 has not been changed between 'initialize_options()' and
 'finalize_options()'.  Usually called from 'finalize_options()' for
@@ -2678,49 +2666,49 @@ for it if necessary); the remaining arguments are
 '(src_option,dst_option)' tuples which mean "take the value of
 'src_option' in the 'src_cmd' command object, and copy it to
 'dst_option' in the current command object".</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">set_undefined_options</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">src_cmd</span><span class="p">,</span> <span class="o">*</span><span class="n">option_pairs</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">set_undefined_options</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">src_cmd</span>, <span class="o">*</span><span class="nv">option_pairs</span><span class="ss">)</span>:
 
-        <span class="ss">&quot;&quot;&quot;Set the values of any &quot;</span><span class="n">undefined</span><span class="ss">&quot; options from corresponding</span>
+        <span class="s2">&quot;&quot;&quot;</span><span class="s">Set the values of any </span><span class="s2">&quot;</span><span class="nv">undefined</span><span class="s2">&quot;</span><span class="s"> options from corresponding</span>
 
-<span class="ss">        option values in some other command object.  &quot;</span><span class="n">Undefined</span><span class="ss">&quot; here means</span>
+        <span class="nv">option</span> <span class="nv">values</span> <span class="nv">in</span> <span class="nv">some</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">object</span>.  <span class="s2">&quot;</span><span class="s">Undefined</span><span class="s2">&quot;</span> <span class="nv">here</span> <span class="nv">means</span>
 
-<span class="ss">        &quot;</span><span class="k">is</span> <span class="k">None</span><span class="ss">&quot;, which is the convention used to indicate that an option</span>
+        <span class="s2">&quot;</span><span class="s">is None</span><span class="s2">&quot;</span>, <span class="nv">which</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nv">convention</span> <span class="nv">used</span> <span class="nv">to</span> <span class="nv">indicate</span> <span class="nv">that</span> <span class="nv">an</span> <span class="nv">option</span>
 
-<span class="ss">        has not been changed between &#39;initialize_options()&#39; and</span>
+        <span class="nv">has</span> <span class="nv">not</span> <span class="nv">been</span> <span class="nv">changed</span> <span class="nv">between</span> <span class="s1">&#39;</span><span class="s">initialize_options()</span><span class="s1">&#39;</span> <span class="nv">and</span>
 
-<span class="ss">        &#39;finalize_options()&#39;.  Usually called from &#39;finalize_options()&#39; for</span>
+        <span class="s1">&#39;</span><span class="s">finalize_options()</span><span class="s1">&#39;</span>.  <span class="nv">Usually</span> <span class="nv">called</span> <span class="nv">from</span> <span class="s1">&#39;</span><span class="s">finalize_options()</span><span class="s1">&#39;</span> <span class="k">for</span>
 
-<span class="ss">        options that depend on some other command rather than another</span>
+        <span class="nv">options</span> <span class="nv">that</span> <span class="nv">depend</span> <span class="nv">on</span> <span class="nv">some</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">rather</span> <span class="nv">than</span> <span class="nv">another</span>
 
-<span class="ss">        option of the same command.  &#39;src_cmd&#39; is the other command from</span>
+        <span class="nv">option</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">same</span> <span class="nv">command</span>.  <span class="s1">&#39;</span><span class="s">src_cmd</span><span class="s1">&#39;</span> <span class="nv">is</span> <span class="nv">the</span> <span class="nv">other</span> <span class="nv">command</span> <span class="nv">from</span>
 
-<span class="ss">        which option values will be taken (a command object will be created</span>
+        <span class="nv">which</span> <span class="nv">option</span> <span class="nv">values</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">taken</span> <span class="ss">(</span><span class="nv">a</span> <span class="nv">command</span> <span class="nv">object</span> <span class="nv">will</span> <span class="nv">be</span> <span class="nv">created</span>
 
-<span class="ss">        for it if necessary); the remaining arguments are</span>
+        <span class="k">for</span> <span class="nv">it</span> <span class="k">if</span> <span class="nv">necessary</span><span class="ss">)</span><span class="c1">; the remaining arguments are</span>
 
-<span class="ss">        &#39;(src_option,dst_option)&#39; tuples which mean &quot;</span><span class="n">take</span> <span class="n">the</span> <span class="n">value</span> <span class="k">of</span>
+        <span class="s1">&#39;</span><span class="s">(src_option,dst_option)</span><span class="s1">&#39;</span> <span class="nv">tuples</span> <span class="nv">which</span> <span class="nv">mean</span> <span class="s2">&quot;</span><span class="s">take the value of</span>
 
-        <span class="s1">&#39;src_option&#39;</span> <span class="k">in</span> <span class="n">the</span> <span class="s1">&#39;src_cmd&#39;</span> <span class="n">command</span> <span class="k">object</span><span class="p">,</span> <span class="k">and</span> <span class="k">copy</span> <span class="n">it</span> <span class="k">to</span>
+        <span class="s1">&#39;</span><span class="s">src_option</span><span class="s1">&#39;</span> <span class="nv">in</span> <span class="nv">the</span> <span class="s1">&#39;</span><span class="s">src_cmd</span><span class="s1">&#39;</span> <span class="nv">command</span> <span class="nv">object</span>, <span class="nv">and</span> <span class="nv">copy</span> <span class="nv">it</span> <span class="nv">to</span>
 
-        <span class="s1">&#39;dst_option&#39;</span> <span class="k">in</span> <span class="n">the</span> <span class="k">current</span> <span class="n">command</span> <span class="k">object</span><span class="ss">&quot;.</span>
+        <span class="s1">&#39;</span><span class="s">dst_option</span><span class="s1">&#39;</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">current</span> <span class="nv">command</span> <span class="nv">object</span><span class="s2">&quot;</span><span class="s">.</span>
 
-<span class="ss">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
 
-        <span class="o">#</span> <span class="n">Option_pairs</span><span class="p">:</span> <span class="n">list</span> <span class="k">of</span> <span class="p">(</span><span class="n">src_option</span><span class="p">,</span> <span class="n">dst_option</span><span class="p">)</span> <span class="n">tuples</span>
+        # <span class="nv">Option_pairs</span>: <span class="nv">list</span> <span class="nv">of</span> <span class="ss">(</span><span class="nv">src_option</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">tuples</span>
 
-        <span class="n">src_cmd_obj</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">distribution</span><span class="p">.</span><span class="n">get_command_obj</span><span class="p">(</span><span class="n">src_cmd</span><span class="p">)</span>
+        <span class="nv">src_cmd_obj</span> <span class="o">=</span> <span class="nv">self</span>.<span class="nv">distribution</span>.<span class="nv">get_command_obj</span><span class="ss">(</span><span class="nv">src_cmd</span><span class="ss">)</span>
 
-        <span class="n">src_cmd_obj</span><span class="p">.</span><span class="n">ensure_finalized</span><span class="p">()</span>
+        <span class="nv">src_cmd_obj</span>.<span class="nv">ensure_finalized</span><span class="ss">()</span>
 
-        <span class="k">for</span> <span class="p">(</span><span class="n">src_option</span><span class="p">,</span> <span class="n">dst_option</span><span class="p">)</span> <span class="k">in</span> <span class="n">option_pairs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="ss">(</span><span class="nv">src_option</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">in</span> <span class="nv">option_pairs</span>:
 
-            <span class="k">if</span> <span class="n">getattr</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">dst_option</span><span class="p">)</span> <span class="k">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nv">getattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">dst_option</span><span class="ss">)</span> <span class="nv">is</span> <span class="nv">None</span>:
 
-                <span class="n">setattr</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">dst_option</span><span class="p">,</span> <span class="n">getattr</span><span class="p">(</span><span class="n">src_cmd_obj</span><span class="p">,</span> <span class="n">src_option</span><span class="p">))</span>
+                <span class="nv">setattr</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">dst_option</span>, <span class="nv">getattr</span><span class="ss">(</span><span class="nv">src_cmd_obj</span>, <span class="nv">src_option</span><span class="ss">))</span>
 </code></pre></div>
 
 </details>
-<h5 id="spawn">spawn</h5>
+<h4 id="spawn">spawn</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">cmd</span><span class="p">,</span>
@@ -2740,16 +2728,16 @@ for it if necessary); the remaining arguments are
 </code></pre></div>
 
 </details>
-<h5 id="warn">warn</h5>
+<h4 id="warn">warn</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">warn</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">msg</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">warn</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    def warn(self, msg):
 
-        <span class="n">log</span><span class="p">.</span><span class="n">warn</span><span class="p">(</span><span class="ss">&quot;warning: %s: %s\n&quot;</span><span class="p">,</span> <span class="k">self</span><span class="p">.</span><span class="n">get_command_name</span><span class="p">(),</span> <span class="n">msg</span><span class="p">)</span>
+        log.warn(&quot;warning: %s: %s\n&quot;, self.get_command_name(), msg)
 </code></pre></div>
 
 </details>

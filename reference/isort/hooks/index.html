@@ -1371,7 +1371,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># nosec - trusted input</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># nosec - trusted input</span>
 
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
@@ -1391,7 +1391,7 @@
 
 <span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
 
-    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
@@ -1459,7 +1459,7 @@
 
             <span class="c1"># Get the staged contents of the file</span>
 
-            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;:{filename}&quot;</span><span class="p">]</span>
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
@@ -1493,8 +1493,40 @@
 </code></pre></div>
 
 <p>Run a command and return lines of output</p>
-<p>:param str command: the command to run
-:returns: list of whitespace-stripped lines output by command</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>command</td>
+<td>str</td>
+<td>the command to run</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>list of whitespace-stripped lines output by command</td>
+</tr>
+</tbody>
+</table>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">get_lines</span><span class="p">(</span><span class="nl">command</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;Run a command and return lines of output</span>
@@ -1518,8 +1550,40 @@
 </code></pre></div>
 
 <p>Run a command and return raw output</p>
-<p>:param str command: the command to run
-:returns: the stdout output of the command</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>command</td>
+<td>str</td>
+<td>the command to run</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>the stdout output of the command</td>
+</tr>
+</tbody>
+</table>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">get_output</span><span class="p">(</span><span class="nl">command</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;Run a command and return raw output</span>
@@ -1563,57 +1627,57 @@
 <p>:return number of errors if in strict mode, 0 otherwise.</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span>
 
-    <span class="k">strict</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="k">modify</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="ss">&quot;&quot;</span>
+    <span class="n">strict</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">modify</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">lazy</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="o">:</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
 
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">int</span><span class="o">:</span>
 
-    <span class="ss">&quot;&quot;&quot;Git pre-commit hook to check staged files for isort errors</span>
+    <span class="s">&quot;&quot;&quot;Git pre-commit hook to check staged files for isort errors</span>
 
-<span class="ss">    :param bool strict - if True, return number of errors on exit,</span>
+<span class="s">    :param bool strict - if True, return number of errors on exit,</span>
 
-<span class="ss">        causing the hook to fail. If False, return zero so it will</span>
+<span class="s">        causing the hook to fail. If False, return zero so it will</span>
 
-<span class="ss">        just act as a warning.</span>
+<span class="s">        just act as a warning.</span>
 
-<span class="ss">    :param bool modify - if True, fix the sources if they are not</span>
+<span class="s">    :param bool modify - if True, fix the sources if they are not</span>
 
-<span class="ss">        sorted properly. If False, only report result without</span>
+<span class="s">        sorted properly. If False, only report result without</span>
 
-<span class="ss">        modifying anything.</span>
+<span class="s">        modifying anything.</span>
 
-<span class="ss">    :param bool lazy - if True, also check/fix unstaged files.</span>
+<span class="s">    :param bool lazy - if True, also check/fix unstaged files.</span>
 
-<span class="ss">        This is useful if you frequently use ``git commit -a`` for example.</span>
+<span class="s">        This is useful if you frequently use ``git commit -a`` for example.</span>
 
-<span class="ss">        If False, ony check/fix the staged files for isort errors.</span>
+<span class="s">        If False, ony check/fix the staged files for isort errors.</span>
 
-<span class="ss">    :param str settings_file - A path to a file to be used as</span>
+<span class="s">    :param str settings_file - A path to a file to be used as</span>
 
-<span class="ss">                               the configuration file for this run.</span>
+<span class="s">                               the configuration file for this run.</span>
 
-<span class="ss">        When settings_file is the empty string, the configuration file</span>
+<span class="s">        When settings_file is the empty string, the configuration file</span>
 
-<span class="ss">        will be searched starting at the directory containing the first</span>
+<span class="s">        will be searched starting at the directory containing the first</span>
 
-<span class="ss">        staged file, if any, and going upward in the directory structure.</span>
+<span class="s">        staged file, if any, and going upward in the directory structure.</span>
 
-<span class="ss">    :return number of errors if in strict mode, 0 otherwise.</span>
+<span class="s">    :return number of errors if in strict mode, 0 otherwise.</span>
 
-<span class="ss">    &quot;&quot;&quot;</span>
+<span class="s">    &quot;&quot;&quot;</span>
 
-    <span class="o">#</span> <span class="k">Get</span> <span class="n">list</span> <span class="k">of</span> <span class="n">files</span> <span class="n">modified</span> <span class="k">and</span> <span class="n">staged</span>
+    <span class="err">#</span> <span class="n">Get</span> <span class="n">list</span> <span class="kr">of</span> <span class="n">files</span> <span class="n">modified</span> <span class="kr">and</span> <span class="n">staged</span>
 
-    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;diff-index&quot;</span><span class="p">,</span> <span class="ss">&quot;--cached&quot;</span><span class="p">,</span> <span class="ss">&quot;--name-only&quot;</span><span class="p">,</span> <span class="ss">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="ss">&quot;HEAD&quot;</span><span class="p">]</span>
+    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;git&quot;</span><span class="p">,</span> <span class="s">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s">&quot;--cached&quot;</span><span class="p">,</span> <span class="s">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">lazy</span><span class="p">:</span>
+    <span class="nf">if</span> <span class="n">lazy</span><span class="o">:</span>
 
-        <span class="n">diff_cmd</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="ss">&quot;--cached&quot;</span><span class="p">)</span>
+        <span class="n">diff_cmd</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&quot;--cached&quot;</span><span class="p">)</span>
 
     <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="k">not</span> <span class="n">files_modified</span><span class="p">:</span>
+    <span class="nf">if</span> <span class="kr">not</span> <span class="n">files_modified</span><span class="o">:</span>
 
-        <span class="k">return</span> <span class="mi">0</span>
+        <span class="kr">return</span> <span class="mi">0</span>
 
     <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -1625,35 +1689,35 @@
 
     <span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">filename</span> <span class="k">in</span> <span class="n">files_modified</span><span class="p">:</span>
+    <span class="n">for</span> <span class="n">filename</span> <span class="kr">in</span> <span class="n">files_modified</span><span class="o">:</span>
 
-        <span class="k">if</span> <span class="n">filename</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="ss">&quot;.py&quot;</span><span class="p">):</span>
+        <span class="nf">if</span> <span class="n">filename</span><span class="p">.</span><span class="kd">ends</span><span class="n">with</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">)</span><span class="o">:</span>
 
-            <span class="o">#</span> <span class="k">Get</span> <span class="n">the</span> <span class="n">staged</span> <span class="n">contents</span> <span class="k">of</span> <span class="n">the</span> <span class="n">file</span>
+            <span class="err">#</span> <span class="n">Get</span> <span class="n">the</span> <span class="n">staged</span> <span class="n">contents</span> <span class="kr">of</span> <span class="n">the</span> <span class="n">file</span>
 
-            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="ss">&quot;git&quot;</span><span class="p">,</span> <span class="ss">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="ss">&quot;:{filename}&quot;</span><span class="p">]</span>
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;git&quot;</span><span class="p">,</span> <span class="s">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s">&quot;:{filename}&quot;</span><span class="p">]</span>
 
             <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
 
-            <span class="n">try</span><span class="p">:</span>
+            <span class="n">try</span><span class="o">:</span>
 
-                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span>
+                <span class="nf">if</span> <span class="kr">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span>
 
                     <span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
 
-                <span class="p">):</span>
+                <span class="p">)</span><span class="o">:</span>
 
                     <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
 
-                    <span class="k">if</span> <span class="k">modify</span><span class="p">:</span>
+                    <span class="nf">if</span> <span class="n">modify</span><span class="o">:</span>
 
                         <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
-            <span class="k">except</span> <span class="n">exceptions</span><span class="p">.</span><span class="n">FileSkipped</span><span class="p">:</span>  <span class="o">#</span> <span class="n">pragma</span><span class="p">:</span> <span class="k">no</span> <span class="n">cover</span>
+            <span class="kr">except</span> <span class="n">exceptions</span><span class="p">.</span><span class="n">FileSkipped</span><span class="o">:</span>  <span class="err">#</span> <span class="n">pragma</span><span class="o">:</span> <span class="n">no</span> <span class="n">cover</span>
 
                 <span class="n">pass</span>
 
-    <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="k">strict</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="kr">return</span> <span class="n">errors</span> <span class="nf">if</span> <span class="n">strict</span> <span class="n">else</span> <span class="mi">0</span>
 </code></pre></div>
 
 </details>

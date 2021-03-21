@@ -1345,16 +1345,16 @@ For a list of all CLI options type <code>isort --help</code> or view <a href="ht
 
 <h2 id="multiple-projects">Multiple Projects</h2>
 <p>Running a single isort command across multiple projects, or source files spanning multiple projects, is highly discouraged. Instead it is recommended that an isort process (or command) is ran for each project independently. This is because isort creates an immutable config for each CLI instance.</p>
-<div class="codehilite"><pre><span></span><code><span class="o">#</span> <span class="n">YES</span>
-<span class="n">isort</span> <span class="n">project1</span>
-<span class="n">isort</span> <span class="n">project2</span>
+<div class="codehilite"><pre><span></span><code># YES
+isort project1
+isort project2
 
-<span class="o">#</span> <span class="n">Also</span> <span class="n">YES</span>
-<span class="n">isort</span> <span class="n">project1</span><span class="o">/</span><span class="n">src</span> <span class="n">project1</span><span class="o">/</span><span class="n">test</span>
-<span class="n">isort</span> <span class="n">project2</span><span class="o">/</span><span class="n">src</span> <span class="n">project2</span><span class="o">/</span><span class="n">test</span>
+# Also YES
+isort project1/src project1/test
+isort project2/src project2/test
 
-<span class="o">#</span> <span class="k">NO</span>
-<span class="n">isort</span> <span class="n">project1</span> <span class="n">project2</span>
+# NO
+isort project1 project2
 </code></pre></div>
                 
               

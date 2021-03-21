@@ -1326,6 +1326,8 @@
                 
                 
                 <h1 id="module-isortcomments">Module isort.comments</h1>
+<p>None</p>
+<p>None</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -1350,7 +1352,7 @@
 
     <span class="n">original_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
 
-    <span class="n">removed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="n">removed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 
     <span class="n">comment_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
 
@@ -1374,7 +1376,7 @@
 
             <span class="n">unique_comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{parse(original_string)[0]}{comment_prefix} {&#39;; &#39;.join(unique_comments)}&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parse</span><span class="p">(</span><span class="n">original_string</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="n">comment_prefix</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unique_comments</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div>
 
 </details>
@@ -1429,8 +1431,8 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
-<p>Parses import lines for comments and returns back the
-import statement and the associated comment.</p>
+<p>Parses import lines for comments and returns back the</p>
+<p>import statement and the associated comment.</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 
     <span class="sd">&quot;&quot;&quot;Parses import lines for comments and returns back the</span>

@@ -979,8 +979,7 @@
     Methods
   </a>
   
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#allow" class="md-nav__link">
@@ -993,11 +992,6 @@
   <a href="#run" class="md-nav__link">
     run
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1379,8 +1373,7 @@
     Methods
   </a>
   
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#allow" class="md-nav__link">
@@ -1393,11 +1386,6 @@
   <a href="#run" class="md-nav__link">
     run
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1432,6 +1420,8 @@
                 
                 
                 <h1 id="module-isortpylama_isort">Module isort.pylama_isort</h1>
+<p>None</p>
+<p>None</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -1476,7 +1466,7 @@
 
             <span class="k">try</span><span class="p">:</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
                     <span class="k">return</span> <span class="p">[</span>
 
@@ -1534,7 +1524,6 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<p>Abstract class for linter plugin.</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">class</span> <span class="n">Linter</span><span class="p">(</span><span class="n">BaseLinter</span><span class="p">)</span><span class="o">:</span>
 
     <span class="n">def</span> <span class="n">allow</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nl">bool:</span>
@@ -1583,7 +1572,7 @@
 <li>pylama.lint.Linter</li>
 </ul>
 <h4 id="methods">Methods</h4>
-<h5 id="allow">allow</h5>
+<h4 id="allow">allow</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">allow</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
@@ -1591,15 +1580,15 @@
 </code></pre></div>
 
 <p>Determine if this path should be linted.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">allow</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">allow</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">path</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span><span class="o">:</span>
 
-        <span class="ss">&quot;&quot;&quot;Determine if this path should be linted.&quot;&quot;&quot;</span>
+        <span class="s">&quot;&quot;&quot;Determine if this path should be linted.&quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">path</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="ss">&quot;.py&quot;</span><span class="p">)</span>
+        <span class="kr">return</span> <span class="n">path</span><span class="p">.</span><span class="kd">ends</span><span class="n">with</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
-<h5 id="run">run</h5>
+<h4 id="run">run</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

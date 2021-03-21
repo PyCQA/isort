@@ -1572,28 +1572,30 @@ supports formatting Python 2 code too.</p>
 
 <h2 id="using-isort">Using isort</h2>
 <p><strong>From the command line</strong>:</p>
+<p>To run on specific files:</p>
 <div class="codehilite"><pre><span></span><code>isort mypythonfile.py mypythonfile2.py
 </code></pre></div>
 
-<p>or recursively:</p>
+<p>To apply recursively:</p>
 <div class="codehilite"><pre><span></span><code>isort .
 </code></pre></div>
 
-<p><em>which is equivalent to:</em></p>
+<p>If <a href="https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html">globstar</a>
+is enabled, <code>isort .</code> is equivalent to:</p>
 <div class="codehilite"><pre><span></span><code>isort **/*.py
 </code></pre></div>
 
-<p>or to see the proposed changes without applying them:</p>
+<p>To view proposed changes without applying them:</p>
 <div class="codehilite"><pre><span></span><code>isort mypythonfile.py --diff
 </code></pre></div>
 
 <p>Finally, to atomically run isort against a project, only applying
-changes if they don't introduce syntax errors do:</p>
+changes if they don't introduce syntax errors:</p>
 <div class="codehilite"><pre><span></span><code>isort --atomic .
 </code></pre></div>
 
-<p>(Note: this is disabled by default as it keeps isort from being able to
-run against code written using a different version of Python)</p>
+<p>(Note: this is disabled by default, as it prevents isort from
+running against code written using a different version of Python.)</p>
 <p><strong>From within Python</strong>:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">isort</span>
 
@@ -1681,7 +1683,7 @@ module's doc string:</p>
 
 <h2 id="adding-or-removing-an-import-from-multiple-files">Adding or removing an import from multiple files</h2>
 <p>isort can be ran or configured to add / remove imports automatically.</p>
-<p>[See a complete guide here.]((https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)</p>
+<p><a href="https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/">See a complete guide here.</a></p>
 <h2 id="using-isort-to-verify-code">Using isort to verify code</h2>
 <h2 id="the-check-only-option">The <code>--check-only</code> option</h2>
 <p>isort can also be used to verify that code is correctly formatted
@@ -1710,7 +1712,7 @@ Python files declared by your project.</p>
 <p><a href="https://pycqa.github.io/isort/"><img alt="Imports: isort" src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336" /></a></p>
 <p>Place this badge at the top of your repository to let others know your project uses isort.</p>
 <p>For README.md:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336)](https://pycqa.github.io/isort/)</span>
+<div class="codehilite"><pre><span></span><code>[<span class="nt">![Imports: isort</span>](<span class="na">https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&amp;labelColor=ef8336</span>)](https://pycqa.github.io/isort/)
 </code></pre></div>
 
 <p>Or README.rst:</p>

@@ -1575,6 +1575,7 @@
                 
                 <h1 id="module-isortwrap_modes">Module isort.wrap_modes</h1>
 <p>Defines all wrap modes that can be used when outputting formatted imports</p>
+<p>None</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="s2">&quot;&quot;&quot;Defines all wrap modes that can be used when outputting formatted imports&quot;&quot;&quot;</span>
 
 <span class="s s-Atom">import</span> <span class="s s-Atom">enum</span>
@@ -2155,9 +2156,9 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">formatter_from_string</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">str</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">def</span> <span class="nv">formatter_from_string</span><span class="ss">(</span><span class="nv">name</span>: <span class="nv">str</span><span class="ss">)</span>:
 
-    <span class="k">return</span> <span class="n">_wrap_modes</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">name</span><span class="p">.</span><span class="k">upper</span><span class="p">(),</span> <span class="n">grid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nv">_wrap_modes</span>.<span class="nv">get</span><span class="ss">(</span><span class="nv">name</span>.<span class="nv">upper</span><span class="ss">()</span>, <span class="nv">grid</span><span class="ss">)</span>
 </code></pre></div>
 
 </details>
@@ -2167,9 +2168,9 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;WrapModes&#39;</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="ss">&quot;WrapModes&quot;</span><span class="p">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s">&quot;WrapModes&quot;</span><span class="o">:</span>
 
-    <span class="k">return</span> <span class="n">getattr</span><span class="p">(</span><span class="n">WrapModes</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="k">None</span><span class="p">)</span> <span class="k">or</span> <span class="n">WrapModes</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="kr">return</span> <span class="n">getattr</span><span class="p">(</span><span class="n">WrapModes</span><span class="p">,</span> <span class="n">str</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">None</span><span class="p">)</span> <span class="kr">or</span> <span class="n">WrapModes</span><span class="p">(</span><span class="n">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 </code></pre></div>
 
 </details>
@@ -2222,15 +2223,15 @@
 
         <span class="p">):</span>
 
-            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="s2">&quot;{interface[&#39;white_space&#39;]}{next_import.split(&#39; &#39;)[0]}&quot;</span><span class="p">]</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;white_space&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">next_import</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
             <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">next_import</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
 
-                <span class="n">new_line</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{lines[-1]} {part}&quot;</span>
+                <span class="n">new_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_length&quot;</span><span class="p">]:</span>
 
-                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{interface[&#39;white_space&#39;]}{part}&quot;</span><span class="p">)</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;white_space&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
 
@@ -2244,7 +2245,7 @@
 
                     <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
 
-                    <span class="n">f</span><span class="s2">&quot;{interface[&#39;statement&#39;]},&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;statement&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
 
                     <span class="n">removed</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;remove_comments&quot;</span><span class="p">],</span>
 
@@ -2252,7 +2253,7 @@
 
                 <span class="p">)</span>
 
-                <span class="o">+</span> <span class="n">f</span><span class="s2">&quot;{interface[&#39;line_separator&#39;]}{next_import}&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;line_separator&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">next_import</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="p">)</span>
 
@@ -2414,7 +2415,7 @@
 
     <span class="n">_comma_maybe</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span> <span class="k">if</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;include_trailing_comma&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{interface[&#39;statement&#39;]}({first_import}{_imports}{_comma_maybe})&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;statement&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">first_import</span><span class="si">}{</span><span class="n">_imports</span><span class="si">}{</span><span class="n">_comma_maybe</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div>
 
 </details>
@@ -2644,7 +2645,7 @@
 
                 <span class="p">)</span>
 
-                <span class="o">+</span> <span class="n">f</span><span class="s2">&quot;{interface[&#39;line_separator&#39;]}{prefix_statement}{next_import}&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;line_separator&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">prefix_statement</span><span class="si">}{</span><span class="n">next_import</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="p">)</span>
 
@@ -2669,7 +2670,6 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<p>An enumeration.</p>
 <h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
 <ul>
 <li>enum.Enum</li>
