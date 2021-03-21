@@ -33,7 +33,7 @@ Force specific imports to the top of their appropriate section.
 
 ## Skip
 
-Files that sort imports should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
 
 **Type:** Frozenset  
 **Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
@@ -43,17 +43,36 @@ Files that sort imports should skip over. If you want to skip multiple files you
 - -s
 - --skip
 
+## Extend Skip
+
+Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** extend_skip  
+**CLI Flags:**
+
+- --extend-skip
+
 ## Skip Glob
 
-Files that sort imports should skip over.
+Additional files that isort should skip over (extending --skip-glob).
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
 **Python & Config File Name:** skip_glob  
 **CLI Flags:**
 
-- --sg
-- --skip-glob
+- --extend-skip-glob
+
+## Extend Skip Glob
+
+**No Description**
+
+**Type:** Frozenset  
+**Default:** `frozenset()`  
+**Python & Config File Name:** extend_skip_glob  
+**CLI Flags:** **Not Supported**
 
 ## Skip Gitignore
 
@@ -1053,6 +1072,28 @@ Tells isort to overwrite in place using the same file handle.Comes at a performa
 **CLI Flags:**
 
 - --overwrite-in-place
+
+## Reverse Sort
+
+Reverses the ordering of imports.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** reverse_sort  
+**CLI Flags:**
+
+- --reverse-sort
+
+## Star First
+
+Forces star imports above others to avoid overriding directly imported variables.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** star_first  
+**CLI Flags:**
+
+- --star-first
 
 ## Show Version
 
