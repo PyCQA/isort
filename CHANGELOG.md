@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
-### 5.8.0 TBD
+### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.
   - Fixed #1667: extra newline added with float-to-top, after skip, in some cases.
   - Fixed #1594: incorrect placement of noqa comments with multiple from imports.

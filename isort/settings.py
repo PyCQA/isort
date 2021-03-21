@@ -212,6 +212,7 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
+    import_dependencies = Dict[str, str]
 
     def __post_init__(self):
         py_version = self.py_version
