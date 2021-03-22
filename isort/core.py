@@ -13,7 +13,8 @@ from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
 IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
-COMMENT_INDICATORS = ('"""', "'''", "'", '"', "#")
+DOCSTRING_INDICATORS = ('"""', "'''")
+COMMENT_INDICATORS = DOCSTRING_INDICATORS + ("'", '"', "#")
 CODE_SORT_COMMENTS = (
     "# isort: list",
     "# isort: dict",
@@ -317,6 +318,7 @@ def process(
                 and not in_quote
                 and not import_section
                 and not line.lstrip().startswith(COMMENT_INDICATORS)
+                and not line.rstrip().endswith(DOCSTRING_INDICATORS)
             ):
                 import_section = line_separator.join(add_imports) + line_separator
                 if end_of_file and index != 0:
