@@ -873,6 +873,41 @@ def test_add_imports() -> None:
         "    pass\n"
     )
 
+    # On a file that has no pre-existing imports and a multiline docstring
+    test_input = (
+        '"""Module docstring\n\nWith a second line\n"""\n' "class MyClass(object):\n    pass\n"
+    )
+    test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
+    assert test_output == (
+        '"""Module docstring\n'
+        "\n"
+        "With a second line\n"
+        '"""\n'
+        "from __future__ import print_function\n"
+        "\n"
+        "\n"
+        "class MyClass(object):\n"
+        "    pass\n"
+    )
+
+    # On a file that has no pre-existing imports and a multiline docstring.
+    # In this example, the closing quotes for the docstring are on the final
+    # line rather than a separate one.
+    test_input = (
+        '"""Module docstring\n\nWith a second line"""\n' "class MyClass(object):\n    pass\n"
+    )
+    test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
+    assert test_output == (
+        '"""Module docstring\n'
+        "\n"
+        'With a second line"""\n'
+        "from __future__ import print_function\n"
+        "\n"
+        "\n"
+        "class MyClass(object):\n"
+        "    pass\n"
+    )
+
     # On a file that has no pre-existing imports, and no doc-string
     test_input = "class MyClass(object):\n    pass\n"
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
