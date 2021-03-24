@@ -68,6 +68,7 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".pants.d",
         ".direnv",
         "node_modules",
+        "__pypackages__",
     }
 )
 
