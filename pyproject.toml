@@ -93,7 +93,7 @@ isort = "isort.main:ISortCommand"
 isort = "isort.pylama_isort:Linter"
 
 [tool.portray.mkdocs]
-edit_uri = "https://github.com/pycqa/isort/edit/develop/"
+edit_uri = "https://github.com/pycqa/isort/edit/main/"
 extra_css = ["art/stylesheets/extra.css"]
 
 [tool.portray.mkdocs.theme]

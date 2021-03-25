@@ -1,4 +1,4 @@
-![isort loves black](https://raw.githubusercontent.com/pycqa/isort/develop/art/isort_loves_black.png)
+![isort loves black](https://raw.githubusercontent.com/pycqa/isort/main/art/isort_loves_black.png)
 
 Compatibility with black
 ========

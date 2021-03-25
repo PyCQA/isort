@@ -1,11 +1,11 @@
-[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/pycqa/isort/develop/art/logo_large.png)](https://pycqa.github.io/isort/)
+[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/pycqa/isort/main/art/logo_large.png)](https://pycqa.github.io/isort/)
 
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
 [![Test Status](https://github.com/pycqa/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ATest)
 [![Lint Status](https://github.com/pycqa/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ALint)
-[![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/develop/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
+[![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/main/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/isort/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Downloads](https://pepy.tech/badge/isort)](https://pepy.tech/project/isort)
@@ -30,7 +30,7 @@ supports formatting Python 2 code too.
 - [Using black? See the isort and black compatiblity guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
 - [isort has official support for pre-commit!](https://pycqa.github.io/isort/docs/configuration/pre-commit/)
 
-![Example Usage](https://raw.github.com/pycqa/isort/develop/example.gif)
+![Example Usage](https://raw.github.com/pycqa/isort/main/example.gif)
 
 Before isort:
 

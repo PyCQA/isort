@@ -1,6 +1,6 @@
 # Introducing isort 5
 
-[![isort 5 - the best version of isort yet](https://raw.githubusercontent.com/pycqa/isort/develop/art/logo_5.png)](https://pycqa.github.io/isort/)
+[![isort 5 - the best version of isort yet](https://raw.githubusercontent.com/pycqa/isort/main/art/logo_5.png)](https://pycqa.github.io/isort/)
 
 isort 5.0.0 is the first major release of isort in over five years and the first significant refactoring of isort since it was conceived more than ten years ago.
 It's also the first version to require Python 3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
