@@ -30,7 +30,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-urls = { Changelog = "https://github.com/pycqa/isort/blob/master/CHANGELOG.md" }
+urls = { Changelog = "https://github.com/pycqa/isort/blob/main/CHANGELOG.md" }
 packages = [
     { include = "isort" },
 ]
