@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
@@ -352,7 +353,26 @@ import b
     assert "Skipped" not in out
     main.main([str(python_file), "--skip-gitignore", "--filter-files"])
     out, error = capsys.readouterr()
-    assert "Skipped" in out
+    assert "Skipped" in out and "has_imports.py" not in out
+
+    tmpdir.join(".gitignore").remove()
+
+    currentdir = os.getcwd()
+    os.chdir(tmpdir)
+
+    tmpdir.join(".gitignore").write("nested_dir/has_imports.py")
+    subpython_file = tmpdir.join("nested_dir/has_imports.py")
+    subpython_file.write(
+        """
+import b
+import a
+"""
+    )
+    main.main([".", "--skip-gitignore", "--filter-files"])
+    out, error = capsys.readouterr()
+    assert "nested_dir/has_imports.py" not in out
+
+    os.chdir(currentdir)
 
     # warnings should be displayed if old flags are used
     with pytest.warns(UserWarning):

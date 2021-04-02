@@ -34,7 +34,7 @@ def find(
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if config.is_supported_filetype(filepath):
-                        if config.is_skipped(Path(filepath)):
+                        if config.is_skipped(Path(os.path.abspath(filepath))):
                             skipped.append(filename)
                         else:
                             yield filepath
