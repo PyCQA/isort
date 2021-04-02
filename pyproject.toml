@@ -44,11 +44,13 @@ pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
 colorama = {version = "^0.4.3", optional = true}
+setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
 pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims<=0.3.4"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama"]
+plugins = ["setuptools"]
 
 [tool.poetry.dev-dependencies]
 vulture = "^1.0"
