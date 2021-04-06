@@ -1093,8 +1093,6 @@ def test_isort_identifies_from_imports_against_known_section_issue_1208():
 import namespace.mymodule
 from namespace import mymodule
 """,
-        known_first_party = ["namespace.mymodule"],
+        known_first_party=["namespace.mymodule"],
         show_diff=True,
     )
-
-
