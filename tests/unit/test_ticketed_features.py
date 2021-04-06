@@ -1082,3 +1082,19 @@ from ._foo import a
 from ._bar import All, Any, Not
 """
     )
+
+
+def test_isort_identifies_from_imports_against_known_section_issue_1208():
+    """isort should provide a way to identify x from y, within known sections.
+    see: https://github.com/PyCQA/isort/issues/1208
+    """
+    assert isort.check_code(
+        """
+import namespace.mymodule
+from namespace import mymodule
+""",
+        known_first_party = ["namespace.mymodule"],
+        show_diff=True,
+    )
+
+
