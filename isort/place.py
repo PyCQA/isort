@@ -23,7 +23,7 @@ def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> Tuple[str,
     return (
         _forced_separate(name, config)
         or _local(name, config)
-        or _known_pattern(name, config)
+        or known_pattern(name, config)
         or _src_path(name, config)
         or (config.default_section, "Default option in Config or universal default.")
     )
@@ -49,7 +49,8 @@ def _local(name: str, config: Config) -> Optional[Tuple[str, str]]:
     return None
 
 
-def _known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
+@lru_cache(maxsize=1000)
+def known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
     parts = name.split(".")
     module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
     for module_name_to_check in module_names_to_check:
