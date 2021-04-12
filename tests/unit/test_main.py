@@ -4,6 +4,7 @@ import subprocess
 from datetime import datetime
 from io import BytesIO, TextIOWrapper
 
+import py
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -340,39 +341,6 @@ import b
     main.main([str(python_file), "not-exist", "--verbose", "--check-only"])
     out, error = capsys.readouterr()
     assert "Broken" in out
-
-    # should respect gitignore if requested.
-    out, error = capsys.readouterr()  # clear sysoutput before tests
-    subprocess.run(["git", "init", str(tmpdir)])
-    main.main([str(python_file), "--skip-gitignore", "--filter-files"])
-    out, error = capsys.readouterr()
-    assert "Skipped" not in out
-    tmpdir.join(".gitignore").write("has_imports.py")
-    main.main([str(python_file)])
-    out, error = capsys.readouterr()
-    assert "Skipped" not in out
-    main.main([str(python_file), "--skip-gitignore", "--filter-files"])
-    out, error = capsys.readouterr()
-    assert "Skipped" in out and "has_imports.py" not in out
-
-    tmpdir.join(".gitignore").remove()
-
-    currentdir = os.getcwd()
-    os.chdir(tmpdir)
-
-    tmpdir.join(".gitignore").write("nested_dir/has_imports.py")
-    subpython_file = tmpdir.join("nested_dir/has_imports.py")
-    subpython_file.write(
-        """
-import b
-import a
-"""
-    )
-    main.main([".", "--skip-gitignore", "--filter-files"])
-    out, error = capsys.readouterr()
-    assert "nested_dir/has_imports.py" not in out
-
-    os.chdir(currentdir)
 
     # warnings should be displayed if old flags are used
     with pytest.warns(UserWarning):
@@ -1060,3 +1028,112 @@ def test_identify_imports_main(tmpdir, capsys):
     main.identify_imports_main(["-", "--attributes"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
     len(out.split("\n")) == 2
+
+
+def test_gitignore(capsys: pytest.CaptureFixture, tmpdir: py.path.local):
+
+    import_content = """
+import b
+import a
+"""
+
+    def main_check(args):
+        try:
+            main.main(args)
+        except SystemExit:
+            pass
+        return capsys.readouterr()
+
+    subprocess.run(["git", "init", str(tmpdir)])
+    python_file = tmpdir.join("has_imports.py")
+    python_file.write(import_content)
+    tmpdir.join("no_imports.py").write("...")
+
+    out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
+    assert "has_imports.py" in error and "no_imports.py" not in error
+
+    tmpdir.join(".gitignore").write("has_imports.py")
+
+    out, error = main_check([str(python_file), "--check"])
+    assert "has_imports.py" in error and "no_imports.py" not in error
+
+    out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
+    assert "Skipped" in out
+
+    # Should work with nested directories
+    tmpdir.mkdir("nested_dir")
+    tmpdir.join(".gitignore").write("nested_dir/has_imports.py")
+    subfolder_file = tmpdir.join("nested_dir/has_imports.py")
+    subfolder_file.write(import_content)
+
+    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files", "--check"])
+    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+
+    # Should work with relative path
+    currentdir = os.getcwd()
+    os.chdir(tmpdir)
+
+    out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
+    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+
+    tmpdir.join(".gitignore").write(
+        """
+nested_dir/has_imports.py
+has_imports.py
+"""
+    )
+    out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
+    assert "Skipped" in out
+
+    os.chdir(currentdir)
+
+    # Should work with multiple git projects
+
+    tmpdir.join(".git").remove()
+    tmpdir.join(".gitignore").remove()
+
+    # git_project0
+    # | has_imports_ignored.py ignored
+    # | has_imports.py should check
+    git_project0 = tmpdir.mkdir("git_project0")
+    subprocess.run(["git", "init", str(git_project0)])
+    git_project0.join(".gitignore").write("has_imports_ignored.py")
+    git_project0.join("has_imports_ignored.py").write(import_content)
+    git_project0.join("has_imports.py").write(import_content)
+
+    # git_project1
+    # | has_imports.py should check
+    # | nested_dir
+    #   | has_imports_ignored.py ignored
+    #   | has_imports.py should check
+    # | nested_dir_ignored ignored
+    #   | has_imports.py ignored from folder
+    git_project1 = tmpdir.mkdir("git_project1")
+    subprocess.run(["git", "init", str(git_project1)])
+    git_project1.join(".gitignore").write(
+        """
+nested_dir/has_imports_ignored.py
+nested_dir_ignored
+"""
+    )
+    git_project1.join("has_imports.py").write(import_content)
+    nested_dir = git_project1.mkdir("nested_dir")
+    nested_dir.join("has_imports.py").write(import_content)
+    nested_dir.join("has_imports_ignored.py").write(import_content)
+    git_project1.mkdir("nested_dir_ignored").join("has_imports.py").write(import_content)
+
+    should_check = [
+        "has_imports.py",
+        "nested_dir/has_imports.py",
+        "git_project0/has_imports.py",
+        "git_project1/has_imports.py",
+        "git_project1/nested_dir/has_imports.py",
+    ]
+
+    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files", "--check"])
+
+    assert all(f"{str(tmpdir)}/{file}" in error for file in should_check)
+
+    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files"])
+
+    assert all(f"{str(tmpdir)}/{file}" in out for file in should_check)

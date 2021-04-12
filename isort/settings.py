@@ -215,8 +215,7 @@ class _Config:
     reverse_sort: bool = False
     star_first: bool = False
     import_dependencies = Dict[str, str]
-    git_folders: Set[Path] = field(default_factory=set)
-    git_ignore_files: Set[Path] = field(default_factory=set)
+    git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
 
     def __post_init__(self):
         py_version = self.py_version
@@ -511,6 +510,30 @@ class Config(_Config):
         else:
             return bool(_SHEBANG_RE.match(line))
 
+    def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+        try:
+            topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", folder, "rev-parse", "--show-toplevel"]
+            )
+            git_folder = Path(topfolder_result.decode("utf-8").split("\n")[0])
+
+            files = glob.glob(str(git_folder) + "/**/*", recursive=True)
+            files_result = (
+                subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                    ["git", "-C", git_folder, "check-ignore", *files]
+                )
+                .decode("utf-8")
+                .split("\n")
+            )
+            files_result = files_result[:-1] if files_result else files_result
+
+            self.git_ignore[git_folder] = {Path(f) for f in files_result}
+
+            return git_folder
+
+        except subprocess.CalledProcessError:
+            return None
+
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
         if self.directory and Path(self.directory) in file_path.resolve().parents:
@@ -524,26 +547,16 @@ class Config(_Config):
             if file_path.name == ".git":  # pragma: no cover
                 return True
 
-            for folder in self.git_folders:
+            git_folder = None
+
+            for folder in self.git_ignore:
                 if folder in file_path.parents:
+                    git_folder = folder
                     break
             else:
-                topfolder_result = subprocess.run([
-                    "git", "-C", str(file_path.parent), "rev-parse", "--show-toplevel"
-                ], capture_output=True)
-                if topfolder_result.returncode == 0:
-                    git_folder = Path(
-                        topfolder_result.stdout.decode('utf-8').split("\n")[0]
-                    )
-                    files = glob.glob(str(git_folder)+"/**/*", recursive=True)
-                    files_result = subprocess.run(
-                        ["git", "-C", git_folder, "check-ignore", *files], capture_output=True
-                    ).stdout.decode('utf-8').split("\n")
-                    files_result = files_result[:-1] if files_result else files_result
-                    self.git_ignore_files.update({Path(f) for f in files_result})
-                    self.git_folders.add(git_folder)
+                git_folder = self._check_folder_gitignore(str(file_path.parent))
 
-            if file_path in self.git_ignore_files:
+            if git_folder and file_path in self.git_ignore[git_folder]:
                 return True
 
         normalized_path = os_path.replace("\\", "/")
