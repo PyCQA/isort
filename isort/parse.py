@@ -432,21 +432,21 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
-                for import_name in just_imports:
-                    placed_module = finder(f"{import_from}.{import_name}")
-                    if config.verbose and not config.only_modified:
-                        print(f"from-type place_module for {import_from} returned {placed_module}")
+                placed_module = finder(import_from)
+                if config.verbose and not config.only_modified:
+                    print(f"from-type place_module for {import_from} returned {placed_module}")
 
-                    elif config.verbose:
-                        verbose_output.append(
-                            f"from-type place_module for {import_from} returned {placed_module}"
-                        )
-                    if placed_module == "":
-                        warn(
-                            f"could not place module {import_from} of line {line} --"
-                            " Do you need to define a default section?"
-                        )
-                    root = imports[placed_module][type_of_import]  # type: ignore
+                elif config.verbose:
+                    verbose_output.append(
+                        f"from-type place_module for {import_from} returned {placed_module}"
+                    )
+                if placed_module == "":
+                    warn(
+                        f"could not place module {import_from} of line {line} --"
+                        " Do you need to define a default section?"
+                    )
+                root = imports[placed_module][type_of_import]  # type: ignore
+                for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment:
                         categorized_comments["nested"].setdefault(import_from, {})[
