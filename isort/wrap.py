@@ -130,9 +130,8 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                         lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
                     return line_separator.join(lines)
                 return f"{content}{splitter}\\{line_separator}{cont_line}"
-    elif len(content) > config.line_length and wrap_mode == Modes.NOQA:  # type: ignore
-        if "# NOQA" not in content:
-            return f"{content}{config.comment_prefix} NOQA"
+    elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
+        return f"{content}{config.comment_prefix} NOQA"
 
     return content
 

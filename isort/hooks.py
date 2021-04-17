@@ -53,7 +53,6 @@ def git_hook(
 
     :return number of errors if in strict mode, 0 otherwise.
     """
-
     # Get list of files modified and staged
     diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
     if lazy:

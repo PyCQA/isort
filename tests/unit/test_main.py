@@ -918,6 +918,31 @@ __revision__ = 'יייי'
     out, error = capsys.readouterr()
 
 
+def test_stream_skip_file(tmpdir, capsys):
+    input_with_skip = """
+# isort: skip_file
+import b
+import a
+"""
+    stream_with_skip = as_stream(input_with_skip)
+    main.main(["-"], stdin=stream_with_skip)
+    out, error = capsys.readouterr()
+    assert out == input_with_skip
+
+    input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
+    stream_without_skip = as_stream(input_without_skip)
+    main.main(["-"], stdin=stream_without_skip)
+    out, error = capsys.readouterr()
+    assert (
+        out
+        == """
+# generic comment
+import a
+import b
+"""
+    )
+
+
 def test_only_modified_flag(tmpdir, capsys):
     # ensures there is no verbose output for correct files with only-modified flag
 
