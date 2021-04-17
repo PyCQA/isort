@@ -153,9 +153,8 @@ def process(
                 if file_skip_comment in line:
                     if raise_on_skip:
                         raise FileSkipComment("Passed in content")
-                    else:
-                        isort_off = True
-                        skip_file = True
+                    isort_off = True
+                    skip_file = True
 
             if not in_quote and stripped_line == "# isort: off":
                 isort_off = True
