@@ -125,6 +125,7 @@ def sort_stream(
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     show_diff: Union[bool, TextIO] = False,
+    raise_on_skip: bool = True,
     **config_kwargs,
 ) -> bool:
     """Sorts any imports within the provided code stream, outputs to the provided output stream.
@@ -150,6 +151,7 @@ def sort_stream(
             config=config,
             file_path=file_path,
             disregard_skip=disregard_skip,
+            raise_on_skip=raise_on_skip,
             **config_kwargs,
         )
         _output_stream.seek(0)
@@ -187,6 +189,7 @@ def sort_stream(
             _internal_output,
             extension=extension or (file_path and file_path.suffix.lstrip(".")) or "py",
             config=config,
+            raise_on_skip=raise_on_skip,
         )
     except FileSkipComment:
         raise FileSkipComment(content_source)

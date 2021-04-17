@@ -30,6 +30,7 @@ def process(
     input_stream: TextIO,
     output_stream: TextIO,
     extension: str = "py",
+    raise_on_skip: bool = True,
     config: Config = DEFAULT_CONFIG,
 ) -> bool:
     """Parses stream identifying sections of contiguous imports and sorting them
@@ -61,6 +62,7 @@ def process(
     first_import_section: bool = True
     indent: str = ""
     isort_off: bool = False
+    skip_file: bool = False
     code_sorting: Union[bool, str] = False
     code_sorting_section: str = ""
     code_sorting_indent: str = ""
@@ -149,7 +151,11 @@ def process(
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
-                    raise FileSkipComment("Passed in content")
+                    if raise_on_skip:
+                        raise FileSkipComment("Passed in content")
+                    else:
+                        isort_off = True
+                        skip_file = True
 
             if not in_quote and stripped_line == "# isort: off":
                 isort_off = True
@@ -195,7 +201,7 @@ def process(
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
             if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
-                    if stripped_line == "# isort: on":
+                    if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
                 elif stripped_line.endswith("# isort: split"):
                     not_imports = True

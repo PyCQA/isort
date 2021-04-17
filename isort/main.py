@@ -1089,6 +1089,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 show_diff=show_diff,
                 file_path=file_path,
                 extension=ext_format,
+                raise_on_skip=False,
             )
     elif "/" in file_names and not allow_root:
         printer = create_terminal_printer(color=config.color_output)
