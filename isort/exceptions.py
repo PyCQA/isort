@@ -56,7 +56,7 @@ class FileSkipComment(FileSkipped):
 
     def __init__(self, file_path: str):
         super().__init__(
-            f"{file_path} contains an file skip comment and was skipped.", file_path=file_path
+            f"{file_path} contains a file skip comment and was skipped.", file_path=file_path
         )
 
 
