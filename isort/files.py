@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from typing import Iterable, Iterator, List, Set
-from warnings import warn
 
 from isort.settings import Config
 
@@ -26,8 +25,6 @@ def find(
                         dirnames.remove(dirname)
                     else:
                         if resolved_path in visited_dirs:  # pragma: no cover
-                            if not config.quiet:
-                                warn(f"Likely recursive symlink detected to {resolved_path}")
                             dirnames.remove(dirname)
                     visited_dirs.add(resolved_path)
 
