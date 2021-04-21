@@ -520,7 +520,7 @@ class Config(_Config):
             files = glob.glob(str(git_folder) + "/**/*", recursive=True)
             files_result = (
                 subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                    ["git", "-C", git_folder, "check-ignore", *files]
+                    ["git", "-C", str(git_folder), "check-ignore", *files]
                 )
                 .decode("utf-8")
                 .split("\n")
