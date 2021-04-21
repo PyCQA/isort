@@ -7,6 +7,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 ### 5.9.0 TBD
   - Fixed (https://github.com/PyCQA/isort/pull/1695) added imports being added to doc string in some cases.
   - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
+  - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
 
 ### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.

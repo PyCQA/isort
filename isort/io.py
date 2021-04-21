@@ -66,7 +66,7 @@ class File:
 
 
 class _EmptyIO(StringIO):
-    def write(self, *args, **kwargs):
+    def write(self, *args, **kwargs):  # skipcq: PTC-W0049
         pass
 
 
