@@ -1179,7 +1179,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if num_skipped and not config.quiet:
             if config.verbose:
                 for was_skipped in skipped:
-                    warn(
+                    print(
                         f"{was_skipped} was skipped as it's listed in 'skip' setting"
                         " or matches a glob in 'skip_glob' setting"
                     )
