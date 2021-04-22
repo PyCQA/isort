@@ -1619,3 +1619,35 @@ def test_isort_correctly_handles_unix_vs_linux_newlines_issue_1566():
     assert isort.code(import_statement, line_length=120) == isort.code(
         import_statement.replace("\n", "\r\n"), line_length=120
     ).replace("\r\n", "\n")
+
+
+def test_isort_treats_src_paths_same_as_from_config_as_cli_issue_1711(tmpdir):
+    assert isort.check_code(
+        """
+import mymodule
+import sqlalchemy
+""",
+        show_diff=True,
+    )
+
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """
+[settings]
+src_paths=
+    api
+"""
+    )
+    api_dir = tmpdir.mkdir("api")
+    api_dir.join("mymodule.py").write("# comment")
+
+    config = isort.settings.Config(str(config_file))
+    assert isort.check_code(
+        """
+import sqlalchemy
+
+import mymodule
+""",
+        show_diff=True,
+        config=config,
+    )
