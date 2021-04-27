@@ -684,8 +684,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--os",
         dest="only_sections",
         action="store_true",
-        help="Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. "
-        "Imports are unaltered and keep their relative positions within the different sections.",
+        help="Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. "
+        "Imports are ordered based on their import style and keep their relative positions within "
+        "the different sections with the same style.",
     )
     section_group.add_argument(
         "--ds",
