@@ -968,8 +968,7 @@ Tells isort to only show an identical custom import heading comment once, even i
 
 ## Only Sections
 
-Causes imports to be sorted only based on their sections like STDLIB,THIRDPARTY etc. Imports are unaltered and keep their relative positions within the different sections.
-
+Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. Within the sections, the imports are ordered by their import style and the imports with the same style maintain their relative positions.
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** only_sections  
