@@ -293,6 +293,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             else:
                 while line.strip().endswith("\\"):
                     line, new_comment = parse_comments(in_lines[index])
+                    line = line.lstrip()
                     index += 1
                     if new_comment:
                         comments.append(new_comment)
