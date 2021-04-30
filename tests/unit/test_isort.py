@@ -4095,6 +4095,14 @@ def test_isort_keeps_comments_issue_691() -> None:
     assert isort.code(test_input) == expected_output
 
 
+def test_isort_multiline_with_tab_issue_1714() -> None:
+    test_input = "from sys \\ \n" "\timport version\n" "print(version)\n"
+
+    expected_output = "from sys import version\n" "\n" "print(version)\n"
+
+    assert isort.code(test_input) == expected_output
+
+
 def test_isort_ensures_blank_line_between_import_and_comment() -> None:
     config = {
         "ensure_newline_before_comments": True,
