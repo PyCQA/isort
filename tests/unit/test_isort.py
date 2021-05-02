@@ -13,16 +13,12 @@ from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
+import toml
 import isort
 from isort import api, sections, files
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
-
-try:
-    import toml
-except ImportError:
-    toml = None
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]

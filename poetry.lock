@@ -1605,7 +1605,7 @@ requirements_deprecated_finder = ["pipreqs", "pip-api"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "ec62167e76408cb378bb244664d70f1c35814d52124a0e8bbce385cc513dfe10"
+content-hash = "4a46585da4f8437ec280cf081865b4d6c6696a951f88d980c9a0089fdbd4f9e1"
 
 [metadata.files]
 appdirs = [
