@@ -83,6 +83,11 @@ httpx = "^0.13.3"
 example_shared_isort_profile = "^0.0.1"
 example_isort_formatting_plugin = "^0.0.2"
 flake8 = "^3.8.4"
+hypothesis = "^6.10.1"
+libcst = "^0.3.18"
+mypy-extensions = "^0.4.3"
+py = "^1.10.0"
+toml = "^0.10.2"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
