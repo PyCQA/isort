@@ -11,7 +11,7 @@ except ImportError:
     colorama_unavailable = True
 else:
     colorama_unavailable = False
-    colorama.init()
+    colorama.init(strip=False)
 
 
 ADDED_LINE_PATTERN = re.compile(r"\+[^+]")
