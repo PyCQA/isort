@@ -468,7 +468,7 @@ Order imports by type, which is determined by case, in addition to alphabeticall
 
 ## Atomic
 
-Ensures the output doesn't save if the resulting file contains syntax errors.
+Ensures the output doesn't save if the resulting file contains syntax errors. This option is not compatible with Cython code.
 
 **Type:** Bool  
 **Default:** `False`  
