@@ -6,7 +6,8 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.9.0 TBD
   - Fixed (https://github.com/PyCQA/isort/pull/1695) added imports being added to doc string in some cases.
-  - Fixed (https://github.com/PyCQA/isort/pull/1714) in rare case line continuation combined with tab can output invalid code.
+  - Fixed (https://github.com/PyCQA/isort/pull/1714) in rare cases line continuation combined with tabs can output invalid code.
+  - Fixed (https://github.com/PyCQA/isort/pull/1726) isort ignores reverse_sort when force_sort_within_sections is true.
   - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
   - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
 
