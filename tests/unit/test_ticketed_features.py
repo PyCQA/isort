@@ -1082,3 +1082,36 @@ from ._foo import a
 from ._bar import All, Any, Not
 """
     )
+
+
+def test_isort_can_combine_reverse_sort_with_force_sort_within_sections_issue_1726():
+    """isort should support reversing import order even with force sort within sections turned on.
+    See: https://github.com/PyCQA/isort/issues/1726
+    """
+    assert (
+        isort.code(
+            """
+import blaaa
+from bl4aaaaaaaaaaaaaaaa import r
+import blaaaaaaaaaaaa
+import bla
+import blaaaaaaa
+from bl1aaaaaaaaaaaaaa import this_is_1
+from bl2aaaaaaa import THIIIIIIIIIIIISS_is_2
+from bl3aaaaaa import less
+""",
+            length_sort=True,
+            reverse_sort=True,
+            force_sort_within_sections=True,
+        )
+        == """
+from bl2aaaaaaa import THIIIIIIIIIIIISS_is_2
+from bl1aaaaaaaaaaaaaa import this_is_1
+from bl4aaaaaaaaaaaaaaaa import r
+from bl3aaaaaa import less
+import blaaaaaaaaaaaa
+import blaaaaaaa
+import blaaa
+import bla
+"""
+    )

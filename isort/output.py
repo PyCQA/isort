@@ -108,6 +108,7 @@ def sorted_imports(
             new_section_output = sorting.naturally(
                 new_section_output,
                 key=partial(sorting.section_key, config=config),
+                reverse=config.reverse_sort,
             )
 
             # uncollapse comments
