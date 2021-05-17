@@ -61,6 +61,16 @@ wemake = {
     "use_parentheses": True,
     "line_length": 80,
 }
+appnexus = {
+    **black,
+    "force_sort_within_sections": True,
+    "order_by_type": False,
+    "case_sensitive": False,
+    "reverse_relative": True,
+    "sort_relative_in_force_sorted_sections": True,
+    "sections": ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "APPLICATION", "LOCALFOLDER"],
+    "no_lines_before": "LOCALFOLDER",
+}
 
 profiles: Dict[str, Dict[str, Any]] = {
     "black": black,
@@ -72,4 +82,5 @@ profiles: Dict[str, Dict[str, Any]] = {
     "attrs": attrs,
     "hug": hug,
     "wemake": wemake,
+    "appnexus": appnexus,
 }
