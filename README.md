@@ -27,7 +27,7 @@ quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
 - [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
-- [Using black? See the isort and black compatiblity guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
+- [Using black? See the isort and black compatibility guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
 - [isort has official support for pre-commit!](https://pycqa.github.io/isort/docs/configuration/pre-commit/)
 
 ![Example Usage](https://raw.github.com/pycqa/isort/main/example.gif)
