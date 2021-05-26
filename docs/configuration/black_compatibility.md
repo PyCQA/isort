@@ -9,7 +9,7 @@ All that's required to use isort alongside black is to set the isort profile to 
 ## Using a config file (such as .isort.cfg)
 
 For projects that officially use both isort and black, we recommend setting the black profile in a config file at the root of your project's repository.
-This way independent to how users call isort (pre-commit, CLI, or editor integration) the black profile will automatically be applied.
+That way it's independent of how users call isort (pre-commit, CLI, or editor integration) the black profile will automatically be applied.
 
 For instance, your _pyproject.toml_ file would look something like
 
