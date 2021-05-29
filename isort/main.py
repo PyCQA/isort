@@ -78,6 +78,7 @@ def sort_imports(
     file_name: str,
     config: Config,
     check: bool = False,
+    check_before_apply: bool = False,
     ask_to_apply: bool = False,
     write_to_stdout: bool = False,
     **kwargs: Any,
@@ -85,12 +86,15 @@ def sort_imports(
     incorrectly_sorted: bool = False
     skipped: bool = False
     try:
-        if check:
+        if check or check_before_apply:
             try:
                 incorrectly_sorted = not api.check_file(file_name, config=config, **kwargs)
             except FileSkipped:
                 skipped = True
-            return SortAttempt(incorrectly_sorted, skipped, True)
+            if check:
+                return SortAttempt(incorrectly_sorted, skipped, True)
+            if check_before_apply and not incorrectly_sorted:
+                return SortAttempt(incorrectly_sorted, skipped, True)
 
         try:
             incorrectly_sorted = not api.sort_file(
@@ -296,6 +300,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="ask_to_apply",
         action="store_true",
         help="Tells isort to apply changes interactively.",
+    )
+
+    general_group.add_argument(
+        "--check-before-apply",
+        dest="check_before_apply",
+        action="store_true",
+        help="Run checks before applying changes. "
+        "This can improve performance if most of the files are correctly formatted.",
     )
 
     target_group.add_argument(
@@ -1047,6 +1059,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     ask_to_apply = config_dict.pop("ask_to_apply", False)
     jobs = config_dict.pop("jobs", None)
     check = config_dict.pop("check", False)
+    check_before_apply = config_dict.pop("check_before_apply", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
     deprecated_flags = config_dict.pop("deprecated_flags", False)
@@ -1135,6 +1148,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     config=config,
                     check=check,
                     ask_to_apply=ask_to_apply,
+                    check_before_apply=check_before_apply,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
                 ),
@@ -1148,6 +1162,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     config=config,
                     check=check,
                     ask_to_apply=ask_to_apply,
+                    check_before_apply=check_before_apply,
                     show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,

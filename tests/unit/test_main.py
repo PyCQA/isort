@@ -80,6 +80,7 @@ def test_parse_args():
     assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
     assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
     assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
+    assert main.parse_args(["--check-before-apply"]) == {"check_before_apply": True}
 
 
 def test_ascii_art(capsys):
@@ -1085,3 +1086,39 @@ def test_identify_imports_main(tmpdir, capsys):
     main.identify_imports_main(["-", "--attributes"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
     len(out.split("\n")) == 2
+
+
+def test_check_before_apply(capsys):
+    input_content = as_stream(
+        """
+import b
+import a
+"""
+    )
+
+    main.main(["-", "--check-before-apply"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import b
+"""
+    )
+
+    input_content = as_stream(
+        """
+import a
+import b
+"""
+    )
+
+    main.main(["-", "--check-before-apply"], stdin=input_content)
+    out, error = capsys.readouterr()
+
+    assert out == (
+        """
+import a
+import b
+"""
+    )
