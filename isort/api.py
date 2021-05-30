@@ -1,3 +1,4 @@
+import contextlib
 import shutil
 import sys
 from enum import Enum
@@ -17,7 +18,7 @@ from .exceptions import (
     IntroducedSyntaxErrors,
 )
 from .format import ask_whether_to_apply_changes_to_file, create_terminal_printer, show_unified_diff
-from .io import Empty
+from .io import Empty, File
 from .place import module as place_module  # noqa: F401
 from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import DEFAULT_CONFIG, Config
@@ -305,6 +306,23 @@ def check_file(
         )
 
 
+def _tmp_file(source_file: File) -> Path:
+    return source_file.path.with_suffix(source_file.path.suffix + ".isorted")
+
+
+@contextlib.contextmanager
+def _in_memory_output_stream_context() -> Iterator[TextIO]:
+    yield StringIO()
+
+
+@contextlib.contextmanager
+def _file_output_stream_context(filename: Union[str, Path], source_file: File) -> Iterator[TextIO]:
+    tmp_file = _tmp_file(source_file)
+    with tmp_file.open("w+", encoding=source_file.encoding, newline="") as output_stream:
+        shutil.copymode(filename, tmp_file)
+        yield output_stream
+
+
 def sort_file(
     filename: Union[str, Path],
     extension: Optional[str] = None,
@@ -349,12 +367,14 @@ def sort_file(
                 )
             else:
                 if output is None:
-                    tmp_file = source_file.path.with_suffix(source_file.path.suffix + ".isorted")
                     try:
-                        with tmp_file.open(
-                            "w", encoding=source_file.encoding, newline=""
-                        ) as output_stream:
-                            shutil.copymode(filename, tmp_file)
+                        if config.overwrite_in_place:
+                            output_stream_context = _in_memory_output_stream_context()
+                        else:
+                            output_stream_context = _file_output_stream_context(
+                                filename, source_file
+                            )
+                        with output_stream_context as output_stream:
                             changed = sort_stream(
                                 input_stream=source_file.stream,
                                 output_stream=output_stream,
@@ -363,15 +383,13 @@ def sort_file(
                                 disregard_skip=disregard_skip,
                                 extension=extension,
                             )
-                        if changed:
-                            if show_diff or ask_to_apply:
-                                source_file.stream.seek(0)
-                                with tmp_file.open(
-                                    encoding=source_file.encoding, newline=""
-                                ) as tmp_out:
+                            output_stream.seek(0)
+                            if changed:
+                                if show_diff or ask_to_apply:
+                                    source_file.stream.seek(0)
                                     show_unified_diff(
                                         file_input=source_file.stream.read(),
-                                        file_output=tmp_out.read(),
+                                        file_output=output_stream.read(),
                                         file_path=actual_file_path,
                                         output=None
                                         if show_diff is True
@@ -385,16 +403,21 @@ def sort_file(
                                         )
                                     ):
                                         return False
-                            source_file.stream.close()
-                            if config.overwrite_in_place:
-                                source_file.path.write_bytes(tmp_file.read_bytes())
-                            else:
-                                tmp_file.replace(source_file.path)
-                            if not config.quiet:
-                                print(f"Fixing {source_file.path}")
+                                source_file.stream.close()
+                                if config.overwrite_in_place:
+                                    output_stream.seek(0)
+                                    with source_file.path.open("w") as fs:
+                                        shutil.copyfileobj(output_stream, fs)
+                                else:
+                                    tmp_file = _tmp_file(source_file)
+                                    tmp_file.replace(source_file.path)
+                                if not config.quiet:
+                                    print(f"Fixing {source_file.path}")
                     finally:
                         try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            tmp_file.unlink()
+                            if not config.overwrite_in_place:
+                                tmp_file = _tmp_file(source_file)
+                                tmp_file.unlink()
                         except FileNotFoundError:
                             pass  # pragma: no cover
                 else:
