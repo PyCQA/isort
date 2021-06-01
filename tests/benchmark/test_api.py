@@ -1,4 +1,5 @@
 import pytest
+
 from isort import api
 
 imperfect_content = "import b\nimport a\n"
