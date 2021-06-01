@@ -408,11 +408,11 @@ def sort_file(
                                     output_stream.seek(0)
                                     with source_file.path.open("w") as fs:
                                         shutil.copyfileobj(output_stream, fs)
-                                else:
-                                    tmp_file = _tmp_file(source_file)
-                                    tmp_file.replace(source_file.path)
-                                if not config.quiet:
-                                    print(f"Fixing {source_file.path}")
+                        if not config.overwrite_in_place:
+                            tmp_file = _tmp_file(source_file)
+                            tmp_file.replace(source_file.path)
+                        if changed and not config.quiet:
+                            print(f"Fixing {source_file.path}")
                     finally:
                         try:  # Python 3.8+: use `missing_ok=True` instead of try except.
                             if not config.overwrite_in_place:
