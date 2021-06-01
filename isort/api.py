@@ -310,17 +310,41 @@ def _tmp_file(source_file: File) -> Path:
     return source_file.path.with_suffix(source_file.path.suffix + ".isorted")
 
 
-@contextlib.contextmanager
-def _in_memory_output_stream_context() -> Iterator[TextIO]:
-    yield StringIO()
+class InMemoryOutputStream:
+    """Defines output stream using in-memory buffers."""
+
+    def __init__(self) -> None:
+        self._buffer = StringIO()
+
+    @contextlib.contextmanager
+    def writer(self) -> Iterator[TextIO]:
+        yield self._buffer
+
+    @contextlib.contextmanager
+    def reader(self) -> Iterator[TextIO]:
+        self._buffer.seek(0)
+        yield self._buffer
 
 
-@contextlib.contextmanager
-def _file_output_stream_context(filename: Union[str, Path], source_file: File) -> Iterator[TextIO]:
-    tmp_file = _tmp_file(source_file)
-    with tmp_file.open("w+", encoding=source_file.encoding, newline="") as output_stream:
-        shutil.copymode(filename, tmp_file)
-        yield output_stream
+class TmpFileOutputStream:
+    """Defines output stream using a tmp file."""
+
+    def __init__(self, filename: Union[str, Path], source_file: File) -> None:
+        self._filename = filename
+        self._source_file = source_file
+
+    @contextlib.contextmanager
+    def writer(self) -> Iterator[TextIO]:
+        tmp_file = _tmp_file(self._source_file)
+        with tmp_file.open("w", encoding=self._source_file.encoding, newline="") as output_stream:
+            shutil.copymode(self._filename, tmp_file)
+            yield output_stream
+
+    @contextlib.contextmanager
+    def reader(self) -> Iterator[TextIO]:
+        tmp_file = _tmp_file(self._source_file)
+        with tmp_file.open(encoding=self._source_file.encoding, newline="") as output_stream:
+            yield output_stream
 
 
 def sort_file(
@@ -368,28 +392,27 @@ def sort_file(
             else:
                 if output is None:
                     try:
-                        if config.overwrite_in_place:
-                            output_stream_context = _in_memory_output_stream_context()
-                        else:
-                            output_stream_context = _file_output_stream_context(
-                                filename, source_file
-                            )
-                        with output_stream_context as output_stream:
+                        output_stream: Union[InMemoryOutputStream, TmpFileOutputStream] = (
+                            InMemoryOutputStream()
+                            if config.overwrite_in_place
+                            else TmpFileOutputStream(filename, source_file)
+                        )
+                        with output_stream.writer() as output_stream_writer:
                             changed = sort_stream(
                                 input_stream=source_file.stream,
-                                output_stream=output_stream,
+                                output_stream=output_stream_writer,
                                 config=config,
                                 file_path=actual_file_path,
                                 disregard_skip=disregard_skip,
                                 extension=extension,
                             )
-                            output_stream.seek(0)
+                        with output_stream.reader() as output_stream_reader:
                             if changed:
                                 if show_diff or ask_to_apply:
                                     source_file.stream.seek(0)
                                     show_unified_diff(
                                         file_input=source_file.stream.read(),
-                                        file_output=output_stream.read(),
+                                        file_output=output_stream_reader.read(),
                                         file_path=actual_file_path,
                                         output=None
                                         if show_diff is True
@@ -405,9 +428,8 @@ def sort_file(
                                         return False
                                 source_file.stream.close()
                                 if config.overwrite_in_place:
-                                    output_stream.seek(0)
                                     with source_file.path.open("w") as fs:
-                                        shutil.copyfileobj(output_stream, fs)
+                                        shutil.copyfileobj(output_stream_reader, fs)
                                 else:
                                     tmp_file = _tmp_file(source_file)
                                     tmp_file.replace(source_file.path)
