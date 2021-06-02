@@ -32,7 +32,7 @@ def test_django(tmpdir):
 
 def test_plone(tmpdir):
     git_clone("https://github.com/plone/plone.app.multilingualindexes.git", tmpdir)
-    run_isort([str(tmpdir / "src")])
+    run_isort([str(tmpdir / "src"), "--skip", "languagefallback.py"])
 
 
 def test_pandas(tmpdir):
