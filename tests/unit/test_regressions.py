@@ -1,8 +1,9 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
 from io import StringIO
 
-import isort
 import pytest
+
+import isort
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -1710,14 +1711,16 @@ from src import abcd, efg, \\
 
 
 @pytest.mark.parametrize("multi_line_output", range(12))
-def test_isort_should_never_quietly_remove_imports_in_any_hangin_mode_issue_1741(multi_line_output: int):
+def test_isort_should_never_quietly_remove_imports_in_any_hangin_mode_issue_1741(
+    multi_line_output: int,
+):
     sorted_code = isort.code(
-            """
+        """
 from src import abcd, qwerty, efg, xyz  # some comment
 """,
-            line_length=30,
-            multi_line_output=multi_line_output,
-        )
+        line_length=30,
+        multi_line_output=multi_line_output,
+    )
     assert "abcd" in sorted_code
     assert "qwerty" in sorted_code
     assert "efg" in sorted_code

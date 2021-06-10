@@ -17,7 +17,7 @@ from warnings import warn
 
 from . import stdlibs
 from ._future import dataclass, field
-from ._vendored import toml
+from ._vendored import toml  # type: ignore
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
