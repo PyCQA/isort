@@ -106,64 +106,67 @@ def vertical(**interface):
     return f"{interface['statement']}({first_import}{_imports}{_comma_maybe})"
 
 
-def _hanging_indent_common(use_parentheses=False, **interface):
+def _hanging_indent_end_line(line: str) -> str:
+    if not line.endswith(" "):
+        line += " "
+    return line + "\\"
+
+
+@_wrap_mode
+def hanging_indent(**interface):
     if not interface["imports"]:
         return ""
-    line_length_limit = interface["line_length"] - (1 if use_parentheses else 3)
 
-    def end_line(line):
-        if use_parentheses:
-            return line
-        if not line.endswith(" "):
-            line += " "
-        return line + "\\"
+    line_length_limit = interface["line_length"] - 3
 
-    if use_parentheses:
-        interface["statement"] += "("
     next_import = interface["imports"].pop(0)
     next_statement = interface["statement"] + next_import
     # Check for first import
     if len(next_statement) > line_length_limit:
         next_statement = (
-            isort.comments.add_to_line(
-                interface["comments"],
-                end_line(interface["statement"]),
-                removed=interface["remove_comments"],
-                comment_prefix=interface["comment_prefix"],
-            )
-            + f"{interface['line_separator']}{interface['indent']}{next_import}"
+            _hanging_indent_end_line(interface["statement"])
+            + interface["line_separator"]
+            + interface["indent"]
+            + next_import
         )
-        interface["comments"] = []
+
     interface["statement"] = next_statement
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
-        next_statement = isort.comments.add_to_line(
+        next_statement = interface["statement"] + ", " + next_import
+        if len(next_statement.split(interface["line_separator"])[-1]) > line_length_limit:
+            next_statement = (
+                _hanging_indent_end_line(interface["statement"] + ",")
+                + f"{interface['line_separator']}{interface['indent']}{next_import}"
+            )
+        interface["statement"] = next_statement
+
+    interface[
+        "statement"
+    ] = f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''}"
+    if interface["comments"]:
+        statement_with_comments = isort.comments.add_to_line(
             interface["comments"],
-            interface["statement"] + ", " + next_import,
+            interface["statement"],
             removed=interface["remove_comments"],
             comment_prefix=interface["comment_prefix"],
         )
-        current_line = next_statement.split(interface["line_separator"])[-1]
-        if len(current_line) > line_length_limit:
-            next_statement = (
-                isort.comments.add_to_line(
+        if len(statement_with_comments.split(interface["line_separator"])[-1]) <= (
+            line_length_limit + 2
+        ):
+            return statement_with_comments
+        else:
+            return (
+                _hanging_indent_end_line(interface["statement"])
+                + interface["line_separator"]
+                + isort.comments.add_to_line(
                     interface["comments"],
-                    end_line(interface["statement"] + ","),
+                    interface["indent"],
                     removed=interface["remove_comments"],
-                    comment_prefix=interface["comment_prefix"],
+                    comment_prefix=interface["comment_prefix"].lstrip(),
                 )
-                + f"{interface['line_separator']}{interface['indent']}{next_import}"
             )
-            interface["comments"] = []
-        interface["statement"] = next_statement
-    _comma_maybe = "," if interface["include_trailing_comma"] else ""
-    _close_parentheses_maybe = ")" if use_parentheses else ""
-    return interface["statement"] + _comma_maybe + _close_parentheses_maybe
-
-
-@_wrap_mode
-def hanging_indent(**interface):
-    return _hanging_indent_common(use_parentheses=False, **interface)
+    return interface["statement"]
 
 
 @_wrap_mode
@@ -309,13 +312,64 @@ def vertical_prefix_from_module_import(**interface):
 
 @_wrap_mode
 def hanging_indent_with_parentheses(**interface):
-    return _hanging_indent_common(use_parentheses=True, **interface)
+    if not interface["imports"]:
+        return ""
+
+    line_length_limit = interface["line_length"] - 1
+
+    interface["statement"] += "("
+    next_import = interface["imports"].pop(0)
+    next_statement = interface["statement"] + next_import
+    # Check for first import
+    if len(next_statement) > line_length_limit:
+        next_statement = (
+            isort.comments.add_to_line(
+                interface["comments"],
+                interface["statement"],
+                removed=interface["remove_comments"],
+                comment_prefix=interface["comment_prefix"],
+            )
+            + f"{interface['line_separator']}{interface['indent']}{next_import}"
+        )
+        interface["comments"] = []
+    interface["statement"] = next_statement
+    while interface["imports"]:
+        next_import = interface["imports"].pop(0)
+        if (
+            not interface["line_separator"] in interface["statement"]
+            and "#" in interface["statement"]
+        ):
+            line, comments = interface["statement"].split("#", 1)
+            next_statement = (
+                f"{line.rstrip()}, {next_import}{interface['comment_prefix']}{comments}"
+            )
+        else:
+            next_statement = isort.comments.add_to_line(
+                interface["comments"],
+                interface["statement"] + ", " + next_import,
+                removed=interface["remove_comments"],
+                comment_prefix=interface["comment_prefix"],
+            )
+        current_line = next_statement.split(interface["line_separator"])[-1]
+        if len(current_line) > line_length_limit:
+            next_statement = (
+                isort.comments.add_to_line(
+                    interface["comments"],
+                    interface["statement"] + ",",
+                    removed=interface["remove_comments"],
+                    comment_prefix=interface["comment_prefix"],
+                )
+                + f"{interface['line_separator']}{interface['indent']}{next_import}"
+            )
+            interface["comments"] = []
+        interface["statement"] = next_statement
+    return f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''})"
 
 
 @_wrap_mode
 def backslash_grid(**interface):
     interface["indent"] = interface["white_space"][:-1]
-    return _hanging_indent_common(use_parentheses=False, **interface)
+    return hanging_indent(**interface)
 
 
 WrapModes = enum.Enum(  # type: ignore

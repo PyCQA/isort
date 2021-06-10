@@ -338,11 +338,12 @@ def test_output_modes() -> None:
         indent="    ",
     )
     assert comment_output_hanging_indent == (
-        "from third_party import lib1, \\  # comment\n"
-        "    lib2, lib3, lib4, lib5, lib6, \\\n"
-        "    lib7, lib8, lib9, lib10, lib11, \\\n"
-        "    lib12, lib13, lib14, lib15, lib16, \\\n"
-        "    lib17, lib18, lib20, lib21, lib22\n"
+        "from third_party import lib1, lib2, \\\n"
+        "    lib3, lib4, lib5, lib6, lib7, \\\n"
+        "    lib8, lib9, lib10, lib11, lib12, \\\n"
+        "    lib13, lib14, lib15, lib16, lib17, \\\n"
+        "    lib18, lib20, lib21, lib22 \\\n"
+        "    # comment\n"
     )
 
     test_output_vertical_indent = isort.code(

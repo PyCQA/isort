@@ -2,6 +2,7 @@
 from io import StringIO
 
 import isort
+import pytest
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -1651,3 +1652,73 @@ import mymodule
         show_diff=True,
         config=config,
     )
+
+
+def test_isort_should_never_quietly_remove_imports_in_hanging_line_mode_issue_1741():
+    assert (
+        isort.code(
+            """
+from src import abcd, qwerty, efg, xyz  # some comment
+""",
+            line_length=50,
+            multi_line_output=2,
+        )
+        == """
+from src import abcd, efg, qwerty, xyz \\
+    # some comment
+"""
+    )
+    assert (
+        isort.code(
+            """
+from src import abcd, qwerty, efg, xyz  # some comment
+""",
+            line_length=54,
+            multi_line_output=2,
+        )
+        == """
+from src import abcd, efg, qwerty, xyz  # some comment
+"""
+    )
+    assert (
+        isort.code(
+            """
+from src import abcd, qwerty, efg, xyz  # some comment
+""",
+            line_length=53,
+            multi_line_output=2,
+        )
+        == """
+from src import abcd, efg, qwerty, xyz \\
+    # some comment
+"""
+    )
+    assert (
+        isort.code(
+            """
+from src import abcd, qwerty, efg, xyz  # some comment
+""",
+            line_length=30,
+            multi_line_output=2,
+        )
+        == """
+from src import abcd, efg, \\
+    qwerty, xyz \\
+    # some comment
+"""
+    )
+
+
+@pytest.mark.parametrize("multi_line_output", range(12))
+def test_isort_should_never_quietly_remove_imports_in_any_hangin_mode_issue_1741(multi_line_output: int):
+    sorted_code = isort.code(
+            """
+from src import abcd, qwerty, efg, xyz  # some comment
+""",
+            line_length=30,
+            multi_line_output=multi_line_output,
+        )
+    assert "abcd" in sorted_code
+    assert "qwerty" in sorted_code
+    assert "efg" in sorted_code
+    assert "xyz" in sorted_code
