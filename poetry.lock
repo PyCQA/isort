@@ -1022,7 +1022,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "portray"
-version = "1.6.0"
+version = "1.7.0"
 description = "Your Project with Great Documentation"
 category = "dev"
 optional = false
@@ -1032,7 +1032,7 @@ python-versions = ">=3.6,<4.0"
 GitPython = ">=3.0,<4.0"
 hug = ">=2.6,<3.0"
 livereload = ">=2.6.3,<3.0.0"
-mkdocs = ">=1.0,<2.0"
+mkdocs = ">=1.2,<1.3"
 mkdocs-material = ">=7.0,<8.0"
 pdocs = ">=1.1.1,<2.0.0"
 pymdown-extensions = ">=7.0,<8.0"
@@ -2123,8 +2123,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 portray = [
-    {file = "portray-1.6.0-py3-none-any.whl", hash = "sha256:592d6f0851dc585b49044d7a61bb6b5b26b3e9693ac06d97e27b86d6e00e9113"},
-    {file = "portray-1.6.0.tar.gz", hash = "sha256:7d4b7b58c4964833c704eb5fbdf801aede6f72ea26603d6c2b58e16448fe93d9"},
+    {file = "portray-1.7.0-py3-none-any.whl", hash = "sha256:fb4467105d948fabf0ec35b11af50f3c0c4f2aabaa31d5dcd657fadb1c6132e1"},
+    {file = "portray-1.7.0.tar.gz", hash = "sha256:8f3c0a6a6841969329e4dd1e94e180220658c3ad0367a5bad81dd964a75ae1fe"},
 ]
 poyo = [
     {file = "poyo-0.5.0-py2.py3-none-any.whl", hash = "sha256:3e2ca8e33fdc3c411cd101ca395668395dd5dc7ac775b8e809e3def9f9fe041a"},
