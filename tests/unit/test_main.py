@@ -1123,17 +1123,20 @@ nested_dir_ignored
     git_project1.mkdir("nested_dir_ignored").join("has_imports.py").write(import_content)
 
     should_check = [
-        "has_imports.py",
-        "nested_dir/has_imports.py",
-        "git_project0/has_imports.py",
-        "git_project1/has_imports.py",
-        "git_project1/nested_dir/has_imports.py",
+        "/has_imports.py",
+        "/nested_dir/has_imports.py",
+        "/git_project0/has_imports.py",
+        "/git_project1/has_imports.py",
+        "/git_project1/nested_dir/has_imports.py",
     ]
 
     out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files", "--check"])
 
-    assert all(f"{str(tmpdir)}/{file}" in error for file in should_check)
+    if os.name == "nt":
+        should_check = [sc.replace("/", "\\") for sc in should_check]
+
+    assert all(f"{str(tmpdir)}{file}" in error for file in should_check)
 
     out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files"])
 
-    assert all(f"{str(tmpdir)}/{file}" in out for file in should_check)
+    assert all(f"{str(tmpdir)}{file}" in out for file in should_check)

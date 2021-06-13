@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+import codecs
 import configparser
 import fnmatch
 import glob
@@ -519,15 +520,17 @@ class Config(_Config):
 
             files = glob.glob(str(git_folder) + "/**/*", recursive=True)
             files_result = (
-                subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                    ["git", "-C", str(git_folder), "check-ignore", *files]
-                )
+                codecs.escape_decode(
+                    subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                        ["git", "-C", str(git_folder), "check-ignore", *files]
+                    )
+                )[0]
                 .decode("utf-8")
                 .split("\n")
             )
             files_result = files_result[:-1] if files_result else files_result
 
-            self.git_ignore[git_folder] = {Path(f) for f in files_result}
+            self.git_ignore[git_folder] = {Path(f.strip('"')) for f in files_result}
 
             return git_folder
 
