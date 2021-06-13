@@ -455,6 +455,20 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         ] = associated_comment
                         if associated_comment in comments:
                             comments.pop(comments.index(associated_comment))
+                if (
+                    config.force_single_line
+                    and comments
+                    and attach_comments_to is None
+                    and len(just_imports) == 1
+                ):
+                    nested_from_comments = categorized_comments["nested"].setdefault(
+                        import_from, {}
+                    )
+                    existing_comment = nested_from_comments.get(just_imports[0], "")
+                    nested_from_comments[
+                        just_imports[0]
+                    ] = f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    comments = []
 
                 if comments and attach_comments_to is None:
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])

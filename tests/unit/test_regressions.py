@@ -1780,3 +1780,19 @@ from typing import IO, BinaryIO, Union  # noqa
 from typing import *  # noqa
 """
     )
+
+
+def test_isort_should_keep_multiple_noqa_comments_force_single_line_mode_issue_1721():
+    assert isort.check_code(
+        """
+from some_very_long_filename_to_import_from_that_causes_a_too_long_import_row import (  # noqa: E501
+    CONSTANT_1,
+)
+from some_very_long_filename_to_import_from_that_causes_a_too_long_import_row import (  # noqa: E501
+    CONSTANT_2,
+)
+""",
+        show_diff=True,
+        profile="black",
+        force_single_line=True,
+    )
