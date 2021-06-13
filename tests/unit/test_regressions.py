@@ -1725,3 +1725,58 @@ from src import abcd, qwerty, efg, xyz  # some comment
     assert "qwerty" in sorted_code
     assert "efg" in sorted_code
     assert "xyz" in sorted_code
+
+
+def test_isort_should_keep_multi_noqa_with_star_issue_1744():
+    assert isort.check_code(
+        """
+from typing import *  # noqa
+from typing import IO, BinaryIO, Union  # noqa
+""",
+        show_diff=True,
+    )
+    assert isort.check_code(
+        """
+from typing import *  # noqa 1
+from typing import IO, BinaryIO, Union  # noqa 2
+""",
+        show_diff=True,
+    )
+    assert isort.check_code(
+        """
+from typing import *  # noqa
+from typing import IO, BinaryIO, Union
+""",
+        show_diff=True,
+    )
+    assert isort.check_code(
+        """
+from typing import *
+from typing import IO, BinaryIO, Union  # noqa
+""",
+        show_diff=True,
+    )
+    assert (
+        isort.code(
+            """
+from typing import *  # hi
+from typing import IO, BinaryIO, Union  # noqa
+""",
+            combine_star=True,
+        )
+        == """
+from typing import *  # noqa; hi
+"""
+    )
+    assert (
+        isort.code(
+            """
+from typing import *  # noqa
+from typing import IO, BinaryIO, Union  # noqa
+""",
+            combine_star=True,
+        )
+        == """
+from typing import *  # noqa
+"""
+    )

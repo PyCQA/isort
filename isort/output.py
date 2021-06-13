@@ -416,14 +416,13 @@ def _with_from_imports(
                 if "*" in from_imports:
                     output.append(
                         with_comments(
-                            _with_star_comments(parsed, module, list(comments or ())),
+                            _with_star_comments(parsed, module, []),
                             f"{import_start}*",
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
                         )
                     )
                     from_imports.remove("*")
-                    comments = None
 
                 for from_import in copy.copy(from_imports):
                     comment = (
