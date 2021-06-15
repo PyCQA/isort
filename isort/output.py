@@ -85,7 +85,16 @@ def sorted_imports(
         lines_between = [""] * (
             config.lines_between_types if from_modules and straight_modules else 0
         )
-        if config.from_first:
+
+        if config.only_sections:
+            section_output =  []
+            for section_import_type in parsed.original_order[section]:
+                if section_import_type == "from":
+                    section_output.append(from_imports.pop(0))
+                else:
+                    section_output.append(straight_imports.pop(0))
+
+        elif config.from_first:
             section_output = from_imports + lines_between + straight_imports
         else:
             section_output = straight_imports + lines_between + from_imports
