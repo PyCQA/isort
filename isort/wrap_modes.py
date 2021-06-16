@@ -155,17 +155,16 @@ def hanging_indent(**interface):
             line_length_limit + 2
         ):
             return statement_with_comments
-        else:
-            return (
-                _hanging_indent_end_line(interface["statement"])
-                + interface["line_separator"]
-                + isort.comments.add_to_line(
-                    interface["comments"],
-                    interface["indent"],
-                    removed=interface["remove_comments"],
-                    comment_prefix=interface["comment_prefix"].lstrip(),
-                )
+        return (
+            _hanging_indent_end_line(interface["statement"])
+            + interface["line_separator"]
+            + isort.comments.add_to_line(
+                interface["comments"],
+                interface["indent"],
+                removed=interface["remove_comments"],
+                comment_prefix=interface["comment_prefix"].lstrip(),
             )
+        )
     return interface["statement"]
 
 
