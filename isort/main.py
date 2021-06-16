@@ -346,7 +346,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--skip-gitignore",
         action="store_true",
         dest="skip_gitignore",
-        help="Treat project as a git repository and ignore files listed in .gitignore",
+        help="Treat project as a git repository and ignore files listed in .gitignore."
+        "\nNOTE: This requires git to be installed and accesible from the same shell as isort.",
     )
     target_group.add_argument(
         "--ext",
