@@ -1,0 +1,4147 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../art/logo.png">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+    
+    
+      
+        <title>Options - isort</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ca7ac06f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../art/stylesheets/extra.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="isort" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-options-for-isort" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="isort" class="md-header__button md-logo" aria-label="isort" data-md-component="logo">
+      
+  <img src="../../art/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            isort
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Options
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="isort" class="md-nav__button md-logo" aria-label="isort" data-md-component="logo">
+      
+  <img src="../../art/logo.png" alt="logo">
+
+    </a>
+    isort
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/timothycrosley/isort/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    isort
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG.html" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Configuration
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="action_comments.html" class="md-nav__link">
+        Action Comments
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="add_or_remove_imports.html" class="md-nav__link">
+        Add Or Remove Imports
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="black_compatibility.html" class="md-nav__link">
+        Black Compatibility
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config_files.html" class="md-nav__link">
+        Config Files
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom_sections_and_ordering.html" class="md-nav__link">
+        Custom Sections And Ordering
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="git_hook.html" class="md-nav__link">
+        Git Hook
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="github_action.html" class="md-nav__link">
+        Github Action
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multi_line_output_modes.html" class="md-nav__link">
+        Multi Line Output Modes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Options
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="options.html" class="md-nav__link md-nav__link--active">
+        Options
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#python-version" class="md-nav__link">
+    Python Version
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-to-top" class="md-nav__link">
+    Force To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip" class="md-nav__link">
+    Skip
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extend-skip" class="md-nav__link">
+    Extend Skip
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-glob" class="md-nav__link">
+    Skip Glob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extend-skip-glob" class="md-nav__link">
+    Extend Skip Glob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-gitignore" class="md-nav__link">
+    Skip Gitignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#line-length" class="md-nav__link">
+    Line Length
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-length" class="md-nav__link">
+    Wrap Length
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#line-ending" class="md-nav__link">
+    Line Ending
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sections" class="md-nav__link">
+    Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-sections" class="md-nav__link">
+    No Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-future-library" class="md-nav__link">
+    Known Future Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-third-party" class="md-nav__link">
+    Known Third Party
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-first-party" class="md-nav__link">
+    Known First Party
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-local-folder" class="md-nav__link">
+    Known Local Folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-standard-library" class="md-nav__link">
+    Known Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-standard-library" class="md-nav__link">
+    Extra Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-other" class="md-nav__link">
+    Known Other
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Other">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-line-output" class="md-nav__link">
+    Multi Line Output
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi Line Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg_1" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml_1" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forced-separate" class="md-nav__link">
+    Forced Separate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indent" class="md-nav__link">
+    Indent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comment-prefix" class="md-nav__link">
+    Comment Prefix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort" class="md-nav__link">
+    Length Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort-straight" class="md-nav__link">
+    Length Sort Straight
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort-sections" class="md-nav__link">
+    Length Sort Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-imports" class="md-nav__link">
+    Add Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-imports" class="md-nav__link">
+    Remove Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#append-only" class="md-nav__link">
+    Append Only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-relative" class="md-nav__link">
+    Reverse Relative
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-single-line" class="md-nav__link">
+    Force Single Line
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-line-exclusions" class="md-nav__link">
+    Single Line Exclusions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-section" class="md-nav__link">
+    Default Section
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-headings" class="md-nav__link">
+    Import Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#balanced-wrapping" class="md-nav__link">
+    Balanced Wrapping
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-parentheses" class="md-nav__link">
+    Use Parentheses
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-by-type" class="md-nav__link">
+    Order By Type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atomic" class="md-nav__link">
+    Atomic
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-after-imports" class="md-nav__link">
+    Lines After Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-between-sections" class="md-nav__link">
+    Lines Between Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-between-types" class="md-nav__link">
+    Lines Between Types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-as-imports" class="md-nav__link">
+    Combine As Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-star" class="md-nav__link">
+    Combine Star
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include-trailing-comma" class="md-nav__link">
+    Include Trailing Comma
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-first" class="md-nav__link">
+    From First
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verbose" class="md-nav__link">
+    Verbose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiet" class="md-nav__link">
+    Quiet
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-adds" class="md-nav__link">
+    Force Adds
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-alphabetical-sort-within-sections" class="md-nav__link">
+    Force Alphabetical Sort Within Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-alphabetical-sort" class="md-nav__link">
+    Force Alphabetical Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-grid-wrap" class="md-nav__link">
+    Force Grid Wrap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-sort-within-sections" class="md-nav__link">
+    Force Sort Within Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lexicographical" class="md-nav__link">
+    Lexicographical
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#group-by-package" class="md-nav__link">
+    Group By Package
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-whitespace" class="md-nav__link">
+    Ignore Whitespace
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-lines-before" class="md-nav__link">
+    No Lines Before
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-inline-sort" class="md-nav__link">
+    No Inline Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-comments" class="md-nav__link">
+    Ignore Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-sensitive" class="md-nav__link">
+    Case Sensitive
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    Sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#virtual-env" class="md-nav__link">
+    Virtual Env
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-env" class="md-nav__link">
+    Conda Env
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-newline-before-comments" class="md-nav__link">
+    Ensure Newline Before Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory" class="md-nav__link">
+    Directory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile" class="md-nav__link">
+    Profile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#honor-noqa" class="md-nav__link">
+    Honor Noqa
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src-paths" class="md-nav__link">
+    Src Paths
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#old-finders" class="md-nav__link">
+    Old Finders
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-redundant-aliases" class="md-nav__link">
+    Remove Redundant Aliases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-to-top" class="md-nav__link">
+    Float To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-files" class="md-nav__link">
+    Filter Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatter" class="md-nav__link">
+    Formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-function" class="md-nav__link">
+    Formatting Function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-output" class="md-nav__link">
+    Color Output
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-comments-as-code" class="md-nav__link">
+    Treat Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-all-comments-as-code" class="md-nav__link">
+    Treat All Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-extensions" class="md-nav__link">
+    Supported Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blocked-extensions" class="md-nav__link">
+    Blocked Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dedup-headings" class="md-nav__link">
+    Dedup Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-sections" class="md-nav__link">
+    Only Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-modified" class="md-nav__link">
+    Only Modified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-straight-imports" class="md-nav__link">
+    Combine Straight Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-identify-namespace-packages" class="md-nav__link">
+    Auto Identify Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#namespace-packages" class="md-nav__link">
+    Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#follow-links" class="md-nav__link">
+    Follow Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indented-import-headings" class="md-nav__link">
+    Indented Import Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#honor-case-in-force-sorted-sections" class="md-nav__link">
+    Honor Case In Force Sorted Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort-relative-in-force-sorted-sections" class="md-nav__link">
+    Sort Relative In Force Sorted Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overwrite-in-place" class="md-nav__link">
+    Overwrite In Place
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-sort" class="md-nav__link">
+    Reverse Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#star-first" class="md-nav__link">
+    Star First
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-ignore" class="md-nav__link">
+    Git Ignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-version" class="md-nav__link">
+    Show Version
+  </a>
+  
+    <nav class="md-nav" aria-label="Show Version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-number" class="md-nav__link">
+    Version Number
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write-to-stdout" class="md-nav__link">
+    Write To Stdout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-config" class="md-nav__link">
+    Show Config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-files" class="md-nav__link">
+    Show Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-diff" class="md-nav__link">
+    Show Diff
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check" class="md-nav__link">
+    Check
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-path" class="md-nav__link">
+    Settings Path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jobs" class="md-nav__link">
+    Jobs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ask-to-apply" class="md-nav__link">
+    Ask To Apply
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-follow-links" class="md-nav__link">
+    Dont Follow Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filename" class="md-nav__link">
+    Filename
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allow-root" class="md-nav__link">
+    Allow Root
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-float-to-top" class="md-nav__link">
+    Dont Float To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-order-by-type" class="md-nav__link">
+    Dont Order By Type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ext-format" class="md-nav__link">
+    Ext Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecated-flags" class="md-nav__link">
+    Deprecated Flags
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pre-commit.html" class="md-nav__link">
+        Pre Commit
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="profiles.html" class="md-nav__link">
+        Profiles
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="setuptools_integration.html" class="md-nav__link">
+        Setuptools Integration
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Contributing
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Contributing" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/1.-contributing-guide.html" class="md-nav__link">
+        1. Contributing Guide
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/2.-coding-standard.html" class="md-nav__link">
+        2. Coding Standard
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/3.-code-of-conduct.html" class="md-nav__link">
+        3. Code Of Conduct
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/4.-acknowledgements.html" class="md-nav__link">
+        4. Acknowledgements
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        Major Releases
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Major Releases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Major Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../major_releases/introducing_isort_5.html" class="md-nav__link">
+        Introducing Isort 5
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../major_releases/release_policy.html" class="md-nav__link">
+        Release Policy
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        Quick Start
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/0.-try.html" class="md-nav__link">
+        0. Try
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/1.-install.html" class="md-nav__link">
+        1. Install
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/2.-cli.html" class="md-nav__link">
+        2. Cli
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/3.-api.html" class="md-nav__link">
+        3. Api
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        Upgrade Guides
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Upgrade Guides" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Upgrade Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upgrade_guides/5.0.0.html" class="md-nav__link">
+        5.0.0
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      <label class="md-nav__link" for="__nav_8">
+        Warning And Error Codes
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Warning And Error Codes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Warning And Error Codes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../warning_and_error_codes/W0500.html" class="md-nav__link">
+        W0500
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      <label class="md-nav__link" for="__nav_9">
+        Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9_1" type="checkbox" id="__nav_9_1" >
+      
+      <label class="md-nav__link" for="__nav_9_1">
+        Isort
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Isort" data-md-level="2">
+        <label class="md-nav__title" for="__nav_9_1">
+          <span class="md-nav__icon md-icon"></span>
+          Isort
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/api.html" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/comments.html" class="md-nav__link">
+        Comments
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/core.html" class="md-nav__link">
+        Core
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/exceptions.html" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/files.html" class="md-nav__link">
+        Files
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/format.html" class="md-nav__link">
+        Format
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/hooks.html" class="md-nav__link">
+        Hooks
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/identify.html" class="md-nav__link">
+        Identify
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/index.html" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/io.html" class="md-nav__link">
+        Io
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/literal.html" class="md-nav__link">
+        Literal
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/logo.html" class="md-nav__link">
+        Logo
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/main.html" class="md-nav__link">
+        Main
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/output.html" class="md-nav__link">
+        Output
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/parse.html" class="md-nav__link">
+        Parse
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/place.html" class="md-nav__link">
+        Place
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/profiles.html" class="md-nav__link">
+        Profiles
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/pylama_isort.html" class="md-nav__link">
+        Pylama Isort
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/sections.html" class="md-nav__link">
+        Sections
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/settings.html" class="md-nav__link">
+        Settings
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/setuptools_commands.html" class="md-nav__link">
+        Setuptools Commands
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/sorting.html" class="md-nav__link">
+        Sorting
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/utils.html" class="md-nav__link">
+        Utils
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/wrap.html" class="md-nav__link">
+        Wrap
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/wrap_modes.html" class="md-nav__link">
+        Wrap Modes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9_1_26" type="checkbox" id="__nav_9_1_26" >
+      
+      <label class="md-nav__link" for="__nav_9_1_26">
+        Deprecated
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Deprecated" data-md-level="3">
+        <label class="md-nav__title" for="__nav_9_1_26">
+          <span class="md-nav__icon md-icon"></span>
+          Deprecated
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/deprecated/finders.html" class="md-nav__link">
+        Finders
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/deprecated/index.html" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9_1_27" type="checkbox" id="__nav_9_1_27" >
+      
+      <label class="md-nav__link" for="__nav_9_1_27">
+        Stdlibs
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Stdlibs" data-md-level="3">
+        <label class="md-nav__title" for="__nav_9_1_27">
+          <span class="md-nav__icon md-icon"></span>
+          Stdlibs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/all.html" class="md-nav__link">
+        All
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/index.html" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py2.html" class="md-nav__link">
+        Py2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py27.html" class="md-nav__link">
+        Py27
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py3.html" class="md-nav__link">
+        Py3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py35.html" class="md-nav__link">
+        Py35
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py36.html" class="md-nav__link">
+        Py36
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py37.html" class="md-nav__link">
+        Py37
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py38.html" class="md-nav__link">
+        Py38
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isort/stdlibs/py39.html" class="md-nav__link">
+        Py39
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#python-version" class="md-nav__link">
+    Python Version
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-to-top" class="md-nav__link">
+    Force To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip" class="md-nav__link">
+    Skip
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extend-skip" class="md-nav__link">
+    Extend Skip
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-glob" class="md-nav__link">
+    Skip Glob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extend-skip-glob" class="md-nav__link">
+    Extend Skip Glob
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-gitignore" class="md-nav__link">
+    Skip Gitignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#line-length" class="md-nav__link">
+    Line Length
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-length" class="md-nav__link">
+    Wrap Length
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#line-ending" class="md-nav__link">
+    Line Ending
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sections" class="md-nav__link">
+    Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-sections" class="md-nav__link">
+    No Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-future-library" class="md-nav__link">
+    Known Future Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-third-party" class="md-nav__link">
+    Known Third Party
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-first-party" class="md-nav__link">
+    Known First Party
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-local-folder" class="md-nav__link">
+    Known Local Folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-standard-library" class="md-nav__link">
+    Known Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-standard-library" class="md-nav__link">
+    Extra Standard Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-other" class="md-nav__link">
+    Known Other
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Other">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-line-output" class="md-nav__link">
+    Multi Line Output
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi Line Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-isortcfg_1" class="md-nav__link">
+    Example .isort.cfg
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-pyprojecttoml_1" class="md-nav__link">
+    Example pyproject.toml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forced-separate" class="md-nav__link">
+    Forced Separate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indent" class="md-nav__link">
+    Indent
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comment-prefix" class="md-nav__link">
+    Comment Prefix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort" class="md-nav__link">
+    Length Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort-straight" class="md-nav__link">
+    Length Sort Straight
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#length-sort-sections" class="md-nav__link">
+    Length Sort Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-imports" class="md-nav__link">
+    Add Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-imports" class="md-nav__link">
+    Remove Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#append-only" class="md-nav__link">
+    Append Only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-relative" class="md-nav__link">
+    Reverse Relative
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-single-line" class="md-nav__link">
+    Force Single Line
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-line-exclusions" class="md-nav__link">
+    Single Line Exclusions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-section" class="md-nav__link">
+    Default Section
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-headings" class="md-nav__link">
+    Import Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#balanced-wrapping" class="md-nav__link">
+    Balanced Wrapping
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-parentheses" class="md-nav__link">
+    Use Parentheses
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-by-type" class="md-nav__link">
+    Order By Type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atomic" class="md-nav__link">
+    Atomic
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-after-imports" class="md-nav__link">
+    Lines After Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-between-sections" class="md-nav__link">
+    Lines Between Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lines-between-types" class="md-nav__link">
+    Lines Between Types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-as-imports" class="md-nav__link">
+    Combine As Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-star" class="md-nav__link">
+    Combine Star
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include-trailing-comma" class="md-nav__link">
+    Include Trailing Comma
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-first" class="md-nav__link">
+    From First
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verbose" class="md-nav__link">
+    Verbose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiet" class="md-nav__link">
+    Quiet
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-adds" class="md-nav__link">
+    Force Adds
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-alphabetical-sort-within-sections" class="md-nav__link">
+    Force Alphabetical Sort Within Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-alphabetical-sort" class="md-nav__link">
+    Force Alphabetical Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-grid-wrap" class="md-nav__link">
+    Force Grid Wrap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-sort-within-sections" class="md-nav__link">
+    Force Sort Within Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lexicographical" class="md-nav__link">
+    Lexicographical
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#group-by-package" class="md-nav__link">
+    Group By Package
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-whitespace" class="md-nav__link">
+    Ignore Whitespace
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-lines-before" class="md-nav__link">
+    No Lines Before
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-inline-sort" class="md-nav__link">
+    No Inline Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-comments" class="md-nav__link">
+    Ignore Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#case-sensitive" class="md-nav__link">
+    Case Sensitive
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sources" class="md-nav__link">
+    Sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#virtual-env" class="md-nav__link">
+    Virtual Env
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-env" class="md-nav__link">
+    Conda Env
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-newline-before-comments" class="md-nav__link">
+    Ensure Newline Before Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory" class="md-nav__link">
+    Directory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile" class="md-nav__link">
+    Profile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#honor-noqa" class="md-nav__link">
+    Honor Noqa
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src-paths" class="md-nav__link">
+    Src Paths
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#old-finders" class="md-nav__link">
+    Old Finders
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remove-redundant-aliases" class="md-nav__link">
+    Remove Redundant Aliases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-to-top" class="md-nav__link">
+    Float To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-files" class="md-nav__link">
+    Filter Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatter" class="md-nav__link">
+    Formatter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-function" class="md-nav__link">
+    Formatting Function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-output" class="md-nav__link">
+    Color Output
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-comments-as-code" class="md-nav__link">
+    Treat Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treat-all-comments-as-code" class="md-nav__link">
+    Treat All Comments As Code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-extensions" class="md-nav__link">
+    Supported Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blocked-extensions" class="md-nav__link">
+    Blocked Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    Classes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dedup-headings" class="md-nav__link">
+    Dedup Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-sections" class="md-nav__link">
+    Only Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#only-modified" class="md-nav__link">
+    Only Modified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combine-straight-imports" class="md-nav__link">
+    Combine Straight Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-identify-namespace-packages" class="md-nav__link">
+    Auto Identify Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#namespace-packages" class="md-nav__link">
+    Namespace Packages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#follow-links" class="md-nav__link">
+    Follow Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indented-import-headings" class="md-nav__link">
+    Indented Import Headings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#honor-case-in-force-sorted-sections" class="md-nav__link">
+    Honor Case In Force Sorted Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort-relative-in-force-sorted-sections" class="md-nav__link">
+    Sort Relative In Force Sorted Sections
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overwrite-in-place" class="md-nav__link">
+    Overwrite In Place
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-sort" class="md-nav__link">
+    Reverse Sort
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#star-first" class="md-nav__link">
+    Star First
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-ignore" class="md-nav__link">
+    Git Ignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-version" class="md-nav__link">
+    Show Version
+  </a>
+  
+    <nav class="md-nav" aria-label="Show Version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-cli-usage" class="md-nav__link">
+    Example cli usage
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-number" class="md-nav__link">
+    Version Number
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write-to-stdout" class="md-nav__link">
+    Write To Stdout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-config" class="md-nav__link">
+    Show Config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-files" class="md-nav__link">
+    Show Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-diff" class="md-nav__link">
+    Show Diff
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check" class="md-nav__link">
+    Check
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-path" class="md-nav__link">
+    Settings Path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jobs" class="md-nav__link">
+    Jobs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ask-to-apply" class="md-nav__link">
+    Ask To Apply
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-follow-links" class="md-nav__link">
+    Dont Follow Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filename" class="md-nav__link">
+    Filename
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allow-root" class="md-nav__link">
+    Allow Root
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-float-to-top" class="md-nav__link">
+    Dont Float To Top
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dont-order-by-type" class="md-nav__link">
+    Dont Order By Type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ext-format" class="md-nav__link">
+    Ext Format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecated-flags" class="md-nav__link">
+    Deprecated Flags
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/pycqa/isort/edit/main/docs/configuration/options.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="configuration-options-for-isort">Configuration options for isort</h1>
+<p>As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
+isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
+how you want your imports sorted, organized, and formatted.</p>
+<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in
+profiles</a>.</p>
+<h2 id="python-version">Python Version</h2>
+<p>Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>py3</code><br />
+<strong>Python &amp; Config File Name:</strong> py_version<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--py</li>
+<li>--python-version</li>
+</ul>
+<h2 id="force-to-top">Force To Top</h2>
+<p>Force specific imports to the top of their appropriate section.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> force_to_top<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-t</li>
+<li>--top</li>
+</ul>
+<h2 id="skip">Skip</h2>
+<p>Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')</code><br />
+<strong>Python &amp; Config File Name:</strong> skip<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-s</li>
+<li>--skip</li>
+</ul>
+<h2 id="extend-skip">Extend Skip</h2>
+<p>Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> extend_skip<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--extend-skip</li>
+</ul>
+<h2 id="skip-glob">Skip Glob</h2>
+<p>Additional files that isort should skip over (extending --skip-glob).</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> skip_glob<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--extend-skip-glob</li>
+</ul>
+<h2 id="extend-skip-glob">Extend Skip Glob</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> extend_skip_glob<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="skip-gitignore">Skip Gitignore</h2>
+<p>Treat project as a git repository and ignore files listed in .gitignore.
+NOTE: This requires git to be installed and accesible from the same shell as isort.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> skip_gitignore<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--gitignore</li>
+<li>--skip-gitignore</li>
+</ul>
+<h2 id="line-length">Line Length</h2>
+<p>The max length of an import line (used for wrapping long imports).</p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>79</code><br />
+<strong>Python &amp; Config File Name:</strong> line_length<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-l</li>
+<li>-w</li>
+<li>--line-length</li>
+<li>--line-width</li>
+</ul>
+<h2 id="wrap-length">Wrap Length</h2>
+<p>Specifies how long lines that are wrapped should be, if not set line_length is used.
+NOTE: wrap_length must be LOWER than or equal to line_length.</p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>0</code><br />
+<strong>Python &amp; Config File Name:</strong> wrap_length<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--wl</li>
+<li>--wrap-length</li>
+</ul>
+<h2 id="line-ending">Line Ending</h2>
+<p>Forces line endings to the specified value. If not set, values will be guessed per-file.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> line_ending<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--le</li>
+<li>--line-ending</li>
+</ul>
+<h2 id="sections">Sections</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</code><br />
+<strong>Python &amp; Config File Name:</strong> sections<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="no-sections">No Sections</h2>
+<p>Put all imports into the same section bucket</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> no_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ds</li>
+<li>--no-sections</li>
+</ul>
+<h2 id="known-future-library">Known Future Library</h2>
+<p>Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of <strong>future</strong> handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six a better option is to create a another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('__future__',)</code><br />
+<strong>Python &amp; Config File Name:</strong> known_future_library<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-f</li>
+<li>--future</li>
+</ul>
+<h2 id="known-third-party">Known Third Party</h2>
+<p>Force isort to recognize a module as being part of a third party library.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> known_third_party<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-o</li>
+<li>--thirdparty</li>
+</ul>
+<h2 id="known-first-party">Known First Party</h2>
+<p>Force isort to recognize a module as being part of the current python project.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> known_first_party<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-p</li>
+<li>--project</li>
+</ul>
+<h2 id="known-local-folder">Known Local Folder</h2>
+<p>Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> known_local_folder<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--known-local-folder</li>
+</ul>
+<h2 id="known-standard-library">Known Standard Library</h2>
+<p>Force isort to recognize a module as part of Python's standard library.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo')</code><br />
+<strong>Python &amp; Config File Name:</strong> known_standard_library<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-b</li>
+<li>--builtin</li>
+</ul>
+<h2 id="extra-standard-library">Extra Standard Library</h2>
+<p>Extra modules to be included in the list of ones in Python's standard library.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> extra_standard_library<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--extra-builtin</li>
+</ul>
+<h2 id="known-other">Known Other</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Dict<br />
+<strong>Default:</strong> <code>{}</code><br />
+<strong>Python &amp; Config File Name:</strong> known_other<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<p><strong>Examples:</strong></p>
+<h3 id="example-isortcfg">Example <code>.isort.cfg</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
+<span class="na">sections</span><span class="o">=</span><span class="s">FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER</span>
+<span class="na">known_airflow</span><span class="o">=</span><span class="s">airflow</span>
+</code></pre></div>
+
+<h3 id="example-pyprojecttoml">Example <code>pyproject.toml</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
+<span class="na">sections</span> <span class="o">=</span> <span class="s">[&#39;FUTURE&#39;, &#39;STDLIB&#39;, &#39;THIRDPARTY&#39;, &#39;AIRFLOW&#39;, &#39;FIRSTPARTY&#39;, &#39;LOCALFOLDER&#39;]</span>
+<span class="na">known_airflow</span> <span class="o">=</span> <span class="s">[&#39;airflow&#39;]</span>
+</code></pre></div>
+
+<h2 id="multi-line-output">Multi Line Output</h2>
+<p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-deprecated-alias-for-5, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).</p>
+<p><strong>Type:</strong> Wrapmodes<br />
+<strong>Default:</strong> <code>WrapModes.GRID</code><br />
+<strong>Python &amp; Config File Name:</strong> multi_line_output<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-m</li>
+<li>--multi-line</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<h3 id="example-isortcfg_1">Example <code>.isort.cfg</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
+<span class="na">multi_line_output</span><span class="o">=</span><span class="s">3</span>
+</code></pre></div>
+
+<h3 id="example-pyprojecttoml_1">Example <code>pyproject.toml</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">[tool.isort]</span>
+<span class="na">multi_line_output</span> <span class="o">=</span> <span class="s">3</span>
+</code></pre></div>
+
+<h2 id="forced-separate">Forced Separate</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>()</code><br />
+<strong>Python &amp; Config File Name:</strong> forced_separate<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="indent">Indent</h2>
+<p>String to place for indents defaults to "    " (4 spaces).</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code></code><br />
+<strong>Python &amp; Config File Name:</strong> indent<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-i</li>
+<li>--indent</li>
+</ul>
+<h2 id="comment-prefix">Comment Prefix</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>#</code><br />
+<strong>Python &amp; Config File Name:</strong> comment_prefix<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="length-sort">Length Sort</h2>
+<p>Sort imports by their string length.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> length_sort<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ls</li>
+<li>--length-sort</li>
+</ul>
+<h2 id="length-sort-straight">Length Sort Straight</h2>
+<p>Sort straight imports by their string length. Similar to <code>length_sort</code> but applies only to straight imports and doesn't affect from imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> length_sort_straight<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--lss</li>
+<li>--length-sort-straight</li>
+</ul>
+<h2 id="length-sort-sections">Length Sort Sections</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> length_sort_sections<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="add-imports">Add Imports</h2>
+<p>Adds the specified import line to all files, automatically determining correct placement.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> add_imports<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-a</li>
+<li>--add-import</li>
+</ul>
+<h2 id="remove-imports">Remove Imports</h2>
+<p>Removes the specified import from all files.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> remove_imports<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--rm</li>
+<li>--remove-import</li>
+</ul>
+<h2 id="append-only">Append Only</h2>
+<p>Only adds the imports specified in --add-import if the file contains existing imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> append_only<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--append</li>
+<li>--append-only</li>
+</ul>
+<h2 id="reverse-relative">Reverse Relative</h2>
+<p>Reverse order of relative imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> reverse_relative<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--rr</li>
+<li>--reverse-relative</li>
+</ul>
+<h2 id="force-single-line">Force Single Line</h2>
+<p>Forces all from imports to appear on their own line</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> force_single_line<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--sl</li>
+<li>--force-single-line-imports</li>
+</ul>
+<h2 id="single-line-exclusions">Single Line Exclusions</h2>
+<p>One or more modules to exclude from the single line rule.</p>
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>()</code><br />
+<strong>Python &amp; Config File Name:</strong> single_line_exclusions<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--nsl</li>
+<li>--single-line-exclusions</li>
+</ul>
+<h2 id="default-section">Default Section</h2>
+<p>Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>THIRDPARTY</code><br />
+<strong>Python &amp; Config File Name:</strong> default_section<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--sd</li>
+<li>--section-default</li>
+</ul>
+<h2 id="import-headings">Import Headings</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Dict<br />
+<strong>Default:</strong> <code>{}</code><br />
+<strong>Python &amp; Config File Name:</strong> import_headings<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="balanced-wrapping">Balanced Wrapping</h2>
+<p>Balances wrapping to produce the most consistent line length possible</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> balanced_wrapping<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-e</li>
+<li>--balanced</li>
+</ul>
+<h2 id="use-parentheses">Use Parentheses</h2>
+<p>Use parentheses for line continuation on length limit instead of slashes. <strong>NOTE</strong>: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> use_parentheses<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--up</li>
+<li>--use-parentheses</li>
+</ul>
+<h2 id="order-by-type">Order By Type</h2>
+<p>Order imports by type, which is determined by case, in addition to alphabetically.</p>
+<p><strong>NOTE</strong>: type here refers to the implied type from the import name capitalization.
+ isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the <code>--dont-order-by-type</code> option will turn this off.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>True</code><br />
+<strong>Python &amp; Config File Name:</strong> order_by_type<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ot</li>
+<li>--order-by-type</li>
+</ul>
+<h2 id="atomic">Atomic</h2>
+<p>Ensures the output doesn't save if the resulting file contains syntax errors.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> atomic<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ac</li>
+<li>--atomic</li>
+</ul>
+<h2 id="lines-after-imports">Lines After Imports</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>-1</code><br />
+<strong>Python &amp; Config File Name:</strong> lines_after_imports<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--lai</li>
+<li>--lines-after-imports</li>
+</ul>
+<h2 id="lines-between-sections">Lines Between Sections</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>1</code><br />
+<strong>Python &amp; Config File Name:</strong> lines_between_sections<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="lines-between-types">Lines Between Types</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>0</code><br />
+<strong>Python &amp; Config File Name:</strong> lines_between_types<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--lbt</li>
+<li>--lines-between-types</li>
+</ul>
+<h2 id="combine-as-imports">Combine As Imports</h2>
+<p>Combines as imports on the same line.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> combine_as_imports<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ca</li>
+<li>--combine-as</li>
+</ul>
+<h2 id="combine-star">Combine Star</h2>
+<p>Ensures that if a star import is present, nothing else is imported from that namespace.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> combine_star<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--cs</li>
+<li>--combine-star</li>
+</ul>
+<h2 id="include-trailing-comma">Include Trailing Comma</h2>
+<p>Includes a trailing comma on multi line imports that include parentheses.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> include_trailing_comma<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--tc</li>
+<li>--trailing-comma</li>
+</ul>
+<h2 id="from-first">From First</h2>
+<p>Switches the typical ordering preference, showing from imports first then straight ones.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> from_first<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ff</li>
+<li>--from-first</li>
+</ul>
+<h2 id="verbose">Verbose</h2>
+<p>Shows verbose output, such as when files are skipped or when a check is successful.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> verbose<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-v</li>
+<li>--verbose</li>
+</ul>
+<h2 id="quiet">Quiet</h2>
+<p>Shows extra quiet output, only errors are outputted.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> quiet<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-q</li>
+<li>--quiet</li>
+</ul>
+<h2 id="force-adds">Force Adds</h2>
+<p>Forces import adds even if the original file is empty.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> force_adds<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--af</li>
+<li>--force-adds</li>
+</ul>
+<h2 id="force-alphabetical-sort-within-sections">Force Alphabetical Sort Within Sections</h2>
+<p>Force all imports to be sorted alphabetically within a section</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> force_alphabetical_sort_within_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--fass</li>
+<li>--force-alphabetical-sort-within-sections</li>
+</ul>
+<h2 id="force-alphabetical-sort">Force Alphabetical Sort</h2>
+<p>Force all imports to be sorted as a single section</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> force_alphabetical_sort<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--fas</li>
+<li>--force-alphabetical-sort</li>
+</ul>
+<h2 id="force-grid-wrap">Force Grid Wrap</h2>
+<p>Force number of from imports (defaults to 2 when passed as CLI flag without value)to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.</p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>0</code><br />
+<strong>Python &amp; Config File Name:</strong> force_grid_wrap<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--fgw</li>
+<li>--force-grid-wrap</li>
+</ul>
+<h2 id="force-sort-within-sections">Force Sort Within Sections</h2>
+<p>Don't sort straight-style imports (like import sys) before from-style imports (like from itertools import groupby). Instead, sort the imports by module, independent of import style.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> force_sort_within_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--fss</li>
+<li>--force-sort-within-sections</li>
+</ul>
+<h2 id="lexicographical">Lexicographical</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> lexicographical<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="group-by-package">Group By Package</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> group_by_package<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="ignore-whitespace">Ignore Whitespace</h2>
+<p>Tells isort to ignore whitespace differences when --check-only is being used.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> ignore_whitespace<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ws</li>
+<li>--ignore-whitespace</li>
+</ul>
+<h2 id="no-lines-before">No Lines Before</h2>
+<p>Sections which should not be split with previous by empty lines</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> no_lines_before<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--nlb</li>
+<li>--no-lines-before</li>
+</ul>
+<h2 id="no-inline-sort">No Inline Sort</h2>
+<p>Leaves <code>from</code> imports with multiple imports 'as-is' (e.g. <code>from foo import a, c ,b</code>).</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> no_inline_sort<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--nis</li>
+<li>--no-inline-sort</li>
+</ul>
+<h2 id="ignore-comments">Ignore Comments</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> ignore_comments<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="case-sensitive">Case Sensitive</h2>
+<p>Tells isort to include casing when sorting module names</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> case_sensitive<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--case-sensitive</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>()</code><br />
+<strong>Python &amp; Config File Name:</strong> sources<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="virtual-env">Virtual Env</h2>
+<p>Virtual environment to use for determining whether a package is third-party</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> virtual_env<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--virtual-env</li>
+</ul>
+<h2 id="conda-env">Conda Env</h2>
+<p>Conda environment to use for determining whether a package is third-party</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> conda_env<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--conda-env</li>
+</ul>
+<h2 id="ensure-newline-before-comments">Ensure Newline Before Comments</h2>
+<p>Inserts a blank line before a comment following an import.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> ensure_newline_before_comments<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-n</li>
+<li>--ensure-newline-before-comments</li>
+</ul>
+<h2 id="directory">Directory</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> directory<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="profile">Profile</h2>
+<p>Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> profile<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--profile</li>
+</ul>
+<h2 id="honor-noqa">Honor Noqa</h2>
+<p>Tells isort to honor noqa comments to enforce skipping those comments.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> honor_noqa<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--honor-noqa</li>
+</ul>
+<h2 id="src-paths">Src Paths</h2>
+<p>Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party).</p>
+<p><strong>Type:</strong> Tuple<br />
+<strong>Default:</strong> <code>()</code><br />
+<strong>Python &amp; Config File Name:</strong> src_paths<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--src</li>
+<li>--src-path</li>
+</ul>
+<h2 id="old-finders">Old Finders</h2>
+<p>Use the old deprecated finder logic that relies on environment introspection magic.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> old_finders<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--old-finders</li>
+<li>--magic-placement</li>
+</ul>
+<h2 id="remove-redundant-aliases">Remove Redundant Aliases</h2>
+<p>Tells isort to remove redundant aliases from imports, such as <code>import os as os</code>. This defaults to <code>False</code> simply because some projects use these seemingly useless  aliases to signify intent and change behaviour.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> remove_redundant_aliases<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--remove-redundant-aliases</li>
+</ul>
+<h2 id="float-to-top">Float To Top</h2>
+<p>Causes all non-indented imports to float to the top of the file having its imports sorted (immediately below the top of file comment).
+This can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.</p>
+<p><em>NOTE</em>: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> float_to_top<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--float-to-top</li>
+</ul>
+<h2 id="filter-files">Filter Files</h2>
+<p>Tells isort to filter files even when they are explicitly passed in as part of the CLI command.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> filter_files<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--filter-files</li>
+</ul>
+<h2 id="formatter">Formatter</h2>
+<p>Specifies the name of a formatting plugin to use when producing output.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> ``<br />
+<strong>Python &amp; Config File Name:</strong> formatter<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--formatter</li>
+</ul>
+<h2 id="formatting-function">Formatting Function</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Nonetype<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> formatting_function<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="color-output">Color Output</h2>
+<p>Tells isort to use color in terminal output.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> color_output<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--color</li>
+</ul>
+<h2 id="treat-comments-as-code">Treat Comments As Code</h2>
+<p>Tells isort to treat the specified single line comment(s) as if they are code.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> treat_comments_as_code<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--treat-comment-as-code</li>
+</ul>
+<h2 id="treat-all-comments-as-code">Treat All Comments As Code</h2>
+<p>Tells isort to treat all single line comments as if they are code.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> treat_all_comments_as_code<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--treat-all-comment-as-code</li>
+</ul>
+<h2 id="supported-extensions">Supported Extensions</h2>
+<p>Specifies what extensions isort can be ran against.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('pxd', 'py', 'pyi', 'pyx')</code><br />
+<strong>Python &amp; Config File Name:</strong> supported_extensions<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ext</li>
+<li>--extension</li>
+<li>--supported-extension</li>
+</ul>
+<h2 id="blocked-extensions">Blocked Extensions</h2>
+<p>Specifies what extensions isort can never be ran against.</p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>('pex',)</code><br />
+<strong>Python &amp; Config File Name:</strong> blocked_extensions<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--blocked-extension</li>
+</ul>
+<h2 id="constants">Constants</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> constants<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="classes">Classes</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> classes<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="variables">Variables</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> variables<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="dedup-headings">Dedup Headings</h2>
+<p>Tells isort to only show an identical custom import heading comment once, even if there are multiple sections with the comment set.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> dedup_headings<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--dedup-headings</li>
+</ul>
+<h2 id="only-sections">Only Sections</h2>
+<p>Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. Within sections, the imports are ordered by their import style and the imports with same style maintain their relative positions.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> only_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--only-sections</li>
+<li>--os</li>
+</ul>
+<h2 id="only-modified">Only Modified</h2>
+<p>Suppresses verbose output for non-modified files.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> only_modified<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--only-modified</li>
+<li>--om</li>
+</ul>
+<h2 id="combine-straight-imports">Combine Straight Imports</h2>
+<p>Combines all the bare straight imports of the same section in a single line. Won't work with sections which have 'as' imports</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> combine_straight_imports<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--combine-straight-imports</li>
+<li>--csi</li>
+</ul>
+<h2 id="auto-identify-namespace-packages">Auto Identify Namespace Packages</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>True</code><br />
+<strong>Python &amp; Config File Name:</strong> auto_identify_namespace_packages<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="namespace-packages">Namespace Packages</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Frozenset<br />
+<strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Python &amp; Config File Name:</strong> namespace_packages<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="follow-links">Follow Links</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>True</code><br />
+<strong>Python &amp; Config File Name:</strong> follow_links<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="indented-import-headings">Indented Import Headings</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>True</code><br />
+<strong>Python &amp; Config File Name:</strong> indented_import_headings<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="honor-case-in-force-sorted-sections">Honor Case In Force Sorted Sections</h2>
+<p>Honor <code>--case-sensitive</code> when <code>--force-sort-within-sections</code> is being used. Without this option set, <code>--order-by-type</code> decides module name ordering too.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> honor_case_in_force_sorted_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--hcss</li>
+<li>--honor-case-in-force-sorted-sections</li>
+</ul>
+<h2 id="sort-relative-in-force-sorted-sections">Sort Relative In Force Sorted Sections</h2>
+<p>When using <code>--force-sort-within-sections</code>, sort relative imports the same way as they are sorted when not using that setting.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> sort_relative_in_force_sorted_sections<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--srss</li>
+<li>--sort-relative-in-force-sorted-sections</li>
+</ul>
+<h2 id="overwrite-in-place">Overwrite In Place</h2>
+<p>Tells isort to overwrite in place using the same file handle.Comes at a performance and memory usage penalty over it's standard approach but ensures all file flags and modes stay unchanged.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> overwrite_in_place<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--overwrite-in-place</li>
+</ul>
+<h2 id="reverse-sort">Reverse Sort</h2>
+<p>Reverses the ordering of imports.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> reverse_sort<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--reverse-sort</li>
+</ul>
+<h2 id="star-first">Star First</h2>
+<p>Forces star imports above others to avoid overriding directly imported variables.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> star_first<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--star-first</li>
+</ul>
+<h2 id="git-ignore">Git Ignore</h2>
+<p><strong>No Description</strong></p>
+<p><strong>Type:</strong> Dict<br />
+<strong>Default:</strong> <code>{}</code><br />
+<strong>Python &amp; Config File Name:</strong> git_ignore<br />
+<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="show-version">Show Version</h2>
+<p>Displays the currently installed version of isort.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-V</li>
+<li>--version</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<h3 id="example-cli-usage">Example cli usage</h3>
+<p><code>isort --version</code></p>
+<h2 id="version-number">Version Number</h2>
+<p>Returns just the current version number without the logo</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>==SUPPRESS==</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--vn</li>
+<li>--version-number</li>
+</ul>
+<h2 id="write-to-stdout">Write To Stdout</h2>
+<p>Force resulting output to stdout, instead of in-place.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-d</li>
+<li>--stdout</li>
+</ul>
+<h2 id="show-config">Show Config</h2>
+<p>See isort's determined config, as well as sources of config options.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--show-config</li>
+</ul>
+<h2 id="show-files">Show Files</h2>
+<p>See the files isort will be ran against with the current config options.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--show-files</li>
+</ul>
+<h2 id="show-diff">Show Diff</h2>
+<p>Prints a diff of all the changes isort would make to a file, instead of changing it in place</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--df</li>
+<li>--diff</li>
+</ul>
+<h2 id="check">Check</h2>
+<p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file. Returns 0 when nothing would change and returns 1 when the file would be reformatted.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-c</li>
+<li>--check-only</li>
+<li>--check</li>
+</ul>
+<h2 id="settings-path">Settings Path</h2>
+<p>Explicitly set the settings path or file instead of auto determining based on file location.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--sp</li>
+<li>--settings-path</li>
+<li>--settings-file</li>
+<li>--settings</li>
+</ul>
+<h2 id="jobs">Jobs</h2>
+<p>Number of files to process in parallel.</p>
+<p><strong>Type:</strong> Int<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-j</li>
+<li>--jobs</li>
+</ul>
+<h2 id="ask-to-apply">Ask To Apply</h2>
+<p>Tells isort to apply changes interactively.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--interactive</li>
+</ul>
+<h2 id="files">Files</h2>
+<p>One or more Python source files that need their imports sorted.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li></li>
+</ul>
+<h2 id="dont-follow-links">Dont Follow Links</h2>
+<p>Tells isort not to follow symlinks that are encountered when running recursively.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--dont-follow-links</li>
+</ul>
+<h2 id="filename">Filename</h2>
+<p>Provide the filename associated with a stream.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--filename</li>
+</ul>
+<h2 id="allow-root">Allow Root</h2>
+<p>Tells isort not to treat / specially, allowing it to be ran against the root dir.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--allow-root</li>
+</ul>
+<h2 id="dont-float-to-top">Dont Float To Top</h2>
+<p>Forces --float-to-top setting off. See --float-to-top for more information.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--dont-float-to-top</li>
+</ul>
+<h2 id="dont-order-by-type">Dont Order By Type</h2>
+<p>Don't order imports by type, which is determined by case, in addition to alphabetically.</p>
+<p><strong>NOTE</strong>: type here refers to the implied type from the import name capitalization.
+ isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using <code>--order-by-type</code>.</p>
+<p><strong>Type:</strong> Bool<br />
+<strong>Default:</strong> <code>False</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--dt</li>
+<li>--dont-order-by-type</li>
+</ul>
+<h2 id="ext-format">Ext Format</h2>
+<p>Tells isort to format the given files according to an extensions formatting rules.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--ext-format</li>
+</ul>
+<h2 id="deprecated-flags">Deprecated Flags</h2>
+<p>==SUPPRESS==</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>None</code><br />
+<strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>-k</li>
+<li>--keep-direct-and-as</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="multi_line_output_modes.html" title="Multi Line Output Modes" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Multi Line Output Modes
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="pre-commit.html" title="Pre Commit" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Pre Commit
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Powered by
+        <a href="http://timothycrosley.github.io/portray">portray.</a>
+        You too can
+        <a href="http://timothycrosley.github.io/portray">
+          portray</a>
+        your Python project well using automatic documentation.
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.76f349be.min.js"></script>
+      
+    
+  </body>
+</html>

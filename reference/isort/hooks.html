@@ -14,7 +14,7 @@
     
     
       
-        <title>Index - isort</title>
+        <title>Hooks - isort</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#module-isort" class="md-skip">
+        <a href="#module-isorthooks" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Index
+              Hooks
             
           </span>
         </div>
@@ -811,11 +811,78 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="hooks.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Hooks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="hooks.html" class="md-nav__link md-nav__link--active">
         Hooks
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_lines" class="md-nav__link">
+    get_lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_output" class="md-nav__link">
+    get_output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git_hook" class="md-nav__link">
+    git_hook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -835,51 +902,11 @@
             
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Index
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="index.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
         Index
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#sub-modules" class="md-nav__link">
-    Sub-modules
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1312,9 +1339,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sub-modules" class="md-nav__link">
-    Sub-modules
+  <a href="#functions" class="md-nav__link">
+    Functions
   </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_lines" class="md-nav__link">
+    get_lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_output" class="md-nav__link">
+    get_output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git_hook" class="md-nav__link">
+    git_hook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1330,83 +1384,393 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/pycqa/isort/edit/main/reference/isort/index.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/pycqa/isort/edit/main/reference/isort/hooks.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="module-isort">Module isort</h1>
-<p>Defines the public isort interface</p>
-<p>None</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Defines the public isort interface&quot;&quot;&quot;</span>
+                <h1 id="module-isorthooks">Module isort.hooks</h1>
+<p>Defines a git hook to allow pre-commit warnings and errors about import order.</p>
+<p>usage:
+    exit_code = git_hook(strict=True|False, modify=True|False)</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Defines a git hook to allow pre-commit warnings and errors about import order.</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="sd">usage:</span>
 
-<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="sd">    exit_code = git_hook(strict=True|False, modify=True|False)</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">ImportKey</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">check_code_string</span> <span class="k">as</span> <span class="n">check_code</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>  <span class="c1"># nosec - Needed for hook</span>
 
-    <span class="n">check_file</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-    <span class="n">check_stream</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-    <span class="n">find_imports_in_code</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">isort</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">exceptions</span>
 
-    <span class="n">find_imports_in_file</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
-    <span class="n">find_imports_in_paths</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;Run a command and return raw output</span>
 
-    <span class="n">find_imports_in_stream</span><span class="p">,</span>
+<span class="sd">    :param str command: the command to run</span>
 
-    <span class="n">place_module</span><span class="p">,</span>
+<span class="sd">    :returns: the stdout output of the command</span>
 
-    <span class="n">place_module_with_reason</span><span class="p">,</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># nosec - trusted input</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_code_string</span> <span class="k">as</span> <span class="n">code</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_file</span> <span class="k">as</span> <span class="n">file</span>
+<span class="k">def</span> <span class="nf">get_lines</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_stream</span> <span class="k">as</span> <span class="n">stream</span>
+    <span class="sd">&quot;&quot;&quot;Run a command and return lines of output</span>
 
-<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="sd">    :param str command: the command to run</span>
+
+<span class="sd">    :returns: list of whitespace-stripped lines output by command</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">stdout</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdout</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
+
+<span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
+
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;Git pre-commit hook to check staged files for isort errors</span>
+
+<span class="sd">    :param bool strict - if True, return number of errors on exit,</span>
+
+<span class="sd">        causing the hook to fail. If False, return zero so it will</span>
+
+<span class="sd">        just act as a warning.</span>
+
+<span class="sd">    :param bool modify - if True, fix the sources if they are not</span>
+
+<span class="sd">        sorted properly. If False, only report result without</span>
+
+<span class="sd">        modifying anything.</span>
+
+<span class="sd">    :param bool lazy - if True, also check/fix unstaged files.</span>
+
+<span class="sd">        This is useful if you frequently use ``git commit -a`` for example.</span>
+
+<span class="sd">        If False, ony check/fix the staged files for isort errors.</span>
+
+<span class="sd">    :param str settings_file - A path to a file to be used as</span>
+
+<span class="sd">                               the configuration file for this run.</span>
+
+<span class="sd">        When settings_file is the empty string, the configuration file</span>
+
+<span class="sd">        will be searched starting at the directory containing the first</span>
+
+<span class="sd">        staged file, if any, and going upward in the directory structure.</span>
+
+<span class="sd">    :return number of errors if in strict mode, 0 otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Get list of files modified and staged</span>
+
+    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s2">&quot;--cached&quot;</span><span class="p">,</span> <span class="s2">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s2">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">lazy</span><span class="p">:</span>
+
+        <span class="n">diff_cmd</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;--cached&quot;</span><span class="p">)</span>
+
+    <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">files_modified</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+
+        <span class="n">settings_file</span><span class="o">=</span><span class="n">settings_file</span><span class="p">,</span>
+
+        <span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files_modified</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
+
+            <span class="c1"># Get the staged contents of the file</span>
+
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+            <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_code_string</span><span class="p">(</span>
+
+                    <span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
+
+                <span class="p">):</span>
+
+                    <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="n">modify</span><span class="p">:</span>
+
+                        <span class="n">api</span><span class="o">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">FileSkipped</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">errors</span> <span class="k">if</span> <span class="n">strict</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
 
 </details>
-<h2 id="sub-modules">Sub-modules</h2>
-<ul>
-<li><a href="api/">isort.api</a></li>
-<li><a href="comments/">isort.comments</a></li>
-<li><a href="core/">isort.core</a></li>
-<li><a href="deprecated/">isort.deprecated</a></li>
-<li><a href="exceptions/">isort.exceptions</a></li>
-<li><a href="files/">isort.files</a></li>
-<li><a href="format/">isort.format</a></li>
-<li><a href="hooks/">isort.hooks</a></li>
-<li><a href="identify/">isort.identify</a></li>
-<li><a href="io/">isort.io</a></li>
-<li><a href="literal/">isort.literal</a></li>
-<li><a href="logo/">isort.logo</a></li>
-<li><a href="main/">isort.main</a></li>
-<li><a href="output/">isort.output</a></li>
-<li><a href="parse/">isort.parse</a></li>
-<li><a href="place/">isort.place</a></li>
-<li><a href="profiles/">isort.profiles</a></li>
-<li><a href="pylama_isort/">isort.pylama_isort</a></li>
-<li><a href="sections/">isort.sections</a></li>
-<li><a href="settings/">isort.settings</a></li>
-<li><a href="setuptools_commands/">isort.setuptools_commands</a></li>
-<li><a href="sorting/">isort.sorting</a></li>
-<li><a href="stdlibs/">isort.stdlibs</a></li>
-<li><a href="utils/">isort.utils</a></li>
-<li><a href="wrap/">isort.wrap</a></li>
-<li><a href="wrap_modes/">isort.wrap_modes</a></li>
-</ul>
+<h2 id="functions">Functions</h2>
+<h3 id="get_lines">get_lines</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_lines</span><span class="p">(</span>
+    <span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Run a command and return lines of output</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>command</td>
+<td>str</td>
+<td>the command to run</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>list of whitespace-stripped lines output by command</td>
+</tr>
+</tbody>
+</table>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">get_lines</span><span class="p">(</span><span class="nl">command</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Run a command and return lines of output</span>
+
+<span class="ss">    :param str command: the command to run</span>
+
+<span class="ss">    :returns: list of whitespace-stripped lines output by command</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_output</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">[</span><span class="n">line.strip() for line in stdout.splitlines()</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+<h3 id="get_output">get_output</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span>
+    <span class="n">command</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+<p>Run a command and return raw output</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>command</td>
+<td>str</td>
+<td>the command to run</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>the stdout output of the command</td>
+</tr>
+</tbody>
+</table>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">get_output</span><span class="p">(</span><span class="nl">command</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Run a command and return raw output</span>
+
+<span class="ss">    :param str command: the command to run</span>
+
+<span class="ss">    :returns: the stdout output of the command</span>
+
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subprocess</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="p">.</span><span class="n">PIPE</span><span class="p">,</span><span class="w"> </span><span class="k">check</span><span class="o">=</span><span class="k">True</span><span class="p">)</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">nosec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">trusted</span><span class="w"> </span><span class="k">input</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">result</span><span class="p">.</span><span class="n">stdout</span><span class="p">.</span><span class="n">decode</span><span class="p">()</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+<h3 id="git_hook">git_hook</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">git_hook</span><span class="p">(</span>
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">modify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+<p>Git pre-commit hook to check staged files for isort errors</p>
+<p>:param bool strict - if True, return number of errors on exit,
+    causing the hook to fail. If False, return zero so it will
+    just act as a warning.
+:param bool modify - if True, fix the sources if they are not
+    sorted properly. If False, only report result without
+    modifying anything.
+:param bool lazy - if True, also check/fix unstaged files.
+    This is useful if you frequently use <code>git commit -a</code> for example.
+    If False, ony check/fix the staged files for isort errors.
+:param str settings_file - A path to a file to be used as
+                           the configuration file for this run.
+    When settings_file is the empty string, the configuration file
+    will be searched starting at the directory containing the first
+    staged file, if any, and going upward in the directory structure.</p>
+<p>:return number of errors if in strict mode, 0 otherwise.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">git_hook</span><span class="p">(</span>
+
+    <span class="n">strict</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">modify</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">lazy</span><span class="o">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kr">False</span><span class="p">,</span> <span class="n">settings_file</span><span class="o">:</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">int</span><span class="o">:</span>
+
+    <span class="s">&quot;&quot;&quot;Git pre-commit hook to check staged files for isort errors</span>
+
+<span class="s">    :param bool strict - if True, return number of errors on exit,</span>
+
+<span class="s">        causing the hook to fail. If False, return zero so it will</span>
+
+<span class="s">        just act as a warning.</span>
+
+<span class="s">    :param bool modify - if True, fix the sources if they are not</span>
+
+<span class="s">        sorted properly. If False, only report result without</span>
+
+<span class="s">        modifying anything.</span>
+
+<span class="s">    :param bool lazy - if True, also check/fix unstaged files.</span>
+
+<span class="s">        This is useful if you frequently use ``git commit -a`` for example.</span>
+
+<span class="s">        If False, ony check/fix the staged files for isort errors.</span>
+
+<span class="s">    :param str settings_file - A path to a file to be used as</span>
+
+<span class="s">                               the configuration file for this run.</span>
+
+<span class="s">        When settings_file is the empty string, the configuration file</span>
+
+<span class="s">        will be searched starting at the directory containing the first</span>
+
+<span class="s">        staged file, if any, and going upward in the directory structure.</span>
+
+<span class="s">    :return number of errors if in strict mode, 0 otherwise.</span>
+
+<span class="s">    &quot;&quot;&quot;</span>
+
+    <span class="err">#</span> <span class="n">Get</span> <span class="n">list</span> <span class="kr">of</span> <span class="n">files</span> <span class="n">modified</span> <span class="kr">and</span> <span class="n">staged</span>
+
+    <span class="n">diff_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;git&quot;</span><span class="p">,</span> <span class="s">&quot;diff-index&quot;</span><span class="p">,</span> <span class="s">&quot;--cached&quot;</span><span class="p">,</span> <span class="s">&quot;--name-only&quot;</span><span class="p">,</span> <span class="s">&quot;--diff-filter=ACMRTUXB&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">]</span>
+
+    <span class="nf">if</span> <span class="n">lazy</span><span class="o">:</span>
+
+        <span class="n">diff_cmd</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&quot;--cached&quot;</span><span class="p">)</span>
+
+    <span class="n">files_modified</span> <span class="o">=</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">diff_cmd</span><span class="p">)</span>
+
+    <span class="nf">if</span> <span class="kr">not</span> <span class="n">files_modified</span><span class="o">:</span>
+
+        <span class="kr">return</span> <span class="mi">0</span>
+
+    <span class="n">errors</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+
+        <span class="n">settings_file</span><span class="o">=</span><span class="n">settings_file</span><span class="p">,</span>
+
+        <span class="n">settings_path</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">files_modified</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+
+    <span class="p">)</span>
+
+    <span class="n">for</span> <span class="n">filename</span> <span class="kr">in</span> <span class="n">files_modified</span><span class="o">:</span>
+
+        <span class="nf">if</span> <span class="n">filename</span><span class="p">.</span><span class="kd">ends</span><span class="n">with</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">)</span><span class="o">:</span>
+
+            <span class="err">#</span> <span class="n">Get</span> <span class="n">the</span> <span class="n">staged</span> <span class="n">contents</span> <span class="kr">of</span> <span class="n">the</span> <span class="n">file</span>
+
+            <span class="n">staged_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;git&quot;</span><span class="p">,</span> <span class="s">&quot;show&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s">&quot;:{filename}&quot;</span><span class="p">]</span>
+
+            <span class="n">staged_contents</span> <span class="o">=</span> <span class="n">get_output</span><span class="p">(</span><span class="n">staged_cmd</span><span class="p">)</span>
+
+            <span class="n">try</span><span class="o">:</span>
+
+                <span class="nf">if</span> <span class="kr">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_code_string</span><span class="p">(</span>
+
+                    <span class="n">staged_contents</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
+
+                <span class="p">)</span><span class="o">:</span>
+
+                    <span class="n">errors</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="nf">if</span> <span class="n">modify</span><span class="o">:</span>
+
+                        <span class="n">api</span><span class="p">.</span><span class="n">sort_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+            <span class="kr">except</span> <span class="n">exceptions</span><span class="p">.</span><span class="n">FileSkipped</span><span class="o">:</span>  <span class="err">#</span> <span class="n">pragma</span><span class="o">:</span> <span class="n">no</span> <span class="n">cover</span>
+
+                <span class="n">pass</span>
+
+    <span class="kr">return</span> <span class="n">errors</span> <span class="nf">if</span> <span class="n">strict</span> <span class="n">else</span> <span class="mi">0</span>
+</code></pre></div>
+
+</details>
                 
               
               
@@ -1426,7 +1790,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="identify.html" title="Identify" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="format.html" title="Format" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1435,19 +1799,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Identify
+                Format
               </span>
             </div>
           </a>
         
         
-          <a href="io.html" title="Io" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="identify.html" title="Identify" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Io
+                Identify
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

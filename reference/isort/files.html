@@ -14,7 +14,7 @@
     
     
       
-        <title>Index - isort</title>
+        <title>Files - isort</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#module-isort" class="md-skip">
+        <a href="#module-isortfiles" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Index
+              Files
             
           </span>
         </div>
@@ -787,11 +787,64 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="files.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Files
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="files.html" class="md-nav__link md-nav__link--active">
         Files
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find" class="md-nav__link">
+    find
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -835,51 +888,11 @@
             
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Index
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="index.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
         Index
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#sub-modules" class="md-nav__link">
-    Sub-modules
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1312,9 +1325,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sub-modules" class="md-nav__link">
-    Sub-modules
+  <a href="#functions" class="md-nav__link">
+    Functions
   </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find" class="md-nav__link">
+    find
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1330,83 +1356,165 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/pycqa/isort/edit/main/reference/isort/index.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/pycqa/isort/edit/main/reference/isort/files.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="module-isort">Module isort</h1>
-<p>Defines the public isort interface</p>
+                <h1 id="module-isortfiles">Module isort.files</h1>
 <p>None</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Defines the public isort interface&quot;&quot;&quot;</span>
+<p>None</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">ImportKey</span>
+<span class="kn">from</span> <span class="nn">isort.settings</span> <span class="kn">import</span> <span class="n">Config</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">check_code_string</span> <span class="k">as</span> <span class="n">check_code</span>
+<span class="k">def</span> <span class="nf">find</span><span class="p">(</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">broken</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
-    <span class="n">check_file</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 
-    <span class="n">check_stream</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;Fines and provides an iterator for all Python source files defined in paths.&quot;&quot;&quot;</span>
 
-    <span class="n">find_imports_in_code</span><span class="p">,</span>
+    <span class="n">visited_dirs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-    <span class="n">find_imports_in_file</span><span class="p">,</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
 
-    <span class="n">find_imports_in_paths</span><span class="p">,</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 
-    <span class="n">find_imports_in_stream</span><span class="p">,</span>
+            <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span>
 
-    <span class="n">place_module</span><span class="p">,</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">follow_links</span>
 
-    <span class="n">place_module_with_reason</span><span class="p">,</span>
+            <span class="p">):</span>
 
-<span class="p">)</span>
+                <span class="n">base_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_code_string</span> <span class="k">as</span> <span class="n">code</span>
+                <span class="k">for</span> <span class="n">dirname</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dirnames</span><span class="p">):</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_file</span> <span class="k">as</span> <span class="n">file</span>
+                    <span class="n">full_path</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">/</span> <span class="n">dirname</span>
 
-<span class="kn">from</span> <span class="nn">.api</span> <span class="kn">import</span> <span class="n">sort_stream</span> <span class="k">as</span> <span class="n">stream</span>
+                    <span class="n">resolved_path</span> <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
-<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">Config</span>
+                    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+
+                        <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+
+                        <span class="n">dirnames</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">resolved_path</span> <span class="ow">in</span> <span class="n">visited_dirs</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                            <span class="n">dirnames</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+
+                    <span class="n">visited_dirs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">resolved_path</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+
+                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_supported_filetype</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+
+                        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filepath</span><span class="p">))):</span>
+
+                            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+
+                            <span class="k">yield</span> <span class="n">filepath</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+            <span class="n">broken</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">yield</span> <span class="n">path</span>
 </code></pre></div>
 
 </details>
-<h2 id="sub-modules">Sub-modules</h2>
-<ul>
-<li><a href="api/">isort.api</a></li>
-<li><a href="comments/">isort.comments</a></li>
-<li><a href="core/">isort.core</a></li>
-<li><a href="deprecated/">isort.deprecated</a></li>
-<li><a href="exceptions/">isort.exceptions</a></li>
-<li><a href="files/">isort.files</a></li>
-<li><a href="format/">isort.format</a></li>
-<li><a href="hooks/">isort.hooks</a></li>
-<li><a href="identify/">isort.identify</a></li>
-<li><a href="io/">isort.io</a></li>
-<li><a href="literal/">isort.literal</a></li>
-<li><a href="logo/">isort.logo</a></li>
-<li><a href="main/">isort.main</a></li>
-<li><a href="output/">isort.output</a></li>
-<li><a href="parse/">isort.parse</a></li>
-<li><a href="place/">isort.place</a></li>
-<li><a href="profiles/">isort.profiles</a></li>
-<li><a href="pylama_isort/">isort.pylama_isort</a></li>
-<li><a href="sections/">isort.sections</a></li>
-<li><a href="settings/">isort.settings</a></li>
-<li><a href="setuptools_commands/">isort.setuptools_commands</a></li>
-<li><a href="sorting/">isort.sorting</a></li>
-<li><a href="stdlibs/">isort.stdlibs</a></li>
-<li><a href="utils/">isort.utils</a></li>
-<li><a href="wrap/">isort.wrap</a></li>
-<li><a href="wrap_modes/">isort.wrap_modes</a></li>
-</ul>
+<h2 id="functions">Functions</h2>
+<h3 id="find">find</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">find</span><span class="p">(</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span>
+    <span class="n">skipped</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">broken</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Fines and provides an iterator for all Python source files defined in paths.</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">find</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">paths</span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">config</span><span class="p">:</span><span class="w"> </span><span class="n">Config</span><span class="p">,</span><span class="w"> </span><span class="nl">skipped</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nl">broken</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="w"></span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Fines and provides an iterator for all Python source files defined in paths.&quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">visited_dirs</span><span class="p">:</span><span class="w"> </span><span class="k">Set</span><span class="o">[</span><span class="n">Path</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">set</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">paths</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">dirpath</span><span class="p">,</span><span class="w"> </span><span class="n">dirnames</span><span class="p">,</span><span class="w"> </span><span class="n">filenames</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="n">walk</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">path</span><span class="p">,</span><span class="w"> </span><span class="n">topdown</span><span class="o">=</span><span class="k">True</span><span class="p">,</span><span class="w"> </span><span class="n">followlinks</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">follow_links</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">base_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">dirname</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">list</span><span class="p">(</span><span class="n">dirnames</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">full_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dirname</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">resolved_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">full_path</span><span class="p">.</span><span class="n">resolve</span><span class="p">()</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">skipped</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                        </span><span class="n">dirnames</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="n">resolved_path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">visited_dirs</span><span class="p">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">dirnames</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">visited_dirs</span><span class="p">.</span><span class="k">add</span><span class="p">(</span><span class="n">resolved_path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="n">filename</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">filenames</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">is_supported_filetype</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="k">Path</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filepath</span><span class="p">)))</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">skipped</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">                        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                            </span><span class="n">yield</span><span class="w"> </span><span class="n">filepath</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="ow">exists</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">broken</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">path</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">yield</span><span class="w"> </span><span class="k">path</span><span class="w"></span>
+</code></pre></div>
+
+</details>
                 
               
               
@@ -1426,7 +1534,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="identify.html" title="Identify" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="exceptions.html" title="Exceptions" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1435,19 +1543,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Identify
+                Exceptions
               </span>
             </div>
           </a>
         
         
-          <a href="io.html" title="Io" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="format.html" title="Format" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Io
+                Format
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
