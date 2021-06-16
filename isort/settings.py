@@ -2,8 +2,10 @@
 
 Defines how the default settings for isort should be loaded
 """
+import codecs
 import configparser
 import fnmatch
+import glob
 import os
 import posixpath
 import re
@@ -214,6 +216,7 @@ class _Config:
     reverse_sort: bool = False
     star_first: bool = False
     import_dependencies = Dict[str, str]
+    git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
 
     def __post_init__(self):
         py_version = self.py_version
@@ -508,6 +511,32 @@ class Config(_Config):
         else:
             return bool(_SHEBANG_RE.match(line))
 
+    def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+        try:
+            topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", folder, "rev-parse", "--show-toplevel"]
+            )
+            git_folder = Path(topfolder_result.decode("utf-8").split("\n")[0])
+
+            files = glob.glob(str(git_folder) + "/**/*", recursive=True)
+            files_result = (
+                codecs.escape_decode(  # type: ignore
+                    subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                        ["git", "-C", str(git_folder), "check-ignore", *files]
+                    )
+                )[0]
+                .decode("utf-8")
+                .split("\n")
+            )
+            files_result = files_result[:-1] if files_result else files_result
+
+            self.git_ignore[git_folder] = {Path(f.strip('"')) for f in files_result}
+
+            return git_folder
+
+        except subprocess.CalledProcessError:
+            return None
+
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
         if self.directory and Path(self.directory) in file_path.resolve().parents:
@@ -521,10 +550,16 @@ class Config(_Config):
             if file_path.name == ".git":  # pragma: no cover
                 return True
 
-            result = subprocess.run(  # nosec # skipcq: PYL-W1510
-                ["git", "-C", str(file_path.parent), "check-ignore", "--quiet", os_path]
-            )
-            if result.returncode == 0:
+            git_folder = None
+
+            for folder in self.git_ignore:
+                if folder in file_path.parents:
+                    git_folder = folder
+                    break
+            else:
+                git_folder = self._check_folder_gitignore(str(file_path.parent))
+
+            if git_folder and file_path in self.git_ignore[git_folder]:
                 return True
 
         normalized_path = os_path.replace("\\", "/")
@@ -543,8 +578,8 @@ class Config(_Config):
                 return True
             position = os.path.split(position[0])
 
-        for glob in self.skip_globs:
-            if fnmatch.fnmatch(file_name, glob) or fnmatch.fnmatch("/" + file_name, glob):
+        for sglob in self.skip_globs:
+            if fnmatch.fnmatch(file_name, sglob) or fnmatch.fnmatch("/" + file_name, sglob):
                 return True
 
         if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
