@@ -6,6 +6,10 @@ Compatibility with black
 Compatibility with black is very important to the isort project and comes baked in starting with version 5.
 All that's required to use isort alongside black is to set the isort profile to "black".
 
+!!! tip
+    Beyond the profile, it is common to set [skip_gitignore](https://pycqa.github.io/isort/docs/configuration/options/#skip-gitignore) (which is not enabled by default for isort as it requires git to be installed) and [line_length](https://pycqa.github.io/isort/docs/configuration/options/#skip-gitignore) as it is common to deviate from black's default of 88.
+
+
 ## Using a config file (such as .isort.cfg)
 
 For projects that officially use both isort and black, we recommend setting the black profile in a config file at the root of your project's repository.
