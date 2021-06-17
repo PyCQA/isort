@@ -1115,3 +1115,53 @@ import blaaa
 import bla
 """
     )
+
+
+def test_isort_can_turn_off_import_adds_with_action_comment_issue_1737():
+    assert (
+        isort.code(
+            """
+import os
+""",
+            add_imports=[
+                "from __future__ import absolute_imports",
+                "from __future__ import annotations",
+            ],
+        )
+        == """
+from __future__ import absolute_imports, annotations
+
+import os
+"""
+    )
+
+    assert isort.check_code(
+        """
+# isort: dont-add-imports
+import os
+""",
+        show_diff=True,
+        add_imports=[
+            "from __future__ import absolute_imports",
+            "from __future__ import annotations",
+        ],
+    )
+
+    assert (
+        isort.code(
+            """
+# isort: dont-add-import: from __future__ import annotations
+import os
+""",
+            add_imports=[
+                "from __future__ import absolute_imports",
+                "from __future__ import annotations",
+            ],
+        )
+        == """
+# isort: dont-add-import: from __future__ import annotations
+from __future__ import absolute_imports
+
+import os
+"""
+    )
