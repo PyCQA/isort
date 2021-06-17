@@ -416,7 +416,7 @@ def sort_file(
                                 print(f"Fixing {source_file.path}")
                     finally:
                         try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            if not config.overwrite_in_place:
+                            if not config.overwrite_in_place:  # pragma: no branch
                                 tmp_file = _tmp_file(source_file)
                                 tmp_file.unlink()
                         except FileNotFoundError:
@@ -511,7 +511,7 @@ def find_imports_in_stream(
             key = f"{identified_import.module}.{identified_import.attribute}"
         elif unique == ImportKey.MODULE:
             key = identified_import.module
-        elif unique == ImportKey.PACKAGE:
+        elif unique == ImportKey.PACKAGE:  # pragma: no branch # type checking ensures this
             key = identified_import.module.split(".")[0]
 
         if key and key not in seen:

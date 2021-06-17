@@ -2,7 +2,6 @@ import json
 import os
 import subprocess
 from datetime import datetime
-from io import BytesIO, TextIOWrapper
 
 import py
 import pytest
@@ -14,15 +13,8 @@ from isort._version import __version__
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from isort.wrap_modes import WrapModes
-
-
-class UnseekableTextIOWrapper(TextIOWrapper):
-    def seek(self, *args, **kwargs):
-        raise ValueError("underlying stream is not seekable")
-
-
-def as_stream(text: str) -> UnseekableTextIOWrapper:
-    return UnseekableTextIOWrapper(BytesIO(text.encode("utf8")))
+from .utils import as_stream
+from io import BytesIO, TextIOWrapper
 
 
 @given(
@@ -900,6 +892,19 @@ import a
     input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
     stream_without_skip = as_stream(input_without_skip)
     main.main(["-"], stdin=stream_without_skip)
+    out, error = capsys.readouterr()
+    assert (
+        out
+        == """
+# generic comment
+import a
+import b
+"""
+    )
+
+    atomic_input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
+    stream_without_skip = as_stream(atomic_input_without_skip)
+    main.main(["-", "--atomic"], stdin=stream_without_skip)
     out, error = capsys.readouterr()
     assert (
         out

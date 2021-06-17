@@ -106,3 +106,12 @@ import a
 
 !!! tip
     isort split is exactly the same as placing an `# isort: on` immediately below an `# isort: off`
+
+
+## isort: dont-add-imports
+
+Tells isort to not automatically add imports to this file, even if --add-imports is set.
+
+## isort: dont-add-import: [IMPORT_LINE]
+
+Tells isort to not automatically add a particular import, even if --add-imports says to add it.
