@@ -19,6 +19,7 @@ from isort import api, sections, files
 from isort.settings import WrapModes, Config
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
+from .utils import as_stream, UnreadableStream
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]
@@ -1368,6 +1369,7 @@ def test_single_multiline() -> None:
 
 
 def test_atomic_mode() -> None:
+    """With atomic mode isort should be able to automatically detect and stop syntax errors"""
     # without syntax error, everything works OK
     test_input = "from b import d, c\nfrom a import f, e\n"
     assert isort.code(test_input, atomic=True) == ("from a import e, f\nfrom b import c, d\n")
@@ -1376,6 +1378,13 @@ def test_atomic_mode() -> None:
     test_input += "while True print 'Hello world'"  # blatant syntax error
     with pytest.raises(ExistingSyntaxErrors):
         isort.code(test_input, atomic=True)
+
+    # ensure atomic works with streams
+    test_input = as_stream("from b import d, c\nfrom a import f, e\n")
+    test_output = UnreadableStream()
+    isort.stream(test_input, test_output, atomic=True)
+    test_output.seek(0)
+    assert test_output.read() == "from a import e, f\nfrom b import c, d\n"
 
 
 def test_order_by_type() -> None:
