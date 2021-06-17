@@ -5268,7 +5268,11 @@ def test_custom_sort() -> None:
     )
 
 
-def test_custom_sort_bad_config() -> None:
+@pytest.mark.parametrize(
+    "bad_config",
+    [("some.non.existent.module.function"), ("tests.unit.test_isort.non_existent_function")],
+)
+def test_custom_sort_bad_config(bad_config) -> None:
     """ Test a custom sorting function provided by config, where config is wrong."""
     test_input = (
         "import rudolph\n"
@@ -5278,7 +5282,7 @@ def test_custom_sort_bad_config() -> None:
         "import adam\n"
         "import jake\n"
     )
-    test_output = isort.code(test_input, sorting_function="some.non.existent.function")
+    test_output = isort.code(test_input, sorting_function=bad_config)
     assert test_output == (
         "import adam\n"
         "import emma\n"

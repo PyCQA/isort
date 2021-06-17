@@ -110,7 +110,7 @@ def sort(
             modname = ".".join(func_def[:-1])
             mod = importlib.import_module(modname)
             sorting_func = getattr(mod, func_def[-1])
-        except:
+        except (ModuleNotFoundError, AttributeError):
             pass  # will default to naturally()
     return sorting_func(to_sort, key, reverse)
 
