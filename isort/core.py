@@ -156,8 +156,20 @@ def process(
                     isort_off = True
                     skip_file = True
 
-            if not in_quote and stripped_line == "# isort: off":
-                isort_off = True
+            if not in_quote:
+                if stripped_line == "# isort: off":
+                    isort_off = True
+                elif stripped_line.startswith("# isort: dont-add-imports"):
+                    add_imports = []
+                elif stripped_line.startswith("# isort: dont-add-import:"):
+                    import_not_to_add = stripped_line.split("# isort: dont-add-import:", 1)[
+                        1
+                    ].strip()
+                    add_imports = [
+                        import_to_add
+                        for import_to_add in add_imports
+                        if not import_to_add == import_not_to_add
+                    ]
 
             if (
                 (index == 0 or (index in (1, 2) and not contains_imports))
