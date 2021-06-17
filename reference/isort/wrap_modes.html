@@ -1890,27 +1890,25 @@
 
 <span class="s2">            return statement_with_comments</span>
 
-<span class="s2">        else:</span>
+<span class="s2">        return (</span>
 
-<span class="s2">            return (</span>
+<span class="s2">            _hanging_indent_end_line(interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;])</span>
 
-<span class="s2">                _hanging_indent_end_line(interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;])</span>
+<span class="s2">            + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
 
-<span class="s2">                + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
+<span class="s2">            + isort.comments.add_to_line(</span>
 
-<span class="s2">                + isort.comments.add_to_line(</span>
+<span class="s2">                interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;],</span>
 
-<span class="s2">                    interface[&quot;</span><span class="s s-Atom">comments</span><span class="s2">&quot;],</span>
+<span class="s2">                interface[&quot;</span><span class="s s-Atom">indent</span><span class="s2">&quot;],</span>
 
-<span class="s2">                    interface[&quot;</span><span class="s s-Atom">indent</span><span class="s2">&quot;],</span>
+<span class="s2">                removed=interface[&quot;</span><span class="s s-Atom">remove_comments</span><span class="s2">&quot;],</span>
 
-<span class="s2">                    removed=interface[&quot;</span><span class="s s-Atom">remove_comments</span><span class="s2">&quot;],</span>
-
-<span class="s2">                    comment_prefix=interface[&quot;</span><span class="s s-Atom">comment_prefix</span><span class="s2">&quot;].lstrip(),</span>
-
-<span class="s2">                )</span>
+<span class="s2">                comment_prefix=interface[&quot;</span><span class="s s-Atom">comment_prefix</span><span class="s2">&quot;].lstrip(),</span>
 
 <span class="s2">            )</span>
+
+<span class="s2">        )</span>
 
 <span class="s2">    return interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
 
@@ -2510,27 +2508,25 @@
 
             <span class="k">return</span> <span class="n">statement_with_comments</span>
 
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
 
-            <span class="k">return</span> <span class="p">(</span>
+            <span class="n">_hanging_indent_end_line</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">])</span>
 
-                <span class="n">_hanging_indent_end_line</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">])</span>
+            <span class="o">+</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">]</span>
 
-                <span class="o">+</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
 
-                <span class="o">+</span> <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
+                <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
 
-                    <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">],</span>
+                <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;indent&quot;</span><span class="p">],</span>
 
-                    <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;indent&quot;</span><span class="p">],</span>
+                <span class="n">removed</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;remove_comments&quot;</span><span class="p">],</span>
 
-                    <span class="n">removed</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;remove_comments&quot;</span><span class="p">],</span>
-
-                    <span class="n">comment_prefix</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(),</span>
-
-                <span class="p">)</span>
+                <span class="n">comment_prefix</span><span class="o">=</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;comment_prefix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(),</span>
 
             <span class="p">)</span>
+
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span>
 </code></pre></div>
