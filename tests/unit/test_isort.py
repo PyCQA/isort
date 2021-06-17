@@ -1266,8 +1266,6 @@ def test_force_single_line_imports_and_sort_within_sections() -> None:
         "from third_party import lib_d\n"
     )
 
-    # Ensure force_sort_within_sections can work with length sort
-    # See: https://github.com/pycqa/isort/issues/1038
     test_input = """import sympy
 import numpy as np
 import pandas as pd
@@ -1280,21 +1278,59 @@ from matplotlib import pyplot as plt
 
 def test_titled_imports() -> None:
     """Tests setting custom titled/commented import sections."""
-    test_input = (
+    # test_input = (
+    # "import sys\n"
+    # "import unicodedata\n"
+    # "import statistics\n"
+    # "import os\n"
+    # "import myproject.test\n"
+    # "import django.settings"
+    # )
+    # test_output = isort.code(
+    # code=test_input,
+    # known_first_party=["myproject"],
+    # import_heading_stdlib="Standard Library",
+    # import_heading_firstparty="My Stuff",
+    # )
+    # assert test_output == (
+    # "# Standard Library\n"
+    # "import os\n"
+    # "import statistics\n"
+    # "import sys\n"
+    # "import unicodedata\n"
+    # "\n"
+    # "import django.settings\n"
+    # "\n"
+    # "# My Stuff\n"
+    # "import myproject.test\n"
+    # )
+    # test_second_run = isort.code(
+    # code=test_output,
+    # known_first_party=["myproject"],
+    # import_heading_stdlib="Standard Library",
+    # import_heading_firstparty="My Stuff",
+    # )
+    # assert test_second_run == test_output
+
+    test_input_lines_down = (
+        "# comment 1\n"
+        "import django.settings\n"
+        "\n"
+        "# Standard Library\n"
         "import sys\n"
         "import unicodedata\n"
         "import statistics\n"
         "import os\n"
         "import myproject.test\n"
-        "import django.settings"
     )
-    test_output = isort.code(
-        code=test_input,
+    test_output_lines_down = isort.code(
+        code=test_input_lines_down,
         known_first_party=["myproject"],
         import_heading_stdlib="Standard Library",
         import_heading_firstparty="My Stuff",
     )
-    assert test_output == (
+    assert test_output_lines_down == (
+        "# comment 1\n"
         "# Standard Library\n"
         "import os\n"
         "import statistics\n"
@@ -1306,13 +1342,6 @@ def test_titled_imports() -> None:
         "# My Stuff\n"
         "import myproject.test\n"
     )
-    test_second_run = isort.code(
-        code=test_output,
-        known_first_party=["myproject"],
-        import_heading_stdlib="Standard Library",
-        import_heading_firstparty="My Stuff",
-    )
-    assert test_second_run == test_output
 
 
 def test_balanced_wrapping() -> None:
@@ -1501,6 +1530,7 @@ def test_combined_from_and_as_imports() -> None:
         "from translate.storage.placeables import general, parse as rich_parse\n"
     )
     assert isort.code(test_input, combine_as_imports=True) == test_input
+    assert isort.code(test_input, combine_as_imports=True, only_sections=True) == test_input
     test_input = "import os \nimport os as _os"
     test_output = "import os\nimport os as _os\n"
     assert isort.code(test_input) == test_output
@@ -4803,6 +4833,23 @@ from flask_security.signals import user_confirmed  # noqa
 from flask_security.signals import user_registered  # noqa
 """
     assert isort.code(test_input, line_length=100) == expected_output
+
+    test_input_2 = """
+#
+# USER SIGNALS
+#
+
+from flask_login import user_logged_in, user_logged_out  # noqa
+
+from flask_security.signals import (
+    password_changed as user_reset_password,  # noqa
+    user_confirmed,  # noqa
+    user_registered,  # noqa
+)
+
+from flask_principal import identity_changed as user_identity_changed  # noqa
+"""
+    assert isort.code(test_input_2, line_length=100) == expected_output
 
 
 def test_single_line_exclusions():

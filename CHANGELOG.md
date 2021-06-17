@@ -15,6 +15,8 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1744: repeat noqa comments dropped when * import and non * imports exist from the same package.
   - Fixed #1721: repeat noqa comments on separate from lines with force-single-line set, sometimes get dropped.
 
+#### Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1394: 100% branch coverage (in addition to line coverage) enforced.
 
 ### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.

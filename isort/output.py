@@ -132,7 +132,7 @@ def sorted_imports(
                 if config.dedup_headings:
                     seen_headings.add(section_title)
                 section_comment = f"# {section_title}"
-                if section_comment not in parsed.lines_without_imports[0:1]:
+                if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
                     section_output.insert(0, section_comment)
 
             if pending_lines_before or not no_lines_before:
@@ -173,7 +173,7 @@ def sorted_imports(
             next_construct = ""
             tail = formatted_output[imports_tail:]
 
-            for index, line in enumerate(tail):
+            for index, line in enumerate(tail):  # pragma: no branch
                 should_skip, in_quote, *_ = parse.skip_line(
                     line,
                     in_quote="",
@@ -190,7 +190,7 @@ def sorted_imports(
                         continue
                     next_construct = line
                     break
-                if in_quote:
+                if in_quote:  # pragma: no branch
                     next_construct = line
                     break
 

@@ -187,7 +187,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         )
 
         if line in config.section_comments and not skipping_line:
-            if import_index == -1:
+            if import_index == -1:  # pragma: no branch
                 import_index = index - 1
             continue
 
@@ -394,7 +394,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         direct_imports.remove("as")
                         if nested_module == as_name and config.remove_redundant_aliases:
                             pass
-                        elif as_name not in as_map["from"][module]:
+                        elif as_name not in as_map["from"][module]:  # pragma: no branch
                             as_map["from"][module].append(as_name)
 
                         full_name = f"{nested_module} as {as_name}"
@@ -403,7 +403,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             categorized_comments["nested"].setdefault(top_level_module, {})[
                                 full_name
                             ] = associated_comment
-                            if associated_comment in comments:
+                            if associated_comment in comments:  # pragma: no branch
                                 comments.pop(comments.index(associated_comment))
                     else:
                         module = just_imports[as_index - 1]
@@ -453,7 +453,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["nested"].setdefault(import_from, {})[
                             import_name
                         ] = associated_comment
-                        if associated_comment in comments:
+                        if associated_comment in comments:  # pragma: no branch
                             comments.pop(comments.index(associated_comment))
                 if (
                     config.force_single_line
