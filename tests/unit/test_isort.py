@@ -9,7 +9,7 @@ import subprocess
 import sys
 from io import StringIO
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Iterator, List, Set, Tuple
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Tuple
 
 import py
 import pytest
@@ -5165,3 +5165,54 @@ def test_find_imports_in_stream() -> None:
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
+
+
+def dummy_sort_no_sort(
+    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
+) -> List[str]:
+    """Returns an unmodified list"""
+    return to_sort
+
+
+def test_custom_sort() -> None:
+    """ Test a custom sorting function provided by config. """
+    test_input = (
+        "import rudolph\n"
+        "import patricia\n"
+        "import zachary\n"
+        "import emma\n"
+        "import adam\n"
+        "import jake\n"
+    )
+    test_output = isort.code(
+        test_input, sorting_function="tests.unit.test_isort.dummy_sort_no_sort"
+    )
+    assert test_output == (
+        "import rudolph\n"
+        "import patricia\n"
+        "import zachary\n"
+        "import emma\n"
+        "import adam\n"
+        "import jake\n"
+    )
+
+
+def test_custom_sort_bad_config() -> None:
+    """ Test a custom sorting function provided by config, where config is wrong."""
+    test_input = (
+        "import rudolph\n"
+        "import patricia\n"
+        "import zachary\n"
+        "import emma\n"
+        "import adam\n"
+        "import jake\n"
+    )
+    test_output = isort.code(test_input, sorting_function="some.non.existent.function")
+    assert test_output == (
+        "import adam\n"
+        "import emma\n"
+        "import jake\n"
+        "import patricia\n"
+        "import rudolph\n"
+        "import zachary\n"
+    )  # sorted naturally

@@ -194,6 +194,7 @@ class _Config:
     filter_files: bool = False
     formatter: str = ""
     formatting_function: Optional[Callable[[str, str, object], str]] = None
+    sorting_function: Optional[str] = None
     color_output: bool = False
     treat_comments_as_code: FrozenSet[str] = frozenset()
     treat_all_comments_as_code: bool = False

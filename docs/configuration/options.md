@@ -867,9 +867,18 @@ Specifies the name of a formatting plugin to use when producing output.
 
 **No Description**
 
-**Type:** Nonetype  
-**Default:** `None`  
-**Python & Config File Name:** formatting_function  
+**Type:** Nonetype
+**Default:** `None`
+**Python & Config File Name:** formatting_function
+**CLI Flags:** **Not Supported**
+
+## Sorting Function
+
+**No Description**
+
+**Type:** Nonetype
+**Default:** `None`
+**Python & Config File Name:** sorting_function
 **CLI Flags:** **Not Supported**
 
 ## Color Output

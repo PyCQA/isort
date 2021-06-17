@@ -1,3 +1,4 @@
+import importlib
 import re
 from typing import Any, Callable, Iterable, List, Optional
 
@@ -94,6 +95,24 @@ def section_key(line: str, config: Config) -> str:
         line = line.lower()
 
     return f"{section}{len(line) if config.length_sort else ''}{line}"
+
+
+def sort(
+    config: Config,
+    to_sort: Iterable[str],
+    key: Optional[Callable[[str], Any]] = None,
+    reverse: bool = False,
+) -> List[str]:
+    sorting_func = naturally
+    if config.sorting_function:
+        try:
+            func_def = config.sorting_function.split(".")
+            modname = ".".join(func_def[:-1])
+            mod = importlib.import_module(modname)
+            sorting_func = getattr(mod, func_def[-1])
+        except:
+            pass  # will default to naturally()
+    return sorting_func(to_sort, key, reverse)
 
 
 def naturally(

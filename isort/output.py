@@ -49,7 +49,8 @@ def sorted_imports(
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
         if not config.only_sections:
-            straight_modules = sorting.naturally(
+            straight_modules = sorting.sort(
+                config,
                 straight_modules,
                 key=lambda key: sorting.module_key(
                     key, config, section_name=section, straight_import=True
@@ -59,7 +60,8 @@ def sorted_imports(
 
         from_modules = parsed.imports[section]["from"]
         if not config.only_sections:
-            from_modules = sorting.naturally(
+            from_modules = sorting.sort(
+                config,
                 from_modules,
                 key=lambda key: sorting.module_key(key, config, section_name=section),
                 reverse=config.reverse_sort,
@@ -105,7 +107,8 @@ def sorted_imports(
                 else:
                     new_section_output.append(line)
             # only_sections options is not imposed if force_sort_within_sections is True
-            new_section_output = sorting.naturally(
+            new_section_output = sorting.sort(
+                config,
                 new_section_output,
                 key=partial(sorting.section_key, config=config),
                 reverse=config.reverse_sort,
@@ -238,7 +241,8 @@ def _with_from_imports(
             not config.no_inline_sort
             or (config.force_single_line and module not in config.single_line_exclusions)
         ) and not config.only_sections:
-            from_imports = sorting.naturally(
+            from_imports = sorting.sort(
+                config,
                 from_imports,
                 key=lambda key: sorting.module_key(
                     key,
@@ -266,7 +270,7 @@ def _with_from_imports(
             if not config.no_inline_sort:
                 for as_import in as_imports:
                     if not config.only_sections:
-                        as_imports[as_import] = sorting.naturally(as_imports[as_import])
+                        as_imports[as_import] = sorting.sort(config, as_imports[as_import])
             for from_import in copy.copy(from_imports):
                 if from_import in as_imports:
                     idx = from_imports.index(from_import)
@@ -337,7 +341,7 @@ def _with_from_imports(
                                     removed=config.ignore_comments,
                                     comment_prefix=config.comment_prefix,
                                 )
-                                for as_import in sorting.naturally(as_imports[from_import])
+                                for as_import in sorting.sort(config, as_imports[from_import])
                             )
 
                         else:
@@ -360,7 +364,7 @@ def _with_from_imports(
                     from_import = from_imports.pop(0)
 
                     if not config.only_sections:
-                        as_imports[from_import] = sorting.naturally(as_imports[from_import])
+                        as_imports[from_import] = sorting.sort(config, as_imports[from_import])
                     from_comments = (
                         parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
                     )
