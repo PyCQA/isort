@@ -893,7 +893,6 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
     to a different stream.
     See: https://github.com/PyCQA/isort/issues/1583
     """
-
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import b\nimport a\n")
 
@@ -913,6 +912,21 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
 
     isort_output.seek(0)
     assert isort_output.read().splitlines() == ["import a", "import b"]
+
+    # should still work with no diff produced
+    tmp_file2 = tmpdir.join("file2.py")
+    tmp_file2.write("import a\nimport b\n")
+
+    isort_diff2 = StringIO()
+    isort_output2 = StringIO()
+
+    isort.file(tmp_file2, show_diff=isort_diff2, output=isort_output2)
+
+    _, error = capsys.readouterr()
+    assert not error
+
+    isort_diff2.seek(0)
+    assert not isort_diff2.read()
 
 
 def test_autofix_mixed_indent_imports_1575():

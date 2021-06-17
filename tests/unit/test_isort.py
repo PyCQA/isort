@@ -2198,6 +2198,21 @@ def test_other_file_encodings(tmpdir) -> None:
         assert tmp_fname.read_text(encoding) == file_contents
 
 
+def test_other_file_encodings_in_place(tmpdir) -> None:
+    """Test to ensure file encoding is respected when overwritten in place."""
+    for encoding in ("latin1", "utf8"):
+        tmp_fname = tmpdir.join(f"test_{encoding}.py")
+        file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
+        tmp_fname.write_binary(file_contents.encode(encoding))
+        api.sort_file(
+            Path(tmp_fname),
+            file_path=Path(tmp_fname),
+            settings_path=os.getcwd(),
+            overwrite_in_place=True,
+        )
+        assert tmp_fname.read_text(encoding) == file_contents
+
+
 def test_encoding_not_in_comment(tmpdir) -> None:
     """Test that 'encoding' not in a comment is ignored"""
     tmp_fname = tmpdir.join("test_encoding.py")
