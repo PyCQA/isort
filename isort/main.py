@@ -7,7 +7,7 @@ import sys
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 from warnings import warn
 
 from . import __version__, api, files, sections
@@ -15,7 +15,8 @@ from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config, WrapModes
+from .settings import VALID_PY_TARGETS, Config
+from .wrap_modes import WrapModes
 
 try:
     from .setuptools_commands import ISortCommand  # noqa: F401
@@ -920,16 +921,16 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     return arguments
 
 
-def _preconvert(item):
+def _preconvert(item: Any) -> Union[str, List[Any]]:
     """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
-        return item.name
+        return str(item.name)
     if isinstance(item, Path):
         return str(item)
     if callable(item) and hasattr(item, "__name__"):
-        return item.__name__
+        return str(item.__name__)
     raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
 

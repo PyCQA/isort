@@ -1,7 +1,7 @@
 import copy
 import itertools
 from functools import partial
-from typing import Iterable, List, Set, Tuple
+from typing import Any, Iterable, List, Optional, Set, Tuple, Type
 
 from isort.format import format_simplified
 
@@ -609,19 +609,21 @@ def _normalize_empty_lines(lines: List[str]) -> List[str]:
 class _LineWithComments(str):
     comments: List[str]
 
-    def __new__(cls, value: str, comments: List[str]):
-        instance = super().__new__(cls, value)  # type: ignore
+    def __new__(
+        cls: Type["_LineWithComments"], value: Any, comments: List[str]
+    ) -> "_LineWithComments":
+        instance = super().__new__(cls, value)
         instance.comments = comments
         return instance
 
 
-def _ensure_newline_before_comment(output):
+def _ensure_newline_before_comment(output: List[str]) -> List[str]:
     new_output: List[str] = []
 
-    def is_comment(line):
-        return line and line.startswith("#")
+    def is_comment(line: Optional[str]) -> bool:
+        return line.startswith("#") if line else False
 
-    for line, prev_line in zip(output, [None] + output):
+    for line, prev_line in zip(output, [None] + output):  # type: ignore
         if is_comment(line) and prev_line != "" and not is_comment(prev_line):
             new_output.append("")
         new_output.append(line)

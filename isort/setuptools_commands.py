@@ -4,13 +4,13 @@ import sys
 from typing import Any, Dict, Iterator, List
 from warnings import warn
 
-import setuptools
+import setuptools  # type: ignore
 
 from . import api
 from .settings import DEFAULT_CONFIG
 
 
-class ISortCommand(setuptools.Command):
+class ISortCommand(setuptools.Command):  # type: ignore
     """The :class:`ISortCommand` class is used by setuptools to perform
     imports checks on registered modules.
     """

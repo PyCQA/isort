@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, TextIO
 
 try:
-    import colorama
+    import colorama  # type: ignore
 except ImportError:
     colorama_unavailable = True
 else:
@@ -48,7 +48,7 @@ def show_unified_diff(
     file_path: Optional[Path],
     output: Optional[TextIO] = None,
     color_output: bool = False,
-):
+) -> None:
     """Shows a unified_diff for the provided input and output against the provided file path.
 
     - **file_input**: A string that represents the contents of a file before changes.
@@ -125,7 +125,7 @@ class ColoramaPrinter(BasicPrinter):
     def style_text(text: str, style: Optional[str] = None) -> str:
         if style is None:
             return text
-        return style + text + colorama.Style.RESET_ALL
+        return style + text + str(colorama.Style.RESET_ALL)
 
     def diff_line(self, line: str) -> None:
         style = None
@@ -138,7 +138,7 @@ class ColoramaPrinter(BasicPrinter):
 
 def create_terminal_printer(
     color: bool, output: Optional[TextIO] = None, error: str = "", success: str = ""
-):
+) -> BasicPrinter:
     if color and colorama_unavailable:
         no_colorama_message = (
             "\n"

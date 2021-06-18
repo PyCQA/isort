@@ -18,6 +18,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 #### Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1394: 100% branch coverage (in addition to line coverage) enforced.
+  - Implemented #1751: Strict typing enforcement (turned on mypy strict mode).
 
 ### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.
