@@ -5245,6 +5245,13 @@ def dummy_sort_no_sort(
     return to_sort
 
 
+def python_sort(
+    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
+) -> List[str]:
+    """Returns the list sorted by Python `sorted`"""
+    return sorted(to_sort, key=key, reverse=reverse)
+
+
 def test_custom_sort() -> None:
     """ Test a custom sorting function provided by config. """
     test_input = (
@@ -5265,6 +5272,25 @@ def test_custom_sort() -> None:
         "import emma\n"
         "import adam\n"
         "import jake\n"
+    )
+
+
+def test_custom_sort_python_unnatural() -> None:
+    """ Test a plugged-in default python sort with packages/modules containing numbers. """
+    test_input = (
+        "from bob2.apples2 import aardvark as aardvark2\n"
+        "from bob.apples import aardvark \n"
+        "import module9\n"
+        "import module10\n"
+        "import module200\n"
+    )
+    test_output = isort.code(test_input, sorting_function="tests.unit.test_isort.python_sort")
+    assert test_output == (
+        "import module10\n"
+        "import module200\n"
+        "import module9\n"
+        "from bob.apples import aardvark\n"
+        "from bob2.apples2 import aardvark as aardvark2\n"
     )
 
 
