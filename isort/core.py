@@ -445,7 +445,7 @@ def process(
     return made_changes
 
 
-def _indented_config(config: Config, indent: str):
+def _indented_config(config: Config, indent: str) -> Config:
     if not indent:
         return config
 

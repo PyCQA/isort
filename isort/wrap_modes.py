@@ -5,14 +5,14 @@ from typing import Any, Callable, Dict, List
 
 import isort.comments
 
-_wrap_modes: Dict[str, Callable[[Any], str]] = {}
+_wrap_modes: Dict[str, Callable[..., str]] = {}
 
 
 def from_string(value: str) -> "WrapModes":
     return getattr(WrapModes, str(value), None) or WrapModes(int(value))
 
 
-def formatter_from_string(name: str):
+def formatter_from_string(name: str) -> Callable[..., str]:
     return _wrap_modes.get(name.upper(), grid)
 
 
@@ -32,18 +32,18 @@ def _wrap_mode_interface(
     return ""
 
 
-def _wrap_mode(function):
+def _wrap_mode(function: Callable[..., str]) -> Callable[..., str]:
     """Registers an individual wrap mode. Function name and order are significant and used for
     creating enum.
     """
     _wrap_modes[function.__name__.upper()] = function
-    function.__signature__ = signature(_wrap_mode_interface)
+    function.__signature__ = signature(_wrap_mode_interface)  # type: ignore
     function.__annotations__ = _wrap_mode_interface.__annotations__
     return function
 
 
 @_wrap_mode
-def grid(**interface):
+def grid(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -80,11 +80,11 @@ def grid(**interface):
             interface["comments"] = []
         else:
             interface["statement"] += ", " + next_import
-    return interface["statement"] + ("," if interface["include_trailing_comma"] else "") + ")"
+    return f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''})"
 
 
 @_wrap_mode
-def vertical(**interface):
+def vertical(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -113,7 +113,7 @@ def _hanging_indent_end_line(line: str) -> str:
 
 
 @_wrap_mode
-def hanging_indent(**interface):
+def hanging_indent(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -157,7 +157,7 @@ def hanging_indent(**interface):
             return statement_with_comments
         return (
             _hanging_indent_end_line(interface["statement"])
-            + interface["line_separator"]
+            + str(interface["line_separator"])
             + isort.comments.add_to_line(
                 interface["comments"],
                 interface["indent"],
@@ -165,11 +165,11 @@ def hanging_indent(**interface):
                 comment_prefix=interface["comment_prefix"].lstrip(),
             )
         )
-    return interface["statement"]
+    return str(interface["statement"])
 
 
 @_wrap_mode
-def vertical_hanging_indent(**interface):
+def vertical_hanging_indent(**interface: Any) -> str:
     _line_with_comments = isort.comments.add_to_line(
         interface["comments"],
         "",
@@ -184,7 +184,7 @@ def vertical_hanging_indent(**interface):
     )
 
 
-def _vertical_grid_common(need_trailing_char: bool, **interface):
+def _vertical_grid_common(need_trailing_char: bool, **interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -217,32 +217,32 @@ def _vertical_grid_common(need_trailing_char: bool, **interface):
         interface["statement"] = next_statement
     if interface["include_trailing_comma"]:
         interface["statement"] += ","
-    return interface["statement"]
+    return str(interface["statement"])
 
 
 @_wrap_mode
-def vertical_grid(**interface) -> str:
+def vertical_grid(**interface: Any) -> str:
     return _vertical_grid_common(need_trailing_char=True, **interface) + ")"
 
 
 @_wrap_mode
-def vertical_grid_grouped(**interface):
+def vertical_grid_grouped(**interface: Any) -> str:
     return (
         _vertical_grid_common(need_trailing_char=False, **interface)
-        + interface["line_separator"]
+        + str(interface["line_separator"])
         + ")"
     )
 
 
 @_wrap_mode
-def vertical_grid_grouped_no_comma(**interface):
+def vertical_grid_grouped_no_comma(**interface: Any) -> str:
     # This is a deprecated alias for vertical_grid_grouped above. This function
     # needs to exist for backwards compatibility but should never get called.
     raise NotImplementedError
 
 
 @_wrap_mode
-def noqa(**interface):
+def noqa(**interface: Any) -> str:
     _imports = ", ".join(interface["imports"])
     retval = f"{interface['statement']}{_imports}"
     comment_str = " ".join(interface["comments"])
@@ -262,7 +262,7 @@ def noqa(**interface):
 
 
 @_wrap_mode
-def vertical_hanging_indent_bracket(**interface):
+def vertical_hanging_indent_bracket(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
     statement = vertical_hanging_indent(**interface)
@@ -270,7 +270,7 @@ def vertical_hanging_indent_bracket(**interface):
 
 
 @_wrap_mode
-def vertical_prefix_from_module_import(**interface):
+def vertical_prefix_from_module_import(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -306,11 +306,11 @@ def vertical_prefix_from_module_import(**interface):
 
     if comments and statement_with_comments:
         output_statement = statement_with_comments
-    return output_statement
+    return str(output_statement)
 
 
 @_wrap_mode
-def hanging_indent_with_parentheses(**interface):
+def hanging_indent_with_parentheses(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
 
@@ -366,7 +366,7 @@ def hanging_indent_with_parentheses(**interface):
 
 
 @_wrap_mode
-def backslash_grid(**interface):
+def backslash_grid(**interface: Any) -> str:
     interface["indent"] = interface["white_space"][:-1]
     return hanging_indent(**interface)
 

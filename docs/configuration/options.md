@@ -1321,6 +1321,34 @@ Tells isort to format the given files according to an extensions formatting rule
 
 - --ext-format
 
+## Format Errors
+
+Define the format used to print errors.
+
+**NOTE** Variables are `error` and `message`.
+The `error` variable prints `ERROR` with color depending on the --color option.
+
+**Type:** String  
+**Default:** `{error}: {message}`  
+**Python & Config File Name:** format_errors
+**CLI Flags:**
+
+- --format-errors
+
+## Format Success
+
+Define the format used to print successes.
+
+**NOTE** Variables are `success` and `message`.
+The `success` variable prints `SUCCESS` with color depending on the --color option.
+
+**Type:** String  
+**Default:** `{success}: {message}`  
+**Python & Config File Name:** format_success
+**CLI Flags:**
+
+- --format-success
+
 ## Deprecated Flags
 
 ==SUPPRESS==

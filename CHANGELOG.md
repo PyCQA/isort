@@ -8,6 +8,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
   - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
   - Implemented #1737: Support for using action comments to avoid adding imports to individual files.
+  - Implemented #1750: Ability to customize output format lines.
   - Fixed (https://github.com/PyCQA/isort/pull/1695): added imports being added to doc string in some cases.
   - Fixed (https://github.com/PyCQA/isort/pull/1714): in rare cases line continuation combined with tabs can output invalid code.
   - Fixed (https://github.com/PyCQA/isort/pull/1726): isort ignores reverse_sort when force_sort_within_sections is true.
@@ -17,6 +18,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 #### Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
   - Implemented #1394: 100% branch coverage (in addition to line coverage) enforced.
+  - Implemented #1751: Strict typing enforcement (turned on mypy strict mode).
 
 ### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.

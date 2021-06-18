@@ -14,7 +14,20 @@ import subprocess  # nosec: Needed for gitignore support.
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    FrozenSet,
+    Iterable,
+    List,
+    Optional,
+    Pattern,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 from warnings import warn
 
 from . import stdlibs
@@ -218,8 +231,10 @@ class _Config:
     star_first: bool = False
     import_dependencies = Dict[str, str]
     git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
+    format_error: str = "{error}: {message}"
+    format_success: str = "{success}: {message}"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
             if sys.version_info.major == 2 and sys.version_info.minor <= 6:
@@ -260,7 +275,7 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self)
 
 
@@ -273,7 +288,7 @@ class Config(_Config):
         settings_file: str = "",
         settings_path: str = "",
         config: Optional[_Config] = None,
-        **config_overrides,
+        **config_overrides: Any,
     ):
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         self._section_comments: Optional[Tuple[str, ...]] = None
@@ -486,7 +501,7 @@ class Config(_Config):
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
-    def is_supported_filetype(self, file_name: str):
+    def is_supported_filetype(self, file_name: str) -> bool:
         _root, ext = os.path.splitext(file_name)
         ext = ext.lstrip(".")
         if ext in self.supported_extensions:
@@ -589,7 +604,7 @@ class Config(_Config):
         return False
 
     @property
-    def known_patterns(self):
+    def known_patterns(self) -> List[Tuple[Pattern[str], str]]:
         if self._known_patterns is not None:
             return self._known_patterns
 
@@ -650,8 +665,10 @@ class Config(_Config):
         return patterns
 
 
-def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
-    type_converter: Callable[[str], Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
+def _get_str_to_type_converter(setting_name: str) -> Union[Callable[[str], Any], Type[Any]]:
+    type_converter: Union[Callable[[str], Any], Type[Any]] = type(
+        _DEFAULT_SETTINGS.get(setting_name, "")
+    )
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
@@ -741,7 +758,7 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                             and config_key.endswith("}")
                             and extension
                             in map(
-                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")
+                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
                             )
                         ):
                             settings.update(config.items(config_key))

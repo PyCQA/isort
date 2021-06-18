@@ -32,7 +32,7 @@ class Import(NamedTuple):
             import_string += f" as {self.alias}"
         return import_string
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"{self.file_path or ''}:{self.line_number} "
             f"{'indented ' if self.indented else ''}{self.statement()}"

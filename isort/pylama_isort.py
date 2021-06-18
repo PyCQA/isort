@@ -1,9 +1,9 @@
 import os
 import sys
 from contextlib import contextmanager
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterator, List
 
-from pylama.lint import Linter as BaseLinter
+from pylama.lint import Linter as BaseLinter  # type: ignore
 
 from isort.exceptions import FileSkipped
 
@@ -11,7 +11,7 @@ from . import api
 
 
 @contextmanager
-def supress_stdout():
+def supress_stdout() -> Iterator[None]:
     stdout = sys.stdout
     with open(os.devnull, "w") as devnull:
         sys.stdout = devnull
@@ -19,7 +19,7 @@ def supress_stdout():
         sys.stdout = stdout
 
 
-class Linter(BaseLinter):
+class Linter(BaseLinter):  # type: ignore
     def allow(self, path: str) -> bool:
         """Determine if this path should be linted."""
         return path.endswith(".py")

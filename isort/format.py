@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, TextIO
 
 try:
-    import colorama
+    import colorama  # type: ignore
 except ImportError:
     colorama_unavailable = True
 else:
@@ -48,7 +48,7 @@ def show_unified_diff(
     file_path: Optional[Path],
     output: Optional[TextIO] = None,
     color_output: bool = False,
-):
+) -> None:
     """Shows a unified_diff for the provided input and output against the provided file path.
 
     - **file_input**: A string that represents the contents of a file before changes.
@@ -95,22 +95,24 @@ class BasicPrinter:
     ERROR = "ERROR"
     SUCCESS = "SUCCESS"
 
-    def __init__(self, output: Optional[TextIO] = None):
+    def __init__(self, error: str, success: str, output: Optional[TextIO] = None):
         self.output = output or sys.stdout
+        self.success_message = success
+        self.error_message = error
 
     def success(self, message: str) -> None:
-        print(f"{self.SUCCESS}: {message}", file=self.output)
+        print(self.success_message.format(success=self.SUCCESS, message=message), file=self.output)
 
     def error(self, message: str) -> None:
-        print(f"{self.ERROR}: {message}", file=sys.stderr)
+        print(self.error_message.format(error=self.ERROR, message=message), file=sys.stderr)
 
     def diff_line(self, line: str) -> None:
         self.output.write(line)
 
 
 class ColoramaPrinter(BasicPrinter):
-    def __init__(self, output: Optional[TextIO] = None):
-        super().__init__(output=output)
+    def __init__(self, error: str, success: str, output: Optional[TextIO]):
+        super().__init__(error, success, output=output)
 
         # Note: this constants are instance variables instead ofs class variables
         # because they refer to colorama which might not be installed.
@@ -123,7 +125,7 @@ class ColoramaPrinter(BasicPrinter):
     def style_text(text: str, style: Optional[str] = None) -> str:
         if style is None:
             return text
-        return style + text + colorama.Style.RESET_ALL
+        return style + text + str(colorama.Style.RESET_ALL)
 
     def diff_line(self, line: str) -> None:
         style = None
@@ -134,7 +136,9 @@ class ColoramaPrinter(BasicPrinter):
         self.output.write(self.style_text(line, style))
 
 
-def create_terminal_printer(color: bool, output: Optional[TextIO] = None):
+def create_terminal_printer(
+    color: bool, output: Optional[TextIO] = None, error: str = "", success: str = ""
+) -> BasicPrinter:
     if color and colorama_unavailable:
         no_colorama_message = (
             "\n"
@@ -147,4 +151,6 @@ def create_terminal_printer(color: bool, output: Optional[TextIO] = None):
         print(no_colorama_message, file=sys.stderr)
         sys.exit(1)
 
-    return ColoramaPrinter(output) if color else BasicPrinter(output)
+    return (
+        ColoramaPrinter(error, success, output) if color else BasicPrinter(error, success, output)
+    )
