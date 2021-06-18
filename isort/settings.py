@@ -217,6 +217,8 @@ class _Config:
     star_first: bool = False
     import_dependencies = Dict[str, str]
     git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
+    format_error: str = "{error}: {message}"
+    format_success: str = "{success}: {message}"
 
     def __post_init__(self):
         py_version = self.py_version
