@@ -586,7 +586,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--sort-order",
         dest="sort_order",
         choices=["default", "pythonic"],
-        default="default",
         help="Use natural language or pythonic sorting.",
     )
     inline_args_group.add_argument(

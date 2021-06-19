@@ -9,7 +9,7 @@ import subprocess
 import sys
 from io import StringIO
 from tempfile import NamedTemporaryFile
-from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
