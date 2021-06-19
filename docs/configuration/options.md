@@ -1074,6 +1074,17 @@ Tells isort to overwrite in place using the same file handle.Comes at a performa
 
 - --overwrite-in-place
 
+## Sorting Order
+
+Use natural language or pythonic sorting. Valid values "default"=natural "pythonic"=python default sorting.
+
+**Type:** String
+**Default:** `default`
+**Python & Config File Name:** sort_order
+**CLI Flags:**
+
+- --sort-order
+
 ## Reverse Sort
 
 Reverses the ordering of imports.

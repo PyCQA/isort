@@ -96,6 +96,18 @@ def section_key(line: str, config: Config) -> str:
     return f"{section}{len(line) if config.length_sort else ''}{line}"
 
 
+def sort(
+    config: Config,
+    to_sort: Iterable[str],
+    key: Optional[Callable[[str], Any]] = None,
+    reverse: bool = False,
+) -> List[str]:
+    sorting_func: Callable[..., List[str]] = naturally
+    if config.sort_order == "pythonic":
+        sorting_func = sorted
+    return sorting_func(to_sort, key=key, reverse=reverse)
+
+
 def naturally(
     to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
 ) -> List[str]:
