@@ -1,7 +1,7 @@
 import copy
 import itertools
 from functools import partial
-from typing import Iterable, List, Set, Tuple
+from typing import Any, Iterable, List, Optional, Set, Tuple, Type
 
 from isort.format import format_simplified
 
@@ -141,7 +141,7 @@ def sorted_imports(
                 if config.dedup_headings:
                     seen_headings.add(section_title)
                 section_comment = f"# {section_title}"
-                if section_comment not in parsed.lines_without_imports[0:1]:
+                if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
                     section_output.insert(0, section_comment)
 
             if pending_lines_before or not no_lines_before:
@@ -182,7 +182,7 @@ def sorted_imports(
             next_construct = ""
             tail = formatted_output[imports_tail:]
 
-            for index, line in enumerate(tail):
+            for index, line in enumerate(tail):  # pragma: no branch
                 should_skip, in_quote, *_ = parse.skip_line(
                     line,
                     in_quote="",
@@ -199,7 +199,7 @@ def sorted_imports(
                         continue
                     next_construct = line
                     break
-                if in_quote:
+                if in_quote:  # pragma: no branch
                     next_construct = line
                     break
 
@@ -618,19 +618,21 @@ def _normalize_empty_lines(lines: List[str]) -> List[str]:
 class _LineWithComments(str):
     comments: List[str]
 
-    def __new__(cls, value: str, comments: List[str]):
-        instance = super().__new__(cls, value)  # type: ignore
+    def __new__(
+        cls: Type["_LineWithComments"], value: Any, comments: List[str]
+    ) -> "_LineWithComments":
+        instance = super().__new__(cls, value)
         instance.comments = comments
         return instance
 
 
-def _ensure_newline_before_comment(output):
+def _ensure_newline_before_comment(output: List[str]) -> List[str]:
     new_output: List[str] = []
 
-    def is_comment(line):
-        return line and line.startswith("#")
+    def is_comment(line: Optional[str]) -> bool:
+        return line.startswith("#") if line else False
 
-    for line, prev_line in zip(output, [None] + output):
+    for line, prev_line in zip(output, [None] + output):  # type: ignore
         if is_comment(line) and prev_line != "" and not is_comment(prev_line):
             new_output.append("")
         new_output.append(line)

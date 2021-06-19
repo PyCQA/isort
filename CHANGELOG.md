@@ -5,13 +5,20 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
 ### 5.9.0 TBD
+  - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
+  - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
+  - Implemented #1737: Support for using action comments to avoid adding imports to individual files.
+  - Implemented #1750: Ability to customize output format lines.
   - Fixed (https://github.com/PyCQA/isort/pull/1695): added imports being added to doc string in some cases.
   - Fixed (https://github.com/PyCQA/isort/pull/1714): in rare cases line continuation combined with tabs can output invalid code.
   - Fixed (https://github.com/PyCQA/isort/pull/1726): isort ignores reverse_sort when force_sort_within_sections is true.
   - Fixed #1741: comments in hanging indent modes can lead to invalid code.
   - Fixed #1744: repeat noqa comments dropped when * import and non * imports exist from the same package.
-  - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
-  - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
+  - Fixed #1721: repeat noqa comments on separate from lines with force-single-line set, sometimes get dropped.
+
+#### Goal Zero (Tickets related to aspirational goal of achieving 0 regressions for remaining 5.0.0 lifespan):
+  - Implemented #1394: 100% branch coverage (in addition to line coverage) enforced.
+  - Implemented #1751: Strict typing enforcement (turned on mypy strict mode).
 
 ### 5.8.0 March 20th 2021
   - Fixed #1631: as import comments can in some cases be duplicated.

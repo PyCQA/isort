@@ -26,9 +26,9 @@ editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.6+ to run but
 supports formatting Python 2 code too.
 
-- [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
-- [Using black? See the isort and black compatibility guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility/)
-- [isort has official support for pre-commit!](https://pycqa.github.io/isort/docs/configuration/pre-commit/)
+- [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try.html)
+- [Using black? See the isort and black compatibility guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility.html)
+- [isort has official support for pre-commit!](https://pycqa.github.io/isort/docs/configuration/pre-commit.html)
 
 ![Example Usage](https://raw.github.com/pycqa/isort/main/example.gif)
 
@@ -168,7 +168,7 @@ notified.
 
 You will notice above the \"multi\_line\_output\" setting. This setting
 defines how from imports wrap when they extend past the line\_length
-limit and has [12 possible settings](https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes/).
+limit and has [12 possible settings](https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes.html).
 
 ## Indentation
 
@@ -221,7 +221,7 @@ the `-e` option into the command line utility.
 isort provides configuration options to change almost every aspect of how
 imports are organized, ordered, or grouped together in sections.
 
-[Click here](https://pycqa.github.io/isort/docs/configuration/custom_sections_and_ordering/) for an overview of all these options.
+[Click here](https://pycqa.github.io/isort/docs/configuration/custom_sections_and_ordering.html) for an overview of all these options.
 
 ## Skip processing of imports (outside of configuration)
 
@@ -258,7 +258,7 @@ import a
 
 isort can be ran or configured to add / remove imports automatically.
 
-[See a complete guide here.](https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports/)
+[See a complete guide here.](https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports.html)
 
 ## Using isort to verify code
 
@@ -289,14 +289,14 @@ project.
 isort provides a hook function that can be integrated into your Git
 pre-commit script to check Python code before committing.
 
-[More info here.](https://pycqa.github.io/isort/docs/configuration/git_hook/)
+[More info here.](https://pycqa.github.io/isort/docs/configuration/git_hook.html)
 
 ## Setuptools integration
 
 Upon installation, isort enables a `setuptools` command that checks
 Python files declared by your project.
 
-[More info here.](https://pycqa.github.io/isort/docs/configuration/setuptools_integration/)
+[More info here.](https://pycqa.github.io/isort/docs/configuration/setuptools_integration.html)
 
 ## Spread the word
 

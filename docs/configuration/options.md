@@ -36,7 +36,7 @@ Force specific imports to the top of their appropriate section.
 Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
 
 **Type:** Frozenset  
-**Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
+**Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -76,7 +76,8 @@ Additional files that isort should skip over (extending --skip-glob).
 
 ## Skip Gitignore
 
-Treat project as a git repository and ignore files listed in .gitignore
+Treat project as a git repository and ignore files listed in .gitignore.
+NOTE: This requires git to be installed and accesible from the same shell as isort.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -468,7 +469,7 @@ Order imports by type, which is determined by case, in addition to alphabeticall
 
 ## Atomic
 
-Ensures the output doesn't save if the resulting file contains syntax errors. This option is not compatible with Cython code.
+Ensures the output doesn't save if the resulting file contains syntax errors.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -771,7 +772,7 @@ Inserts a blank line before a comment following an import.
 
 ## Profile
 
-Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake. As well as any shared profiles.
+Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.
 
 **Type:** String  
 **Default:** ``  
@@ -968,7 +969,8 @@ Tells isort to only show an identical custom import heading comment once, even i
 
 ## Only Sections
 
-Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. Within the sections, the imports are ordered by their import style and the imports with the same style maintain their relative positions.
+Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. Within sections, the imports are ordered by their import style and the imports with same style maintain their relative positions.
+
 **Type:** Bool  
 **Default:** `False`  
 **Python & Config File Name:** only_sections  
@@ -1093,6 +1095,15 @@ Forces star imports above others to avoid overriding directly imported variables
 **CLI Flags:**
 
 - --star-first
+
+## Git Ignore
+
+**No Description**
+
+**Type:** Dict  
+**Default:** `{}`  
+**Python & Config File Name:** git_ignore  
+**CLI Flags:** **Not Supported**
 
 ## Show Version
 
@@ -1300,6 +1311,34 @@ Tells isort to format the given files according to an extensions formatting rule
 **CLI Flags:**
 
 - --ext-format
+
+## Format Errors
+
+Define the format used to print errors.
+
+**NOTE** Variables are `error` and `message`.
+The `error` variable prints `ERROR` with color depending on the --color option.
+
+**Type:** String  
+**Default:** `{error}: {message}`  
+**Python & Config File Name:** format_errors
+**CLI Flags:**
+
+- --format-errors
+
+## Format Success
+
+Define the format used to print successes.
+
+**NOTE** Variables are `success` and `message`.
+The `success` variable prints `SUCCESS` with color depending on the --color option.
+
+**Type:** String  
+**Default:** `{success}: {message}`  
+**Python & Config File Name:** format_success
+**CLI Flags:**
+
+- --format-success
 
 ## Deprecated Flags
 

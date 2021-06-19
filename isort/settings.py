@@ -2,8 +2,10 @@
 
 Defines how the default settings for isort should be loaded
 """
+import codecs
 import configparser
 import fnmatch
+import glob
 import os
 import posixpath
 import re
@@ -12,7 +14,20 @@ import subprocess  # nosec: Needed for gitignore support.
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Pattern, Set, Tuple
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    FrozenSet,
+    Iterable,
+    List,
+    Optional,
+    Pattern,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 from warnings import warn
 
 from . import stdlibs
@@ -214,8 +229,11 @@ class _Config:
     reverse_sort: bool = False
     star_first: bool = False
     import_dependencies = Dict[str, str]
+    git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
+    format_error: str = "{error}: {message}"
+    format_success: str = "{success}: {message}"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
             if sys.version_info.major == 2 and sys.version_info.minor <= 6:
@@ -256,7 +274,7 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self)
 
 
@@ -269,7 +287,7 @@ class Config(_Config):
         settings_file: str = "",
         settings_path: str = "",
         config: Optional[_Config] = None,
-        **config_overrides,
+        **config_overrides: Any,
     ):
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         self._section_comments: Optional[Tuple[str, ...]] = None
@@ -482,7 +500,7 @@ class Config(_Config):
 
         super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
 
-    def is_supported_filetype(self, file_name: str):
+    def is_supported_filetype(self, file_name: str) -> bool:
         _root, ext = os.path.splitext(file_name)
         ext = ext.lstrip(".")
         if ext in self.supported_extensions:
@@ -508,6 +526,32 @@ class Config(_Config):
         else:
             return bool(_SHEBANG_RE.match(line))
 
+    def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+        try:
+            topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", folder, "rev-parse", "--show-toplevel"]
+            )
+            git_folder = Path(topfolder_result.decode("utf-8").split("\n")[0])
+
+            files = glob.glob(str(git_folder) + "/**/*", recursive=True)
+            files_result = (
+                codecs.escape_decode(  # type: ignore
+                    subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                        ["git", "-C", str(git_folder), "check-ignore", *files]
+                    )
+                )[0]
+                .decode("utf-8")
+                .split("\n")
+            )
+            files_result = files_result[:-1] if files_result else files_result
+
+            self.git_ignore[git_folder] = {Path(f.strip('"')) for f in files_result}
+
+            return git_folder
+
+        except subprocess.CalledProcessError:
+            return None
+
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
         if self.directory and Path(self.directory) in file_path.resolve().parents:
@@ -521,10 +565,16 @@ class Config(_Config):
             if file_path.name == ".git":  # pragma: no cover
                 return True
 
-            result = subprocess.run(  # nosec # skipcq: PYL-W1510
-                ["git", "-C", str(file_path.parent), "check-ignore", "--quiet", os_path]
-            )
-            if result.returncode == 0:
+            git_folder = None
+
+            for folder in self.git_ignore:
+                if folder in file_path.parents:
+                    git_folder = folder
+                    break
+            else:
+                git_folder = self._check_folder_gitignore(str(file_path.parent))
+
+            if git_folder and file_path in self.git_ignore[git_folder]:
                 return True
 
         normalized_path = os_path.replace("\\", "/")
@@ -543,8 +593,8 @@ class Config(_Config):
                 return True
             position = os.path.split(position[0])
 
-        for glob in self.skip_globs:
-            if fnmatch.fnmatch(file_name, glob) or fnmatch.fnmatch("/" + file_name, glob):
+        for sglob in self.skip_globs:
+            if fnmatch.fnmatch(file_name, sglob) or fnmatch.fnmatch("/" + file_name, sglob):
                 return True
 
         if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
@@ -553,7 +603,7 @@ class Config(_Config):
         return False
 
     @property
-    def known_patterns(self):
+    def known_patterns(self) -> List[Tuple[Pattern[str], str]]:
         if self._known_patterns is not None:
             return self._known_patterns
 
@@ -614,8 +664,10 @@ class Config(_Config):
         return patterns
 
 
-def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any]:
-    type_converter: Callable[[str], Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
+def _get_str_to_type_converter(setting_name: str) -> Union[Callable[[str], Any], Type[Any]]:
+    type_converter: Union[Callable[[str], Any], Type[Any]] = type(
+        _DEFAULT_SETTINGS.get(setting_name, "")
+    )
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
@@ -705,7 +757,7 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                             and config_key.endswith("}")
                             and extension
                             in map(
-                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")
+                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
                             )
                         ):
                             settings.update(config.items(config_key))

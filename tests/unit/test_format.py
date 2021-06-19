@@ -21,13 +21,25 @@ def test_ask_whether_to_apply_changes_to_file():
 
 
 def test_basic_printer(capsys):
-    printer = isort.format.create_terminal_printer(color=False)
+    printer = isort.format.create_terminal_printer(
+        color=False, success="{success}: {message}", error="{error}: {message}"
+    )
     printer.success("All good!")
     out, _ = capsys.readouterr()
     assert out == "SUCCESS: All good!\n"
     printer.error("Some error")
     _, err = capsys.readouterr()
     assert err == "ERROR: Some error\n"
+
+    printer = isort.format.create_terminal_printer(
+        color=False, success="success: {message}: {success}", error="error: {message}: {error}"
+    )
+    printer.success("All good!")
+    out, _ = capsys.readouterr()
+    assert out == "success: All good!: SUCCESS\n"
+    printer.error("Some error")
+    _, err = capsys.readouterr()
+    assert err == "error: Some error: ERROR\n"
 
 
 def test_basic_printer_diff(capsys):
@@ -40,7 +52,7 @@ def test_basic_printer_diff(capsys):
 
 
 def test_colored_printer_success(capsys):
-    printer = isort.format.create_terminal_printer(color=True)
+    printer = isort.format.create_terminal_printer(color=True, success="{success}: {message}")
     printer.success("All good!")
     out, _ = capsys.readouterr()
     assert "SUCCESS" in out
@@ -49,7 +61,7 @@ def test_colored_printer_success(capsys):
 
 
 def test_colored_printer_error(capsys):
-    printer = isort.format.create_terminal_printer(color=True)
+    printer = isort.format.create_terminal_printer(color=True, error="{error}: {message}")
     printer.error("Some error")
     _, err = capsys.readouterr()
     assert "ERROR" in err

@@ -7,7 +7,7 @@ import sys
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 from warnings import warn
 
 from . import __version__, api, files, sections
@@ -15,7 +15,8 @@ from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config, WrapModes
+from .settings import VALID_PY_TARGETS, Config
+from .wrap_modes import WrapModes
 
 try:
     from .setuptools_commands import ISortCommand  # noqa: F401
@@ -127,7 +128,9 @@ def _print_hard_fail(
         "This should NEVER happen.\n"
         "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
     )
-    printer = create_terminal_printer(color=config.color_output)
+    printer = create_terminal_printer(
+        color=config.color_output, error=config.format_error, success=config.format_success
+    )
     printer.error(message)
 
 
@@ -297,6 +300,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Tells isort to apply changes interactively.",
     )
+    general_group.add_argument(
+        "--format-error",
+        dest="format_error",
+        help="Override the format used to print errors.",
+    )
+    general_group.add_argument(
+        "--format-success",
+        dest="format_success",
+        help="Override the format used to print success.",
+    )
 
     target_group.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
@@ -346,7 +359,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--skip-gitignore",
         action="store_true",
         dest="skip_gitignore",
-        help="Treat project as a git repository and ignore files listed in .gitignore",
+        help="Treat project as a git repository and ignore files listed in .gitignore."
+        "\nNOTE: This requires git to be installed and accesible from the same shell as isort.",
     )
     target_group.add_argument(
         "--ext",
@@ -907,16 +921,16 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     return arguments
 
 
-def _preconvert(item):
+def _preconvert(item: Any) -> Union[str, List[Any]]:
     """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
-        return item.name
+        return str(item.name)
     if isinstance(item, Path):
         return str(item)
     if callable(item) and hasattr(item, "__name__"):
-        return item.__name__
+        return str(item.__name__)
     raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
 
 
@@ -1093,13 +1107,17 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 raise_on_skip=False,
             )
     elif "/" in file_names and not allow_root:
-        printer = create_terminal_printer(color=config.color_output)
+        printer = create_terminal_printer(
+            color=config.color_output, error=config.format_error, success=config.format_success
+        )
         printer.error("it is dangerous to operate recursively on '/'")
         printer.error("use --allow-root to override this failsafe")
         sys.exit(1)
     else:
         if stream_filename:
-            printer = create_terminal_printer(color=config.color_output)
+            printer = create_terminal_printer(
+                color=config.color_output, error=config.format_error, success=config.format_success
+            )
             printer.error("Filename override is intended only for stream (-) sorting.")
             sys.exit(1)
         skipped: List[str] = []
@@ -1221,7 +1239,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         sys.exit(1)
 
     if no_valid_encodings:
-        printer = create_terminal_printer(color=config.color_output)
+        printer = create_terminal_printer(
+            color=config.color_output, error=config.format_error, success=config.format_success
+        )
         printer.error("No valid encodings.")
         sys.exit(1)
 

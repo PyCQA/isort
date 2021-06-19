@@ -19,19 +19,19 @@ from isort.settings import KNOWN_SECTION_MAPPING, Config
 from isort.utils import exists_case_sensitive
 
 try:
-    from pipreqs import pipreqs
+    from pipreqs import pipreqs  # type: ignore
 
 except ImportError:
     pipreqs = None
 
 try:
-    from pip_api import parse_requirements
+    from pip_api import parse_requirements  # type: ignore
 
 except ImportError:
     parse_requirements = None
 
 try:
-    from requirementslib import Pipfile
+    from requirementslib import Pipfile  # type: ignore
 
 except ImportError:
     Pipfile = None

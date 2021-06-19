@@ -1,4 +1,5 @@
 [run]
+branch = True
 omit =
   isort/_future/*
   isort/_vendored/*

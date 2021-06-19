@@ -39,7 +39,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = ">=3.6.1,<4.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
@@ -90,6 +90,7 @@ py = "^1.10.0"
 toml = "^0.10.2"
 pytest-benchmark = "^3.4.1"
 types-pkg-resources = "^0.1.2"
+pre-commit = "^2.13.0"
 
 [tool.poetry.scripts]
 isort = "isort.main:main"

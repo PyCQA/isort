@@ -1,3 +1,19 @@
+__all__ = (
+    "ImportKey",
+    "check_code_string",
+    "check_file",
+    "check_stream",
+    "find_imports_in_code",
+    "find_imports_in_file",
+    "find_imports_in_paths",
+    "find_imports_in_stream",
+    "place_module",
+    "place_module_with_reason",
+    "sort_code_string",
+    "sort_file",
+    "sort_stream",
+)
+
 import contextlib
 import shutil
 import sys
@@ -5,7 +21,7 @@ from enum import Enum
 from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import Iterator, Optional, Set, TextIO, Union, cast
+from typing import Any, Iterator, Optional, Set, TextIO, Union, cast
 from warnings import warn
 
 from isort import core
@@ -57,8 +73,8 @@ def sort_code_string(
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
     show_diff: Union[bool, TextIO] = False,
-    **config_kwargs,
-):
+    **config_kwargs: Any,
+) -> str:
     """Sorts any imports within the provided code string, returning a new string with them sorted.
 
     - **code**: The string of code with imports that need to be sorted.
@@ -93,7 +109,7 @@ def check_code_string(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> bool:
     """Checks the order, format, and categorization of imports within the provided code string.
     Returns `True` if everything is correct, otherwise `False`.
@@ -127,7 +143,7 @@ def sort_stream(
     disregard_skip: bool = False,
     show_diff: Union[bool, TextIO] = False,
     raise_on_skip: bool = True,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> bool:
     """Sorts any imports within the provided code stream, outputs to the provided output stream.
      Returns `True` if anything is modified from the original input stream, otherwise `False`.
@@ -215,7 +231,7 @@ def check_stream(
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     disregard_skip: bool = False,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> bool:
     """Checks any imports within the provided code stream, returning `False` if any unsorted or
     incorrectly imports are found or `True` if no problems are identified.
@@ -242,7 +258,9 @@ def check_stream(
         file_path=file_path,
         disregard_skip=disregard_skip,
     )
-    printer = create_terminal_printer(color=config.color_output)
+    printer = create_terminal_printer(
+        color=config.color_output, error=config.format_error, success=config.format_success
+    )
     if not changed:
         if config.verbose and not config.only_modified:
             printer.success(f"{file_path or ''} Everything Looks Good!")
@@ -280,7 +298,7 @@ def check_file(
     file_path: Optional[Path] = None,
     disregard_skip: bool = True,
     extension: Optional[str] = None,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> bool:
     """Checks any imports within the provided file, returning `False` if any unsorted or
     incorrectly imports are found or `True` if no problems are identified.
@@ -333,7 +351,7 @@ def sort_file(
     show_diff: Union[bool, TextIO] = False,
     write_to_stdout: bool = False,
     output: Optional[TextIO] = None,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> bool:
     """Sorts and formats any groups of imports imports within the provided file or Path.
      Returns `True` if the file has been changed, otherwise `False`.
@@ -416,7 +434,7 @@ def sort_file(
                                 print(f"Fixing {source_file.path}")
                     finally:
                         try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            if not config.overwrite_in_place:
+                            if not config.overwrite_in_place:  # pragma: no branch
                                 tmp_file = _tmp_file(source_file)
                                 tmp_file.unlink()
                         except FileNotFoundError:
@@ -456,7 +474,7 @@ def find_imports_in_code(
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
     top_only: bool = False,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code string.
 
@@ -484,7 +502,7 @@ def find_imports_in_stream(
     unique: Union[bool, ImportKey] = False,
     top_only: bool = False,
     _seen: Optional[Set[str]] = None,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code stream.
 
@@ -511,7 +529,7 @@ def find_imports_in_stream(
             key = f"{identified_import.module}.{identified_import.attribute}"
         elif unique == ImportKey.MODULE:
             key = identified_import.module
-        elif unique == ImportKey.PACKAGE:
+        elif unique == ImportKey.PACKAGE:  # pragma: no branch # type checking ensures this
             key = identified_import.module.split(".")[0]
 
         if key and key not in seen:
@@ -525,7 +543,7 @@ def find_imports_in_file(
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
     top_only: bool = False,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source file.
 
@@ -554,7 +572,7 @@ def find_imports_in_paths(
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
     top_only: bool = False,
-    **config_kwargs,
+    **config_kwargs: Any,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided source paths.
 
@@ -579,7 +597,7 @@ def find_imports_in_paths(
 
 
 def _config(
-    path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs
+    path: Optional[Path] = None, config: Config = DEFAULT_CONFIG, **config_kwargs: Any
 ) -> Config:
     if path and (
         config is DEFAULT_CONFIG

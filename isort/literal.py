@@ -69,10 +69,14 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     return sorted_value_code
 
 
-def register_type(name: str, kind: type):
+def register_type(
+    name: str, kind: type
+) -> Callable[[Callable[[Any, ISortPrettyPrinter], str]], Callable[[Any, ISortPrettyPrinter], str]]:
     """Registers a new literal sort type."""
 
-    def wrap(function):
+    def wrap(
+        function: Callable[[Any, ISortPrettyPrinter], str]
+    ) -> Callable[[Any, ISortPrettyPrinter], str]:
         type_mapping[name] = (kind, function)
         return function
 
@@ -81,7 +85,7 @@ def register_type(name: str, kind: type):
 
 @register_type("dict", dict)
 def _dict(value: Dict[Any, Any], printer: ISortPrettyPrinter) -> str:
-    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))
+    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))  # type: ignore
 
 
 @register_type("list", list)
