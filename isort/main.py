@@ -582,6 +582,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Reverses the ordering of imports.",
     )
+    output_group.add_argument(
+        "--sort-order",
+        dest="sort_order",
+        choices=["default", "pythonic"],
+        default="default",
+        help="Use natural language or pythonic sorting.",
+    )
     inline_args_group.add_argument(
         "--sl",
         "--force-single-line-imports",

@@ -1,4 +1,3 @@
-import importlib
 import re
 from typing import Any, Callable, Iterable, List, Optional
 
@@ -103,16 +102,10 @@ def sort(
     key: Optional[Callable[[str], Any]] = None,
     reverse: bool = False,
 ) -> List[str]:
-    sorting_func = naturally
-    if config.sorting_function:
-        try:
-            func_def = config.sorting_function.split(".")
-            modname = ".".join(func_def[:-1])
-            mod = importlib.import_module(modname)
-            sorting_func = getattr(mod, func_def[-1])
-        except (ModuleNotFoundError, AttributeError):
-            pass  # will default to naturally()
-    return sorting_func(to_sort, key, reverse)
+    sorting_func: Callable[..., List[str]] = naturally
+    if config.sort_order == "pythonic":
+        sorting_func = sorted
+    return sorting_func(to_sort, key=key, reverse=reverse)
 
 
 def naturally(

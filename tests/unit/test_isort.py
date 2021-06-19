@@ -5238,44 +5238,7 @@ def test_find_imports_in_stream() -> None:
     assert identified_imports == [":1 import m2", ":2 import m1"]
 
 
-def dummy_sort_no_sort(
-    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
-) -> List[str]:
-    """Returns an unmodified list"""
-    return to_sort
-
-
-def python_sort(
-    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
-) -> List[str]:
-    """Returns the list sorted by Python `sorted`"""
-    return sorted(to_sort, key=key, reverse=reverse)
-
-
-def test_custom_sort() -> None:
-    """ Test a custom sorting function provided by config. """
-    test_input = (
-        "import rudolph\n"
-        "import patricia\n"
-        "import zachary\n"
-        "import emma\n"
-        "import adam\n"
-        "import jake\n"
-    )
-    test_output = isort.code(
-        test_input, sorting_function="tests.unit.test_isort.dummy_sort_no_sort"
-    )
-    assert test_output == (
-        "import rudolph\n"
-        "import patricia\n"
-        "import zachary\n"
-        "import emma\n"
-        "import adam\n"
-        "import jake\n"
-    )
-
-
-def test_custom_sort_python_unnatural() -> None:
+def test_sort_pythonic() -> None:
     """ Test a plugged-in default python sort with packages/modules containing numbers. """
     test_input = (
         "from bob2.apples2 import aardvark as aardvark2\n"
@@ -5284,7 +5247,7 @@ def test_custom_sort_python_unnatural() -> None:
         "import module10\n"
         "import module200\n"
     )
-    test_output = isort.code(test_input, sorting_function="tests.unit.test_isort.python_sort")
+    test_output = isort.code(test_input, sort_order="pythonic")
     assert test_output == (
         "import module10\n"
         "import module200\n"
@@ -5292,28 +5255,3 @@ def test_custom_sort_python_unnatural() -> None:
         "from bob.apples import aardvark\n"
         "from bob2.apples2 import aardvark as aardvark2\n"
     )
-
-
-@pytest.mark.parametrize(
-    "bad_config",
-    [("some.non.existent.module.function"), ("tests.unit.test_isort.non_existent_function")],
-)
-def test_custom_sort_bad_config(bad_config) -> None:
-    """ Test a custom sorting function provided by config, where config is wrong."""
-    test_input = (
-        "import rudolph\n"
-        "import patricia\n"
-        "import zachary\n"
-        "import emma\n"
-        "import adam\n"
-        "import jake\n"
-    )
-    test_output = isort.code(test_input, sorting_function=bad_config)
-    assert test_output == (
-        "import adam\n"
-        "import emma\n"
-        "import jake\n"
-        "import patricia\n"
-        "import rudolph\n"
-        "import zachary\n"
-    )  # sorted naturally

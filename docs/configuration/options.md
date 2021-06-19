@@ -872,15 +872,6 @@ Specifies the name of a formatting plugin to use when producing output.
 **Python & Config File Name:** formatting_function  
 **CLI Flags:** **Not Supported**
 
-## Sorting Function
-
-**No Description**
-
-**Type:** Nonetype
-**Default:** `None`
-**Python & Config File Name:** sorting_function
-**CLI Flags:** **Not Supported**
-
 ## Color Output
 
 Tells isort to use color in terminal output.
@@ -1082,6 +1073,17 @@ Tells isort to overwrite in place using the same file handle.Comes at a performa
 **CLI Flags:**
 
 - --overwrite-in-place
+
+## Sorting Order
+
+Use natural language or pythonic sorting. Valid values "default"=natural "pythonic"=python default sorting.
+
+**Type:** String
+**Default:** `default`
+**Python & Config File Name:** sort_order
+**CLI Flags:**
+
+- --sort-order
 
 ## Reverse Sort
 

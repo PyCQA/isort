@@ -207,7 +207,6 @@ class _Config:
     filter_files: bool = False
     formatter: str = ""
     formatting_function: Optional[Callable[[str, str, object], str]] = None
-    sorting_function: Optional[str] = None
     color_output: bool = False
     treat_comments_as_code: FrozenSet[str] = frozenset()
     treat_all_comments_as_code: bool = False
@@ -233,6 +232,7 @@ class _Config:
     git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
+    sort_order: str = "default"
 
     def __post_init__(self) -> None:
         py_version = self.py_version
