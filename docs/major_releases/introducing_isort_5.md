@@ -6,11 +6,11 @@ isort 5.0.0 is the first major release of isort in over five years and the first
 It's also the first version to require Python 3 (Python 3.6+ at that!) to run - though it can still be run on source files from any version of Python.
 This does mean that there may be some pain with the upgrade process, but we believe the improvements will be well worth it.
 
-[Click here for an attempt at full changelog with a list of breaking changes.](https://pycqa.github.io/isort/CHANGELOG/)
+[Click here for an attempt at full changelog with a list of breaking changes.](https://pycqa.github.io/isort/CHANGELOG.html)
 
-[Using isort 4.x.x? Click here for the isort 5.0.0 upgrade guide.](https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/)
+[Using isort 4.x.x? Click here for the isort 5.0.0 upgrade guide.](https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html)
 
-[Try isort 5 right now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
+[Try isort 5 right now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try.html)
 
 So why the massive change?
 
@@ -105,7 +105,7 @@ import c
 import d
 ```
 
-isort 5 adds support for [Action Comments](https://pycqa.github.io/isort/docs/configuration/action_comments/) which provide a quick and convient way to control the flow of parsing within single source files.
+isort 5 adds support for [Action Comments](https://pycqa.github.io/isort/docs/configuration/action_comments.html) which provide a quick and convient way to control the flow of parsing within single source files.
 
 
 # First class Python API
@@ -122,7 +122,7 @@ import b
 """
 ```
 
-isort now exposes its programmatic API as a first-class citizen. This API makes it easy to extend or use isort in your own Python project. You can see the full documentation for this new API [here](https://pycqa.github.io/isort/reference/isort/api/).
+isort now exposes its programmatic API as a first-class citizen. This API makes it easy to extend or use isort in your own Python project. You can see the full documentation for this new API [here](https://pycqa.github.io/isort/reference/isort/api.html).
 
 # Solid base for the future
 
@@ -133,10 +133,10 @@ It went from fully dynamic to fully static typing using mypy. Finally, it utiliz
 
 # Give 5.0.0 a try!
 
-[Try isort 5 right now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try/)
+[Try isort 5 right now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try.html)
 
 OR
 
 Install isort locally using `pip3 install isort`.
 
-[Click here for full installation instructions.](https://pycqa.github.io/isort/docs/quick_start/1.-install/)
+[Click here for full installation instructions.](https://pycqa.github.io/isort/docs/quick_start/1.-install.html)
