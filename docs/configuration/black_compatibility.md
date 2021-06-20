@@ -7,7 +7,7 @@ Compatibility with black is very important to the isort project and comes baked 
 All that's required to use isort alongside black is to set the isort profile to "black".
 
 !!! tip
-    Beyond the profile, it is common to set [skip_gitignore](https://pycqa.github.io/isort/docs/configuration/options/#skip-gitignore) (which is not enabled by default for isort as it requires git to be installed) and [line_length](https://pycqa.github.io/isort/docs/configuration/options/#skip-gitignore) as it is common to deviate from black's default of 88.
+    Beyond the profile, it is common to set [skip_gitignore](https://pycqa.github.io/isort/docs/configuration/options.html#skip-gitignore) (which is not enabled by default for isort as it requires git to be installed) and [line_length](https://pycqa.github.io/isort/docs/configuration/options.html#line-length) as it is common to deviate from black's default of 88.
 
 
 ## Using a config file (such as .isort.cfg)
@@ -23,7 +23,7 @@ profile = "black"
 multi_line_output = 3
 ```
 
-Read More about supported [config files](https://pycqa.github.io/isort/docs/configuration/config_files/).
+Read More about supported [config files](https://pycqa.github.io/isort/docs/configuration/config_files.html).
 
 ## CLI
 
@@ -51,7 +51,7 @@ after_success:
 
 ```
 
-See [built-in profiles](https://pycqa.github.io/isort/docs/configuration/profiles/) for more profiles.
+See [built-in profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html) for more profiles.
 
 ## Integration with pre-commit
 

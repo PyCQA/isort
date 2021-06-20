@@ -81,7 +81,7 @@ src_paths=isort,test
 
 ## Custom config files
 
-Optionally, you can also create a config file with a custom name, or directly point isort to a config file that falls lower in the priority order, by using [--settings-file](https://pycqa.github.io/isort/docs/configuration/options/#settings-path).
+Optionally, you can also create a config file with a custom name, or directly point isort to a config file that falls lower in the priority order, by using [--settings-file](https://pycqa.github.io/isort/docs/configuration/options.html#settings-path).
 This can be useful, for instance, if you want to have one configuration for `.py` files and another for `.pyx` - while keeping the config files at the root of your repository.
 
 !!! tip
