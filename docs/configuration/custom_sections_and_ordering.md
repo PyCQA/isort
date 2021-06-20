@@ -115,7 +115,7 @@ import b
 from a import a  # This will always appear below because it is a from import.
 ```
 
-However, if you prefer to keep strict alphabetical sorting you can set [force sort within sections](https://pycqa.github.io/isort/docs/configuration/options/#force-sort-within-sections) to true. Resulting in:
+However, if you prefer to keep strict alphabetical sorting you can set [force sort within sections](https://pycqa.github.io/isort/docs/configuration/options.html#force-sort-within-sections) to true. Resulting in:
 
 
 ```python
@@ -123,7 +123,7 @@ from a import a  # This will now appear at top because a appears in the alphabet
 import b
 ```
 
-You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](https://pycqa.github.io/isort/docs/configuration/options/#from-first).
+You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](https://pycqa.github.io/isort/docs/configuration/options.html#from-first).
 
 ```python
 from b import b # If from first is set to True, all from imports will be placed before non-from imports.
