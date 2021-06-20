@@ -5236,3 +5236,22 @@ def test_find_imports_in_stream() -> None:
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
+
+
+def test_sort_pythonic() -> None:
+    """ Test a plugged-in default python sort with packages/modules containing numbers. """
+    test_input = (
+        "from bob2.apples2 import aardvark as aardvark2\n"
+        "from bob.apples import aardvark \n"
+        "import module9\n"
+        "import module10\n"
+        "import module200\n"
+    )
+    test_output = isort.code(test_input, sort_order="pythonic")
+    assert test_output == (
+        "import module10\n"
+        "import module200\n"
+        "import module9\n"
+        "from bob.apples import aardvark\n"
+        "from bob2.apples2 import aardvark as aardvark2\n"
+    )
