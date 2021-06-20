@@ -232,6 +232,7 @@ class _Config:
     git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
+    sort_order: str = "default"
 
     def __post_init__(self) -> None:
         py_version = self.py_version
