@@ -1054,6 +1054,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#sort" class="md-nav__link">
+    sort
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1367,6 +1374,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#sort" class="md-nav__link">
+    sort
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1559,6 +1573,26 @@
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">section</span><span class="si">}{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+
+    <span class="n">to_sort</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+
+    <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+
+    <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+    <span class="n">sorting_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">naturally</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">sort_order</span> <span class="o">==</span> <span class="s2">&quot;pythonic&quot;</span><span class="p">:</span>
+
+        <span class="n">sorting_func</span> <span class="o">=</span> <span class="nb">sorted</span>
+
+    <span class="k">return</span> <span class="n">sorting_func</span><span class="p">(</span><span class="n">to_sort</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">naturally</span><span class="p">(</span>
 
@@ -1799,6 +1833,37 @@
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">section</span><span class="si">}{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">length_sort</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+</details>
+<h3 id="sort">sort</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span>
+    <span class="n">to_sort</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">sort</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">config</span><span class="p">:</span><span class="w"> </span><span class="n">Config</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">to_sort</span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">key</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">Callable[[str</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="ow">Any</span><span class="err">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="nf">reverse</span><span class="err">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">sorting_func</span><span class="p">:</span><span class="w"> </span><span class="n">Callable</span><span class="o">[</span><span class="n">..., List[str</span><span class="o">]</span><span class="err">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">naturally</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">sort_order</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;pythonic&quot;</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">sorting_func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sorted</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sorting_func</span><span class="p">(</span><span class="n">to_sort</span><span class="p">,</span><span class="w"> </span><span class="k">key</span><span class="o">=</span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="nf">reverse</span><span class="o">=</span><span class="nf">reverse</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 </details>

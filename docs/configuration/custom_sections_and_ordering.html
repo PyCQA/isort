@@ -1451,12 +1451,12 @@ as a configuration item, e.g.:</p>
 <span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will always appear below because it is a from import.</span>
 </code></pre></div>
 
-<p>However, if you prefer to keep strict alphabetical sorting you can set <a href="https://pycqa.github.io/isort/docs/configuration/options/#force-sort-within-sections">force sort within sections</a> to true. Resulting in:</p>
+<p>However, if you prefer to keep strict alphabetical sorting you can set <a href="https://pycqa.github.io/isort/docs/configuration/options.html#force-sort-within-sections">force sort within sections</a> to true. Resulting in:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">a</span> <span class="kn">import</span> <span class="n">a</span>  <span class="c1"># This will now appear at top because a appears in the alphabet before b</span>
 <span class="kn">import</span> <span class="nn">b</span>
 </code></pre></div>
 
-<p>You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using <a href="https://pycqa.github.io/isort/docs/configuration/options/#from-first">from first</a>.</p>
+<p>You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using <a href="https://pycqa.github.io/isort/docs/configuration/options.html#from-first">from first</a>.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">b</span> <span class="kn">import</span> <span class="n">b</span> <span class="c1"># If from first is set to True, all from imports will be placed before non-from imports.</span>
 <span class="kn">import</span> <span class="nn">a</span>
 </code></pre></div>

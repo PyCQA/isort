@@ -1063,6 +1063,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sorting-order" class="md-nav__link">
+    Sorting Order
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reverse-sort" class="md-nav__link">
     Reverse Sort
   </a>
@@ -2845,6 +2852,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sorting-order" class="md-nav__link">
+    Sorting Order
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reverse-sort" class="md-nav__link">
     Reverse Sort
   </a>
@@ -3039,7 +3053,7 @@
 <p>As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.</p>
-<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in
+<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles.html">built-in
 profiles</a>.</p>
 <h2 id="python-version">Python Version</h2>
 <p>Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</p>
@@ -3890,6 +3904,15 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--overwrite-in-place</li>
+</ul>
+<h2 id="sorting-order">Sorting Order</h2>
+<p>Use natural language or pythonic sorting. Valid values "default"=natural "pythonic"=python default sorting.</p>
+<p><strong>Type:</strong> String
+<strong>Default:</strong> <code>default</code>
+<strong>Python &amp; Config File Name:</strong> sort_order
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--sort-order</li>
 </ul>
 <h2 id="reverse-sort">Reverse Sort</h2>
 <p>Reverses the ordering of imports.</p>

@@ -1585,7 +1585,7 @@ This guide is meant to help migrate projects from using isort 4.x.x unto the 5.0
 <p>Related documentation:</p>
 <ul>
 <li><a href="https://pycqa.github.io/isort/CHANGELOG/#500-penny-july-4-2020">isort 5.0.0 changelog</a></li>
-<li><a href="https://pycqa.github.io/isort/docs/major_releases/introducing_isort_5/">isort 5 release document</a></li>
+<li><a href="https://pycqa.github.io/isort/docs/major_releases/introducing_isort_5.html">isort 5 release document</a></li>
 </ul>
 <div class="admonition important -">
 <p class="admonition-title">If you use pre-commit remove seed-isort-config.</p>
@@ -1596,7 +1596,7 @@ This guide is meant to help migrate projects from using isort 4.x.x unto the 5.0
 The great thing about this is that it means that isort can safely run against complex code bases that need to place side effects between import sections without needing any comments, flags, or configs. It's also part of the rearchitecting that allows it to sort within type checking conditionals and functions. However, it can be a jarring change
 for those of us who have gotten used to placing imports right above their usage in code to avoid context switching. No need to worry! isort still supports this work mode.</p>
 <p>If you want to move all imports to the top, you can use the new<code>--float-to-top</code> flag in the CLI or <code>float_to_top=true</code> option in your config file.</p>
-<p>See: <a href="https://pycqa.github.io/isort/docs/configuration/options/#float-to-top">https://pycqa.github.io/isort/docs/configuration/options/#float-to-top</a></p>
+<p>See: <a href="https://pycqa.github.io/isort/docs/configuration/options.html#float-to-top">https://pycqa.github.io/isort/docs/configuration/options.html#float-to-top</a></p>
 <h2 id="migrating-cli-options">Migrating CLI options</h2>
 <h3 id="-dont-skip-or-ns"><code>--dont-skip</code> or <code>-ns</code></h3>
 <p>In an earlier version isort had a default skip of <code>__init__.py</code>. To get around that many projects wanted a way to not skip <code>__init__.py</code> or any other files that were automatically skipped in the future by isort. isort no longer has any default skips, so if the value here is <code>__init__.py</code> you can simply remove the command line option. If it is something else, just make sure you aren't specifying to skip that file somewhere else in your config.</p>
@@ -1614,7 +1614,7 @@ The option was originally added to allow working around this, and was then turne
 <h2 id="migrating-config-options">Migrating Config options</h2>
 <p>The first thing to keep in mind is how isort loads config options has changed in isort 5. It will no longer merge multiple config files, instead you must have 1 isort config per a project.
 If you have multiple configs, they will need to be merged into 1 single one. You can see the priority order of configuration files and the manner in which they are loaded on the
-<a href="https://pycqa.github.io/isort/docs/configuration/config_files/">config files documentation page</a>.</p>
+<a href="https://pycqa.github.io/isort/docs/configuration/config_files.html">config files documentation page</a>.</p>
 <div class="admonition tip -">
 <p class="admonition-title">Config options are loaded relative to the file, not the isort instance.</p>
 <p>isort looks for a config file based on the path of the file you request to sort. If you have your config placed outside of the project, you can use <code>--settings-path</code> to manually specify the config location instead. Full information about how config files are loaded is in the linked config files documentation page.</p>
@@ -1627,7 +1627,7 @@ The option was originally added to allow working around this, and was then turne
 <h3 id="known_standard_library"><code>known_standard_library</code></h3>
 <p>isort settings no longer merge together, instead they override. The old behavior of merging together caused many hard to
 track down errors, but the one place it was very convenient was for adding a few additional standard library modules.
-In isort 5, you can still get this behavior by moving your extra modules from the <code>known_standard_library</code> setting to <a href="https://pycqa.github.io/isort/docs/configuration/options/#extra-standard-library"><code>extra_standard_library</code></a>.</p>
+In isort 5, you can still get this behavior by moving your extra modules from the <code>known_standard_library</code> setting to <a href="https://pycqa.github.io/isort/docs/configuration/options.html#extra-standard-library"><code>extra_standard_library</code></a>.</p>
 <h3 id="module-placement-changes-known_third_party-known_first_party-default_section-etc">module placement changes: <code>known_third_party</code>, <code>known_first_party</code>, <code>default_section</code>, etc...</h3>
 <p>isort has completely rewritten its logic for placing modules in 5.0.0 to ensure the same behavior across environments. You can see the details of this change <a href="https://github.com/pycqa/isort/issues/1147">here</a>.
 The TL;DR of which is that isort has now changed from <code>default_section=FIRSTPARTY</code> to <code>default_section=THIRDPARTY</code>. If you all already setting the default section to third party, your config is probably in good shape.
