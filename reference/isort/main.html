@@ -1478,7 +1478,7 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
@@ -1492,7 +1492,9 @@
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
-<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">WrapModes</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">VALID_PY_TARGETS</span><span class="p">,</span> <span class="n">Config</span>
+
+<span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">WrapModes</span>
 
 <span class="k">try</span><span class="p">:</span>
 
@@ -1690,7 +1692,11 @@
 
     <span class="p">)</span>
 
-    <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">)</span>
+    <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span>
+
+        <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_error</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_success</span>
+
+    <span class="p">)</span>
 
     <span class="n">printer</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
@@ -2019,6 +2025,26 @@
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tells isort to apply changes interactively.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">general_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--format-error&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;format_error&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override the format used to print errors.&quot;</span><span class="p">,</span>
+
+    <span class="p">)</span>
+
+    <span class="n">general_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+        <span class="s2">&quot;--format-success&quot;</span><span class="p">,</span>
+
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;format_success&quot;</span><span class="p">,</span>
+
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override the format used to print success.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
@@ -3222,7 +3248,7 @@
 
     <span class="k">return</span> <span class="n">arguments</span>
 
-<span class="k">def</span> <span class="nf">_preconvert</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_preconvert</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 
     <span class="sd">&quot;&quot;&quot;Preconverts objects from native types into JSONifyiable types&quot;&quot;&quot;</span>
 
@@ -3232,7 +3258,7 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">WrapModes</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
 
@@ -3240,7 +3266,7 @@
 
     <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unserializable object </span><span class="si">{}</span><span class="s2"> of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
 
@@ -3558,7 +3584,11 @@
 
     <span class="k">elif</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_root</span><span class="p">:</span>
 
-        <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">)</span>
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span>
+
+            <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_error</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_success</span>
+
+        <span class="p">)</span>
 
         <span class="n">printer</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;it is dangerous to operate recursively on &#39;/&#39;&quot;</span><span class="p">)</span>
 
@@ -3570,7 +3600,11 @@
 
         <span class="k">if</span> <span class="n">stream_filename</span><span class="p">:</span>
 
-            <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">)</span>
+            <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span>
+
+                <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_error</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_success</span>
+
+            <span class="p">)</span>
 
             <span class="n">printer</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Filename override is intended only for stream (-) sorting.&quot;</span><span class="p">)</span>
 
@@ -3786,7 +3820,11 @@
 
     <span class="k">if</span> <span class="n">no_valid_encodings</span><span class="p">:</span>
 
-        <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">)</span>
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">create_terminal_printer</span><span class="p">(</span>
+
+            <span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">color_output</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_error</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">format_success</span>
+
+        <span class="p">)</span>
 
         <span class="n">printer</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No valid encodings.&quot;</span><span class="p">)</span>
 
@@ -4145,7 +4183,11 @@
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="ss">&quot;/&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">allow_root</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_success</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">printer</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="ss">&quot;it is dangerous to operate recursively on &#39;/&#39;&quot;</span><span class="p">)</span><span class="w"></span>
 
@@ -4157,7 +4199,11 @@
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nl">stream_filename</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_success</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">printer</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="ss">&quot;Filename override is intended only for stream (-) sorting.&quot;</span><span class="p">)</span><span class="w"></span>
 
@@ -4373,7 +4419,11 @@
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nl">no_valid_encodings</span><span class="p">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">printer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">color</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">color_output</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="o">=</span><span class="n">config</span><span class="p">.</span><span class="n">format_success</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">printer</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="ss">&quot;No valid encodings.&quot;</span><span class="p">)</span><span class="w"></span>
 

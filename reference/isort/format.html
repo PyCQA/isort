@@ -1736,7 +1736,7 @@
 
 <span class="k">try</span><span class="p">:</span>
 
-    <span class="kn">import</span> <span class="nn">colorama</span>
+    <span class="kn">import</span> <span class="nn">colorama</span>  <span class="c1"># type: ignore</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
 
@@ -1800,7 +1800,7 @@
 
     <span class="n">color_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;Shows a unified_diff for the provided input and output against the provided file path.</span>
 
@@ -1878,17 +1878,21 @@
 
     <span class="n">SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">success_message</span> <span class="o">=</span> <span class="n">success</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="n">error</span>
+
     <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">SUCCESS</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">diff_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -1896,9 +1900,9 @@
 
 <span class="k">class</span> <span class="nc">ColoramaPrinter</span><span class="p">(</span><span class="n">BasicPrinter</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]):</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
         <span class="c1"># Note: this constants are instance variables instead ofs class variables</span>
 
@@ -1920,7 +1924,7 @@
 
             <span class="k">return</span> <span class="n">text</span>
 
-        <span class="k">return</span> <span class="n">style</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">colorama</span><span class="o">.</span><span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span>
+        <span class="k">return</span> <span class="n">style</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">colorama</span><span class="o">.</span><span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">diff_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -1936,7 +1940,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_text</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">style</span><span class="p">))</span>
 
-<span class="k">def</span> <span class="nf">create_terminal_printer</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">create_terminal_printer</span><span class="p">(</span>
+
+    <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">success</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BasicPrinter</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="n">color</span> <span class="ow">and</span> <span class="n">colorama_unavailable</span><span class="p">:</span>
 
@@ -1960,7 +1968,11 @@
 
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ColoramaPrinter</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="k">else</span> <span class="n">BasicPrinter</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+
+        <span class="n">ColoramaPrinter</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="k">else</span> <span class="n">BasicPrinter</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="p">)</span>
 </code></pre></div>
 
 </details>
@@ -2006,11 +2018,17 @@
 <h3 id="create_terminal_printer">create_terminal_printer</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">create_terminal_printer</span><span class="p">(</span>
     <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">isort</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">BasicPrinter</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="nl">color</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">create_terminal_printer</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">    </span><span class="nl">color</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">,</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">success</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="w"></span>
+
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">BasicPrinter</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nl">colorama_unavailable</span><span class="p">:</span><span class="w"></span>
 
@@ -2034,7 +2052,11 @@
 
 <span class="w">        </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ColoramaPrinter</span><span class="p">(</span><span class="k">output</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">BasicPrinter</span><span class="p">(</span><span class="k">output</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">ColoramaPrinter</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">BasicPrinter</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 </details>
@@ -2111,7 +2133,7 @@
     <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">color_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
 <p>Shows a unified_diff for the provided input and output against the provided file path.</p>
@@ -2136,7 +2158,7 @@
 
 <span class="w">    </span><span class="nl">color_output</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
 
-<span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;Shows a unified_diff for the provided input and output against the provided file path.</span>
 
@@ -2187,6 +2209,8 @@
 <h2 id="classes">Classes</h2>
 <h3 id="basicprinter">BasicPrinter</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">BasicPrinter</span><span class="p">(</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -2197,17 +2221,21 @@
 
 <span class="w">    </span><span class="n">SUCCESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;SUCCESS&quot;</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">success</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="k">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"></span>
 
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">success_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">success</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="nf">error_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">error</span><span class="w"></span>
+
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">success</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">message</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{self.SUCCESS}: {message}&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="k">output</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">success_message</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">SUCCESS</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="k">output</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">error</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">message</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="ss">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">print</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">error_message</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">self</span><span class="p">.</span><span class="n">ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span><span class="w"> </span><span class="k">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">diff_line</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">line</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
@@ -2250,7 +2278,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="nf">error</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">message</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="s">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">error_message</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="nf">error</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="nf">ERROR</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
@@ -2263,21 +2291,23 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="kr">success</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">message</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="s">&quot;{self.SUCCESS}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">output</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">success_message</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="kr">success</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">SUCCESS</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">output</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
 <h3 id="coloramaprinter">ColoramaPrinter</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">ColoramaPrinter</span><span class="p">(</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ColoramaPrinter</span><span class="p">(</span><span class="n">BasicPrinter</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">success</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="err">:</span><span class="w"> </span><span class="n">Optional</span><span class="o">[</span><span class="n">TextIO</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="k">output</span><span class="o">=</span><span class="k">output</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="o">=</span><span class="k">output</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="nl">Note</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">constants</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="n">instead</span><span class="w"> </span><span class="n">ofs</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">variables</span><span class="w"></span>
 
@@ -2299,7 +2329,7 @@
 
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nc">text</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">style</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nc">text</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Style</span><span class="p">.</span><span class="n">RESET_ALL</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">style</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nc">text</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">colorama</span><span class="p">.</span><span class="n">Style</span><span class="p">.</span><span class="n">RESET_ALL</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">diff_line</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">line</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
 
@@ -2345,7 +2375,7 @@
 
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nc">text</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">style</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nc">text</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">colorama</span><span class="p">.</span><span class="n">Style</span><span class="p">.</span><span class="n">RESET_ALL</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">style</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nc">text</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">colorama</span><span class="p">.</span><span class="n">Style</span><span class="p">.</span><span class="n">RESET_ALL</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 </details>
@@ -2382,7 +2412,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="nf">error</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">message</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="s">&quot;{self.ERROR}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">error_message</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="nf">error</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="nf">ERROR</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stderr</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
@@ -2395,7 +2425,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="kr">success</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">message</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">None</span><span class="o">:</span>
 
-        <span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="s">&quot;{self.SUCCESS}: {message}&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">output</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="kr">self</span><span class="p">.</span><span class="n">success_message</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="kr">success</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">SUCCESS</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="kr">self</span><span class="p">.</span><span class="kr">output</span><span class="p">)</span>
 </code></pre></div>
 
 </details>

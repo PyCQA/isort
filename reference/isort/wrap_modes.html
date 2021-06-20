@@ -1636,13 +1636,13 @@
 
 <span class="s s-Atom">import</span> <span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">comments</span>
 
-<span class="k">_</span><span class="s s-Atom">wrap_modes:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Callable</span><span class="p">[[</span><span class="nv">Any</span><span class="p">],</span> <span class="s s-Atom">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">_</span><span class="s s-Atom">wrap_modes:</span> <span class="nv">Dict</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">,</span> <span class="nv">Callable</span><span class="p">[...,</span> <span class="s s-Atom">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="s s-Atom">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="nn">value</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="s2">&quot;WrapModes&quot;</span><span class="s s-Atom">:</span>
 
     <span class="s s-Atom">return</span> <span class="nf">getattr</span><span class="p">(</span><span class="nv">WrapModes</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="s s-Atom">value</span><span class="p">),</span> <span class="nv">None</span><span class="p">)</span> <span class="s s-Atom">or</span> <span class="nv">WrapModes</span><span class="p">(</span><span class="nf">int</span><span class="p">(</span><span class="s s-Atom">value</span><span class="p">))</span>
 
-<span class="s s-Atom">def</span> <span class="nf">formatter_from_string</span><span class="p">(</span><span class="nn">name</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="nf">formatter_from_string</span><span class="p">(</span><span class="nn">name</span><span class="p">:</span> <span class="s s-Atom">str</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Callable</span><span class="p">[...,</span> <span class="s s-Atom">str</span><span class="p">]</span><span class="s s-Atom">:</span>
 
     <span class="s s-Atom">return</span> <span class="k">_</span><span class="s s-Atom">wrap_modes</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="s s-Atom">name</span><span class="p">.</span><span class="nf">upper</span><span class="p">(),</span> <span class="s s-Atom">grid</span><span class="p">)</span>
 
@@ -1674,7 +1674,7 @@
 
     <span class="s s-Atom">return</span> <span class="s2">&quot;&quot;</span>
 
-<span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">wrap_mode</span><span class="p">(</span><span class="s s-Atom">function</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">wrap_mode</span><span class="p">(</span><span class="nn">function</span><span class="p">:</span> <span class="nv">Callable</span><span class="p">[...,</span> <span class="s s-Atom">str</span><span class="p">])</span> <span class="s s-Atom">-&gt;</span> <span class="nv">Callable</span><span class="p">[...,</span> <span class="s s-Atom">str</span><span class="p">]</span><span class="s s-Atom">:</span>
 
     <span class="s2">&quot;&quot;&quot;Registers an individual wrap mode. Function name and order are significant and used for</span>
 
@@ -1684,7 +1684,7 @@
 
     <span class="k">_</span><span class="s s-Atom">wrap_modes</span><span class="p">[</span><span class="s s-Atom">function</span><span class="p">.</span><span class="k">__</span><span class="s s-Atom">name__</span><span class="p">.</span><span class="nf">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="s s-Atom">function</span>
 
-    <span class="s s-Atom">function</span><span class="p">.</span><span class="k">__</span><span class="s s-Atom">signature__</span> <span class="o">=</span> <span class="nf">signature</span><span class="p">(</span><span class="k">_</span><span class="s s-Atom">wrap_mode_interface</span><span class="p">)</span>
+    <span class="s s-Atom">function</span><span class="p">.</span><span class="k">__</span><span class="s s-Atom">signature__</span> <span class="o">=</span> <span class="nf">signature</span><span class="p">(</span><span class="k">_</span><span class="s s-Atom">wrap_mode_interface</span><span class="p">)</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="s s-Atom">ignore</span>
 
     <span class="s s-Atom">function</span><span class="p">.</span><span class="k">__</span><span class="s s-Atom">annotations__</span> <span class="o">=</span> <span class="k">_</span><span class="s s-Atom">wrap_mode_interface</span><span class="p">.</span><span class="k">__</span><span class="s s-Atom">annotations__</span>
 
@@ -1692,7 +1692,7 @@
 
 <span class="s s-Atom">@</span><span class="k">_</span><span class="s s-Atom">wrap_mode</span>
 
-<span class="s s-Atom">def</span> <span class="nf">grid</span><span class="p">(</span><span class="s s-Atom">**interface</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="nf">grid</span><span class="p">(</span><span class="s s-Atom">**</span><span class="nn">interface</span><span class="p">:</span> <span class="nv">Any</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
 
     <span class="s s-Atom">if</span> <span class="o">not</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="s s-Atom">:</span>
 
@@ -1764,11 +1764,11 @@
 
             <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="s s-Atom">+=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="s s-Atom">next_import</span>
 
-    <span class="s s-Atom">return</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span> <span class="s s-Atom">if</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;include_trailing_comma&quot;</span><span class="p">]</span> <span class="s s-Atom">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+    <span class="s s-Atom">return</span> <span class="s s-Atom">f</span><span class="s2">&quot;{interface[&#39;statement&#39;]}{&#39;,&#39; if interface[&#39;include_trailing_comma&#39;] else &#39;&#39;})&quot;</span>
 
 <span class="s s-Atom">@</span><span class="k">_</span><span class="s s-Atom">wrap_mode</span>
 
-<span class="s s-Atom">def</span> <span class="nf">vertical</span><span class="p">(</span><span class="s s-Atom">**interface</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="nf">vertical</span><span class="p">(</span><span class="s s-Atom">**</span><span class="nn">interface</span><span class="p">:</span> <span class="nv">Any</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
 
     <span class="s s-Atom">if</span> <span class="o">not</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="s s-Atom">:</span>
 
@@ -1814,7 +1814,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def hanging_indent(**interface):</span>
+<span class="s2">def hanging_indent(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
@@ -1894,7 +1894,7 @@
 
 <span class="s2">            _hanging_indent_end_line(interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;])</span>
 
-<span class="s2">            + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
+<span class="s2">            + str(interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;])</span>
 
 <span class="s2">            + isort.comments.add_to_line(</span>
 
@@ -1910,11 +1910,11 @@
 
 <span class="s2">        )</span>
 
-<span class="s2">    return interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
+<span class="s2">    return str(interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;])</span>
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_hanging_indent(**interface):</span>
+<span class="s2">def vertical_hanging_indent(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    _line_with_comments = isort.comments.add_to_line(</span>
 
@@ -1940,7 +1940,7 @@
 
 <span class="s2">    )</span>
 
-<span class="s2">def _vertical_grid_common(need_trailing_char: bool, **interface):</span>
+<span class="s2">def _vertical_grid_common(need_trailing_char: bool, **interface: Any) -&gt; str:</span>
 
 <span class="s2">    if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
@@ -2004,23 +2004,23 @@
 
 <span class="s2">        interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;] += &quot;</span><span class="p">,</span><span class="s2">&quot;</span>
 
-<span class="s2">    return interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
+<span class="s2">    return str(interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;])</span>
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_grid(**interface) -&gt; str:</span>
+<span class="s2">def vertical_grid(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    return _vertical_grid_common(need_trailing_char=True, **interface) + &quot;</span><span class="p">)</span><span class="s2">&quot;</span>
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_grid_grouped(**interface):</span>
+<span class="s2">def vertical_grid_grouped(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    return (</span>
 
 <span class="s2">        _vertical_grid_common(need_trailing_char=False, **interface)</span>
 
-<span class="s2">        + interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;]</span>
+<span class="s2">        + str(interface[&quot;</span><span class="s s-Atom">line_separator</span><span class="s2">&quot;])</span>
 
 <span class="s2">        + &quot;</span><span class="p">)</span><span class="s2">&quot;</span>
 
@@ -2028,7 +2028,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_grid_grouped_no_comma(**interface):</span>
+<span class="s2">def vertical_grid_grouped_no_comma(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    # This is a deprecated alias for vertical_grid_grouped above. This function</span>
 
@@ -2038,7 +2038,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def noqa(**interface):</span>
+<span class="s2">def noqa(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    _imports = &quot;</span><span class="p">,</span> <span class="s2">&quot;.join(interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;])</span>
 
@@ -2072,7 +2072,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_hanging_indent_bracket(**interface):</span>
+<span class="s2">def vertical_hanging_indent_bracket(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
@@ -2084,7 +2084,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def vertical_prefix_from_module_import(**interface):</span>
+<span class="s2">def vertical_prefix_from_module_import(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
@@ -2150,11 +2150,11 @@
 
 <span class="s2">        output_statement = statement_with_comments</span>
 
-<span class="s2">    return output_statement</span>
+<span class="s2">    return str(output_statement)</span>
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def hanging_indent_with_parentheses(**interface):</span>
+<span class="s2">def hanging_indent_with_parentheses(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    if not interface[&quot;</span><span class="s s-Atom">imports</span><span class="s2">&quot;]:</span>
 
@@ -2258,7 +2258,7 @@
 
 <span class="s2">@_wrap_mode</span>
 
-<span class="s2">def backslash_grid(**interface):</span>
+<span class="s2">def backslash_grid(**interface: Any) -&gt; str:</span>
 
 <span class="s2">    interface[&quot;</span><span class="s s-Atom">indent</span><span class="s2">&quot;] = interface[&quot;</span><span class="s s-Atom">white_space</span><span class="s2">&quot;][:-1]</span>
 
@@ -2290,7 +2290,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="s s-Atom">@</span><span class="k">_</span><span class="s s-Atom">wrap_mode</span>
 
-<span class="s s-Atom">def</span> <span class="nf">backslash_grid</span><span class="p">(</span><span class="s s-Atom">**interface</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="nf">backslash_grid</span><span class="p">(</span><span class="s s-Atom">**</span><span class="nn">interface</span><span class="p">:</span> <span class="nv">Any</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
 
     <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;indent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;white_space&quot;</span><span class="p">][:-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -2301,12 +2301,12 @@
 <h3 id="formatter_from_string">formatter_from_string</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">formatter_from_string</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">def</span> <span class="nv">formatter_from_string</span><span class="ss">(</span><span class="nv">name</span>: <span class="nv">str</span><span class="ss">)</span>:
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">formatter_from_string</span><span class="p">(</span><span class="n">name</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[...,</span> <span class="n">str</span><span class="p">]</span><span class="o">:</span>
 
-    <span class="k">return</span> <span class="nv">_wrap_modes</span>.<span class="nv">get</span><span class="ss">(</span><span class="nv">name</span>.<span class="nv">upper</span><span class="ss">()</span>, <span class="nv">grid</span><span class="ss">)</span>
+    <span class="kr">return</span> <span class="n">_wrap_modes</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">grid</span><span class="p">)</span>
 </code></pre></div>
 
 </details>
@@ -2339,7 +2339,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nd">@_wrap_mode</span>
 
-<span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
@@ -2411,7 +2411,7 @@
 
             <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">next_import</span>
 
-    <span class="k">return</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span> <span class="k">if</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;include_trailing_comma&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="p">[</span><span class="s1">&#39;statement&#39;</span><span class="p">]</span><span class="si">}{</span><span class="s1">&#39;,&#39;</span> <span class="k">if</span> <span class="n">interface</span><span class="p">[</span><span class="s1">&#39;include_trailing_comma&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div>
 
 </details>
@@ -2432,7 +2432,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nd">@_wrap_mode</span>
 
-<span class="k">def</span> <span class="nf">hanging_indent</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">hanging_indent</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
@@ -2512,7 +2512,7 @@
 
             <span class="n">_hanging_indent_end_line</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">])</span>
 
-            <span class="o">+</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;line_separator&quot;</span><span class="p">])</span>
 
             <span class="o">+</span> <span class="n">isort</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">add_to_line</span><span class="p">(</span>
 
@@ -2528,7 +2528,7 @@
 
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">])</span>
 </code></pre></div>
 
 </details>
@@ -2549,7 +2549,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nd">@_wrap_mode</span>
 
-<span class="k">def</span> <span class="nf">hanging_indent_with_parentheses</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">hanging_indent_with_parentheses</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
@@ -2670,7 +2670,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@_wrap_mode</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">noqa</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">noqa</span><span class="p">(</span><span class="o">**</span><span class="nl">interface</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">_imports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;, &quot;</span><span class="p">.</span><span class="k">join</span><span class="p">(</span><span class="n">interface</span><span class="o">[</span><span class="n">&quot;imports&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
 
@@ -2721,7 +2721,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nd">@_wrap_mode</span>
 
-<span class="k">def</span> <span class="nf">vertical</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">vertical</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
@@ -2776,7 +2776,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@_wrap_mode</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid</span><span class="p">(</span><span class="o">**</span><span class="nl">interface</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">_vertical_grid_common</span><span class="p">(</span><span class="n">need_trailing_char</span><span class="o">=</span><span class="k">True</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;)&quot;</span><span class="w"></span>
 </code></pre></div>
@@ -2799,13 +2799,13 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@_wrap_mode</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid_grouped</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid_grouped</span><span class="p">(</span><span class="o">**</span><span class="nl">interface</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">_vertical_grid_common</span><span class="p">(</span><span class="n">need_trailing_char</span><span class="o">=</span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">interface</span><span class="o">[</span><span class="n">&quot;line_separator&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">interface</span><span class="o">[</span><span class="n">&quot;line_separator&quot;</span><span class="o">]</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;)&quot;</span><span class="w"></span>
 
@@ -2830,7 +2830,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@_wrap_mode</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid_grouped_no_comma</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">vertical_grid_grouped_no_comma</span><span class="p">(</span><span class="o">**</span><span class="nl">interface</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">deprecated</span><span class="w"> </span><span class="k">alias</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">vertical_grid_grouped</span><span class="w"> </span><span class="n">above</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
 
@@ -2857,7 +2857,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@_wrap_mode</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">vertical_hanging_indent</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">vertical_hanging_indent</span><span class="p">(</span><span class="o">**</span><span class="nl">interface</span><span class="p">:</span><span class="w"> </span><span class="ow">Any</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">_line_with_comments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isort</span><span class="p">.</span><span class="n">comments</span><span class="p">.</span><span class="n">add_to_line</span><span class="p">(</span><span class="w"></span>
 
@@ -2902,7 +2902,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="s s-Atom">@</span><span class="k">_</span><span class="s s-Atom">wrap_mode</span>
 
-<span class="s s-Atom">def</span> <span class="nf">vertical_hanging_indent_bracket</span><span class="p">(</span><span class="s s-Atom">**interface</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="s s-Atom">def</span> <span class="nf">vertical_hanging_indent_bracket</span><span class="p">(</span><span class="s s-Atom">**</span><span class="nn">interface</span><span class="p">:</span> <span class="nv">Any</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">str</span><span class="p">:</span>
 
     <span class="s s-Atom">if</span> <span class="o">not</span> <span class="s s-Atom">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]</span><span class="s s-Atom">:</span>
 
@@ -2931,7 +2931,7 @@
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nd">@_wrap_mode</span>
 
-<span class="k">def</span> <span class="nf">vertical_prefix_from_module_import</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">vertical_prefix_from_module_import</span><span class="p">(</span><span class="o">**</span><span class="n">interface</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;imports&quot;</span><span class="p">]:</span>
 
@@ -2997,7 +2997,7 @@
 
         <span class="n">output_statement</span> <span class="o">=</span> <span class="n">statement_with_comments</span>
 
-    <span class="k">return</span> <span class="n">output_statement</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_statement</span><span class="p">)</span>
 </code></pre></div>
 
 </details>

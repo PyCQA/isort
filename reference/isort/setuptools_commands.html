@@ -1806,13 +1806,13 @@
 
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">import</span> <span class="nn">setuptools</span>
+<span class="kn">import</span> <span class="nn">setuptools</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">api</span>
 
 <span class="kn">from</span> <span class="nn">.settings</span> <span class="kn">import</span> <span class="n">DEFAULT_CONFIG</span>
 
-<span class="k">class</span> <span class="nc">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
 
     <span class="sd">&quot;&quot;&quot;The :class:`ISortCommand` class is used by setuptools to perform</span>
 
@@ -1908,7 +1908,7 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="p">.</span><span class="n">Command</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">ISortCommand</span><span class="p">(</span><span class="n">setuptools</span><span class="p">.</span><span class="n">Command</span><span class="p">)</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">type</span><span class="p">:</span><span class="w"> </span><span class="k">ignore</span><span class="w"></span>
 
 <span class="w">    </span><span class="ss">&quot;&quot;&quot;The :class:`ISortCommand` class is used by setuptools to perform</span>
 

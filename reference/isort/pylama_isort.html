@@ -1478,9 +1478,9 @@
 
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">pylama.lint</span> <span class="kn">import</span> <span class="n">Linter</span> <span class="k">as</span> <span class="n">BaseLinter</span>
+<span class="kn">from</span> <span class="nn">pylama.lint</span> <span class="kn">import</span> <span class="n">Linter</span> <span class="k">as</span> <span class="n">BaseLinter</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">isort.exceptions</span> <span class="kn">import</span> <span class="n">FileSkipped</span>
 
@@ -1488,7 +1488,7 @@
 
 <span class="nd">@contextmanager</span>
 
-<span class="k">def</span> <span class="nf">supress_stdout</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">supress_stdout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
 
     <span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
 
@@ -1500,7 +1500,7 @@
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">stdout</span>
 
-<span class="k">class</span> <span class="nc">Linter</span><span class="p">(</span><span class="n">BaseLinter</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Linter</span><span class="p">(</span><span class="n">BaseLinter</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span> <span class="nf">allow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
@@ -1546,12 +1546,12 @@
 <h3 id="supress_stdout">supress_stdout</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">supress_stdout</span><span class="p">(</span>
 
-<span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]</span>
 </code></pre></div>
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="nv">@contextmanager</span><span class="w"></span>
 
-<span class="n">def</span><span class="w"> </span><span class="n">supress_stdout</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="n">def</span><span class="w"> </span><span class="n">supress_stdout</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Iterator</span><span class="o">[</span><span class="n">None</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="w"></span>
 
@@ -1574,7 +1574,7 @@
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">class</span> <span class="n">Linter</span><span class="p">(</span><span class="n">BaseLinter</span><span class="p">)</span><span class="o">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">class</span> <span class="n">Linter</span><span class="p">(</span><span class="n">BaseLinter</span><span class="p">)</span><span class="o">:</span>  <span class="p">#</span> <span class="k">type</span><span class="o">:</span> <span class="n">ignore</span>
 
     <span class="n">def</span> <span class="n">allow</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nl">bool:</span>
 

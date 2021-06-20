@@ -1216,6 +1216,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#format-errors" class="md-nav__link">
+    Format Errors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-success" class="md-nav__link">
+    Format Success
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deprecated-flags" class="md-nav__link">
     Deprecated Flags
   </a>
@@ -2984,6 +2998,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#format-errors" class="md-nav__link">
+    Format Errors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-success" class="md-nav__link">
+    Format Success
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deprecated-flags" class="md-nav__link">
     Deprecated Flags
   </a>
@@ -4055,6 +4083,28 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--ext-format</li>
+</ul>
+<h2 id="format-errors">Format Errors</h2>
+<p>Define the format used to print errors.</p>
+<p><strong>NOTE</strong> Variables are <code>error</code> and <code>message</code>.
+The <code>error</code> variable prints <code>ERROR</code> with color depending on the --color option.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>{error}: {message}</code><br />
+<strong>Python &amp; Config File Name:</strong> format_errors
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--format-errors</li>
+</ul>
+<h2 id="format-success">Format Success</h2>
+<p>Define the format used to print successes.</p>
+<p><strong>NOTE</strong> Variables are <code>success</code> and <code>message</code>.
+The <code>success</code> variable prints <code>SUCCESS</code> with color depending on the --color option.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>{success}: {message}</code><br />
+<strong>Python &amp; Config File Name:</strong> format_success
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--format-success</li>
 </ul>
 <h2 id="deprecated-flags">Deprecated Flags</h2>
 <p>==SUPPRESS==</p>

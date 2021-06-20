@@ -1504,7 +1504,33 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">pathlib</span> <span class="s s-Atom">import</span> <span class="nv">Path</span>
 
-<span class="s s-Atom">from</span> <span class="s s-Atom">typing</span> <span class="s s-Atom">import</span> <span class="nv">Any</span><span class="p">,</span> <span class="nv">Callable</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">,</span> <span class="nv">FrozenSet</span><span class="p">,</span> <span class="nv">Iterable</span><span class="p">,</span> <span class="nv">List</span><span class="p">,</span> <span class="nv">Optional</span><span class="p">,</span> <span class="nv">Pattern</span><span class="p">,</span> <span class="nv">Set</span><span class="p">,</span> <span class="nv">Tuple</span>
+<span class="s s-Atom">from</span> <span class="s s-Atom">typing</span> <span class="nf">import</span> <span class="p">(</span>
+
+    <span class="nv">Any</span><span class="p">,</span>
+
+    <span class="nv">Callable</span><span class="p">,</span>
+
+    <span class="nv">Dict</span><span class="p">,</span>
+
+    <span class="nv">FrozenSet</span><span class="p">,</span>
+
+    <span class="nv">Iterable</span><span class="p">,</span>
+
+    <span class="nv">List</span><span class="p">,</span>
+
+    <span class="nv">Optional</span><span class="p">,</span>
+
+    <span class="nv">Pattern</span><span class="p">,</span>
+
+    <span class="nv">Set</span><span class="p">,</span>
+
+    <span class="nv">Tuple</span><span class="p">,</span>
+
+    <span class="nv">Type</span><span class="p">,</span>
+
+    <span class="nv">Union</span><span class="p">,</span>
+
+<span class="p">)</span>
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">warnings</span> <span class="s s-Atom">import</span> <span class="s s-Atom">warn</span>
 
@@ -1888,7 +1914,11 @@
 
     <span class="s s-Atom">git_ignore:</span> <span class="nv">Dict</span><span class="p">[</span><span class="nv">Path</span><span class="p">,</span> <span class="nv">Set</span><span class="p">[</span><span class="nv">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="nf">field</span><span class="p">(</span><span class="s s-Atom">default_factory</span><span class="o">=</span><span class="s s-Atom">dict</span><span class="p">)</span>
 
-    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">post_init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+    <span class="s s-Atom">format_error:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;{error}: {message}&quot;</span>
+
+    <span class="s s-Atom">format_success:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;{success}: {message}&quot;</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">post_init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">None</span><span class="s s-Atom">:</span>
 
         <span class="s s-Atom">py_version</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">py_version</span>
 
@@ -1960,7 +1990,7 @@
 
             <span class="p">)</span>
 
-    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">hash__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">hash__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nn">int</span><span class="p">:</span>
 
         <span class="s s-Atom">return</span> <span class="nf">id</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span>
 
@@ -1978,7 +2008,7 @@
 
         <span class="nn">config</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="k">_</span><span class="nv">Config</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
 
-        <span class="s s-Atom">**config_overrides</span><span class="p">,</span>
+        <span class="s s-Atom">**config_overrides:</span> <span class="nv">Any</span><span class="p">,</span>
 
     <span class="p">)</span><span class="s s-Atom">:</span>
 
@@ -2350,7 +2380,7 @@
 
 <span class="s s-Atom">        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore</span>
 
-<span class="s s-Atom">    def is_supported_filetype(self, file_name: str):</span>
+<span class="s s-Atom">    def is_supported_filetype(self, file_name: str) -&gt; bool:</span>
 
 <span class="s s-Atom">        _root, ext = os.path.splitext(file_name)</span>
 
@@ -2514,7 +2544,7 @@
 
 <span class="s2">    @property</span>
 
-<span class="s2">    def known_patterns(self):</span>
+<span class="s2">    def known_patterns(self) -&gt; List[Tuple[Pattern[str], str]]:</span>
 
 <span class="s2">        if self._known_patterns is not None:</span>
 
@@ -2612,9 +2642,13 @@
 
 <span class="s2">        return patterns</span>
 
-<span class="s2">def _get_str_to_type_converter(setting_name: str) -&gt; Callable[[str], Any]:</span>
+<span class="s2">def _get_str_to_type_converter(setting_name: str) -&gt; Union[Callable[[str], Any], Type[Any]]:</span>
 
-<span class="s2">    type_converter: Callable[[str], Any] = type(_DEFAULT_SETTINGS.get(setting_name, &quot;&quot;))</span>
+<span class="s2">    type_converter: Union[Callable[[str], Any], Type[Any]] = type(</span>
+
+<span class="s2">        _DEFAULT_SETTINGS.get(setting_name, &quot;&quot;)</span>
+
+<span class="s2">    )</span>
 
 <span class="s2">    if type_converter == WrapModes:</span>
 
@@ -2766,7 +2800,7 @@
 
 <span class="s2">                            in map(</span>
 
-<span class="s2">                                lambda text: text.strip(), config_key[len(&quot;</span><span class="s s-Atom">*.</span><span class="p">{</span><span class="s2">&quot;) : -1].split(&quot;</span><span class="p">,</span><span class="s2">&quot;)</span>
+<span class="s2">                                lambda text: text.strip(), config_key[len(&quot;</span><span class="s s-Atom">*.</span><span class="p">{</span><span class="s2">&quot;) : -1].split(&quot;</span><span class="p">,</span><span class="s2">&quot;)  # type: ignore # noqa</span>
 
 <span class="s2">                            )</span>
 
@@ -2964,7 +2998,7 @@
     <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
     <span class="n">settings_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_Config</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">config_overrides</span>
+    <span class="o">**</span><span class="n">config_overrides</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -2980,7 +3014,7 @@
 
         <span class="nn">config</span><span class="p">:</span> <span class="nv">Optional</span><span class="p">[</span><span class="k">_</span><span class="nv">Config</span><span class="p">]</span> <span class="o">=</span> <span class="nv">None</span><span class="p">,</span>
 
-        <span class="s s-Atom">**config_overrides</span><span class="p">,</span>
+        <span class="s s-Atom">**config_overrides:</span> <span class="nv">Any</span><span class="p">,</span>
 
     <span class="p">)</span><span class="s s-Atom">:</span>
 
@@ -3352,7 +3386,7 @@
 
 <span class="s s-Atom">        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore</span>
 
-<span class="s s-Atom">    def is_supported_filetype(self, file_name: str):</span>
+<span class="s s-Atom">    def is_supported_filetype(self, file_name: str) -&gt; bool:</span>
 
 <span class="s s-Atom">        _root, ext = os.path.splitext(file_name)</span>
 
@@ -3516,7 +3550,7 @@
 
 <span class="s2">    @property</span>
 
-<span class="s2">    def known_patterns(self):</span>
+<span class="s2">    def known_patterns(self) -&gt; List[Tuple[Pattern[str], str]]:</span>
 
 <span class="s2">        if self._known_patterns is not None:</span>
 
@@ -3719,6 +3753,12 @@
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="n">forced_separate</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">format_error</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">format_success</span>
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="n">formatter</span>
@@ -4005,52 +4045,52 @@
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_supported_filetype</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="nv">def</span> <span class="nv">is_supported_filetype</span><span class="ss">(</span><span class="nv">self</span>, <span class="nv">file_name</span>: <span class="nv">str</span><span class="ss">)</span>:
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">is_supported_filetype</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span><span class="o">:</span>
 
-        <span class="nv">_root</span>, <span class="nv">ext</span> <span class="o">=</span> <span class="nv">os</span>.<span class="nv">path</span>.<span class="nv">splitext</span><span class="ss">(</span><span class="nv">file_name</span><span class="ss">)</span>
+        <span class="n">_root</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 
-        <span class="nv">ext</span> <span class="o">=</span> <span class="nv">ext</span>.<span class="nv">lstrip</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">.</span><span class="s2">&quot;</span><span class="ss">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="p">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nv">ext</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">supported_extensions</span>:
+        <span class="nf">if</span> <span class="n">ext</span> <span class="kr">in</span> <span class="kr">self</span><span class="p">.</span><span class="n">supported_extensions</span><span class="o">:</span>
 
-            <span class="k">return</span> <span class="nv">True</span>
+            <span class="kr">return</span> <span class="kr">True</span>
 
-        <span class="k">if</span> <span class="nv">ext</span> <span class="nv">in</span> <span class="nv">self</span>.<span class="nv">blocked_extensions</span>:
+        <span class="nf">if</span> <span class="n">ext</span> <span class="kr">in</span> <span class="kr">self</span><span class="p">.</span><span class="n">blocked_extensions</span><span class="o">:</span>
 
-            <span class="k">return</span> <span class="nv">False</span>
+            <span class="kr">return</span> <span class="kr">False</span>
 
-        # <span class="nv">Skip</span> <span class="nv">editor</span> <span class="nv">backup</span> <span class="nv">files</span>.
+        <span class="err">#</span> <span class="kr">Skip</span> <span class="n">editor</span> <span class="n">backup</span> <span class="n">files</span><span class="p">.</span>
 
-        <span class="k">if</span> <span class="nv">file_name</span>.<span class="nv">endswith</span><span class="ss">(</span><span class="s2">&quot;</span><span class="s">~</span><span class="s2">&quot;</span><span class="ss">)</span>:
+        <span class="nf">if</span> <span class="n">file_name</span><span class="p">.</span><span class="kd">ends</span><span class="n">with</span><span class="p">(</span><span class="s">&quot;~&quot;</span><span class="p">)</span><span class="o">:</span>
 
-            <span class="k">return</span> <span class="nv">False</span>
+            <span class="kr">return</span> <span class="kr">False</span>
 
-        <span class="nv">try</span>:
+        <span class="n">try</span><span class="o">:</span>
 
-            <span class="k">if</span> <span class="nv">stat</span>.<span class="nv">S_ISFIFO</span><span class="ss">(</span><span class="nv">os</span>.<span class="nv">stat</span><span class="ss">(</span><span class="nv">file_name</span><span class="ss">)</span>.<span class="nv">st_mode</span><span class="ss">)</span>:
+            <span class="nf">if</span> <span class="n">stat</span><span class="p">.</span><span class="n">S_ISFIFO</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">stat</span><span class="p">(</span><span class="n">file_name</span><span class="p">).</span><span class="n">st_mode</span><span class="p">)</span><span class="o">:</span>
 
-                <span class="k">return</span> <span class="nv">False</span>
+                <span class="kr">return</span> <span class="kr">False</span>
 
-        <span class="nv">except</span> <span class="nv">OSError</span>:
+        <span class="kr">except</span> <span class="n">OSError</span><span class="o">:</span>
 
-            <span class="nv">pass</span>
+            <span class="n">pass</span>
 
-        <span class="nv">try</span>:
+        <span class="n">try</span><span class="o">:</span>
 
-            <span class="nv">with</span> <span class="nv">open</span><span class="ss">(</span><span class="nv">file_name</span>, <span class="s2">&quot;</span><span class="s">rb</span><span class="s2">&quot;</span><span class="ss">)</span> <span class="nv">as</span> <span class="nv">fp</span>:
+            <span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span> <span class="kr">as</span> <span class="n">fp</span><span class="o">:</span>
 
-                <span class="nv">line</span> <span class="o">=</span> <span class="nv">fp</span>.<span class="nv">readline</span><span class="ss">(</span><span class="mi">100</span><span class="ss">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
-        <span class="nv">except</span> <span class="nv">OSError</span>:
+        <span class="kr">except</span> <span class="n">OSError</span><span class="o">:</span>
 
-            <span class="k">return</span> <span class="nv">False</span>
+            <span class="kr">return</span> <span class="kr">False</span>
 
-        <span class="k">else</span>:
+        <span class="n">else</span><span class="o">:</span>
 
-            <span class="k">return</span> <span class="nv">bool</span><span class="ss">(</span><span class="nv">_SHEBANG_RE</span>.<span class="nv">match</span><span class="ss">(</span><span class="nv">line</span><span class="ss">))</span>
+            <span class="kr">return</span> <span class="n">bool</span><span class="p">(</span><span class="n">_SHEBANG_RE</span><span class="p">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
 </code></pre></div>
 
 </details>
