@@ -167,7 +167,7 @@ class UnsupportedSettings(ISortError):
             "isort was provided settings that it doesn't support:\n\n"
             f"{errors}\n\n"
             "For a complete and up-to-date listing of supported settings see: "
-            "https://pycqa.github.io/isort/docs/configuration/options/.\n"
+            "https://pycqa.github.io/isort/docs/configuration/options.\n"
         )
         self.unsupported_settings = unsupported_settings
 
