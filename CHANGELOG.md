@@ -2,7 +2,10 @@ Changelog
 =========
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
-Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
+Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
+
+### 5.9.1 June 21st 2021 [hotfix]
+  - Fixed #1758: projects with many files and skip_ignore set can lead to a command-line overload.
 
 ### 5.9.0 June 21st 2021
   - Improved CLI startup time.
