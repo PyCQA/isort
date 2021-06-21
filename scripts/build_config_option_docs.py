@@ -22,7 +22,7 @@ isort will disagree but commit to your way of formatting. To enable this, isort 
 how you want your imports sorted, organized, and formatted.
 
 Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in
-profiles](https://pycqa.github.io/isort/docs/configuration/profiles/).
+profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html).
 """
 parser = _build_arg_parser()
 
