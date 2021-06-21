@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy/).
 
 ### 5.9.0 TBD
+  - Improved CLI startup time.
   - Implemented #1697: Provisional support for PEP 582: skip `__pypackages__` directories by default.
   - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
   - Implemented #1737: Support for using action comments to avoid adding imports to individual files.
