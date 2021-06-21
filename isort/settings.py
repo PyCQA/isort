@@ -547,13 +547,13 @@ class Config(_Config):
             files_result = (
                 codecs.escape_decode(  # type: ignore
                     subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                        ["git", "-C", str(git_folder), "check-ignore", *files]
+                        ["git", "-C", str(git_folder), "check-ignore", "--stdin"],
+                        input="\n".join(files).encode(),
                     )
                 )[0]
                 .decode("utf-8")
-                .split("\n")
+                .splitlines()
             )
-            files_result = files_result[:-1] if files_result else files_result
 
             self.git_ignore[git_folder] = {Path(f.strip('"')) for f in files_result}
 
