@@ -14,7 +14,7 @@ fixed_diff = "+import a\n import b\n-import a\n"
 
 
 @pytest.fixture
-def imperfect(tmpdir) -> None:
+def imperfect(tmpdir):
     imperfect_file = tmpdir.join("test_needs_changes.py")
     imperfect_file.write_text(imperfect_content, "utf8")
     return imperfect_file

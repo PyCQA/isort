@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, TextIO
 
 try:
-    import colorama  # type: ignore
+    import colorama
 except ImportError:
     colorama_unavailable = True
 else:

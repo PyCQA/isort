@@ -11,7 +11,7 @@ class TestISortError:
 
 class TestExistingSyntaxErrors(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.ExistingSyntaxErrors("file_path")
+        self.instance: exceptions.ExistingSyntaxErrors = exceptions.ExistingSyntaxErrors("file_path")
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -19,7 +19,7 @@ class TestExistingSyntaxErrors(TestISortError):
 
 class TestIntroducedSyntaxErrors(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.IntroducedSyntaxErrors("file_path")
+        self.instance: exceptions.IntroducedSyntaxErrors = exceptions.IntroducedSyntaxErrors("file_path")
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -27,7 +27,7 @@ class TestIntroducedSyntaxErrors(TestISortError):
 
 class TestFileSkipped(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.FileSkipped("message", "file_path")
+        self.instance: exceptions.FileSkipped = exceptions.FileSkipped("message", "file_path")
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -36,7 +36,7 @@ class TestFileSkipped(TestISortError):
 
 class TestFileSkipComment(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.FileSkipComment("file_path")
+        self.instance: exceptions.FileSkipComment = exceptions.FileSkipComment("file_path")
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -44,7 +44,7 @@ class TestFileSkipComment(TestISortError):
 
 class TestFileSkipSetting(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.FileSkipSetting("file_path")
+        self.instance: exceptions.FileSkipSetting = exceptions.FileSkipSetting("file_path")
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -52,7 +52,7 @@ class TestFileSkipSetting(TestISortError):
 
 class TestProfileDoesNotExist(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.ProfileDoesNotExist("profile")
+        self.instance: exceptions.ProfileDoesNotExist = exceptions.ProfileDoesNotExist("profile")
 
     def test_variables(self):
         assert self.instance.profile == "profile"
@@ -60,7 +60,7 @@ class TestProfileDoesNotExist(TestISortError):
 
 class TestSortingFunctionDoesNotExist(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.SortingFunctionDoesNotExist("round", ["square", "peg"])
+        self.instance: exceptions.SortingFunctionDoesNotExist = exceptions.SortingFunctionDoesNotExist("round", ["square", "peg"])
 
     def test_variables(self):
         assert self.instance.sort_order == "round"
@@ -69,7 +69,7 @@ class TestSortingFunctionDoesNotExist(TestISortError):
 
 class TestLiteralParsingFailure(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.LiteralParsingFailure("x = [", SyntaxError)
+        self.instance: exceptions.LiteralParsingFailure = exceptions.LiteralParsingFailure("x = [", SyntaxError)
 
     def test_variables(self):
         assert self.instance.code == "x = ["
@@ -78,7 +78,7 @@ class TestLiteralParsingFailure(TestISortError):
 
 class TestLiteralSortTypeMismatch(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.LiteralSortTypeMismatch(tuple, list)
+        self.instance: exceptions.LiteralSortTypeMismatch = exceptions.LiteralSortTypeMismatch(tuple, list)
 
     def test_variables(self):
         assert self.instance.kind == tuple
@@ -87,7 +87,7 @@ class TestLiteralSortTypeMismatch(TestISortError):
 
 class TestAssignmentsFormatMismatch(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.AssignmentsFormatMismatch("print x")
+        self.instance: exceptions.AssignmentsFormatMismatch = exceptions.AssignmentsFormatMismatch("print x")
 
     def test_variables(self):
         assert self.instance.code == "print x"
@@ -95,7 +95,7 @@ class TestAssignmentsFormatMismatch(TestISortError):
 
 class TestUnsupportedSettings(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.UnsupportedSettings({"apply": {"value": "true", "source": "/"}})
+        self.instance: exceptions.UnsupportedSettings = exceptions.UnsupportedSettings({"apply": {"value": "true", "source": "/"}})
 
     def test_variables(self):
         assert self.instance.unsupported_settings == {"apply": {"value": "true", "source": "/"}}
@@ -103,7 +103,7 @@ class TestUnsupportedSettings(TestISortError):
 
 class TestUnsupportedEncoding(TestISortError):
     def setup_class(self):
-        self.instance = exceptions.UnsupportedEncoding("file.py")
+        self.instance: exceptions.UnsupportedEncoding = exceptions.UnsupportedEncoding("file.py")
 
     def test_variables(self):
         assert self.instance.filename == "file.py"

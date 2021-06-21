@@ -31,13 +31,13 @@ class TestFindersManager:
         assert FindersManager(settings.DEFAULT_CONFIG)
 
         class ExceptionOnInit(finders.BaseFinder):
-            def __init__(*args, **kwargs):
+            def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 raise ValueError("test")
 
         with patch(
             "isort.deprecated.finders.FindersManager._default_finders_classes",
-            FindersManager._default_finders_classes + (ExceptionOnInit,),
+            FindersManager._default_finders_classes + (ExceptionOnInit,),  # type: ignore
         ):
             assert FindersManager(settings.Config(verbose=True))
 
@@ -59,14 +59,14 @@ class AbstractTestFinder:
 
     @classmethod
     def setup_class(cls):
-        cls.instance = cls.kind(settings.DEFAULT_CONFIG)
+        cls.instance = cls.kind(settings.DEFAULT_CONFIG)  # type: ignore
 
     def test_create(self):
-        assert self.kind(settings.DEFAULT_CONFIG)
+        assert self.kind(settings.DEFAULT_CONFIG)  # type: ignore
 
     def test_find(self):
-        self.instance.find("isort")
-        self.instance.find("")
+        self.instance.find("isort")  # type: ignore
+        self.instance.find("")  # type: ignore
 
 
 class TestForcedSeparateFinder(AbstractTestFinder):
@@ -154,7 +154,7 @@ def test_requirements_finder(tmpdir) -> None:
         assert finder.find("flask") is None  # package not in reqs
         assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
-        assert len(finder.mapping) > 100
+        assert len(finder.mapping) > 100  # type: ignore
         assert finder._normalize_name("deal") == "deal"
         assert finder._normalize_name("Django") == "django"  # lowercase
         assert finder._normalize_name("django_haystack") == "haystack"  # mapping
@@ -174,7 +174,7 @@ def test_pipfile_finder(tmpdir) -> None:
     assert finder.find("flask") is None  # package not in reqs
     assert finder.find("deal") == sections.THIRDPARTY  # vcs
 
-    assert len(finder.mapping) > 100
+    assert len(finder.mapping) > 100  # type: ignore
     assert finder._normalize_name("deal") == "deal"
     assert finder._normalize_name("Django") == "django"  # lowercase
     assert finder._normalize_name("django_haystack") == "haystack"  # mapping

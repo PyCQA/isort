@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 poetry run cruft check
-poetry run mypy -p isort
+poetry run mypy -p isort -p tests
 poetry run black --target-version py36 --check .
 poetry run isort --profile hug --check --diff isort/ tests/
 poetry run isort --profile hug --check --diff example_*/

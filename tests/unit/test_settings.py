@@ -93,11 +93,11 @@ class TestConfig:
         assert Config(src_paths=src_paths * 2).src_paths == tuple(src_full_paths)
 
     def test_deprecated_multi_line_output(self):
-        assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
+        assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED  # type: ignore
 
 
 def test_as_list():
-    assert settings._as_list([" one "]) == ["one"]
+    assert settings._as_list([" one "]) == ["one"]  # type: ignore
     assert settings._as_list("one,two") == ["one", "two"]
 
 

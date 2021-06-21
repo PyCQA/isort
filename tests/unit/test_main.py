@@ -12,10 +12,14 @@ from isort import main
 from isort._version import __version__
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
-from isort.wrap_modes import WrapModes
 from .utils import as_stream
 from io import BytesIO, TextIOWrapper
+from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:
+    WrapModes: Any
+else:
+    from isort.wrap_modes import WrapModes
 
 @given(
     file_name=st.text(),
@@ -37,15 +41,15 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
 def test_sort_imports(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+    assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
     main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
-    assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+    assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
 
     skip_config = Config(skip=["file.py"])
-    assert main.sort_imports(
+    assert main.sort_imports(  # type: ignore
         str(tmp_file), config=skip_config, check=True, disregard_skip=False
-    ).skipped
-    assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped
+    ).skippedg
+    assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore
 
 
 def test_sort_imports_error_handling(tmpdir, mocker, capsys):
@@ -53,7 +57,7 @@ def test_sort_imports_error_handling(tmpdir, mocker, capsys):
     tmp_file.write("import os, sys\n")
     mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
     with pytest.raises(IndexError):
-        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted
+        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
 
     out, error = capsys.readouterr()
     assert "Unrecoverable exception thrown when parsing" in error
@@ -345,7 +349,7 @@ import b
 
 def test_isort_command():
     """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
-    assert main.ISortCommand
+    assert main.ISortCommand  # type: ignore
 
 
 def test_isort_filename_overrides(tmpdir, capsys):
@@ -1060,7 +1064,7 @@ def test_identify_imports_main(tmpdir, capsys):
     len(out.split("\n")) == 2
 
 
-def test_gitignore(capsys: pytest.CaptureFixture, tmpdir: py.path.local):
+def test_gitignore(capsys, tmpdir: py.path.local):
 
     import_content = """
 import b

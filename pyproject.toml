@@ -58,7 +58,7 @@ bandit = "^1.6"
 safety = "^1.8"
 flake8-bugbear = "^19.8"
 black = {version = "^20.08b1", allow-prereleases = true}
-mypy = "^0.901"
+mypy = "^0.902"
 ipython = "^7.7"
 pytest = "^6.0"
 pytest-cov = "^2.7"
@@ -116,3 +116,15 @@ palette = {scheme = "isort"}
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+python_version = 3.6
+strict = true
+follow_imports = "silent"
+exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+allow_untyped_defs = true
+allow_incomplete_defs = true
+allow_untyped_calls = true

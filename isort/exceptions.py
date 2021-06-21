@@ -1,6 +1,6 @@
 """All isort specific exception classes should be defined here"""
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Type, Union
 
 from .profiles import profiles
 
@@ -107,7 +107,7 @@ class LiteralParsingFailure(ISortError):
     the given data structure.
     """
 
-    def __init__(self, code: str, original_error: Exception):
+    def __init__(self, code: str, original_error: Union[Exception, Type[Exception]]):
         super().__init__(
             f"isort failed to parse the given literal {code}. It's important to note "
             "that isort literal sorting only supports simple literals parsable by "

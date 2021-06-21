@@ -9,17 +9,23 @@ import subprocess
 import sys
 from io import StringIO
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Iterator, List, Set, Tuple
+from typing import Any, Dict, Iterator, List, Set, Tuple,  TYPE_CHECKING
 
 import py
 import pytest
 import toml
 import isort
 from isort import api, sections, files
-from isort.settings import WrapModes, Config
+from isort.settings import Config
+
 from isort.utils import exists_case_sensitive
 from isort.exceptions import FileSkipped, ExistingSyntaxErrors
 from .utils import as_stream, UnreadableStream
+
+if TYPE_CHECKING:
+    WrapModes: Any
+else:
+    from isort.wrap_modes import WrapModes
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]
@@ -225,7 +231,10 @@ def test_line_length() -> None:
     )
     with pytest.raises(ValueError):
         test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
-    test_output = isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99) == test_input
+    assert isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99) == (
+"""from third_party import (lib1, lib2, lib3, lib4, lib5, lib6, lib7, lib8, lib9, lib10, lib11, lib12,
+                         lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22)
+""")
 
     # Test Case described in issue #1015
     test_output = isort.code(
@@ -1271,46 +1280,44 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 """
-    test_output = (
-        isort.code(code=test_input, force_sort_within_sections=True, length_sort=True) == test_input
-    )
+    assert isort.code(code=test_input, force_sort_within_sections=True, length_sort=True) == test_input
 
 
 def test_titled_imports() -> None:
     """Tests setting custom titled/commented import sections."""
-    # test_input = (
-    # "import sys\n"
-    # "import unicodedata\n"
-    # "import statistics\n"
-    # "import os\n"
-    # "import myproject.test\n"
-    # "import django.settings"
-    # )
-    # test_output = isort.code(
-    # code=test_input,
-    # known_first_party=["myproject"],
-    # import_heading_stdlib="Standard Library",
-    # import_heading_firstparty="My Stuff",
-    # )
-    # assert test_output == (
-    # "# Standard Library\n"
-    # "import os\n"
-    # "import statistics\n"
-    # "import sys\n"
-    # "import unicodedata\n"
-    # "\n"
-    # "import django.settings\n"
-    # "\n"
-    # "# My Stuff\n"
-    # "import myproject.test\n"
-    # )
-    # test_second_run = isort.code(
-    # code=test_output,
-    # known_first_party=["myproject"],
-    # import_heading_stdlib="Standard Library",
-    # import_heading_firstparty="My Stuff",
-    # )
-    # assert test_second_run == test_output
+    test_input = (
+    "import sys\n"
+    "import unicodedata\n"
+    "import statistics\n"
+    "import os\n"
+    "import myproject.test\n"
+    "import django.settings"
+    )
+    test_output = isort.code(
+    code=test_input,
+    known_first_party=["myproject"],
+    import_heading_stdlib="Standard Library",
+    import_heading_firstparty="My Stuff",
+    )
+    assert test_output == (
+    "# Standard Library\n"
+    "import os\n"
+    "import statistics\n"
+    "import sys\n"
+    "import unicodedata\n"
+    "\n"
+    "import django.settings\n"
+    "\n"
+    "# My Stuff\n"
+    "import myproject.test\n"
+    )
+    test_second_run = isort.code(
+    code=test_output,
+    known_first_party=["myproject"],
+    import_heading_stdlib="Standard Library",
+    import_heading_firstparty="My Stuff",
+    )
+    assert test_second_run == test_output
 
     test_input_lines_down = (
         "# comment 1\n"
@@ -1420,9 +1427,9 @@ while True print 'Hello world'
     )
 
     # ensure atomic works with streams
-    test_input = as_stream("from b import d, c\nfrom a import f, e\n")
+    test_stream_input = as_stream("from b import d, c\nfrom a import f, e\n")
     test_output = UnreadableStream()
-    isort.stream(test_input, test_output, atomic=True)
+    isort.stream(test_stream_input, test_output, atomic=True)
     test_output.seek(0)
     assert test_output.read() == "from a import e, f\nfrom b import c, d\n"
 

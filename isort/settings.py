@@ -15,6 +15,7 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -32,7 +33,6 @@ from warnings import warn
 
 from . import sorting, stdlibs
 from ._future import dataclass, field
-from ._vendored import toml  # type: ignore
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
@@ -45,6 +45,11 @@ from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
+
+if TYPE_CHECKING:
+    toml: Any
+else:
+    from ._vendored import toml
 
 _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
