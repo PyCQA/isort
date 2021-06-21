@@ -30,13 +30,14 @@ from typing import (
 )
 from warnings import warn
 
-from . import stdlibs
+from . import sorting, stdlibs
 from ._future import dataclass, field
 from ._vendored import toml  # type: ignore
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
     ProfileDoesNotExist,
+    SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
 from .profiles import profiles
@@ -232,7 +233,7 @@ class _Config:
     git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
-    sort_order: str = "default"
+    sort_order: str = "natural"
 
     def __post_init__(self) -> None:
         py_version = self.py_version
@@ -294,6 +295,7 @@ class Config(_Config):
         self._section_comments: Optional[Tuple[str, ...]] = None
         self._skips: Optional[FrozenSet[str]] = None
         self._skip_globs: Optional[FrozenSet[str]] = None
+        self._sorting_function: Optional[Callable[..., List[str]]] = None
 
         if config:
             config_vars = vars(config).copy()
@@ -303,6 +305,7 @@ class Config(_Config):
             config_vars.pop("_section_comments")
             config_vars.pop("_skips")
             config_vars.pop("_skip_globs")
+            config_vars.pop("_sorting_function")
             super().__init__(**config_vars)  # type: ignore
             return
 
@@ -650,6 +653,29 @@ class Config(_Config):
 
         self._skip_globs = self.skip_glob.union(self.extend_skip_glob)
         return self._skip_globs
+
+    @property
+    def sorting_function(self) -> Callable[..., List[str]]:
+        if self._sorting_function is not None:
+            return self._sorting_function
+
+        if self.sort_order == "natural":
+            self._sorting_function = sorting.naturally
+        elif self.sort_order == "native":
+            self._sorting_function = sorted
+        else:
+            available_sort_orders = ["natural", "native"]
+            import pkg_resources
+
+            for sort_plugin in pkg_resources.iter_entry_points("isort.sort_function"):
+                available_sort_orders.append(sort_plugin.name)
+                if sort_plugin.name == self.sort_order:
+                    self._sorting_function = sort_plugin.load()
+                    break
+            else:
+                raise SortingFunctionDoesNotExist(self.sort_order, available_sort_orders)
+
+        return self._sorting_function
 
     def _parse_known_pattern(self, pattern: str) -> List[str]:
         """Expand pattern if identified as a directory and return found sub packages"""

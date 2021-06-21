@@ -58,6 +58,15 @@ class TestProfileDoesNotExist(TestISortError):
         assert self.instance.profile == "profile"
 
 
+class TestSortingFunctionDoesNotExist(TestISortError):
+    def setup_class(self):
+        self.instance = exceptions.SortingFunctionDoesNotExist("round", ["square", "peg"])
+
+    def test_variables(self):
+        assert self.instance.sort_order == "round"
+        assert self.instance.available_sort_orders == ["square", "peg"]
+
+
 class TestLiteralParsingFailure(TestISortError):
     def setup_class(self):
         self.instance = exceptions.LiteralParsingFailure("x = [", SyntaxError)

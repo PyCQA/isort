@@ -585,8 +585,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--sort-order",
         dest="sort_order",
-        choices=["default", "pythonic"],
-        help="Use natural language or pythonic sorting.",
+        help="Specify sorting function. Can be built in (natural[default] = force numbers "
+        "to be sequential, native = Python's built-in sorted function) or an installable plugin.",
     )
     inline_args_group.add_argument(
         "--sl",

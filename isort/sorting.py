@@ -1,7 +1,10 @@
 import re
-from typing import Any, Callable, Iterable, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional
 
-from .settings import Config
+if TYPE_CHECKING:
+    from .settings import Config
+else:
+    Config = Any
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
@@ -102,10 +105,7 @@ def sort(
     key: Optional[Callable[[str], Any]] = None,
     reverse: bool = False,
 ) -> List[str]:
-    sorting_func: Callable[..., List[str]] = naturally
-    if config.sort_order == "pythonic":
-        sorting_func = sorted
-    return sorting_func(to_sort, key=key, reverse=reverse)
+    return config.sorting_function(to_sort, key=key, reverse=reverse)
 
 
 def naturally(

@@ -1,6 +1,6 @@
 """All isort specific exception classes should be defined here"""
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 from .profiles import profiles
 
@@ -80,6 +80,18 @@ class ProfileDoesNotExist(ISortError):
             f"Available profiles: {','.join(profiles)}."
         )
         self.profile = profile
+
+
+class SortingFunctionDoesNotExist(ISortError):
+    """Raised when the specified sorting function isn't available"""
+
+    def __init__(self, sort_order: str, available_sort_orders: List[str]):
+        super().__init__(
+            f"Specified sort_order of {sort_order} does not exist. "
+            f"Available sort_orders: {','.join(available_sort_orders)}."
+        )
+        self.sort_order = sort_order
+        self.available_sort_orders = available_sort_orders
 
 
 class FormattingPluginDoesNotExist(ISortError):

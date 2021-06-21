@@ -9,6 +9,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1705: More intuitive handling of isort:skip_file comments on streams.
   - Implemented #1737: Support for using action comments to avoid adding imports to individual files.
   - Implemented #1750: Ability to customize output format lines.
+  - Implemented #1732: Support for custom sort functions.
   - Fixed (https://github.com/PyCQA/isort/pull/1695): added imports being added to doc string in some cases.
   - Fixed (https://github.com/PyCQA/isort/pull/1714): in rare cases line continuation combined with tabs can output invalid code.
   - Fixed (https://github.com/PyCQA/isort/pull/1726): isort ignores reverse_sort when force_sort_within_sections is true.

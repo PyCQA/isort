@@ -1179,3 +1179,45 @@ from __future__ import absolute_imports
 import os
 """
     )
+
+
+def test_sort_configurable_sort_issue_1732() -> None:
+    """Test support for pluggable isort sort functions."""
+    test_input = (
+        "from bob2.apples2 import aardvark as aardvark2\n"
+        "from bob.apples import aardvark \n"
+        "import module9\n"
+        "import module10\n"
+        "import module200\n"
+    )
+    assert isort.code(test_input, sort_order="native") == (
+        "import module10\n"
+        "import module200\n"
+        "import module9\n"
+        "from bob.apples import aardvark\n"
+        "from bob2.apples2 import aardvark as aardvark2\n"
+    )
+    assert (
+        isort.code(test_input, sort_order="natural")
+        == isort.code(test_input)
+        == (
+            "import module9\n"
+            "import module10\n"
+            "import module200\n"
+            "from bob2.apples2 import aardvark as aardvark2\n"
+            "from bob.apples import aardvark\n"
+        )
+    )
+    assert (
+        isort.code(test_input, sort_order="natural_plus")
+        == isort.code(test_input)
+        == (
+            "import module9\n"
+            "import module10\n"
+            "import module200\n"
+            "from bob2.apples2 import aardvark as aardvark2\n"
+            "from bob.apples import aardvark\n"
+        )
+    )
+    with pytest.raises(exceptions.SortingFunctionDoesNotExist):
+        isort.code(test_input, sort_order="round")
