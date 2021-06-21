@@ -98,7 +98,7 @@ isort = "isort.main:main"
 isort-identify-imports = "isort.main:identify_imports_main"
 
 [tool.poetry.plugins."distutils.commands"]
-isort = "isort.main:ISortCommand"
+isort = "isort.setuptools_commands:ISortCommand"
 
 [tool.poetry.plugins."pylama.linter"]
 isort = "isort.pylama_isort:Linter"

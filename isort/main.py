@@ -18,11 +18,6 @@ from .profiles import profiles
 from .settings import VALID_PY_TARGETS, Config
 from .wrap_modes import WrapModes
 
-try:
-    from .setuptools_commands import ISortCommand  # noqa: F401
-except ImportError:
-    pass
-
 DEPRECATED_SINGLE_DASH_ARGS = {
     "-ac",
     "-af",
