@@ -7,7 +7,6 @@ from warnings import warn
 
 from . import place
 from .comments import parse as parse_comments
-from .deprecated.finders import FindersManager
 from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
@@ -151,6 +150,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     out_lines = []
     original_line_count = len(in_lines)
     if config.old_finders:
+        from .deprecated.finders import FindersManager
+
         finder = FindersManager(config=config).find
     else:
         finder = partial(place.module, config=config)
