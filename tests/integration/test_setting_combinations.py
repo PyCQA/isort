@@ -56,6 +56,7 @@ def configs() -> st.SearchStrategy[isort.Config]:
         "default_section": st.sampled_from(sorted(isort.settings.KNOWN_SECTION_MAPPING)),
         "force_grid_wrap": st.integers(0, 20),
         "profile": st.sampled_from(sorted(isort.settings.profiles)),
+        "sort_order": st.sampled_from(sorted(("native", "natural", "natural_plus"))),
         "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
     }
     kwargs = {**inferred_kwargs, **specific}
