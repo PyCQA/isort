@@ -1063,13 +1063,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sorting-order" class="md-nav__link">
-    Sorting Order
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#reverse-sort" class="md-nav__link">
     Reverse Sort
   </a>
@@ -1086,6 +1079,27 @@
         <li class="md-nav__item">
   <a href="#git-ignore" class="md-nav__link">
     Git Ignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-error" class="md-nav__link">
+    Format Error
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-success" class="md-nav__link">
+    Format Success
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort-order" class="md-nav__link">
+    Sort Order
   </a>
   
 </li>
@@ -1218,20 +1232,6 @@
         <li class="md-nav__item">
   <a href="#ext-format" class="md-nav__link">
     Ext Format
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#format-errors" class="md-nav__link">
-    Format Errors
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#format-success" class="md-nav__link">
-    Format Success
   </a>
   
 </li>
@@ -2852,13 +2852,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sorting-order" class="md-nav__link">
-    Sorting Order
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#reverse-sort" class="md-nav__link">
     Reverse Sort
   </a>
@@ -2875,6 +2868,27 @@
         <li class="md-nav__item">
   <a href="#git-ignore" class="md-nav__link">
     Git Ignore
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-error" class="md-nav__link">
+    Format Error
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-success" class="md-nav__link">
+    Format Success
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort-order" class="md-nav__link">
+    Sort Order
   </a>
   
 </li>
@@ -3012,20 +3026,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#format-errors" class="md-nav__link">
-    Format Errors
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#format-success" class="md-nav__link">
-    Format Success
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#deprecated-flags" class="md-nav__link">
     Deprecated Flags
   </a>
@@ -3053,7 +3053,7 @@
 <p>As a code formatter isort has opinions. However, it also allows you to have your own. If your opinions disagree with those of isort,
 isort will disagree but commit to your way of formatting. To enable this, isort exposes a plethora of options to specify
 how you want your imports sorted, organized, and formatted.</p>
-<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles.html">built-in
+<p>Too busy to build your perfect isort configuration? For curated common configurations, see isort's <a href="https://pycqa.github.io/isort/docs/configuration/profiles/">built-in
 profiles</a>.</p>
 <h2 id="python-version">Python Version</h2>
 <p>Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 38) will be used.</p>
@@ -3905,15 +3905,6 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <ul>
 <li>--overwrite-in-place</li>
 </ul>
-<h2 id="sorting-order">Sorting Order</h2>
-<p>Use natural language or pythonic sorting. Valid values "default"=natural "pythonic"=python default sorting.</p>
-<p><strong>Type:</strong> String
-<strong>Default:</strong> <code>default</code>
-<strong>Python &amp; Config File Name:</strong> sort_order
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>--sort-order</li>
-</ul>
 <h2 id="reverse-sort">Reverse Sort</h2>
 <p>Reverses the ordering of imports.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -3938,6 +3929,33 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> git_ignore<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
+<h2 id="format-error">Format Error</h2>
+<p>Override the format used to print errors.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>{error}: {message}</code><br />
+<strong>Python &amp; Config File Name:</strong> format_error<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--format-error</li>
+</ul>
+<h2 id="format-success">Format Success</h2>
+<p>Override the format used to print success.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>{success}: {message}</code><br />
+<strong>Python &amp; Config File Name:</strong> format_success<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--format-success</li>
+</ul>
+<h2 id="sort-order">Sort Order</h2>
+<p>Specify sorting function. Can be built in (natural[default] = force numbers to be sequential, native = Python's built-in sorted function) or an installable plugin.</p>
+<p><strong>Type:</strong> String<br />
+<strong>Default:</strong> <code>natural</code><br />
+<strong>Python &amp; Config File Name:</strong> sort_order<br />
+<strong>CLI Flags:</strong></p>
+<ul>
+<li>--sort-order</li>
+</ul>
 <h2 id="show-version">Show Version</h2>
 <p>Displays the currently installed version of isort.</p>
 <p><strong>Type:</strong> Bool<br />
@@ -4106,28 +4124,6 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>CLI Flags:</strong></p>
 <ul>
 <li>--ext-format</li>
-</ul>
-<h2 id="format-errors">Format Errors</h2>
-<p>Define the format used to print errors.</p>
-<p><strong>NOTE</strong> Variables are <code>error</code> and <code>message</code>.
-The <code>error</code> variable prints <code>ERROR</code> with color depending on the --color option.</p>
-<p><strong>Type:</strong> String<br />
-<strong>Default:</strong> <code>{error}: {message}</code><br />
-<strong>Python &amp; Config File Name:</strong> format_errors
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>--format-errors</li>
-</ul>
-<h2 id="format-success">Format Success</h2>
-<p>Define the format used to print successes.</p>
-<p><strong>NOTE</strong> Variables are <code>success</code> and <code>message</code>.
-The <code>success</code> variable prints <code>SUCCESS</code> with color depending on the --color option.</p>
-<p><strong>Type:</strong> String<br />
-<strong>Default:</strong> <code>{success}: {message}</code><br />
-<strong>Python &amp; Config File Name:</strong> format_success
-<strong>CLI Flags:</strong></p>
-<ul>
-<li>--format-success</li>
 </ul>
 <h2 id="deprecated-flags">Deprecated Flags</h2>
 <p>==SUPPRESS==</p>

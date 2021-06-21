@@ -1506,6 +1506,8 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">typing</span> <span class="nf">import</span> <span class="p">(</span>
 
+    <span class="nv">TYPE_CHECKING</span><span class="p">,</span>
+
     <span class="nv">Any</span><span class="p">,</span>
 
     <span class="nv">Callable</span><span class="p">,</span>
@@ -1534,11 +1536,9 @@
 
 <span class="s s-Atom">from</span> <span class="s s-Atom">warnings</span> <span class="s s-Atom">import</span> <span class="s s-Atom">warn</span>
 
-<span class="s s-Atom">from</span> <span class="p">.</span> <span class="s s-Atom">import</span> <span class="s s-Atom">stdlibs</span>
+<span class="s s-Atom">from</span> <span class="p">.</span> <span class="s s-Atom">import</span> <span class="s s-Atom">sorting</span><span class="p">,</span> <span class="s s-Atom">stdlibs</span>
 
 <span class="s s-Atom">from</span> <span class="p">.</span><span class="k">_</span><span class="s s-Atom">future</span> <span class="s s-Atom">import</span> <span class="s s-Atom">dataclass</span><span class="p">,</span> <span class="s s-Atom">field</span>
-
-<span class="s s-Atom">from</span> <span class="p">.</span><span class="k">_</span><span class="s s-Atom">vendored</span> <span class="s s-Atom">import</span> <span class="s s-Atom">toml</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="s s-Atom">ignore</span>
 
 <span class="s s-Atom">from</span> <span class="p">.</span><span class="s s-Atom">exceptions</span> <span class="nf">import</span> <span class="p">(</span>
 
@@ -1547,6 +1547,8 @@
     <span class="nv">InvalidSettingsPath</span><span class="p">,</span>
 
     <span class="nv">ProfileDoesNotExist</span><span class="p">,</span>
+
+    <span class="nv">SortingFunctionDoesNotExist</span><span class="p">,</span>
 
     <span class="nv">UnsupportedSettings</span><span class="p">,</span>
 
@@ -1562,9 +1564,19 @@
 
 <span class="s s-Atom">from</span> <span class="p">.</span><span class="s s-Atom">wrap_modes</span> <span class="s s-Atom">import</span> <span class="s s-Atom">from_string</span> <span class="s s-Atom">as</span> <span class="s s-Atom">wrap_mode_from_string</span>
 
+<span class="s s-Atom">if</span> <span class="nv">TYPE_CHECKING</span><span class="s s-Atom">:</span>
+
+    <span class="nn">toml</span><span class="p">:</span> <span class="nv">Any</span>
+
+<span class="nn">else</span><span class="p">:</span>
+
+    <span class="s s-Atom">from</span> <span class="p">.</span><span class="k">_</span><span class="s s-Atom">vendored</span> <span class="s s-Atom">import</span> <span class="s s-Atom">toml</span>
+
 <span class="k">_</span><span class="nv">SHEBANG_RE</span> <span class="o">=</span> <span class="s s-Atom">re</span><span class="p">.</span><span class="nf">compile</span><span class="p">(</span><span class="s s-Atom">br</span><span class="s2">&quot;^#!.*\bpython[23w]?\b&quot;</span><span class="p">)</span>
 
-<span class="nv">SUPPORTED_EXTENSIONS</span> <span class="o">=</span> <span class="nf">frozenset</span><span class="p">({</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pyi&quot;</span><span class="p">,</span> <span class="s2">&quot;pyx&quot;</span><span class="p">,</span> <span class="s2">&quot;pxd&quot;</span><span class="p">})</span>
+<span class="nv">CYTHON_EXTENSIONS</span> <span class="o">=</span> <span class="nf">frozenset</span><span class="p">({</span><span class="s2">&quot;pyx&quot;</span><span class="p">,</span> <span class="s2">&quot;pxd&quot;</span><span class="p">})</span>
+
+<span class="nv">SUPPORTED_EXTENSIONS</span> <span class="o">=</span> <span class="nf">frozenset</span><span class="p">({</span><span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pyi&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nv">CYTHON_EXTENSIONS</span><span class="p">})</span>
 
 <span class="nv">BLOCKED_EXTENSIONS</span> <span class="o">=</span> <span class="nf">frozenset</span><span class="p">({</span><span class="s2">&quot;pex&quot;</span><span class="p">})</span>
 
@@ -1918,7 +1930,7 @@
 
     <span class="s s-Atom">format_success:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;{success}: {message}&quot;</span>
 
-    <span class="s s-Atom">sort_order:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+    <span class="s s-Atom">sort_order:</span> <span class="s s-Atom">str</span> <span class="o">=</span> <span class="s2">&quot;natural&quot;</span>
 
     <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">post_init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span> <span class="s s-Atom">-&gt;</span> <span class="nv">None</span><span class="s s-Atom">:</span>
 
@@ -2022,6 +2034,8 @@
 
         <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">skip_globs:</span> <span class="nv">Optional</span><span class="p">[</span><span class="nv">FrozenSet</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">None</span>
 
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">sorting_function:</span> <span class="nv">Optional</span><span class="p">[</span><span class="nv">Callable</span><span class="p">[...,</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="nv">None</span>
+
         <span class="s s-Atom">if</span> <span class="nn">config</span><span class="p">:</span>
 
             <span class="s s-Atom">config_vars</span> <span class="o">=</span> <span class="nf">vars</span><span class="p">(</span><span class="s s-Atom">config</span><span class="p">).</span><span class="nf">copy</span><span class="p">()</span>
@@ -2037,6 +2051,8 @@
             <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_skips&quot;</span><span class="p">)</span>
 
             <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_skip_globs&quot;</span><span class="p">)</span>
+
+            <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_sorting_function&quot;</span><span class="p">)</span>
 
             <span class="nf">super</span><span class="p">().</span><span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">**config_vars</span><span class="p">)</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="s s-Atom">ignore</span>
 
@@ -2621,6 +2637,44 @@
 <span class="s2">        self._skip_globs = self.skip_glob.union(self.extend_skip_glob)</span>
 
 <span class="s2">        return self._skip_globs</span>
+
+<span class="s2">    @property</span>
+
+<span class="s2">    def sorting_function(self) -&gt; Callable[..., List[str]]:</span>
+
+<span class="s2">        if self._sorting_function is not None:</span>
+
+<span class="s2">            return self._sorting_function</span>
+
+<span class="s2">        if self.sort_order == &quot;</span><span class="s s-Atom">natural</span><span class="s2">&quot;:</span>
+
+<span class="s2">            self._sorting_function = sorting.naturally</span>
+
+<span class="s2">        elif self.sort_order == &quot;</span><span class="s s-Atom">native</span><span class="s2">&quot;:</span>
+
+<span class="s2">            self._sorting_function = sorted</span>
+
+<span class="s2">        else:</span>
+
+<span class="s2">            available_sort_orders = [&quot;</span><span class="s s-Atom">natural</span><span class="s2">&quot;, &quot;</span><span class="s s-Atom">native</span><span class="s2">&quot;]</span>
+
+<span class="s2">            import pkg_resources</span>
+
+<span class="s2">            for sort_plugin in pkg_resources.iter_entry_points(&quot;</span><span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">sort_function</span><span class="s2">&quot;):</span>
+
+<span class="s2">                available_sort_orders.append(sort_plugin.name)</span>
+
+<span class="s2">                if sort_plugin.name == self.sort_order:</span>
+
+<span class="s2">                    self._sorting_function = sort_plugin.load()</span>
+
+<span class="s2">                    break</span>
+
+<span class="s2">            else:</span>
+
+<span class="s2">                raise SortingFunctionDoesNotExist(self.sort_order, available_sort_orders)</span>
+
+<span class="s2">        return self._sorting_function</span>
 
 <span class="s2">    def _parse_known_pattern(self, pattern: str) -&gt; List[str]:</span>
 
@@ -2934,6 +2988,9 @@
 <div class="codehilite"><pre><span></span><code><span class="n">CONFIG_SOURCES</span>
 </code></pre></div>
 
+<div class="codehilite"><pre><span></span><code><span class="n">CYTHON_EXTENSIONS</span>
+</code></pre></div>
+
 <div class="codehilite"><pre><span></span><code><span class="n">DEFAULT_CONFIG</span>
 </code></pre></div>
 
@@ -2988,6 +3045,9 @@
 <div class="codehilite"><pre><span></span><code><span class="n">THIRDPARTY</span>
 </code></pre></div>
 
+<div class="codehilite"><pre><span></span><code><span class="n">TYPE_CHECKING</span>
+</code></pre></div>
+
 <div class="codehilite"><pre><span></span><code><span class="n">VALID_PY_TARGETS</span>
 </code></pre></div>
 
@@ -3028,6 +3088,8 @@
 
         <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">skip_globs:</span> <span class="nv">Optional</span><span class="p">[</span><span class="nv">FrozenSet</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">None</span>
 
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">sorting_function:</span> <span class="nv">Optional</span><span class="p">[</span><span class="nv">Callable</span><span class="p">[...,</span> <span class="nv">List</span><span class="p">[</span><span class="s s-Atom">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="nv">None</span>
+
         <span class="s s-Atom">if</span> <span class="nn">config</span><span class="p">:</span>
 
             <span class="s s-Atom">config_vars</span> <span class="o">=</span> <span class="nf">vars</span><span class="p">(</span><span class="s s-Atom">config</span><span class="p">).</span><span class="nf">copy</span><span class="p">()</span>
@@ -3043,6 +3105,8 @@
             <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_skips&quot;</span><span class="p">)</span>
 
             <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_skip_globs&quot;</span><span class="p">)</span>
+
+            <span class="s s-Atom">config_vars</span><span class="p">.</span><span class="nf">pop</span><span class="p">(</span><span class="s2">&quot;_sorting_function&quot;</span><span class="p">)</span>
 
             <span class="nf">super</span><span class="p">().</span><span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">**config_vars</span><span class="p">)</span>  <span class="s s-Atom">#</span> <span class="nn">type</span><span class="p">:</span> <span class="s s-Atom">ignore</span>
 
@@ -3627,6 +3691,44 @@
 <span class="s2">        self._skip_globs = self.skip_glob.union(self.extend_skip_glob)</span>
 
 <span class="s2">        return self._skip_globs</span>
+
+<span class="s2">    @property</span>
+
+<span class="s2">    def sorting_function(self) -&gt; Callable[..., List[str]]:</span>
+
+<span class="s2">        if self._sorting_function is not None:</span>
+
+<span class="s2">            return self._sorting_function</span>
+
+<span class="s2">        if self.sort_order == &quot;</span><span class="s s-Atom">natural</span><span class="s2">&quot;:</span>
+
+<span class="s2">            self._sorting_function = sorting.naturally</span>
+
+<span class="s2">        elif self.sort_order == &quot;</span><span class="s s-Atom">native</span><span class="s2">&quot;:</span>
+
+<span class="s2">            self._sorting_function = sorted</span>
+
+<span class="s2">        else:</span>
+
+<span class="s2">            available_sort_orders = [&quot;</span><span class="s s-Atom">natural</span><span class="s2">&quot;, &quot;</span><span class="s s-Atom">native</span><span class="s2">&quot;]</span>
+
+<span class="s2">            import pkg_resources</span>
+
+<span class="s2">            for sort_plugin in pkg_resources.iter_entry_points(&quot;</span><span class="s s-Atom">isort</span><span class="p">.</span><span class="s s-Atom">sort_function</span><span class="s2">&quot;):</span>
+
+<span class="s2">                available_sort_orders.append(sort_plugin.name)</span>
+
+<span class="s2">                if sort_plugin.name == self.sort_order:</span>
+
+<span class="s2">                    self._sorting_function = sort_plugin.load()</span>
+
+<span class="s2">                    break</span>
+
+<span class="s2">            else:</span>
+
+<span class="s2">                raise SortingFunctionDoesNotExist(self.sort_order, available_sort_orders)</span>
+
+<span class="s2">        return self._sorting_function</span>
 
 <span class="s2">    def _parse_known_pattern(self, pattern: str) -&gt; List[str]:</span>
 
@@ -3957,6 +4059,9 @@
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="n">skips</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">sorting_function</span>
 </code></pre></div>
 
 <h4 id="methods">Methods</h4>

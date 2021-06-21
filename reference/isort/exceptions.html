@@ -1372,11 +1372,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedencoding" class="md-nav__link">
-    UnsupportedEncoding
+  <a href="#sortingfunctiondoesnotexist" class="md-nav__link">
+    SortingFunctionDoesNotExist
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedEncoding">
+    <nav class="md-nav" aria-label="SortingFunctionDoesNotExist">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1413,11 +1413,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedsettings" class="md-nav__link">
-    UnsupportedSettings
+  <a href="#unsupportedencoding" class="md-nav__link">
+    UnsupportedEncoding
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedSettings">
+    <nav class="md-nav" aria-label="UnsupportedEncoding">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1443,6 +1443,47 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_14" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupportedsettings" class="md-nav__link">
+    UnsupportedSettings
+  </a>
+  
+    <nav class="md-nav" aria-label="UnsupportedSettings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_15" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_15" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_15" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_15" class="md-nav__link">
     with_traceback
   </a>
   
@@ -2516,11 +2557,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedencoding" class="md-nav__link">
-    UnsupportedEncoding
+  <a href="#sortingfunctiondoesnotexist" class="md-nav__link">
+    SortingFunctionDoesNotExist
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedEncoding">
+    <nav class="md-nav" aria-label="SortingFunctionDoesNotExist">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2557,11 +2598,11 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unsupportedsettings" class="md-nav__link">
-    UnsupportedSettings
+  <a href="#unsupportedencoding" class="md-nav__link">
+    UnsupportedEncoding
   </a>
   
-    <nav class="md-nav" aria-label="UnsupportedSettings">
+    <nav class="md-nav" aria-label="UnsupportedEncoding">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2587,6 +2628,47 @@
         
           <li class="md-nav__item">
   <a href="#with_traceback_14" class="md-nav__link">
+    with_traceback
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupportedsettings" class="md-nav__link">
+    UnsupportedSettings
+  </a>
+  
+    <nav class="md-nav" aria-label="UnsupportedSettings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancestors-in-mro_15" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-variables_15" class="md-nav__link">
+    Class variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_15" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with_traceback_15" class="md-nav__link">
     with_traceback
   </a>
   
@@ -2626,7 +2708,7 @@
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.profiles</span> <span class="kn">import</span> <span class="n">profiles</span>
 
@@ -2738,6 +2820,24 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
 
+<span class="k">class</span> <span class="nc">SortingFunctionDoesNotExist</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Raised when the specified sorting function isn&#39;t available&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">available_sort_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+
+            <span class="sa">f</span><span class="s2">&quot;Specified sort_order of </span><span class="si">{</span><span class="n">sort_order</span><span class="si">}</span><span class="s2"> does not exist. &quot;</span>
+
+            <span class="sa">f</span><span class="s2">&quot;Available sort_orders: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">available_sort_orders</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_order</span> <span class="o">=</span> <span class="n">sort_order</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_sort_orders</span> <span class="o">=</span> <span class="n">available_sort_orders</span>
+
 <span class="k">class</span> <span class="nc">FormattingPluginDoesNotExist</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Raised when a formatting plugin is set by the user that doesn&#39;t exist&quot;&quot;&quot;</span>
@@ -2756,7 +2856,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_error</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_error</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
 
@@ -3192,6 +3292,7 @@
 <li>isort.exceptions.IntroducedSyntaxErrors</li>
 <li>isort.exceptions.FileSkipped</li>
 <li>isort.exceptions.ProfileDoesNotExist</li>
+<li>isort.exceptions.SortingFunctionDoesNotExist</li>
 <li>isort.exceptions.FormattingPluginDoesNotExist</li>
 <li>isort.exceptions.LiteralParsingFailure</li>
 <li>isort.exceptions.LiteralSortTypeMismatch</li>
@@ -3306,33 +3407,33 @@
 <h3 id="literalparsingfailure">LiteralParsingFailure</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">LiteralParsingFailure</span><span class="p">(</span>
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">original_error</span><span class="p">:</span> <span class="ne">Exception</span>
+    <span class="n">original_error</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]</span>
 <span class="p">)</span>
 </code></pre></div>
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">LiteralParsingFailure</span>(<span class="n">ISortError</span>):
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">LiteralParsingFailure</span><span class="p">(</span><span class="n">ISortError</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-    <span class="s">&quot;&quot;&quot;Raised when one of isorts literal sorting comments is used but isort can&#39;t parse the</span>
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Raised when one of isorts literal sorting comments is used but isort can&#39;t parse the</span>
 
-<span class="s">    the given data structure.</span>
+<span class="ss">    the given data structure.</span>
 
-<span class="s">    &quot;&quot;&quot;</span>
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
 
-    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">code:</span> <span class="n">str</span>, <span class="n">original_error:</span> <span class="nb">Exception</span>):
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">code</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">original_error</span><span class="p">:</span><span class="w"> </span><span class="ow">Union</span><span class="o">[</span><span class="n">Exception, Type[Exception</span><span class="o">]</span><span class="err">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-        <span class="n">super</span>().<span class="n">__init__</span>(
+<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="w"></span>
 
-            <span class="nb">f</span><span class="s">&quot;isort failed to parse the given literal {code}. It&#39;s important to note &quot;</span>
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;isort failed to parse the given literal {code}. It&#39;s important to note &quot;</span><span class="w"></span>
 
-            <span class="s">&quot;that isort literal sorting only supports simple literals parsable by &quot;</span>
+<span class="w">            </span><span class="ss">&quot;that isort literal sorting only supports simple literals parsable by &quot;</span><span class="w"></span>
 
-            <span class="nb">f</span><span class="s">&quot;ast.literal_eval which gave the exception of {original_error}.&quot;</span>
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;ast.literal_eval which gave the exception of {original_error}.&quot;</span><span class="w"></span>
 
-        )
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
 
-        <span class="nb">self</span>.<span class="nb">code</span> = <span class="nb">code</span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">code</span><span class="w"></span>
 
-        <span class="nb">self</span>.<span class="n">original_error</span> = <span class="n">original_error</span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">original_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">original_error</span><span class="w"></span>
 </code></pre></div>
 
 </details>
@@ -3498,6 +3599,53 @@
 
 <p>Exception.with_traceback(tb) --</p>
 <p>set self.<strong>traceback</strong> to tb and return self.</p>
+<h3 id="sortingfunctiondoesnotexist">SortingFunctionDoesNotExist</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SortingFunctionDoesNotExist</span><span class="p">(</span>
+    <span class="n">sort_order</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">available_sort_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">SortingFunctionDoesNotExist</span><span class="p">(</span><span class="n">ISortError</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;Raised when the specified sorting function isn&#39;t available&quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">sort_order</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">,</span><span class="w"> </span><span class="nl">available_sort_orders</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">(</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;Specified sort_order of {sort_order} does not exist. &quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">f</span><span class="ss">&quot;Available sort_orders: {&#39;,&#39;.join(available_sort_orders)}.&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">sort_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sort_order</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">available_sort_orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">available_sort_orders</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+<hr />
+<h4 id="ancestors-in-mro_13">Ancestors (in MRO)</h4>
+<ul>
+<li>isort.exceptions.ISortError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h4 id="class-variables_13">Class variables</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">args</span>
+</code></pre></div>
+
+<h4 id="methods_13">Methods</h4>
+<h4 id="with_traceback_13">with_traceback</h4>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Exception.with_traceback(tb) --</p>
+<p>set self.<strong>traceback</strong> to tb and return self.</p>
 <h3 id="unsupportedencoding">UnsupportedEncoding</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">UnsupportedEncoding</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span>
@@ -3517,18 +3665,18 @@
 
 </details>
 <hr />
-<h4 id="ancestors-in-mro_13">Ancestors (in MRO)</h4>
+<h4 id="ancestors-in-mro_14">Ancestors (in MRO)</h4>
 <ul>
 <li>isort.exceptions.ISortError</li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
-<h4 id="class-variables_13">Class variables</h4>
+<h4 id="class-variables_14">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">args</span>
 </code></pre></div>
 
-<h4 id="methods_13">Methods</h4>
-<h4 id="with_traceback_13">with_traceback</h4>
+<h4 id="methods_14">Methods</h4>
+<h4 id="with_traceback_14">with_traceback</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
     <span class="o">...</span>
 <span class="p">)</span>
@@ -3581,18 +3729,18 @@
 
 </details>
 <hr />
-<h4 id="ancestors-in-mro_14">Ancestors (in MRO)</h4>
+<h4 id="ancestors-in-mro_15">Ancestors (in MRO)</h4>
 <ul>
 <li>isort.exceptions.ISortError</li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
-<h4 id="class-variables_14">Class variables</h4>
+<h4 id="class-variables_15">Class variables</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">args</span>
 </code></pre></div>
 
-<h4 id="methods_14">Methods</h4>
-<h4 id="with_traceback_14">with_traceback</h4>
+<h4 id="methods_15">Methods</h4>
+<h4 id="with_traceback_15">with_traceback</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">with_traceback</span><span class="p">(</span>
     <span class="o">...</span>
 <span class="p">)</span>

@@ -1496,14 +1496,6 @@
 
 <span class="kn">from</span> <span class="nn">.wrap_modes</span> <span class="kn">import</span> <span class="n">WrapModes</span>
 
-<span class="k">try</span><span class="p">:</span>
-
-    <span class="kn">from</span> <span class="nn">.setuptools_commands</span> <span class="kn">import</span> <span class="n">ISortCommand</span>  <span class="c1"># noqa: F401</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-    <span class="k">pass</span>
-
 <span class="n">DEPRECATED_SINGLE_DASH_ARGS</span> <span class="o">=</span> <span class="p">{</span>
 
     <span class="s2">&quot;-ac&quot;</span><span class="p">,</span>
@@ -2594,9 +2586,9 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;sort_order&quot;</span><span class="p">,</span>
 
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;pythonic&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify sorting function. Can be built in (natural[default] = force numbers &quot;</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use natural language or pythonic sorting.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;to be sequential, native = Python&#39;s built-in sorted function) or an installable plugin.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
