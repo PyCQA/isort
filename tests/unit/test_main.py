@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 else:
     from isort.wrap_modes import WrapModes
 
+
 @given(
     file_name=st.text(),
     config=st.builds(Config),
@@ -41,15 +42,15 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
 def test_sort_imports(tmpdir):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
+    assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
     main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
-    assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
+    assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
 
     skip_config = Config(skip=["file.py"])
     assert main.sort_imports(  # type: ignore
         str(tmp_file), config=skip_config, check=True, disregard_skip=False
-    ).skippedg
-    assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore
+    ).skipped
+    assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore # noqa
 
 
 def test_sort_imports_error_handling(tmpdir, mocker, capsys):
@@ -57,7 +58,7 @@ def test_sort_imports_error_handling(tmpdir, mocker, capsys):
     tmp_file.write("import os, sys\n")
     mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
     with pytest.raises(IndexError):
-        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore
+        main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
 
     out, error = capsys.readouterr()
     assert "Unrecoverable exception thrown when parsing" in error
@@ -345,11 +346,6 @@ import b
     # warnings should be displayed when streaming input is provided with old flags as well
     with pytest.warns(UserWarning):
         main.main(["-sp", str(config_file), "-"], stdin=input_content)
-
-
-def test_isort_command():
-    """Ensure ISortCommand got registered, otherwise setuptools error must have occurred"""
-    assert main.ISortCommand  # type: ignore
 
 
 def test_isort_filename_overrides(tmpdir, capsys):

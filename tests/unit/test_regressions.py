@@ -233,7 +233,9 @@ def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304():
     """Ensure sre_parse is idenified as STDLIB.
     See: https://github.com/pycqa/isort/issues/1304.
     """
-    assert isort.place_module("sre_parse") == isort.place_module("sre") == isort.settings.STDLIB  # type: ignore
+    assert (
+        isort.place_module("sre_parse") == isort.place_module("sre") == isort.settings.STDLIB  # type: ignore # noqa
+    )
 
 
 def test_add_imports_shouldnt_move_lower_comments_issue_1300():

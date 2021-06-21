@@ -11,7 +11,9 @@ class TestISortError:
 
 class TestExistingSyntaxErrors(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.ExistingSyntaxErrors = exceptions.ExistingSyntaxErrors("file_path")
+        self.instance: exceptions.ExistingSyntaxErrors = exceptions.ExistingSyntaxErrors(
+            "file_path"
+        )
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -19,7 +21,9 @@ class TestExistingSyntaxErrors(TestISortError):
 
 class TestIntroducedSyntaxErrors(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.IntroducedSyntaxErrors = exceptions.IntroducedSyntaxErrors("file_path")
+        self.instance: exceptions.IntroducedSyntaxErrors = exceptions.IntroducedSyntaxErrors(
+            "file_path"
+        )
 
     def test_variables(self):
         assert self.instance.file_path == "file_path"
@@ -60,7 +64,9 @@ class TestProfileDoesNotExist(TestISortError):
 
 class TestSortingFunctionDoesNotExist(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.SortingFunctionDoesNotExist = exceptions.SortingFunctionDoesNotExist("round", ["square", "peg"])
+        self.instance: exceptions.SortingFunctionDoesNotExist = (
+            exceptions.SortingFunctionDoesNotExist("round", ["square", "peg"])
+        )
 
     def test_variables(self):
         assert self.instance.sort_order == "round"
@@ -69,7 +75,9 @@ class TestSortingFunctionDoesNotExist(TestISortError):
 
 class TestLiteralParsingFailure(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.LiteralParsingFailure = exceptions.LiteralParsingFailure("x = [", SyntaxError)
+        self.instance: exceptions.LiteralParsingFailure = exceptions.LiteralParsingFailure(
+            "x = [", SyntaxError
+        )
 
     def test_variables(self):
         assert self.instance.code == "x = ["
@@ -78,7 +86,9 @@ class TestLiteralParsingFailure(TestISortError):
 
 class TestLiteralSortTypeMismatch(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.LiteralSortTypeMismatch = exceptions.LiteralSortTypeMismatch(tuple, list)
+        self.instance: exceptions.LiteralSortTypeMismatch = exceptions.LiteralSortTypeMismatch(
+            tuple, list
+        )
 
     def test_variables(self):
         assert self.instance.kind == tuple
@@ -87,7 +97,9 @@ class TestLiteralSortTypeMismatch(TestISortError):
 
 class TestAssignmentsFormatMismatch(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.AssignmentsFormatMismatch = exceptions.AssignmentsFormatMismatch("print x")
+        self.instance: exceptions.AssignmentsFormatMismatch = exceptions.AssignmentsFormatMismatch(
+            "print x"
+        )
 
     def test_variables(self):
         assert self.instance.code == "print x"
@@ -95,7 +107,9 @@ class TestAssignmentsFormatMismatch(TestISortError):
 
 class TestUnsupportedSettings(TestISortError):
     def setup_class(self):
-        self.instance: exceptions.UnsupportedSettings = exceptions.UnsupportedSettings({"apply": {"value": "true", "source": "/"}})
+        self.instance: exceptions.UnsupportedSettings = exceptions.UnsupportedSettings(
+            {"apply": {"value": "true", "source": "/"}}
+        )
 
     def test_variables(self):
         assert self.instance.unsupported_settings == {"apply": {"value": "true", "source": "/"}}
