@@ -5,7 +5,7 @@ isort will disagree but commit to your way of formatting. To enable this, isort 
 how you want your imports sorted, organized, and formatted.
 
 Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in
-profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html).
+profiles](https://pycqa.github.io/isort/docs/configuration/profiles/).
 
 ## Python Version
 
@@ -1074,17 +1074,6 @@ Tells isort to overwrite in place using the same file handle.Comes at a performa
 
 - --overwrite-in-place
 
-## Sorting Order
-
-Use natural language or pythonic sorting. Valid values "default"=natural "pythonic"=python default sorting.
-
-**Type:** String
-**Default:** `default`
-**Python & Config File Name:** sort_order
-**CLI Flags:**
-
-- --sort-order
-
 ## Reverse Sort
 
 Reverses the ordering of imports.
@@ -1115,6 +1104,39 @@ Forces star imports above others to avoid overriding directly imported variables
 **Default:** `{}`  
 **Python & Config File Name:** git_ignore  
 **CLI Flags:** **Not Supported**
+
+## Format Error
+
+Override the format used to print errors.
+
+**Type:** String  
+**Default:** `{error}: {message}`  
+**Python & Config File Name:** format_error  
+**CLI Flags:**
+
+- --format-error
+
+## Format Success
+
+Override the format used to print success.
+
+**Type:** String  
+**Default:** `{success}: {message}`  
+**Python & Config File Name:** format_success  
+**CLI Flags:**
+
+- --format-success
+
+## Sort Order
+
+Specify sorting function. Can be built in (natural[default] = force numbers to be sequential, native = Python's built-in sorted function) or an installable plugin.
+
+**Type:** String  
+**Default:** `natural`  
+**Python & Config File Name:** sort_order  
+**CLI Flags:**
+
+- --sort-order
 
 ## Show Version
 
@@ -1322,34 +1344,6 @@ Tells isort to format the given files according to an extensions formatting rule
 **CLI Flags:**
 
 - --ext-format
-
-## Format Errors
-
-Define the format used to print errors.
-
-**NOTE** Variables are `error` and `message`.
-The `error` variable prints `ERROR` with color depending on the --color option.
-
-**Type:** String  
-**Default:** `{error}: {message}`  
-**Python & Config File Name:** format_errors
-**CLI Flags:**
-
-- --format-errors
-
-## Format Success
-
-Define the format used to print successes.
-
-**NOTE** Variables are `success` and `message`.
-The `success` variable prints `SUCCESS` with color depending on the --color option.
-
-**Type:** String  
-**Default:** `{success}: {message}`  
-**Python & Config File Name:** format_success
-**CLI Flags:**
-
-- --format-success
 
 ## Deprecated Flags
 
