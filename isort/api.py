@@ -37,7 +37,7 @@ from .format import ask_whether_to_apply_changes_to_file, create_terminal_printe
 from .io import Empty, File
 from .place import module as place_module  # noqa: F401
 from .place import module_with_reason as place_module_with_reason  # noqa: F401
-from .settings import DEFAULT_CONFIG, Config
+from .settings import CYTHON_EXTENSIONS, DEFAULT_CONFIG, Config
 
 
 class ImportKey(Enum):
@@ -193,9 +193,14 @@ def sort_stream(
         try:
             file_content = input_stream.read()
             compile(file_content, content_source, "exec", 0, 1)
-            input_stream = StringIO(file_content)
         except SyntaxError:
-            raise ExistingSyntaxErrors(content_source)
+            if extension not in CYTHON_EXTENSIONS:
+                raise ExistingSyntaxErrors(content_source)
+            elif config.verbose:
+                warn(
+                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                )
+        input_stream = StringIO(file_content)
 
         if not output_stream.readable():
             _internal_output = StringIO()
@@ -216,10 +221,15 @@ def sort_stream(
         try:
             compile(_internal_output.read(), content_source, "exec", 0, 1)
             _internal_output.seek(0)
-            if _internal_output != output_stream:
-                output_stream.write(_internal_output.read())
         except SyntaxError:  # pragma: no cover
-            raise IntroducedSyntaxErrors(content_source)
+            if extension not in CYTHON_EXTENSIONS:
+                raise IntroducedSyntaxErrors(content_source)
+            elif config.verbose:
+                warn(
+                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                )
+        if _internal_output != output_stream:
+            output_stream.write(_internal_output.read())
 
     return changed
 

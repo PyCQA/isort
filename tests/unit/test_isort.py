@@ -1408,6 +1408,17 @@ def test_atomic_mode() -> None:
     with pytest.raises(ExistingSyntaxErrors):
         isort.code(test_input, atomic=True)
 
+    # unless file is for Cython which doesn't yet provide a public AST parsing API
+    assert (
+        isort.code(test_input, extension="pyx", atomic=True, verbose=True)
+        == isort.code(test_input, extension="pyx", atomic=True)
+        == """from a import e, f
+from b import c, d
+
+while True print 'Hello world'
+"""
+    )
+
     # ensure atomic works with streams
     test_input = as_stream("from b import d, c\nfrom a import f, e\n")
     test_output = UnreadableStream()
