@@ -2,7 +2,6 @@
 
 Defines how the default settings for isort should be loaded
 """
-import codecs
 import configparser
 import fnmatch
 import glob
@@ -485,7 +484,8 @@ class Config(_Config):
                 warn(
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
-                    "Please see the 5.0.0 upgrade guide: bit.ly/isortv5."
+                    "Please see the 5.0.0 upgrade guide: "
+                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
                 )
 
         if known_other:
@@ -537,30 +537,30 @@ class Config(_Config):
             return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+        env = {"LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                ["git", "-C", folder, "rev-parse", "--show-toplevel"]
+                ["git", "-C", folder, "rev-parse", "--show-toplevel"], encoding="utf-8", env=env
             )
-            git_folder = Path(topfolder_result.decode("utf-8").split("\n")[0])
-
-            files = glob.glob(str(git_folder) + "/**/*", recursive=True)
-            files_result = (
-                codecs.escape_decode(  # type: ignore
-                    subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                        ["git", "-C", str(git_folder), "check-ignore", "--stdin"],
-                        input="\n".join(files).encode(),
-                    )
-                )[0]
-                .decode("utf-8")
-                .splitlines()
-            )
-
-            self.git_ignore[git_folder] = {Path(f.strip('"')) for f in files_result}
-
-            return git_folder
-
         except subprocess.CalledProcessError:
             return None
+
+        git_folder = Path(topfolder_result.rstrip())
+
+        files = glob.glob(f"{git_folder}/**/*", recursive=True)
+        git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
+        try:
+            ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", *git_options, "check-ignore", "-z", "--stdin"],
+                encoding="utf-8",
+                env=env,
+                input="\0".join(files),
+            )
+        except subprocess.CalledProcessError:
+            return None
+
+        self.git_ignore[git_folder] = {Path(f) for f in ignored.rstrip("\0").split("\0")}
+        return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
