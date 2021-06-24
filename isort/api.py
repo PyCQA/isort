@@ -158,6 +158,7 @@ def sort_stream(
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
+    extension = extension or (file_path and file_path.suffix.lstrip(".")) or "py"
     if show_diff:
         _output_stream = StringIO()
         _input_stream = StringIO(input_stream.read())
@@ -209,7 +210,7 @@ def sort_stream(
         changed = core.process(
             input_stream,
             _internal_output,
-            extension=extension or (file_path and file_path.suffix.lstrip(".")) or "py",
+            extension=extension,
             config=config,
             raise_on_skip=raise_on_skip,
         )
