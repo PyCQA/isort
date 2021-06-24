@@ -484,7 +484,8 @@ class Config(_Config):
                 warn(
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
-                    "Please see the 5.0.0 upgrade guide: bit.ly/isortv5."
+                    "Please see the 5.0.0 upgrade guide: "
+                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
                 )
 
         if known_other:
