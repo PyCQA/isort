@@ -137,8 +137,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 "
         "interactive behavior."
         " "
-        "If you've used isort 4 but are new to isort 5, see the upgrading guide:"
-        "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/.",
+        "If you've used isort 4 but are new to isort 5, see the upgrading guide: "
+        "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
         add_help=False,  # prevent help option from appearing in "optional arguments" group
     )
 
@@ -1230,7 +1230,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             )
         warn(
             "W0500: Please see the 5.0.0 Upgrade guide: "
-            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/"
+            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
         )
 
     if wrong_sorted_files:
