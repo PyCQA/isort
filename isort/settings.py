@@ -571,22 +571,6 @@ class Config(_Config):
 
         os_path = str(file_path)
 
-        if self.skip_gitignore:
-            if file_path.name == ".git":  # pragma: no cover
-                return True
-
-            git_folder = None
-
-            for folder in self.git_ignore:
-                if folder in file_path.parents:
-                    git_folder = folder
-                    break
-            else:
-                git_folder = self._check_folder_gitignore(str(file_path.parent))
-
-            if git_folder and file_path in self.git_ignore[git_folder]:
-                return True
-
         normalized_path = os_path.replace("\\", "/")
         if normalized_path[1:2] == ":":
             normalized_path = normalized_path[2:]
@@ -609,6 +593,22 @@ class Config(_Config):
 
         if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
             return True
+
+        if self.skip_gitignore:
+            if file_path.name == ".git":  # pragma: no cover
+                return True
+
+            git_folder = None
+
+            for folder in self.git_ignore:
+                if folder in file_path.parents:
+                    git_folder = folder
+                    break
+            else:
+                git_folder = self._check_folder_gitignore(str(file_path.parent))
+
+            if git_folder and file_path in self.git_ignore[git_folder]:
+                return True
 
         return False
 
