@@ -546,7 +546,7 @@ class Config(_Config):
         except subprocess.CalledProcessError:
             return None
 
-        git_folder = Path(topfolder_result.rstrip())
+        git_folder = Path(topfolder_result.rstrip()).resolve()
 
         files = [str(p) for p in Path(git_folder).rglob("*")]
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
@@ -601,14 +601,15 @@ class Config(_Config):
 
             git_folder = None
 
+            file_paths = [file_path, file_path.resolve()]
             for folder in self.git_ignore:
-                if folder in file_path.parents:
+                if any(folder in path.parents for path in file_paths):
                     git_folder = folder
                     break
             else:
                 git_folder = self._check_folder_gitignore(str(file_path.parent))
 
-            if git_folder and file_path in self.git_ignore[git_folder]:
+            if git_folder and any(path in self.git_ignore[git_folder] for path in file_paths):
                 return True
 
         return False
