@@ -4,7 +4,6 @@ Defines how the default settings for isort should be loaded
 """
 import configparser
 import fnmatch
-import glob
 import os
 import posixpath
 import re
@@ -549,7 +548,7 @@ class Config(_Config):
 
         git_folder = Path(topfolder_result.rstrip())
 
-        files = glob.glob(f"{git_folder}/**/*", recursive=True)
+        files = [str(p) for p in Path(git_folder).rglob("*")]
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
         try:
             ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
