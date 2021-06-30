@@ -794,7 +794,8 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 ## Src Paths
 
-Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party).
+Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party). Glob expansion (`*` and `**`) is supported for this option.
+
 
 **Type:** Tuple  
 **Default:** `()`  

@@ -450,11 +450,13 @@ class Config(_Config):
         if "src_paths" not in combined_config:
             combined_config["src_paths"] = (path_root / "src", path_root)
         else:
-            src_paths: List[Path] = []
+            src_paths: Set[Path] = set()
             for src_path in combined_config.get("src_paths", ()):
-                full_path = path_root / src_path
-                if full_path not in src_paths:
-                    src_paths.append(full_path)
+                full_paths = (
+                    path_root.glob(src_path) if "*" in str(src_path) else [path_root / src_path]
+                )
+                for path in full_paths:
+                    src_paths.add(path)
 
             combined_config["src_paths"] = tuple(src_paths)
 

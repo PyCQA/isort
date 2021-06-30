@@ -90,7 +90,18 @@ class TestConfig:
     def test_src_paths_are_combined_and_deduplicated(self):
         src_paths = ["src", "tests"]
         src_full_paths = (Path(os.getcwd()) / f for f in src_paths)
-        assert Config(src_paths=src_paths * 2).src_paths == tuple(src_full_paths)
+        assert sorted(Config(src_paths=src_paths * 2).src_paths) == sorted(src_full_paths)
+
+    def test_src_paths_supports_glob_expansion(self, tmp_path):
+        libs = tmp_path / "libs"
+        libs.mkdir()
+        requests = libs / "requests"
+        requests.mkdir()
+        beautifulpasta = libs / "beautifulpasta"
+        beautifulpasta.mkdir()
+        assert sorted(Config(directory=tmp_path, src_paths=["libs/*"]).src_paths) == sorted(
+            (beautifulpasta, requests)
+        )
 
     def test_deprecated_multi_line_output(self):
         assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED  # type: ignore # noqa
