@@ -4,8 +4,10 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
-### 5.9.2
+### 5.9.2 TBD
   - Improved behavior of `isort --check --atomic` against Cython files.
+  - Fixed #1772: skip-gitignore will check files not in the git repository.
+  - Fixed #1762: in some cases when skip-gitignore is set, isort fails to skip any files.
 
 ### 5.9.1 June 21st 2021 [hotfix]
   - Fixed #1758: projects with many files and skip_ignore set can lead to a command-line overload.
