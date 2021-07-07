@@ -622,7 +622,7 @@ Force all imports to be sorted as a single section
 
 ## Force Grid Wrap
 
-Force number of from imports (defaults to 2 when passed as CLI flag without value)to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.
+Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.
 
 **Type:** Int  
 **Default:** `0`  
