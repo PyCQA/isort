@@ -472,7 +472,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         const=2,
         type=int,
         dest="force_grid_wrap",
-        help="Force number of from imports (defaults to 2 when passed as CLI flag without value)"
+        help="Force number of from imports (defaults to 2 when passed as CLI flag without value) "
         "to be grid wrapped regardless of line "
         "length. If 0 is passed in (the global default) only line length is considered.",
     )
