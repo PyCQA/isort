@@ -1204,8 +1204,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             if config.verbose:
                 for was_skipped in skipped:
                     print(
-                        f"{was_skipped} was skipped as it's listed in 'skip' setting"
-                        " or matches a glob in 'skip_glob' setting"
+                        f"{was_skipped} was skipped as it's listed in 'skip' setting, "
+                        "matches a glob in 'skip_glob' setting, or is in a .gitignore file with "
+                        "--skip-gitignore enabled."
                     )
             print(f"Skipped {num_skipped} files")
 

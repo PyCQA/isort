@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.9.3 TBD
+  - Improved text of skipped file message to mention gitignore feature.
+
 ### 5.9.2 July 8th 2021
   - Improved behavior of `isort --check --atomic` against Cython files.
   - Fixed #1769: Future imports added below assignments when no other imports present.
