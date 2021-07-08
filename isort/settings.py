@@ -555,7 +555,7 @@ class Config(_Config):
             for git_file in git_files:
                 git_path = os.path.join(root, git_file)
                 # followlinks only disables walking into linked dirs
-                if not os.path.islink(git_path):
+                if not os.path.islink(git_path):  # pragma: no cover
                     files.append(git_path)
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
         try:
