@@ -1480,13 +1480,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">codecs</span>
-
 <span class="kn">import</span> <span class="nn">configparser</span>
 
 <span class="kn">import</span> <span class="nn">fnmatch</span>
-
-<span class="kn">import</span> <span class="nn">glob</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 
@@ -2298,15 +2294,19 @@
 
         <span class="k">else</span><span class="p">:</span>
 
-            <span class="n">src_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">src_paths</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
             <span class="k">for</span> <span class="n">src_path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">()):</span>
 
-                <span class="n">full_path</span> <span class="o">=</span> <span class="n">path_root</span> <span class="o">/</span> <span class="n">src_path</span>
+                <span class="n">full_paths</span> <span class="o">=</span> <span class="p">(</span>
 
-                <span class="k">if</span> <span class="n">full_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_paths</span><span class="p">:</span>
+                    <span class="n">path_root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">path_root</span> <span class="o">/</span> <span class="n">src_path</span><span class="p">]</span>
 
-                    <span class="n">src_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">full_paths</span><span class="p">:</span>
+
+                    <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span>
 
@@ -2356,7 +2356,9 @@
 
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">deprecated_options_used</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
 
-                    <span class="s2">&quot;Please see the 5.0.0 upgrade guide: bit.ly/isortv5.&quot;</span>
+                    <span class="s2">&quot;Please see the 5.0.0 upgrade guide: &quot;</span>
+
+                    <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html&quot;</span>
 
                 <span class="p">)</span>
 
@@ -2444,45 +2446,63 @@
 
     <span class="k">def</span> <span class="nf">_check_folder_gitignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 
+        <span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LANG&quot;</span><span class="p">:</span> <span class="s2">&quot;C.UTF-8&quot;</span><span class="p">}</span>
+
         <span class="k">try</span><span class="p">:</span>
 
             <span class="n">topfolder_result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
 
-                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--show-toplevel&quot;</span><span class="p">]</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--show-toplevel&quot;</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span>
 
             <span class="p">)</span>
-
-            <span class="n">git_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">topfolder_result</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/**/*&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-            <span class="n">files_result</span> <span class="o">=</span> <span class="p">(</span>
-
-                <span class="n">codecs</span><span class="o">.</span><span class="n">escape_decode</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-
-                    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
-
-                        <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
-
-                        <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
-
-                    <span class="p">)</span>
-
-                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-                <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-
-                <span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-
-            <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files_result</span><span class="p">}</span>
-
-            <span class="k">return</span> <span class="n">git_folder</span>
 
         <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">git_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">topfolder_result</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># don&#39;t check symlinks; either part of the repo and would be checked</span>
+
+        <span class="c1"># twice, or is external to the repo and git won&#39;t konw anything about it</span>
+
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">git_files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">git_folder</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">git_file</span> <span class="ow">in</span> <span class="n">git_files</span><span class="p">:</span>
+
+                <span class="n">git_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">)</span>
+
+                <span class="c1"># followlinks only disables walking into linked dirs</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">git_path</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+
+                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">git_path</span><span class="p">)</span>
+
+        <span class="n">git_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;core.quotePath=&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">ignored</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
+
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
+
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+
+                <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+
+                <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">),</span>
+
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ignored</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">git_folder</span>
 
     <span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
@@ -2497,30 +2517,6 @@
             <span class="n">file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
         <span class="n">os_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.git&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-
-                <span class="k">return</span> <span class="kc">True</span>
-
-            <span class="n">git_folder</span> <span class="o">=</span> <span class="kc">None</span>
-
-            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
-
-                    <span class="n">git_folder</span> <span class="o">=</span> <span class="n">folder</span>
-
-                    <span class="k">break</span>
-
-            <span class="k">else</span><span class="p">:</span>
-
-                <span class="n">git_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
-
-            <span class="k">if</span> <span class="n">git_folder</span> <span class="ow">and</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]:</span>
-
-                <span class="k">return</span> <span class="kc">True</span>
 
         <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">os_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
@@ -2557,6 +2553,32 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">os_path</span><span class="p">)):</span>
 
             <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.git&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="n">git_folder</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_path</span><span class="p">,</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
+
+            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">folder</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">parents</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">):</span>
+
+                    <span class="n">git_folder</span> <span class="o">=</span> <span class="n">folder</span>
+
+                    <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">git_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">git_folder</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -3059,7 +3081,7 @@
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span>
     <span class="n">settings_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
     <span class="n">settings_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-    <span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_Config</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">isort</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_Config</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">config_overrides</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -3352,15 +3374,19 @@
 
         <span class="k">else</span><span class="p">:</span>
 
-            <span class="n">src_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">src_paths</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">set</span><span class="p">()</span>
 
             <span class="k">for</span> <span class="n">src_path</span> <span class="ow">in</span> <span class="n">combined_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_paths&quot;</span><span class="p">,</span> <span class="p">()):</span>
 
-                <span class="n">full_path</span> <span class="o">=</span> <span class="n">path_root</span> <span class="o">/</span> <span class="n">src_path</span>
+                <span class="n">full_paths</span> <span class="o">=</span> <span class="p">(</span>
 
-                <span class="k">if</span> <span class="n">full_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_paths</span><span class="p">:</span>
+                    <span class="n">path_root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">path_root</span> <span class="o">/</span> <span class="n">src_path</span><span class="p">]</span>
 
-                    <span class="n">src_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">full_paths</span><span class="p">:</span>
+
+                    <span class="n">src_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
             <span class="n">combined_config</span><span class="p">[</span><span class="s2">&quot;src_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuple</span><span class="p">(</span><span class="n">src_paths</span><span class="p">)</span>
 
@@ -3410,7 +3436,9 @@
 
                     <span class="n">f</span><span class="s2">&quot;{&#39;, &#39;.join(deprecated_options_used)}.&quot;</span>
 
-                    <span class="s2">&quot;Please see the 5.0.0 upgrade guide: bit.ly/isortv5.&quot;</span>
+                    <span class="s2">&quot;Please see the 5.0.0 upgrade guide: &quot;</span>
+
+                    <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html&quot;</span>
 
                 <span class="p">)</span>
 
@@ -3498,45 +3526,63 @@
 
     <span class="n">def</span> <span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 
+        <span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LANG&quot;</span><span class="p">:</span> <span class="s2">&quot;C.UTF-8&quot;</span><span class="p">}</span>
+
         <span class="n">try</span><span class="p">:</span>
 
             <span class="n">topfolder_result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
 
-                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--show-toplevel&quot;</span><span class="p">]</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--show-toplevel&quot;</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span>
 
             <span class="p">)</span>
-
-            <span class="n">git_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">topfolder_result</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/**/*&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
-
-            <span class="n">files_result</span> <span class="o">=</span> <span class="p">(</span>
-
-                <span class="n">codecs</span><span class="o">.</span><span class="n">escape_decode</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-
-                    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
-
-                        <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
-
-                        <span class="n">input</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
-
-                    <span class="p">)</span>
-
-                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-                <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-
-                <span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-
-            <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files_result</span><span class="p">}</span>
-
-            <span class="k">return</span> <span class="n">git_folder</span>
 
         <span class="n">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="n">None</span>
+
+        <span class="n">git_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">topfolder_result</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># don&#39;t check symlinks; either part of the repo and would be checked</span>
+
+        <span class="c1"># twice, or is external to the repo and git won&#39;t konw anything about it</span>
+
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">git_files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">git_folder</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="n">False</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">git_file</span> <span class="ow">in</span> <span class="n">git_files</span><span class="p">:</span>
+
+                <span class="n">git_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">)</span>
+
+                <span class="c1"># followlinks only disables walking into linked dirs</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">git_path</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+
+                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">git_path</span><span class="p">)</span>
+
+        <span class="n">git_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;core.quotePath=&quot;</span><span class="p">]</span>
+
+        <span class="n">try</span><span class="p">:</span>
+
+            <span class="n">ignored</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
+
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
+
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+
+                <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+
+                <span class="n">input</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">),</span>
+
+            <span class="p">)</span>
+
+        <span class="n">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ignored</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">git_folder</span>
 
     <span class="n">def</span> <span class="n">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb nb-Type">bool</span><span class="p">:</span>
 
@@ -3551,30 +3597,6 @@
             <span class="n">file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
         <span class="n">os_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.git&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-
-                <span class="k">return</span> <span class="n">True</span>
-
-            <span class="n">git_folder</span> <span class="o">=</span> <span class="n">None</span>
-
-            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
-
-                    <span class="n">git_folder</span> <span class="o">=</span> <span class="n">folder</span>
-
-                    <span class="k">break</span>
-
-            <span class="k">else</span><span class="p">:</span>
-
-                <span class="n">git_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
-
-            <span class="k">if</span> <span class="n">git_folder</span> <span class="ow">and</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]:</span>
-
-                <span class="k">return</span> <span class="n">True</span>
 
         <span class="n">normalized_path</span> <span class="o">=</span> <span class="n">os_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
 
@@ -3611,6 +3633,32 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">os_path</span><span class="p">)):</span>
 
             <span class="k">return</span> <span class="n">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_gitignore</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;.git&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+
+                <span class="k">return</span> <span class="n">True</span>
+
+            <span class="n">git_folder</span> <span class="o">=</span> <span class="n">None</span>
+
+            <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_path</span><span class="p">,</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
+
+            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">any</span><span class="p">(</span><span class="n">folder</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">parents</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">):</span>
+
+                    <span class="n">git_folder</span> <span class="o">=</span> <span class="n">folder</span>
+
+                    <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">git_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">git_folder</span> <span class="ow">and</span> <span class="n">any</span><span class="p">(</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">git_ignore</span><span class="p">[</span><span class="n">git_folder</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="n">True</span>
 
         <span class="k">return</span> <span class="n">False</span>
 
@@ -4087,30 +4135,6 @@
 
 <span class="w">        </span><span class="n">os_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">skip_gitignore</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;.git&quot;</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
-
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
-
-<span class="w">            </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">folder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">git_ignore</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">folder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="nl">parents</span><span class="p">:</span><span class="w"></span>
-
-<span class="w">                    </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">folder</span><span class="w"></span>
-
-<span class="w">                    </span><span class="k">break</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">                </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">parent</span><span class="p">))</span><span class="w"></span>
-
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">git_folder</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">file_path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">git_ignore</span><span class="o">[</span><span class="n">git_folder</span><span class="o">]</span><span class="err">:</span><span class="w"></span>
-
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
-
 <span class="w">        </span><span class="n">normalized_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">os_path</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;\\&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;/&quot;</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">normalized_path</span><span class="o">[</span><span class="n">1:2</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;:&quot;</span><span class="err">:</span><span class="w"></span>
@@ -4146,6 +4170,32 @@
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os_path</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">os</span><span class="p">.</span><span class="k">path</span><span class="p">.</span><span class="n">islink</span><span class="p">(</span><span class="n">os_path</span><span class="p">))</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">skip_gitignore</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">file_path</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">&quot;.git&quot;</span><span class="err">:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nl">pragma</span><span class="p">:</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">cover</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">None</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">file_paths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">file_path, file_path.resolve()</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">folder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">git_ignore</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="ow">any</span><span class="p">(</span><span class="n">folder</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">path</span><span class="p">.</span><span class="n">parents</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_paths</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                    </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">folder</span><span class="w"></span>
+
+<span class="w">                    </span><span class="k">break</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">git_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">_check_folder_gitignore</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">.</span><span class="n">parent</span><span class="p">))</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">git_folder</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">any</span><span class="p">(</span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">git_ignore</span><span class="o">[</span><span class="n">git_folder</span><span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_paths</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">True</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="w"></span>
 </code></pre></div>

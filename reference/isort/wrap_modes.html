@@ -2204,7 +2204,7 @@
 
 <span class="s2">            and &quot;</span><span class="s s-Atom">#</span><span class="s2">&quot; in interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;]</span>
 
-<span class="s2">        ):</span>
+<span class="s2">        ):  # pragma: no cover # TODO: fix, this is because of test run inconsistency.</span>
 
 <span class="s2">            line, comments = interface[&quot;</span><span class="s s-Atom">statement</span><span class="s2">&quot;].split(&quot;</span><span class="s s-Atom">#</span><span class="s2">&quot;, 1)</span>
 
@@ -2599,7 +2599,7 @@
 
             <span class="ow">and</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span>
 
-        <span class="p">):</span>
+        <span class="p">):</span>  <span class="c1"># pragma: no cover # TODO: fix, this is because of test run inconsistency.</span>
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">interface</span><span class="p">[</span><span class="s2">&quot;statement&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 

@@ -245,6 +245,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#592-july-8th-2021" class="md-nav__link">
+    5.9.2 July 8th 2021
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#591-june-21st-2021-hotfix" class="md-nav__link">
     5.9.1 June 21st 2021 [hotfix]
   </a>
@@ -1939,6 +1946,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#592-july-8th-2021" class="md-nav__link">
+    5.9.2 July 8th 2021
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#591-june-21st-2021-hotfix" class="md-nav__link">
     5.9.1 June 21st 2021 [hotfix]
   </a>
@@ -2596,6 +2610,15 @@
                 <h1 id="changelog">Changelog</h1>
 <p>NOTE: isort follows the <a href="https://semver.org/">semver</a> versioning standard.
 Find out more about isort's release policy <a href="https://pycqa.github.io/isort/docs/major_releases/release_policy">here</a>.</p>
+<h3 id="592-july-8th-2021">5.9.2 July 8th 2021</h3>
+<ul>
+<li>Improved behavior of <code>isort --check --atomic</code> against Cython files.</li>
+<li>Fixed #1769: Future imports added below assignments when no other imports present.</li>
+<li>Fixed #1772: skip-gitignore will check files not in the git repository.</li>
+<li>Fixed #1762: in some cases when skip-gitignore is set, isort fails to skip any files.</li>
+<li>Fixed #1767: Encoding issues surfacing when invalid characters set in <code>__init__.py</code> files during placement.</li>
+<li>Fixed #1771: Improved handling of skips against named streamed in content.</li>
+</ul>
 <h3 id="591-june-21st-2021-hotfix">5.9.1 June 21st 2021 [hotfix]</h3>
 <ul>
 <li>Fixed #1758: projects with many files and skip_ignore set can lead to a command-line overload.</li>

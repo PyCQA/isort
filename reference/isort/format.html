@@ -2018,7 +2018,7 @@
 <h3 id="create_terminal_printer">create_terminal_printer</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">create_terminal_printer</span><span class="p">(</span>
     <span class="n">color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
     <span class="n">success</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">isort</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">BasicPrinter</span>
@@ -2130,8 +2130,8 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">file_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">],</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">color_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
@@ -2211,7 +2211,7 @@
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">BasicPrinter</span><span class="p">(</span>
     <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -2299,7 +2299,7 @@
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">ColoramaPrinter</span><span class="p">(</span>
     <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">success</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TextIO</span><span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -2363,7 +2363,7 @@
 <h4 id="style_text">style_text</h4>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">style_text</span><span class="p">(</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">style</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 

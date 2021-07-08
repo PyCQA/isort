@@ -1708,9 +1708,9 @@
 
         <span class="s2">&quot; &quot;</span>
 
-        <span class="s2">&quot;If you&#39;ve used isort 4 but are new to isort 5, see the upgrading guide:&quot;</span>
+        <span class="s2">&quot;If you&#39;ve used isort 4 but are new to isort 5, see the upgrading guide: &quot;</span>
 
-        <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html&quot;</span><span class="p">,</span>
 
         <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># prevent help option from appearing in &quot;optional arguments&quot; group</span>
 
@@ -2370,7 +2370,7 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;force_grid_wrap&quot;</span><span class="p">,</span>
 
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2 when passed as CLI flag without value)&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force number of from imports (defaults to 2 when passed as CLI flag without value) &quot;</span>
 
         <span class="s2">&quot;to be grid wrapped regardless of line &quot;</span>
 
@@ -3548,11 +3548,13 @@
 
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Error: can&#39;t show files for streaming input.&quot;</span><span class="p">)</span>
 
+        <span class="n">input_stream</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">stdin</span>
+
         <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
 
             <span class="n">incorrectly_sorted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_stream</span><span class="p">(</span>
 
-                <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
+                <span class="n">input_stream</span><span class="o">=</span><span class="n">input_stream</span><span class="p">,</span>
 
                 <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
 
@@ -3568,23 +3570,29 @@
 
         <span class="k">else</span><span class="p">:</span>
 
-            <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
+            <span class="k">try</span><span class="p">:</span>
 
-                <span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="k">if</span> <span class="n">stdin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">stdin</span><span class="p">,</span>
+                <span class="n">api</span><span class="o">.</span><span class="n">sort_stream</span><span class="p">(</span>
 
-                <span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+                    <span class="n">input_stream</span><span class="o">=</span><span class="n">input_stream</span><span class="p">,</span>
 
-                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                    <span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
 
-                <span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span>
+                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
 
-                <span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span>
+                    <span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span>
 
-                <span class="n">extension</span><span class="o">=</span><span class="n">ext_format</span><span class="p">,</span>
+                    <span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span>
 
-                <span class="n">raise_on_skip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">extension</span><span class="o">=</span><span class="n">ext_format</span><span class="p">,</span>
 
-            <span class="p">)</span>
+                    <span class="n">raise_on_skip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+
+                <span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">FileSkipped</span><span class="p">:</span>
+
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">input_stream</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
     <span class="k">elif</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_root</span><span class="p">:</span>
 
@@ -3810,7 +3818,7 @@
 
             <span class="s2">&quot;W0500: Please see the 5.0.0 Upgrade guide: &quot;</span>
 
-            <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/&quot;</span>
+            <span class="s2">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html&quot;</span>
 
         <span class="p">)</span>
 
@@ -3859,8 +3867,8 @@
 <h2 id="functions">Functions</h2>
 <h3 id="identify_imports_main">identify_imports_main</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">identify_imports_main</span><span class="p">(</span>
-    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">stdin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">stdin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -4026,8 +4034,8 @@
 </details>
 <h3 id="main">main</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">(</span>
-    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">stdin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">stdin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -4147,11 +4155,13 @@
 
 <span class="w">            </span><span class="n">sys</span><span class="p">.</span><span class="k">exit</span><span class="p">(</span><span class="ss">&quot;Error: can&#39;t show files for streaming input.&quot;</span><span class="p">)</span><span class="w"></span>
 
+<span class="w">        </span><span class="n">input_stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="w"></span>
+
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="k">check</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">incorrectly_sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">api</span><span class="p">.</span><span class="n">check_stream</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">input_stream</span><span class="o">=</span><span class="n">input_stream</span><span class="p">,</span><span class="w"></span>
 
 <span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
@@ -4167,23 +4177,29 @@
 
 <span class="w">        </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">            </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="k">try</span><span class="err">:</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">input_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">stdin</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">stdin</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="n">api</span><span class="p">.</span><span class="n">sort_stream</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">input_stream</span><span class="o">=</span><span class="n">input_stream</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">output_stream</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">show_diff</span><span class="o">=</span><span class="n">show_diff</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">extension</span><span class="o">=</span><span class="n">ext_format</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">                </span><span class="n">raise_on_skip</span><span class="o">=</span><span class="k">False</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">extension</span><span class="o">=</span><span class="n">ext_format</span><span class="p">,</span><span class="w"></span>
 
-<span class="w">            </span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="n">raise_on_skip</span><span class="o">=</span><span class="k">False</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">                </span><span class="p">)</span><span class="w"></span>
+
+<span class="w">            </span><span class="ow">except</span><span class="w"> </span><span class="nl">FileSkipped</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">                </span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">.</span><span class="k">write</span><span class="p">(</span><span class="n">input_stream</span><span class="p">.</span><span class="k">read</span><span class="p">())</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">elif</span><span class="w"> </span><span class="ss">&quot;/&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">file_names</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nl">allow_root</span><span class="p">:</span><span class="w"></span>
 
@@ -4409,7 +4425,7 @@
 
 <span class="w">            </span><span class="ss">&quot;W0500: Please see the 5.0.0 Upgrade guide: &quot;</span><span class="w"></span>
 
-<span class="w">            </span><span class="ss">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0/&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="ss">&quot;https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html&quot;</span><span class="w"></span>
 
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 
@@ -4437,7 +4453,7 @@
 </details>
 <h3 id="parse_args">parse_args</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span>
-    <span class="n">argv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
@@ -4511,7 +4527,7 @@
     <span class="n">ask_to_apply</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">write_to_stdout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">isort</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">SortAttempt</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">isort</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">SortAttempt</span><span class="p">]</span>
 </code></pre></div>
 
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">sort_imports</span><span class="p">(</span><span class="w"></span>

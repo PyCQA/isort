@@ -2313,7 +2313,7 @@ the latter defaults to false for commands that don't define it.)</p>
 
 <span class="w">            </span><span class="k">return</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">string_types</span><span class="p">):</span><span class="w"></span>
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">str</span><span class="p">):</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">setattr</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">option</span><span class="p">,</span><span class="w"> </span><span class="n">re</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">r</span><span class="o">&#39;</span><span class="p">,</span><span class="o">\</span><span class="n">s</span><span class="o">*|\</span><span class="n">s</span><span class="o">+</span><span class="s">&#39;, val))</span>
 
@@ -2321,7 +2321,7 @@ the latter defaults to false for commands that don't define it.)</p>
 
 <span class="s">            if isinstance(val, list):</span>
 
-<span class="s">                ok = all(isinstance(v, string_types) for v in val)</span>
+<span class="s">                ok = all(isinstance(v, str) for v in val)</span>
 
 <span class="s">            else:</span>
 
