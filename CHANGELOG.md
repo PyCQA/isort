@@ -10,6 +10,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Fixed #1772: skip-gitignore will check files not in the git repository.
   - Fixed #1762: in some cases when skip-gitignore is set, isort fails to skip any files.
   - Fixed #1767: Encoding issues surfacing when invalid characters set in `__init__.py` files during placement.
+  - Fixed #1771: Improved handling of skips against named streamed in content.
 
 ### 5.9.1 June 21st 2021 [hotfix]
   - Fixed #1758: projects with many files and skip_ignore set can lead to a command-line overload.

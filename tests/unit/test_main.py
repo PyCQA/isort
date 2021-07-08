@@ -375,6 +375,23 @@ def function():
 """
     )
 
+    # if file is skipped it should output unchanged.
+    main.main(
+        ["-", "--filename", "x.py", "--skip", "x.py", "--filter-files"],
+        stdin=build_input_content(),
+    )
+    out, error = capsys.readouterr()
+    assert not error
+    assert out == (
+        """
+import b
+import a
+
+def function():
+    pass
+"""
+    )
+
     main.main(["-", "--ext-format", "pyi"], stdin=build_input_content())
     out, error = capsys.readouterr()
     assert not error
