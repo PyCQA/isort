@@ -125,14 +125,14 @@ def _is_namespace_package(path: Path, src_extensions: FrozenSet[str]) -> bool:
         if filenames:
             return False
     else:
-        with init_file.open() as open_init_file:
+        with init_file.open("rb") as open_init_file:
             file_start = open_init_file.read(4096)
             if (
-                "__import__('pkg_resources').declare_namespace(__name__)" not in file_start
-                and '__import__("pkg_resources").declare_namespace(__name__)' not in file_start
-                and "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                b"__import__('pkg_resources').declare_namespace(__name__)" not in file_start
+                and b'__import__("pkg_resources").declare_namespace(__name__)' not in file_start
+                and b"__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
                 not in file_start
-                and '__path__ = __import__("pkgutil").extend_path(__path__, __name__)'
+                and b'__path__ = __import__("pkgutil").extend_path(__path__, __name__)'
                 not in file_start
             ):
                 return False
