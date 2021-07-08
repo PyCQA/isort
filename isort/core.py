@@ -55,6 +55,7 @@ def process(
     next_import_section: str = ""
     next_cimports: bool = False
     in_quote: str = ""
+    was_in_quote: bool = False
     first_comment_index_start: int = -1
     first_comment_index_end: int = -1
     contains_imports: bool = False
@@ -332,14 +333,15 @@ def process(
                 and (stripped_line or end_of_file)
                 and not config.append_only
                 and not in_top_comment
-                and not in_quote
+                and not was_in_quote
                 and not import_section
                 and not line.lstrip().startswith(COMMENT_INDICATORS)
-                and not line.rstrip().endswith(DOCSTRING_INDICATORS)
+                and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
-                import_section = line_separator.join(add_imports) + line_separator
+                add_line_separator = line_separator or "\n"
+                import_section = add_line_separator.join(add_imports) + add_line_separator
                 if end_of_file and index != 0:
-                    output_stream.write(line_separator)
+                    output_stream.write(add_line_separator)
                 contains_imports = True
                 add_imports = []
 

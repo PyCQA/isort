@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.9.2 TBD
   - Improved behavior of `isort --check --atomic` against Cython files.
+  - Fixed #1769: Future imports added below assignments when no other imports present.
   - Fixed #1772: skip-gitignore will check files not in the git repository.
   - Fixed #1762: in some cases when skip-gitignore is set, isort fails to skip any files.
 

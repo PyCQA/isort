@@ -1798,3 +1798,33 @@ from some_very_long_filename_to_import_from_that_causes_a_too_long_import_row im
         profile="black",
         force_single_line=True,
     )
+
+
+def test_isort_should_only_add_imports_to_valid_location_issue_1769():
+    assert (
+        isort.code(
+            '''v = """
+""".split(
+    "\n"
+)
+''',
+            add_imports=["from __future__ import annotations"],
+        )
+        == '''from __future__ import annotations
+
+v = """
+""".split(
+    "\n"
+)
+'''
+    )
+    assert (
+        isort.code(
+            '''v=""""""''',
+            add_imports=["from __future__ import annotations"],
+        )
+        == '''from __future__ import annotations
+
+v=""""""
+'''
+    )
