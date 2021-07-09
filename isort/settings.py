@@ -550,7 +550,7 @@ class Config(_Config):
 
         files: List[str] = []
         # don't check symlinks; either part of the repo and would be checked
-        # twice, or is external to the repo and git won't konw anything about it
+        # twice, or is external to the repo and git won't know anything about it
         for root, _dirs, git_files in os.walk(git_folder, followlinks=False):
             for git_file in git_files:
                 git_path = os.path.join(root, git_file)
