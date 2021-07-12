@@ -1,7 +1,7 @@
 import os
 import sys
 from contextlib import contextmanager
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Optional
 
 from pylama.lint import Linter as BaseLinter  # type: ignore
 
@@ -24,7 +24,9 @@ class Linter(BaseLinter):  # type: ignore
         """Determine if this path should be linted."""
         return path.endswith(".py")
 
-    def run(self, path: str, params: Dict[str, Any] = None, **meta: Any) -> List[Dict[str, Any]]:
+    def run(
+        self, path: str, params: Optional[Dict[str, Any]] = None, **meta: Any
+    ) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with supress_stdout():
             try:
