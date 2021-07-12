@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.9.3 TBD
   - Improved text of skipped file message to mention gitignore feature.
+  - Fixed #1779: Pylama integration ignores pylama specific isort config overrides.
 
 ### 5.9.2 July 8th 2021
   - Improved behavior of `isort --check --atomic` against Cython files.
