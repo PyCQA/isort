@@ -24,11 +24,11 @@ class Linter(BaseLinter):  # type: ignore
         """Determine if this path should be linted."""
         return path.endswith(".py")
 
-    def run(self, path: str, **meta: Any) -> List[Dict[str, Any]]:
+    def run(self, path: str, params: Dict[str, Any] = None, **meta: Any) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with supress_stdout():
             try:
-                if not api.check_file(path, disregard_skip=False):
+                if not api.check_file(path, disregard_skip=False, **params or {}):
                     return [
                         {
                             "lnum": 0,
