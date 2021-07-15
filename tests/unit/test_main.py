@@ -78,6 +78,7 @@ def test_parse_args():
     assert main.parse_args(["--combine-straight-imports"]) == {"combine_straight_imports": True}
     assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
     assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
+    assert main.parse_args(["--from-first"]) == {"from_first": True}
 
 
 def test_ascii_art(capsys):
@@ -562,7 +563,7 @@ from a import y
 """
     )
 
-    main.main(["-", "--ff", "FROM_FIRST"], stdin=input_content)
+    main.main(["-", "--ff"], stdin=input_content)
     out, error = capsys.readouterr()
 
     assert out == (

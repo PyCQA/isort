@@ -462,6 +462,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--ff",
         "--from-first",
         dest="from_first",
+        action="store_true",
         help="Switches the typical ordering preference, "
         "showing from imports first then straight ones.",
     )
