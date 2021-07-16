@@ -241,10 +241,8 @@ class TomlArraySeparatorEncoder(TomlEncoder):
         self.separator = separator
 
     def dump_list(self, v):
-        t = []
         retval = "["
-        for u in v:
-            t.append(self.dump_value(u))
+        t = [self.dump_value(u) for u in v]
         while t != []:
             s = []
             for u in t:
