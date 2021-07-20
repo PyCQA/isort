@@ -9,7 +9,7 @@ if sys.version_info >= (3,):
     unicode = str
 
 
-def dump(o, f, encoder=None):
+dump(o, f, encoder=None):
     """Writes out dict as toml to a file
 
     Args:
@@ -241,8 +241,10 @@ class TomlArraySeparatorEncoder(TomlEncoder):
         self.separator = separator
 
     def dump_list(self, v):
+        t = []
         retval = "["
-        t = [self.dump_value(u) for u in v]
+        for u in v:
+            t.append(self.dump_value(u))
         while t != []:
             s = []
             for u in t:
