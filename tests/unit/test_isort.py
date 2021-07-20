@@ -2708,7 +2708,7 @@ def test_import_by_paren_issue_375() -> None:
 
 
 def test_import_by_paren_issue_460() -> None:
-    """Test to ensure isort can doesnt move comments around """
+    """Test to ensure isort can doesnt move comments around"""
     test_input = """
 # First comment
 # Second comment
@@ -5184,7 +5184,7 @@ def test_only_sections() -> None:
 
 
 def test_combine_straight_imports() -> None:
-    """ Tests to ensure that combine_straight_imports works correctly """
+    """Tests to ensure that combine_straight_imports works correctly"""
 
     test_input = (
         "import os\n" "import sys\n" "# this is a comment\n" "import math  # inline comment\n"
