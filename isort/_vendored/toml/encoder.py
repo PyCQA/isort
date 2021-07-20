@@ -9,7 +9,7 @@ if sys.version_info >= (3,):
     unicode = str
 
 
-dump(o, f, encoder=None):
+def dump(o, f, encoder=None):
     """Writes out dict as toml to a file
 
     Args:
