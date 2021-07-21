@@ -555,7 +555,7 @@ class Config(_Config):
             if ".git" in _dirs:
                 _dirs.remove(".git")
             for git_file in git_files:
-                files.append(os.path.join(root, git_file))\
+                files.append(os.path.join(root, git_file))
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
         try:
             ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
