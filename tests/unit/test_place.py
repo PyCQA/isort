@@ -47,7 +47,8 @@ def test_namespace_package_placement(examples_path):
 
     no_namespace = namespace_examples / "none"
     almost_implicit = namespace_examples / "almost-implicit"
-    for lacks_namespace in (no_namespace, almost_implicit):
+    weird_encoding = namespace_examples / "weird_encoding"
+    for lacks_namespace in (no_namespace, almost_implicit, weird_encoding):
         config = Config(settings_path=lacks_namespace)
         manual_namespace = Config(settings_path=lacks_namespace, namespace_packages=["root"])
         assert place.module("root.name", config=config) == "FIRSTPARTY"

@@ -550,12 +550,12 @@ class Config(_Config):
 
         files: List[str] = []
         # don't check symlinks; either part of the repo and would be checked
-        # twice, or is external to the repo and git won't konw anything about it
+        # twice, or is external to the repo and git won't know anything about it
         for root, _dirs, git_files in os.walk(git_folder, followlinks=False):
             if ".git" in _dirs:
                 _dirs.remove(".git")
             for git_file in git_files:
-                files.append(os.path.join(root, git_file))
+                files.append(os.path.join(root, git_file))\
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
         try:
             ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510

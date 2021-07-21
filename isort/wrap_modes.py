@@ -337,7 +337,7 @@ def hanging_indent_with_parentheses(**interface: Any) -> str:
         if (
             not interface["line_separator"] in interface["statement"]
             and "#" in interface["statement"]
-        ):
+        ):  # pragma: no cover # TODO: fix, this is because of test run inconsistency.
             line, comments = interface["statement"].split("#", 1)
             next_statement = (
                 f"{line.rstrip()}, {next_import}{interface['comment_prefix']}{comments}"

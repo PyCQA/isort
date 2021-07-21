@@ -462,6 +462,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--ff",
         "--from-first",
         dest="from_first",
+        action="store_true",
         help="Switches the typical ordering preference, "
         "showing from imports first then straight ones.",
     )
@@ -472,7 +473,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         const=2,
         type=int,
         dest="force_grid_wrap",
-        help="Force number of from imports (defaults to 2 when passed as CLI flag without value)"
+        help="Force number of from imports (defaults to 2 when passed as CLI flag without value) "
         "to be grid wrapped regardless of line "
         "length. If 0 is passed in (the global default) only line length is considered.",
     )
@@ -1087,9 +1088,10 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if show_files:
             sys.exit("Error: can't show files for streaming input.")
 
+        input_stream = sys.stdin if stdin is None else stdin
         if check:
             incorrectly_sorted = not api.check_stream(
-                input_stream=sys.stdin if stdin is None else stdin,
+                input_stream=input_stream,
                 config=config,
                 show_diff=show_diff,
                 file_path=file_path,
@@ -1098,15 +1100,18 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
             wrong_sorted_files = incorrectly_sorted
         else:
-            api.sort_stream(
-                input_stream=sys.stdin if stdin is None else stdin,
-                output_stream=sys.stdout,
-                config=config,
-                show_diff=show_diff,
-                file_path=file_path,
-                extension=ext_format,
-                raise_on_skip=False,
-            )
+            try:
+                api.sort_stream(
+                    input_stream=input_stream,
+                    output_stream=sys.stdout,
+                    config=config,
+                    show_diff=show_diff,
+                    file_path=file_path,
+                    extension=ext_format,
+                    raise_on_skip=False,
+                )
+            except FileSkipped:
+                sys.stdout.write(input_stream.read())
     elif "/" in file_names and not allow_root:
         printer = create_terminal_printer(
             color=config.color_output, error=config.format_error, success=config.format_success
@@ -1200,8 +1205,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             if config.verbose:
                 for was_skipped in skipped:
                     print(
-                        f"{was_skipped} was skipped as it's listed in 'skip' setting"
-                        " or matches a glob in 'skip_glob' setting"
+                        f"{was_skipped} was skipped as it's listed in 'skip' setting, "
+                        "matches a glob in 'skip_glob' setting, or is in a .gitignore file with "
+                        "--skip-gitignore enabled."
                     )
             print(f"Skipped {num_skipped} files")
 

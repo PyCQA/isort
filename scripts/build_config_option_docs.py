@@ -153,10 +153,7 @@ def human(name: str) -> str:
 
 
 def config_options() -> Generator[ConfigOption, None, None]:
-    cli_actions = {}
-    for action in parser._actions:
-        cli_actions[action.dest] = action
-
+    cli_actions = {action.dest: action for action in parser._actions}
     for name, default in config.items():
         extra_kwargs = {}
 
@@ -168,7 +165,7 @@ def config_options() -> Generator[ConfigOption, None, None]:
 
         default_display = default
         if isinstance(default, (set, frozenset)) and len(default) > 0:
-            default_display = tuple(i for i in sorted(default))
+            default_display = tuple(sorted(default))
 
         # todo: refactor place for example params
         # needs to integrate with isort/settings/_Config
