@@ -1188,3 +1188,26 @@ nested_dir_ignored
     out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files"])
 
     assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
+
+    # Should work when git project contains symlinks
+
+    if os.name != "nt":
+        git_project0.join("has_imports_ignored.py").write(import_content)
+        git_project0.join("has_imports.py").write(import_content)
+        tmpdir.join("has_imports.py").write(import_content)
+        tmpdir.join("nested_dir").join("has_imports.py").write(import_content)
+        git_project0.join("ignore_link.py").mksymlinkto(tmpdir.join("has_imports.py"))
+        git_project0.join("ignore_link").mksymlinkto(tmpdir.join("nested_dir"))
+        git_project0.join(".gitignore").write("ignore_link.py\nignore_link", mode="a")
+
+        out, error = main_check(
+            [str(git_project0), "--skip-gitignore", "--filter-files", "--check"]
+        )
+
+        should_check = ["/git_project0/has_imports.py"]
+
+        assert all(f"{str(tmpdir)}{file}" in error for file in should_check)
+
+        out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
+
+        assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
