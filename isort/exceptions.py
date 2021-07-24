@@ -1,4 +1,5 @@
 """All isort specific exception classes should be defined here"""
+from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
@@ -7,6 +8,9 @@ from .profiles import profiles
 
 class ISortError(Exception):
     """Base isort exception object from which all isort sourced exceptions should inherit"""
+
+    def __reduce__(self):  # type: ignore
+        return (partial(type(self), **self.__dict__), ())
 
 
 class InvalidSettingsPath(ISortError):
@@ -48,13 +52,14 @@ class FileSkipped(ISortError):
 
     def __init__(self, message: str, file_path: str):
         super().__init__(message)
+        self.message = message
         self.file_path = file_path
 
 
 class FileSkipComment(FileSkipped):
     """Raised when an entire file is skipped due to a isort skip file comment"""
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, **kwargs: str):
         super().__init__(
             f"{file_path} contains a file skip comment and was skipped.", file_path=file_path
         )
@@ -63,7 +68,7 @@ class FileSkipComment(FileSkipped):
 class FileSkipSetting(FileSkipped):
     """Raised when an entire file is skipped due to provided isort settings"""
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, **kwargs: str):
         super().__init__(
             f"{file_path} was skipped as it's listed in 'skip' setting"
             " or matches a glob in 'skip_glob' setting",

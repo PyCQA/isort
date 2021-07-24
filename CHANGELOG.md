@@ -6,6 +6,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### 5.9.3 TBD
   - Improved text of skipped file message to mention gitignore feature.
+  - Made all exceptions pickleable.
   - Fixed #1779: Pylama integration ignores pylama specific isort config overrides.
   - Fixed #1781: `--from-first` CLI flag shouldn't take any arguments.
   - Fixed #1785: `_ast` module incorrectly excluded from stdlib definition.
