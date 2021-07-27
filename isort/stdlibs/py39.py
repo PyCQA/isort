@@ -6,7 +6,6 @@ using the mkstdlibs.py script.
 """
 
 stdlib = {
-    "_ast",
     "_thread",
     "abc",
     "aifc",
