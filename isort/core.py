@@ -176,10 +176,13 @@ def process(
                 (index == 0 or (index in (1, 2) and not contains_imports))
                 and stripped_line.startswith("#")
                 and stripped_line not in config.section_comments
+                and stripped_line not in CODE_SORT_COMMENTS
             ):
                 in_top_comment = True
             elif in_top_comment and (
-                not line.startswith("#") or stripped_line in config.section_comments
+                not line.startswith("#")
+                or stripped_line in config.section_comments
+                or stripped_line in CODE_SORT_COMMENTS
             ):
                 in_top_comment = False
                 first_comment_index_end = index - 1
