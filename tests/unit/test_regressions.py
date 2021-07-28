@@ -1828,3 +1828,44 @@ v = """
 v=""""""
 '''
     )
+
+
+def test_literal_sort_at_top_of_file_issue_1792():
+    assert (
+        isort.code(
+            '''"""I'm a docstring! Look at me!"""
+
+# isort: unique-list
+__all__ = ["Foo", "Foo", "Bar"]
+
+from typing import final  # arbitrary
+
+
+@final
+class Foo:
+    ...
+
+
+@final
+class Bar:
+    ...
+'''
+        )
+        == '''"""I'm a docstring! Look at me!"""
+
+# isort: unique-list
+__all__ = ['Bar', 'Foo']
+
+from typing import final  # arbitrary
+
+
+@final
+class Foo:
+    ...
+
+
+@final
+class Bar:
+    ...
+'''
+    )

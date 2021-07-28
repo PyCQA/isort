@@ -9,6 +9,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Made all exceptions pickleable.
   - Fixed #1779: Pylama integration ignores pylama specific isort config overrides.
   - Fixed #1781: `--from-first` CLI flag shouldn't take any arguments.
+  - Fixed #1792: Sorting literals sometimes ignored when placed on first few lines of file.
 
 ### 5.9.2 July 8th 2021
   - Improved behavior of `isort --check --atomic` against Cython files.
