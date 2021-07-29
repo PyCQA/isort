@@ -6,4 +6,4 @@
     language_version: python3
     types_or: [cython, pyi, python]
     args: ['--filter-files']
-    minimum_pre_commit_version: '2.9.0'
+    minimum_pre_commit_version: '2.9.2'
