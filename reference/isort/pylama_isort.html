@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -1478,7 +1478,7 @@
 
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">pylama.lint</span> <span class="kn">import</span> <span class="n">Linter</span> <span class="k">as</span> <span class="n">BaseLinter</span>  <span class="c1"># type: ignore</span>
 
@@ -1508,7 +1508,11 @@
 
         <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">meta</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">meta</span><span class="p">:</span> <span class="n">Any</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 
         <span class="sd">&quot;&quot;&quot;Lint the file. Return an array of error dicts if appropriate.&quot;&quot;&quot;</span>
 
@@ -1516,7 +1520,7 @@
 
             <span class="k">try</span><span class="p">:</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">api</span><span class="o">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span> <span class="ow">or</span> <span class="p">{}):</span>
 
                     <span class="k">return</span> <span class="p">[</span>
 
@@ -1582,7 +1586,11 @@
 
         <span class="k">return</span> <span class="n">path</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.py&quot;</span><span class="p">)</span>
 
-    <span class="n">def</span> <span class="n">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">,</span> <span class="o">**</span><span class="nl">meta:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">:</span>
+    <span class="n">def</span> <span class="n">run</span><span class="p">(</span>
+
+        <span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">,</span> <span class="nl">params:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">None</span><span class="p">,</span> <span class="o">**</span><span class="nl">meta:</span> <span class="n">Any</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">:</span>
 
         <span class="s">&quot;&quot;&quot;Lint the file. Return an array of error dicts if appropriate.&quot;&quot;&quot;</span>
 
@@ -1590,7 +1598,7 @@
 
             <span class="nl">try:</span>
 
-                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="n">False</span><span class="p">)</span><span class="o">:</span>
+                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="n">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span> <span class="k">or</span> <span class="p">{})</span><span class="o">:</span>
 
                     <span class="k">return</span> <span class="p">[</span>
 
@@ -1642,12 +1650,17 @@
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">meta</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
 <p>Lint the file. Return an array of error dicts if appropriate.</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">,</span> <span class="o">**</span><span class="nl">meta:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">:</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">run</span><span class="p">(</span>
+
+        <span class="n">self</span><span class="p">,</span> <span class="nl">path:</span> <span class="n">str</span><span class="p">,</span> <span class="nl">params:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">None</span><span class="p">,</span> <span class="o">**</span><span class="nl">meta:</span> <span class="n">Any</span>
+
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span><span class="o">:</span>
 
         <span class="s">&quot;&quot;&quot;Lint the file. Return an array of error dicts if appropriate.&quot;&quot;&quot;</span>
 
@@ -1655,7 +1668,7 @@
 
             <span class="nl">try:</span>
 
-                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="n">False</span><span class="p">)</span><span class="o">:</span>
+                <span class="k">if</span> <span class="k">not</span> <span class="n">api</span><span class="p">.</span><span class="n">check_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">disregard_skip</span><span class="o">=</span><span class="n">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span> <span class="k">or</span> <span class="p">{})</span><span class="o">:</span>
 
                     <span class="k">return</span> <span class="p">[</span>
 
@@ -1752,10 +1765,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.76f349be.min.js"></script>
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>

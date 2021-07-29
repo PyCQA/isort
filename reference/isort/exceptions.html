@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -2706,6 +2706,8 @@
 <p>None</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;All isort specific exception classes should be defined here&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
@@ -2715,6 +2717,10 @@
 <span class="k">class</span> <span class="nc">ISortError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Base isort exception object from which all isort sourced exceptions should inherit&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">),</span> <span class="p">())</span>
 
 <span class="k">class</span> <span class="nc">InvalidSettingsPath</span><span class="p">(</span><span class="n">ISortError</span><span class="p">):</span>
 
@@ -2774,13 +2780,15 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
 
 <span class="k">class</span> <span class="nc">FileSkipComment</span><span class="p">(</span><span class="n">FileSkipped</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Raised when an entire file is skipped due to a isort skip file comment&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
 
@@ -2792,7 +2800,7 @@
 
     <span class="sd">&quot;&quot;&quot;Raised when an entire file is skipped due to provided isort settings&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
 
@@ -3099,7 +3107,8 @@
 <p>set self.<strong>traceback</strong> to tb and return self.</p>
 <h3 id="fileskipcomment">FileSkipComment</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">FileSkipComment</span><span class="p">(</span>
-    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -3107,7 +3116,7 @@
 
     <span class="s">&quot;&quot;&quot;Raised when an entire file is skipped due to a isort skip file comment&quot;&quot;&quot;</span>
 
-    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">file_path:</span> <span class="n">str</span>):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">file_path:</span> <span class="n">str</span>, **<span class="n">kwargs:</span> <span class="n">str</span>):
 
         <span class="n">super</span>().<span class="n">__init__</span>(
 
@@ -3140,7 +3149,8 @@
 <p>set self.<strong>traceback</strong> to tb and return self.</p>
 <h3 id="fileskipsetting">FileSkipSetting</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">FileSkipSetting</span><span class="p">(</span>
-    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -3148,7 +3158,7 @@
 
     <span class="s">&quot;&quot;&quot;Raised when an entire file is skipped due to provided isort settings&quot;&quot;&quot;</span>
 
-    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">file_path:</span> <span class="n">str</span>):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">file_path:</span> <span class="n">str</span>, **<span class="n">kwargs:</span> <span class="n">str</span>):
 
         <span class="n">super</span>().<span class="n">__init__</span>(
 
@@ -3197,6 +3207,8 @@
     <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, <span class="n">message:</span> <span class="n">str</span>, <span class="n">file_path:</span> <span class="n">str</span>):
 
         <span class="n">super</span>().<span class="n">__init__</span>(<span class="nb">message</span>)
+
+        <span class="nb">self</span>.<span class="nb">message</span> = <span class="nb">message</span>
 
         <span class="nb">self</span>.<span class="n">file_path</span> = <span class="n">file_path</span>
 </code></pre></div>
@@ -3276,6 +3288,10 @@
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">ISortError</span>(<span class="nb">Exception</span>):
 
     <span class="s">&quot;&quot;&quot;Base isort exception object from which all isort sourced exceptions should inherit&quot;&quot;&quot;</span>
+
+    <span class="n">def</span> <span class="n">__reduce__</span>(<span class="nb">self</span>):  <span class="c1"># type: ignore</span>
+
+        <span class="k">return</span> (<span class="n">partial</span>(<span class="nb">type</span>(<span class="nb">self</span>), **<span class="nb">self</span>.<span class="n">__dict__</span>), ())
 </code></pre></div>
 
 </details>
@@ -3819,10 +3835,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.76f349be.min.js"></script>
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>

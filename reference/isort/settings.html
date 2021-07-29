@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -2466,19 +2466,17 @@
 
         <span class="c1"># don&#39;t check symlinks; either part of the repo and would be checked</span>
 
-        <span class="c1"># twice, or is external to the repo and git won&#39;t konw anything about it</span>
+        <span class="c1"># twice, or is external to the repo and git won&#39;t know anything about it</span>
 
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">git_files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">git_folder</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
+            <span class="k">if</span> <span class="s2">&quot;.git&quot;</span> <span class="ow">in</span> <span class="n">_dirs</span><span class="p">:</span>
+
+                <span class="n">_dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">)</span>
+
             <span class="k">for</span> <span class="n">git_file</span> <span class="ow">in</span> <span class="n">git_files</span><span class="p">:</span>
 
-                <span class="n">git_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">)</span>
-
-                <span class="c1"># followlinks only disables walking into linked dirs</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">git_path</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-
-                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">git_path</span><span class="p">)</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">))</span>
 
         <span class="n">git_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;core.quotePath=&quot;</span><span class="p">]</span>
 
@@ -2486,7 +2484,7 @@
 
             <span class="n">ignored</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
 
-                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-index&quot;</span><span class="p">],</span>
 
                 <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
 
@@ -3546,19 +3544,17 @@
 
         <span class="c1"># don&#39;t check symlinks; either part of the repo and would be checked</span>
 
-        <span class="c1"># twice, or is external to the repo and git won&#39;t konw anything about it</span>
+        <span class="c1"># twice, or is external to the repo and git won&#39;t know anything about it</span>
 
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">git_files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">git_folder</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="n">False</span><span class="p">):</span>
 
+            <span class="k">if</span> <span class="s2">&quot;.git&quot;</span> <span class="ow">in</span> <span class="n">_dirs</span><span class="p">:</span>
+
+                <span class="n">_dirs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">)</span>
+
             <span class="k">for</span> <span class="n">git_file</span> <span class="ow">in</span> <span class="n">git_files</span><span class="p">:</span>
 
-                <span class="n">git_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">)</span>
-
-                <span class="c1"># followlinks only disables walking into linked dirs</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">git_path</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-
-                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">git_path</span><span class="p">)</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">git_file</span><span class="p">))</span>
 
         <span class="n">git_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">git_folder</span><span class="p">),</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;core.quotePath=&quot;</span><span class="p">]</span>
 
@@ -3566,7 +3562,7 @@
 
             <span class="n">ignored</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>  <span class="c1"># nosec # skipcq: PYL-W1510</span>
 
-                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">git_options</span><span class="p">,</span> <span class="s2">&quot;check-ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;-z&quot;</span><span class="p">,</span> <span class="s2">&quot;--stdin&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-index&quot;</span><span class="p">],</span>
 
                 <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
 
@@ -4325,10 +4321,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.76f349be.min.js"></script>
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>

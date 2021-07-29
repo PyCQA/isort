@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../../art/logo.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -2350,6 +2350,8 @@
 
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;from_first&quot;</span><span class="p">,</span>
 
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Switches the typical ordering preference, &quot;</span>
 
         <span class="s2">&quot;showing from imports first then straight ones.&quot;</span><span class="p">,</span>
@@ -3764,9 +3766,11 @@
 
                     <span class="nb">print</span><span class="p">(</span>
 
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">was_skipped</span><span class="si">}</span><span class="s2"> was skipped as it&#39;s listed in &#39;skip&#39; setting&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">was_skipped</span><span class="si">}</span><span class="s2"> was skipped as it&#39;s listed in &#39;skip&#39; setting, &quot;</span>
 
-                        <span class="s2">&quot; or matches a glob in &#39;skip_glob&#39; setting&quot;</span>
+                        <span class="s2">&quot;matches a glob in &#39;skip_glob&#39; setting, or is in a .gitignore file with &quot;</span>
+
+                        <span class="s2">&quot;--skip-gitignore enabled.&quot;</span>
 
                     <span class="p">)</span>
 
@@ -4371,9 +4375,11 @@
 
 <span class="w">                    </span><span class="k">print</span><span class="p">(</span><span class="w"></span>
 
-<span class="w">                        </span><span class="n">f</span><span class="ss">&quot;{was_skipped} was skipped as it&#39;s listed in &#39;skip&#39; setting&quot;</span><span class="w"></span>
+<span class="w">                        </span><span class="n">f</span><span class="ss">&quot;{was_skipped} was skipped as it&#39;s listed in &#39;skip&#39; setting, &quot;</span><span class="w"></span>
 
-<span class="w">                        </span><span class="ss">&quot; or matches a glob in &#39;skip_glob&#39; setting&quot;</span><span class="w"></span>
+<span class="w">                        </span><span class="ss">&quot;matches a glob in &#39;skip_glob&#39; setting, or is in a .gitignore file with &quot;</span><span class="w"></span>
+
+<span class="w">                        </span><span class="ss">&quot;--skip-gitignore enabled.&quot;</span><span class="w"></span>
 
 <span class="w">                    </span><span class="p">)</span><span class="w"></span>
 
@@ -4707,10 +4713,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.76f349be.min.js"></script>
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>
