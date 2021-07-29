@@ -559,7 +559,7 @@ class Config(_Config):
         git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
         try:
             ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                ["git", *git_options, "check-ignore", "-z", "--stdin"],
+                ["git", *git_options, "check-ignore", "-z", "--stdin", "--no-index"],
                 encoding="utf-8",
                 env=env,
                 input="\0".join(files),
