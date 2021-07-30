@@ -98,7 +98,7 @@ def test_typeshed(tmpdir):
             "--skip",
             f"{tmpdir}/third_party/2and3/yaml/__init__.pyi",
             "--skip",
-            f"{tmpdir}/stdlib/ast.pyi",
+            "ast.pyi",
         )
     )
 
