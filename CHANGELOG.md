@@ -4,6 +4,11 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.10.0 TBD
+
+#### Potentially breaking changes:
+  - Fixed #1785: `_ast` module incorrectly excluded from stdlib definition.
+
 ### 5.9.3 July 28 2021
   - Improved text of skipped file message to mention gitignore feature.
   - Made all exceptions pickleable.

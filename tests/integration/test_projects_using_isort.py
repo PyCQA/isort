@@ -83,7 +83,7 @@ def test_websockets(tmpdir):
 
 def test_airflow(tmpdir):
     git_clone("https://github.com/apache/airflow.git", tmpdir)
-    run_isort([str(tmpdir), "--skip-glob", "*/_vendor/*"])
+    run_isort([str(tmpdir), "--skip-glob", "*/_vendor/*", "--skip", "tests"])
 
 
 def test_typeshed(tmpdir):
@@ -97,6 +97,8 @@ def test_typeshed(tmpdir):
             "scripts",
             "--skip",
             f"{tmpdir}/third_party/2and3/yaml/__init__.pyi",
+            "--skip",
+            f"{tmpdir}/stdlib/ast.pyi",
         )
     )
 

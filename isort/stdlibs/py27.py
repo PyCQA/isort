@@ -40,6 +40,7 @@ stdlib = {
     "UserString",
     "W",
     "__builtin__",
+    "_ast",
     "_winreg",
     "abc",
     "aepack",
