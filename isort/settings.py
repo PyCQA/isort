@@ -769,15 +769,16 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
 def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
-    with open(file_path, encoding="utf-8") as config_file:
-        if file_path.endswith(".toml"):
-            config = tomli.load(config_file)
-            for section in sections:
-                config_section = config
-                for key in section.split("."):
-                    config_section = config_section.get(key, {})
-                settings.update(config_section)
-        else:
+    if file_path.endswith(".toml"):
+        with open(file_path, "rb") as bin_config_file:
+            config = tomli.load(bin_config_file)
+        for section in sections:
+            config_section = config
+            for key in section.split("."):
+                config_section = config_section.get(key, {})
+            settings.update(config_section)
+    else:
+        with open(file_path, encoding="utf-8") as config_file:
             if file_path.endswith(".editorconfig"):
                 line = "\n"
                 last_position = config_file.tell()
@@ -790,22 +791,22 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
 
             config = configparser.ConfigParser(strict=False)
             config.read_file(config_file)
-            for section in sections:
-                if section.startswith("*.{") and section.endswith("}"):
-                    extension = section[len("*.{") : -1]
-                    for config_key in config.keys():
-                        if (
-                            config_key.startswith("*.{")
-                            and config_key.endswith("}")
-                            and extension
-                            in map(
-                                lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
-                            )
-                        ):
-                            settings.update(config.items(config_key))
+        for section in sections:
+            if section.startswith("*.{") and section.endswith("}"):
+                extension = section[len("*.{") : -1]
+                for config_key in config.keys():
+                    if (
+                        config_key.startswith("*.{")
+                        and config_key.endswith("}")
+                        and extension
+                        in map(
+                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
+                        )
+                    ):
+                        settings.update(config.items(config_key))
 
-                elif config.has_section(section):
-                    settings.update(config.items(section))
+            elif config.has_section(section):
+                settings.update(config.items(section))
 
     if settings:
         settings["source"] = file_path
