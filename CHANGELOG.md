@@ -5,6 +5,7 @@ NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
 ### 5.10.0 TBD
+  - Implemented #1796: Switch to `tomli` for pyproject.toml configuration loader.
 
 #### Potentially breaking changes:
   - Fixed #1785: `_ast` module incorrectly excluded from stdlib definition.

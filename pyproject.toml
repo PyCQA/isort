@@ -58,6 +58,7 @@ bandit = "^1.6"
 safety = "^1.8"
 flake8-bugbear = "^19.8"
 black = {version = "^20.08b1", allow-prereleases = true}
+coverage = {version = "^6.0b1", allow-prereleases = true}
 mypy = "^0.902"
 ipython = "^7.7"
 pytest = "^6.0"
