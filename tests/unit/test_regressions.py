@@ -1869,3 +1869,33 @@ class Bar:
     ...
 '''
     )
+
+
+def test_isort_should_produce_the_same_code_on_subsequent_runs_issue_1799(tmpdir):
+    code = """import sys
+
+if sys.version_info[:2] >= (3, 8):
+    # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
+    from importlib.metadata import PackageNotFoundError, version  # pragma: no cover
+else:
+    from importlib_metadata import PackageNotFoundError, version  # pragma: no cover
+"""
+    config_file = tmpdir.join(".isort.cfg")
+    config_file.write(
+        """[isort]
+profile=black
+src_paths=isort,test
+line_length=100
+skip=.tox,.venv,build,dist,docs,tests
+extra_standard_library=pkg_resources,setuptools,typing
+known_test=pytest
+known_first_party=ibpt
+sections=FUTURE,STDLIB,TEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+import_heading_firstparty=internal
+import_heading_thirdparty=external
+"""
+    )
+    settings = isort.settings.Config(str(config_file))
+    assert isort.code(code, config=settings) == isort.code(
+        isort.code(code, config=settings), config=settings
+    )
