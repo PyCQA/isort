@@ -346,7 +346,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     target_group.add_argument(
         "--extend-skip-glob",
         help="Additional files that isort should skip over (extending --skip-glob).",
-        dest="skip_glob",
+        dest="extend_skip_glob",
         action="append",
     )
     target_group.add_argument(
