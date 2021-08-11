@@ -2124,7 +2124,7 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Additional files that isort should skip over (extending --skip-glob).&quot;</span><span class="p">,</span>
 
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;skip_glob&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;extend_skip_glob&quot;</span><span class="p">,</span>
 
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
 
@@ -2984,7 +2984,9 @@
 
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Add an explicitly defined source path &quot;</span>
 
-        <span class="s2">&quot;(modules within src paths have their imports automatically categorized as first_party).&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;(modules within src paths have their imports automatically categorized as first_party).&quot;</span>
+
+        <span class="s2">&quot; Glob expansion (`*` and `**`) is supported for this option.&quot;</span><span class="p">,</span>
 
     <span class="p">)</span>
 
