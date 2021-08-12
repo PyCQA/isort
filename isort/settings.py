@@ -538,7 +538,7 @@ class Config(_Config):
             return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
-        env = {"LANG": "C.UTF-8"}
+        env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
                 ["git", "-C", folder, "rev-parse", "--show-toplevel"], encoding="utf-8", env=env
