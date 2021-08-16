@@ -1246,7 +1246,7 @@ Explicitly set the settings path or file instead of auto determining based on fi
 
 ## Jobs
 
-Number of files to process in parallel.
+Number of files to process in parallel. Negative value means use number of CPUs.
 
 **Type:** Int  
 **Default:** `None`  
