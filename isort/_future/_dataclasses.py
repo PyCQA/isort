@@ -284,7 +284,7 @@ class Field:
 
     # This is used to support the PEP 487 __set_name__ protocol in the
     # case where we're using a field that contains a descriptor as a
-    # defaul value.  For details on __set_name__, see
+    # default value.  For details on __set_name__, see
     # https://www.python.org/dev/peps/pep-0487/#implementation-details.
     #
     # Note that in _process_class, this Field object is overwritten
@@ -680,7 +680,7 @@ def _get_field(cls, a_name, a_type):
     # In addition to checking for actual types here, also check for
     # string annotations.  get_type_hints() won't always work for us
     # (see https://github.com/python/typing/issues/508 for example),
-    # plus it's expensive and would require an eval for every stirng
+    # plus it's expensive and would require an eval for every string
     # annotation.  So, make a best effort to see if this is a ClassVar
     # or InitVar using regex's and checking that the thing referenced
     # is actually of the correct type.
@@ -1148,7 +1148,7 @@ def make_dataclass(
             raise TypeError(f"Invalid field: {item!r}")
 
         if not isinstance(name, str) or not name.isidentifier():
-            raise TypeError(f"Field names must be valid identifers: {name!r}")
+            raise TypeError(f"Field names must be valid identifiers: {name!r}")
         if keyword.iskeyword(name):
             raise TypeError(f"Field names must not be keywords: {name!r}")
         if name in seen:

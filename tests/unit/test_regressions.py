@@ -98,7 +98,7 @@ from starlette import status
 
 
 def test_extra_blank_line_added_nested_imports_issue_1290():
-    """Ensure isort doesn't added unecessary blank lines above nested imports.
+    """Ensure isort doesn't add unnecessary blank lines above nested imports.
     See: https://github.com/pycqa/isort/issues/1290
     """
     test_input = '''from typing import TYPE_CHECKING

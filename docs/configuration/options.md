@@ -80,7 +80,7 @@ Additional files that isort should skip over (extending --skip-glob).
 ## Skip Gitignore
 
 Treat project as a git repository and ignore files listed in .gitignore.
-NOTE: This requires git to be installed and accesible from the same shell as isort.
+NOTE: This requires git to be installed and accessible from the same shell as isort.
 
 **Type:** Bool  
 **Default:** `False`  

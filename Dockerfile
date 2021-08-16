@@ -4,7 +4,7 @@ FROM python:$VERSION
 # Install pip and poetry
 RUN python -m pip install --upgrade pip && python -m pip install poetry
 
-# Setup as minimal a stub project as posible, simply to allow caching base dependencies
+# Setup as minimal a stub project as possible, simply to allow caching base dependencies
 # between builds.
 #
 # If error is encountered in these steps, can safely be removed locally.
