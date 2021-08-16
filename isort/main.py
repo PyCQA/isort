@@ -1150,7 +1150,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if config.verbose:
             print(ASCII_ART)
 
-        if jobs:
+        if jobs and jobs != 1:
             import multiprocessing
 
             executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
