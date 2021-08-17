@@ -19,7 +19,7 @@ def as_stream(text: str) -> UnseekableTextIOWrapper:
 
 def isort_test(code: str, expected_output: str = "", **config):
     """Runs isort against the given code snippet and ensures that it
-    gives consistent output accross multiple runs, and if an expected_output
+    gives consistent output across multiple runs, and if an expected_output
     is given - that it matches that.
     """
     expected_output = expected_output or code

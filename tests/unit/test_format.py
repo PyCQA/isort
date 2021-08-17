@@ -85,7 +85,7 @@ def test_colored_printer_diff(capsys):
     assert colorama.Fore.GREEN + "+ added line" in out
     # Removed lines are red
     assert colorama.Fore.RED + "- removed line" in out
-    # Normal lines are resetted back
+    # Normal lines are reset back
     assert colorama.Style.RESET_ALL + "normal line" in out
 
 

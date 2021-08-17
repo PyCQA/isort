@@ -44,7 +44,7 @@ def git_hook(
         modifying anything.
     :param bool lazy - if True, also check/fix unstaged files.
         This is useful if you frequently use ``git commit -a`` for example.
-        If False, ony check/fix the staged files for isort errors.
+        If False, only check/fix the staged files for isort errors.
     :param str settings_file - A path to a file to be used as
                                the configuration file for this run.
         When settings_file is the empty string, the configuration file

@@ -11,7 +11,7 @@ from . import api
 
 
 @contextmanager
-def supress_stdout() -> Iterator[None]:
+def suppress_stdout() -> Iterator[None]:
     stdout = sys.stdout
     with open(os.devnull, "w") as devnull:
         sys.stdout = devnull
@@ -28,7 +28,7 @@ class Linter(BaseLinter):  # type: ignore
         self, path: str, params: Optional[Dict[str, Any]] = None, **meta: Any
     ) -> List[Dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
-        with supress_stdout():
+        with suppress_stdout():
             try:
                 if not api.check_file(path, disregard_skip=False, **params or {}):
                     return [
