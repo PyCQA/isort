@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
@@ -75,7 +76,6 @@ pipfile = "^0.0.2"
 requirementslib = "^1.5"
 pipreqs = "^0.4.9"
 pip_api = "^0.0.12"
-numpy = "^1.16.0"
 pylama = "^7.7"
 pip = "^21.1.1"
 pip-shims = "^0.5.2"

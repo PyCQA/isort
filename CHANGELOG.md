@@ -8,6 +8,7 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
   - Implemented #1796: Switch to `tomli` for pyproject.toml configuration loader.
   - Fixed #1801: CLI bug (--exend-skip-glob, overrides instead of extending).
   - Fixed #1802: respect PATH customization in nested calls to git.
+  - Added support for Python 3.10
 
 #### Potentially breaking changes:
   - Fixed #1785: `_ast` module incorrectly excluded from stdlib definition.
