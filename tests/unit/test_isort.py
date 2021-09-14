@@ -19,7 +19,7 @@ from isort import api, sections, files
 from isort.settings import Config
 
 from isort.utils import exists_case_sensitive
-from isort.exceptions import FileSkipped, ExistingSyntaxErrors
+from isort.exceptions import FileSkipped, ExistingSyntaxErrors, MissingSection
 from .utils import as_stream, UnreadableStream
 
 if TYPE_CHECKING:
@@ -2035,6 +2035,41 @@ def test_custom_sections() -> None:
         "import p24.imports._VERSION as VERSION\n"
         "import p24.shared.media_wiki_syntax as syntax\n"
     )
+
+
+def test_custom_sections_exception_handling() -> None:
+    """Ensure that appropriate exception is raised for missing sections"""
+    test_input = "import requests\n"
+
+    with pytest.raises(MissingSection):
+        isort.code(
+            code=test_input,
+            default_section="THIRDPARTY",
+            sections=[
+                "FUTURE",
+                "STDLIB",
+                "DJANGO",
+                "PANDAS",
+                "FIRSTPARTY",
+                "LOCALFOLDER",
+            ],
+        )
+
+    test_input = "from requests import get, post\n"
+
+    with pytest.raises(MissingSection):
+        isort.code(
+            code=test_input,
+            default_section="THIRDPARTY",
+            sections=[
+                "FUTURE",
+                "STDLIB",
+                "DJANGO",
+                "PANDAS",
+                "FIRSTPARTY",
+                "LOCALFOLDER",
+            ],
+        )
 
 
 def test_glob_known() -> None:

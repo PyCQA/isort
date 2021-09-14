@@ -447,6 +447,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         f"could not place module {import_from} of line {line} --"
                         " Do you need to define a default section?"
                     )
+
+                if placed_module and placed_module not in imports:
+                    raise MissingSection(import_module=import_from, section=placed_module)
+
                 root = imports[placed_module][type_of_import]  # type: ignore
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
