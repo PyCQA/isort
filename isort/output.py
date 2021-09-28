@@ -206,6 +206,9 @@ def sorted_imports(
             else:
                 formatted_output[imports_tail:0] = [""]
 
+            if config.lines_before_imports != -1:
+                formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
+
     if parsed.place_imports:
         new_out_lines = []
         for index, line in enumerate(formatted_output):

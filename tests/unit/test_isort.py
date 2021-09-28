@@ -1473,6 +1473,19 @@ def test_order_by_type() -> None:
     )
 
 
+def test_custom_lines_before_import_section() -> None:
+    """Test the case where the number of lines to output after imports has been explicitly set."""
+    test_input = "from a import b\nfrom c import d\nfoo = 'bar'\n"
+
+    # default case is no line added before the import
+    assert isort.code(test_input) == ("from a import b\nfrom c import d\n\nfoo = 'bar'\n")
+
+    # test again with a custom number of lines before the import section
+    assert isort.code(test_input, lines_before_imports=2) == (
+        "\n\nfrom a import b\nfrom c import d\n\nfoo = 'bar'\n"
+    )
+
+
 def test_custom_lines_after_import_section() -> None:
     """Test the case where the number of lines to output after imports has been explicitly set."""
     test_input = "from a import b\nfoo = 'bar'\n"

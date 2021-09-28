@@ -40,6 +40,7 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Co
         "sections",
         "known_future_library",
         "forced_separate",
+        "lines_before_imports",
         "lines_after_imports",
         "lines_between_sections",
         "lines_between_types",

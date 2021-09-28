@@ -177,6 +177,7 @@ class _Config:
     use_parentheses: bool = False
     order_by_type: bool = True
     atomic: bool = False
+    lines_before_imports: int = -1
     lines_after_imports: int = -1
     lines_between_sections: int = 1
     lines_between_types: int = 0
