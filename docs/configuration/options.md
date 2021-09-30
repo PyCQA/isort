@@ -431,6 +431,15 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 **Python & Config File Name:** import_headings  
 **CLI Flags:** **Not Supported**
 
+## Import Footers
+
+**No Description**
+
+**Type:** Dict  
+**Default:** `{}`  
+**Python & Config File Name:** import_footers  
+**CLI Flags:** **Not Supported**
+
 ## Balanced Wrapping
 
 Balances wrapping to produce the most consistent line length possible
