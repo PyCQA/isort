@@ -187,7 +187,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             line, in_quote=in_quote, index=index, section_comments=config.section_comments
         )
 
-        if line in config.section_comments and not skipping_line:
+        if (
+            line in config.section_comments or line in config.section_comments_end
+        ) and not skipping_line:
             if import_index == -1:  # pragma: no branch
                 import_index = index - 1
             continue

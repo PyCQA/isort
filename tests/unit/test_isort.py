@@ -1356,6 +1356,163 @@ def test_titled_imports() -> None:
     )
 
 
+def test_footered_imports() -> None:
+    """Tests setting both custom titles and footers to import sections."""
+    test_input = (
+        "import sys\n"
+        "import unicodedata\n"
+        "import statistics\n"
+        "import os\n"
+        "import myproject.test\n"
+        "import django.settings"
+    )
+    test_output = isort.code(
+        code=test_input,
+        known_first_party=["myproject"],
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_output == (
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+    test_second_run = isort.code(
+        code=test_output,
+        known_first_party=["myproject"],
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_second_run == test_output
+
+    test_input_lines_down = (
+        "# comment 1\n"
+        "import django.settings\n"
+        "\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "import statistics\n"
+        "import os\n"
+        "import myproject.test\n"
+        "\n"
+        "# Standard Library End\n"
+    )
+    test_output_lines_down = isort.code(
+        code=test_input_lines_down,
+        known_first_party=["myproject"],
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_output_lines_down == (
+        "# comment 1\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+
+
+def test_titled_and_footered_imports() -> None:
+    """Tests setting custom footers to import sections."""
+    test_input = (
+        "import sys\n"
+        "import unicodedata\n"
+        "import statistics\n"
+        "import os\n"
+        "import myproject.test\n"
+        "import django.settings"
+    )
+    test_output = isort.code(
+        code=test_input,
+        known_first_party=["myproject"],
+        import_heading_stdlib="Standard Library",
+        import_heading_firstparty="My Stuff",
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_output == (
+        "# Standard Library\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "# My Stuff\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+    test_second_run = isort.code(
+        code=test_output,
+        known_first_party=["myproject"],
+        import_heading_stdlib="Standard Library",
+        import_heading_firstparty="My Stuff",
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_second_run == test_output
+
+    test_input_lines_down = (
+        "# comment 1\n"
+        "import django.settings\n"
+        "\n"
+        "# Standard Library\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "import statistics\n"
+        "import os\n"
+        "import myproject.test\n"
+        "\n"
+        "# Standard Library End\n"
+    )
+    test_output_lines_down = isort.code(
+        code=test_input_lines_down,
+        known_first_party=["myproject"],
+        import_heading_stdlib="Standard Library",
+        import_heading_firstparty="My Stuff",
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+    )
+    assert test_output_lines_down == (
+        "# comment 1\n"
+        "# Standard Library\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "# My Stuff\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+
+
 def test_balanced_wrapping() -> None:
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
     test_input = (

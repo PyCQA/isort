@@ -249,7 +249,10 @@ def process(
                     else:
                         code_sorting_section += line
                         line = ""
-                elif stripped_line in config.section_comments:
+                elif (
+                    stripped_line in config.section_comments
+                    or stripped_line in config.section_comments_end
+                ):
                     if import_section and not contains_imports:
                         output_stream.write(import_section)
                         import_section = line
@@ -460,6 +463,7 @@ def _indented_config(config: Config, indent: str) -> Config:
         wrap_length=max(config.wrap_length - len(indent), 0),
         lines_after_imports=1,
         import_headings=config.import_headings if config.indented_import_headings else {},
+        import_footers=config.import_footers if config.indented_import_headings else {},
     )
 
 
