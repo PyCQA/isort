@@ -491,6 +491,18 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 - --ac
 - --atomic
 
+## Lines Before Imports
+
+How many lines to add before an import section
+
+**Type:** Int
+**Default:** `-1`
+**Python & Config File Name:** lines_before_imports
+**CLI Flags:**
+
+- --lbi
+- --lines-before-imports
+
 ## Lines After Imports
 
 **No Description**
