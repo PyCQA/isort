@@ -404,14 +404,14 @@ def sort_file(
 
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path
-        config = _config(path=actual_file_path, config=config, **config_kwargs)
+        config = _config(path=actual_file_path, config=file_config, **config_kwargs)
         changed: bool = False
         try:
             if write_to_stdout:
                 changed = sort_stream(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
-                    config=file_config,
+                    config=config,
                     file_path=actual_file_path,
                     disregard_skip=disregard_skip,
                     extension=extension,
@@ -429,7 +429,7 @@ def sort_file(
                             changed = sort_stream(
                                 input_stream=source_file.stream,
                                 output_stream=output_stream,
-                                config=file_config,
+                                config=config,
                                 file_path=actual_file_path,
                                 disregard_skip=disregard_skip,
                                 extension=extension,
