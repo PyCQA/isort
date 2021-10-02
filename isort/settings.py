@@ -726,34 +726,32 @@ class Config(_Config):
         return patterns
 
 
-class Trie_Node:
+class TrieNode:
     def __init__(self) -> None:
-        self.nodes: Dict[str, Optional[Trie_Node]] = {}
+        self.nodes: Dict[str, TrieNode] = {}
         self.config_info: Tuple[str, Config] = ("", DEFAULT_CONFIG)
 
 
 class Trie:
     def __init__(self) -> None:
-        self.root: Trie_Node = Trie_Node()
+        self.root: TrieNode = TrieNode()
 
-    
     def _insert(self, config_path: str, config_file: str, config_data: Dict[str, Any]) -> None:
         resolved_config_path_as_tuple = Path(config_path).parent.resolve().parts
-        
+
         temp = self.root
 
         for path in resolved_config_path_as_tuple:
             if path not in temp.nodes:
-                temp.nodes[path] = Trie_Node()
+                temp.nodes[path] = TrieNode()
 
             temp = temp.nodes[path]
 
         temp.config_info = (config_file, Config(**config_data))
 
-    
     def _search(self, filename: str) -> Tuple[str, Config]:
         resolved_file_path_as_tuple = Path(filename).resolve().parts
-        
+
         temp = self.root
 
         for path in resolved_file_path_as_tuple:
@@ -839,7 +837,9 @@ def find_all_configs(src_paths: Tuple[str]) -> Trie:
                             potential_config_file, CONFIG_SECTIONS[config_file_name]
                         )
                     except Exception:
-                        warn(f"Failed to pull configuration information from {potential_config_file}")
+                        warn(
+                            f"Failed to pull configuration information from {potential_config_file}"
+                        )
                         config_data = {}
 
                     if config_data:
