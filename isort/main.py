@@ -492,6 +492,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         type=str,
     )
     output_group.add_argument(
+        "--lbi", "--lines-before-imports", dest="lines_before_imports", type=int
+    )
+    output_group.add_argument(
         "--lai", "--lines-after-imports", dest="lines_after_imports", type=int
     )
     output_group.add_argument(

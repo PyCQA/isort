@@ -138,6 +138,17 @@ def sorted_imports(
                 if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
                     section_output.insert(0, section_comment)
 
+            section_footer = config.import_footers.get(section_name.lower(), "")
+            if section_footer and section_footer not in seen_headings:
+                if config.dedup_headings:
+                    seen_headings.add(section_footer)
+                section_comment_end = f"# {section_footer}"
+                if (
+                    section_comment_end not in parsed.lines_without_imports[-1:]
+                ):  # pragma: no branch
+                    section_output.append("")  # Empty line for black compatibility
+                    section_output.append(section_comment_end)
+
             if pending_lines_before or not no_lines_before:
                 output += [""] * config.lines_between_sections
 
@@ -205,6 +216,9 @@ def sorted_imports(
                 formatted_output[imports_tail:0] = ["", ""]
             else:
                 formatted_output[imports_tail:0] = [""]
+
+            if config.lines_before_imports != -1:
+                formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
 
     if parsed.place_imports:
         new_out_lines = []

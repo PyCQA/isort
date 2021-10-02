@@ -431,6 +431,15 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 **Python & Config File Name:** import_headings  
 **CLI Flags:** **Not Supported**
 
+## Import Footers
+
+**No Description**
+
+**Type:** Dict  
+**Default:** `{}`  
+**Python & Config File Name:** import_footers  
+**CLI Flags:** **Not Supported**
+
 ## Balanced Wrapping
 
 Balances wrapping to produce the most consistent line length possible
@@ -481,6 +490,18 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 - --ac
 - --atomic
+
+## Lines Before Imports
+
+How many lines to add before an import section
+
+**Type:** Int
+**Default:** `-1`
+**Python & Config File Name:** lines_before_imports
+**CLI Flags:**
+
+- --lbi
+- --lines-before-imports
 
 ## Lines After Imports
 

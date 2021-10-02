@@ -102,6 +102,7 @@ CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
 FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
 
 IMPORT_HEADING_PREFIX = "import_heading_"
+IMPORT_FOOTER_PREFIX = "import_footer_"
 KNOWN_PREFIX = "known_"
 KNOWN_SECTION_MAPPING: Dict[str, str] = {
     STDLIB: "STANDARD_LIBRARY",
@@ -173,10 +174,12 @@ class _Config:
     single_line_exclusions: Tuple[str, ...] = ()
     default_section: str = THIRDPARTY
     import_headings: Dict[str, str] = field(default_factory=dict)
+    import_footers: Dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False
     order_by_type: bool = True
     atomic: bool = False
+    lines_before_imports: int = -1
     lines_after_imports: int = -1
     lines_between_sections: int = 1
     lines_between_types: int = 0
@@ -297,6 +300,7 @@ class Config(_Config):
     ):
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         self._section_comments: Optional[Tuple[str, ...]] = None
+        self._section_comments_end: Optional[Tuple[str, ...]] = None
         self._skips: Optional[FrozenSet[str]] = None
         self._skip_globs: Optional[FrozenSet[str]] = None
         self._sorting_function: Optional[Callable[..., List[str]]] = None
@@ -307,6 +311,7 @@ class Config(_Config):
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
             config_vars.pop("_known_patterns")
             config_vars.pop("_section_comments")
+            config_vars.pop("_section_comments_end")
             config_vars.pop("_skips")
             config_vars.pop("_skip_globs")
             config_vars.pop("_sorting_function")
@@ -381,6 +386,7 @@ class Config(_Config):
 
         known_other = {}
         import_headings = {}
+        import_footers = {}
         for key, value in tuple(combined_config.items()):
             # Collect all known sections beyond those that have direct entries
             if key.startswith(KNOWN_PREFIX) and key not in (
@@ -417,6 +423,8 @@ class Config(_Config):
                         )
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
+            if key.startswith(IMPORT_FOOTER_PREFIX):
+                import_footers[key[len(IMPORT_FOOTER_PREFIX) :].lower()] = str(value)
 
             # Coerce all provided config values into their correct type
             default_value = _DEFAULT_SETTINGS.get(key, None)
@@ -495,6 +503,10 @@ class Config(_Config):
             for import_heading_key in import_headings:
                 combined_config.pop(f"{IMPORT_HEADING_PREFIX}{import_heading_key}")
             combined_config["import_headings"] = import_headings
+        if import_footers:
+            for import_footer_key in import_footers:
+                combined_config.pop(f"{IMPORT_FOOTER_PREFIX}{import_footer_key}")
+            combined_config["import_footers"] = import_footers
 
         unsupported_config_errors = {}
         for option in set(combined_config.keys()).difference(
@@ -652,6 +664,14 @@ class Config(_Config):
 
         self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
         return self._section_comments
+
+    @property
+    def section_comments_end(self) -> Tuple[str, ...]:
+        if self._section_comments_end is not None:
+            return self._section_comments_end
+
+        self._section_comments_end = tuple(f"# {footer}" for footer in self.import_footers.values())
+        return self._section_comments_end
 
     @property
     def skips(self) -> FrozenSet[str]:
