@@ -15,7 +15,7 @@ from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config
+from .settings import VALID_PY_TARGETS, Config, Trie, find_all_configs
 from .wrap_modes import WrapModes
 
 DEPRECATED_SINGLE_DASH_ARGS = {
@@ -258,6 +258,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="settings_path",
         help="Explicitly set the settings path or file instead of auto determining "
         "based on file location.",
+    )
+    general_group.add_argument(
+        "--resolve-all-configs",
+        dest="resolve_all_configs",
+        action="store_true",
+        help="Tells isort to resolve the configs for all sub-directories "
+        "and sort files in terms of its closest config files.",
     )
     general_group.add_argument(
         "--profile",
@@ -1071,9 +1078,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     stream_filename = config_dict.pop("filename", None)
     ext_format = config_dict.pop("ext_format", None)
     allow_root = config_dict.pop("allow_root", None)
+    resolve_all_configs = config_dict.pop("resolve_all_configs", False)
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
+
+    config_trie: Optional[Trie] = None
+    if resolve_all_configs:
+        config_trie = find_all_configs(config_dict.get("src_paths", (".")))
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
@@ -1162,6 +1174,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     ask_to_apply=ask_to_apply,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
+                    config_trie=config_trie,
                 ),
                 file_names,
             )
@@ -1176,6 +1189,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
+                    config_trie=config_trie,
                 )
                 for file_name in file_names
             )
