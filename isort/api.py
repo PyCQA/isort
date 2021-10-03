@@ -332,7 +332,7 @@ def check_file(
             if config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
-            file_config = config_info[1]
+            file_config = Config(**config_info[1])
 
     with io.File.read(filename) as source_file:
         return check_stream(
@@ -400,7 +400,7 @@ def sort_file(
             if config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
-            file_config = config_info[1]
+            file_config = Config(**config_info[1])
 
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path

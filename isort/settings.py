@@ -41,6 +41,7 @@ from .exceptions import (
 from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
+from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
@@ -726,43 +727,6 @@ class Config(_Config):
         return patterns
 
 
-class TrieNode:
-    def __init__(self) -> None:
-        self.nodes: Dict[str, TrieNode] = {}
-        self.config_info: Tuple[str, Config] = ("", DEFAULT_CONFIG)
-
-
-class Trie:
-    def __init__(self) -> None:
-        self.root: TrieNode = TrieNode()
-
-    def _insert(self, config_path: str, config_file: str, config_data: Dict[str, Any]) -> None:
-        resolved_config_path_as_tuple = Path(config_path).parent.resolve().parts
-
-        temp = self.root
-
-        for path in resolved_config_path_as_tuple:
-            if path not in temp.nodes:
-                temp.nodes[path] = TrieNode()
-
-            temp = temp.nodes[path]
-
-        temp.config_info = (config_file, Config(**config_data))
-
-    def _search(self, filename: str) -> Tuple[str, Config]:
-        resolved_file_path_as_tuple = Path(filename).resolve().parts
-
-        temp = self.root
-
-        for path in resolved_file_path_as_tuple:
-            if path not in temp.nodes:
-                return temp.config_info
-
-            temp = temp.nodes[path]
-
-        return temp.config_info
-
-
 def _get_str_to_type_converter(setting_name: str) -> Union[Callable[[str], Any], Type[Any]]:
     type_converter: Union[Callable[[str], Any], Type[Any]] = type(
         _DEFAULT_SETTINGS.get(setting_name, "")
@@ -824,7 +788,7 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
 
 @lru_cache()
 def find_all_configs(src_paths: Tuple[str]) -> Trie:
-    trie_root = Trie()
+    trie_root = Trie("default", DEFAULT_CONFIG.__dict__)
 
     for path in src_paths:
         for (dirpath, _, _) in os.walk(path):

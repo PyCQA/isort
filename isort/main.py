@@ -15,7 +15,8 @@ from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
 from .profiles import profiles
-from .settings import VALID_PY_TARGETS, Config, Trie, find_all_configs
+from .settings import VALID_PY_TARGETS, Config, find_all_configs
+from .utils import Trie
 from .wrap_modes import WrapModes
 
 DEPRECATED_SINGLE_DASH_ARGS = {
