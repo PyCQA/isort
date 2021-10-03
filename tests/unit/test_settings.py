@@ -274,17 +274,17 @@ profile=black
 
     config_trie = settings.find_all_configs((str(tmpdir),))
 
-    config_info_1 = config_trie._search(str(dir1 / "test1.py"))
+    config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
     assert "profile" in config_info_1[1] and config_info_1[1]["profile"] == "django"
 
-    config_info_2 = config_trie._search(str(dir2 / "test2.py"))
+    config_info_2 = config_trie.search(str(dir2 / "test2.py"))
     assert config_info_2[0] == str(pyproject_toml_file)
     assert "profile" in config_info_2[1] and config_info_2[1]["profile"] == "hug"
 
-    config_info_3 = config_trie._search(str(dir3 / "test3.py"))
+    config_info_3 = config_trie.search(str(dir3 / "test3.py"))
     assert config_info_3[0] == str(isort_cfg_file)
     assert "profile" in config_info_3[1] and config_info_3[1]["profile"] == "black"
 
-    config_info_4 = config_trie._search(str(tmpdir / "file4.py"))
+    config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"

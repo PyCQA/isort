@@ -328,7 +328,7 @@ def check_file(
     if "config_trie" in config_kwargs:
         config_trie = config_kwargs.pop("config_trie", None)
         if config_trie:
-            config_info = config_trie._search(filename)
+            config_info = config_trie.search(filename)
             if config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
@@ -396,7 +396,7 @@ def sort_file(
     if "config_trie" in config_kwargs:
         config_trie = config_kwargs.pop("config_trie", None)
         if config_trie:
-            config_info = config_trie._search(filename)
+            config_info = config_trie.search(filename)
             if config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
