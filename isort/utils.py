@@ -6,9 +6,6 @@ from typing import Any, Dict, Optional, Tuple
 
 class TrieNode:
     def __init__(self, config_file: str = "", config_data: Optional[Dict[str, Any]] = None) -> None:
-        if not config_file:
-            config_file = ""
-
         if not config_data:
             config_data = {}
 
@@ -25,8 +22,8 @@ class Trie:
     def __init__(self, config_file: str = "", config_data: Optional[Dict[str, Any]] = None) -> None:
         self.root: TrieNode = TrieNode(config_file, config_data)
 
-    def _insert(self, config_path: str, config_file: str, config_data: Dict[str, Any]) -> None:
-        resolved_config_path_as_tuple = Path(config_path).parent.resolve().parts
+    def _insert(self, config_file: str, config_data: Dict[str, Any]) -> None:
+        resolved_config_path_as_tuple = Path(config_file).parent.resolve().parts
 
         temp = self.root
 

@@ -807,7 +807,7 @@ def find_all_configs(src_paths: Tuple[str]) -> Trie:
                         config_data = {}
 
                     if config_data:
-                        trie_root._insert(potential_config_file, potential_config_file, config_data)
+                        trie_root._insert(potential_config_file, config_data)
                         break
 
     return trie_root
