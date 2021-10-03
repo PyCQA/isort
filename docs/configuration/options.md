@@ -43,6 +43,22 @@ Files that isort should skip over. If you want to skip multiple files you should
 - -s
 - --skip
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+skip=.gitignore,.dockerignore
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+skip = [".gitignore", ".dockerignore"]
+```
+
 ## Extend Skip
 
 Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
@@ -53,6 +69,22 @@ Extends --skip to add additional files that isort should skip over. If you want 
 **CLI Flags:**
 
 - --extend-skip
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+extend_skip=.md,.json
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+extend_skip = [".md", ".json"]
+```
 
 ## Skip Glob
 
@@ -66,6 +98,22 @@ Files that isort should skip over.
 - --sg
 - --skip-glob
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+skip_glob=docs/*
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+skip_glob = ["docs/*"]
+```
+
 ## Extend Skip Glob
 
 Additional files that isort should skip over (extending --skip-glob).
@@ -76,6 +124,22 @@ Additional files that isort should skip over (extending --skip-glob).
 **CLI Flags:**
 
 - --extend-skip-glob
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+extend_skip_glob=my_*_module.py,test/*
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+extend_skip_glob = ["my_*_module.py", "test/*"]
+```
 
 ## Skip Gitignore
 
@@ -174,6 +238,22 @@ Force isort to recognize a module as being part of a third party library.
 - -o
 - --thirdparty
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+known_third_party=my_module1,my_module2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+known_third_party = ["my_module1", "my_module2"]
+```
+
 ## Known First Party
 
 Force isort to recognize a module as being part of the current python project.
@@ -186,6 +266,22 @@ Force isort to recognize a module as being part of the current python project.
 - -p
 - --project
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+known_first_party=my_module1,my_module2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+known_first_party = ["my_module1", "my_module2"]
+```
+
 ## Known Local Folder
 
 Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).
@@ -196,6 +292,22 @@ Force isort to recognize a module as being a local folder. Generally, this is re
 **CLI Flags:**
 
 - --known-local-folder
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+known_local_folder=my_module1,my_module2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+known_local_folder = ["my_module1", "my_module2"]
+```
 
 ## Known Standard Library
 
@@ -209,6 +321,22 @@ Force isort to recognize a module as part of Python's standard library.
 - -b
 - --builtin
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+known_standard_library=my_module1,my_module2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+known_standard_library = ["my_module1", "my_module2"]
+```
+
 ## Extra Standard Library
 
 Extra modules to be included in the list of ones in Python's standard library.
@@ -219,6 +347,22 @@ Extra modules to be included in the list of ones in Python's standard library.
 **CLI Flags:**
 
 - --extra-builtin
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+extra_standard_library=my_module1,my_module2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+extra_standard_library = ["my_module1", "my_module2"]
+```
 
 ## Known Other
 
@@ -277,12 +421,28 @@ multi_line_output = 3
 
 ## Forced Separate
 
-**No Description**
+Force certain sub modules to show separately
 
 **Type:** Tuple  
 **Default:** `()`  
 **Python & Config File Name:** forced_separate  
 **CLI Flags:** **Not Supported**
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+forced_separate=glob_exp1,glob_exp2
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+forced_separate = ["glob_exp1", "glob_exp2"]
+```
 
 ## Indent
 
@@ -331,12 +491,28 @@ Sort straight imports by their string length. Similar to `length_sort` but appli
 
 ## Length Sort Sections
 
-**No Description**
+Sort the given sections by length
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
 **Python & Config File Name:** length_sort_sections  
 **CLI Flags:** **Not Supported**
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+length_sort_sections=future,stdlib
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+length_sort_sections = ["future", "stdlib"]
+```
 
 ## Add Imports
 
@@ -350,6 +526,22 @@ Adds the specified import line to all files, automatically determining correct p
 - -a
 - --add-import
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+add_imports=import os,import json
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+add_imports = ["import os", "import json"]
+```
+
 ## Remove Imports
 
 Removes the specified import from all files.
@@ -361,6 +553,22 @@ Removes the specified import from all files.
 
 - --rm
 - --remove-import
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+remove_imports=os,json
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+remove_imports = ["os", "json"]
+```
 
 ## Append Only
 
@@ -409,6 +617,22 @@ One or more modules to exclude from the single line rule.
 
 - --nsl
 - --single-line-exclusions
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+single_line_exclusions=os,json
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+single_line_exclusions = ["os", "json"]
+```
 
 ## Default Section
 
@@ -710,6 +934,22 @@ Sections which should not be split with previous by empty lines
 - --nlb
 - --no-lines-before
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+no_lines_before=future,stdlib
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+no_lines_before = ["future", "stdlib"]
+```
+
 ## No Inline Sort
 
 Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c ,b`).
@@ -828,6 +1068,22 @@ Add an explicitly defined source path (modules within src paths have their impor
 - --src
 - --src-path
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+src_paths = src,tests
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+src_paths = ["src", "tests"]
+```
+
 ## Old Finders
 
 Use the old deprecated finder logic that relies on environment introspection magic.
@@ -918,6 +1174,22 @@ Tells isort to treat the specified single line comment(s) as if they are code.
 
 - --treat-comment-as-code
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+treat_comments_as_code = # my comment 1, # my other comment
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+treat_comments_as_code = ["# my comment 1", "# my other comment"]
+```
+
 ## Treat All Comments As Code
 
 Tells isort to treat all single line comments as if they are code.
@@ -942,6 +1214,22 @@ Specifies what extensions isort can be ran against.
 - --extension
 - --supported-extension
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+supported_extensions=pyw,ext
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+supported_extensions = ["pyw", "ext"]
+```
+
 ## Blocked Extensions
 
 Specifies what extensions isort can never be ran against.
@@ -952,6 +1240,22 @@ Specifies what extensions isort can never be ran against.
 **CLI Flags:**
 
 - --blocked-extension
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+blocked_extensions=pyw,pyc
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+blocked_extensions = ["pyw", "pyc"]
+```
 
 ## Constants
 
