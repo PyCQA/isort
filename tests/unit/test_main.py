@@ -1215,6 +1215,9 @@ nested_dir_ignored
 
 
 def test_multiple_configs(capsys, tmpdir):
+    # Ensure that --resolve-all-configs flag resolves multiple configs correctly
+    # and sorts files corresponding to their nearest config
+
     setup_cfg = """
 [isort]
 from_first=True
@@ -1297,3 +1300,20 @@ import b
 from a import x, y, z
 """
     )
+
+    # Ensure that --resolve-all-config flags works with --check
+
+    file5 = dir1 / "file5.py"
+    file5.write(
+        """
+import b
+from a import x, y, z
+    """
+    )
+
+    with pytest.raises(SystemExit):
+        main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--check"])
+
+    _, err = capsys.readouterr()
+
+    assert f"{str(file5)} Imports are incorrectly sorted and/or formatted" in err
