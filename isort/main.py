@@ -261,6 +261,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "based on file location.",
     )
     general_group.add_argument(
+        "--cr",
+        "--config-root",
+        dest="config_root",
+        help="Explicitly set the config root for resolving all configs. When used "
+        "with the --resolve-all-configs flag, isort will look at all sub-folders "
+        "in this config root to resolve config files and sort files based on the "
+        "closest available config(if any)",
+    )
+    general_group.add_argument(
         "--resolve-all-configs",
         dest="resolve_all_configs",
         action="store_true",
@@ -1089,7 +1098,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     config_trie: Optional[Trie] = None
     if resolve_all_configs:
-        config_trie = find_all_configs(config_dict.get("src_paths", (".")))
+        config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
