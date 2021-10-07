@@ -1264,26 +1264,36 @@ import b
     file4 = tmpdir / "file4.py"
     file4.write_text(import_section, "utf-8")
 
-    main.main([str(tmpdir), "--resolve-all-configs", "--rp", str(tmpdir)])
-    
-    assert file1.read() == """
+    main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir)])
+
+    assert (
+        file1.read()
+        == """
 from a import x, y, z
 import b
 """
+    )
 
-#     assert file2.read() == """
-# import b
-# from a import y, z, x
-# """
-# 
-#     assert file3.read() == """
-# import b
-# from a import x
-# from a import y
-# from a import z
-# """
-# 
-#     assert file4.read() == """
-# import b
-# from a import x, y z    
-# """
+    assert (
+        file2.read()
+        == """
+import b
+from a import y, z, x
+"""
+    )
+    assert (
+        file3.read()
+        == """
+import b
+from a import x
+from a import y
+from a import z
+"""
+    )
+    assert (
+        file4.read()
+        == """
+import b
+from a import x, y, z
+"""
+    )

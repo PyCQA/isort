@@ -272,7 +272,7 @@ profile=black
     isort_cfg_file = dir3 / ".isort.cfg"
     isort_cfg_file.write_text(isort_cfg, "utf-8")
 
-    config_trie = settings.find_all_configs((str(tmpdir),))
+    config_trie = settings.find_all_configs(str(tmpdir))
 
     config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
