@@ -255,13 +255,21 @@ profile = "hug"
 [settings]
 profile=black
 """
+
+    pyproject_toml_broken = """
+[tool.isorts]
+something = nothing
+"""
+
     dir1 = tmpdir / "subdir1"
     dir2 = tmpdir / "subdir2"
     dir3 = tmpdir / "subdir3"
+    dir4 = tmpdir / "subdir4"
 
     dir1.mkdir()
     dir2.mkdir()
     dir3.mkdir()
+    dir4.mkdir()
 
     setup_cfg_file = dir1 / "setup.cfg"
     setup_cfg_file.write_text(setup_cfg, "utf-8")
@@ -272,19 +280,22 @@ profile=black
     isort_cfg_file = dir3 / ".isort.cfg"
     isort_cfg_file.write_text(isort_cfg, "utf-8")
 
+    pyproject_toml_file_broken = dir4 / "pyproject.toml"
+    pyproject_toml_file_broken.write_text(pyproject_toml_broken, "utf-8")
+
     config_trie = settings.find_all_configs(str(tmpdir))
 
     config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
-    assert "profile" in config_info_1[1] and config_info_1[1]["profile"] == "django"
+    assert config_info_1[0] == str(setup_cfg_file) and config_info_1[1]["profile"] == "django"
 
     config_info_2 = config_trie.search(str(dir2 / "test2.py"))
     assert config_info_2[0] == str(pyproject_toml_file)
-    assert "profile" in config_info_2[1] and config_info_2[1]["profile"] == "hug"
+    assert config_info_2[0] == str(pyproject_toml_file) and config_info_2[1]["profile"] == "hug"
 
     config_info_3 = config_trie.search(str(dir3 / "test3.py"))
     assert config_info_3[0] == str(isort_cfg_file)
-    assert "profile" in config_info_3[1] and config_info_3[1]["profile"] == "black"
+    assert config_info_3[0] == str(isort_cfg_file) and config_info_3[1]["profile"] == "black"
 
     config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"

@@ -1264,7 +1264,7 @@ import b
     file4 = tmpdir / "file4.py"
     file4.write_text(import_section, "utf-8")
 
-    main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir)])
+    main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
 
     assert (
         file1.read()
