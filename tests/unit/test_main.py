@@ -79,6 +79,7 @@ def test_parse_args():
     assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
     assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
     assert main.parse_args(["--from-first"]) == {"from_first": True}
+    assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
 
 
 def test_ascii_art(capsys):
@@ -1211,3 +1212,78 @@ nested_dir_ignored
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
         assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
+
+
+def test_multiple_configs(capsys, tmpdir):
+    setup_cfg = """
+[isort]
+from_first=True
+"""
+
+    pyproject_toml = """
+[tool.isort]
+no_inline_sort = \"True\"
+"""
+
+    isort_cfg = """
+[settings]
+force_single_line=True
+"""
+
+    dir1 = tmpdir / "subdir1"
+    dir2 = tmpdir / "subdir2"
+    dir3 = tmpdir / "subdir3"
+
+    dir1.mkdir()
+    dir2.mkdir()
+    dir3.mkdir()
+
+    setup_cfg_file = dir1 / "setup.cfg"
+    setup_cfg_file.write_text(setup_cfg, "utf-8")
+
+    pyproject_toml_file = dir2 / "pyproject.toml"
+    pyproject_toml_file.write_text(pyproject_toml, "utf-8")
+
+    isort_cfg_file = dir3 / ".isort.cfg"
+    isort_cfg_file.write_text(isort_cfg, "utf-8")
+
+    import_section = """
+from a import y, z, x
+import b
+"""
+
+    file1 = dir1 / "file1.py"
+    file1.write_text(import_section, "utf-8")
+
+    file2 = dir2 / "file2.py"
+    file2.write_text(import_section, "utf-8")
+
+    file3 = dir3 / "file3.py"
+    file3.write_text(import_section, "utf-8")
+
+    file4 = tmpdir / "file4.py"
+    file4.write_text(import_section, "utf-8")
+
+    main.main([str(tmpdir), "--resolve-all-configs", "--rp", str(tmpdir)])
+    
+    assert file1.read() == """
+from a import x, y, z
+import b
+"""
+
+#     assert file2.read() == """
+# import b
+# from a import y, z, x
+# """
+# 
+#     assert file3.read() == """
+# import b
+# from a import x
+# from a import y
+# from a import z
+# """
+# 
+#     assert file4.read() == """
+# import b
+# from a import x, y z    
+# """
