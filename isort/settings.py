@@ -805,9 +805,7 @@ def find_all_configs(path: str) -> Trie:
                         potential_config_file, CONFIG_SECTIONS[config_file_name]
                     )
                 except Exception:
-                    warn(
-                        f"Failed to pull configuration information from {potential_config_file}"
-                    )
+                    warn(f"Failed to pull configuration information from {potential_config_file}")
                     config_data = {}
 
                 if config_data:
