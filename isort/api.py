@@ -197,7 +197,7 @@ def sort_stream(
         except SyntaxError:
             if extension not in CYTHON_EXTENSIONS:
                 raise ExistingSyntaxErrors(content_source)
-            elif config.verbose:
+            if config.verbose:
                 warn(
                     f"{content_source} Python AST errors found but ignored due to Cython extension"
                 )
@@ -225,7 +225,7 @@ def sort_stream(
         except SyntaxError:  # pragma: no cover
             if extension not in CYTHON_EXTENSIONS:
                 raise IntroducedSyntaxErrors(content_source)
-            elif config.verbose:
+            if config.verbose:
                 warn(
                     f"{content_source} Python AST errors found but ignored due to Cython extension"
                 )
