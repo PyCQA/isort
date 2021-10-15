@@ -1233,13 +1233,20 @@ no_inline_sort = \"True\"
 force_single_line=True
 """
 
+    broken_isort_cfg = """
+[iaort_confg]
+force_single_line=True
+"""
+
     dir1 = tmpdir / "subdir1"
     dir2 = tmpdir / "subdir2"
     dir3 = tmpdir / "subdir3"
+    dir4 = tmpdir / "subdir4"
 
     dir1.mkdir()
     dir2.mkdir()
     dir3.mkdir()
+    dir4.mkdir()
 
     setup_cfg_file = dir1 / "setup.cfg"
     setup_cfg_file.write_text(setup_cfg, "utf-8")
@@ -1249,6 +1256,9 @@ force_single_line=True
 
     isort_cfg_file = dir3 / ".isort.cfg"
     isort_cfg_file.write_text(isort_cfg, "utf-8")
+
+    broken_isort_cfg_file = dir4 / ".isort.cfg"
+    broken_isort_cfg_file.write_text(broken_isort_cfg, "utf-8")
 
     import_section = """
 from a import y, z, x
@@ -1264,10 +1274,20 @@ import b
     file3 = dir3 / "file3.py"
     file3.write_text(import_section, "utf-8")
 
-    file4 = tmpdir / "file4.py"
+    file4 = dir4 / "file4.py"
     file4.write_text(import_section, "utf-8")
 
+    file5 = tmpdir / "file5.py"
+    file5.write_text(import_section, "utf-8")
+
     main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
+    out, _ = capsys.readouterr()
+
+    assert f"{str(setup_cfg_file)} used for file {str(file1)}" in out
+    assert f"{str(pyproject_toml_file)} used for file {str(file2)}" in out
+    assert f"{str(isort_cfg_file)} used for file {str(file3)}" in out
+    assert f"default used for file {str(file4)}" in out
+    assert f"default used for file {str(file5)}" in out
 
     assert (
         file1.read()
@@ -1301,10 +1321,18 @@ from a import x, y, z
 """
     )
 
+    assert (
+        file5.read()
+        == """
+import b
+from a import x, y, z
+"""
+    )
+
     # Ensure that --resolve-all-config flags works with --check
 
-    file5 = dir1 / "file5.py"
-    file5.write(
+    file6 = dir1 / "file6.py"
+    file6.write(
         """
 import b
 from a import x, y, z
@@ -1316,4 +1344,4 @@ from a import x, y, z
 
     _, err = capsys.readouterr()
 
-    assert f"{str(file5)} Imports are incorrectly sorted and/or formatted" in err
+    assert f"{str(file6)} Imports are incorrectly sorted and/or formatted" in err
