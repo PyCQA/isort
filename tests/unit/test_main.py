@@ -79,6 +79,7 @@ def test_parse_args():
     assert main.parse_args(["--dont-follow-links"]) == {"follow_links": False}
     assert main.parse_args(["--overwrite-in-place"]) == {"overwrite_in_place": True}
     assert main.parse_args(["--from-first"]) == {"from_first": True}
+    assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
 
 
 def test_ascii_art(capsys):
@@ -1211,3 +1212,136 @@ nested_dir_ignored
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
         assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
+
+
+def test_multiple_configs(capsys, tmpdir):
+    # Ensure that --resolve-all-configs flag resolves multiple configs correctly
+    # and sorts files corresponding to their nearest config
+
+    setup_cfg = """
+[isort]
+from_first=True
+"""
+
+    pyproject_toml = """
+[tool.isort]
+no_inline_sort = \"True\"
+"""
+
+    isort_cfg = """
+[settings]
+force_single_line=True
+"""
+
+    broken_isort_cfg = """
+[iaort_confg]
+force_single_line=True
+"""
+
+    dir1 = tmpdir / "subdir1"
+    dir2 = tmpdir / "subdir2"
+    dir3 = tmpdir / "subdir3"
+    dir4 = tmpdir / "subdir4"
+
+    dir1.mkdir()
+    dir2.mkdir()
+    dir3.mkdir()
+    dir4.mkdir()
+
+    setup_cfg_file = dir1 / "setup.cfg"
+    setup_cfg_file.write_text(setup_cfg, "utf-8")
+
+    pyproject_toml_file = dir2 / "pyproject.toml"
+    pyproject_toml_file.write_text(pyproject_toml, "utf-8")
+
+    isort_cfg_file = dir3 / ".isort.cfg"
+    isort_cfg_file.write_text(isort_cfg, "utf-8")
+
+    broken_isort_cfg_file = dir4 / ".isort.cfg"
+    broken_isort_cfg_file.write_text(broken_isort_cfg, "utf-8")
+
+    import_section = """
+from a import y, z, x
+import b
+"""
+
+    file1 = dir1 / "file1.py"
+    file1.write_text(import_section, "utf-8")
+
+    file2 = dir2 / "file2.py"
+    file2.write_text(import_section, "utf-8")
+
+    file3 = dir3 / "file3.py"
+    file3.write_text(import_section, "utf-8")
+
+    file4 = dir4 / "file4.py"
+    file4.write_text(import_section, "utf-8")
+
+    file5 = tmpdir / "file5.py"
+    file5.write_text(import_section, "utf-8")
+
+    main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
+    out, _ = capsys.readouterr()
+
+    assert f"{str(setup_cfg_file)} used for file {str(file1)}" in out
+    assert f"{str(pyproject_toml_file)} used for file {str(file2)}" in out
+    assert f"{str(isort_cfg_file)} used for file {str(file3)}" in out
+    assert f"default used for file {str(file4)}" in out
+    assert f"default used for file {str(file5)}" in out
+
+    assert (
+        file1.read()
+        == """
+from a import x, y, z
+import b
+"""
+    )
+
+    assert (
+        file2.read()
+        == """
+import b
+from a import y, z, x
+"""
+    )
+    assert (
+        file3.read()
+        == """
+import b
+from a import x
+from a import y
+from a import z
+"""
+    )
+    assert (
+        file4.read()
+        == """
+import b
+from a import x, y, z
+"""
+    )
+
+    assert (
+        file5.read()
+        == """
+import b
+from a import x, y, z
+"""
+    )
+
+    # Ensure that --resolve-all-config flags works with --check
+
+    file6 = dir1 / "file6.py"
+    file6.write(
+        """
+import b
+from a import x, y, z
+    """
+    )
+
+    with pytest.raises(SystemExit):
+        main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--check"])
+
+    _, err = capsys.readouterr()
+
+    assert f"{str(file6)} Imports are incorrectly sorted and/or formatted" in err

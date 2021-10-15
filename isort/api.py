@@ -323,12 +323,23 @@ def check_file(
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - ****config_kwargs**: Any config modifications.
     """
+    file_config: Config = config
+
+    if "config_trie" in config_kwargs:
+        config_trie = config_kwargs.pop("config_trie", None)
+        if config_trie:
+            config_info = config_trie.search(filename)
+            if config.verbose:
+                print(f"{config_info[0]} used for file {filename}")
+
+            file_config = Config(**config_info[1])
+
     with io.File.read(filename) as source_file:
         return check_stream(
             source_file.stream,
             show_diff=show_diff,
             extension=extension,
-            config=config,
+            config=file_config,
             file_path=file_path or source_file.path,
             disregard_skip=disregard_skip,
             **config_kwargs,
@@ -380,9 +391,20 @@ def sort_file(
     the original file content.
     - ****config_kwargs**: Any config modifications.
     """
+    file_config: Config = config
+
+    if "config_trie" in config_kwargs:
+        config_trie = config_kwargs.pop("config_trie", None)
+        if config_trie:
+            config_info = config_trie.search(filename)
+            if config.verbose:
+                print(f"{config_info[0]} used for file {filename}")
+
+            file_config = Config(**config_info[1])
+
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path
-        config = _config(path=actual_file_path, config=config, **config_kwargs)
+        config = _config(path=actual_file_path, config=file_config, **config_kwargs)
         changed: bool = False
         try:
             if write_to_stdout:
