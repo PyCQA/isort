@@ -208,8 +208,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     general_group.add_argument(
         "--overwrite-in-place",
-        help="Tells isort to overwrite in place using the same file handle."
-        "Comes at a performance and memory usage penalty over it's standard "
+        help="Tells isort to overwrite in place using the same file handle. "
+        "Comes at a performance and memory usage penalty over its standard "
         "approach but ensures all file flags and modes stay unchanged.",
         dest="overwrite_in_place",
         action="store_true",
@@ -224,7 +224,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--show-files",
         dest="show_files",
         action="store_true",
-        help="See the files isort will be ran against with the current config options.",
+        help="See the files isort will be run against with the current config options.",
     )
     general_group.add_argument(
         "--df",
@@ -380,13 +380,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--supported-extension",
         dest="supported_extensions",
         action="append",
-        help="Specifies what extensions isort can be ran against.",
+        help="Specifies what extensions isort can be run against.",
     )
     target_group.add_argument(
         "--blocked-extension",
         dest="blocked_extensions",
         action="append",
-        help="Specifies what extensions isort can never be ran against.",
+        help="Specifies what extensions isort can never be run against.",
     )
     target_group.add_argument(
         "--dont-follow-links",
@@ -403,7 +403,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--allow-root",
         action="store_true",
         default=False,
-        help="Tells isort not to treat / specially, allowing it to be ran against the root dir.",
+        help="Tells isort not to treat / specially, allowing it to be run against the root dir.",
     )
 
     output_group.add_argument(
@@ -720,9 +720,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--os",
         dest="only_sections",
         action="store_true",
-        help="Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. "
+        help="Causes imports to be sorted based on their sections like STDLIB, THIRDPARTY, etc. "
         "Within sections, the imports are ordered by their import style and the imports with "
-        "same style maintain their relative positions.",
+        "the same style maintain their relative positions.",
     )
     section_group.add_argument(
         "--ds",
@@ -822,7 +822,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Force isort to recognize a module as part of Python's internal future compatibility "
         "libraries. WARNING: this overrides the behavior of __future__ handling and therefore"
         " can result in code that can't execute. If you're looking to add dependencies such "
-        "as six a better option is to create a another section below --future using custom "
+        "as six, a better option is to create another section below --future using custom "
         "sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the "
         "discussion here: https://github.com/PyCQA/isort/issues/1463.",
     )
