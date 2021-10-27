@@ -151,7 +151,7 @@ def process(
                 line_separator = line[len(line.rstrip()) :].replace(" ", "").replace("\t", "")
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
-                if file_skip_comment in line:
+                if line.startswith(file_skip_comment):
                     if raise_on_skip:
                         raise FileSkipComment("Passed in content")
                     isort_off = True
