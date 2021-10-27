@@ -837,6 +837,12 @@ def test_skip_within_file() -> None:
     with pytest.raises(FileSkipped):
         isort.code(test_input, known_third_party=["django"])
 
+def test_skip_comment_without_space_after_hash() -> None:
+    """Ensure skipping a whole file works."""
+    test_input = "#isort: skip_file\nimport django\nimport myproject\n"
+    with pytest.raises(FileSkipped):
+        isort.code(test_input, known_third_party=["django"])
+
 def test_skip_comment_is_no_comment() -> None:
     """Ensure skipping a whole file works."""
     test_input = "content = \"# isort:skip_file\""
@@ -848,7 +854,6 @@ def test_force_to_top() -> None:
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n"
     test_output = isort.code(test_input, force_to_top=["lib5"])
     assert test_output == "import lib5\nimport lib1\nimport lib2\nimport lib6\n"
-
 
 def test_add_imports() -> None:
     """Ensures adding imports works as expected."""
