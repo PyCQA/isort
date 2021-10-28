@@ -1,6 +1,7 @@
 import textwrap
 from io import StringIO
 from itertools import chain
+from re import match
 from typing import List, TextIO, Union
 
 import isort.literal
@@ -9,7 +10,7 @@ from isort.settings import DEFAULT_CONFIG, Config
 from . import output, parse
 from .exceptions import FileSkipComment
 from .format import format_natural, remove_whitespace
-from .settings import FILE_SKIP_COMMENTS
+from .settings import FILE_SKIP_RE
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
 IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
@@ -150,12 +151,11 @@ def process(
             if stripped_line and not line_separator:
                 line_separator = line[len(line.rstrip()) :].replace(" ", "").replace("\t", "")
 
-            for file_skip_comment in FILE_SKIP_COMMENTS:
-                if line.startswith(file_skip_comment):
-                    if raise_on_skip:
-                        raise FileSkipComment("Passed in content")
-                    isort_off = True
-                    skip_file = True
+            if FILE_SKIP_RE.match(line):
+                if raise_on_skip:
+                    raise FileSkipComment("Passed in content")
+                isort_off = True
+                skip_file = True
 
             if not in_quote:
                 if stripped_line == "# isort: off":

@@ -845,6 +845,13 @@ def test_skip_comment_without_space_after_hash() -> None:
         isort.code(test_input, known_third_party=["django"])
 
 
+def test_skip_comment_with_multiline_comment() -> None:
+    """Ensure skipping a whole file works."""
+    test_input = '"""some comment\n\nisort: skip_file\nimport django\nimport myproject\n"""'
+    with pytest.raises(FileSkipped):
+        isort.code(test_input, known_third_party=["django"])
+
+
 def test_skip_comment_is_no_comment() -> None:
     """Ensure skipping a whole file works."""
     test_input = 'content = "# isort:skip_file"'

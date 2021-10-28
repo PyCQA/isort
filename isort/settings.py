@@ -54,12 +54,7 @@ _SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
-FILE_SKIP_COMMENTS: Tuple[str, ...] = (
-    "# isort:" + "skip_file",
-    "# isort: " + "skip_file",
-    "#isort:" + "skip_file",
-    "#isort: " + "skip_file",
-)  # Concatenated to avoid this file being skipped
+FILE_SKIP_RE = re.compile(r"^#?\s?isort:\s?skip_file")
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
 STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
 VALID_PY_TARGETS: Tuple[str, ...] = tuple(
