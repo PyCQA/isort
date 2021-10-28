@@ -7,9 +7,20 @@ isort provides official support for [pre-commit](https://pre-commit.com/).
 
 To use isort's official pre-commit integration add the following config:
 
-```
+```yaml
   - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        name: isort (python)
+```
+
+under the `repos` section of your projects `.pre-commit-config.yaml` file.  Optionally if you want to have different hooks 
+over different file types (ex: python vs cython vs pyi) you can do so with the following config:
+
+```yaml
+  - repo: https://github.com/pycqa/isort
+    rev: 5.9.3
     hooks:
       - id: isort
         name: isort (python)
@@ -20,8 +31,6 @@ To use isort's official pre-commit integration add the following config:
         name: isort (pyi)
         types: [pyi]
 ```
-
-under the `repos` section of your projects `.pre-commit-config.yaml` file.
 
 ### seed-isort-config
 
