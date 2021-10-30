@@ -4,23 +4,24 @@ Should be ran using py.test by simply running py.test in the isort project direc
 """
 import os
 import os.path
-from pathlib import Path
 import subprocess
 import sys
 from io import StringIO
+from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Iterator, List, Set, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
 import toml
-import isort
-from isort import api, sections, files
-from isort.settings import Config
 
+import isort
+from isort import api, files, sections
+from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
+from isort.settings import Config
 from isort.utils import exists_case_sensitive
-from isort.exceptions import FileSkipped, ExistingSyntaxErrors, MissingSection
-from .utils import as_stream, UnreadableStream
+
+from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
     WrapModes: Any
