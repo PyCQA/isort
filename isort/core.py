@@ -1,7 +1,6 @@
 import textwrap
 from io import StringIO
 from itertools import chain
-from re import match
 from typing import List, TextIO, Union
 
 import isort.literal
