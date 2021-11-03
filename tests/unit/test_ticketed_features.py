@@ -213,6 +213,19 @@ import os
 """
     )
 
+    # issue 1838: don't append in middle of class
+    assert isort.check_code(
+        '''class C:
+    """a
+
+    """
+    # comment
+''',
+        append_only=True,
+        add_imports=["from __future__ import annotations"],
+        show_diff=True,
+    )
+
 
 def test_isort_supports_shared_profiles_issue_970():
     """Test to ensure isort provides a way to use shared profiles.

@@ -355,7 +355,7 @@ def process(
                 next_import_section = ""
 
             if import_section:
-                if add_imports and not indent:
+                if add_imports and (contains_imports or not config.append_only) and not indent:
                     import_section = (
                         line_separator.join(add_imports) + line_separator + import_section
                     )
