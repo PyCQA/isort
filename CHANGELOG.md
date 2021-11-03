@@ -4,11 +4,12 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
-### 5.10.0 TBD
+### 5.10.0 November 3 2021
   - Implemented #1796: Switch to `tomli` for pyproject.toml configuration loader.
   - Fixed #1801: CLI bug (--exend-skip-glob, overrides instead of extending).
   - Fixed #1802: respect PATH customization in nested calls to git.
-  - Added support for Python 3.10
+  - Fixed #1838: Append only with certain code snippets incorrectly adds imports.
+  - Added official support for Python 3.10
 
 #### Potentially breaking changes:
   - Fixed #1785: `_ast` module incorrectly excluded from stdlib definition.
