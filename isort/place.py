@@ -84,7 +84,9 @@ def _src_path(
                 and _is_namespace_package(module_path, config.supported_extensions)
             )
         ):
-            return _src_path(nested_module[0], config, (module_path,), new_prefix)
+            section_info = _src_path(nested_module[0], config, (module_path,), new_prefix)
+            if section_info:
+                return section_info
         if (
             _is_module(module_path)
             or _is_package(module_path)
