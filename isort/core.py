@@ -9,7 +9,7 @@ from isort.settings import DEFAULT_CONFIG, Config
 from . import output, parse
 from .exceptions import FileSkipComment
 from .format import format_natural, remove_whitespace
-from .settings import FILE_SKIP_RE
+from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
 IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
@@ -150,11 +150,12 @@ def process(
             if stripped_line and not line_separator:
                 line_separator = line[len(line.rstrip()) :].replace(" ", "").replace("\t", "")
 
-            if FILE_SKIP_RE.match(line):
-                if raise_on_skip:
-                    raise FileSkipComment("Passed in content")
-                isort_off = True
-                skip_file = True
+            for file_skip_comment in FILE_SKIP_COMMENTS:
+                if file_skip_comment in line:
+                    if raise_on_skip:
+                        raise FileSkipComment("Passed in content")
+                    isort_off = True
+                    skip_file = True
 
             if not in_quote:
                 if stripped_line == "# isort: off":
