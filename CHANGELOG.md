@@ -4,6 +4,10 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.10.1 November 8 2021
+  - Fixed #1819: Occasional inconsistency with multiple src paths.
+  - Fixed #1840: skip_file ignored when on the first docstring line
+
 ### 5.10.0 November 3 2021
   - Implemented #1796: Switch to `tomli` for pyproject.toml configuration loader.
   - Fixed #1801: CLI bug (--exend-skip-glob, overrides instead of extending).
