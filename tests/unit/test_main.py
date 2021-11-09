@@ -1345,3 +1345,47 @@ from a import x, y, z
     _, err = capsys.readouterr()
 
     assert f"{str(file6)} Imports are incorrectly sorted and/or formatted" in err
+
+
+def test_multiple_src_paths(tmpdir, capsys):
+    """
+    Ensure that isort has consistent behavior with multiple source paths
+    """
+
+    tests_module = tmpdir / "tests"
+    app_module = tmpdir / "app"
+
+    tests_module.mkdir()
+    app_module.mkdir()
+
+    pyproject_toml = tmpdir / "pyproject.toml"
+    pyproject_toml.write_text(
+        """
+[tool.isort]
+profile = "black"
+src_paths = ["app", "tests"]
+auto_identify_namespace_packages = false
+""",
+        "utf-8",
+    )
+    file = tmpdir / "file.py"
+    file.write_text(
+        """
+from app.something import something
+from tests.something import something_else
+""",
+        "utf-8",
+    )
+
+    for _ in range(10):  # To ensure isort has consistent results in multiple runs
+        main.main([str(tmpdir), "--verbose"])
+        out, _ = capsys.readouterr()
+
+        assert (
+            file.read()
+            == """
+from app.something import something
+from tests.something import something_else
+"""
+        )
+        assert "from-type place_module for tests.something returned FIRSTPARTY" in out
