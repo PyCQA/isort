@@ -464,7 +464,7 @@ class Config(_Config):
                     path_root.glob(src_path) if "*" in str(src_path) else [path_root / src_path]
                 )
                 for path in full_paths:
-                    if not path in src_paths:
+                    if path not in src_paths:
                         src_paths.append(path)
 
             combined_config["src_paths"] = tuple(src_paths)
