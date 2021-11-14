@@ -87,3 +87,30 @@ This can be useful, for instance, if you want to have one configuration for `.py
 !!! tip
     Custom config files should place their configuration options inside an `[isort]` section and never a generic `[settings]` section. This is because isort can't know for sure
     how other tools are utilizing the config file.
+
+
+## Supporting multiple config files in single isort run
+
+If you have a directory structure where different sub-directories may have their separate configuration settings and you want isort to respect these configurations, not just apply the same global configuration for the entire directory then you can do so with the `--resolve-all-configs` flag. Using the `--resolve-all-configs` along with providing the directory root as `--config-root` argument(if the config-root is not explicitly defined, then isort will consider the current directory `.` where the shell is running), isort will traverse and parse all the config files defined under the `--config-root` and dynamically decide what configurations should be applied to a specific file by choosing the nearest config file in the file's path. For instance, if your directory structure is
+
+```
+directory_root
+
+    subdir1
+        .isort.cfg
+        file1.py
+
+    subdir2
+        pyproject.toml
+        file2.py
+
+    subdir3
+        file3.py
+
+    setup.cfg
+```
+
+isort will sort `subdir1/file1` according to the configurations defined in `subdir1/.isort.cfg`, `subdir2/file2` with configurations from `subdir2/pyproject.toml` and `subdir3/file3.py` based on the `setup.cfg` settings.
+
+!!! tip
+You can always confirm exactly what config file was used for a file by running isort with the `--verbose` flag.
