@@ -98,26 +98,32 @@ chardet = ">=3.0.2"
 
 [[package]]
 name = "black"
-version = "20.8b1"
+version = "21.10b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.6.2"
 
 [package.dependencies]
-appdirs = "*"
 click = ">=7.1.2"
 dataclasses = {version = ">=0.6", markers = "python_version < \"3.7\""}
 mypy-extensions = ">=0.4.3"
-pathspec = ">=0.6,<1"
+pathspec = ">=0.9.0,<1"
+platformdirs = ">=2"
 regex = ">=2020.1.8"
-toml = ">=0.10.1"
-typed-ast = ">=1.4.0"
-typing-extensions = ">=3.7.4"
+tomli = ">=0.2.6,<2.0.0"
+typed-ast = {version = ">=1.4.2", markers = "python_version < \"3.8\""}
+typing-extensions = [
+    {version = ">=3.10.0.0", markers = "python_version < \"3.10\""},
+    {version = "!=3.10.0.1", markers = "python_version >= \"3.10\""},
+]
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
-d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
+d = ["aiohttp (>=3.7.4)"]
+jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
+python2 = ["typed-ast (>=1.4.3)"]
+uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "cached-property"
@@ -307,14 +313,14 @@ pipenv = ["pipenv"]
 
 [[package]]
 name = "example-isort-formatting-plugin"
-version = "0.0.2"
+version = "0.0.4"
 description = "An example plugin that modifies isort formatting using black."
 category = "dev"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.2,<4.0"
 
 [package.dependencies]
-black = ">=20.08b1,<21.0"
+black = ">20.08b1"
 isort = ">=5.1.4,<6.0.0"
 
 [[package]]
@@ -1179,11 +1185,11 @@ virtualenv = ">=20.0.8"
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.19"
+version = "3.0.22"
 description = "Library for building powerful interactive command lines in Python"
 category = "dev"
 optional = false
-python-versions = ">=3.6.1"
+python-versions = ">=3.6.2"
 
 [package.dependencies]
 wcwidth = "*"
@@ -1802,8 +1808,8 @@ requirements_deprecated_finder = ["pipreqs", "pip-api"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.6.1,<4.0"
-content-hash = "c064ec28d39e179c7212dfebf09bd367e1e49224662428d09487ba44f4086fd0"
+python-versions = ">=3.6.2,<4.0"
+content-hash = "92f51188850adce051ecd2e95304e31593d76d0b6f7767d26d174ce5083d64a1"
 
 [metadata.files]
 appdirs = [
@@ -1843,7 +1849,8 @@ binaryornot = [
     {file = "binaryornot-0.4.4.tar.gz", hash = "sha256:359501dfc9d40632edc9fac890e19542db1a287bbcfa58175b66658392018061"},
 ]
 black = [
-    {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
+    {file = "black-21.10b0-py3-none-any.whl", hash = "sha256:6eb7448da9143ee65b856a5f3676b7dda98ad9abe0f87fce8c59291f15e82a5b"},
+    {file = "black-21.10b0.tar.gz", hash = "sha256:a9952229092e325fe5f3dae56d81f639b23f7131eb840781947e4b2886030f33"},
 ]
 cached-property = [
     {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
@@ -1959,8 +1966,8 @@ dparse = [
     {file = "dparse-0.5.1.tar.gz", hash = "sha256:a1b5f169102e1c894f9a7d5ccf6f9402a836a5d24be80a986c7ce9eaed78f367"},
 ]
 example-isort-formatting-plugin = [
-    {file = "example_isort_formatting_plugin-0.0.2-py3-none-any.whl", hash = "sha256:ce428ab5deb4719e4bec56eae63978ff2d9c20dc2c2aa7cc39ece61044153db7"},
-    {file = "example_isort_formatting_plugin-0.0.2.tar.gz", hash = "sha256:8cb6401c9efe2f97ba3e776439cb647ee964dc7880bd9790b0324be2c7a55907"},
+    {file = "example_isort_formatting_plugin-0.0.4-py3-none-any.whl", hash = "sha256:a1e4afc0a359495060e5fcc14a9c6f3bc7c8fe7e096fb0b878195c8e3bf4e2c6"},
+    {file = "example_isort_formatting_plugin-0.0.4.tar.gz", hash = "sha256:8085996afbc81e729a258861181144038fd8a65a39113d3632b430e6ff20b974"},
 ]
 example-isort-sorting-plugin = [
     {file = "example_isort_sorting_plugin-0.0.2-py3-none-any.whl", hash = "sha256:108d3d66bb5fd8ef51fde9bbab3207d2b6176b5df803dd88e31f2f48b8975b59"},
@@ -2327,8 +2334,8 @@ pre-commit = [
     {file = "pre_commit-2.15.0.tar.gz", hash = "sha256:3c25add78dbdfb6a28a651780d5c311ac40dd17f160eb3954a0c59da40a505a7"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.19-py3-none-any.whl", hash = "sha256:7089d8d2938043508aa9420ec18ce0922885304cddae87fb96eebca942299f88"},
-    {file = "prompt_toolkit-3.0.19.tar.gz", hash = "sha256:08360ee3a3148bdb5163621709ee322ec34fc4375099afa4bbf751e9b7b7fa4f"},
+    {file = "prompt_toolkit-3.0.22-py3-none-any.whl", hash = "sha256:48d85cdca8b6c4f16480c7ce03fd193666b62b0a21667ca56b4bb5ad679d1170"},
+    {file = "prompt_toolkit-3.0.22.tar.gz", hash = "sha256:449f333dd120bd01f5d296a8ce1452114ba3a71fae7288d2f0ae2c918764fa72"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},

@@ -40,7 +40,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.1,<4.0"
+python = ">=3.6.2,<4.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
@@ -58,7 +58,7 @@ vulture = "^1.0"
 bandit = "^1.6"
 safety = "^1.8"
 flake8-bugbear = "^19.8"
-black = {version = "^20.08b1", allow-prereleases = true}
+black = {version = "^21.10b0", allow-prereleases = true}
 coverage = {version = "^6.0b1", allow-prereleases = true}
 mypy = "^0.902"
 ipython = "^7.7"
@@ -83,7 +83,7 @@ smmap2 = "^3.0.1"
 gitdb2 = "^4.0.2"
 httpx = "^0.13.3"
 example_shared_isort_profile = "^0.0.1"
-example_isort_formatting_plugin = "^0.0.2"
+example_isort_formatting_plugin = "^0.0.4"
 example_isort_sorting_plugin = "^0.0.2"
 flake8 = "^3.8.4"
 hypothesis = "^6.10.1"

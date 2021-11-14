@@ -1,4 +1,5 @@
 import black
+from black.report import NothingChanged
 
 import isort
 
@@ -14,7 +15,7 @@ def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
                 line_length=line_length,
             ),
         )
-    except black.NothingChanged:
+    except NothingChanged:
         return code
 
 
