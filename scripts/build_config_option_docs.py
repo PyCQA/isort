@@ -97,8 +97,164 @@ class Example:
         return self.section_complete
 
 
+description_mapping: Dict[str, str]
+description_mapping = {
+    "length_sort_sections": "Sort the given sections by length",
+    "forced_separate": "Force certain sub modules to show separately",
+}
+
 example_mapping: Dict[str, Example]
 example_mapping = {
+    "skip": Example(
+        cfg="""
+skip=.gitignore,.dockerignore""",
+        pyproject_toml="""
+skip = [".gitignore", ".dockerignore"]
+""",
+    ),
+    "extend_skip": Example(
+        cfg="""
+extend_skip=.md,.json""",
+        pyproject_toml="""
+extend_skip = [".md", ".json"]
+""",
+    ),
+    "skip_glob": Example(
+        cfg="""
+skip_glob=docs/*
+""",
+        pyproject_toml="""
+skip_glob = ["docs/*"]
+""",
+    ),
+    "extend_skip_glob": Example(
+        cfg="""
+extend_skip_glob=my_*_module.py,test/*
+""",
+        pyproject_toml="""
+extend_skip_glob = ["my_*_module.py", "test/*"]
+""",
+    ),
+    "known_third_party": Example(
+        cfg="""
+known_third_party=my_module1,my_module2
+""",
+        pyproject_toml="""
+known_third_party = ["my_module1", "my_module2"]
+""",
+    ),
+    "known_first_party": Example(
+        cfg="""
+known_first_party=my_module1,my_module2
+""",
+        pyproject_toml="""
+known_first_party = ["my_module1", "my_module2"]
+""",
+    ),
+    "known_local_folder": Example(
+        cfg="""
+known_local_folder=my_module1,my_module2
+""",
+        pyproject_toml="""
+known_local_folder = ["my_module1", "my_module2"]
+""",
+    ),
+    "known_standard_library": Example(
+        cfg="""
+known_standard_library=my_module1,my_module2
+""",
+        pyproject_toml="""
+known_standard_library = ["my_module1", "my_module2"]
+""",
+    ),
+    "extra_standard_library": Example(
+        cfg="""
+extra_standard_library=my_module1,my_module2
+""",
+        pyproject_toml="""
+extra_standard_library = ["my_module1", "my_module2"]
+""",
+    ),
+    "forced_separate": Example(
+        cfg="""
+forced_separate=glob_exp1,glob_exp2
+""",
+        pyproject_toml="""
+forced_separate = ["glob_exp1", "glob_exp2"]
+""",
+    ),
+    "length_sort_sections": Example(
+        cfg="""
+length_sort_sections=future,stdlib
+""",
+        pyproject_toml="""
+length_sort_sections = ["future", "stdlib"]
+""",
+    ),
+    "add_imports": Example(
+        cfg="""
+add_imports=import os,import json
+""",
+        pyproject_toml="""
+add_imports = ["import os", "import json"]
+""",
+    ),
+    "remove_imports": Example(
+        cfg="""
+remove_imports=os,json
+""",
+        pyproject_toml="""
+remove_imports = ["os", "json"]
+""",
+    ),
+    "single_line_exclusions": Example(
+        cfg="""
+single_line_exclusions=os,json
+""",
+        pyproject_toml="""
+single_line_exclusions = ["os", "json"]
+""",
+    ),
+    "no_lines_before": Example(
+        cfg="""
+no_lines_before=future,stdlib
+""",
+        pyproject_toml="""
+no_lines_before = ["future", "stdlib"]
+""",
+    ),
+    "src_paths": Example(
+        cfg="""
+src_paths = src,tests
+""",
+        pyproject_toml="""
+src_paths = ["src", "tests"]
+""",
+    ),
+    "treat_comments_as_code": Example(
+        cfg="""
+treat_comments_as_code = # my comment 1, # my other comment
+""",
+        pyproject_toml="""
+treat_comments_as_code = ["# my comment 1", "# my other comment"]
+""",
+    ),
+    "supported_extensions": Example(
+        cfg="""
+supported_extensions=pyw,ext
+""",
+        pyproject_toml="""
+supported_extensions = ["pyw", "ext"]
+""",
+    ),
+    "blocked_extensions": Example(
+        cfg="""
+blocked_extensions=pyw,pyc
+""",
+        pyproject_toml="""
+blocked_extensions = ["pyw", "pyc"]
+""",
+    ),
     "known_other": Example(
         cfg="""
         sections=FUTURE,STDLIB,THIRDPARTY,AIRFLOW,FIRSTPARTY,LOCALFOLDER
@@ -156,12 +312,13 @@ def config_options() -> Generator[ConfigOption, None, None]:
     cli_actions = {action.dest: action for action in parser._actions}
     for name, default in config.items():
         extra_kwargs = {}
+        description: Optional[str] = description_mapping.get(name, None)
 
         cli = cli_actions.pop(name, None)
         if cli:
             extra_kwargs["cli_options"] = cli.option_strings
-            if cli.help:
-                extra_kwargs["description"] = cli.help
+            if cli.help and not description:
+                description = cli.help
 
         default_display = default
         if isinstance(default, (set, frozenset)) and len(default) > 0:
@@ -175,25 +332,28 @@ def config_options() -> Generator[ConfigOption, None, None]:
             type=type(default),
             default=default_display,
             config_name=name,
+            description=description or "**No Description**",
             example=example_mapping.get(name, None),
             **extra_kwargs,
         )
 
     for name, cli in cli_actions.items():
         extra_kwargs = {}
+        description: Optional[str] = description_mapping.get(name, None)
         if cli.type:
             extra_kwargs["type"] = cli.type
         elif cli.default is not None:
             extra_kwargs["type"] = type(cli.default)
 
-        if cli.help:
-            extra_kwargs["description"] = cli.help
+        if cli.help and not description:
+            description = cli.help
 
         yield ConfigOption(
             name=name,
             default=cli.default,
             cli_options=cli.option_strings,
             example=example_mapping.get(name, None),
+            description=description or "**No Description**",
             **extra_kwargs,
         )
 

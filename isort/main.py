@@ -293,7 +293,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     general_group.add_argument(
         "-j",
         "--jobs",
-        help="Number of files to process in parallel.",
+        help="Number of files to process in parallel. Negative value means use number of CPUs.",
         dest="jobs",
         type=int,
         nargs="?",

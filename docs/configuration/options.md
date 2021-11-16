@@ -57,6 +57,7 @@ skip=.gitignore,.dockerignore
 ```
 [tool.isort]
 skip = [".gitignore", ".dockerignore"]
+
 ```
 
 ## Extend Skip
@@ -84,6 +85,7 @@ extend_skip=.md,.json
 ```
 [tool.isort]
 extend_skip = [".md", ".json"]
+
 ```
 
 ## Skip Glob
@@ -105,6 +107,7 @@ Files that isort should skip over.
 ```
 [settings]
 skip_glob=docs/*
+
 ```
 
 ### Example `pyproject.toml`
@@ -112,6 +115,7 @@ skip_glob=docs/*
 ```
 [tool.isort]
 skip_glob = ["docs/*"]
+
 ```
 
 ## Extend Skip Glob
@@ -132,6 +136,7 @@ Additional files that isort should skip over (extending --skip-glob).
 ```
 [settings]
 extend_skip_glob=my_*_module.py,test/*
+
 ```
 
 ### Example `pyproject.toml`
@@ -139,6 +144,7 @@ extend_skip_glob=my_*_module.py,test/*
 ```
 [tool.isort]
 extend_skip_glob = ["my_*_module.py", "test/*"]
+
 ```
 
 ## Skip Gitignore
@@ -216,7 +222,7 @@ Put all imports into the same section bucket
 
 ## Known Future Library
 
-Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of __future__ handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six a better option is to create a another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
+Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of __future__ handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six, a better option is to create another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
 
 **Type:** Frozenset  
 **Default:** `('__future__',)`  
@@ -245,6 +251,7 @@ Force isort to recognize a module as being part of a third party library.
 ```
 [settings]
 known_third_party=my_module1,my_module2
+
 ```
 
 ### Example `pyproject.toml`
@@ -252,6 +259,7 @@ known_third_party=my_module1,my_module2
 ```
 [tool.isort]
 known_third_party = ["my_module1", "my_module2"]
+
 ```
 
 ## Known First Party
@@ -273,6 +281,7 @@ Force isort to recognize a module as being part of the current python project.
 ```
 [settings]
 known_first_party=my_module1,my_module2
+
 ```
 
 ### Example `pyproject.toml`
@@ -280,6 +289,7 @@ known_first_party=my_module1,my_module2
 ```
 [tool.isort]
 known_first_party = ["my_module1", "my_module2"]
+
 ```
 
 ## Known Local Folder
@@ -300,6 +310,7 @@ Force isort to recognize a module as being a local folder. Generally, this is re
 ```
 [settings]
 known_local_folder=my_module1,my_module2
+
 ```
 
 ### Example `pyproject.toml`
@@ -307,6 +318,7 @@ known_local_folder=my_module1,my_module2
 ```
 [tool.isort]
 known_local_folder = ["my_module1", "my_module2"]
+
 ```
 
 ## Known Standard Library
@@ -328,6 +340,7 @@ Force isort to recognize a module as part of Python's standard library.
 ```
 [settings]
 known_standard_library=my_module1,my_module2
+
 ```
 
 ### Example `pyproject.toml`
@@ -335,6 +348,7 @@ known_standard_library=my_module1,my_module2
 ```
 [tool.isort]
 known_standard_library = ["my_module1", "my_module2"]
+
 ```
 
 ## Extra Standard Library
@@ -355,6 +369,7 @@ Extra modules to be included in the list of ones in Python's standard library.
 ```
 [settings]
 extra_standard_library=my_module1,my_module2
+
 ```
 
 ### Example `pyproject.toml`
@@ -362,6 +377,7 @@ extra_standard_library=my_module1,my_module2
 ```
 [tool.isort]
 extra_standard_library = ["my_module1", "my_module2"]
+
 ```
 
 ## Known Other
@@ -435,6 +451,7 @@ Force certain sub modules to show separately
 ```
 [settings]
 forced_separate=glob_exp1,glob_exp2
+
 ```
 
 ### Example `pyproject.toml`
@@ -442,6 +459,7 @@ forced_separate=glob_exp1,glob_exp2
 ```
 [tool.isort]
 forced_separate = ["glob_exp1", "glob_exp2"]
+
 ```
 
 ## Indent
@@ -505,6 +523,7 @@ Sort the given sections by length
 ```
 [settings]
 length_sort_sections=future,stdlib
+
 ```
 
 ### Example `pyproject.toml`
@@ -512,6 +531,7 @@ length_sort_sections=future,stdlib
 ```
 [tool.isort]
 length_sort_sections = ["future", "stdlib"]
+
 ```
 
 ## Add Imports
@@ -533,6 +553,7 @@ Adds the specified import line to all files, automatically determining correct p
 ```
 [settings]
 add_imports=import os,import json
+
 ```
 
 ### Example `pyproject.toml`
@@ -540,6 +561,7 @@ add_imports=import os,import json
 ```
 [tool.isort]
 add_imports = ["import os", "import json"]
+
 ```
 
 ## Remove Imports
@@ -561,6 +583,7 @@ Removes the specified import from all files.
 ```
 [settings]
 remove_imports=os,json
+
 ```
 
 ### Example `pyproject.toml`
@@ -568,6 +591,7 @@ remove_imports=os,json
 ```
 [tool.isort]
 remove_imports = ["os", "json"]
+
 ```
 
 ## Append Only
@@ -625,6 +649,7 @@ One or more modules to exclude from the single line rule.
 ```
 [settings]
 single_line_exclusions=os,json
+
 ```
 
 ### Example `pyproject.toml`
@@ -632,6 +657,7 @@ single_line_exclusions=os,json
 ```
 [tool.isort]
 single_line_exclusions = ["os", "json"]
+
 ```
 
 ## Default Section
@@ -717,11 +743,11 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 ## Lines Before Imports
 
-How many lines to add before an import section
+**No Description**
 
-**Type:** Int
-**Default:** `-1`
-**Python & Config File Name:** lines_before_imports
+**Type:** Int  
+**Default:** `-1`  
+**Python & Config File Name:** lines_before_imports  
 **CLI Flags:**
 
 - --lbi
@@ -941,6 +967,7 @@ Sections which should not be split with previous by empty lines
 ```
 [settings]
 no_lines_before=future,stdlib
+
 ```
 
 ### Example `pyproject.toml`
@@ -948,6 +975,7 @@ no_lines_before=future,stdlib
 ```
 [tool.isort]
 no_lines_before = ["future", "stdlib"]
+
 ```
 
 ## No Inline Sort
@@ -1075,6 +1103,7 @@ Add an explicitly defined source path (modules within src paths have their impor
 ```
 [settings]
 src_paths = src,tests
+
 ```
 
 ### Example `pyproject.toml`
@@ -1082,6 +1111,7 @@ src_paths = src,tests
 ```
 [tool.isort]
 src_paths = ["src", "tests"]
+
 ```
 
 ## Old Finders
@@ -1181,6 +1211,7 @@ Tells isort to treat the specified single line comment(s) as if they are code.
 ```
 [settings]
 treat_comments_as_code = # my comment 1, # my other comment
+
 ```
 
 ### Example `pyproject.toml`
@@ -1188,6 +1219,7 @@ treat_comments_as_code = # my comment 1, # my other comment
 ```
 [tool.isort]
 treat_comments_as_code = ["# my comment 1", "# my other comment"]
+
 ```
 
 ## Treat All Comments As Code
@@ -1203,7 +1235,7 @@ Tells isort to treat all single line comments as if they are code.
 
 ## Supported Extensions
 
-Specifies what extensions isort can be ran against.
+Specifies what extensions isort can be run against.
 
 **Type:** Frozenset  
 **Default:** `('pxd', 'py', 'pyi', 'pyx')`  
@@ -1221,6 +1253,7 @@ Specifies what extensions isort can be ran against.
 ```
 [settings]
 supported_extensions=pyw,ext
+
 ```
 
 ### Example `pyproject.toml`
@@ -1228,11 +1261,12 @@ supported_extensions=pyw,ext
 ```
 [tool.isort]
 supported_extensions = ["pyw", "ext"]
+
 ```
 
 ## Blocked Extensions
 
-Specifies what extensions isort can never be ran against.
+Specifies what extensions isort can never be run against.
 
 **Type:** Frozenset  
 **Default:** `('pex',)`  
@@ -1248,6 +1282,7 @@ Specifies what extensions isort can never be ran against.
 ```
 [settings]
 blocked_extensions=pyw,pyc
+
 ```
 
 ### Example `pyproject.toml`
@@ -1255,6 +1290,7 @@ blocked_extensions=pyw,pyc
 ```
 [tool.isort]
 blocked_extensions = ["pyw", "pyc"]
+
 ```
 
 ## Constants
@@ -1297,7 +1333,7 @@ Tells isort to only show an identical custom import heading comment once, even i
 
 ## Only Sections
 
-Causes imports to be sorted based on their sections like STDLIB,THIRDPARTY etc. Within sections, the imports are ordered by their import style and the imports with same style maintain their relative positions.
+Causes imports to be sorted based on their sections like STDLIB, THIRDPARTY, etc. Within sections, the imports are ordered by their import style and the imports with the same style maintain their relative positions.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1393,7 +1429,7 @@ When using `--force-sort-within-sections`, sort relative imports the same way as
 
 ## Overwrite In Place
 
-Tells isort to overwrite in place using the same file handle.Comes at a performance and memory usage penalty over it's standard approach but ensures all file flags and modes stay unchanged.
+Tells isort to overwrite in place using the same file handle. Comes at a performance and memory usage penalty over its standard approach but ensures all file flags and modes stay unchanged.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1521,7 +1557,7 @@ See isort's determined config, as well as sources of config options.
 
 ## Show Files
 
-See the files isort will be ran against with the current config options.
+See the files isort will be run against with the current config options.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1569,9 +1605,32 @@ Explicitly set the settings path or file instead of auto determining based on fi
 - --settings-file
 - --settings
 
+## Config Root
+
+Explicitly set the config root for resolving all configs. When used with the --resolve-all-configs flag, isort will look at all sub-folders in this config root to resolve config files and sort files based on the closest available config(if any)
+
+**Type:** String  
+**Default:** `None`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --cr
+- --config-root
+
+## Resolve All Configs
+
+Tells isort to resolve the configs for all sub-directories and sort files in terms of its closest config files.
+
+**Type:** Bool  
+**Default:** `False`  
+**Python & Config File Name:** **Not Supported**  
+**CLI Flags:**
+
+- --resolve-all-configs
+
 ## Jobs
 
-Number of files to process in parallel. Negative value means use number of CPUs.
+Number of files to process in parallel.
 
 **Type:** Int  
 **Default:** `None`  
@@ -1627,7 +1686,7 @@ Provide the filename associated with a stream.
 
 ## Allow Root
 
-Tells isort not to treat / specially, allowing it to be ran against the root dir.
+Tells isort not to treat / specially, allowing it to be run against the root dir.
 
 **Type:** Bool  
 **Default:** `False`  
