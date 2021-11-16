@@ -71,7 +71,7 @@ hypothesmith = "^0.1.3"
 examples = { version = "^1.0.0" }
 cruft = { version = "^2.2" }
 portray = { version = "^1.6.0" }
-mkdocs = { version = "1.2.1" }
+mkdocs = { version = "1.2.3" }
 pipfile = "^0.0.2"
 requirementslib = "^1.5"
 pipreqs = "^0.4.9"
