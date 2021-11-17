@@ -101,6 +101,7 @@ description_mapping: Dict[str, str]
 description_mapping = {
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
+    "sections": "What sections isort should display imports for and in what order",
 }
 
 example_mapping: Dict[str, Example]

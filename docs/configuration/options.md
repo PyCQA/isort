@@ -201,7 +201,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 ## Sections
 
-**No Description**
+What sections isort should display imports for and in what order
 
 **Type:** Tuple  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  
