@@ -382,7 +382,7 @@ extra_standard_library = ["my_module1", "my_module2"]
 
 ## Known Other
 
-**No Description**
+known_OTHER is how imports of custom sections are defined. OTHER is a placeholder for the custom section name.
 
 **Type:** Dict  
 **Default:** `{}`  
@@ -476,7 +476,7 @@ String to place for indents defaults to "    " (4 spaces).
 
 ## Comment Prefix
 
-**No Description**
+Allows customizing how isort prefixes comments that it adds or modifies on import linesGenerally `  #` (two spaces before a pound symbol) is use, though one space is also common.
 
 **Type:** String  
 **Default:** `  #`  
@@ -743,7 +743,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 ## Lines Before Imports
 
-**No Description**
+The number of blank lines to place before imports. -1 for automatic determination
 
 **Type:** Int  
 **Default:** `-1`  
@@ -755,7 +755,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 ## Lines After Imports
 
-**No Description**
+The number of blank lines to place after imports. -1 for automatic determination
 
 **Type:** Int  
 **Default:** `-1`  
@@ -767,7 +767,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 ## Lines Between Sections
 
-**No Description**
+The number of lines to place between sections
 
 **Type:** Int  
 **Default:** `1`  
@@ -776,7 +776,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 ## Lines Between Types
 
-**No Description**
+The number of lines to place between direct and from imports
 
 **Type:** Int  
 **Default:** `0`  

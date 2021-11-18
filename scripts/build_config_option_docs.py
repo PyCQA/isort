@@ -102,6 +102,14 @@ description_mapping = {
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
     "sections": "What sections isort should display imports for and in what order",
+    "known_other": "known_OTHER is how imports of custom sections are defined. "
+    "OTHER is a placeholder for the custom section name.",
+    "comment_prefix": "Allows customizing how isort prefixes comments that it adds or modifies on import lines"
+    "Generally `  #` (two spaces before a pound symbol) is use, though one space is also common.",
+    "lines_before_imports": "The number of blank lines to place before imports. -1 for automatic determination",
+    "lines_after_imports": "The number of blank lines to place after imports. -1 for automatic determination",
+    "lines_between_sections": "The number of lines to place between sections",
+    "lines_between_types": "The number of lines to place between direct and from imports",
 }
 
 example_mapping: Dict[str, Example]
