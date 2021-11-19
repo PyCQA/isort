@@ -4576,7 +4576,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--force-sort-within-sections</li>
 </ul>
 <h2 id="lexicographical">Lexicographical</h2>
-<p><strong>No Description</strong></p>
+<p>Lexicographical order is strictly alphabetical order. For example by default isort will sort <code>1, 10, 2</code> into <code>1, 2, 10</code> - but with lexicographical sorting enabled it will remain <code>1, 10, 2</code>.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> lexicographical<br />
@@ -4629,7 +4629,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--no-inline-sort</li>
 </ul>
 <h2 id="ignore-comments">Ignore Comments</h2>
-<p><strong>No Description</strong></p>
+<p>If enabled, isort will strip comments that exist within import lines.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> ignore_comments<br />
@@ -4857,19 +4857,19 @@ This can be an excellent shortcut for collecting imports every once in a while w
 </code></pre></div>
 
 <h2 id="constants">Constants</h2>
-<p><strong>No Description</strong></p>
+<p>An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> constants<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="classes">Classes</h2>
-<p><strong>No Description</strong></p>
+<p>An override list of tokens to always recognize as a Class for order_by_type regardless of casing.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> classes<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="variables">Variables</h2>
-<p><strong>No Description</strong></p>
+<p>An override list of tokens to always recognize as a var for order_by_type regardless of casing.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> variables<br />
@@ -5121,7 +5121,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <li>--resolve-all-configs</li>
 </ul>
 <h2 id="jobs">Jobs</h2>
-<p>Number of files to process in parallel.</p>
+<p>Number of files to process in parallel. Negative value means use number of CPUs.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
