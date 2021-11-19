@@ -920,7 +920,7 @@ Don't sort straight-style imports (like import sys) before from-style imports (l
 
 ## Lexicographical
 
-**No Description**
+Lexicographical order is strictly alphabetical order. For example by default isort will sort `1, 10, 2` into `1, 2, 10` - but with lexicographical sorting enabled it will remain `1, 10, 2`.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -992,7 +992,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 
 ## Ignore Comments
 
-**No Description**
+If enabled, isort will strip comments that exist within import lines.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1295,7 +1295,7 @@ blocked_extensions = ["pyw", "pyc"]
 
 ## Constants
 
-**No Description**
+An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
@@ -1304,7 +1304,7 @@ blocked_extensions = ["pyw", "pyc"]
 
 ## Classes
 
-**No Description**
+An override list of tokens to always recognize as a Class for order_by_type regardless of casing.
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
@@ -1313,7 +1313,7 @@ blocked_extensions = ["pyw", "pyc"]
 
 ## Variables
 
-**No Description**
+An override list of tokens to always recognize as a var for order_by_type regardless of casing.
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
@@ -1630,7 +1630,7 @@ Tells isort to resolve the configs for all sub-directories and sort files in ter
 
 ## Jobs
 
-Number of files to process in parallel.
+Number of files to process in parallel. Negative value means use number of CPUs.
 
 **Type:** Int  
 **Default:** `None`  

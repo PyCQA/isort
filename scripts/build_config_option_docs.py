@@ -110,6 +110,13 @@ description_mapping = {
     "lines_after_imports": "The number of blank lines to place after imports. -1 for automatic determination",
     "lines_between_sections": "The number of lines to place between sections",
     "lines_between_types": "The number of lines to place between direct and from imports",
+    "lexicographical": "Lexicographical order is strictly alphabetical order. "
+    "For example by default isort will sort `1, 10, 2` into `1, 2, 10` - but with "
+    "lexicographical sorting enabled it will remain `1, 10, 2`.",
+    "ignore_comments": "If enabled, isort will strip comments that exist within import lines.",
+    "constants": "An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.",
+    "classes": "An override list of tokens to always recognize as a Class for order_by_type regardless of casing.",
+    "variables": "An override list of tokens to always recognize as a var for order_by_type regardless of casing.",
 }
 
 example_mapping: Dict[str, Example]
