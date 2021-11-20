@@ -1369,7 +1369,7 @@ Combines all the bare straight imports of the same section in a single line. Won
 
 ## Auto Identify Namespace Packages
 
-**No Description**
+Automatically determine local namespace packages, generally by lack of any src files before a src containing directory.
 
 **Type:** Bool  
 **Default:** `True`  
@@ -1387,7 +1387,7 @@ Combines all the bare straight imports of the same section in a single line. Won
 
 ## Follow Links
 
-**No Description**
+If `True` isort will follow symbolic links when doing recursive sorting.
 
 **Type:** Bool  
 **Default:** `True`  
@@ -1462,7 +1462,7 @@ Forces star imports above others to avoid overriding directly imported variables
 
 ## Git Ignore
 
-**No Description**
+If `True` isort will honor ignores within locally defined .git_ignore files.
 
 **Type:** Dict  
 **Default:** `{}`  

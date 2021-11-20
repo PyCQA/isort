@@ -117,6 +117,10 @@ description_mapping = {
     "constants": "An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.",
     "classes": "An override list of tokens to always recognize as a Class for order_by_type regardless of casing.",
     "variables": "An override list of tokens to always recognize as a var for order_by_type regardless of casing.",
+    "auto_identify_namespace_packages": "Automatically determine local namespace packages, generally by lack of any src files before a src containing directory.",
+    "namespaces_packages": "Manually specify one or more namespace packages.",
+    "follow_links": "If `True` isort will follow symbolic links when doing recursive sorting.",
+    "git_ignore": "If `True` isort will honor ignores within locally defined .git_ignore files.",
 }
 
 example_mapping: Dict[str, Example]
