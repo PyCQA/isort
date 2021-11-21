@@ -1150,13 +1150,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sources" class="md-nav__link">
-    Sources
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#virtual-env" class="md-nav__link">
     Virtual Env
   </a>
@@ -3359,13 +3352,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sources" class="md-nav__link">
-    Sources
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#virtual-env" class="md-nav__link">
     Virtual Env
   </a>
@@ -4582,7 +4568,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <strong>Python &amp; Config File Name:</strong> lexicographical<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="group-by-package">Group By Package</h2>
-<p><strong>No Description</strong></p>
+<p>If <code>True</code> isort will automatically create section groups by the top-level package they come from.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
 <strong>Python &amp; Config File Name:</strong> group_by_package<br />
@@ -4643,12 +4629,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <ul>
 <li>--case-sensitive</li>
 </ul>
-<h2 id="sources">Sources</h2>
-<p><strong>No Description</strong></p>
-<p><strong>Type:</strong> Tuple<br />
-<strong>Default:</strong> <code>()</code><br />
-<strong>Python &amp; Config File Name:</strong> sources<br />
-<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="virtual-env">Virtual Env</h2>
 <p>Virtual environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
@@ -4771,7 +4751,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <li>--formatter</li>
 </ul>
 <h2 id="formatting-function">Formatting Function</h2>
-<p><strong>No Description</strong></p>
+<p>The fully qualified Python path of a function to apply to format code sorted by isort.</p>
 <p><strong>Type:</strong> Nonetype<br />
 <strong>Default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> formatting_function<br />
@@ -4920,7 +4900,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>Python &amp; Config File Name:</strong> auto_identify_namespace_packages<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="namespace-packages">Namespace Packages</h2>
-<p><strong>No Description</strong></p>
+<p>Manually specify one or more namespace packages.</p>
 <p><strong>Type:</strong> Frozenset<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
 <strong>Python &amp; Config File Name:</strong> namespace_packages<br />
