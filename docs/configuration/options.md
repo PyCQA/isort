@@ -929,7 +929,7 @@ Lexicographical order is strictly alphabetical order. For example by default iso
 
 ## Group By Package
 
-**No Description**
+If `True` isort will automatically create section groups by the top-level package they come from.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1009,15 +1009,6 @@ Tells isort to include casing when sorting module names
 **CLI Flags:**
 
 - --case-sensitive
-
-## Sources
-
-**No Description**
-
-**Type:** Tuple  
-**Default:** `()`  
-**Python & Config File Name:** sources  
-**CLI Flags:** **Not Supported**
 
 ## Virtual Env
 
@@ -1175,7 +1166,7 @@ Specifies the name of a formatting plugin to use when producing output.
 
 ## Formatting Function
 
-**No Description**
+The fully qualified Python path of a function to apply to format code sorted by isort.
 
 **Type:** Nonetype  
 **Default:** `None`  
@@ -1378,7 +1369,7 @@ Automatically determine local namespace packages, generally by lack of any src f
 
 ## Namespace Packages
 
-**No Description**
+Manually specify one or more namespace packages.
 
 **Type:** Frozenset  
 **Default:** `frozenset()`  
