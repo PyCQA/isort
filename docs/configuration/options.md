@@ -674,7 +674,7 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 
 ## Import Headings
 
-**No Description**
+A mapping of import sections to import heading comments that should show above them.
 
 **Type:** Dict  
 **Default:** `{}`  
@@ -683,7 +683,7 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 
 ## Import Footers
 
-**No Description**
+A mapping of import sections to import footer comments that should show below them.
 
 **Type:** Dict  
 **Default:** `{}`  
@@ -1044,15 +1044,6 @@ Inserts a blank line before a comment following an import.
 - -n
 - --ensure-newline-before-comments
 
-## Directory
-
-**No Description**
-
-**Type:** String  
-**Default:** ``  
-**Python & Config File Name:** directory  
-**CLI Flags:** **Not Supported**
-
 ## Profile
 
 Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.
@@ -1387,7 +1378,7 @@ If `True` isort will follow symbolic links when doing recursive sorting.
 
 ## Indented Import Headings
 
-**No Description**
+If `True` isort will apply import headings to indended imports the same way it does unindented ones.
 
 **Type:** Bool  
 **Default:** `True`  
