@@ -1171,13 +1171,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#directory" class="md-nav__link">
-    Directory
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#profile" class="md-nav__link">
     Profile
   </a>
@@ -3373,13 +3366,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#directory" class="md-nav__link">
-    Directory
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#profile" class="md-nav__link">
     Profile
   </a>
@@ -4362,13 +4348,13 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>--section-default</li>
 </ul>
 <h2 id="import-headings">Import Headings</h2>
-<p><strong>No Description</strong></p>
+<p>A mapping of import sections to import heading comments that should show above them.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_headings<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="import-footers">Import Footers</h2>
-<p><strong>No Description</strong></p>
+<p>A mapping of import sections to import footer comments that should show below them.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_footers<br />
@@ -4657,12 +4643,6 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <li>-n</li>
 <li>--ensure-newline-before-comments</li>
 </ul>
-<h2 id="directory">Directory</h2>
-<p><strong>No Description</strong></p>
-<p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
-<strong>Python &amp; Config File Name:</strong> directory<br />
-<strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="profile">Profile</h2>
 <p>Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.</p>
 <p><strong>Type:</strong> String<br />
@@ -4912,7 +4892,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <strong>Python &amp; Config File Name:</strong> follow_links<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="indented-import-headings">Indented Import Headings</h2>
-<p><strong>No Description</strong></p>
+<p>If <code>True</code> isort will apply import headings to indended imports the same way it does unindented ones.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>True</code><br />
 <strong>Python &amp; Config File Name:</strong> indented_import_headings<br />
