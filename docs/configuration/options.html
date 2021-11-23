@@ -3863,6 +3863,7 @@ profiles</a>.</p>
 <p>Tells isort to set the known standard library based on the specified Python version. Default is to assume any Python 3 version could be the target, and use a union of all stdlib modules across versions. If auto is specified, the version of the interpreter used to run isort (currently: 39) will be used.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>py3</code><br />
+<strong>Config default:</strong> <code>py3</code><br />
 <strong>Python &amp; Config File Name:</strong> py_version<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3871,8 +3872,9 @@ profiles</a>.</p>
 </ul>
 <h2 id="force-to-top">Force To Top</h2>
 <p>Force specific imports to the top of their appropriate section.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> force_to_top<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3881,8 +3883,9 @@ profiles</a>.</p>
 </ul>
 <h2 id="skip">Skip</h2>
 <p>Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')</code><br />
+<strong>Config default:</strong> <code>['.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv']</code><br />
 <strong>Python &amp; Config File Name:</strong> skip<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3902,8 +3905,9 @@ profiles</a>.</p>
 
 <h2 id="extend-skip">Extend Skip</h2>
 <p>Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> extend_skip<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3922,8 +3926,9 @@ profiles</a>.</p>
 
 <h2 id="skip-glob">Skip Glob</h2>
 <p>Files that isort should skip over.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> skip_glob<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3943,8 +3948,9 @@ profiles</a>.</p>
 
 <h2 id="extend-skip-glob">Extend Skip Glob</h2>
 <p>Additional files that isort should skip over (extending --skip-glob).</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> extend_skip_glob<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3966,6 +3972,7 @@ profiles</a>.</p>
 NOTE: This requires git to be installed and accessible from the same shell as isort.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> skip_gitignore<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3976,6 +3983,7 @@ NOTE: This requires git to be installed and accessible from the same shell as is
 <p>The max length of an import line (used for wrapping long imports).</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>79</code><br />
+<strong>Config default:</strong> <code>79</code><br />
 <strong>Python &amp; Config File Name:</strong> line_length<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3989,6 +3997,7 @@ NOTE: This requires git to be installed and accessible from the same shell as is
 NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>0</code><br />
+<strong>Config default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> wrap_length<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -3998,7 +4007,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="line-ending">Line Ending</h2>
 <p>Forces line endings to the specified value. If not set, values will be guessed per-file.</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code>**Config default:**</code><br />
 <strong>Python &amp; Config File Name:</strong> line_ending<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4009,12 +4018,14 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>What sections isort should display imports for and in what order</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</code><br />
+<strong>Config default:</strong> <code>['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']</code><br />
 <strong>Python &amp; Config File Name:</strong> sections<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="no-sections">No Sections</h2>
 <p>Put all imports into the same section bucket</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> no_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4023,8 +4034,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="known-future-library">Known Future Library</h2>
 <p>Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of <strong>future</strong> handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six, a better option is to create another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>('__future__',)</code><br />
+<strong>Config default:</strong> <code>['__future__']</code><br />
 <strong>Python &amp; Config File Name:</strong> known_future_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4033,8 +4045,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="known-third-party">Known Third Party</h2>
 <p>Force isort to recognize a module as being part of a third party library.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> known_third_party<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4054,8 +4067,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="known-first-party">Known First Party</h2>
 <p>Force isort to recognize a module as being part of the current python project.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> known_first_party<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4075,8 +4089,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="known-local-folder">Known Local Folder</h2>
 <p>Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> known_local_folder<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4095,8 +4110,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="known-standard-library">Known Standard Library</h2>
 <p>Force isort to recognize a module as part of Python's standard library.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>('_ast', '_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo')</code><br />
+<strong>Config default:</strong> <code>['_ast', '_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo']</code><br />
 <strong>Python &amp; Config File Name:</strong> known_standard_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4116,8 +4132,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="extra-standard-library">Extra Standard Library</h2>
 <p>Extra modules to be included in the list of ones in Python's standard library.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> extra_standard_library<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4138,6 +4155,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>known_OTHER is how imports of custom sections are defined. OTHER is a placeholder for the custom section name.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
+<strong>Config default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> known_other<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <p><strong>Examples:</strong></p>
@@ -4157,6 +4175,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5-vert-grid-grouped, 6-deprecated-alias-for-5, 7-noqa, 8-vertical-hanging-indent-bracket, 9-vertical-prefix-from-module-import, 10-hanging-indent-with-parentheses).</p>
 <p><strong>Type:</strong> Wrapmodes<br />
 <strong>Default:</strong> <code>WrapModes.GRID</code><br />
+<strong>Config default:</strong> <code>WrapModes.GRID</code><br />
 <strong>Python &amp; Config File Name:</strong> multi_line_output<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4178,6 +4197,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Force certain sub modules to show separately</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> forced_separate<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <p><strong>Examples:</strong></p>
@@ -4195,6 +4215,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>String to place for indents defaults to "    " (4 spaces).</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code></code><br />
+<strong>Config default:</strong> <code></code><br />
 <strong>Python &amp; Config File Name:</strong> indent<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4205,12 +4226,14 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Allows customizing how isort prefixes comments that it adds or modifies on import linesGenerally <code>#</code> (two spaces before a pound symbol) is use, though one space is also common.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>#</code><br />
+<strong>Config default:</strong> <code>#</code><br />
 <strong>Python &amp; Config File Name:</strong> comment_prefix<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="length-sort">Length Sort</h2>
 <p>Sort imports by their string length.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> length_sort<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4221,6 +4244,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Sort straight imports by their string length. Similar to <code>length_sort</code> but applies only to straight imports and doesn't affect from imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> length_sort_straight<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4229,8 +4253,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="length-sort-sections">Length Sort Sections</h2>
 <p>Sort the given sections by length</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> length_sort_sections<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <p><strong>Examples:</strong></p>
@@ -4246,8 +4271,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="add-imports">Add Imports</h2>
 <p>Adds the specified import line to all files, automatically determining correct placement.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> add_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4267,8 +4293,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 
 <h2 id="remove-imports">Remove Imports</h2>
 <p>Removes the specified import from all files.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> remove_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4290,6 +4317,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Only adds the imports specified in --add-import if the file contains existing imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> append_only<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4300,6 +4328,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Reverse order of relative imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> reverse_relative<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4310,6 +4339,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Forces all from imports to appear on their own line</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> force_single_line<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4320,6 +4350,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>One or more modules to exclude from the single line rule.</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> single_line_exclusions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4341,6 +4372,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>THIRDPARTY</code><br />
+<strong>Config default:</strong> <code>THIRDPARTY</code><br />
 <strong>Python &amp; Config File Name:</strong> default_section<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4351,18 +4383,21 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>A mapping of import sections to import heading comments that should show above them.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
+<strong>Config default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_headings<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="import-footers">Import Footers</h2>
 <p>A mapping of import sections to import footer comments that should show below them.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
+<strong>Config default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> import_footers<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="balanced-wrapping">Balanced Wrapping</h2>
 <p>Balances wrapping to produce the most consistent line length possible</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> balanced_wrapping<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4373,6 +4408,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Use parentheses for line continuation on length limit instead of slashes. <strong>NOTE</strong>: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> use_parentheses<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4385,6 +4421,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the <code>--dont-order-by-type</code> option will turn this off.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>True</code><br />
+<strong>Config default:</strong> <code>true</code><br />
 <strong>Python &amp; Config File Name:</strong> order_by_type<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4395,6 +4432,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Ensures the output doesn't save if the resulting file contains syntax errors.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> atomic<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4405,6 +4443,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>The number of blank lines to place before imports. -1 for automatic determination</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>-1</code><br />
+<strong>Config default:</strong> <code>-1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_before_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4415,6 +4454,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>The number of blank lines to place after imports. -1 for automatic determination</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>-1</code><br />
+<strong>Config default:</strong> <code>-1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_after_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4425,12 +4465,14 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>The number of lines to place between sections</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>1</code><br />
+<strong>Config default:</strong> <code>1</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_between_sections<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="lines-between-types">Lines Between Types</h2>
 <p>The number of lines to place between direct and from imports</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>0</code><br />
+<strong>Config default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> lines_between_types<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4441,6 +4483,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Combines as imports on the same line.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> combine_as_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4451,6 +4494,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Ensures that if a star import is present, nothing else is imported from that namespace.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> combine_star<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4461,6 +4505,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Includes a trailing comma on multi line imports that include parentheses.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> include_trailing_comma<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4471,6 +4516,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Switches the typical ordering preference, showing from imports first then straight ones.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> from_first<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4481,6 +4527,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Shows verbose output, such as when files are skipped or when a check is successful.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> verbose<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4491,6 +4538,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Shows extra quiet output, only errors are outputted.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> quiet<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4501,6 +4549,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Forces import adds even if the original file is empty.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> force_adds<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4511,6 +4560,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Force all imports to be sorted alphabetically within a section</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> force_alphabetical_sort_within_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4521,6 +4571,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Force all imports to be sorted as a single section</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> force_alphabetical_sort<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4531,6 +4582,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Force number of from imports (defaults to 2 when passed as CLI flag without value) to be grid wrapped regardless of line length. If 0 is passed in (the global default) only line length is considered.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>0</code><br />
+<strong>Config default:</strong> <code>0</code><br />
 <strong>Python &amp; Config File Name:</strong> force_grid_wrap<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4541,6 +4593,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Don't sort straight-style imports (like import sys) before from-style imports (like from itertools import groupby). Instead, sort the imports by module, independent of import style.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> force_sort_within_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4551,18 +4604,21 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Lexicographical order is strictly alphabetical order. For example by default isort will sort <code>1, 10, 2</code> into <code>1, 2, 10</code> - but with lexicographical sorting enabled it will remain <code>1, 10, 2</code>.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> lexicographical<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="group-by-package">Group By Package</h2>
 <p>If <code>True</code> isort will automatically create section groups by the top-level package they come from.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> group_by_package<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="ignore-whitespace">Ignore Whitespace</h2>
 <p>Tells isort to ignore whitespace differences when --check-only is being used.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> ignore_whitespace<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4571,8 +4627,9 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 </ul>
 <h2 id="no-lines-before">No Lines Before</h2>
 <p>Sections which should not be split with previous by empty lines</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> no_lines_before<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4594,6 +4651,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Leaves <code>from</code> imports with multiple imports 'as-is' (e.g. <code>from foo import a, c ,b</code>).</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> no_inline_sort<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4604,12 +4662,14 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>If enabled, isort will strip comments that exist within import lines.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> ignore_comments<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="case-sensitive">Case Sensitive</h2>
 <p>Tells isort to include casing when sorting module names</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> case_sensitive<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4618,7 +4678,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="virtual-env">Virtual Env</h2>
 <p>Virtual environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code>**Config default:**</code><br />
 <strong>Python &amp; Config File Name:</strong> virtual_env<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4627,7 +4687,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="conda-env">Conda Env</h2>
 <p>Conda environment to use for determining whether a package is third-party</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code>**Config default:**</code><br />
 <strong>Python &amp; Config File Name:</strong> conda_env<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4637,6 +4697,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Inserts a blank line before a comment following an import.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> ensure_newline_before_comments<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4646,7 +4707,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <h2 id="profile">Profile</h2>
 <p>Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code>**Config default:**</code><br />
 <strong>Python &amp; Config File Name:</strong> profile<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4656,6 +4717,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Tells isort to honor noqa comments to enforce skipping those comments.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> honor_noqa<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4665,6 +4727,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party). Glob expansion (<code>*</code> and <code>**</code>) is supported for this option.</p>
 <p><strong>Type:</strong> Tuple<br />
 <strong>Default:</strong> <code>()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> src_paths<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4686,6 +4749,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Use the old deprecated finder logic that relies on environment introspection magic.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> old_finders<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4696,6 +4760,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.</p>
 <p>Tells isort to remove redundant aliases from imports, such as <code>import os as os</code>. This defaults to <code>False</code> simply because some projects use these seemingly useless  aliases to signify intent and change behaviour.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> remove_redundant_aliases<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4707,6 +4772,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p><em>NOTE</em>: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> float_to_top<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4716,6 +4782,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to filter files even when they are explicitly passed in as part of the CLI command.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> filter_files<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4724,7 +4791,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <h2 id="formatter">Formatter</h2>
 <p>Specifies the name of a formatting plugin to use when producing output.</p>
 <p><strong>Type:</strong> String<br />
-<strong>Default:</strong> ``<br />
+<strong>Default:</strong> <code>**Config default:**</code><br />
 <strong>Python &amp; Config File Name:</strong> formatter<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4734,12 +4801,14 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>The fully qualified Python path of a function to apply to format code sorted by isort.</p>
 <p><strong>Type:</strong> Nonetype<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> formatting_function<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="color-output">Color Output</h2>
 <p>Tells isort to use color in terminal output.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> color_output<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4747,8 +4816,9 @@ This can be an excellent shortcut for collecting imports every once in a while w
 </ul>
 <h2 id="treat-comments-as-code">Treat Comments As Code</h2>
 <p>Tells isort to treat the specified single line comment(s) as if they are code.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> treat_comments_as_code<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4769,6 +4839,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to treat all single line comments as if they are code.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> treat_all_comments_as_code<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4776,8 +4847,9 @@ This can be an excellent shortcut for collecting imports every once in a while w
 </ul>
 <h2 id="supported-extensions">Supported Extensions</h2>
 <p>Specifies what extensions isort can be run against.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>('pxd', 'py', 'pyi', 'pyx')</code><br />
+<strong>Config default:</strong> <code>['pxd', 'py', 'pyi', 'pyx']</code><br />
 <strong>Python &amp; Config File Name:</strong> supported_extensions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4798,8 +4870,9 @@ This can be an excellent shortcut for collecting imports every once in a while w
 
 <h2 id="blocked-extensions">Blocked Extensions</h2>
 <p>Specifies what extensions isort can never be run against.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>('pex',)</code><br />
+<strong>Config default:</strong> <code>['pex']</code><br />
 <strong>Python &amp; Config File Name:</strong> blocked_extensions<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4818,26 +4891,30 @@ This can be an excellent shortcut for collecting imports every once in a while w
 
 <h2 id="constants">Constants</h2>
 <p>An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> constants<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="classes">Classes</h2>
 <p>An override list of tokens to always recognize as a Class for order_by_type regardless of casing.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> classes<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="variables">Variables</h2>
 <p>An override list of tokens to always recognize as a var for order_by_type regardless of casing.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> variables<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="dedup-headings">Dedup Headings</h2>
 <p>Tells isort to only show an identical custom import heading comment once, even if there are multiple sections with the comment set.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> dedup_headings<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4847,6 +4924,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Causes imports to be sorted based on their sections like STDLIB, THIRDPARTY, etc. Within sections, the imports are ordered by their import style and the imports with the same style maintain their relative positions.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> only_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4857,6 +4935,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Suppresses verbose output for non-modified files.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> only_modified<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4867,6 +4946,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Combines all the bare straight imports of the same section in a single line. Won't work with sections which have 'as' imports</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> combine_straight_imports<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4877,30 +4957,35 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Automatically determine local namespace packages, generally by lack of any src files before a src containing directory.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>True</code><br />
+<strong>Config default:</strong> <code>true</code><br />
 <strong>Python &amp; Config File Name:</strong> auto_identify_namespace_packages<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="namespace-packages">Namespace Packages</h2>
 <p>Manually specify one or more namespace packages.</p>
-<p><strong>Type:</strong> Frozenset<br />
+<p><strong>Type:</strong> List of Strings<br />
 <strong>Default:</strong> <code>frozenset()</code><br />
+<strong>Config default:</strong> <code>[]</code><br />
 <strong>Python &amp; Config File Name:</strong> namespace_packages<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="follow-links">Follow Links</h2>
 <p>If <code>True</code> isort will follow symbolic links when doing recursive sorting.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>True</code><br />
+<strong>Config default:</strong> <code>true</code><br />
 <strong>Python &amp; Config File Name:</strong> follow_links<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="indented-import-headings">Indented Import Headings</h2>
 <p>If <code>True</code> isort will apply import headings to indended imports the same way it does unindented ones.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>True</code><br />
+<strong>Config default:</strong> <code>true</code><br />
 <strong>Python &amp; Config File Name:</strong> indented_import_headings<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="honor-case-in-force-sorted-sections">Honor Case In Force Sorted Sections</h2>
 <p>Honor <code>--case-sensitive</code> when <code>--force-sort-within-sections</code> is being used. Without this option set, <code>--order-by-type</code> decides module name ordering too.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> honor_case_in_force_sorted_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4911,6 +4996,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>When using <code>--force-sort-within-sections</code>, sort relative imports the same way as they are sorted when not using that setting.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> sort_relative_in_force_sorted_sections<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4921,6 +5007,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to overwrite in place using the same file handle. Comes at a performance and memory usage penalty over its standard approach but ensures all file flags and modes stay unchanged.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> overwrite_in_place<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4930,6 +5017,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Reverses the ordering of imports.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> reverse_sort<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4939,6 +5027,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Forces star imports above others to avoid overriding directly imported variables.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> star_first<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4948,12 +5037,14 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>If <code>True</code> isort will honor ignores within locally defined .git_ignore files.</p>
 <p><strong>Type:</strong> Dict<br />
 <strong>Default:</strong> <code>{}</code><br />
+<strong>Config default:</strong> <code>{}</code><br />
 <strong>Python &amp; Config File Name:</strong> git_ignore<br />
 <strong>CLI Flags:</strong> <strong>Not Supported</strong></p>
 <h2 id="format-error">Format Error</h2>
 <p>Override the format used to print errors.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>{error}: {message}</code><br />
+<strong>Config default:</strong> <code>{error}: {message}</code><br />
 <strong>Python &amp; Config File Name:</strong> format_error<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4963,6 +5054,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Override the format used to print success.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>{success}: {message}</code><br />
+<strong>Config default:</strong> <code>{success}: {message}</code><br />
 <strong>Python &amp; Config File Name:</strong> format_success<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4972,6 +5064,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Specify sorting function. Can be built in (natural[default] = force numbers to be sequential, native = Python's built-in sorted function) or an installable plugin.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>natural</code><br />
+<strong>Config default:</strong> <code>natural</code><br />
 <strong>Python &amp; Config File Name:</strong> sort_order<br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4981,6 +5074,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Displays the currently installed version of isort.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -4994,6 +5088,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Returns just the current version number without the logo</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>==SUPPRESS==</code><br />
+<strong>Config default:</strong> <code>==SUPPRESS==</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5004,6 +5099,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Force resulting output to stdout, instead of in-place.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5014,6 +5110,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>See isort's determined config, as well as sources of config options.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5023,6 +5120,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>See the files isort will be run against with the current config options.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5032,6 +5130,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Prints a diff of all the changes isort would make to a file, instead of changing it in place</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5042,6 +5141,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Checks the file for unsorted / unformatted imports and prints them to the command line without modifying the file. Returns 0 when nothing would change and returns 1 when the file would be reformatted.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5053,6 +5153,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Explicitly set the settings path or file instead of auto determining based on file location.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5065,6 +5166,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Explicitly set the config root for resolving all configs. When used with the --resolve-all-configs flag, isort will look at all sub-folders in this config root to resolve config files and sort files based on the closest available config(if any)</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5075,6 +5177,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to resolve the configs for all sub-directories and sort files in terms of its closest config files.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5084,6 +5187,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Number of files to process in parallel. Negative value means use number of CPUs.</p>
 <p><strong>Type:</strong> Int<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5094,6 +5198,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to apply changes interactively.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5103,6 +5208,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>One or more Python source files that need their imports sorted.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5112,6 +5218,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort not to follow symlinks that are encountered when running recursively.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5121,6 +5228,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Provide the filename associated with a stream.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5130,6 +5238,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort not to treat / specially, allowing it to be run against the root dir.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5139,6 +5248,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Forces --float-to-top setting off. See --float-to-top for more information.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5150,6 +5260,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
  isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using <code>--order-by-type</code>.</p>
 <p><strong>Type:</strong> Bool<br />
 <strong>Default:</strong> <code>False</code><br />
+<strong>Config default:</strong> <code>false</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5160,6 +5271,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>Tells isort to format the given files according to an extensions formatting rules.</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
@@ -5169,6 +5281,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 <p>==SUPPRESS==</p>
 <p><strong>Type:</strong> String<br />
 <strong>Default:</strong> <code>None</code><br />
+<strong>Config default:</strong> <code>None</code><br />
 <strong>Python &amp; Config File Name:</strong> <strong>Not Supported</strong><br />
 <strong>CLI Flags:</strong></p>
 <ul>
