@@ -11,7 +11,8 @@ OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
 MD_NEWLINE = "  "
-HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String"}
+HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String", "frozenset": "List of Strings", }
+CONFIG_DEFAULTS = {"False": "false", "True": "true"}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help", "sources", "directory"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]
@@ -321,16 +322,27 @@ class ConfigOption:
 
 **Type:** {human(self.type.__name__)}{MD_NEWLINE}
 **Default:** `{self.default}`{MD_NEWLINE}
+**Config default:** `{config_default(self.default)}`{MD_NEWLINE}
 **Python & Config File Name:** {self.config_name}{MD_NEWLINE}
 **CLI Flags:**{cli_options}
 {example}"""
+
+
+def config_default(default: Any) -> str:
+    if isinstance(default, (frozenset, tuple)):
+        default = list(default)
+    default_str = str(default)
+    if default_str in CONFIG_DEFAULTS:
+        return CONFIG_DEFAULTS[default_str]
+
+    return default_str
 
 
 def human(name: str) -> str:
     if name in HUMAN_NAME:
         return HUMAN_NAME[name]
 
-    return " ".join(part.capitalize() for part in name.replace("-", "_").split("_"))
+    return " ".join(part if part in ("of", ) else part.capitalize() for part in name.replace("-", "_").split("_"))
 
 
 def config_options() -> Generator[ConfigOption, None, None]:

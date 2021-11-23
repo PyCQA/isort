@@ -13,6 +13,7 @@ Tells isort to set the known standard library based on the specified Python vers
 
 **Type:** String  
 **Default:** `py3`  
+**Config default:** `py3`  
 **Python & Config File Name:** py_version  
 **CLI Flags:**
 
@@ -23,8 +24,9 @@ Tells isort to set the known standard library based on the specified Python vers
 
 Force specific imports to the top of their appropriate section.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** force_to_top  
 **CLI Flags:**
 
@@ -35,8 +37,9 @@ Force specific imports to the top of their appropriate section.
 
 Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
+**Config default:** `['.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv']`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
 
@@ -64,8 +67,9 @@ skip = [".gitignore", ".dockerignore"]
 
 Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** extend_skip  
 **CLI Flags:**
 
@@ -92,8 +96,9 @@ extend_skip = [".md", ".json"]
 
 Files that isort should skip over.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** skip_glob  
 **CLI Flags:**
 
@@ -122,8 +127,9 @@ skip_glob = ["docs/*"]
 
 Additional files that isort should skip over (extending --skip-glob).
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** extend_skip_glob  
 **CLI Flags:**
 
@@ -154,6 +160,7 @@ NOTE: This requires git to be installed and accessible from the same shell as is
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** skip_gitignore  
 **CLI Flags:**
 
@@ -166,6 +173,7 @@ The max length of an import line (used for wrapping long imports).
 
 **Type:** Int  
 **Default:** `79`  
+**Config default:** `79`  
 **Python & Config File Name:** line_length  
 **CLI Flags:**
 
@@ -181,6 +189,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.
 
 **Type:** Int  
 **Default:** `0`  
+**Config default:** `0`  
 **Python & Config File Name:** wrap_length  
 **CLI Flags:**
 
@@ -193,6 +202,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 **Type:** String  
 **Default:** ``  
+**Config default:** ``  
 **Python & Config File Name:** line_ending  
 **CLI Flags:**
 
@@ -205,6 +215,7 @@ What sections isort should display imports for and in what order
 
 **Type:** Tuple  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  
+**Config default:** `['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']`  
 **Python & Config File Name:** sections  
 **CLI Flags:** **Not Supported**
 
@@ -214,6 +225,7 @@ Put all imports into the same section bucket
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** no_sections  
 **CLI Flags:**
 
@@ -224,8 +236,9 @@ Put all imports into the same section bucket
 
 Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of __future__ handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six, a better option is to create another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `('__future__',)`  
+**Config default:** `['__future__']`  
 **Python & Config File Name:** known_future_library  
 **CLI Flags:**
 
@@ -236,8 +249,9 @@ Force isort to recognize a module as part of Python's internal future compatibil
 
 Force isort to recognize a module as being part of a third party library.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** known_third_party  
 **CLI Flags:**
 
@@ -266,8 +280,9 @@ known_third_party = ["my_module1", "my_module2"]
 
 Force isort to recognize a module as being part of the current python project.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** known_first_party  
 **CLI Flags:**
 
@@ -296,8 +311,9 @@ known_first_party = ["my_module1", "my_module2"]
 
 Force isort to recognize a module as being a local folder. Generally, this is reserved for relative imports (from . import module).
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** known_local_folder  
 **CLI Flags:**
 
@@ -325,8 +341,9 @@ known_local_folder = ["my_module1", "my_module2"]
 
 Force isort to recognize a module as part of Python's standard library.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `('_ast', '_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo')`  
+**Config default:** `['_ast', '_dummy_thread', '_thread', 'abc', 'aifc', 'argparse', 'array', 'ast', 'asynchat', 'asyncio', 'asyncore', 'atexit', 'audioop', 'base64', 'bdb', 'binascii', 'binhex', 'bisect', 'builtins', 'bz2', 'cProfile', 'calendar', 'cgi', 'cgitb', 'chunk', 'cmath', 'cmd', 'code', 'codecs', 'codeop', 'collections', 'colorsys', 'compileall', 'concurrent', 'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'crypt', 'csv', 'ctypes', 'curses', 'dataclasses', 'datetime', 'dbm', 'decimal', 'difflib', 'dis', 'distutils', 'doctest', 'dummy_threading', 'email', 'encodings', 'ensurepip', 'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch', 'formatter', 'fpectl', 'fractions', 'ftplib', 'functools', 'gc', 'getopt', 'getpass', 'gettext', 'glob', 'graphlib', 'grp', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib', 'imghdr', 'imp', 'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword', 'lib2to3', 'linecache', 'locale', 'logging', 'lzma', 'macpath', 'mailbox', 'mailcap', 'marshal', 'math', 'mimetypes', 'mmap', 'modulefinder', 'msilib', 'msvcrt', 'multiprocessing', 'netrc', 'nis', 'nntplib', 'ntpath', 'numbers', 'operator', 'optparse', 'os', 'ossaudiodev', 'parser', 'pathlib', 'pdb', 'pickle', 'pickletools', 'pipes', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posix', 'posixpath', 'pprint', 'profile', 'pstats', 'pty', 'pwd', 'py_compile', 'pyclbr', 'pydoc', 'queue', 'quopri', 'random', 're', 'readline', 'reprlib', 'resource', 'rlcompleter', 'runpy', 'sched', 'secrets', 'select', 'selectors', 'shelve', 'shlex', 'shutil', 'signal', 'site', 'smtpd', 'smtplib', 'sndhdr', 'socket', 'socketserver', 'spwd', 'sqlite3', 'sre', 'sre_compile', 'sre_constants', 'sre_parse', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct', 'subprocess', 'sunau', 'symbol', 'symtable', 'sys', 'sysconfig', 'syslog', 'tabnanny', 'tarfile', 'telnetlib', 'tempfile', 'termios', 'test', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token', 'tokenize', 'trace', 'traceback', 'tracemalloc', 'tty', 'turtle', 'turtledemo', 'types', 'typing', 'unicodedata', 'unittest', 'urllib', 'uu', 'uuid', 'venv', 'warnings', 'wave', 'weakref', 'webbrowser', 'winreg', 'winsound', 'wsgiref', 'xdrlib', 'xml', 'xmlrpc', 'zipapp', 'zipfile', 'zipimport', 'zlib', 'zoneinfo']`  
 **Python & Config File Name:** known_standard_library  
 **CLI Flags:**
 
@@ -355,8 +372,9 @@ known_standard_library = ["my_module1", "my_module2"]
 
 Extra modules to be included in the list of ones in Python's standard library.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** extra_standard_library  
 **CLI Flags:**
 
@@ -386,6 +404,7 @@ known_OTHER is how imports of custom sections are defined. OTHER is a placeholde
 
 **Type:** Dict  
 **Default:** `{}`  
+**Config default:** `{}`  
 **Python & Config File Name:** known_other  
 **CLI Flags:** **Not Supported**
 
@@ -413,6 +432,7 @@ Multi line output (0-grid, 1-vertical, 2-hanging, 3-vert-hanging, 4-vert-grid, 5
 
 **Type:** Wrapmodes  
 **Default:** `WrapModes.GRID`  
+**Config default:** `WrapModes.GRID`  
 **Python & Config File Name:** multi_line_output  
 **CLI Flags:**
 
@@ -441,6 +461,7 @@ Force certain sub modules to show separately
 
 **Type:** Tuple  
 **Default:** `()`  
+**Config default:** `[]`  
 **Python & Config File Name:** forced_separate  
 **CLI Flags:** **Not Supported**
 
@@ -468,6 +489,7 @@ String to place for indents defaults to "    " (4 spaces).
 
 **Type:** String  
 **Default:** `    `  
+**Config default:** `    `  
 **Python & Config File Name:** indent  
 **CLI Flags:**
 
@@ -480,6 +502,7 @@ Allows customizing how isort prefixes comments that it adds or modifies on impor
 
 **Type:** String  
 **Default:** `  #`  
+**Config default:** `  #`  
 **Python & Config File Name:** comment_prefix  
 **CLI Flags:** **Not Supported**
 
@@ -489,6 +512,7 @@ Sort imports by their string length.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** length_sort  
 **CLI Flags:**
 
@@ -501,6 +525,7 @@ Sort straight imports by their string length. Similar to `length_sort` but appli
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** length_sort_straight  
 **CLI Flags:**
 
@@ -511,8 +536,9 @@ Sort straight imports by their string length. Similar to `length_sort` but appli
 
 Sort the given sections by length
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** length_sort_sections  
 **CLI Flags:** **Not Supported**
 
@@ -538,8 +564,9 @@ length_sort_sections = ["future", "stdlib"]
 
 Adds the specified import line to all files, automatically determining correct placement.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** add_imports  
 **CLI Flags:**
 
@@ -568,8 +595,9 @@ add_imports = ["import os", "import json"]
 
 Removes the specified import from all files.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** remove_imports  
 **CLI Flags:**
 
@@ -600,6 +628,7 @@ Only adds the imports specified in --add-import if the file contains existing im
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** append_only  
 **CLI Flags:**
 
@@ -612,6 +641,7 @@ Reverse order of relative imports.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** reverse_relative  
 **CLI Flags:**
 
@@ -624,6 +654,7 @@ Forces all from imports to appear on their own line
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** force_single_line  
 **CLI Flags:**
 
@@ -636,6 +667,7 @@ One or more modules to exclude from the single line rule.
 
 **Type:** Tuple  
 **Default:** `()`  
+**Config default:** `[]`  
 **Python & Config File Name:** single_line_exclusions  
 **CLI Flags:**
 
@@ -666,6 +698,7 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 
 **Type:** String  
 **Default:** `THIRDPARTY`  
+**Config default:** `THIRDPARTY`  
 **Python & Config File Name:** default_section  
 **CLI Flags:**
 
@@ -678,6 +711,7 @@ A mapping of import sections to import heading comments that should show above t
 
 **Type:** Dict  
 **Default:** `{}`  
+**Config default:** `{}`  
 **Python & Config File Name:** import_headings  
 **CLI Flags:** **Not Supported**
 
@@ -687,6 +721,7 @@ A mapping of import sections to import footer comments that should show below th
 
 **Type:** Dict  
 **Default:** `{}`  
+**Config default:** `{}`  
 **Python & Config File Name:** import_footers  
 **CLI Flags:** **Not Supported**
 
@@ -696,6 +731,7 @@ Balances wrapping to produce the most consistent line length possible
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** balanced_wrapping  
 **CLI Flags:**
 
@@ -708,6 +744,7 @@ Use parentheses for line continuation on length limit instead of slashes. **NOTE
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** use_parentheses  
 **CLI Flags:**
 
@@ -723,6 +760,7 @@ Order imports by type, which is determined by case, in addition to alphabeticall
 
 **Type:** Bool  
 **Default:** `True`  
+**Config default:** `true`  
 **Python & Config File Name:** order_by_type  
 **CLI Flags:**
 
@@ -735,6 +773,7 @@ Ensures the output doesn't save if the resulting file contains syntax errors.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** atomic  
 **CLI Flags:**
 
@@ -747,6 +786,7 @@ The number of blank lines to place before imports. -1 for automatic determinatio
 
 **Type:** Int  
 **Default:** `-1`  
+**Config default:** `-1`  
 **Python & Config File Name:** lines_before_imports  
 **CLI Flags:**
 
@@ -759,6 +799,7 @@ The number of blank lines to place after imports. -1 for automatic determination
 
 **Type:** Int  
 **Default:** `-1`  
+**Config default:** `-1`  
 **Python & Config File Name:** lines_after_imports  
 **CLI Flags:**
 
@@ -771,6 +812,7 @@ The number of lines to place between sections
 
 **Type:** Int  
 **Default:** `1`  
+**Config default:** `1`  
 **Python & Config File Name:** lines_between_sections  
 **CLI Flags:** **Not Supported**
 
@@ -780,6 +822,7 @@ The number of lines to place between direct and from imports
 
 **Type:** Int  
 **Default:** `0`  
+**Config default:** `0`  
 **Python & Config File Name:** lines_between_types  
 **CLI Flags:**
 
@@ -792,6 +835,7 @@ Combines as imports on the same line.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** combine_as_imports  
 **CLI Flags:**
 
@@ -804,6 +848,7 @@ Ensures that if a star import is present, nothing else is imported from that nam
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** combine_star  
 **CLI Flags:**
 
@@ -816,6 +861,7 @@ Includes a trailing comma on multi line imports that include parentheses.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** include_trailing_comma  
 **CLI Flags:**
 
@@ -828,6 +874,7 @@ Switches the typical ordering preference, showing from imports first then straig
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** from_first  
 **CLI Flags:**
 
@@ -840,6 +887,7 @@ Shows verbose output, such as when files are skipped or when a check is successf
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** verbose  
 **CLI Flags:**
 
@@ -852,6 +900,7 @@ Shows extra quiet output, only errors are outputted.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** quiet  
 **CLI Flags:**
 
@@ -864,6 +913,7 @@ Forces import adds even if the original file is empty.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** force_adds  
 **CLI Flags:**
 
@@ -876,6 +926,7 @@ Force all imports to be sorted alphabetically within a section
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** force_alphabetical_sort_within_sections  
 **CLI Flags:**
 
@@ -888,6 +939,7 @@ Force all imports to be sorted as a single section
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** force_alphabetical_sort  
 **CLI Flags:**
 
@@ -900,6 +952,7 @@ Force number of from imports (defaults to 2 when passed as CLI flag without valu
 
 **Type:** Int  
 **Default:** `0`  
+**Config default:** `0`  
 **Python & Config File Name:** force_grid_wrap  
 **CLI Flags:**
 
@@ -912,6 +965,7 @@ Don't sort straight-style imports (like import sys) before from-style imports (l
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** force_sort_within_sections  
 **CLI Flags:**
 
@@ -924,6 +978,7 @@ Lexicographical order is strictly alphabetical order. For example by default iso
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** lexicographical  
 **CLI Flags:** **Not Supported**
 
@@ -933,6 +988,7 @@ If `True` isort will automatically create section groups by the top-level packag
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** group_by_package  
 **CLI Flags:** **Not Supported**
 
@@ -942,6 +998,7 @@ Tells isort to ignore whitespace differences when --check-only is being used.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** ignore_whitespace  
 **CLI Flags:**
 
@@ -952,8 +1009,9 @@ Tells isort to ignore whitespace differences when --check-only is being used.
 
 Sections which should not be split with previous by empty lines
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** no_lines_before  
 **CLI Flags:**
 
@@ -984,6 +1042,7 @@ Leaves `from` imports with multiple imports 'as-is' (e.g. `from foo import a, c 
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** no_inline_sort  
 **CLI Flags:**
 
@@ -996,6 +1055,7 @@ If enabled, isort will strip comments that exist within import lines.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** ignore_comments  
 **CLI Flags:** **Not Supported**
 
@@ -1005,6 +1065,7 @@ Tells isort to include casing when sorting module names
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** case_sensitive  
 **CLI Flags:**
 
@@ -1016,6 +1077,7 @@ Virtual environment to use for determining whether a package is third-party
 
 **Type:** String  
 **Default:** ``  
+**Config default:** ``  
 **Python & Config File Name:** virtual_env  
 **CLI Flags:**
 
@@ -1027,6 +1089,7 @@ Conda environment to use for determining whether a package is third-party
 
 **Type:** String  
 **Default:** ``  
+**Config default:** ``  
 **Python & Config File Name:** conda_env  
 **CLI Flags:**
 
@@ -1038,6 +1101,7 @@ Inserts a blank line before a comment following an import.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** ensure_newline_before_comments  
 **CLI Flags:**
 
@@ -1050,6 +1114,7 @@ Base profile type to use for configuration. Profiles include: black, django, pyc
 
 **Type:** String  
 **Default:** ``  
+**Config default:** ``  
 **Python & Config File Name:** profile  
 **CLI Flags:**
 
@@ -1061,6 +1126,7 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** honor_noqa  
 **CLI Flags:**
 
@@ -1072,6 +1138,7 @@ Add an explicitly defined source path (modules within src paths have their impor
 
 **Type:** Tuple  
 **Default:** `()`  
+**Config default:** `[]`  
 **Python & Config File Name:** src_paths  
 **CLI Flags:**
 
@@ -1102,6 +1169,7 @@ Use the old deprecated finder logic that relies on environment introspection mag
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** old_finders  
 **CLI Flags:**
 
@@ -1114,6 +1182,7 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** remove_redundant_aliases  
 **CLI Flags:**
 
@@ -1128,6 +1197,7 @@ This can be an excellent shortcut for collecting imports every once in a while w
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** float_to_top  
 **CLI Flags:**
 
@@ -1139,6 +1209,7 @@ Tells isort to filter files even when they are explicitly passed in as part of t
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** filter_files  
 **CLI Flags:**
 
@@ -1150,6 +1221,7 @@ Specifies the name of a formatting plugin to use when producing output.
 
 **Type:** String  
 **Default:** ``  
+**Config default:** ``  
 **Python & Config File Name:** formatter  
 **CLI Flags:**
 
@@ -1161,6 +1233,7 @@ The fully qualified Python path of a function to apply to format code sorted by 
 
 **Type:** Nonetype  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** formatting_function  
 **CLI Flags:** **Not Supported**
 
@@ -1170,6 +1243,7 @@ Tells isort to use color in terminal output.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** color_output  
 **CLI Flags:**
 
@@ -1179,8 +1253,9 @@ Tells isort to use color in terminal output.
 
 Tells isort to treat the specified single line comment(s) as if they are code.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** treat_comments_as_code  
 **CLI Flags:**
 
@@ -1210,6 +1285,7 @@ Tells isort to treat all single line comments as if they are code.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** treat_all_comments_as_code  
 **CLI Flags:**
 
@@ -1219,8 +1295,9 @@ Tells isort to treat all single line comments as if they are code.
 
 Specifies what extensions isort can be run against.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `('pxd', 'py', 'pyi', 'pyx')`  
+**Config default:** `['pxd', 'py', 'pyi', 'pyx']`  
 **Python & Config File Name:** supported_extensions  
 **CLI Flags:**
 
@@ -1250,8 +1327,9 @@ supported_extensions = ["pyw", "ext"]
 
 Specifies what extensions isort can never be run against.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `('pex',)`  
+**Config default:** `['pex']`  
 **Python & Config File Name:** blocked_extensions  
 **CLI Flags:**
 
@@ -1279,8 +1357,9 @@ blocked_extensions = ["pyw", "pyc"]
 
 An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** constants  
 **CLI Flags:** **Not Supported**
 
@@ -1288,8 +1367,9 @@ An override list of tokens to always recognize as a CONSTANT for order_by_type r
 
 An override list of tokens to always recognize as a Class for order_by_type regardless of casing.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** classes  
 **CLI Flags:** **Not Supported**
 
@@ -1297,8 +1377,9 @@ An override list of tokens to always recognize as a Class for order_by_type rega
 
 An override list of tokens to always recognize as a var for order_by_type regardless of casing.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** variables  
 **CLI Flags:** **Not Supported**
 
@@ -1308,6 +1389,7 @@ Tells isort to only show an identical custom import heading comment once, even i
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** dedup_headings  
 **CLI Flags:**
 
@@ -1319,6 +1401,7 @@ Causes imports to be sorted based on their sections like STDLIB, THIRDPARTY, etc
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** only_sections  
 **CLI Flags:**
 
@@ -1331,6 +1414,7 @@ Suppresses verbose output for non-modified files.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** only_modified  
 **CLI Flags:**
 
@@ -1343,6 +1427,7 @@ Combines all the bare straight imports of the same section in a single line. Won
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** combine_straight_imports  
 **CLI Flags:**
 
@@ -1355,6 +1440,7 @@ Automatically determine local namespace packages, generally by lack of any src f
 
 **Type:** Bool  
 **Default:** `True`  
+**Config default:** `true`  
 **Python & Config File Name:** auto_identify_namespace_packages  
 **CLI Flags:** **Not Supported**
 
@@ -1362,8 +1448,9 @@ Automatically determine local namespace packages, generally by lack of any src f
 
 Manually specify one or more namespace packages.
 
-**Type:** Frozenset  
+**Type:** List of Strings  
 **Default:** `frozenset()`  
+**Config default:** `[]`  
 **Python & Config File Name:** namespace_packages  
 **CLI Flags:** **Not Supported**
 
@@ -1373,6 +1460,7 @@ If `True` isort will follow symbolic links when doing recursive sorting.
 
 **Type:** Bool  
 **Default:** `True`  
+**Config default:** `true`  
 **Python & Config File Name:** follow_links  
 **CLI Flags:** **Not Supported**
 
@@ -1382,6 +1470,7 @@ If `True` isort will apply import headings to indended imports the same way it d
 
 **Type:** Bool  
 **Default:** `True`  
+**Config default:** `true`  
 **Python & Config File Name:** indented_import_headings  
 **CLI Flags:** **Not Supported**
 
@@ -1391,6 +1480,7 @@ Honor `--case-sensitive` when `--force-sort-within-sections` is being used. With
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** honor_case_in_force_sorted_sections  
 **CLI Flags:**
 
@@ -1403,6 +1493,7 @@ When using `--force-sort-within-sections`, sort relative imports the same way as
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** sort_relative_in_force_sorted_sections  
 **CLI Flags:**
 
@@ -1415,6 +1506,7 @@ Tells isort to overwrite in place using the same file handle. Comes at a perform
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** overwrite_in_place  
 **CLI Flags:**
 
@@ -1426,6 +1518,7 @@ Reverses the ordering of imports.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** reverse_sort  
 **CLI Flags:**
 
@@ -1437,6 +1530,7 @@ Forces star imports above others to avoid overriding directly imported variables
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** star_first  
 **CLI Flags:**
 
@@ -1448,6 +1542,7 @@ If `True` isort will honor ignores within locally defined .git_ignore files.
 
 **Type:** Dict  
 **Default:** `{}`  
+**Config default:** `{}`  
 **Python & Config File Name:** git_ignore  
 **CLI Flags:** **Not Supported**
 
@@ -1457,6 +1552,7 @@ Override the format used to print errors.
 
 **Type:** String  
 **Default:** `{error}: {message}`  
+**Config default:** `{error}: {message}`  
 **Python & Config File Name:** format_error  
 **CLI Flags:**
 
@@ -1468,6 +1564,7 @@ Override the format used to print success.
 
 **Type:** String  
 **Default:** `{success}: {message}`  
+**Config default:** `{success}: {message}`  
 **Python & Config File Name:** format_success  
 **CLI Flags:**
 
@@ -1479,6 +1576,7 @@ Specify sorting function. Can be built in (natural[default] = force numbers to b
 
 **Type:** String  
 **Default:** `natural`  
+**Config default:** `natural`  
 **Python & Config File Name:** sort_order  
 **CLI Flags:**
 
@@ -1490,6 +1588,7 @@ Displays the currently installed version of isort.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1508,6 +1607,7 @@ Returns just the current version number without the logo
 
 **Type:** String  
 **Default:** `==SUPPRESS==`  
+**Config default:** `==SUPPRESS==`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1520,6 +1620,7 @@ Force resulting output to stdout, instead of in-place.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1532,6 +1633,7 @@ See isort's determined config, as well as sources of config options.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1543,6 +1645,7 @@ See the files isort will be run against with the current config options.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1554,6 +1657,7 @@ Prints a diff of all the changes isort would make to a file, instead of changing
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1566,6 +1670,7 @@ Checks the file for unsorted / unformatted imports and prints them to the comman
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1579,6 +1684,7 @@ Explicitly set the settings path or file instead of auto determining based on fi
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1593,6 +1699,7 @@ Explicitly set the config root for resolving all configs. When used with the --r
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1605,6 +1712,7 @@ Tells isort to resolve the configs for all sub-directories and sort files in ter
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1616,6 +1724,7 @@ Number of files to process in parallel. Negative value means use number of CPUs.
 
 **Type:** Int  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1628,6 +1737,7 @@ Tells isort to apply changes interactively.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1639,6 +1749,7 @@ One or more Python source files that need their imports sorted.
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1650,6 +1761,7 @@ Tells isort not to follow symlinks that are encountered when running recursively
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1661,6 +1773,7 @@ Provide the filename associated with a stream.
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1672,6 +1785,7 @@ Tells isort not to treat / specially, allowing it to be run against the root dir
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1683,6 +1797,7 @@ Forces --float-to-top setting off. See --float-to-top for more information.
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1697,6 +1812,7 @@ Don't order imports by type, which is determined by case, in addition to alphabe
 
 **Type:** Bool  
 **Default:** `False`  
+**Config default:** `false`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1709,6 +1825,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1720,6 +1837,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
+**Config default:** `None`  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
