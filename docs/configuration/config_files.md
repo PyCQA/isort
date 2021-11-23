@@ -61,6 +61,8 @@ Because isort verification is commonly ran as a testing step, some prefer to pla
 
 ```ini
 [isort]
+profile = black
+multi_line_output = 3
 ```
 
 ## .editorconfig
