@@ -13,12 +13,34 @@ Tells isort to set the known standard library based on the specified Python vers
 
 **Type:** String  
 **Default:** `py3`  
-**Config default:** `py3`  
+**Config default:** `3`  
 **Python & Config File Name:** py_version  
 **CLI Flags:**
 
 - --py
 - --python-version
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+py_version=39
+
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+py_version=39
+
+```
+
+### Example cli usage
+
+`isort --py 39`
 
 ## Force To Top
 

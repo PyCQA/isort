@@ -291,6 +291,13 @@ blocked_extensions = ["pyw", "pyc"]
     ),
     "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
     "show_version": Example(cli="isort --version"),
+    "py_version": Example(cli="isort --py 39",
+    pyproject_toml="""
+py_version=39
+""",
+    cfg="""
+py_version=39
+""")
 }
 
 
@@ -335,6 +342,8 @@ def config_default(default: Any) -> str:
     if default_str in CONFIG_DEFAULTS:
         return CONFIG_DEFAULTS[default_str]
 
+    if default_str.startswith("py"):
+        return default_str[2:]
     return default_str
 
 
