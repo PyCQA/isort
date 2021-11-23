@@ -11,7 +11,13 @@ OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
 MD_NEWLINE = "  "
-HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String", "frozenset": "List of Strings", "tuple": "List of Strings"}
+HUMAN_NAME = {
+    "py_version": "Python Version",
+    "vn": "Version Number",
+    "str": "String",
+    "frozenset": "List of Strings",
+    "tuple": "List of Strings",
+}
 CONFIG_DEFAULTS = {"False": "false", "True": "true", "None": ""}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help", "sources", "directory"}
@@ -291,13 +297,15 @@ blocked_extensions = ["pyw", "pyc"]
     ),
     "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
     "show_version": Example(cli="isort --version"),
-    "py_version": Example(cli="isort --py 39",
-    pyproject_toml="""
+    "py_version": Example(
+        cli="isort --py 39",
+        pyproject_toml="""
 py_version=39
 """,
-    cfg="""
+        cfg="""
 py_version=39
-""")
+""",
+    ),
 }
 
 
@@ -351,7 +359,9 @@ def human(name: str) -> str:
     if name in HUMAN_NAME:
         return HUMAN_NAME[name]
 
-    return " ".join(part if part in ("of", ) else part.capitalize() for part in name.replace("-", "_").split("_"))
+    return " ".join(
+        part if part in ("of",) else part.capitalize() for part in name.replace("-", "_").split("_")
+    )
 
 
 def config_options() -> Generator[ConfigOption, None, None]:
