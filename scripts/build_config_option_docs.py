@@ -12,7 +12,7 @@ OUTPUT_FILE = os.path.abspath(
 )
 MD_NEWLINE = "  "
 HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String", "frozenset": "List of Strings", }
-CONFIG_DEFAULTS = {"False": "false", "True": "true"}
+CONFIG_DEFAULTS = {"False": "false", "True": "true", "None": ""}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help", "sources", "directory"}
 COLUMNS = ["Name", "Type", "Default", "Python / Config file", "CLI", "Description"]

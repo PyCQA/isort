@@ -1233,7 +1233,7 @@ The fully qualified Python path of a function to apply to format code sorted by 
 
 **Type:** Nonetype  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** formatting_function  
 **CLI Flags:** **Not Supported**
 
@@ -1684,7 +1684,7 @@ Explicitly set the settings path or file instead of auto determining based on fi
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1699,7 +1699,7 @@ Explicitly set the config root for resolving all configs. When used with the --r
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1724,7 +1724,7 @@ Number of files to process in parallel. Negative value means use number of CPUs.
 
 **Type:** Int  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1749,7 +1749,7 @@ One or more Python source files that need their imports sorted.
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1773,7 +1773,7 @@ Provide the filename associated with a stream.
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1825,7 +1825,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1837,7 +1837,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** `None`  
+**Config default:** ``  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
