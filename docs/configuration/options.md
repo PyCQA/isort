@@ -201,8 +201,8 @@ NOTE: wrap_length must be LOWER than or equal to line_length.
 Forces line endings to the specified value. If not set, values will be guessed per-file.
 
 **Type:** String  
-**Default:** ``  
-**Config default:** ``  
+**Default:** ` `  
+**Config default:** ` `  
 **Python & Config File Name:** line_ending  
 **CLI Flags:**
 
@@ -213,7 +213,7 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 What sections isort should display imports for and in what order
 
-**Type:** Tuple  
+**Type:** List of Strings  
 **Default:** `('FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER')`  
 **Config default:** `['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']`  
 **Python & Config File Name:** sections  
@@ -459,7 +459,7 @@ multi_line_output = 3
 
 Force certain sub modules to show separately
 
-**Type:** Tuple  
+**Type:** List of Strings  
 **Default:** `()`  
 **Config default:** `[]`  
 **Python & Config File Name:** forced_separate  
@@ -665,7 +665,7 @@ Forces all from imports to appear on their own line
 
 One or more modules to exclude from the single line rule.
 
-**Type:** Tuple  
+**Type:** List of Strings  
 **Default:** `()`  
 **Config default:** `[]`  
 **Python & Config File Name:** single_line_exclusions  
@@ -1076,8 +1076,8 @@ Tells isort to include casing when sorting module names
 Virtual environment to use for determining whether a package is third-party
 
 **Type:** String  
-**Default:** ``  
-**Config default:** ``  
+**Default:** ` `  
+**Config default:** ` `  
 **Python & Config File Name:** virtual_env  
 **CLI Flags:**
 
@@ -1088,8 +1088,8 @@ Virtual environment to use for determining whether a package is third-party
 Conda environment to use for determining whether a package is third-party
 
 **Type:** String  
-**Default:** ``  
-**Config default:** ``  
+**Default:** ` `  
+**Config default:** ` `  
 **Python & Config File Name:** conda_env  
 **CLI Flags:**
 
@@ -1113,8 +1113,8 @@ Inserts a blank line before a comment following an import.
 Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.
 
 **Type:** String  
-**Default:** ``  
-**Config default:** ``  
+**Default:** ` `  
+**Config default:** ` `  
 **Python & Config File Name:** profile  
 **CLI Flags:**
 
@@ -1136,7 +1136,7 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party). Glob expansion (`*` and `**`) is supported for this option.
 
-**Type:** Tuple  
+**Type:** List of Strings  
 **Default:** `()`  
 **Config default:** `[]`  
 **Python & Config File Name:** src_paths  
@@ -1220,8 +1220,8 @@ Tells isort to filter files even when they are explicitly passed in as part of t
 Specifies the name of a formatting plugin to use when producing output.
 
 **Type:** String  
-**Default:** ``  
-**Config default:** ``  
+**Default:** ` `  
+**Config default:** ` `  
 **Python & Config File Name:** formatter  
 **CLI Flags:**
 
@@ -1233,7 +1233,7 @@ The fully qualified Python path of a function to apply to format code sorted by 
 
 **Type:** Nonetype  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** formatting_function  
 **CLI Flags:** **Not Supported**
 
@@ -1684,7 +1684,7 @@ Explicitly set the settings path or file instead of auto determining based on fi
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1699,7 +1699,7 @@ Explicitly set the config root for resolving all configs. When used with the --r
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1724,7 +1724,7 @@ Number of files to process in parallel. Negative value means use number of CPUs.
 
 **Type:** Int  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1749,7 +1749,7 @@ One or more Python source files that need their imports sorted.
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1773,7 +1773,7 @@ Provide the filename associated with a stream.
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1825,7 +1825,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
@@ -1837,7 +1837,7 @@ Tells isort to format the given files according to an extensions formatting rule
 
 **Type:** String  
 **Default:** `None`  
-**Config default:** ``  
+**Config default:** ` `  
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 

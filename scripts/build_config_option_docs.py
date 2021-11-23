@@ -11,7 +11,7 @@ OUTPUT_FILE = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "../docs/configuration/options.md")
 )
 MD_NEWLINE = "  "
-HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String", "frozenset": "List of Strings", }
+HUMAN_NAME = {"py_version": "Python Version", "vn": "Version Number", "str": "String", "frozenset": "List of Strings", "tuple": "List of Strings"}
 CONFIG_DEFAULTS = {"False": "false", "True": "true", "None": ""}
 DESCRIPTIONS = {}
 IGNORED = {"source", "help", "sources", "directory"}
@@ -321,8 +321,8 @@ class ConfigOption:
 {self.description}
 
 **Type:** {human(self.type.__name__)}{MD_NEWLINE}
-**Default:** `{self.default}`{MD_NEWLINE}
-**Config default:** `{config_default(self.default)}`{MD_NEWLINE}
+**Default:** `{str(self.default) or " "}`{MD_NEWLINE}
+**Config default:** `{config_default(self.default) or " "}`{MD_NEWLINE}
 **Python & Config File Name:** {self.config_name}{MD_NEWLINE}
 **CLI Flags:**{cli_options}
 {example}"""
