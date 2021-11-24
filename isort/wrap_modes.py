@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List
 import isort.comments
 
 _wrap_modes: Dict[str, Callable[..., str]] = {}
+SILENT_LENGTH_COMMENT = "NOQA: E501"
 
 
 def from_string(value: str) -> "WrapModes":
@@ -252,13 +253,13 @@ def noqa(**interface: Any) -> str:
             <= interface["line_length"]
         ):
             return f"{retval}{interface['comment_prefix']} {comment_str}"
-        if "NOQA" in interface["comments"]:
+        if "# NOQA" in f"{interface['comment_prefix']} {comment_str}":
             return f"{retval}{interface['comment_prefix']} {comment_str}"
-        return f"{retval}{interface['comment_prefix']} NOQA {comment_str}"
+        return f"{retval}{interface['comment_prefix']} {SILENT_LENGTH_COMMENT} {comment_str}"
 
     if len(retval) <= interface["line_length"]:
         return retval
-    return f"{retval}{interface['comment_prefix']} NOQA"
+    return f"{retval}{interface['comment_prefix']} {SILENT_LENGTH_COMMENT}"
 
 
 @_wrap_mode

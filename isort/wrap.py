@@ -3,6 +3,7 @@ import re
 from typing import List, Optional, Sequence
 
 from .settings import DEFAULT_CONFIG, Config
+from .wrap_modes import SILENT_LENGTH_COMMENT
 from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string
 
@@ -131,7 +132,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                     return line_separator.join(lines)
                 return f"{content}{splitter}\\{line_separator}{cont_line}"
     elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
-        return f"{content}{config.comment_prefix} NOQA"
+        return f"{content}{config.comment_prefix} {SILENT_LENGTH_COMMENT}"
 
     return content
 

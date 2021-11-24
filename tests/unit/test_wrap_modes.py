@@ -29,7 +29,7 @@ def test_auto_saved():
                 "white_space": "\U000a7322\U000c20e3-\U0010eae4\x07\x14\U0007d486",
             }
         )
-        == "\U00092452-\U000bf82c\x0c\U0004608f\x10% NOQA"
+        == "\U00092452-\U000bf82c\x0c\U0004608f\x10% NOQA: E501"
     )
     assert (
         wrap_modes.noqa(

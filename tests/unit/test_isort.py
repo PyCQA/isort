@@ -487,7 +487,7 @@ def test_output_modes() -> None:
         "from third_party import lib1, lib2, lib3, lib4, lib5, lib6, lib7,"
         " lib8, lib9, lib10, lib11,"
         " lib12, lib13, lib14, lib15, lib16, lib17, lib18, lib20, lib21, lib22  "
-        "# NOQA comment\n"
+        "# NOQA: E501 comment\n"
     )
 
     test_case = isort.code(
@@ -1243,7 +1243,7 @@ def test_force_single_line_long_imports() -> None:
     )
     assert test_output == (
         "from veryveryveryveryveryvery import big\n"
-        "from veryveryveryveryveryvery import small  # NOQA\n"
+        "from veryveryveryveryveryvery import small  # NOQA: E501\n"
     )
 
 
