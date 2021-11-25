@@ -1513,6 +1513,89 @@ def test_titled_and_footered_imports() -> None:
         "# My Stuff End\n"
     )
 
+    test_input_lines_down = (
+        "# comment 1\n"
+        "import django.settings\n"
+        "\n"
+        "# Standard Library\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "import statistics\n"
+        "import os\n"
+        "import myproject.test\n"
+        "\n"
+        "# Standard Library End\n"
+        "# Standard Library End\n"
+    )
+    test_output_lines_down = isort.code(
+        code=test_input_lines_down,
+        known_first_party=["myproject"],
+        import_heading_stdlib="Standard Library",
+        import_heading_firstparty="My Stuff",
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+        dedup_headings=True,
+    )
+    assert test_output_lines_down == (
+        "# comment 1\n"
+        "# Standard Library\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "# My Stuff\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+
+    test_input_lines_down = (
+        "# comment 1\n"
+        "# Standard Library\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "# My Stuff\n"
+        "import myproject.test\n"
+    )
+    test_output_lines_down = isort.code(
+        code=test_input_lines_down,
+        known_first_party=["myproject"],
+        import_heading_stdlib="Standard Library",
+        import_heading_firstparty="My Stuff",
+        import_footer_stdlib="Standard Library End",
+        import_footer_firstparty="My Stuff End",
+        dedup_headings=True,
+    )
+    assert test_output_lines_down == (
+        "# comment 1\n"
+        "# Standard Library\n"
+        "import os\n"
+        "import statistics\n"
+        "import sys\n"
+        "import unicodedata\n"
+        "\n"
+        "# Standard Library End\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "# My Stuff\n"
+        "import myproject.test\n"
+        "\n"
+        "# My Stuff End\n"
+    )
+
 
 def test_balanced_wrapping() -> None:
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
