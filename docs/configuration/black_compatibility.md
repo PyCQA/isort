@@ -20,7 +20,6 @@ For instance, your _pyproject.toml_ file would look something like
 ```ini
 [tool.isort]
 profile = "black"
-multi_line_output = 3
 ```
 
 Read More about supported [config files](https://pycqa.github.io/isort/docs/configuration/config_files.html).
@@ -64,4 +63,3 @@ You can also set the profile directly when integrating isort within pre-commit.
       - id: isort
         args: ["--profile", "black", "--filter-files"]
 ```
-
