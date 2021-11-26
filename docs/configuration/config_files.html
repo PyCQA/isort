@@ -1478,6 +1478,8 @@ use this standard it can be a natural fit to put your isort config there as well
 <p><a href="https://tox.readthedocs.io/en/latest/">tox</a> is a tool commonly used in the Python community to specify multiple testing environments.
 Because isort verification is commonly ran as a testing step, some prefer to place the isort config inside of the tox.ini file.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[isort]</span>
+<span class="na">profile</span> <span class="o">=</span> <span class="s">black</span>
+<span class="na">multi_line_output</span> <span class="o">=</span> <span class="s">3</span>
 </code></pre></div>
 
 <h2 id="editorconfig">.editorconfig</h2>
