@@ -1716,14 +1716,28 @@ def test_order_by_type() -> None:
 
 def test_custom_lines_before_import_section() -> None:
     """Test the case where the number of lines to output after imports has been explicitly set."""
-    test_input = "from a import b\nfrom c import d\nfoo = 'bar'\n"
+    test_input = """from a import b
+
+foo = 'bar'
+"""
+
+    ln = "\n"
 
     # default case is no line added before the import
-    assert isort.code(test_input) == ("from a import b\nfrom c import d\n\nfoo = 'bar'\n")
+    assert isort.code(test_input) == (test_input)
 
     # test again with a custom number of lines before the import section
-    assert isort.code(test_input, lines_before_imports=2) == (
-        "\n\nfrom a import b\nfrom c import d\n\nfoo = 'bar'\n"
+    assert isort.code(test_input, lines_before_imports=2) == 2 * ln + test_input
+
+    comment = "# Comment\n"
+
+    # test with a comment above
+    assert isort.code(comment + ln + test_input, lines_before_imports=0) == comment + test_input
+
+    # test with comments with empty lines
+    assert (
+        isort.code(comment + ln + comment + 3 * ln + test_input, lines_before_imports=1)
+        == comment + ln + comment + 1 * ln + test_input
     )
 
 
