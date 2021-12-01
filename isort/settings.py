@@ -555,7 +555,10 @@ class Config(_Config):
         env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                ["git", "-C", folder, "rev-parse", "--show-toplevel"], encoding="utf-8", env=env
+                ["git", "-C", folder, "rev-parse", "--show-toplevel"],
+                encoding="utf-8",
+                env=env,
+                shell=True,
             )
         except subprocess.CalledProcessError:
             return None
