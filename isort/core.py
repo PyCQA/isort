@@ -72,6 +72,7 @@ def process(
     stripped_line: str = ""
     end_of_file: bool = False
     verbose_output: List[str] = []
+    lines_before: List[str] = []
 
     if config.float_to_top:
         new_input = ""
@@ -333,6 +334,15 @@ def process(
                     not_imports = True
 
         if not_imports:
+
+            if not was_in_quote and config.lines_before_imports > -1:
+                if line.strip() == "":
+                    lines_before += line
+                    continue
+                if not import_section:
+                    output_stream.write("".join(lines_before))
+                lines_before = []
+
             raw_import_section: str = import_section
             if (
                 add_imports
