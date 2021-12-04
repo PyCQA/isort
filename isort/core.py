@@ -24,6 +24,11 @@ CODE_SORT_COMMENTS = (
     "# isort: unique-tuple",
     "# isort: assignments",
 )
+LITERAL_TYPE_MAPPING = {
+    "(": "tuple",
+    "[": "list",
+    "{": "dict",
+}
 
 
 def process(
@@ -73,6 +78,8 @@ def process(
     end_of_file: bool = False
     verbose_output: List[str] = []
     lines_before: List[str] = []
+    auto_reexporting: bool = False
+    line_index: int = 0
 
     if config.float_to_top:
         new_input = ""
@@ -145,7 +152,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code)
+                line_index += output_stream.write(sorted_code)
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -225,6 +232,13 @@ def process(
                     code_sorting = stripped_line.split("isort: ")[1].strip()
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
+                elif config.sort_reexports and stripped_line.startswith("__all__"):
+                    code_sorting = LITERAL_TYPE_MAPPING[stripped_line.split(" = ")[1][0]]
+                    code_sorting_indent = line[: -len(line.lstrip())]
+                    not_imports = True
+                    code_sorting_section += line
+                    auto_reexporting = True
+                    line_index -= len(line) - 1
                 elif code_sorting:
                     if not stripped_line:
                         sorted_code = textwrap.indent(
@@ -242,11 +256,14 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-                        output_stream.write(sorted_code)
+                        if auto_reexporting:
+                            output_stream.seek(line_index, 0)
+                        line_index += output_stream.write(sorted_code)
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
                         code_sorting_indent = ""
+                        auto_reexporting = False
                     else:
                         code_sorting_section += line
                         line = ""
@@ -332,6 +349,8 @@ def process(
                         import_section += import_statement
                 else:
                     not_imports = True
+
+        line_index += len(line)
 
         if not_imports:
 
