@@ -322,6 +322,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="format_success",
         help="Override the format used to print success.",
     )
+    general_group.add_argument(
+        "--sort-reexports",
+        dest="sort_reexports",
+        action="store_true",
+        help="Automatically sort all re-exports (module level __all__ collections)",
+    )
 
     target_group.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
