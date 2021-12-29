@@ -889,6 +889,17 @@ Includes a trailing comma on multi line imports that include parentheses.
 
 - --tc
 - --trailing-comma
+## Split on Trailing Comma
+
+Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode. This follows Black style magic comma.
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** split_on_trailing_comma
+**CLI Flags:**
+
+- --split-on-trailing-comma
 
 ## From First
 

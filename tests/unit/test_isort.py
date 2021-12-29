@@ -5562,3 +5562,19 @@ def test_find_imports_in_stream() -> None:
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
+
+
+def test_split_on_trailing_comma() -> None:
+    test_input = "from lib import (a, b, c,)"
+    expected_output = """from lib import (
+    a,
+    b,
+    c,
+)
+"""
+
+    output = isort.code(test_input, split_on_trailing_comma=True)
+    assert output == expected_output
+
+    output = isort.code(expected_output, split_on_trailing_comma=True)
+    assert output == expected_output

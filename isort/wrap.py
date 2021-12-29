@@ -4,7 +4,7 @@ from typing import List, Optional, Sequence
 
 from .settings import DEFAULT_CONFIG, Config
 from .wrap_modes import WrapModes as Modes
-from .wrap_modes import formatter_from_string
+from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 
 def import_statement(
@@ -14,12 +14,19 @@ def import_statement(
     line_separator: str = "\n",
     config: Config = DEFAULT_CONFIG,
     multi_line_output: Optional[Modes] = None,
+    explode: bool = False,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
-    formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
+    if explode:
+        formatter = vertical_hanging_indent
+        line_length = 1
+        include_trailing_comma = True
+    else:
+        formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
+        line_length = config.wrap_length or config.line_length
+        include_trailing_comma = config.include_trailing_comma
     dynamic_indent = " " * (len(import_start) + 1)
     indent = config.indent
-    line_length = config.wrap_length or config.line_length
     statement = formatter(
         statement=import_start,
         imports=copy.copy(from_imports),
@@ -29,7 +36,7 @@ def import_statement(
         comments=comments,
         line_separator=line_separator,
         comment_prefix=config.comment_prefix,
-        include_trailing_comma=config.include_trailing_comma,
+        include_trailing_comma=include_trailing_comma,
         remove_comments=config.ignore_comments,
     )
     if config.balanced_wrapping:
@@ -52,7 +59,7 @@ def import_statement(
                 comments=comments,
                 line_separator=line_separator,
                 comment_prefix=config.comment_prefix,
-                include_trailing_comma=config.include_trailing_comma,
+                include_trailing_comma=include_trailing_comma,
                 remove_comments=config.ignore_comments,
             )
             lines = new_import_statement.split(line_separator)

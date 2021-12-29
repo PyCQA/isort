@@ -2,7 +2,7 @@
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple
 from warnings import warn
 
 from . import place
@@ -138,6 +138,7 @@ class ParsedContent(NamedTuple):
     line_separator: str
     sections: Any
     verbose_output: List[str]
+    trailing_commas: Set[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -175,6 +176,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "nested": {},
         "above": {"straight": {}, "from": {}},
     }
+
+    trailing_commas: Set[str] = set()
 
     index = 0
     import_index = -1
@@ -515,6 +518,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
+
+                if "," in import_string.split(just_imports[-1])[-1]:
+                    trailing_commas.add(import_from)
             else:
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
@@ -587,4 +593,5 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line_separator=line_separator,
         sections=config.sections,
         verbose_output=verbose_output,
+        trailing_commas=trailing_commas,
     )
