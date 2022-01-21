@@ -61,7 +61,7 @@ flake8-bugbear = "^19.8"
 black = {version = "^21.10b0", allow-prereleases = true}
 coverage = {version = "^6.0b1", allow-prereleases = true}
 mypy = "^0.902"
-ipython = "^7.7"
+ipython = "^7.16"
 pytest = "^6.0"
 pytest-cov = "^2.7"
 pytest-mock = "^1.10"
