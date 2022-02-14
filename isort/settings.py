@@ -636,7 +636,8 @@ class Config(_Config):
                 git_folder = self._check_folder_git_ls_files(str(file_path.parent))
 
             # git_ls_files are good files you should parse. If you're not in the allow list, skip.
-            if git_folder and str(file_path.resolve()) not in self.git_ls_files[git_folder]:
+
+            if git_folder and not file_path.is_dir() and str(file_path.resolve()) not in self.git_ls_files[git_folder]:
                 return True
 
         return False
