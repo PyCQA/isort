@@ -5562,3 +5562,18 @@ def test_find_imports_in_stream() -> None:
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
+
+
+def test_unindented_comments_issue_1899():
+    """Ensure unindented comments in indented blocks are handled correctly"""
+
+    test_input = """
+import sys
+
+if True:
+# this comment will get cut off
+    import os
+
+    """
+
+    assert isort.code(test_input) == test_input
