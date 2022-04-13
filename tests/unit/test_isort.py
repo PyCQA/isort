@@ -5562,3 +5562,21 @@ def test_find_imports_in_stream() -> None:
     test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
+
+
+def test_infinite_loop_in_unmatched_parenthesis() -> None:
+    test_input = "from os import ("
+
+    # ensure a syntax error is raised for unmatched parenthesis
+    with pytest.raises(ExistingSyntaxErrors):
+        isort.code(test_input)
+
+    test_input = """from os import (
+    path,
+
+    walk
+)
+"""
+
+    # ensure other cases are handled correctly
+    assert isort.code(test_input) == "from os import path, walk\n"
