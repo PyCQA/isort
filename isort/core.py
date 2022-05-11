@@ -7,7 +7,7 @@ import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
 
 from . import output, parse
-from .exceptions import FileSkipComment
+from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
 
@@ -303,6 +303,10 @@ def process(
                         else:
                             while ")" not in stripped_line:
                                 line = input_stream.readline()
+
+                                if not line:  # end of file without closing parenthesis
+                                    raise ExistingSyntaxErrors("Parenthesis is not closed")
+
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
 
