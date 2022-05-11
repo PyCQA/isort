@@ -15,4 +15,4 @@ python = ">=3.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"

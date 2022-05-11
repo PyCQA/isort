@@ -238,7 +238,7 @@ class _Config:
     reverse_sort: bool = False
     star_first: bool = False
     import_dependencies = Dict[str, str]
-    git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
+    git_ls_files: Dict[Path, Set[str]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
@@ -553,7 +553,7 @@ class Config(_Config):
         else:
             return bool(_SHEBANG_RE.match(line))
 
-    def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+    def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
@@ -564,26 +564,30 @@ class Config(_Config):
 
         git_folder = Path(topfolder_result.rstrip()).resolve()
 
-        files: List[str] = []
-        # don't check symlinks; either part of the repo and would be checked
-        # twice, or is external to the repo and git won't know anything about it
-        for root, _dirs, git_files in os.walk(git_folder, followlinks=False):
-            if ".git" in _dirs:
-                _dirs.remove(".git")
-            for git_file in git_files:
-                files.append(os.path.join(root, git_file))
-        git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
-        try:
-            ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                ["git", *git_options, "check-ignore", "-z", "--stdin", "--no-index"],
+        # files committed to git
+        tracked_files = (
+            subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", str(git_folder), "ls-files", "-z"],
                 encoding="utf-8",
                 env=env,
-                input="\0".join(files),
             )
-        except subprocess.CalledProcessError:
-            return None
+            .rstrip("\0")
+            .split("\0")
+        )
+        # files that haven't been committed yet, but aren't ignored
+        tracked_files_others = (
+            subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", str(git_folder), "ls-files", "-z", "--others", "--exclude-standard"],
+                encoding="utf-8",
+                env=env,
+            )
+            .rstrip("\0")
+            .split("\0")
+        )
 
-        self.git_ignore[git_folder] = {Path(f) for f in ignored.rstrip("\0").split("\0")}
+        self.git_ls_files[git_folder] = {
+            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
+        }
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -625,14 +629,20 @@ class Config(_Config):
             git_folder = None
 
             file_paths = [file_path, file_path.resolve()]
-            for folder in self.git_ignore:
+            for folder in self.git_ls_files:
                 if any(folder in path.parents for path in file_paths):
                     git_folder = folder
                     break
             else:
-                git_folder = self._check_folder_gitignore(str(file_path.parent))
+                git_folder = self._check_folder_git_ls_files(str(file_path.parent))
 
-            if git_folder and any(path in self.git_ignore[git_folder] for path in file_paths):
+            # git_ls_files are good files you should parse. If you're not in the allow list, skip.
+
+            if (
+                git_folder
+                and not file_path.is_dir()
+                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
+            ):
                 return True
 
         return False

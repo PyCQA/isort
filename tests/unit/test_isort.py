@@ -5578,3 +5578,21 @@ def test_split_on_trailing_comma() -> None:
 
     output = isort.code(expected_output, split_on_trailing_comma=True)
     assert output == expected_output
+
+ 
+def test_infinite_loop_in_unmatched_parenthesis() -> None:
+    test_input = "from os import ("
+
+    # ensure a syntax error is raised for unmatched parenthesis
+    with pytest.raises(ExistingSyntaxErrors):
+        isort.code(test_input)
+
+    test_input = """from os import (
+    path,
+
+    walk
+)
+"""
+
+    # ensure other cases are handled correctly
+    assert isort.code(test_input) == "from os import path, walk\n"

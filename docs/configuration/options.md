@@ -1143,7 +1143,10 @@ Inserts a blank line before a comment following an import.
 
 ## Profile
 
-Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.
+Base profile type to use for configuration. Profiles include: black, django,
+pycharm, google, open\_stack, plone, attrs, hug, wemake, appnexus. As well as
+any [shared
+profiles](https://pycqa.github.io/isort/docs/howto/shared_profiles.html).
 
 **Type:** String  
 **Default:** ` `  
