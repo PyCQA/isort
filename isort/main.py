@@ -120,7 +120,7 @@ def _print_hard_fail(
 ) -> None:
     """Fail on unrecoverable exception with custom message."""
     message = message or (
-        f"Unrecoverable exception thrown when parsing {offending_file or ''}!"
+        f"Unrecoverable exception thrown when parsing {offending_file or ''}! "
         "This should NEVER happen.\n"
         "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
     )
