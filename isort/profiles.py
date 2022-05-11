@@ -33,12 +33,14 @@ open_stack = {
     "force_sort_within_sections": True,
     "lexicographical": True,
 }
-plone = {
-    "force_alphabetical_sort": True,
-    "force_single_line": True,
-    "lines_after_imports": 2,
-    "line_length": 200,
-}
+plone = black.copy()
+plone.update(
+    {
+        "force_alphabetical_sort": True,
+        "force_single_line": True,
+        "lines_after_imports": 2,
+    }
+)
 attrs = {
     "atomic": True,
     "force_grid_wrap": 0,
