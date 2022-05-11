@@ -69,7 +69,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
         comment = None
         if "#" in content:
             line_without_comment, comment = content.split("#", 1)
-        for splitter in ("import ", ".", "as "):
+        for splitter in ("import ", "cimport ", ".", "as "):
             exp = r"\b" + re.escape(splitter) + r"\b"
             if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
                 splitter
