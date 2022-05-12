@@ -40,7 +40,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.2"
+python = ">=3.6.2,<4.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
