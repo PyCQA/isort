@@ -714,6 +714,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="star_first",
         action="store_true",
     )
+    output_group.add_argument(
+        "--split-on-trailing-comma",
+        help="Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode",
+        dest="split_on_trailing_comma",
+        action="store_true",
+    )
 
     section_group.add_argument(
         "--sd",

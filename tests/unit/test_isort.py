@@ -5564,6 +5564,22 @@ def test_find_imports_in_stream() -> None:
     assert identified_imports == [":1 import m2", ":2 import m1"]
 
 
+def test_split_on_trailing_comma() -> None:
+    test_input = "from lib import (a, b, c,)"
+    expected_output = """from lib import (
+    a,
+    b,
+    c,
+)
+"""
+
+    output = isort.code(test_input, split_on_trailing_comma=True)
+    assert output == expected_output
+
+    output = isort.code(expected_output, split_on_trailing_comma=True)
+    assert output == expected_output
+
+ 
 def test_infinite_loop_in_unmatched_parenthesis() -> None:
     test_input = "from os import ("
 

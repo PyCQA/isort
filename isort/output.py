@@ -505,7 +505,17 @@ def _with_from_imports(
                 ):
                     do_multiline_reformat = True
 
-                if do_multiline_reformat:
+                if config.split_on_trailing_comma and module in parsed.trailing_commas:
+                    import_statement = wrap.import_statement(
+                        import_start=import_start,
+                        from_imports=from_import_section,
+                        comments=comments,
+                        line_separator=parsed.line_separator,
+                        config=config,
+                        explode=True,
+                    )
+
+                elif do_multiline_reformat:
                     import_statement = wrap.import_statement(
                         import_start=import_start,
                         from_imports=from_import_section,
@@ -530,7 +540,7 @@ def _with_from_imports(
                             > config.line_length
                         ):
                             import_statement = other_import_statement
-                if not do_multiline_reformat and len(import_statement) > config.line_length:
+                elif len(import_statement) > config.line_length:
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)
 
             if import_statement:
