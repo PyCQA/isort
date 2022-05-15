@@ -5579,7 +5579,7 @@ def test_split_on_trailing_comma() -> None:
     output = isort.code(expected_output, split_on_trailing_comma=True)
     assert output == expected_output
 
- 
+
 def test_infinite_loop_in_unmatched_parenthesis() -> None:
     test_input = "from os import ("
 
