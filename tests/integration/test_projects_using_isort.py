@@ -167,4 +167,4 @@ def test_dobby(tmpdir):
 
 def test_zope(tmpdir):
     git_clone("https://github.com/zopefoundation/Zope.git", tmpdir)
-    run_isort([str(tmpdir), "--skip", "utils.py"])
+    run_isort([str(tmpdir), "--skip", "util.py"])
