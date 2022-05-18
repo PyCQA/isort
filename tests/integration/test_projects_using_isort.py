@@ -118,7 +118,7 @@ def test_poetry(tmpdir):
 def test_hypothesis(tmpdir):
     git_clone("https://github.com/HypothesisWorks/hypothesis.git", tmpdir)
     run_isort(
-        (str(tmpdir), "--skip", "tests", "--profile", "black", "--ca", "--project", "hypothesis")
+        (str(tmpdir), "--skip", "tests", "--profile", "black", "--ca", "--project", "hypothesis", "--project", "hypothesistooling")
     )
 
 
