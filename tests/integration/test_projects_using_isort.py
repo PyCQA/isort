@@ -101,6 +101,8 @@ def test_typeshed(tmpdir):
             "builtins.pyi",
             "--skip",
             "ast.pyi",
+            "--skip",
+            f"{tmpdir}/stdlib/venv/__init__.pyi",
         )
     )
 
