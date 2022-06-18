@@ -962,6 +962,63 @@ def test_remove_imports() -> None:
     assert test_output == ""
 
 
+def test_replace_imports() -> None:
+    """Ensures replacing imports works as expected."""
+    test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1"
+    test_output = isort.code(test_input, replace_imports={"lib2": "repl2", "lib6": "repl6"})
+    assert test_output == "import lib1\nimport lib5\nimport repl2\nimport repl6\n"
+
+    # Using natural syntax
+    test_input = (
+        "import lib6\n" "import lib2\n" "import lib5\n" "import lib1\n" "from lib8 import a"
+    )
+    test_output = isort.code(
+        code=test_input,
+        replace_imports={
+            "import lib2": "import repl2",
+            "import lib6": "import repl6",
+            "from lib8 import a": "from repl8 import a",
+        },
+    )
+    assert (
+        test_output == "import lib1\nimport lib5\nimport repl2\nimport repl6\nfrom repl8 import a\n"
+    )
+
+    # From imports
+    test_input = "from x import y"
+    test_output = isort.code(test_input, replace_imports={"x": "z"})
+    assert test_output == "from z import y\n"
+
+    test_input = "from x import y"
+    test_output = isort.code(test_input, replace_imports={"x.y": "z.y"})
+    assert test_output == "from z import y\n"
+
+    test_input = "from typing import Any, Callable, Pattern, TypeVar"
+    test_output = isort.code(
+        test_input,
+        replace_imports={
+            "typing.Callable": "collections.abc.Callable",
+            "from typing import Pattern": "from re import Pattern",
+        },
+    )
+    assert (
+        test_output
+        == "from collections.abc import Callable\nfrom re import Pattern\nfrom typing import Any, TypeVar\n"
+    )
+
+    # From to straight
+    test_input = "from typing import re"
+    test_output = isort.code(test_input, replace_imports={"from typing import re": "import re"})
+    assert test_output == "import re\n"
+
+    # Replace with empty is "remove"
+    test_input = "from typing import Dict, List, TypeVar"
+    test_output = isort.code(
+        test_input, replace_imports={"typing.Dict": "", "from typing import List": ""}
+    )
+    assert test_output == "from typing import TypeVar\n"
+
+
 def test_comments_above():
     """Test to ensure comments above an import will stay in place"""
     test_input = "import os\n\nfrom x import y\n\n# comment\nfrom z import __version__, api\n"

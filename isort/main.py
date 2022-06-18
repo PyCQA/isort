@@ -443,6 +443,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Removes the specified import from all files.",
     )
     output_group.add_argument(
+        "--replace-import",
+        dest="replace_imports",
+        metavar="OLD|NEW",
+        action="append",
+        help="Replaces the old import with new import in all files, "
+        "automatically determining correct placement.",
+    )
+    output_group.add_argument(
         "--float-to-top",
         dest="float_to_top",
         action="store_true",
@@ -952,6 +960,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
             arguments["multi_line_output"] = WrapModes(int(multi_line_output))
         else:
             arguments["multi_line_output"] = WrapModes[multi_line_output]
+    replace_imports = arguments.get("replace_imports", None)
+    if replace_imports:
+        arguments["replace_imports"] = [replacement.split("|") for replacement in replace_imports]
 
     return arguments
 

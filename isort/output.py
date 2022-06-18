@@ -3,7 +3,7 @@ import itertools
 from functools import partial
 from typing import Any, Iterable, List, Optional, Set, Tuple, Type
 
-from isort.format import format_simplified
+from isort.format import format_natural, format_simplified
 
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
@@ -24,6 +24,42 @@ def sorted_imports(
     """
     if parsed.import_index == -1:
         return _output_as_string(parsed.lines_without_imports, parsed.line_separator)
+
+    # start replace imports
+    if config.replace_imports:
+        replace_imports = {
+            format_simplified(old): format_simplified(new)
+            for old, new in config.replace_imports.items()
+        }
+        all_imports = []
+        for section, import_content in parsed.imports.items():
+            from_imports = import_content["from"]
+            from_as_map = parsed.as_map["from"]
+            for module, attributes in from_imports.items():
+                for attribute, not_aliased in attributes.items():
+                    assert isinstance(not_aliased, bool)
+                    if not_aliased:
+                        all_imports.append(f"from {module} import {attribute}")
+                    for as_name in from_as_map.get(f"{module}.{attribute}", []):
+                        all_imports.append(f"from {module} import {attribute} as {as_name}")
+            straight_imports = import_content["straight"]
+            straight_as_map = parsed.as_map["straight"]
+            for module, not_aliased in straight_imports.items():
+                if not_aliased:
+                    all_imports.append(f"import {module}")
+                for as_name in straight_as_map.get(module, []):
+                    all_imports.append(f"import {module} as {as_name}")
+        for old, new in replace_imports.items():
+            for i, imp in enumerate(all_imports):
+                simplified_imp = format_simplified(imp)
+                simplified_imp, sep, alias = simplified_imp.partition(" as ")
+                if simplified_imp == old or (simplified_imp.startswith(old + ".")):
+                    new_simplified_imp = simplified_imp.replace(old, new, 1) + sep + alias
+                    all_imports[i] = format_natural(new_simplified_imp)
+
+        new_content = parse.file_contents("\n".join(all_imports), config=config)
+        parsed = parsed._replace(as_map=new_content.as_map, imports=new_content.imports)
+    # end replace imports
 
     formatted_output: List[str] = parsed.lines_without_imports.copy()
     remove_imports = [format_simplified(removal) for removal in config.remove_imports]

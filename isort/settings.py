@@ -169,6 +169,7 @@ class _Config:
     length_sort_sections: FrozenSet[str] = frozenset()
     add_imports: FrozenSet[str] = frozenset()
     remove_imports: FrozenSet[str] = frozenset()
+    replace_imports: Dict[str, str] = field(default_factory=dict)
     append_only: bool = False
     reverse_relative: bool = False
     force_single_line: bool = False
