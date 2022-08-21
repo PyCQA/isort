@@ -363,7 +363,7 @@ def process(
 
         if not_imports:
             if not was_in_quote and config.lines_before_imports > -1:
-                if line.strip() == "":
+                if line.strip() == "" and not end_of_file:
                     lines_before += line
                     continue
                 if not import_section:

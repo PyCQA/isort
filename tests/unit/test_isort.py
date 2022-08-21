@@ -1715,12 +1715,12 @@ def test_order_by_type() -> None:
     )
 
 
-def test_custom_lines_before_import_section() -> None:
-    """Test the case where the number of lines to output after imports has been explicitly set."""
-    test_input = """from a import b
-
-foo = 'bar'
-"""
+@pytest.mark.parametrize("has_body", [True, False])
+def test_custom_lines_before_import_section(has_body: bool) -> None:
+    """Test the case where the number of lines to output before imports has been explicitly set."""
+    test_input = "from a import b\n"
+    if has_body:
+        test_input += "\nfoo = 'bar'\n"
 
     ln = "\n"
 
