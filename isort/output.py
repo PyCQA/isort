@@ -183,6 +183,10 @@ def sorted_imports(
         ] == [""]:
             formatted_output.pop(imports_tail)
 
+        if config.lines_before_imports != -1:
+            formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
+            imports_tail += config.lines_before_imports
+
         if len(formatted_output) > imports_tail:
             next_construct = ""
             tail = formatted_output[imports_tail:]
@@ -216,9 +220,6 @@ def sorted_imports(
                 formatted_output[imports_tail:0] = ["", ""]
             else:
                 formatted_output[imports_tail:0] = [""]
-
-            if config.lines_before_imports != -1:
-                formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
 
     if parsed.place_imports:
         new_out_lines = []
