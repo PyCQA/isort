@@ -1087,6 +1087,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         return
     if "settings_path" not in arguments:
         arguments["settings_path"] = (
+            arguments.get("filename", None) or os.getcwd()
+            if file_names == ["-"] else
             os.path.abspath(file_names[0] if file_names else ".")
         )
         if not os.path.isdir(arguments["settings_path"]):
