@@ -825,7 +825,7 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
+def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
     if file_path.endswith(".toml"):
