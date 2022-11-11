@@ -555,7 +555,6 @@ def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
     assert not out
 
     # Present in an automatically loaded configuration file
-    isort.settings._find_config.cache_clear()
     settings_file.write(
         """
 [isort]
@@ -610,7 +609,6 @@ quiet = true
     with pytest.warns(UserWarning):
         assert not Config(settings_file=str(settings_file)).quiet
 
-    isort.settings._get_config_data.cache_clear()
     settings_file.write(
         """
 [isort]
