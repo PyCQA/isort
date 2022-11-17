@@ -1134,6 +1134,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 show_diff=show_diff,
                 file_path=file_path,
                 extension=ext_format,
+                disregard_skip=True,
             )
 
             wrong_sorted_files = incorrectly_sorted
@@ -1147,6 +1148,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     file_path=file_path,
                     extension=ext_format,
                     raise_on_skip=False,
+                    disregard_skip=True,
                 )
             except FileSkipped:
                 sys.stdout.write(input_stream.read())
