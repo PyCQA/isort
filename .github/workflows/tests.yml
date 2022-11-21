@@ -3,25 +3,27 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  build:
+  tests:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-latest, ubuntu-18.04, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
       - name: Ubuntu cache
         uses: actions/cache@v2
         if: startsWith(matrix.os, 'ubuntu')
         with:
           path: ~/.cache/pip
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python-version }}-
+            ${{ matrix.os }}-${{ matrix.python }}-
 
       - name: macOS cache
         uses: actions/cache@v2
@@ -29,9 +31,9 @@ jobs:
         with:
           path: ~/Library/Caches/pip
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python-version }}-
+            ${{ matrix.os }}-${{ matrix.python }}-
 
       - name: Windows cache
         uses: actions/cache@v2
@@ -39,19 +41,24 @@ jobs:
         with:
           path: c:\users\runneradmin\appdata\local\pip\cache
           key:
-            ${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python-version }}-
+            ${{ matrix.os }}-${{ matrix.python }}-
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python }}
 
-      - name: Install poetry
+      - name: Upgrade pip
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade poetry
+          pip install --constraint=.github/workflows/constraints.txt pip
+          pip --version
+
+      - name: Install Poetry
+        run: |
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          poetry --version
 
       - name: Install dependencies
         run: poetry install
@@ -61,6 +68,7 @@ jobs:
         run: |
           poetry run pytest tests/unit/ -s --cov=isort/ --cov-report=term-missing ${@-}
           poetry run coverage xml
+
       - name: Report Coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
         uses: codecov/codecov-action@v1

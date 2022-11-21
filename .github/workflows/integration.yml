@@ -7,10 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: pip cache
         uses: actions/cache@v2
@@ -25,11 +28,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - name: Upgrade pip
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade poetry
-          poetry install
+          pip install --constraint=.github/workflows/constraints.txt pip
+          pip --version
+
+      - name: Install Poetry
+        run: |
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          poetry --version
+
+      - name: Install dependencies
+        run: poetry install
 
       - name: Test integration
         run: ./scripts/test_integration.sh
