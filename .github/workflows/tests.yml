@@ -15,35 +15,36 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Ubuntu cache
-        uses: actions/cache@v2
-        if: startsWith(matrix.os, 'ubuntu')
-        with:
-          path: ~/.cache/pip
-          key:
-            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python }}-
+      # Clean poisoned cache
+      # - name: Ubuntu cache
+      #   uses: actions/cache@v2
+      #   if: startsWith(matrix.os, 'ubuntu')
+      #   with:
+      #     path: ~/.cache/pip
+      #     key:
+      #       ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
+      #     restore-keys: |
+      #       ${{ matrix.os }}-${{ matrix.python }}-
 
-      - name: macOS cache
-        uses: actions/cache@v2
-        if: startsWith(matrix.os, 'macOS')
-        with:
-          path: ~/Library/Caches/pip
-          key:
-            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python }}-
+      # - name: macOS cache
+      #   uses: actions/cache@v2
+      #   if: startsWith(matrix.os, 'macOS')
+      #   with:
+      #     path: ~/Library/Caches/pip
+      #     key:
+      #       ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
+      #     restore-keys: |
+      #       ${{ matrix.os }}-${{ matrix.python }}-
 
-      - name: Windows cache
-        uses: actions/cache@v2
-        if: startsWith(matrix.os, 'windows')
-        with:
-          path: c:\users\runneradmin\appdata\local\pip\cache
-          key:
-            ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.python }}-
+      # - name: Windows cache
+      #   uses: actions/cache@v2
+      #   if: startsWith(matrix.os, 'windows')
+      #   with:
+      #     path: c:\users\runneradmin\appdata\local\pip\cache
+      #     key:
+      #       ${{ matrix.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml') }}
+      #     restore-keys: |
+      #       ${{ matrix.os }}-${{ matrix.python }}-
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v4
