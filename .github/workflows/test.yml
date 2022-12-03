@@ -58,9 +58,8 @@ jobs:
 
       - name: Test
         shell: bash
-        run: |
-          poetry run pytest tests/unit/ -s --cov=isort/ --cov-report=term-missing ${@-}
-          poetry run coverage xml
+        run: ./scripts/test.sh
+
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
         uses: codecov/codecov-action@v1
