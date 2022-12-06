@@ -209,16 +209,20 @@ def sorted_imports(
                     break
 
             if config.lines_after_imports != -1:
-                formatted_output[imports_tail:0] = [
-                    "" for line in range(config.lines_after_imports)
-                ]
+                lines_after_imports = config.lines_after_imports
+                if config.profile == "black" and extension == "pyi":  # special case for black
+                    lines_after_imports = 1
+                formatted_output[imports_tail:0] = ["" for line in range(lines_after_imports)]
             elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
                 formatted_output[imports_tail:0] = ["", ""]
             else:
                 formatted_output[imports_tail:0] = [""]
 
             if config.lines_before_imports != -1:
-                formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
+                lines_before_imports = config.lines_before_imports
+                if config.profile == "black" and extension == "pyi":  # special case for black
+                    lines_before_imports = 1
+                formatted_output[:0] = ["" for line in range(lines_before_imports)]
 
     if parsed.place_imports:
         new_out_lines = []
