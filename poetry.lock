@@ -299,6 +299,18 @@ conda = ["pyyaml"]
 pipenv = ["pipenv"]
 
 [[package]]
+name = "example-isort-formatting-plugin"
+version = "0.0.4"
+description = "An example plugin that modifies isort formatting using black."
+category = "dev"
+optional = false
+python-versions = ">=3.6.2,<4.0"
+
+[package.dependencies]
+black = ">20.08b1"
+isort = ">=5.1.4,<6.0.0"
+
+[[package]]
 name = "example-isort-sorting-plugin"
 version = "0.0.3"
 description = "An example plugin that modifies isorts sorting order to provide an even more natural sort by utilizing natsort."
@@ -1844,7 +1856,7 @@ requirements-deprecated-finder = ["pipreqs", "pip-api"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "c4513c1489dd2877f13e8c0f47ddb2d721e367a02cab07d8e6ce5c522e44323b"
+content-hash = "e780d5eab8f17b64d7791e87db75586d1d5c9bbb51aba1a2aea68a7ce2a393e6"
 
 [metadata.files]
 appdirs = [
@@ -1994,6 +2006,10 @@ docstring-parser = [
 dparse = [
     {file = "dparse-0.6.2-py3-none-any.whl", hash = "sha256:8097076f1dd26c377f30d4745e6ec18fef42f3bf493933b842ac5bafad8c345f"},
     {file = "dparse-0.6.2.tar.gz", hash = "sha256:d45255bda21f998bc7ddf2afd5e62505ba6134756ba2d42a84c56b0826614dfe"},
+]
+example-isort-formatting-plugin = [
+    {file = "example_isort_formatting_plugin-0.0.4-py3-none-any.whl", hash = "sha256:a1e4afc0a359495060e5fcc14a9c6f3bc7c8fe7e096fb0b878195c8e3bf4e2c6"},
+    {file = "example_isort_formatting_plugin-0.0.4.tar.gz", hash = "sha256:8085996afbc81e729a258861181144038fd8a65a39113d3632b430e6ff20b974"},
 ]
 example-isort-sorting-plugin = [
     {file = "example_isort_sorting_plugin-0.0.3-py3-none-any.whl", hash = "sha256:643c348a97d537bce87ffd027083463c56ee47b61d68158ad0b5ec848c93d24b"},
