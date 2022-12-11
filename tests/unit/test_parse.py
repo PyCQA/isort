@@ -70,7 +70,7 @@ def test_fuzz_import_type(line, config):
     line=st.text(),
     in_quote=st.text(),
     index=st.integers(),
-    section_comments=st.lists(st.text()).map(tuple),
+    section_comments=st.lists(st.text()),
     needs_import=st.booleans(),
 )
 def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
