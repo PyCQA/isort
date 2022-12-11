@@ -4,7 +4,7 @@ version = "21.10b0"
 description = "The uncompromising code formatter."
 category = "main"
 optional = false
-python-versions = ">=3.6.2"
+python-versions = ">=3.7.0"
 
 [package.dependencies]
 click = ">=7.1.2"
