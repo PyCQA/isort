@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 else:
     from ._vendored import tomli
 
-_SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
+_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})

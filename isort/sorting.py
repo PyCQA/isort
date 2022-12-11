@@ -75,7 +75,7 @@ def section_key(line: str, config: Config) -> str:
         line = re.sub("^import ", "", line)
     if config.sort_relative_in_force_sorted_sections:
         sep = " " if config.reverse_relative else "_"
-        line = re.sub(r"^(\.+)", fr"\1{sep}", line)
+        line = re.sub(r"^(\.+)", rf"\1{sep}", line)
     if line.split(" ")[0] in config.force_to_top:
         section = "A"
     # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
