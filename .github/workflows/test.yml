@@ -48,10 +48,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install poetry
+      - name: Upgrade pip
+        run: |
+          pip install --constraint=.github/workflows/constraints.txt pip
+          pip --version
+
+      - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
           python -m pip install --upgrade poetry
+          poetry --version
+          poetry install
 
       - name: Install dependencies
         run: poetry install
