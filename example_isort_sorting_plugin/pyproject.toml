@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "example_isort_sorting_plugin"
-version = "0.0.4"
+version = "0.1.0"
 description = "An example plugin that modifies isorts sorting order to provide an even more natural sort by utilizing natsort."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -9,7 +9,7 @@ license = "MIT"
 natural_plus = "example_isort_sorting_plugin:natural_plus"
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = ">=3.7"
 natsort = ">=7.1.1"
 
 [tool.poetry.dev-dependencies]
