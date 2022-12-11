@@ -33,9 +33,9 @@ A demo of how this would look like in your _.travis.yml_
 ```yaml
 language: python
 python:
-  - "3.6"
-  - "3.7"
+  - "3.9"
   - "3.8"
+  - "3.7"
 
 install:
   - pip install -r requirements-dev.txt
