@@ -251,7 +251,7 @@ class _Config:
             if sys.version_info.major == 2 and sys.version_info.minor <= 6:
                 py_version = "2"
             elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 10
+                sys.version_info.minor <= 6 or sys.version_info.minor >= 11
             ):
                 py_version = "3"
             else:
