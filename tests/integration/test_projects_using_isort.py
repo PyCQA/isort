@@ -36,22 +36,13 @@ def test_plone(tmpdir):
 
 
 def test_pandas(tmpdir):
-    # Need to limit extensions as isort has just made sorting pxd the default, and pandas
-    # will have not picked it up yet
-    # TODO: Remove below line as soon as these files are sorted on the mainline pandas project
     git_clone("https://github.com/pandas-dev/pandas.git", tmpdir)
-    limit_extensions = ("--ext", "py", "--ext", "pyi", "--ext", "pyx")
-    run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py", *limit_extensions))
+    run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py"))
 
 
 def test_fastapi(tmpdir):
     git_clone("https://github.com/tiangolo/fastapi.git", tmpdir)
     run_isort([str(tmpdir / "fastapi")])
-
-
-def test_zulip(tmpdir):
-    git_clone("https://github.com/zulip/zulip.git", tmpdir)
-    run_isort((str(tmpdir), "--skip", "__init__.pyi"))
 
 
 def test_habitat_lab(tmpdir):
@@ -83,7 +74,7 @@ def test_websockets(tmpdir):
 
 def test_airflow(tmpdir):
     git_clone("https://github.com/apache/airflow.git", tmpdir)
-    run_isort([str(tmpdir), "--skip-glob", "*/_vendor/*", "--skip", "tests"])
+    run_isort([str(tmpdir), "--skip-glob", "*.pyi", "--skip", "tests"])
 
 
 def test_typeshed(tmpdir):
@@ -157,7 +148,23 @@ def test_attrs(tmpdir):
 
 def test_datadog_integrations_core(tmpdir):
     git_clone("https://github.com/DataDog/integrations-core.git", tmpdir)
-    run_isort([str(tmpdir), "--skip", "docs"])
+    run_isort(
+        [
+            str(tmpdir),
+            "--skip",
+            "ddev",
+            "--skip",
+            "docs",
+            "--skip-glob",
+            ".*",
+            "--skip-glob",
+            "*/datadog_checks/dev/tooling/signing.py",
+            "--skip-glob",
+            "*/datadog_checks/dev/tooling/templates/*",
+            "--skip-glob",
+            "*/datadog_checks/*/vendor/*",
+        ]
+    )
 
 
 def test_pyramid(tmpdir):
