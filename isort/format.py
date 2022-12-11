@@ -11,7 +11,6 @@ except ImportError:
     colorama_unavailable = True
 else:
     colorama_unavailable = False
-    colorama.init(strip=False)
 
 
 ADDED_LINE_PATTERN = re.compile(r"\+[^+]")
@@ -151,6 +150,7 @@ def create_terminal_printer(
         print(no_colorama_message, file=sys.stderr)
         sys.exit(1)
 
+    colorama.init(strip=False)
     return (
         ColoramaPrinter(error, success, output) if color else BasicPrinter(error, success, output)
     )
