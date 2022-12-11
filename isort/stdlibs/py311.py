@@ -1,5 +1,5 @@
 """
-File contains the standard library of Python 3.10.
+File contains the standard library of Python 3.11.
 
 DO NOT EDIT. If the standard library changes, a new list should be created
 using the mkstdlibs.py script.
@@ -21,7 +21,6 @@ stdlib = {
     "base64",
     "bdb",
     "binascii",
-    "binhex",
     "bisect",
     "builtins",
     "bz2",
@@ -190,6 +189,7 @@ stdlib = {
     "tkinter",
     "token",
     "tokenize",
+    "tomllib",
     "trace",
     "traceback",
     "tracemalloc",

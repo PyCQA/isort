@@ -27,6 +27,7 @@ npm-debug.log
 # Unit test / coverage reports
 .coverage
 .coverage.*
+coverage.xml
 .pytest_cache
 .tox
 nosetests.xml
@@ -68,6 +69,7 @@ atlassian-ide-plugin.xml
 pip-selfcheck.json
 
 # Python3 Venv Files
+.python-version
 .venv/
 pyvenv.cfg
 

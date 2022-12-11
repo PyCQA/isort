@@ -9,7 +9,7 @@ from typing import Any, Callable, Iterator, TextIO, Union
 from isort._future import dataclass
 from isort.exceptions import UnsupportedEncoding
 
-_ENCODING_PATTERN = re.compile(br"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
+_ENCODING_PATTERN = re.compile(rb"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
 @dataclass(frozen=True)

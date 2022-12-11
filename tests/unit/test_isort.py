@@ -3533,15 +3533,12 @@ def test_not_splitted_sections() -> None:
     )
     # in case when THIRDPARTY section is excluded from sections list,
     # it's ok to merge STDLIB and FIRSTPARTY
-    assert (
-        isort.code(
-            code=test_input,
-            sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
-            no_lines_before=["FIRSTPARTY"],
-            known_first_party=["app"],
-        )
-        == (stdlib_section + firstparty_section + whiteline + local_section + whiteline + statement)
-    )
+    assert isort.code(
+        code=test_input,
+        sections=["STDLIB", "FIRSTPARTY", "LOCALFOLDER"],
+        no_lines_before=["FIRSTPARTY"],
+        known_first_party=["app"],
+    ) == (stdlib_section + firstparty_section + whiteline + local_section + whiteline + statement)
     # it doesn't change output, because stdlib packages don't have any whitelines before them
     assert (
         isort.code(test_input, no_lines_before=["STDLIB"], known_first_party=["app"]) == test_input

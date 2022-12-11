@@ -39,7 +39,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.2,<4.0"
+python = ">=3.7.0,<4.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
@@ -55,12 +55,11 @@ plugins = ["setuptools"]
 [tool.poetry.dev-dependencies]
 bandit = "^1.6"
 flake8-bugbear = "^19.8"
-black = {version = "^21.10b0", allow-prereleases = true}
-coverage = {version = "^6.0b1", allow-prereleases = true}
+black = ">=22.6.0"
+coverage = {version = ">=6.5.0", extras = ["toml"]}
 mypy = "^0.902"
 ipython = "^7.16"
 pytest = "^6.0"
-pytest-cov = "^2.7"
 pytest-mock = "^1.10"
 pep8-naming = "^0.8.2"
 hypothesis-auto = { version = "^1.0.0" }
