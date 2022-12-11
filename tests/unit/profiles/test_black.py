@@ -10,7 +10,7 @@ def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
         return black.format_file_contents(
             code,
             fast=True,
-            mode=black.FileMode(  # type: ignore
+            mode=black.FileMode(
                 is_pyi=is_pyi,
                 line_length=line_length,
             ),
