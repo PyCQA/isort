@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "example_isort_formatting_plugin"
-version = "0.1.0"
+version = "0.1.1"
 description = "An example plugin that modifies isort formatting using black."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
