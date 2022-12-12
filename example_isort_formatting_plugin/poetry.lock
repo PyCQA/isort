@@ -88,14 +88,14 @@ testing = ["flake8 (<5)", "flufl.flake8", "importlib-resources (>=1.3)", "packag
 
 [[package]]
 name = "isort"
-version = "6.0.0a1"
+version = "5.11.0"
 description = "A Python utility / library to sort Python imports."
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "isort-6.0.0a1-py3-none-any.whl", hash = "sha256:d8c3e298e855dade98dfd9fc42dffbdaf150bfe897603dba06a1bf9288f00a96"},
-    {file = "isort-6.0.0a1.tar.gz", hash = "sha256:4d2f4fecbe6c3a762062f859bdbf7a05b41a3db7ffbb5732cde192387801beff"},
+    {file = "isort-5.11.0-py3-none-any.whl", hash = "sha256:1b8631908ecc1b7108801801e510c4bf908962b77bd44882a3873566542f7255"},
+    {file = "isort-5.11.0.tar.gz", hash = "sha256:7aa325a6cbbc086cb74db2e9cc838a8089f8a6e1da26780d8d6d6b24e37f4e5f"},
 ]
 
 [package.extras]
@@ -221,4 +221,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7.0"
-content-hash = "758b7303eda9dc1adf0304be194bf84e63228597b406ae5809fdc62572056eac"
+content-hash = "eb074d4a515edca5157c8e5aaad40d162d6a7da8101c533fd8fc910eb9db2401"
