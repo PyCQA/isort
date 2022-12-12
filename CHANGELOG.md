@@ -4,6 +4,32 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 6.0.0 December 12 2022
+
+  - Added official support for Python 3.11 (#1996, #2008, #2011) @staticdev
+  - Dropped support for Python 3.6 (#2019) @barrelful
+  - Fixed problematic tests (#2021, #2022) @staticdev
+  - Fixed #1960: Rich compatibility (#1961) @ofek
+  - Fixed #1945, #1986: Python 4.0 upper bound dependency resolving issues @staticdev
+  - Fixed Pyodide CDN URL (#1991) @andersk
+  - Docs: clarify description of use_parentheses (#1941) @mgedmin
+  - Fixed #1976: `black` compatibility for `.pyi` files @XuehaiPan
+  - Implemented #1683: magic trailing comma option (#1876) @legau
+  - Add missing space in unrecoverable exception message (#1933) @andersk
+  - Fixed #1895: skip-gitignore: use allow list, not deny list @bmalehorn
+  - Fixed #1917: infinite loop for unmatched parenthesis (#1919) @anirudnits
+  - Docs: shared profiles (#1896) @matthewhughes934
+  - Fixed build-backend values in the example plugins (#1892) @mgorny
+  - Remove reference to jamescurtin/isort-action (#1885) @AndrewLane
+  - Split long cython import lines (#1931) @davidcollins001
+  - Update plone profile: copy of `black`, plus three settings. (#1926) @mauritsvanrees
+  - Fixed #1815, #1862: Add a command-line flag to sort all re-exports (#1863) @parafoxia
+  - Fixed #1854: `lines_before_imports` appending lines after comments (#1861) @legau
+  - Remove redundant `multi_line_output = 3` from "Compatibility with black" (#1858) @jdufresne
+  - Add tox config example (#1856) @umonaca
+  - Docs: add examples for frozenset and tuple settings (#1822) @sgaist
+  - Docs: add multiple config documentation (#1850) @anirudnits
+
 ### 5.10.1 November 8 2021
   - Fixed #1819: Occasional inconsistency with multiple src paths.
   - Fixed #1840: skip_file ignored when on the first docstring line
