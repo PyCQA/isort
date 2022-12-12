@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "example_shared_isort_profile"
-version = "0.0.2"
+version = "0.1.0"
 description = "An example shared isort profile"
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -9,7 +9,7 @@ license = "MIT"
 example = "example_shared_isort_profile:PROFILE"
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = ">=3.7"
 
 [tool.poetry.dev-dependencies]
 
