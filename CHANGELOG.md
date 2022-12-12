@@ -4,7 +4,7 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
-### 6.0.0 December 12 2022
+### 5.11.0 December 12 2022
 
   - Added official support for Python 3.11 (#1996, #2008, #2011) @staticdev
   - Dropped support for Python 3.6 (#2019) @barrelful
