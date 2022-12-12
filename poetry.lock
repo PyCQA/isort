@@ -352,22 +352,6 @@ conda = ["pyyaml"]
 pipenv = ["pipenv"]
 
 [[package]]
-name = "example-isort-formatting-plugin"
-version = "0.1.0"
-description = "An example plugin that modifies isort formatting using black."
-category = "dev"
-optional = false
-python-versions = ">=3.7.0"
-files = [
-    {file = "example_isort_formatting_plugin-0.1.0-py3-none-any.whl", hash = "sha256:85d1136a98654054445f42e232b8a7f642a79e02db718995805e8b77a33291b7"},
-    {file = "example_isort_formatting_plugin-0.1.0.tar.gz", hash = "sha256:db371d4731e886e0824074f64eea5cc20c7d6c8f3216520bc3fa85c5d1076c69"},
-]
-
-[package.dependencies]
-black = ">=22.6.0"
-isort = ">5.10.1"
-
-[[package]]
 name = "example-isort-sorting-plugin"
 version = "0.1.0"
 description = "An example plugin that modifies isorts sorting order to provide an even more natural sort by utilizing natsort."
@@ -2257,4 +2241,4 @@ requirements-deprecated-finder = ["pipreqs", "pip-api"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7.0"
-content-hash = "74518ea514991a01425f57a0805ce104ce7121e14190da3a3cb3065cca7cd64a"
+content-hash = "59583a6aee842a5b281abe4a593ee9ea71ba177f732b7e12cd717a8250462cb9"

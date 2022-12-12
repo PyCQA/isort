@@ -61,7 +61,6 @@ bandit = "^1.6"
 black = ">=22.6.0"
 coverage = {version = ">=6.5.0", extras = ["toml"]}
 #cruft = { version = "^2.2" }
-example-isort-formatting-plugin = ">=0.1.0"
 example-isort-sorting-plugin = ">=0.1.0"
 example-shared-isort-profile = ">=0.1.0"
 flake8 = "^3.8.4"
