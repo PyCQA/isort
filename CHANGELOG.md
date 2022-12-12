@@ -4,6 +4,10 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.11.1 December 12 2022
+
+  - Hotfix #2031: only call `colorama.init` if `colorama` is available (#2032) @tomaarsen
+
 ### 5.11.0 December 12 2022
 
   - Added official support for Python 3.11 (#1996, #2008, #2011) @staticdev
