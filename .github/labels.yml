@@ -53,7 +53,7 @@
   description: Refactoring
   color: "ef67c4"
 - name: removal
-  description: Removals and Deprecations
+  description: Removals and deprecations
   color: "9ae7ea"
 - name: style
   description: Style
@@ -64,3 +64,6 @@
 - name: wontfix
   description: This will not be worked on
   color: "ffffff"
+- name: skip-changelog
+  description: This will not be added to release notes
+  color: "dddddd"

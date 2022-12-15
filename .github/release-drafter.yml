@@ -1,3 +1,9 @@
+---
+template: |
+  ## Changes
+
+  $CHANGES
+
 categories:
   - title: ":boom: Breaking Changes"
     label: "breaking"
@@ -25,7 +31,6 @@ categories:
     labels:
       - "dependencies"
       - "build"
-template: |
-  ## Changes
 
-  $CHANGES
+exclude-labels:
+  - "skip-changelog"

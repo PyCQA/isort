@@ -1,6 +1,7 @@
+---
 name: Labeler
 
-on:
+"on":
   push:
     branches:
       - main

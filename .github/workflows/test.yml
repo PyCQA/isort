@@ -1,6 +1,9 @@
+---
 name: Test
 
-on: [push, pull_request]
+"on":
+  push:
+  pull_request:
 
 permissions:
   contents: read
@@ -58,11 +61,8 @@ jobs:
 
       - name: Install Poetry
         run: |
-          python -m pip install --upgrade pip
           pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
-          python -m pip install --upgrade poetry
           poetry --version
-          poetry install
 
       - name: Install dependencies
         run: poetry install
@@ -72,5 +72,5 @@ jobs:
         run: ./scripts/test.sh
 
       - name: Report Coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         uses: codecov/codecov-action@v1
