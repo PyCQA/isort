@@ -31,9 +31,12 @@ def test_importable():
     import isort.stdlibs.py2
     import isort.stdlibs.py3
     import isort.stdlibs.py27
-    import isort.stdlibs.py35
     import isort.stdlibs.py36
     import isort.stdlibs.py37
+    import isort.stdlibs.py38
+    import isort.stdlibs.py39
+    import isort.stdlibs.py310
+    import isort.stdlibs.py311
     import isort.utils
     import isort.wrap
     import isort.wrap_modes
