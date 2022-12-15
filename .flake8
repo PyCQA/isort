@@ -1,7 +1,3 @@
-[tool:pytest]
-testpaths = tests
-
-
 [flake8]
 max-line-length = 100
 # Ignore non PEP 8 compliant rules as suggested by black

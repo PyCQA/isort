@@ -2123,15 +2123,18 @@ typing = ["mypy", "mypy-extensions", "mypytools", "typed-ast"]
 
 [[package]]
 name = "vulture"
-version = "1.6"
+version = "2.6"
 description = "Find dead code"
 category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.6"
 files = [
-    {file = "vulture-1.6-py2.py3-none-any.whl", hash = "sha256:79ecb77e5d61a2375e2b94dea2fd859cd77a067e55e99b8238b64196adfcdc0f"},
-    {file = "vulture-1.6.tar.gz", hash = "sha256:7b94784ededbf8e2913b5142dc875d8f26de7c903b37cd2d8f478f79275f7ce9"},
+    {file = "vulture-2.6-py2.py3-none-any.whl", hash = "sha256:e792e903ccc063ec4873a8979dcf11b51ea3d65a2d3b31c113d47be48f0cdcae"},
+    {file = "vulture-2.6.tar.gz", hash = "sha256:2515fa848181001dc8a73aba6a01a1a17406f5d372f24ec7f7191866f9f4997e"},
 ]
+
+[package.dependencies]
+toml = "*"
 
 [[package]]
 name = "watchdog"
@@ -2241,4 +2244,4 @@ requirements-deprecated-finder = ["pipreqs", "pip-api"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7.0"
-content-hash = "59583a6aee842a5b281abe4a593ee9ea71ba177f732b7e12cd717a8250462cb9"
+content-hash = "c085fe60809f5ebf88aa1a630a14a8ff660da17400a8b753645dfb5d8ae864c7"
