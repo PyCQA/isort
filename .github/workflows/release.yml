@@ -34,11 +34,11 @@ jobs:
       - name: Check if there is a parent commit
         id: check-parent-commit
         run: |
-          echo "name=sha::$(git rev-parse --verify --quiet HEAD^)" >> $GITHUB_ENV
+          echo "::set-output name=sha::$(git rev-parse --verify --quiet HEAD^)"
 
       - name: Detect and tag new version
         id: check-version
-        if: env.sha
+        if: steps.check-parent-commit.outputs.sha
         uses: salsify/action-detect-and-tag-new-version@v2
         with:
           version-command: |
@@ -60,15 +60,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-
-      - name: Publish package on TestPyPI
-        if: "! steps.check-version.outputs.tag"
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Publish the release notes
         uses: release-drafter/release-drafter@v5
