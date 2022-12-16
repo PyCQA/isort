@@ -4,6 +4,15 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.11.3 December 16 2022
+
+  - Fixed #2007: settings for py3.11 (#2040) @staticdev
+  - Fixed #2038: packaging pypoetry (#2042) @staticdev
+  - Docs: renable portray (#2043) @timothycrosley
+  - Ci: add minimum GitHub token permissions for workflows (#1969) @varunsh-coder
+  - Ci: general CI improvements (#2041) @staticdev
+  - Ci: add release workflow (#2026) @staticdev
+
 ### 5.11.2 December 12 2022
 
   - Hotfix #2034: isort --version is not accurate on 5.11.x releases (#2034) @gschaffner
