@@ -42,6 +42,7 @@ jobs:
         if: steps.check-parent-commit.outputs.sha
         uses: salsify/action-detect-and-tag-new-version@v2
         with:
+          tag-template: "{VERSION}"
           version-command: |
             bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
 
