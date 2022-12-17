@@ -8,6 +8,7 @@ name: Release Drafter
 
 jobs:
   draft_release:
+    if: github.repository_owner == 'PyCQA'
     runs-on: ubuntu-latest
     steps:
       - uses: release-drafter/release-drafter@v5
