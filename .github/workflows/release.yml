@@ -8,6 +8,7 @@ name: Release
 
 jobs:
   release:
+    if: github.repository_owner == 'PyCQA'
     name: Release
     runs-on: ubuntu-latest
     steps:
