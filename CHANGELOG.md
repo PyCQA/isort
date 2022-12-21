@@ -4,6 +4,13 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.11.4 December 21 2022
+
+  - Fixed #2038 (again): stop installing documentation files to top-level site-packages (#2057) @mgorny
+  - CI: only run release workflows for upstream (#2052) @hugovk
+  - Tests: remove obsolete toml import from the test suite (#1978) @mgorny
+  - CI: bump Poetry 1.3.1 (#2058) @staticdev
+
 ### 5.11.3 December 16 2022
 
   - Fixed #2007: settings for py3.11 (#2040) @staticdev
