@@ -5,6 +5,7 @@ from typing import List, TextIO, Union
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
+from isort.utils import is_module_dunder
 
 from . import output, parse
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
@@ -29,7 +30,6 @@ LITERAL_TYPE_MAPPING = {
     "[": "list",
     "{": "dict",
 }
-
 
 def process(
     input_stream: TextIO,
@@ -222,6 +222,7 @@ def process(
                     char_index += 1
 
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
+
             if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
@@ -287,6 +288,8 @@ def process(
                     and not config.treat_all_comments_as_code
                     and stripped_line not in config.treat_comments_as_code
                 ):
+                    import_section += line
+                elif is_module_dunder(stripped_line):
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
@@ -429,6 +432,7 @@ def process(
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
+
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
                             sorted_import_section = (

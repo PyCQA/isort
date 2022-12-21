@@ -46,7 +46,13 @@ def sorted_imports(
     output: List[str] = []
     seen_headings: Set[str] = set()
     pending_lines_before = False
+
     for section in sections:
+        if section == "DUNDER":
+            output += [""] * config.lines_between_sections
+            output.extend(parsed.module_dunders)
+            continue
+
         straight_modules = parsed.imports[section]["straight"]
         if not config.only_sections:
             straight_modules = sorting.sort(

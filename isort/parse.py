@@ -5,6 +5,8 @@ from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple
 from warnings import warn
 
+from isort.utils import is_module_dunder
+
 from . import place
 from .comments import parse as parse_comments
 from .exceptions import MissingSection
@@ -132,6 +134,7 @@ class ParsedContent(NamedTuple):
     import_placements: Dict[str, str]
     as_map: Dict[str, Dict[str, List[str]]]
     imports: Dict[str, Dict[str, Any]]
+    module_dunders: List[str]
     categorized_comments: "CommentsDict"
     change_count: int
     original_line_count: int
@@ -166,9 +169,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "from": defaultdict(list),
     }
     imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+    module_dunders: List[str] = []
     verbose_output: List[str] = []
 
-    for section in chain(config.sections, config.forced_separate):
+    section_names = [name for name in config.sections if name != "DUNDER"]
+
+    for section in chain(section_names, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
     categorized_comments: CommentsDict = {
         "from": {},
@@ -265,8 +271,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
         for statement in statements:
             line, raw_line = _normalize_line(statement)
-            type_of_import = import_type(line, config) or ""
             raw_lines = [raw_line]
+
+            if is_module_dunder(statement):
+                module_dunders.append(statement)
+                continue
+
+            type_of_import = import_type(line, config) or ""
+
             if not type_of_import:
                 out_lines.append(raw_line)
                 continue
@@ -587,6 +599,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         import_placements=import_placements,
         as_map=as_map,
         imports=imports,
+        module_dunders=module_dunders,
         categorized_comments=categorized_comments,
         change_count=change_count,
         original_line_count=original_line_count,
