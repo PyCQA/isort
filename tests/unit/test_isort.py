@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
 
 import py
 import pytest
-import toml
 
 import isort
 from isort import api, files, sections
@@ -2713,7 +2712,6 @@ def test_sections_parsed_correct(tmpdir) -> None:
     assert isort.code(test_input, settings_path=str(tmpdir)) == correct_output
 
 
-@pytest.mark.skipif(toml is None, reason="Requires toml package to be installed.")
 def test_pyproject_conf_file(tmpdir) -> None:
     """Ensure that modules for custom sections parsed as list from config file and
     isort result is correct
