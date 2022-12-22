@@ -195,7 +195,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         if is_module_dunder(line):
             dunder_statement = line
             if line.endswith(("\\", "[", '= """', "= '''")):
-                while index < line_count and line and not line.endswith("]") and line != '"""' and line != "'''":
+                while (
+                    index < line_count
+                    and line
+                    and not line.endswith("]")
+                    and line != '"""'
+                    and line != "'''"
+                ):
                     line = in_lines[index]
                     index += 1
                     dunder_statement += "\n" + line

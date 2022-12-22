@@ -75,5 +75,6 @@ def exists_case_sensitive(path: str) -> bool:
 
 MODULE_DUNDER_PATTERN = re.compile(r"^__.*__\s*=")
 
+
 def is_module_dunder(line: str) -> bool:
     return bool(MODULE_DUNDER_PATTERN.match(line))

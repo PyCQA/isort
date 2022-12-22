@@ -3730,7 +3730,6 @@ def test_new_lines_are_preserved() -> None:
 
 
 def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
-
     config_file = tmpdir.join("setup.cfg")
     config_file.write(
         "[isort]\n"
@@ -5615,6 +5614,7 @@ import os
 import sys
 """
     assert isort.code(test_input) == expected_output
+
 
 def test_multiline_dunders() -> None:
     """Test to ensure isort correctly handles multiline dunders"""
