@@ -65,7 +65,7 @@ def test_git_hook(src_dir):
         "isort.hooks.get_lines", MagicMock(return_value=[os.path.join(src_dir, "main.py")])
     ) as run_mock:
 
-        class FakeProcessResponse(object):
+        class FakeProcessResponse:
             stdout = b"# isort: skip-file\nimport b\nimport a\n"
 
         with patch("subprocess.run", MagicMock(return_value=FakeProcessResponse())) as run_mock:

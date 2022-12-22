@@ -966,7 +966,7 @@ def _preconvert(item: Any) -> Union[str, List[Any]]:
         return str(item)
     if callable(item) and hasattr(item, "__name__"):
         return str(item.__name__)
-    raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
+    raise TypeError(f"Unserializable object {item} of type {type(item)}")
 
 
 def identify_imports_main(

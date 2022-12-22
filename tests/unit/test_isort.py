@@ -3017,7 +3017,7 @@ def test_import_by_paren_issue_460() -> None:
 import io
 import os
 """
-    assert isort.code((test_input)) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_function_with_docstring() -> None:
@@ -3780,7 +3780,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
 
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
     tmpdir.join("file2.py").write(
-        ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
+        "import collections\nimport time\n\nimport abc" "\n\n\nimport isort"
     )
     arguments = [str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
