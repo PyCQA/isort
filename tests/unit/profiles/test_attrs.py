@@ -9,6 +9,8 @@ def test_attrs_code_snippet_one():
     attrs_isort_test(
         """from __future__ import absolute_import, division, print_function
 
+__version__ = "20.2.0.dev0"
+
 import sys
 
 from functools import partial
@@ -28,9 +30,6 @@ from ._make import (
     validate,
 )
 from ._version_info import VersionInfo
-
-
-__version__ = "20.2.0.dev0"
 """
     )
 
@@ -81,12 +80,6 @@ Commonly useful validators.
 
 from __future__ import absolute_import, division, print_function
 
-import re
-
-from ._make import _AndValidator, and_, attrib, attrs
-from .exceptions import NotCallableError
-
-
 __all__ = [
     "and_",
     "deep_iterable",
@@ -98,5 +91,10 @@ __all__ = [
     "optional",
     "provides",
 ]
+
+import re
+
+from ._make import _AndValidator, and_, attrib, attrs
+from .exceptions import NotCallableError
 '''
     )

@@ -5593,7 +5593,7 @@ def test_infinite_loop_in_unmatched_parenthesis() -> None:
     assert isort.code(test_input) == "from os import path, walk\n"
 
 
-def test_dunder_imports() -> None:
+def test_dunders() -> None:
     """Test to ensure dunder imports are in the correct location."""
     test_input = """from __future__ import division
 
@@ -5616,3 +5616,37 @@ import sys
 """
     assert isort.code(test_input) == expected_output
 
+def test_multiline_dunders() -> None:
+    """Test to ensure isort correctly handles multiline dunders"""
+    test_input = """from __future__ import division
+
+import os
+import sys
+
+__all__ = [
+    "one",
+    "two",
+]
+__version__ = '0.1'
+__author__ = '''
+	first name
+	last name
+'''
+"""
+
+    expected_output = """from __future__ import division
+
+__all__ = [
+    "one",
+    "two",
+]
+__version__ = '0.1'
+__author__ = '''
+	first name
+	last name
+'''
+
+import os
+import sys
+"""
+    assert isort.code(test_input) == expected_output

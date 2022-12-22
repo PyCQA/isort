@@ -34,9 +34,12 @@ def sorted_imports(
         parsed.imports["no_sections"] = {"straight": {}, "from": {}}
         base_sections: Tuple[str, ...] = ()
         for section in sections:
+            if section == "DUNDER":
+                continue
             if section == "FUTURE":
                 base_sections = ("FUTURE",)
                 continue
+
             parsed.imports["no_sections"]["straight"].update(
                 parsed.imports[section].get("straight", {})
             )
@@ -49,8 +52,9 @@ def sorted_imports(
 
     for section in sections:
         if section == "DUNDER":
-            output += [""] * config.lines_between_sections
-            output.extend(parsed.module_dunders)
+            if parsed.module_dunders:
+                output += [""] * config.lines_between_sections
+                output.extend(parsed.module_dunders)
             continue
 
         straight_modules = parsed.imports[section]["straight"]

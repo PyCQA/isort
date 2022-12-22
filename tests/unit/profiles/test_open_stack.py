@@ -100,6 +100,19 @@ def test_open_stack_code_snippet_three():
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+__all__ = [
+    'init',
+    'cleanup',
+    'set_defaults',
+    'add_extra_exmods',
+    'clear_extra_exmods',
+    'get_allowed_exmods',
+    'RequestContextSerializer',
+    'get_client',
+    'get_server',
+    'get_notifier',
+]
+
 import functools
 
 from oslo_log import log as logging
@@ -114,19 +127,6 @@ import nova.conf
 import nova.context
 import nova.exception
 from nova.i18n import _
-
-__all__ = [
-    'init',
-    'cleanup',
-    'set_defaults',
-    'add_extra_exmods',
-    'clear_extra_exmods',
-    'get_allowed_exmods',
-    'RequestContextSerializer',
-    'get_client',
-    'get_server',
-    'get_notifier',
-]
 
 profiler = importutils.try_import("osprofiler.profiler")
 """,

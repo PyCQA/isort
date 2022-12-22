@@ -196,7 +196,7 @@ def process(
                 first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
-            if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
+            if not is_module_dunder(stripped_line) and (not stripped_line.startswith("#") or in_quote) and ('"' in line or "'" in line):
                 char_index = 0
                 if first_comment_index_start == -1 and (
                     line.startswith('"') or line.startswith("'")
@@ -290,7 +290,16 @@ def process(
                 ):
                     import_section += line
                 elif is_module_dunder(stripped_line):
-                    import_section += line
+                    # Handle module-level dunders.
+                    dunder_statement = line
+                    if stripped_line.endswith(("\\", "[", '= """', "= '''")):
+                        # Handle multiline module dunder assignments.
+                        while stripped_line and not stripped_line.endswith("]") and stripped_line != '"""' and stripped_line != "'''":
+                            line = input_stream.readline()
+                            stripped_line = line.strip()
+                            dunder_statement += line
+                    import_section += dunder_statement
+
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
                     import_statement = line
@@ -298,6 +307,7 @@ def process(
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
                     ):
+                        # Handle multiline import statements.
                         if stripped_line.endswith("\\"):
                             while stripped_line and stripped_line.endswith("\\"):
                                 line = input_stream.readline()

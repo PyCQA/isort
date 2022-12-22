@@ -191,6 +191,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     while index < line_count:
         line = in_lines[index]
         index += 1
+
+        if is_module_dunder(line):
+            dunder_statement = line
+            if line.endswith(("\\", "[", '= """', "= '''")):
+                while index < line_count and line and not line.endswith("]") and line != '"""' and line != "'''":
+                    line = in_lines[index]
+                    index += 1
+                    dunder_statement += "\n" + line
+            module_dunders.append(dunder_statement)
+            continue
+
         statement_index = index
         (skipping_line, in_quote) = skip_line(
             line, in_quote=in_quote, index=index, section_comments=config.section_comments
@@ -272,11 +283,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         for statement in statements:
             line, raw_line = _normalize_line(statement)
             raw_lines = [raw_line]
-
-            if is_module_dunder(statement):
-                module_dunders.append(statement)
-                continue
-
             type_of_import = import_type(line, config) or ""
 
             if not type_of_import:
