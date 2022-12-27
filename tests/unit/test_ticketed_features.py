@@ -1056,3 +1056,20 @@ def test_sort_configurable_sort_issue_1732() -> None:
     )
     with pytest.raises(exceptions.SortingFunctionDoesNotExist):
         isort.code(test_input, sort_order="round")
+
+
+def test_cython_pure_python_imports_2062():
+    """Test to ensure an import form a cython.cimports remains import, not cimport.
+    See: https://github.com/pycqa/isort/issues/2062.
+    """
+    assert isort.check_code(
+        """
+import cython
+from cython.cimports.libc import math
+
+
+def use_libc_math():
+    return math.ceil(5.5)
+""",
+        show_diff=True,
+    )
