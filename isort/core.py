@@ -326,7 +326,10 @@ def process(
                             or " cimport " in import_statement
                             or " cimport*" in import_statement
                             or " cimport(" in import_statement
-                            or ".cimport" in import_statement
+                            or (
+                                ".cimport" in import_statement
+                                and "cython.cimports" not in import_statement
+                            )  # Allow pure python imports. See #2062
                         ):
                             cimport_statement = True
 
