@@ -38,7 +38,7 @@ from .exceptions import (
     SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
-from .profiles import profiles
+from .profiles import profiles as profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
@@ -318,7 +318,7 @@ class Config(_Config):
             config_vars.pop("_skips")
             config_vars.pop("_skip_globs")
             config_vars.pop("_sorting_function")
-            super().__init__(**config_vars)  # type: ignore
+            super().__init__(**config_vars)
             return
 
         # We can't use self.quiet to conditionally show warnings before super.__init__() is called

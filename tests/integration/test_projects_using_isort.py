@@ -6,9 +6,11 @@ NOTE: If you use isort within a public repository, please feel empowered to add 
 It is important to isort that as few regressions as possible are experienced by our users.
 Having your project tested here is the most sure way to keep those regressions form ever happening.
 """
+from __future__ import annotations
+
 from pathlib import Path
 from subprocess import check_call
-from typing import Sequence
+from typing import Generator, Sequence
 
 from isort.main import main
 
@@ -18,7 +20,7 @@ def git_clone(repository_url: str, directory: Path):
     check_call(["git", "clone", "--depth", "1", repository_url, str(directory)])
 
 
-def run_isort(arguments: Sequence[str]):
+def run_isort(arguments: Generator[str, None, None] | Sequence[str]):
     """Runs isort in diff and check mode with the given arguments"""
     main(["--check-only", "--diff", *arguments])
 

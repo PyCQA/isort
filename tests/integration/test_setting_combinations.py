@@ -61,7 +61,7 @@ def configs() -> st.SearchStrategy[isort.Config]:
         "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
     }
     kwargs = {**inferred_kwargs, **specific}
-    return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)
+    return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)  # type:ignore
 
 
 st.register_type_strategy(isort.Config, configs())

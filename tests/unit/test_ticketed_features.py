@@ -617,7 +617,7 @@ quiet = true
 quiet = true
 """
     )
-    with pytest.warns(None) as warning:
+    with pytest.warns(None) as warning:  # type: ignore
         assert Config(settings_file=str(settings_file)).quiet
     assert not warning
 

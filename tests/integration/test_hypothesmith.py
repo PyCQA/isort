@@ -33,7 +33,7 @@ def _record_targets(code: str, prefix: str = "") -> str:
     return code
 
 
-def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Config]:
+def configs(**force_strategies: st.SearchStrategy[isort.Config]) -> st.SearchStrategy[isort.Config]:
     """Generate arbitrary Config objects."""
     skip = {
         "line_ending",
@@ -66,7 +66,7 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy[isort.Co
         "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
     }
     kwargs = {**inferred_kwargs, **specific, **force_strategies}
-    return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)
+    return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)  # type: ignore
 
 
 st.register_type_strategy(isort.Config, configs())
