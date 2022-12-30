@@ -1068,15 +1068,15 @@ def test_identify_imports_main(tmpdir, capsys):
 
     main.identify_imports_main(["-", "--packages"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
-    len(out.split("\n")) == 2
+    assert len(out.split("\n")) == 6
 
     main.identify_imports_main(["-", "--modules"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
-    len(out.split("\n")) == 2
+    assert len(out.split("\n")) == 3
 
     main.identify_imports_main(["-", "--attributes"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
-    len(out.split("\n")) == 2
+    assert len(out.split("\n")) == 3
 
 
 def test_gitignore(capsys, tmpdir: py.path.local):

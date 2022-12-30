@@ -262,7 +262,7 @@ class ReqsBaseFinder(BaseFinder):
         if os.path.isfile(path):
             path = os.path.dirname(path)
 
-        for path in self._get_parents(path):
+        for path in self._get_parents(path):  # noqa
             yield from self._get_files_from_dir(path)
 
     def _normalize_name(self, name: str) -> str:

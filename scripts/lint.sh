@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # TODO: reneable cruft when it takes Python restriction
-#poetry run cruft check
+poetry run cruft check
 poetry run mypy -p isort -p tests
 poetry run black --target-version py37 --check .
 poetry run isort --profile hug --check --diff isort/ tests/
