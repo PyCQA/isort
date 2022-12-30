@@ -1,9 +1,9 @@
 #! /bin/env python
+import dataclasses
 import os
 from textwrap import dedent
 from typing import Any, Dict, Generator, Iterable, Optional, Type
 
-from isort._future import dataclass
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
 
@@ -34,7 +34,7 @@ profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html).
 parser = _build_arg_parser()
 
 
-@dataclass
+@dataclasses.dataclass
 class Example:
     section_complete: str = ""
     cfg: str = ""
@@ -309,7 +309,7 @@ py_version=39
 }
 
 
-@dataclass
+@dataclasses.dataclass
 class ConfigOption:
     name: str
     type: Type = str

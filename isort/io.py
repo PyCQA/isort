@@ -1,4 +1,5 @@
 """Defines any IO utilities used by isort"""
+import dataclasses
 import re
 import tokenize
 from contextlib import contextmanager
@@ -6,13 +7,12 @@ from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
 from typing import Any, Callable, Iterator, TextIO, Union
 
-from isort._future import dataclass
 from isort.exceptions import UnsupportedEncoding
 
 _ENCODING_PATTERN = re.compile(rb"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class File:
     stream: TextIO
     path: Path
@@ -28,9 +28,7 @@ class File:
     @staticmethod
     def from_contents(contents: str, filename: str) -> "File":
         encoding = File.detect_encoding(filename, BytesIO(contents.encode("utf-8")).readline)
-        return File(  # type: ignore
-            stream=StringIO(contents), path=Path(filename).resolve(), encoding=encoding
-        )
+        return File(stream=StringIO(contents), path=Path(filename).resolve(), encoding=encoding)
 
     @property
     def extension(self) -> str:
@@ -59,7 +57,7 @@ class File:
         stream = None
         try:
             stream = File._open(file_path)
-            yield File(stream=stream, path=file_path, encoding=stream.encoding)  # type: ignore
+            yield File(stream=stream, path=file_path, encoding=stream.encoding)
         finally:
             if stream is not None:
                 stream.close()

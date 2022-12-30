@@ -10,6 +10,7 @@ import re
 import stat
 import subprocess  # nosec: Needed for gitignore support.
 import sys
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import (
@@ -30,7 +31,6 @@ from typing import (
 from warnings import warn
 
 from . import sorting, stdlibs
-from ._future import dataclass, field
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
@@ -525,7 +525,7 @@ class Config(_Config):
         if unsupported_config_errors:
             raise UnsupportedSettings(unsupported_config_errors)
 
-        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
+        super().__init__(sources=tuple(sources), **combined_config)
 
     def is_supported_filetype(self, file_name: str) -> bool:
         _root, ext = os.path.splitext(file_name)
