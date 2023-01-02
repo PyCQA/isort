@@ -47,8 +47,9 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             f"Defined sort types are {', '.join(type_mapping.keys())}."
         )
 
-    variable_name, literal = code.split(" = ")
-    variable_name = variable_name.lstrip()
+    variable_name, literal = code.split("=")
+    variable_name = variable_name.strip()
+    literal = literal.lstrip()
     try:
         value = ast.literal_eval(literal)
     except Exception as error:
