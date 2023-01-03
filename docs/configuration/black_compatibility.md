@@ -1,7 +1,6 @@
 ![isort loves black](https://raw.githubusercontent.com/pycqa/isort/main/art/isort_loves_black.png)
 
-Compatibility with black
-========
+# Compatibility with black
 
 Compatibility with black is very important to the isort project and comes baked in starting with version 5.
 All that's required to use isort alongside black is to set the isort profile to "black".
@@ -33,9 +32,9 @@ A demo of how this would look like in your _.travis.yml_
 ```yaml
 language: python
 python:
+  - "3.10"
   - "3.9"
   - "3.8"
-  - "3.7"
 
 install:
   - pip install -r requirements-dev.txt

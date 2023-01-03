@@ -6,8 +6,6 @@ def test_importable():
     """Simple smoketest to ensure all isort modules are importable"""
 
     import isort
-    import isort._future
-    import isort._future._dataclasses
     import isort._version
     import isort.api
     import isort.comments
