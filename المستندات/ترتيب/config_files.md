@@ -116,3 +116,6 @@ isort will sort `subdir1/file1` according to the configurations defined in `subd
 
 !!! tip
 You can always confirm exactly what config file was used for a file by running isort with the `--verbose` flag.
+
+.
+config_files.md
