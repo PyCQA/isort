@@ -33,6 +33,7 @@ def test_file_contents():
         _,
         _,
         _,
+        _,
         change_count,
         original_line_count,
         _,

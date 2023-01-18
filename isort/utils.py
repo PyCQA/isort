@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
@@ -70,3 +71,10 @@ def exists_case_sensitive(path: str) -> bool:
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result
+
+
+MODULE_DUNDER_PATTERN = re.compile(r"^__.*__\s*=")
+
+
+def is_module_dunder(line: str) -> bool:
+    return bool(MODULE_DUNDER_PATTERN.match(line))

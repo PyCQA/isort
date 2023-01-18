@@ -3730,7 +3730,6 @@ def test_new_lines_are_preserved() -> None:
 
 
 def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
-
     config_file = tmpdir.join("setup.cfg")
     config_file.write(
         "[isort]\n"
@@ -5591,3 +5590,76 @@ def test_infinite_loop_in_unmatched_parenthesis() -> None:
 
     # ensure other cases are handled correctly
     assert isort.code(test_input) == "from os import path, walk\n"
+
+
+def test_dunders() -> None:
+    """Test to ensure dunder imports are in the correct location."""
+    test_input = """from __future__ import division
+
+import os
+import sys
+
+__all__ = ["dla"]
+__version__ = '0.1'
+__author__ = 'someone'
+"""
+
+    expected_output = """from __future__ import division
+
+__all__ = ["dla"]
+__version__ = '0.1'
+__author__ = 'someone'
+
+import os
+import sys
+"""
+    assert isort.code(test_input) == expected_output
+
+
+def test_multiline_dunders() -> None:
+    """Test to ensure isort correctly handles multiline dunders"""
+    test_input = """from __future__ import division
+
+import os
+import sys
+
+__all__ = [
+    "one",
+    "two",
+]
+__version__ = '0.1'
+__author__ = '''
+	first name
+	last name
+'''
+"""
+
+    expected_output = """from __future__ import division
+
+__all__ = [
+    "one",
+    "two",
+]
+__version__ = '0.1'
+__author__ = '''
+	first name
+	last name
+'''
+
+import os
+import sys
+"""
+    assert isort.code(test_input) == expected_output
+
+
+def test_dunders_needs_import() -> None:
+    """Test to ensure dunder definitions that need imports are not moved."""
+    test_input = """from importlib import metadata
+
+__version__ = metadata.version("isort")
+__all__ = ["dla"]
+__author__ = 'someone'
+"""
+
+    expected_output = test_input
+    assert isort.code(test_input) == expected_output

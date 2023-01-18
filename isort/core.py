@@ -5,6 +5,7 @@ from typing import List, TextIO, Union
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
+from isort.utils import is_module_dunder
 
 from . import output, parse
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
@@ -196,7 +197,11 @@ def process(
                 first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
-            if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
+            if (
+                not is_module_dunder(stripped_line)
+                and (not stripped_line.startswith("#") or in_quote)
+                and ('"' in line or "'" in line)
+            ):
                 char_index = 0
                 if first_comment_index_start == -1 and (
                     line.startswith('"') or line.startswith("'")
@@ -222,6 +227,7 @@ def process(
                     char_index += 1
 
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
+
             if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
@@ -288,6 +294,22 @@ def process(
                     and stripped_line not in config.treat_comments_as_code
                 ):
                     import_section += line
+                elif is_module_dunder(stripped_line):
+                    # Handle module-level dunders.
+                    dunder_statement = line
+                    if stripped_line.endswith(("\\", "[", '= """', "= '''")):
+                        # Handle multiline module dunder assignments.
+                        while (
+                            stripped_line
+                            and not stripped_line.endswith("]")
+                            and stripped_line != '"""'
+                            and stripped_line != "'''"
+                        ):
+                            line = input_stream.readline()
+                            stripped_line = line.strip()
+                            dunder_statement += line
+                    import_section += dunder_statement
+
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
                     import_statement = line
@@ -295,6 +317,7 @@ def process(
                     while stripped_line.endswith("\\") or (
                         "(" in stripped_line and ")" not in stripped_line
                     ):
+                        # Handle multiline import statements.
                         if stripped_line.endswith("\\"):
                             while stripped_line and stripped_line.endswith("\\"):
                                 line = input_stream.readline()
@@ -429,6 +452,7 @@ def process(
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
+
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
                             sorted_import_section = (
