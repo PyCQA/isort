@@ -5650,3 +5650,16 @@ import os
 import sys
 """
     assert isort.code(test_input) == expected_output
+
+
+def test_dunders_needs_import() -> None:
+    """Test to ensure dunder definitions that need imports are not moved."""
+    test_input = """from importlib import metadata
+
+__version__ = metadata.version("isort")
+__all__ = ["dla"]
+__author__ = 'someone'
+"""
+
+    expected_output = test_input
+    assert isort.code(test_input) == expected_output
