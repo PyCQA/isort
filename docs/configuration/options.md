@@ -57,7 +57,7 @@ Force specific imports to the top of their appropriate section.
 
 ## Skip
 
-Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+Files that isort should skip over. If you want to skip multiple files you should specify twice: `--skip file1 --skip file2`. Values can be file names, directory names or file paths. To skip all files in a nested path, use [`--skip-glob`](#skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
@@ -87,7 +87,7 @@ skip = [".gitignore", ".dockerignore"]
 
 ## Extend Skip
 
-Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path, use [`--skip-glob`](#skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -116,7 +116,7 @@ extend_skip = [".md", ".json"]
 
 ## Skip Glob
 
-Files that isort should skip over.
+Files that isort should skip over. To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -147,7 +147,7 @@ skip_glob = ["docs/*"]
 
 ## Extend Skip Glob
 
-Additional files that isort should skip over (extending --skip-glob).
+Additional files that isort should skip over (extending --skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -177,7 +177,8 @@ extend_skip_glob = ["my_*_module.py", "test/*"]
 
 ## Skip Gitignore
 
-Treat project as a git repository and ignore files listed in .gitignore.
+Treat project as a git repository and ignore files listed in .gitignore. To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
+
 NOTE: This requires git to be installed and accessible from the same shell as isort.
 
 **Type:** Bool  
