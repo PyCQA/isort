@@ -24,11 +24,7 @@ CODE_SORT_COMMENTS = (
     "# isort: unique-tuple",
     "# isort: assignments",
 )
-LITERAL_TYPE_MAPPING = {
-    "(": "tuple",
-    "[": "list",
-    "{": "dict",
-}
+LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 
 
 def process(
@@ -78,8 +74,8 @@ def process(
     end_of_file: bool = False
     verbose_output: List[str] = []
     lines_before: List[str] = []
-    auto_reexporting: bool = False
-    line_index: int = 0
+    is_reexport: bool = False
+    sort_section_pointer: int = 0
 
     if config.float_to_top:
         new_input = ""
@@ -137,6 +133,8 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
+                if is_reexport:
+                    output_stream.seek(sort_section_pointer, 0)
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
                         code_sorting_section,
@@ -152,7 +150,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                line_index += output_stream.write(sorted_code)
+                sort_section_pointer += output_stream.write(sorted_code)
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -233,12 +231,13 @@ def process(
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                 elif config.sort_reexports and stripped_line.startswith("__all__"):
-                    code_sorting = LITERAL_TYPE_MAPPING[stripped_line.split(" = ")[1][0]]
+                    _, rhs = stripped_line.split("=")
+                    code_sorting = LITERAL_TYPE_MAPPING.get(rhs.lstrip()[0], "tuple")
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                     code_sorting_section += line
-                    auto_reexporting = True
-                    line_index -= len(line) - 1
+                    is_reexport = True
+                    sort_section_pointer -= len(line)
                 elif code_sorting:
                     if not stripped_line:
                         sorted_code = textwrap.indent(
@@ -256,14 +255,14 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-                        if auto_reexporting:
-                            output_stream.seek(line_index, 0)
-                        line_index += output_stream.write(sorted_code)
+                        if is_reexport:
+                            output_stream.seek(sort_section_pointer, 0)
+                        sort_section_pointer += output_stream.write(sorted_code)
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
                         code_sorting_indent = ""
-                        auto_reexporting = False
+                        is_reexport = False
                     else:
                         code_sorting_section += line
                         line = ""
@@ -357,7 +356,7 @@ def process(
                 else:
                     not_imports = True
 
-        line_index += len(line)
+        sort_section_pointer += len(line)
 
         if not_imports:
 

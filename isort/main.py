@@ -323,6 +323,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Override the format used to print success.",
     )
     general_group.add_argument(
+        "--srx",
         "--sort-reexports",
         dest="sort_reexports",
         action="store_true",

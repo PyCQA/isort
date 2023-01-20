@@ -232,6 +232,19 @@ Forces line endings to the specified value. If not set, values will be guessed p
 - --le
 - --line-ending
 
+## Sort Re-exports
+
+Specifies whether to sort re-exports (`__all__` collections) automatically.
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** sort_reexports  
+**CLI Flags:**
+
+- --srx
+- --sort-reexports
+
 ## Sections
 
 What sections isort should display imports for and in what order
