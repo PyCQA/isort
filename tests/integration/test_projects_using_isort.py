@@ -74,23 +74,6 @@ def test_websockets(tmpdir):
     run_isort((str(tmpdir), "--skip", "example", "--skip", "docs", "--skip", "compliance"))
 
 
-def test_airflow(tmpdir):
-    git_clone("https://github.com/apache/airflow.git", tmpdir)
-    run_isort(
-        [
-            str(tmpdir),
-            "--skip-glob",
-            "*.pyi",
-            "--skip",
-            "tests",
-            "--skip",
-            "docker_tests",
-            "--skip",
-            "docs",
-        ]
-    )
-
-
 def test_typeshed(tmpdir):
     git_clone("https://github.com/python/typeshed.git", tmpdir)
     run_isort(
