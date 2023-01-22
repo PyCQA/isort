@@ -66,7 +66,7 @@ def test_tmuxp(tmpdir):
             "--skip",
             "workspacebuilder.py",
             "--skip",
-            "src/tmuxp/workspace/freezer.py"
+            "src/tmuxp/workspace/freezer.py",
         ]
     )
 
@@ -78,23 +78,7 @@ def test_websockets(tmpdir):
 
 def test_typeshed(tmpdir):
     git_clone("https://github.com/python/typeshed.git", tmpdir)
-    run_isort(
-        (
-            str(tmpdir),
-            "--skip",
-            "tests",
-            "--skip",
-            "scripts",
-            "--skip",
-            f"{tmpdir}/third_party/2and3/yaml/__init__.pyi",
-            "--skip",
-            "builtins.pyi",
-            "--skip",
-            "ast.pyi",
-            "--skip",
-            f"{tmpdir}/stdlib/venv/__init__.pyi",
-        )
-    )
+    run_isort([str(tmpdir)])
 
 
 def test_pylint(tmpdir):
