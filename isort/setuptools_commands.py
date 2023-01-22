@@ -43,7 +43,7 @@ class ISortCommand(setuptools.Command):  # type: ignore
 
         if self.distribution.py_modules:
             for filename in self.distribution.py_modules:
-                yield "%s.py" % filename
+                yield f"{filename}.py"
         # Don't miss the setup.py file itself
         yield "setup.py"
 
