@@ -63,7 +63,7 @@ class ForcedSeparateFinder(BaseFinder):
             # Ensure all forced_separate patterns will match to end of string
             path_glob = forced_separate
             if not forced_separate.endswith("*"):
-                path_glob = "%s*" % forced_separate
+                path_glob = f"{forced_separate}*"
 
             if fnmatch(module_name, path_glob) or fnmatch(module_name, "." + path_glob):
                 return forced_separate
