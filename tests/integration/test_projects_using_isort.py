@@ -66,7 +66,7 @@ def test_tmuxp(tmpdir):
             "--skip",
             "workspacebuilder.py",
             "--skip",
-            "src/tmuxp/workspace/freezer.py",
+            "freezer.py"
         ]
     )
 
