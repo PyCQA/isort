@@ -12,7 +12,7 @@ from isort import Config, exceptions
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
     """Test to ensure even if a semicolon is in the decorator in the line following an import
-    the correct line spacing detrmination will be made.
+    the correct line spacing determination will be made.
     See: https://github.com/pycqa/isort/issues/1178.
     """
     assert isort.check_code(
