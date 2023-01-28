@@ -32,7 +32,10 @@ def get_lines(command: List[str]) -> List[str]:
 
 
 def git_hook(
-    strict: bool = False, modify: bool = False, lazy: bool = False, settings_file: str = "",
+    strict: bool = False,
+    modify: bool = False,
+    lazy: bool = False,
+    settings_file: str = "",
     directories: Optional[List[str]] = None,
 ) -> int:
     """Git pre-commit hook to check staged files for isort errors
