@@ -43,12 +43,13 @@ include = [
 python = ">=3.7.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
+pip-shims = {version = ">=0.5.2", optional = true}
 pip-api = {version = "*", optional = true}
 colorama = {version = "^0.4.3", optional = true}
 setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims<=0.3.4"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama"]
 plugins = ["setuptools"]
@@ -79,7 +80,6 @@ pipreqs = "^0.4.9"
 pip_api = "^0.0.12"
 pylama = "^7.7"
 pip = "^21.1.1"
-pip-shims = "^0.5.2"
 py = "^1.11.0"
 safety = "^2.2.0"
 smmap2 = "^3.0.1"
