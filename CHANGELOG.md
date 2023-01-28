@@ -4,9 +4,11 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
-### 5.11.5 January 28 2022
+### 5.12.0 January 28 2022
 
-  - hotfix for poetry incompatibility
+  - Removed support for Python 3.7
+  - Fixed incompatiblity with latest poetry version
+  - Added support for directory limitations within built in git hook
 
 ### 5.11.4 December 21 2022
 
