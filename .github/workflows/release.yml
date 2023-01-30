@@ -5,6 +5,7 @@ name: Release
   push:
     branches:
       - main
+      - hotfix-5.11.5
 
 jobs:
   release:
