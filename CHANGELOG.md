@@ -4,6 +4,9 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.12.1 [in progress]
+  - Fixed #1989: settings lookup when working in stream based mode
+  
 ### 5.12.0 January 28 2023
 
   - Removed support for Python 3.7
