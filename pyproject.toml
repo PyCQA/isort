@@ -48,8 +48,6 @@ colorama = {version = ">=0.4.3", optional = true}
 setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims"]
-requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama"]
 plugins = ["setuptools"]
 
@@ -67,12 +65,11 @@ hypothesmith = ">=0.1.3"
 #hypothesis-auto = { version = ">=1.0.0" }
 hypothesis = ">=6.10.1"
 ipython = ">=7.16"
-mypy = ">=0.902"
+mypy = ">=0.902,<1.0.0"
 pytest = ">=6.0"
 pytest-mock = ">=1.10"
 pep8-naming = ">=0.8.2"
 portray = ">=1.8.0"
-pipfile = ">=0.0.2"
 requirementslib = ">=1.5"
 pipreqs = ">=0.4.9"
 pip_api = ">=0.0.12"

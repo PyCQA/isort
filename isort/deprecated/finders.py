@@ -30,12 +30,6 @@ try:
 except ImportError:
     parse_requirements = None
 
-try:
-    from requirementslib import Pipfile  # type: ignore
-
-except ImportError:
-    Pipfile = None
-
 
 @contextmanager
 def chdir(path: str) -> Iterator[None]:
@@ -346,20 +340,6 @@ class RequirementsFinder(ReqsBaseFinder):
         return result
 
 
-class PipfileFinder(ReqsBaseFinder):
-    enabled = bool(Pipfile)
-
-    def _get_names(self, path: str) -> Iterator[str]:
-        with chdir(path):
-            project = Pipfile.load(path)
-            for req in project.packages:
-                yield req.name
-
-    def _get_files_from_dir(self, path: str) -> Iterator[str]:
-        if "Pipfile" in os.listdir(path):
-            yield path
-
-
 class DefaultFinder(BaseFinder):
     def find(self, module_name: str) -> Optional[str]:
         return self.config.default_section
@@ -371,7 +351,6 @@ class FindersManager:
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
-        PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
     )

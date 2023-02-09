@@ -82,24 +82,6 @@ Installing isort is as simple as:
 pip install isort
 ```
 
-Install isort with requirements.txt support:
-
-```bash
-pip install isort[requirements_deprecated_finder]
-```
-
-Install isort with Pipfile support:
-
-```bash
-pip install isort[pipfile_deprecated_finder]
-```
-
-Install isort with both formats support:
-
-```bash
-pip install isort[requirements_deprecated_finder,pipfile_deprecated_finder]
-```
-
 ## Using isort
 
 **From the command line**:

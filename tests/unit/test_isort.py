@@ -3730,7 +3730,6 @@ def test_new_lines_are_preserved() -> None:
 
 
 def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
-
     config_file = tmpdir.join("setup.cfg")
     config_file.write(
         "[isort]\n"

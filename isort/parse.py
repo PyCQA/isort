@@ -241,7 +241,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and not commentless.rstrip().endswith(")")
                             and import_index < line_count
                         ):
-
                             while import_index < line_count and not commentless.rstrip().endswith(
                                 ")"
                             ):
@@ -532,7 +531,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         comments = []
 
                     if len(out_lines) > max(import_index, +1, 1) - 1:
-
                         last = out_lines[-1].rstrip() if out_lines else ""
                         while (
                             last.startswith("#")
