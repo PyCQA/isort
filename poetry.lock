@@ -848,14 +848,14 @@ files = [
 
 [[package]]
 name = "ipython"
-version = "8.9.0"
+version = "8.10.0"
 description = "IPython: Productive Interactive Computing"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ipython-8.9.0-py3-none-any.whl", hash = "sha256:9c207b0ef2d276d1bfcfeb9a62804336abbe4b170574ea061500952319b1d78c"},
-    {file = "ipython-8.9.0.tar.gz", hash = "sha256:71618e82e6d59487bea059626e7c79fb4a5b760d1510d02fab1160db6fdfa1f7"},
+    {file = "ipython-8.10.0-py3-none-any.whl", hash = "sha256:b38c31e8fc7eff642fc7c597061fff462537cf2314e3225a19c906b7b0d8a345"},
+    {file = "ipython-8.10.0.tar.gz", hash = "sha256:b13a1d6c1f5818bd388db53b7107d17454129a70de2b87481d555daede5eb49e"},
 ]
 
 [package.dependencies]
@@ -873,7 +873,7 @@ stack-data = "*"
 traitlets = ">=5"
 
 [package.extras]
-all = ["black", "curio", "docrepr", "ipykernel", "ipyparallel", "ipywidgets", "matplotlib", "matplotlib (!=3.2.0)", "nbconvert", "nbformat", "notebook", "numpy (>=1.20)", "pandas", "pytest (<7)", "pytest (<7.1)", "pytest-asyncio", "qtconsole", "setuptools (>=18.5)", "sphinx (>=1.3)", "sphinx-rtd-theme", "stack-data", "testpath", "trio", "typing-extensions"]
+all = ["black", "curio", "docrepr", "ipykernel", "ipyparallel", "ipywidgets", "matplotlib", "matplotlib (!=3.2.0)", "nbconvert", "nbformat", "notebook", "numpy (>=1.21)", "pandas", "pytest (<7)", "pytest (<7.1)", "pytest-asyncio", "qtconsole", "setuptools (>=18.5)", "sphinx (>=1.3)", "sphinx-rtd-theme", "stack-data", "testpath", "trio", "typing-extensions"]
 black = ["black"]
 doc = ["docrepr", "ipykernel", "matplotlib", "pytest (<7)", "pytest (<7.1)", "pytest-asyncio", "setuptools (>=18.5)", "sphinx (>=1.3)", "sphinx-rtd-theme", "stack-data", "testpath", "typing-extensions"]
 kernel = ["ipykernel"]
@@ -883,7 +883,7 @@ notebook = ["ipywidgets", "notebook"]
 parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
 test = ["pytest (<7.1)", "pytest-asyncio", "testpath"]
-test-extra = ["curio", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.20)", "pandas", "pytest (<7.1)", "pytest-asyncio", "testpath", "trio"]
+test-extra = ["curio", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.21)", "pandas", "pytest (<7.1)", "pytest-asyncio", "testpath", "trio"]
 
 [[package]]
 name = "jedi"
@@ -1314,7 +1314,7 @@ setuptools = "*"
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1463,29 +1463,6 @@ files = [
 
 [package.dependencies]
 pip = "*"
-
-[[package]]
-name = "pip-shims"
-version = "0.7.3"
-description = "Compatibility shims for pip versions 8 thru current."
-category = "main"
-optional = true
-python-versions = ">=3.6"
-files = [
-    {file = "pip_shims-0.7.3-py2.py3-none-any.whl", hash = "sha256:2ae9f21c0155ca5c37d2734eb5f9a7d98c4c42a122d1ba3eddbacc9d9ea9fbae"},
-    {file = "pip_shims-0.7.3.tar.gz", hash = "sha256:089e3586a92b1b8dbbc16b2d2859331dc1c412d3e3dbcd91d80e6b30d73db96c"},
-]
-
-[package.dependencies]
-packaging = "*"
-pip = ">=20"
-setuptools = "*"
-wheel = "*"
-
-[package.extras]
-dev = ["nox", "parver", "pre-commit"]
-docs = ["sphinx (<2.0)", "sphinx-rtd-theme"]
-tests = ["pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "readme-renderer[md]"]
 
 [[package]]
 name = "pipreqs"
@@ -2506,21 +2483,6 @@ files = [
 ]
 
 [[package]]
-name = "wheel"
-version = "0.38.4"
-description = "A built-package format for Python"
-category = "main"
-optional = true
-python-versions = ">=3.7"
-files = [
-    {file = "wheel-0.38.4-py3-none-any.whl", hash = "sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8"},
-    {file = "wheel-0.38.4.tar.gz", hash = "sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac"},
-]
-
-[package.extras]
-test = ["pytest (>=3.0.0)"]
-
-[[package]]
 name = "yarg"
 version = "0.1.9"
 description = "A semi hard Cornish cheese, also queries PyPI (PyPI client)"
@@ -2570,4 +2532,4 @@ plugins = ["setuptools"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.0"
-content-hash = "7657f79800d0deefd3ae20eb0e9cba10bbd66924e30bedaf3ec7635a5c5d3e45"
+content-hash = "be7998af5cfde042dcbcd4483b610f66988020ea4af656d260e71c3977618638"
