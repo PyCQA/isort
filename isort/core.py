@@ -359,7 +359,6 @@ def process(
         sort_section_pointer += len(line)
 
         if not_imports:
-
             if not was_in_quote and config.lines_before_imports > -1:
                 if line.strip() == "":
                     lines_before += line

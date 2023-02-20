@@ -142,7 +142,6 @@ def test_requirements_finder(tmpdir) -> None:
     req_file = tmpdir.join("requirements.txt")
     req_file.write("Django==1.11\n-e git+https://github.com/orsinium/deal.git#egg=deal\n")
     for path in (str(tmpdir), str(subdir)):
-
         finder = finders.RequirementsFinder(config=Config(), path=path)
 
         files = list(finder._get_files())
