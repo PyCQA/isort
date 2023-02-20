@@ -28,7 +28,7 @@ try:
     from pip_api import parse_requirements  # type: ignore
 
 except ImportError:
-    parse_requirements = None
+    parse_requirements = None  # type: ignore
 
 try:
     from requirementslib import Pipfile  # type: ignore
@@ -338,7 +338,7 @@ class RequirementsFinder(ReqsBaseFinder):
         result = []
 
         with chdir(os.path.dirname(path)):
-            requirements = parse_requirements(path)
+            requirements = parse_requirements(Path(path))
             for req in requirements.values():
                 if req.name:
                     result.append(req.name)
