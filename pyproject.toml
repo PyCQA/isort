@@ -42,14 +42,11 @@ include = [
 python = ">=3.8.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
-pip-shims = {version = ">=0.5.2", optional = true}
 pip-api = {version = "*", optional = true}
 colorama = {version = ">=0.4.3", optional = true}
 setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib", "pip-shims"]
-requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama"]
 plugins = ["setuptools"]
 
@@ -61,18 +58,17 @@ cruft = ">=2.12.0"
 example-isort-sorting-plugin = ">=0.1.0"
 example-shared-isort-profile = ">=0.1.0"
 flake8 = ">=3.8.4"
-flake8-bugbear = ">=19.8"
+flake8-bugbear = ">=22.12.6,<23.0.0"
 httpx = ">=0.13.3"
 hypothesmith = ">=0.1.3"
 #hypothesis-auto = { version = ">=1.0.0" }
 hypothesis = ">=6.10.1"
 ipython = ">=7.16"
-mypy = ">=0.902"
+mypy = ">=0.902,<1.0.0"
 pytest = ">=6.0"
 pytest-mock = ">=1.10"
 pep8-naming = ">=0.8.2"
 portray = ">=1.8.0"
-pipfile = ">=0.0.2"
 requirementslib = ">=1.5"
 pipreqs = ">=0.4.9"
 pip_api = ">=0.0.12"

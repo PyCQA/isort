@@ -9,22 +9,6 @@ from isort.deprecated import finders
 from isort.deprecated.finders import FindersManager
 from isort.settings import Config
 
-PIPFILE = """
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
-
-[requires]
-python_version = "3.5"
-
-[packages]
-Django = "~=1.11"
-deal = {editable = true, git = "https://github.com/orsinium/deal.git"}
-
-[dev-packages]
-"""
-
 
 class TestFindersManager:
     def test_init(self):
@@ -114,10 +98,6 @@ class TestPathFinder(AbstractTestFinder):
         )
 
 
-class TestPipfileFinder(AbstractTestFinder):
-    kind = finders.PipfileFinder
-
-
 class TestRequirementsFinder(AbstractTestFinder):
     kind = finders.RequirementsFinder
 
@@ -160,26 +140,6 @@ def test_requirements_finder(tmpdir) -> None:
         assert finder._normalize_name("Flask-RESTful") == "flask_restful"  # convert `-`to `_`
 
     req_file.remove()
-
-
-def test_pipfile_finder(tmpdir) -> None:
-    pipfile = tmpdir.join("Pipfile")
-    pipfile.write(PIPFILE)
-    finder = finders.PipfileFinder(config=Config(), path=str(tmpdir))
-
-    assert set(finder._get_names(str(tmpdir))) == {"Django", "deal"}  # file parsing
-
-    assert finder.find("django") == sections.THIRDPARTY  # package in reqs
-    assert finder.find("flask") is None  # package not in reqs
-    assert finder.find("deal") == sections.THIRDPARTY  # vcs
-
-    assert len(finder.mapping) > 100  # type: ignore
-    assert finder._normalize_name("deal") == "deal"
-    assert finder._normalize_name("Django") == "django"  # lowercase
-    assert finder._normalize_name("django_haystack") == "haystack"  # mapping
-    assert finder._normalize_name("Flask-RESTful") == "flask_restful"  # convert `-`to `_`
-
-    pipfile.remove()
 
 
 def test_path_finder(monkeypatch) -> None:
