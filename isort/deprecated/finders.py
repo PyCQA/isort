@@ -332,7 +332,7 @@ class RequirementsFinder(ReqsBaseFinder):
         result = []
 
         with chdir(os.path.dirname(path)):
-            requirements = parse_requirements(path)
+            requirements = parse_requirements(Path(path))
             for req in requirements.values():
                 if req.name:
                     result.append(req.name)

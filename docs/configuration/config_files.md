@@ -115,4 +115,4 @@ directory_root
 isort will sort `subdir1/file1` according to the configurations defined in `subdir1/.isort.cfg`, `subdir2/file2` with configurations from `subdir2/pyproject.toml` and `subdir3/file3.py` based on the `setup.cfg` settings.
 
 !!! tip
-You can always confirm exactly what config file was used for a file by running isort with the `--verbose` flag.
+    You can always confirm exactly what config file was used for a file by running isort with the `--verbose` flag.
