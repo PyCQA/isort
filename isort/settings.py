@@ -89,6 +89,7 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".direnv",
         "node_modules",
         "__pypackages__",
+        ".pytype",
     }
 )
 
