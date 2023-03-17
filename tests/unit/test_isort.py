@@ -16,7 +16,7 @@ import pytest
 
 import isort
 from isort import api, files, sections
-from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
+from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection, ParsingError
 from isort.settings import Config
 from isort.utils import exists_case_sensitive
 
@@ -5671,3 +5671,16 @@ def test_reexport_not_last_line() -> None:
     meme = "rickroll"
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_doesnot_break_for_syntax_error() -> None:
+    """Test to ensure that isort doesn't break for syntax error while parsing import"""
+    test_input = """
+from pathlib import Path
+from typing import Optional, Union
+import numpy as np
+
+from os.path.import Path
+"""
+    with pytest.raises(ParsingError):
+        isort.code(test_input)
