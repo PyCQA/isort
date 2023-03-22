@@ -270,7 +270,7 @@ Put all imports into the same section bucket
 
 ## Known Future Library
 
-Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of __future__ handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six, a better option is to create another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
+Force isort to recognize a module as part of Python's internal future compatibility libraries. WARNING: this overrides the behavior of **future** handling and therefore can result in code that can't execute. If you're looking to add dependencies such as six, a better option is to create another section below --future using custom sections. See: https://github.com/PyCQA/isort#custom-sections-and-ordering and the discussion here: https://github.com/PyCQA/isort/issues/1463.
 
 **Type:** List of Strings  
 **Default:** `('__future__',)`  
@@ -521,7 +521,7 @@ forced_separate = ["glob_exp1", "glob_exp2"]
 
 ## Indent
 
-String to place for indents defaults to "    " (4 spaces).
+String to place for indents defaults to " " (4 spaces).
 
 **Type:** String  
 **Default:** `    `  
@@ -744,12 +744,24 @@ Sets the default section for import options: ('FUTURE', 'STDLIB', 'THIRDPARTY', 
 ## Import Headings
 
 A mapping of import sections to import heading comments that should show above them.
+**Note:** The keys need to be defined in this format: import_heading_SectionName, refer to the examples for find references.
 
-**Type:** Dict  
-**Default:** `{}`  
+**Type:** Dict
+**Default:** `{}`
 **Config default:** `{}`  
 **Python & Config File Name:** import_headings  
 **CLI Flags:** **Not Supported**
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+import_heading_stdlib = "standard"
+import_heading_thirdparty = "external"
+
+```
 
 ## Import Footers
 
@@ -776,7 +788,7 @@ Balances wrapping to produce the most consistent line length possible
 
 ## Use Parentheses
 
-Use parentheses for line continuation on length limit instead of backslashes. **NOTE**: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.
+Use parentheses for line continuation on length limit instead of backslashes. **NOTE**: This is separate from wrap modes, and only affects how individual lines that are too long get continued, not sections of multiple imports.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -792,7 +804,7 @@ Use parentheses for line continuation on length limit instead of backslashes. **
 Order imports by type, which is determined by case, in addition to alphabetically.
 
 **NOTE**: type here refers to the implied type from the import name capitalization.
- isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the `--dont-order-by-type` option will turn this off.
+isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default, otherwise you likely will want to turn it off. From the CLI the `--dont-order-by-type` option will turn this off.
 
 **Type:** Bool  
 **Default:** `True`  
@@ -903,6 +915,7 @@ Includes a trailing comma on multi line imports that include parentheses.
 
 - --tc
 - --trailing-comma
+
 ## Split on Trailing Comma
 
 Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode. This follows Black style magic comma.
@@ -1158,7 +1171,7 @@ Inserts a blank line before a comment following an import.
 ## Profile
 
 Base profile type to use for configuration. Profiles include: black, django,
-pycharm, google, open\_stack, plone, attrs, hug, wemake, appnexus. As well as
+pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as
 any [shared
 profiles](https://pycqa.github.io/isort/docs/howto/shared_profiles.html).
 
@@ -1228,7 +1241,7 @@ Use the old deprecated finder logic that relies on environment introspection mag
 
 ## Remove Redundant Aliases
 
-Tells isort to remove redundant aliases from imports, such as `import os as os`. This defaults to `False` simply because some projects use these seemingly useless  aliases to signify intent and change behaviour.
+Tells isort to remove redundant aliases from imports, such as `import os as os`. This defaults to `False` simply because some projects use these seemingly useless aliases to signify intent and change behaviour.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1243,7 +1256,7 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 Causes all non-indented imports to float to the top of the file having its imports sorted (immediately below the top of file comment).
 This can be an excellent shortcut for collecting imports every once in a while when you place them in the middle of a file to avoid context switching.
 
-*NOTE*: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.
+_NOTE_: It currently doesn't work with cimports and introduces some extra over-head and a performance penalty.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -1803,7 +1816,7 @@ One or more Python source files that need their imports sorted.
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
-- 
+-
 
 ## Dont Follow Links
 
@@ -1858,7 +1871,7 @@ Forces --float-to-top setting off. See --float-to-top for more information.
 Don't order imports by type, which is determined by case, in addition to alphabetically.
 
 **NOTE**: type here refers to the implied type from the import name capitalization.
- isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using `--order-by-type`.
+isort does not do type introspection for the imports. These "types" are simply: CONSTANT_VARIABLE, CamelCaseClass, variable_or_function. If your project follows PEP8 or a related coding standard and has many imports this is a good default. You can turn this on from the CLI using `--order-by-type`.
 
 **Type:** Bool  
 **Default:** `False`  
