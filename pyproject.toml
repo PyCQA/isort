@@ -152,3 +152,10 @@ module = "tests.*"
 allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
+
+[tool.isort]
+profile = "hug"
+src_paths = ["isort", "tests"]
+skip = [
+    "tests/unit/example_crlf_file.py"
+]
