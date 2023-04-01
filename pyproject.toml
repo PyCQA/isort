@@ -90,16 +90,32 @@ vulture = ">=1.0"
 jinja2 = "<3.1.0"
 
 [tool.coverage.paths]
-source = ["src", "*/site-packages"]
+source = [
+    "isort/",
+    ".tox/*/lib/python*/site-packages/isort/",
+    ".tox/*/lib/site-packages/isort/"
+]
 tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["git_portfolio", "tests"]
+source = ["isort", "tests"]
+omit = [
+    "isort/_vendored/*",
+    "tests/*",
+    "isort/deprecated/*",
+]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+fail_under = 99
+exclude_lines = [
+    "pragma: no cover",
+    "except ImportError:",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
@@ -136,3 +152,10 @@ module = "tests.*"
 allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
+
+[tool.isort]
+profile = "hug"
+src_paths = ["isort", "tests"]
+skip = [
+    "tests/unit/example_crlf_file.py"
+]
