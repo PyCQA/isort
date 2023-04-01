@@ -99,7 +99,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["git_portfolio", "tests"]
+source = ["isort", "tests"]
 omit = [
     "isort/_vendored/*",
     "tests/*",
