@@ -1,6 +1,9 @@
 ARG VERSION=3
 FROM python:$VERSION
 
+LABEL org.opencontainers.image.source = "https://github.com/PyCQA/isort"
+LABEL org.opencontainers.image.licenses = "MIT"
+
 # Install pip and poetry
 RUN python -m pip install --upgrade pip && python -m pip install poetry
 
