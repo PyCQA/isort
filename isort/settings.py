@@ -38,7 +38,7 @@ from .exceptions import (
     SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
-from .profiles import profiles as profiles
+from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
@@ -440,7 +440,7 @@ class Config(_Config):
             if section in SECTION_DEFAULTS:
                 continue
 
-            if not section.lower() in known_other:
+            if section.lower() not in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
@@ -550,8 +550,7 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
