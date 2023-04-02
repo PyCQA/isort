@@ -4,6 +4,18 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.12.1 [in progress]
+  - Fixed #1989: settings lookup when working in stream based mode
+  
+### 5.12.0 January 28 2023
+
+  - Removed support for Python 3.7
+  - Fixed incompatiblity with latest poetry version
+  - Added support for directory limitations within built in git hook
+
+### 5.11.5 January 30 2023 [hotfix]
+  - Fixed incompatiblity with latest poetry version
+
 ### 5.11.4 December 21 2022
 
   - Fixed #2038 (again): stop installing documentation files to top-level site-packages (#2057) @mgorny

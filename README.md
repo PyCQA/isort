@@ -19,8 +19,8 @@ _________________
 
 isort your imports, so you don't have to.
 
-isort is a Python utility / library to sort imports alphabetically, and
-automatically separated into sections and by type. It provides a command line
+isort is a Python utility / library to sort imports alphabetically and
+automatically separate into sections and by type. It provides a command line
 utility, Python library and [plugins for various
 editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.8+ to run but
@@ -80,24 +80,6 @@ Installing isort is as simple as:
 
 ```bash
 pip install isort
-```
-
-Install isort with requirements.txt support:
-
-```bash
-pip install isort[requirements_deprecated_finder]
-```
-
-Install isort with Pipfile support:
-
-```bash
-pip install isort[pipfile_deprecated_finder]
-```
-
-Install isort with both formats support:
-
-```bash
-pip install isort[requirements_deprecated_finder,pipfile_deprecated_finder]
 ```
 
 ## Using isort

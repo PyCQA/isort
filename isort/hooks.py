@@ -6,7 +6,7 @@ usage:
 import os
 import subprocess  # nosec - Needed for hook
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from isort import Config, api, exceptions
 
@@ -32,7 +32,11 @@ def get_lines(command: List[str]) -> List[str]:
 
 
 def git_hook(
-    strict: bool = False, modify: bool = False, lazy: bool = False, settings_file: str = ""
+    strict: bool = False,
+    modify: bool = False,
+    lazy: bool = False,
+    settings_file: str = "",
+    directories: Optional[List[str]] = None,
 ) -> int:
     """Git pre-commit hook to check staged files for isort errors
 
@@ -50,6 +54,7 @@ def git_hook(
         When settings_file is the empty string, the configuration file
         will be searched starting at the directory containing the first
         staged file, if any, and going upward in the directory structure.
+    :param list[str] directories - A list of directories to restrict the hook to.
 
     :return number of errors if in strict mode, 0 otherwise.
     """
@@ -57,6 +62,8 @@ def git_hook(
     diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
     if lazy:
         diff_cmd.remove("--cached")
+    if directories:
+        diff_cmd.extend(directories)
 
     files_modified = get_lines(diff_cmd)
     if not files_modified:

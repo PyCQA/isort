@@ -126,8 +126,6 @@ def test_find_config(tmpdir):
     tmp_config = tmpdir.join(".isort.cfg")
 
     # can't find config if it has no relevant section
-    settings._find_config.cache_clear()
-    settings._get_config_data.cache_clear()
     tmp_config.write_text(
         """
 [section]
@@ -138,14 +136,10 @@ force_grid_wrap=true
     assert not settings._find_config(str(tmpdir))[1]
 
     # or if it is malformed
-    settings._find_config.cache_clear()
-    settings._get_config_data.cache_clear()
     tmp_config.write_text("""arstoyrsyan arienrsaeinrastyngpuywnlguyn354q^%$)(%_)@$""", "utf8")
     assert not settings._find_config(str(tmpdir))[1]
 
     # can when it has either a file format, or generic relevant section
-    settings._find_config.cache_clear()
-    settings._get_config_data.cache_clear()
     _write_simple_settings(tmp_config)
     assert settings._find_config(str(tmpdir))[1]
 
@@ -155,8 +149,6 @@ def test_find_config_deep(tmpdir):
     dirs = [f"dir{i}" for i in range(settings.MAX_CONFIG_SEARCH_DEPTH + 1)]
     tmp_dirs = tmpdir.ensure(*dirs, dirs=True)
     tmp_config = tmpdir.join("dir0", ".isort.cfg")
-    settings._find_config.cache_clear()
-    settings._get_config_data.cache_clear()
     _write_simple_settings(tmp_config)
     assert not settings._find_config(str(tmp_dirs))[1]
     # but can find config if it is MAX_CONFIG_SEARCH_DEPTH up
