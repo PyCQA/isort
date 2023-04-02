@@ -11,6 +11,7 @@ import stat
 import subprocess  # nosec: Needed for gitignore support.
 import sys
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -37,7 +38,7 @@ from .exceptions import (
     SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
-from .profiles import profiles as profiles
+from .profiles import profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
@@ -89,7 +90,6 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".direnv",
         "node_modules",
         "__pypackages__",
-        ".pytype",
     }
 )
 
@@ -440,7 +440,7 @@ class Config(_Config):
             if section in SECTION_DEFAULTS:
                 continue
 
-            if section.lower() not in known_other:
+            if not section.lower() in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
@@ -550,7 +550,8 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        return bool(_SHEBANG_RE.match(line))
+        else:
+            return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -765,6 +766,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     return paths
 
 
+@lru_cache()
 def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     current_directory = path
     tries = 0
@@ -797,6 +799,7 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     return (path, {})
 
 
+@lru_cache()
 def find_all_configs(path: str) -> Trie:
     """
     Looks for config files in the path provided and in all of its sub-directories.
@@ -805,7 +808,7 @@ def find_all_configs(path: str) -> Trie:
     """
     trie_root = Trie("default", {})
 
-    for dirpath, _, _ in os.walk(path):
+    for (dirpath, _, _) in os.walk(path):
         for config_file_name in CONFIG_SOURCES:
             potential_config_file = os.path.join(dirpath, config_file_name)
             if os.path.isfile(potential_config_file):
@@ -825,7 +828,8 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any]:
+@lru_cache()
+def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
     if file_path.endswith(".toml"):
