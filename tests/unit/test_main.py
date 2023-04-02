@@ -1080,7 +1080,6 @@ def test_identify_imports_main(tmpdir, capsys):
 
 
 def test_gitignore(capsys, tmpdir: py.path.local):
-
     import_content = """
 import b
 import a
