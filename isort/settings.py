@@ -38,7 +38,7 @@ from .exceptions import (
     SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
-from .profiles import profiles
+from .profiles import profiles as profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
