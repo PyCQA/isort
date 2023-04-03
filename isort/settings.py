@@ -807,7 +807,7 @@ def find_all_configs(path: str) -> Trie:
     """
     trie_root = Trie("default", {})
 
-    for (dirpath, _, _) in os.walk(path):
+    for dirpath, _, _ in os.walk(path):
         for config_file_name in CONFIG_SOURCES:
             potential_config_file = os.path.join(dirpath, config_file_name)
             if os.path.isfile(potential_config_file):
