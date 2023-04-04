@@ -798,7 +798,7 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     return (path, {})
 
 
-def find_all_configs(path: str) -> Trie:
+def find_all_configs(path: str, config_overrides: Dict[str, Any]) -> Trie:
     """
     Looks for config files in the path provided and in all of its sub-directories.
     Parses and stores any config file encountered in a trie and returns the root of
@@ -820,6 +820,7 @@ def find_all_configs(path: str) -> Trie:
                     config_data = {}
 
                 if config_data:
+                    config_data.update(config_overrides)
                     trie_root.insert(potential_config_file, config_data)
                     break
 
