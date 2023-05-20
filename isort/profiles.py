@@ -8,6 +8,7 @@ black = {
     "use_parentheses": True,
     "ensure_newline_before_comments": True,
     "line_length": 88,
+    "split_on_trailing_comma": True,
 }
 django = {
     "combine_as_imports": True,
