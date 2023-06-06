@@ -1758,7 +1758,7 @@ Explicitly set the config root for resolving all configs. When used with the --r
 
 ## Resolve All Configs
 
-Tells isort to resolve the configs for all sub-directories and sort files in terms of its closest config files.
+Tells isort to resolve the configs for all sub-directories and sort files in terms of its closest config files. When using this option, `src_paths` will resolve relative to the directory that contains the config that was used by default.
 
 **Type:** Bool  
 **Default:** `False`  

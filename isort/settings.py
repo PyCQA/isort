@@ -820,6 +820,8 @@ def find_all_configs(path: str) -> Trie:
                     config_data = {}
 
                 if config_data:
+                    if "directory" not in config_data:
+                        config_data["directory"] = dirpath
                     trie_root.insert(potential_config_file, config_data)
                     break
 
