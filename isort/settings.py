@@ -11,7 +11,7 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
 from pathlib import Path
@@ -780,29 +780,48 @@ def find_all_configs(path: str) -> Trie:
     """
     trie_root = Trie("default", {})
 
-    for dirpath, _, _ in os.walk(path):
-        for config_file_name in CONFIG_SOURCES:
-            potential_config_file = os.path.join(dirpath, config_file_name)
-            if os.path.isfile(potential_config_file):
-                config_data: dict[str, Any]
-                try:
-                    config_data = _get_config_data(
-                        potential_config_file, CONFIG_SECTIONS[config_file_name]
-                    )
-                except Exception:
-                    warn(
-                        f"Failed to pull configuration information from {potential_config_file}",
-                        stacklevel=2,
-                    )
-                    config_data = {}
+    config_sources_set = set(CONFIG_SOURCES)
+    for potential_config_file in _scanwalk_files(
+        path, exclude_fn=lambda entry: entry.name in DEFAULT_SKIP
+    ):
+        if potential_config_file.name not in config_sources_set:
+            continue
+        config_data: dict[str, Any]
+        try:
+            config_data = _get_config_data(
+                potential_config_file.path, CONFIG_SECTIONS[potential_config_file.name]
+            )
+        except Exception:
+            warn(
+                f"Failed to pull configuration information from {potential_config_file.path}",
+                stacklevel=2,
+            )
+            config_data = {}
 
-                if config_data:
-                    if "directory" not in config_data:
-                        config_data["directory"] = dirpath
-                    trie_root.insert(potential_config_file, config_data)
-                    break
+        if config_data:
+            if "directory" not in config_data:
+                config_data["directory"] = os.path.dirname(potential_config_file.path)
+            trie_root.insert(potential_config_file.path, config_data)
 
     return trie_root
+
+
+def _scanwalk_files(
+    root_path: str, exclude_fn: Callable[[os.DirEntry[str]], bool] | None = None
+) -> Iterator[os.DirEntry[str]]:
+    # depth-first walk of file system starting with root_path
+    stack: list[str] = [root_path]
+    while stack:
+        dir_path = stack.pop()
+        with os.scandir(dir_path) as it:
+            for entry in it:
+                # Avoid processing excluded files/dirs and their descendants
+                if exclude_fn and exclude_fn(entry):
+                    continue
+                if entry.is_dir():
+                    stack.append(entry.path)
+                elif entry.is_file():
+                    yield entry
 
 
 def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, object]:
