@@ -258,11 +258,13 @@ something = nothing
     dir2 = tmpdir / "subdir2"
     dir3 = tmpdir / "subdir3"
     dir4 = tmpdir / "subdir4"
+    dir_skip = tmpdir / ".venv"
 
     dir1.mkdir()
     dir2.mkdir()
     dir3.mkdir()
     dir4.mkdir()
+    dir_skip.mkdir()
 
     setup_cfg_file = dir1 / "setup.cfg"
     setup_cfg_file.write_text(setup_cfg, "utf-8")
@@ -275,6 +277,9 @@ something = nothing
 
     pyproject_toml_file_broken = dir4 / "pyproject.toml"
     pyproject_toml_file_broken.write_text(pyproject_toml_broken, "utf-8")
+
+    pyproject_toml_file_skip = dir_skip / "pyproject.toml"
+    pyproject_toml_file_skip.write_text(pyproject_toml, "utf-8")
 
     config_trie = settings.find_all_configs(str(tmpdir))
 
@@ -296,3 +301,7 @@ something = nothing
     config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"
     assert set(Config(**config_info_4[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
+
+    config_info_skip = config_trie.search(str(dir_skip / "skip.py"))
+    assert config_info_skip[0] == "default"
+    assert set(Config(**config_info_skip[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
