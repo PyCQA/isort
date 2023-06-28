@@ -9,7 +9,7 @@ To use isort's official pre-commit integration add the following config:
 
 ```yaml
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.5
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort (python)
