@@ -3883,6 +3883,53 @@ def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) ->
     assert file_names == file_names_expected
 
 
+@pytest.mark.parametrize(
+    "exclude_glob,skipped_count,file_names_expected",
+    (
+        (
+            [],
+            0,
+            {
+                os.sep.join(("code", "file.py")),
+                os.sep.join(("code", "file1.py")),
+                os.sep.join(("code", "code_sub", "file2.py")),
+                os.sep.join(("code", "code_sub", "file3.py")),
+            },
+        ),
+        (["code/**"], 1, set()),
+        (["code/**/*.py"], 4, set()),
+        (
+            ["code/code_sub/*.py"],
+            2,
+            {
+                os.sep.join(("code", "file.py")),
+                os.sep.join(("code", "file1.py")),
+            },
+        ),
+    ),
+)
+def test_exclude_glob(
+    tmpdir, exclude_glob: List[str], skipped_count: int, file_names_expected: Set[str]
+) -> None:
+    base_dir = tmpdir.mkdir("build")
+    code_dir = base_dir.mkdir("code")
+    code_dir.join("file.py").write("import os")
+    code_dir.join("file1.py").write("import os")
+    code_subdir = code_dir.mkdir("code_sub")
+    code_subdir.join("file2.py").write("import os")
+    code_subdir.join("file3.py").write("import os")
+
+    config = Config(exclude_glob=exclude_glob, directory=str(base_dir))
+    skipped: List[str] = []
+    broken: List[str] = []
+    file_names = {
+        os.path.relpath(f, str(base_dir))
+        for f in files.find([str(base_dir)], config, skipped, broken)
+    }
+    assert len(skipped) == skipped_count
+    assert file_names == file_names_expected
+
+
 def test_broken(tmpdir) -> None:
     base_dir = tmpdir.mkdir("broken")
 

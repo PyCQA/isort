@@ -70,8 +70,8 @@ class FileSkipSetting(FileSkipped):
 
     def __init__(self, file_path: str, **kwargs: str):
         super().__init__(
-            f"{file_path} was skipped as it's listed in 'skip' setting"
-            " or matches a glob in 'skip_glob' setting",
+            f"{file_path} was skipped as it's listed in 'skip' setting, "
+            "matches in 'exclude' setting or matches a glob in 'exclude-glob'",
             file_path=file_path,
         )
 
