@@ -1389,13 +1389,13 @@ pip = "*"
 
 [[package]]
 name = "pipreqs"
-version = "0.4.11"
+version = "0.4.12"
 description = "Pip requirements.txt generator based on imports in project"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "pipreqs-0.4.11-py2.py3-none-any.whl", hash = "sha256:1510a91ae73ef6a8e2f24ffc8751132251cd61a01296d61538f37d1491841640"},
-    {file = "pipreqs-0.4.11.tar.gz", hash = "sha256:c793b4e147ac437871b3a962c5ce467e129c859ece5ba79aca83c20f4d9c3aef"},
+    {file = "pipreqs-0.4.12-py2.py3-none-any.whl", hash = "sha256:f8ca40a95c6547f35760716ae9be4544627cd34e67e6f32446044ed851203a1b"},
+    {file = "pipreqs-0.4.12.tar.gz", hash = "sha256:1f1435c46ca59f177fe7de2a94861208bd8b215647f4d51ea398815721b00bf5"},
 ]
 
 [package.dependencies]
