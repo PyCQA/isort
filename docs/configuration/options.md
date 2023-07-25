@@ -910,7 +910,7 @@ Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mod
 **Type:** Bool  
 **Default:** `False`  
 **Config default:** `false`  
-**Python & Config File Name:** split_on_trailing_comma
+**Python & Config File Name:** split_on_trailing_comma  
 **CLI Flags:**
 
 - --split-on-trailing-comma
