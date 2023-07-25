@@ -1502,7 +1502,7 @@ If `True` isort will follow symbolic links when doing recursive sorting.
 
 ## Indented Import Headings
 
-If `True` isort will apply import headings to indended imports the same way it does unindented ones.
+If `True` isort will apply import headings to indented imports the same way it does unindented ones.
 
 **Type:** Bool  
 **Default:** `True`  
