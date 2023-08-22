@@ -441,7 +441,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 placed_module, reason = finder(import_from)
                 if placed_module == config.default_section and reason.startswith("Default"):
                     # The imported name might be a submodule of `import_from`, in which case
-                    # it might be specified in the config. See https://github.com/PyCQA/isort/issues/2167.
+                    # it might be specified in the config.
+                    # See https://github.com/PyCQA/isort/issues/2167.
                     placed_module, reason = finder(".".join([import_from] + just_imports))
 
                 if config.verbose and not config.only_modified:
