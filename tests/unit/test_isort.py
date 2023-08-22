@@ -5671,3 +5671,14 @@ def test_reexport_not_last_line() -> None:
     meme = "rickroll"
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_import_submodule_both_ways() -> None:
+    """See https://github.com/PyCQA/isort/issues/2167."""
+    test_input = "import requests\n" "\n" "from subdir import fileA\n"
+    test_output = isort.code(code=test_input, known_first_party=["subdir.fileA"])
+    assert test_output == ("import requests\n" "\n" "from subdir import fileA\n")
+
+    test_input = "import requests\n" "\n" "import subdir.fileA\n"
+    test_output = isort.code(code=test_input, known_first_party=["subdir.fileA"])
+    assert test_output == ("import requests\n" "\n" "import subdir.fileA\n")

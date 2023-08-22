@@ -155,7 +155,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
         finder = FindersManager(config=config).find
     else:
-        finder = partial(place.module, config=config)
+        finder = partial(place.module_with_reason, config=config)
 
     line_count = len(in_lines)
 
@@ -438,7 +438,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             if type_of_import == "from":
                 import_from = just_imports.pop(0)
-                placed_module = finder(import_from)
+                placed_module, reason = finder(import_from)
+                if placed_module == config.default_section and reason.startswith("Default"):
+                    # The imported name might be a submodule of `import_from`, in which case
+                    # it might be specified in the config. See https://github.com/PyCQA/isort/issues/2167.
+                    placed_module, reason = finder(".".join([import_from] + just_imports))
+
                 if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
 
@@ -552,7 +557,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             import_index -= len(
                                 categorized_comments["above"]["straight"].get(module, [])
                             )
-                    placed_module = finder(module)
+                    placed_module, reason = finder(module)
                     if config.verbose and not config.only_modified:
                         print(f"else-type place_module for {module} returned {placed_module}")
 
