@@ -57,7 +57,7 @@ You can also set the profile directly when integrating isort within pre-commit.
 
 ```yaml
 - repo: https://github.com/pycqa/isort
-    rev: 5.6.4
+    rev: 5.11.5
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
