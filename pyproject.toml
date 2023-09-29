@@ -43,7 +43,7 @@ python = ">=3.8.0"
 pipreqs = {version = "*", optional = true}
 requirementslib = {version = "*", optional = true}
 pip-api = {version = "*", optional = true}
-colorama = {version = ">=0.4.3", optional = true}
+colorama = {version = ">=0.4.6", optional = true}
 setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
@@ -53,6 +53,7 @@ plugins = ["setuptools"]
 [tool.poetry.dev-dependencies]
 bandit = ">=1.6"
 black = ">=22.6.0"
+colorama = ">=0.4.6"
 coverage = {version = ">=6.5.0", extras = ["toml"]}
 cruft = ">=2.12.0"
 example-isort-sorting-plugin = ">=0.1.0"
@@ -86,7 +87,6 @@ types-pkg-resources = ">=0.1.2"
 types-colorama = ">=0.4.2"
 types-toml = ">=0.1.3"
 vulture = ">=1.0"
-jinja2 = "<3.1.0"
 
 [tool.coverage.paths]
 source = [
