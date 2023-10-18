@@ -70,76 +70,112 @@ def import_statement(
 
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
+    if len(content) <= config.line_length:
+        return content
+
     wrap_mode = config.multi_line_output
-    if len(content) > config.line_length and wrap_mode != Modes.NOQA:  # type: ignore
-        line_without_comment = content
-        comment = None
-        if "#" in content:
-            line_without_comment, comment = content.split("#", 1)
-        for splitter in ("import ", "cimport ", ".", "as "):
-            exp = r"\b" + re.escape(splitter) + r"\b"
-            if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
-                splitter
-            ):
-                line_parts = re.split(exp, line_without_comment)
-                if comment and not (config.use_parentheses and "noqa" in comment):
-                    _comma_maybe = (
-                        ","
-                        if (
-                            config.include_trailing_comma
-                            and config.use_parentheses
-                            and not line_without_comment.rstrip().endswith(",")
-                        )
-                        else ""
-                    )
-                    line_parts[
-                        -1
-                    ] = f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
-                next_line = []
-                while (len(content) + 2) > (
-                    config.wrap_length or config.line_length
-                ) and line_parts:
-                    next_line.append(line_parts.pop())
-                    content = splitter.join(line_parts)
-                if not content:
-                    content = next_line.pop()
+    if wrap_mode == Modes.NOQA:  # type: ignore
+        return wrap_line_in_noqa_mode(content=content, config=config)
 
-                cont_line = _wrap_line(
-                    config.indent + splitter.join(next_line).lstrip(),
-                    line_separator,
-                    config,
+    line_without_comment = content
+    comment = ""
+    if "#" in content:
+        line_without_comment, comment = content.split("#", 1)
+        comment = f"{config.comment_prefix}{comment}"
+    for splitter in ("import ", "cimport ", ".", "as "):
+        exp = r"\b" + re.escape(splitter) + r"\b"
+        if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
+            splitter
+        ):
+            line_parts = re.split(exp, line_without_comment)
+            line_parts[-1] = add_trailing_comma(
+                last_line=line_parts[-1],
+                comment=comment,
+                config=config,
+            )
+
+            if comment and not (config.use_parentheses and "noqa" in comment):
+                line_parts[-1] = f"{line_parts[-1]}{comment}"
+
+            wrap_length = config.wrap_length or config.line_length
+            next_line = []
+            while (len(content) + 2) > wrap_length and line_parts:
+                next_line.append(line_parts.pop())
+                content = splitter.join(line_parts)
+
+            if not content:
+                content = next_line.pop()
+
+            cont_line = _wrap_line(
+                config.indent + splitter.join(next_line).lstrip(),
+                line_separator,
+                config,
+            )
+
+            if config.use_parentheses:
+                return add_parentheses_brackets(
+                    content=content,
+                    cont_line=cont_line,
+                    comment=comment,
+                    splitter=splitter,
+                    line_separator=line_separator,
+                    config=config,
                 )
-                if config.use_parentheses:
-                    if splitter == "as ":
-                        output = f"{content}{splitter}{cont_line.lstrip()}"
-                    else:
-                        _comma = "," if config.include_trailing_comma and not comment else ""
+            return f"{content}{splitter}\\{line_separator}{cont_line}"
 
-                        if wrap_mode in (
-                            Modes.VERTICAL_HANGING_INDENT,  # type: ignore
-                            Modes.VERTICAL_GRID_GROUPED,  # type: ignore
-                        ):
-                            _separator = line_separator
-                        else:
-                            _separator = ""
-                        _comment = ""
-                        if comment and "noqa" in comment:
-                            _comment = f"{config.comment_prefix}{comment}"
-                            cont_line = cont_line.rstrip()
-                            _comma = "," if config.include_trailing_comma else ""
-                        output = (
-                            f"{content}{splitter}({_comment}"
-                            f"{line_separator}{cont_line}{_comma}{_separator})"
-                        )
-                    lines = output.split(line_separator)
-                    if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
-                        content, comment = lines[-1].split(config.comment_prefix, 1)
-                        lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
-                    return line_separator.join(lines)
-                return f"{content}{splitter}\\{line_separator}{cont_line}"
-    elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
+    return content
+
+
+def add_parentheses_brackets(
+    content: str,
+    cont_line: str,
+    comment: str,
+    splitter: str,
+    line_separator: str,
+    config: Config,
+) -> str:
+    if splitter == "as ":
+        return f"{content}{splitter}{cont_line.lstrip()}"
+
+    wrap_mode = config.multi_line_output
+    if wrap_mode in (
+        Modes.VERTICAL_HANGING_INDENT,  # type: ignore
+        Modes.VERTICAL_GRID_GROUPED,  # type: ignore
+    ):
+        closing_bracket_line_break = line_separator
+    else:
+        closing_bracket_line_break = ""
+
+    noqa_comment = ""
+    if comment and "noqa" in comment:
+        noqa_comment = comment
+        cont_line = cont_line.rstrip()
+    output = (
+        f"{content}{splitter}({noqa_comment}"
+        f"{line_separator}{cont_line}{closing_bracket_line_break})"
+    )
+    lines = output.split(line_separator)
+    if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
+        content, comment = lines[-1].split(config.comment_prefix, 1)
+        lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
+    return line_separator.join(lines)
+
+
+def add_trailing_comma(last_line: str, comment: str, config: Config) -> str:
+    last_line = last_line.rstrip()
+    if not config.include_trailing_comma or last_line.endswith(","):
+        return last_line
+
+    comma = ""
+    if comment and config.use_parentheses or not comment:
+        comma = ","
+
+    return f"{last_line}{comma}"
+
+
+def wrap_line_in_noqa_mode(content: str, config: Config) -> str:
+    if "# NOQA" not in content:
         return f"{content}{config.comment_prefix} NOQA"
-
     return content
 
 
