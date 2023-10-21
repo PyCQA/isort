@@ -1,4 +1,5 @@
 """Defines parsing functions used by isort for parsing import definitions"""
+import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
@@ -36,18 +37,18 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
-def _normalize_line(raw_line: str) -> Tuple[str, str]:
+def normalize_line(raw_line: str) -> Tuple[str, str]:
     """Normalizes import related statements in the provided line.
 
     Returns (normalized_line: str, raw_line: str)
     """
-    line = raw_line.replace("from.import ", "from . import ")
-    line = line.replace("from.cimport ", "from . cimport ")
+    line = re.sub(r"from(\.+)cimport ", r"from \g<1> cimport ", raw_line)
+    line = re.sub(r"from(\.+)import ", r"from \g<1> import ", line)
     line = line.replace("import*", "import *")
-    line = line.replace(" .import ", " . import ")
-    line = line.replace(" .cimport ", " . cimport ")
+    line = re.sub(r" (\.+)import ", r" \g<1> import ", line)
+    line = re.sub(r" (\.+)cimport ", r" \g<1> cimport ", line)
     line = line.replace("\t", " ")
-    return (line, raw_line)
+    return line, raw_line
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
@@ -263,7 +264,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
-            line, raw_line = _normalize_line(statement)
+            line, raw_line = normalize_line(statement)
             type_of_import = import_type(line, config) or ""
             raw_lines = [raw_line]
             if not type_of_import:

@@ -5,7 +5,7 @@ from functools import partial
 from pathlib import Path
 from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
 
-from isort.parse import _normalize_line, _strip_syntax, skip_line
+from isort.parse import _strip_syntax, normalize_line, skip_line
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
@@ -84,7 +84,7 @@ def imports(
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
-            line, _raw_line = _normalize_line(statement)
+            line, _raw_line = normalize_line(statement)
             if line.startswith(("import ", "cimport ")):
                 type_of_import = "straight"
             elif line.startswith("from "):
