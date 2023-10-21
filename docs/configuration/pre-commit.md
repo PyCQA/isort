@@ -20,7 +20,7 @@ over different file types (ex: python vs cython vs pyi) you can do so with the f
 
 ```yaml
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.5
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort (python)
