@@ -45,9 +45,12 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
-    tomli: Any
+    tomllib: Any
 else:
-    from ._vendored import tomli
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        from ._vendored import tomli as tomllib
 
 _SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
@@ -831,7 +834,7 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
 
     if file_path.endswith(".toml"):
         with open(file_path, "rb") as bin_config_file:
-            config = tomli.load(bin_config_file)
+            config = tomllib.load(bin_config_file)
         for section in sections:
             config_section = config
             for key in section.split("."):
