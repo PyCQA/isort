@@ -11,7 +11,7 @@ def test_git_hook(src_dir):
     # Ensure correct subprocess command is called
     with patch("subprocess.run", MagicMock()) as run_mock:
         hooks.git_hook()
-        assert run_mock.called_once()
+        run_mock.assert_called_once()
         assert run_mock.call_args[0][0] == [
             "git",
             "diff-index",
@@ -21,8 +21,9 @@ def test_git_hook(src_dir):
             "HEAD",
         ]
 
+    with patch("subprocess.run", MagicMock()) as run_mock:
         hooks.git_hook(lazy=True)
-        assert run_mock.called_once()
+        run_mock.assert_called_once()
         assert run_mock.call_args[0][0] == [
             "git",
             "diff-index",
