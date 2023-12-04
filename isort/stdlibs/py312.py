@@ -1,5 +1,5 @@
 """
-File contains the standard library of Python 3.11.
+File contains the standard library of Python 3.12.
 
 DO NOT EDIT. If the standard library changes, a new list should be created
 using the mkstdlibs.py script.
@@ -14,9 +14,7 @@ stdlib = {
     "argparse",
     "array",
     "ast",
-    "asynchat",
     "asyncio",
-    "asyncore",
     "atexit",
     "audioop",
     "base64",
@@ -54,7 +52,6 @@ stdlib = {
     "decimal",
     "difflib",
     "dis",
-    "distutils",
     "doctest",
     "email",
     "encodings",
@@ -85,7 +82,6 @@ stdlib = {
     "idlelib",
     "imaplib",
     "imghdr",
-    "imp",
     "importlib",
     "inspect",
     "io",
@@ -155,7 +151,6 @@ stdlib = {
     "signal",
     "site",
     "sitecustomize",
-    "smtpd",
     "smtplib",
     "sndhdr",
     "socket",
