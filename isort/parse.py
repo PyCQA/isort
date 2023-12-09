@@ -64,7 +64,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     return None
 
 
-def _strip_syntax(import_string: str) -> str:
+def strip_syntax(import_string: str) -> str:
     import_string = import_string.replace("_import", "[[i]]")
     import_string = import_string.replace("_cimport", "[[ci]]")
     for remove_syntax in ["\\", "(", ")", ","]:
@@ -276,7 +276,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment else []
-            line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
+            line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
             if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
@@ -286,7 +286,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     index += 1
                     if new_comment:
                         comments.append(new_comment)
-                    stripped_line = _strip_syntax(line).strip()
+                    stripped_line = strip_syntax(line).strip()
                     if (
                         type_of_import == "from"
                         and stripped_line
@@ -310,7 +310,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and ")" not in line.split("#")[0]
                         and index < line_count
                     ):
-                        stripped_line = _strip_syntax(line).strip()
+                        stripped_line = strip_syntax(line).strip()
                         if (
                             type_of_import == "from"
                             and stripped_line
@@ -326,7 +326,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             index += 1
                             if new_comment:
                                 comments.append(new_comment)
-                            stripped_line = _strip_syntax(line).strip()
+                            stripped_line = strip_syntax(line).strip()
                             if (
                                 type_of_import == "from"
                                 and stripped_line
@@ -337,7 +337,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             import_string += line_separator + line
                             raw_lines.append(line)
 
-                    stripped_line = _strip_syntax(line).strip()
+                    stripped_line = strip_syntax(line).strip()
                     if (
                         type_of_import == "from"
                         and stripped_line
@@ -378,7 +378,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
-                for item in _strip_syntax(import_string).split()
+                for item in strip_syntax(import_string).split()
             ]
 
             attach_comments_to: Optional[List[Any]] = None

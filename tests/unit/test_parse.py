@@ -59,7 +59,7 @@ def test_fuzz__infer_line_separator(contents):
 
 @given(import_string=st.text())
 def test_fuzz__strip_syntax(import_string):
-    parse._strip_syntax(import_string=import_string)
+    parse.strip_syntax(import_string=import_string)
 
 
 @given(line=st.text(), config=st.builds(Config))

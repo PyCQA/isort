@@ -5,7 +5,7 @@ from functools import partial
 from pathlib import Path
 from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
 
-from isort.parse import _strip_syntax, normalize_line, skip_line
+from isort.parse import normalize_line, skip_line, strip_syntax
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
@@ -162,7 +162,7 @@ def imports(
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
-                for item in _strip_syntax(import_string).split()
+                for item in strip_syntax(import_string).split()
             ]
 
             direct_imports = just_imports[1:]
