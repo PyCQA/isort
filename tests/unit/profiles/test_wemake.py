@@ -85,3 +85,23 @@ from wemake_python_styleguide.transformations.ast.enhancements import (
 class _ClassVisitor(ast.NodeVisitor): ...
 """
     )
+
+
+def test_wemake_snippet_four():
+    """80 line length should be fixed"""
+    wemake_isort_test(
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
+""",
+        """
+from typing import (
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
+""",
+    )

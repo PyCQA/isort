@@ -61,7 +61,7 @@ wemake = {
     "multi_line_output": 3,
     "include_trailing_comma": True,
     "use_parentheses": True,
-    "line_length": 80,
+    "line_length": 79,
 }
 appnexus = {
     **black,
