@@ -41,11 +41,6 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.8.0"
-pipreqs = {version = "*", optional = true}
-requirementslib = {version = "*", optional = true}
-pip-api = {version = "*", optional = true}
-colorama = {version = ">=0.4.6", optional = true}
-setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
 colors = ["colorama"]
