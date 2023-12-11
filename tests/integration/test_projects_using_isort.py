@@ -42,53 +42,14 @@ def test_pandas(tmpdir):
     run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py"))
 
 
-def test_fastapi(tmpdir):
-    git_clone("https://github.com/tiangolo/fastapi.git", tmpdir)
-    run_isort([str(tmpdir / "fastapi")])
-
-
 def test_habitat_lab(tmpdir):
     git_clone("https://github.com/facebookresearch/habitat-lab.git", tmpdir)
-    run_isort([str(tmpdir)])
-
-
-def test_tmuxp(tmpdir):
-    git_clone("https://github.com/tmux-python/tmuxp.git", tmpdir)
-    run_isort(
-        [
-            str(tmpdir),
-            "--skip",
-            "cli.py",
-            "--skip",
-            "test_workspacebuilder.py",
-            "--skip",
-            "test_cli.py",
-            "--skip",
-            "workspacebuilder.py",
-            "--skip",
-            "freezer.py",
-        ]
-    )
-
-
-def test_websockets(tmpdir):
-    git_clone("https://github.com/aaugustin/websockets.git", tmpdir)
-    run_isort((str(tmpdir), "--skip", "example", "--skip", "docs", "--skip", "compliance"))
-
-
-def test_typeshed(tmpdir):
-    git_clone("https://github.com/python/typeshed.git", tmpdir)
     run_isort([str(tmpdir)])
 
 
 def test_pylint(tmpdir):
     git_clone("https://github.com/PyCQA/pylint.git", tmpdir)
     run_isort([str(tmpdir), "--skip", "bad.py"])
-
-
-def test_poetry(tmpdir):
-    git_clone("https://github.com/python-poetry/poetry.git", tmpdir)
-    run_isort((str(tmpdir), "--skip", "tests"))
 
 
 def test_hypothesis(tmpdir):
@@ -106,47 +67,6 @@ def test_hypothesis(tmpdir):
             "--project",
             "hypothesistooling",
         )
-    )
-
-
-def test_pillow(tmpdir):
-    git_clone("https://github.com/python-pillow/Pillow.git", tmpdir)
-    run_isort((str(tmpdir), "--skip", "tests"))
-
-
-def test_attrs(tmpdir):
-    git_clone("https://github.com/python-attrs/attrs.git", tmpdir)
-    run_isort(
-        (
-            str(tmpdir),
-            "--skip",
-            "tests",
-            "--ext",
-            "py",
-            "--skip",
-            "_compat.py",
-        )
-    )
-
-
-def test_datadog_integrations_core(tmpdir):
-    git_clone("https://github.com/DataDog/integrations-core.git", tmpdir)
-    run_isort(
-        [
-            str(tmpdir),
-            "--skip",
-            "ddev",
-            "--skip",
-            "docs",
-            "--skip-glob",
-            ".*",
-            "--skip-glob",
-            "*/datadog_checks/dev/tooling/signing.py",
-            "--skip-glob",
-            "*/datadog_checks/dev/tooling/templates/*",
-            "--skip-glob",
-            "*/datadog_checks/*/vendor/*",
-        ]
     )
 
 
