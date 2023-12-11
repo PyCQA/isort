@@ -4,6 +4,12 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.13.1 December 11 2023
+
+   - Fixed integration tests (#2208) @bp72
+   - Fixed normalizing imports from more than one level of parent modules (issue/2152) (#2191) @bp72
+   - Remove optional dependencies without extras (#2207) @staticdev
+
 ### 5.13.0 December 9 2023
 
   - Cleanup deprecated extras (#2089) @staticdev
