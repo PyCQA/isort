@@ -1,6 +1,7 @@
 -   id: isort
     name: isort
     entry: isort
+    stages: [commit, merge-commit, push, manual]
     require_serial: true
     language: python
     types_or: [cython, pyi, python]
