@@ -4,6 +4,12 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.13.2 December 13 2023
+
+   - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72
+   - Confine pre-commit to stages (#2213) @davidculley
+   - Fixed colors extras (#2212) @staticdev
+
 ### 5.13.1 December 11 2023
 
    - Fixed integration tests (#2208) @bp72
