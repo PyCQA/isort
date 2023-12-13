@@ -519,7 +519,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
 
-                if "," in import_string.split(just_imports[-1])[-1]:
+                if (
+                    just_imports
+                    and just_imports[-1]
+                    and "," in import_string.split(just_imports[-1])[-1]
+                ):
                     trailing_commas.add(import_from)
             else:
                 if comments and attach_comments_to is not None:

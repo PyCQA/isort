@@ -122,20 +122,21 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                             _separator = line_separator
                         else:
                             _separator = ""
-                        _comment = ""
+                        noqa_comment = ""
                         if comment and "noqa" in comment:
-                            _comment = f"{config.comment_prefix}{comment}"
+                            noqa_comment = f"{config.comment_prefix}{comment}"
                             cont_line = cont_line.rstrip()
                             _comma = "," if config.include_trailing_comma else ""
                         output = (
-                            f"{content}{splitter}({_comment}"
+                            f"{content}{splitter}({noqa_comment}"
                             f"{line_separator}{cont_line}{_comma}{_separator})"
                         )
-                    lines = output.split(line_separator)
-                    if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
-                        content, comment = lines[-1].split(config.comment_prefix, 1)
-                        lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
-                    return line_separator.join(lines)
+                        lines = output.split(line_separator)
+                        if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
+                            content, comment = lines[-1].split(config.comment_prefix, 1)
+                            lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
+                        output = line_separator.join(lines)
+                    return output
                 return f"{content}{splitter}\\{line_separator}{cont_line}"
     elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
         return f"{content}{config.comment_prefix} NOQA"
