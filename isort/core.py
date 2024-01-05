@@ -7,7 +7,7 @@ import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
 
 from . import output, parse
-from .exceptions import ExistingSyntaxErrors, FileSkipComment
+from .exceptions import ExistingSyntaxErrors, FileSkipComment, ISortError, ParsingError
 from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
 
@@ -417,8 +417,12 @@ def process(
                         import_section = "".join(
                             line[len(indent) :] for line in import_section.splitlines(keepends=True)
                         )
-
-                    parsed_content = parse.file_contents(import_section, config=config)
+                    try:
+                        parsed_content = parse.file_contents(import_section, config=config)
+                    except ISortError as error:
+                        raise error
+                    except Exception:
+                        raise ParsingError(file_path=None)
                     verbose_output += parsed_content.verbose_output
 
                     sorted_import_section = output.sorted_imports(

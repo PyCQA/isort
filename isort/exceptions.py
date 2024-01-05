@@ -1,7 +1,7 @@
 """All isort specific exception classes should be defined here"""
 from functools import partial
 from pathlib import Path
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 from .profiles import profiles
 
@@ -195,3 +195,11 @@ class MissingSection(ISortError):
             "See https://pycqa.github.io/isort/#custom-sections-and-ordering "
             "for more info."
         )
+
+
+class ParsingError(ISortError):
+    """Raised when there's a failure with parsing the imports"""
+
+    def __init__(self, file_path: Optional[Path]):
+        super().__init__(f"isort couldn't parse imports for {file_path}")
+        self.file_path = file_path

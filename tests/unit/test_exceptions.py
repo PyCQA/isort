@@ -126,3 +126,11 @@ class TestUnsupportedEncoding(TestISortError):
 
     def test_variables(self):
         assert self.instance.filename == "file.py"
+
+
+class TestParsingError(TestISortError):
+    def setup_class(self):
+        self.instance: exceptions.ParsingError = exceptions.ParsingError(file_path=None)
+
+    def test_variables(self):
+        assert self.instance.file_path is None
