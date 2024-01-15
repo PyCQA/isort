@@ -24,7 +24,13 @@ google = {
     "force_single_line": True,
     "force_sort_within_sections": True,
     "lexicographical": True,
-    "single_line_exclusions": ("typing",),
+    "line_length": 1000,
+    "single_line_exclusions": (
+        "collections.abc",
+        "six.moves",
+        "typing",
+        "typing_extensions",
+    ),
     "order_by_type": False,
     "group_by_package": True,
 }
