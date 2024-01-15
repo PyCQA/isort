@@ -126,6 +126,7 @@ Files that isort should skip over. To even skip matching files that have been sp
 
 - --sg
 - --skip-glob
+- --exclude
 
 **Examples:**
 
@@ -156,6 +157,7 @@ Additional files that isort should skip over (extending --skip-glob). To even sk
 **CLI Flags:**
 
 - --extend-skip-glob
+- --extend-exclude
 
 **Examples:**
 
@@ -172,6 +174,36 @@ extend_skip_glob=my_*_module.py,test/*
 ```
 [tool.isort]
 extend_skip_glob = ["my_*_module.py", "test/*"]
+
+```
+
+## Exclude Glob
+
+Files that isort should skip over. Paths are being excluded as globs. To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
+
+**Type:** List of Strings  
+**Default:** `frozenset()`  
+**Config default:** `[]`  
+**Python & Config File Name:** exclude-glob  
+**CLI Flags:**
+
+- --exclude-glob
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+exclude_glob=docs/**
+
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+exclude_glob = ["docs/**"]
 
 ```
 
