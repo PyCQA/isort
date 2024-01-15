@@ -377,12 +377,12 @@ class FindersManager:
                     )
         self.finders: Tuple[BaseFinder, ...] = tuple(finders)
 
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> Tuple[Optional[str], str]:
         for finder in self.finders:
             try:
                 section = finder.find(module_name)
                 if section is not None:
-                    return section
+                    return section, ""
             except Exception as exception:
                 # isort has to be able to keep trying to identify the correct
                 # import section even if one approach fails
@@ -391,4 +391,4 @@ class FindersManager:
                         f"{finder.__class__.__name__} encountered an error ({exception}) while "
                         f"trying to identify the {module_name} module"
                     )
-        return None
+        return None, ""
