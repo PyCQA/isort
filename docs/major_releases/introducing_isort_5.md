@@ -105,7 +105,7 @@ import c
 import d
 ```
 
-isort 5 adds support for [Action Comments](https://pycqa.github.io/isort/docs/configuration/action_comments.html) which provide a quick and convient way to control the flow of parsing within single source files.
+isort 5 adds support for [Action Comments](https://pycqa.github.io/isort/docs/configuration/action_comments.html) which provide a quick and convenient way to control the flow of parsing within single source files.
 
 
 # First class Python API
