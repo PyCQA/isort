@@ -51,7 +51,7 @@ DEPRECATED_SINGLE_DASH_ARGS = {
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
-Nothing to do: no files or paths have have been passed in!
+Nothing to do: no files or paths have been passed in!
 
 Try one of the following:
 
