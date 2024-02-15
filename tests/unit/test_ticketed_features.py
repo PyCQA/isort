@@ -3,6 +3,7 @@ it fully works as defined in the associated ticket.
 """
 from functools import partial
 from io import StringIO
+import warnings
 
 import pytest
 
@@ -615,9 +616,9 @@ quiet = true
 quiet = true
 """
     )
-    with pytest.warns(None) as warning:  # type: ignore
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         assert Config(settings_file=str(settings_file)).quiet
-    assert not warning
 
 
 def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
