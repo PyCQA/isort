@@ -145,6 +145,7 @@ class _Config:
     """
 
     py_version: str = "3"
+    required_version: str = ""
     force_to_top: FrozenSet[str] = frozenset()
     skip: FrozenSet[str] = DEFAULT_SKIP
     extend_skip: FrozenSet[str] = frozenset()

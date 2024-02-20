@@ -1,4 +1,5 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
+
 import argparse
 import functools
 import json
@@ -1074,14 +1075,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(ASCII_ART)
         return
 
-    required_version = arguments.get("required_version")
-    if (
-        required_version
-        and required_version != __version__
-        and required_version != __version__.split(".")[0]
-    ):
-        sys.exit(f"The required version `{required_version}` does not match the running version `{__version__}`!")
-
     show_config: bool = arguments.pop("show_config", False)
     show_files: bool = arguments.pop("show_files", False)
     if show_config and show_files:
@@ -1116,7 +1109,6 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
     config_dict = arguments.copy()
-    config_dict.pop("required_version", None)
     ask_to_apply = config_dict.pop("ask_to_apply", False)
     jobs = config_dict.pop("jobs", None)
     check = config_dict.pop("check", False)
@@ -1145,6 +1137,16 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     if show_config:
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
+
+    if (
+        config.required_version
+        and config.required_version != __version__
+        and config.required_version != __version__.split(".")[0]
+    ):
+        sys.exit(
+            f"Error: the required version `{config.required_version}` does not match the running version `{__version__}`!"
+        )
+
     if file_names == ["-"]:
         file_path = Path(stream_filename) if stream_filename else None
         if show_files:
