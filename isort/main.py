@@ -168,7 +168,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     general_group.add_argument(
         "--rv",
         "--required-version",
-        default=None,
+        default="",
         dest="required_version",
         type=str,
         help="Require a specific version of isort to be running. This is useful for"
