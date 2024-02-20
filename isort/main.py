@@ -165,6 +165,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Displays the currently installed version of isort.",
     )
     general_group.add_argument(
+        "--rv",
+        "--required-version",
+        default=None,
+        dest="required_version",
+        type=str,
+        help="Require a specific version of isort to be running. This is useful for"
+        " ensuring that all contributors to your project are using the same"
+        " version, because different versions of isort may format code a little"
+        " differently. This option can be set in a configuration file for consistent"
+        " results across environments.",
+    )
+    general_group.add_argument(
         "--vn",
         "--version-number",
         action="version",
@@ -1062,6 +1074,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         print(ASCII_ART)
         return
 
+    required_version = arguments.get("required_version")
+    if (
+        required_version
+        and required_version != __version__
+        and required_version != __version__.split(".")[0]
+    ):
+        sys.exit(f"The required version `{required_version}` does not match the running version `{__version__}`!")
+
     show_config: bool = arguments.pop("show_config", False)
     show_files: bool = arguments.pop("show_files", False)
     if show_config and show_files:
@@ -1096,6 +1116,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
 
     config_dict = arguments.copy()
+    config_dict.pop("required_version", None)
     ask_to_apply = config_dict.pop("ask_to_apply", False)
     jobs = config_dict.pop("jobs", None)
     check = config_dict.pop("check", False)
