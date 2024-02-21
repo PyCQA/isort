@@ -1144,7 +1144,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         and config.required_version != __version__.split(".")[0]
     ):
         sys.exit(
-            f"Error: the required version `{config.required_version}` does not match the running version `{__version__}`!"
+            f"Error: the required version `{config.required_version}` does not match the running"
+            f" version `{__version__}`!"
         )
 
     if file_names == ["-"]:
