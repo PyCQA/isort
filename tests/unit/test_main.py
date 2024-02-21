@@ -103,6 +103,46 @@ def test_ascii_art(capsys):
     assert error == ""
 
 
+def test_required_version_matches_version(capsys, tmpdir):
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    main.main(["--required-version", __version__, str(python_file)])
+    out, error = capsys.readouterr()
+    assert out == ""
+    assert error == ""
+
+
+def test_required_version_matches_partial_version(capsys, tmpdir):
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    main.main(["--required-version", __version__.split(".")[0], str(python_file)])
+    out, error = capsys.readouterr()
+    assert out == ""
+    assert error == ""
+
+
+def test_required_version_does_not_match_on_minor_version(tmpdir):
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    required_version = __version__.split(".")[0] + ".999"
+    error_msg = f"Error: the required version `{required_version}` does not match the running version `{__version__}`!"
+    with pytest.raises(SystemExit, match=error_msg):
+        main.main(["--required-version", required_version, str(python_file)])
+
+
+def test_required_version_does_not_match_version(tmpdir):
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os")
+
+    required_version = "0.13.2b"
+    error_msg = f"Error: the required version `{required_version}` does not match the running version `{__version__}`!"
+    with pytest.raises(SystemExit, match=error_msg):
+        main.main(["--required-version", required_version, str(python_file)])
+
+
 def test_preconvert():
     assert main._preconvert(frozenset([1, 1, 2])) == [1, 2]
     assert main._preconvert(WrapModes.GRID) == "GRID"

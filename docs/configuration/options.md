@@ -1651,6 +1651,19 @@ Displays the currently installed version of isort.
 
 `isort --version`
 
+## Required Version
+
+Require a specific version of isort to be running. This is useful for ensuring that all contributors to your project are using the same version, because different versions of isort may format code a little differently. This option can be set in a configuration file for consistent results across environments.
+
+**Type:** String
+**Default:** ` `
+**Config default:** ` `
+**Python & Config File Name:** required_version
+**CLI Flags:**
+
+- --rv
+- --required-version
+
 ## Version Number
 
 Returns just the current version number without the logo

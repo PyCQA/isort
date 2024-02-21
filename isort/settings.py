@@ -145,6 +145,7 @@ class _Config:
     """
 
     py_version: str = "3"
+    required_version: str = ""
     force_to_top: FrozenSet[str] = frozenset()
     skip: FrozenSet[str] = DEFAULT_SKIP
     extend_skip: FrozenSet[str] = frozenset()
@@ -553,8 +554,8 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}

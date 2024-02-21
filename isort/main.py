@@ -1,4 +1,5 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
+
 import argparse
 import functools
 import json
@@ -163,6 +164,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         dest="show_version",
         help="Displays the currently installed version of isort.",
+    )
+    general_group.add_argument(
+        "--rv",
+        "--required-version",
+        default="",
+        dest="required_version",
+        type=str,
+        help="Require a specific version of isort to be running. This is useful for"
+        " ensuring that all contributors to your project are using the same"
+        " version, because different versions of isort may format code a little"
+        " differently. This option can be set in a configuration file for consistent"
+        " results across environments.",
     )
     general_group.add_argument(
         "--vn",
@@ -1124,6 +1137,17 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     if show_config:
         print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
         return
+
+    if (
+        config.required_version
+        and config.required_version != __version__
+        and config.required_version != __version__.split(".")[0]
+    ):
+        sys.exit(
+            f"Error: the required version `{config.required_version}` does not match the running"
+            f" version `{__version__}`!"
+        )
+
     if file_names == ["-"]:
         file_path = Path(stream_filename) if stream_filename else None
         if show_files:
