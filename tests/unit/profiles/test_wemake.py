@@ -88,10 +88,22 @@ class _ClassVisitor(ast.NodeVisitor): ...
 
 
 def test_wemake_snippet_four():
-    """80 line length should be fixed"""
+    """80 line length should not be fixed"""
     wemake_isort_test(
         """
 from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
+""",
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
+""",
+    )
+
+
+def test_wemake_snippet_five():
+    """81 line length should be fixed"""
+    wemake_isort_test(
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union1
 """,
         """
 from typing import (
@@ -101,7 +113,7 @@ from typing import (
     Sequence,
     Tuple,
     TypeVar,
-    Union,
+    Union1,
 )
 """,
     )
