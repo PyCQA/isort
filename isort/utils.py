@@ -1,5 +1,6 @@
 import os
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -58,6 +59,7 @@ class Trie:
         return last_stored_config
 
 
+@lru_cache(maxsize=1000)
 def exists_case_sensitive(path: str) -> bool:
     """Returns if the given path exists and also matches the case on Windows.
 

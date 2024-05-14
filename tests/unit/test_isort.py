@@ -3064,6 +3064,7 @@ def test_third_party_case_sensitive() -> None:
 
 def test_exists_case_sensitive_file(tmpdir) -> None:
     """Test exists_case_sensitive function for a file."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("module.py").ensure(file=1)
     assert exists_case_sensitive(str(tmpdir.join("module.py")))
     assert not exists_case_sensitive(str(tmpdir.join("MODULE.py")))
@@ -3071,6 +3072,7 @@ def test_exists_case_sensitive_file(tmpdir) -> None:
 
 def test_exists_case_sensitive_directory(tmpdir) -> None:
     """Test exists_case_sensitive function for a directory."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("pkg").ensure(dir=1)
     assert exists_case_sensitive(str(tmpdir.join("pkg")))
     assert not exists_case_sensitive(str(tmpdir.join("PKG")))
