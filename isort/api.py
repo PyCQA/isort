@@ -32,6 +32,7 @@ from .exceptions import (
     FileSkipComment,
     FileSkipSetting,
     IntroducedSyntaxErrors,
+    ParsingError,
 )
 from .format import ask_whether_to_apply_changes_to_file, create_terminal_printer, show_unified_diff
 from .io import Empty, File
@@ -216,6 +217,9 @@ def sort_stream(
         )
     except FileSkipComment:
         raise FileSkipComment(content_source)
+
+    except ParsingError:
+        raise ParsingError(file_path)
 
     if config.atomic:
         _internal_output.seek(0)
