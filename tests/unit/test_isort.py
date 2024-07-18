@@ -5671,3 +5671,19 @@ def test_reexport_not_last_line() -> None:
     meme = "rickroll"
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_collections_abc() -> None:
+     test_input = (
+        "from typing import Iterable, Iterator, TypeVar, cast\n"
+        "\n"
+        "from _collections_abc import dict_items, dict_keys, dict_values\n"
+        "from python_none_objects import NoneIterable\n"
+    )
+     expd_output = (
+    "from typing import Iterable, Iterator, TypeVar, cast\n"
+    "from _collections_abc import dict_items, dict_keys, dict_values\n"
+    "\n"
+    "from python_none_objects import NoneIterable\n"
+      )
+     assert isort.code(test_input) == expd_output

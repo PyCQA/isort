@@ -37,7 +37,7 @@ for version_info in VERSIONS:
     invdata = fetch_inventory(FakeApp(), "", url)
 
     # Any modules we want to enforce across Python versions stdlib can be included in set init
-    modules = {"_ast", "posixpath", "ntpath", "sre_constants", "sre_parse", "sre_compile", "sre"}
+    modules = {"_ast", "posixpath", "ntpath", "sre_constants", "sre_parse", "sre_compile", "sre", "_collections_abc"}
     for module in invdata["py:module"]:
         root, *_ = module.split(".")
         if root not in ["__future__", "__main__"]:
