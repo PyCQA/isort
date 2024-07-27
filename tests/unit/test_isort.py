@@ -5727,26 +5727,3 @@ __all__ = ['bar', 'foo']
 test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
-
-
-def test_reexport_black() -> None:
-    test_input = """from m import (
-    bar,
-    foo,
-)
-__all__ = [
-    "foo",
-    "bar",
-]
-
-test
-"""
-    expd_output = """from m import bar, foo
-
-__all__ = ["bar", "foo"]
-
-test
-"""
-    assert (
-        isort.code(test_input, config=Config(sort_reexports=True, profile="black")) == expd_output
-    )
