@@ -152,6 +152,8 @@ def process(
                     ignore_whitespace=config.ignore_whitespace,
                 )
                 output_stream.write(sorted_code)
+                if is_reexport:
+                    output_stream.truncate()
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -260,6 +262,8 @@ def process(
                             output_stream.seek(output_stream.tell() - reexport_rollback)
                             reexport_rollback = 0
                         output_stream.write(sorted_code)
+                        if is_reexport:
+                            output_stream.truncate()
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
