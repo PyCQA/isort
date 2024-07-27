@@ -75,7 +75,7 @@ def process(
     verbose_output: List[str] = []
     lines_before: List[str] = []
     is_reexport: bool = False
-    sort_section_pointer: int = 0
+    reexport_rollback: int = 0
 
     if config.float_to_top:
         new_input = ""
@@ -134,7 +134,8 @@ def process(
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
-                    output_stream.seek(sort_section_pointer, 0)
+                    output_stream.seek(output_stream.tell() - reexport_rollback)
+                    reexport_rollback = 0
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
                         code_sorting_section,
@@ -150,7 +151,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                sort_section_pointer += output_stream.write(sorted_code)
+                output_stream.write(sorted_code)
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -236,8 +237,8 @@ def process(
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                     code_sorting_section += line
+                    reexport_rollback = len(line)
                     is_reexport = True
-                    sort_section_pointer -= len(line)
                 elif code_sorting:
                     if not stripped_line:
                         sorted_code = textwrap.indent(
@@ -256,8 +257,9 @@ def process(
                             ignore_whitespace=config.ignore_whitespace,
                         )
                         if is_reexport:
-                            output_stream.seek(sort_section_pointer, 0)
-                        sort_section_pointer += output_stream.write(sorted_code)
+                            output_stream.seek(output_stream.tell() - reexport_rollback)
+                            reexport_rollback = 0
+                        output_stream.write(sorted_code)
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
@@ -355,8 +357,6 @@ def process(
                         import_section += import_statement
                 else:
                     not_imports = True
-
-        sort_section_pointer += len(line)
 
         if not_imports:
             if not was_in_quote and config.lines_before_imports > -1:
