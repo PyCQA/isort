@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 from sphinx.ext.intersphinx import fetch_inventory
 
 URL = "https://docs.python.org/{}/objects.inv"
@@ -23,6 +25,7 @@ using the mkstdlibs.py script.
 class FakeConfig:
     intersphinx_timeout = None
     tls_verify = True
+    tls_cacerts = ()
     user_agent = ""
 
 
@@ -40,8 +43,13 @@ for version_info in VERSIONS:
     modules = {"_ast", "posixpath", "ntpath", "sre_constants", "sre_parse", "sre_compile", "sre"}
     for module in invdata["py:module"]:
         root, *_ = module.split(".")
-        if root not in ["__future__", "__main__"]:
-            modules.add(root)
+        modules.add(root)
+
+    if version_info in {("3", "8"), ("3", "9")}:
+        modules |= set(sys.builtin_module_names)
+    else:
+        modules |= sys.stdlib_module_names
+    modules -= {"__future__", "__main__", "antigravity", "this"}
 
     path = PATH.format("".join(version_info))
     with open(path, "w") as stdlib_file:
