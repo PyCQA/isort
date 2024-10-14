@@ -10,11 +10,11 @@ By default, it will run recursively from the root of the repository being linted
 
 ### Inputs
 
-#### `isortVersion`
+#### `isort-version`
 
 Optional. Version of `isort` to use. Defaults to latest version of `isort`.
 
-#### `sortPaths`
+#### `sort-paths`
 
 Optional. List of paths to sort, relative to your project root. Defaults to `.`
 
@@ -22,7 +22,7 @@ Optional. List of paths to sort, relative to your project root. Defaults to `.`
 
 Optional. `isort` configuration options to pass to the `isort` CLI. Defaults to `--check-only --diff`.
 
-#### `requirementsFiles`
+#### `requirements-files`
 
 Optional. Paths to python requirements files to install before running isort.
 If multiple requirements files are provided, they should be separated by a space.
@@ -48,11 +48,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.8
-      - uses: isort/isort-action@master
+          python-version: 3.12
+      - uses: isort/isort-action@v1
         with:
             requirementsFiles: "requirements.txt requirements-test.txt"
 ```
