@@ -1200,6 +1200,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     config=config,
                     check=check,
                     ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
                     config_trie=config_trie,
