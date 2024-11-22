@@ -1,5 +1,5 @@
 """
-File contains the standard library of Python 3.12.
+File contains the standard library of Python 3.13.
 
 DO NOT EDIT. If the standard library changes, a new list should be created
 using the mkstdlibs.py script.
@@ -93,7 +93,6 @@ stdlib = {
     "itertools",
     "json",
     "keyword",
-    "lib2to3",
     "linecache",
     "locale",
     "logging",

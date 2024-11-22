@@ -10,6 +10,7 @@ VERSIONS = [
     ("3", "10"),
     ("3", "11"),
     ("3", "12"),
+    ("3", "13"),
 ]
 
 DOCSTRING = """
@@ -24,6 +25,7 @@ class FakeConfig:
     intersphinx_timeout = None
     tls_verify = True
     user_agent = ""
+    tls_cacerts = None
 
 
 class FakeApp:
