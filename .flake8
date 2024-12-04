@@ -7,6 +7,4 @@ extend-ignore =
     B017
 exclude = _vendored
 per-file-ignores =
-    isort/__init__.py:F401
-    isort/stdlibs/__init__.py:F401
     tests/unit/example_crlf_file.py:F401
