@@ -1,4 +1,5 @@
 """Finders try to find right section for passed module name"""
+
 import importlib.machinery
 import inspect
 import os

@@ -1,4 +1,5 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
+
 import enum
 from inspect import signature
 from typing import Any, Callable, Dict, List

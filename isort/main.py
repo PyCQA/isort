@@ -1,4 +1,5 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
+
 import argparse
 import functools
 import json

@@ -2,6 +2,7 @@
 
 Should be ran using py.test by simply running py.test in the isort project directory
 """
+
 import os
 import os.path
 import subprocess

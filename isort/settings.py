@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -761,9 +762,11 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths

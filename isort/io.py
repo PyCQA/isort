@@ -1,4 +1,5 @@
 """Defines any IO utilities used by isort"""
+
 import dataclasses
 import re
 import tokenize

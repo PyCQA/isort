@@ -1,4 +1,5 @@
 """Basic set of tests to ensure entire code base is importable"""
+
 import pytest
 
 

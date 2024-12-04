@@ -392,12 +392,10 @@ from typing import Sequence
 import numpy as np
 
 
-def add(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    ...
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
 
 
-def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    ...
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
 """,
         """# comment
 
@@ -408,12 +406,10 @@ from typing import Sequence
 import numpy as np
 
 
-def add(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    ...
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
 
 
-def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    ...
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
 """,
         is_pyi=False,
         lines_before_imports=2,
