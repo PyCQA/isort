@@ -48,7 +48,7 @@ colors = ["colorama"]
 plugins = ["setuptools"]
 
 [tool.poetry.dev-dependencies]
-bandit = ">=1.6"
+bandit = ">=1.7.7"
 black = ">=22.6.0"
 colorama = ">=0.4.6"
 coverage = {version = ">=6.5.0", extras = ["toml"]}
