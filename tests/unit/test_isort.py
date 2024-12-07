@@ -12,7 +12,6 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
 
-import py
 import pytest
 
 import isort
@@ -4259,12 +4258,12 @@ import ujson # NOQA
     assert isort.code(test_input.lower(), honor_noqa=True) == test_output_honor_noqa.lower()
 
 
-def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
+def test_extract_multiline_output_wrap_setting_from_a_config_file(tmp_path: Path) -> None:
     editorconfig_contents = ["root = true", " [*.py]", "multi_line_output = 5"]
-    config_file = tmpdir.join(".editorconfig")
-    config_file.write("\n".join(editorconfig_contents))
+    config_file = tmp_path.joinpath(".editorconfig")
+    config_file.write_text("\n".join(editorconfig_contents))
 
-    config = Config(settings_path=str(tmpdir))
+    config = Config(settings_path=str(tmp_path))
     assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
