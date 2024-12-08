@@ -193,7 +193,7 @@ def sort_stream(
     if config.atomic:
         try:
             file_content = input_stream.read()
-            compile(file_content, content_source, "exec", 0, 1)
+            compile(file_content, content_source, "exec", flags=0, dont_inherit=True)
         except SyntaxError:
             if extension not in CYTHON_EXTENSIONS:
                 raise ExistingSyntaxErrors(content_source)
@@ -220,7 +220,7 @@ def sort_stream(
     if config.atomic:
         _internal_output.seek(0)
         try:
-            compile(_internal_output.read(), content_source, "exec", 0, 1)
+            compile(_internal_output.read(), content_source, "exec", flags=0, dont_inherit=True)
             _internal_output.seek(0)
         except SyntaxError:  # pragma: no cover
             if extension not in CYTHON_EXTENSIONS:
