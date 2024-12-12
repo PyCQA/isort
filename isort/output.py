@@ -151,9 +151,9 @@ def sorted_imports(
                     section_output.append(section_comment_end)
 
             if section in config.separate_packages:
-                group_keys: set[str] = set()
-                comments_above: list[str] = []
-                processed_section_output: list[str] = []
+                group_keys: Set[str] = set()
+                comments_above: List[str] = []
+                processed_section_output: List[str] = []
                 for section_line in section_output:
                     if section_line.startswith("#"):
                         comments_above.append(section_line)
