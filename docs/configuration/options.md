@@ -1039,6 +1039,16 @@ If `True` isort will automatically create section groups by the top-level packag
 **Python & Config File Name:** group_by_package  
 **CLI Flags:** **Not Supported**
 
+## Separate Packages
+
+Separate packages within the listed sections with newlines.
+
+**Type:** List of Strings  
+**Default:** `frozenset()`  
+**Config default:** `[]`  
+**Python & Config File Name:** separate_packages  
+**CLI Flags:** **Not Supported**
+
 ## Ignore Whitespace
 
 Tells isort to ignore whitespace differences when --check-only is being used.

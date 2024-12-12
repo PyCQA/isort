@@ -1,6 +1,7 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+
 from functools import partial
 from io import StringIO
 
@@ -1070,4 +1071,112 @@ def use_libc_math():
     return math.ceil(5.5)
 """,
         show_diff=True,
+    )
+
+
+def test_sort_separate_packages_issue_2104():
+    """
+    Test to ensure that packages within a section can be separated by blank lines.
+    See: https://github.com/PyCQA/isort/issues/2104
+    """
+
+    # Base case as described in issue
+    assert (
+        isort.code(
+            """
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+from django_filters import BooleanFilter
+from junitparser import JUnitXml
+from junitparser import TestSuite
+from loguru import logger
+""",
+            force_single_line=True,
+            separate_packages=["THIRDPARTY"],
+        )
+        == """
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+
+from django_filters import BooleanFilter
+
+from junitparser import JUnitXml
+from junitparser import TestSuite
+
+from loguru import logger
+"""
+    )
+
+    # Check that multiline comments aren't broken up
+    assert (
+        isort.code(
+            """
+from junitparser import TestSuite
+# Some multiline
+# comment
+from loguru import logger
+""",
+            force_single_line=True,
+            separate_packages=["THIRDPARTY"],
+        )
+        == """
+from junitparser import TestSuite
+
+# Some multiline
+# comment
+from loguru import logger
+"""
+    )
+
+    # Check it works for custom sections
+    assert (
+        isort.code(
+            """
+import os
+from package2 import bar
+from package1 import foo
+            """,
+            force_single_line=True,
+            known_MYPACKAGES=["package1", "package2"],
+            sections=["STDLIB", "MYPACKAGES"],
+            separate_packages=["MYPACKAGES"],
+        )
+        == """
+import os
+
+from package1 import foo
+
+from package2 import bar
+"""
+    )
+
+    # Check it works for packages with deeper nesting
+    assert (
+        isort.code(
+            """
+import os
+from package2 import bar
+from package1.a.b import foo
+from package1.a.c import baz
+            """,
+            force_single_line=True,
+            known_MYPACKAGES=["package1.a", "package2"],
+            sections=["STDLIB", "MYPACKAGES"],
+            separate_packages=["MYPACKAGES"],
+        )
+        == """
+import os
+
+from package1.a.b import foo
+
+from package1.a.c import baz
+
+from package2 import bar
+"""
     )
