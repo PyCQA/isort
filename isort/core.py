@@ -27,6 +27,8 @@ CODE_SORT_COMMENTS = (
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def process(
     input_stream: TextIO,
     output_stream: TextIO,
