@@ -2672,4 +2672,4 @@ plugins = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.0"
-content-hash = "6969eccd5d691d77d8f78a9f82e3ed626675d646a7e2b896fb4ad4aa64db0dfa"
+content-hash = "af40040169eed27512d6c410555090b114596c1cabc2db893ecbe36cc25a91cd"

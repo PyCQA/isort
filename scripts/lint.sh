@@ -3,7 +3,7 @@ set -euxo pipefail
 
 poetry run cruft check
 poetry run mypy -p isort -p tests
-poetry run black --target-version py38 .
+poetry run black --target-version py38 --check .
 poetry run isort --profile hug --check --diff isort/ tests/
 poetry run isort --profile hug --check --diff example_*/
 poetry run flake8 isort/ tests/
