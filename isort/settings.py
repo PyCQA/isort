@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -553,8 +554,7 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -761,9 +761,11 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths

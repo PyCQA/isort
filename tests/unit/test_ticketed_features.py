@@ -1,6 +1,7 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+
 from functools import partial
 from io import StringIO
 

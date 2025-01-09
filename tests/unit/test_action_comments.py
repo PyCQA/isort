@@ -1,4 +1,5 @@
 """Tests for isort action comments, such as isort: skip"""
+
 import isort
 
 
