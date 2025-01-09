@@ -20,7 +20,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -40,7 +39,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.0"
+python = ">=3.9.0"
 colorama = {version = ">=0.4.6", optional = true}
 
 [tool.poetry.extras]
@@ -138,7 +137,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-python_version = 3.8
+python_version = 3.9
 strict = true
 follow_imports = "silent"
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"

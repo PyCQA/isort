@@ -466,12 +466,9 @@ def sort_file(
                             if not config.quiet:
                                 print(f"Fixing {source_file.path}")
                     finally:
-                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            if not config.overwrite_in_place:  # pragma: no branch
-                                tmp_file = _tmp_file(source_file)
-                                tmp_file.unlink()
-                        except FileNotFoundError:
-                            pass  # pragma: no cover
+                        if not config.overwrite_in_place:  # pragma: no branch
+                            tmp_file = _tmp_file(source_file)
+                            tmp_file.unlink(missing_ok=True)
                 else:
                     changed = sort_stream(
                         input_stream=source_file.stream,
