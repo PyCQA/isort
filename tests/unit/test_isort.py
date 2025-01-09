@@ -2,6 +2,7 @@
 
 Should be ran using py.test by simply running py.test in the isort project directory
 """
+
 import os
 import os.path
 import subprocess
@@ -5669,5 +5670,60 @@ def test_reexport_not_last_line() -> None:
     expd_output = """__all__ = ('bar', 'foo')
 
     meme = "rickroll"
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_import() -> None:
+    test_input = """from m import (
+    bar,
+    foo,
+)
+__all__ = [
+    "foo",
+    "bar",
+]
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_in_center() -> None:
+    test_input = """from m import (
+    bar,
+    foo,
+)
+__all__ = [
+    "foo",
+    "bar",
+]
+
+test
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+
+test
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_long_rollback() -> None:
+    test_input = """from m import foo, bar
+__all__ = [                            "foo",
+    "bar",
+]
+
+test
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+
+test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output

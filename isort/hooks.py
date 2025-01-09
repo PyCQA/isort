@@ -3,6 +3,7 @@
 usage:
     exit_code = git_hook(strict=True|False, modify=True|False)
 """
+
 import os
 import subprocess  # nosec - Needed for hook
 from pathlib import Path
