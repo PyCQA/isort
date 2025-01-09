@@ -5695,7 +5695,7 @@ def test_reexport_multiline_in_center() -> None:
     test_input = """from m import (
     bar,
     foo,
-) 
+)
 __all__ = [
     "foo",
     "bar",
@@ -5713,7 +5713,7 @@ test
 
 
 def test_reexport_multiline_long_rollback() -> None:
-    test_input = """from m import foo, bar 
+    test_input = """from m import foo, bar
 __all__ = [                            "foo",
     "bar",
 ]
