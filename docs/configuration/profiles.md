@@ -12,6 +12,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 
  - **multi_line_output**: `3`
  - **include_trailing_comma**: `True`
+ - **split_on_trailing_comma**: `True`
  - **force_grid_wrap**: `0`
  - **use_parentheses**: `True`
  - **ensure_newline_before_comments**: `True`
