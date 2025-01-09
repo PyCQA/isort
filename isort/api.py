@@ -363,6 +363,9 @@ def _file_output_stream_context(filename: Union[str, Path], source_file: File) -
         yield output_stream
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
 def sort_file(
     filename: Union[str, Path],
     extension: Optional[str] = None,
