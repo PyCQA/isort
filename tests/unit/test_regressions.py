@@ -1,4 +1,5 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
+
 from io import StringIO
 
 import pytest

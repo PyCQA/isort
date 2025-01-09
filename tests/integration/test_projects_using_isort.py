@@ -6,6 +6,7 @@ NOTE: If you use isort within a public repository, please feel empowered to add 
 It is important to isort that as few regressions as possible are experienced by our users.
 Having your project tested here is the most sure way to keep those regressions form ever happening.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

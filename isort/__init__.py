@@ -1,4 +1,5 @@
 """Defines the public isort interface"""
+
 __all__ = (
     "Config",
     "ImportKey",

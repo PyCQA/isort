@@ -1,4 +1,5 @@
 """Tests for the isort import placement module"""
+
 from functools import partial
 
 from isort import place, sections
