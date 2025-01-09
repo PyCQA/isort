@@ -20,7 +20,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -41,7 +40,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.0"
+python = ">=3.9.0"
 colorama = {version = ">=0.4.6", optional = true}
 
 [tool.poetry.extras]
