@@ -2466,17 +2466,6 @@ files = [
 ]
 
 [[package]]
-name = "types-pkg-resources"
-version = "0.1.3"
-description = "Typing stubs for pkg_resources"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-pkg_resources-0.1.3.tar.gz", hash = "sha256:834a9b8d3dbea343562fd99d5d3359a726f6bf9d3733bccd2b4f3096fbab9dae"},
-    {file = "types_pkg_resources-0.1.3-py2.py3-none-any.whl", hash = "sha256:0cb9972cee992249f93fff1a491bf2dc3ce674e5a1926e27d4f0866f7d9b6d9c"},
-]
-
-[[package]]
 name = "types-python-dateutil"
 version = "2.8.19.14"
 description = "Typing stubs for python-dateutil"
@@ -2485,6 +2474,17 @@ python-versions = "*"
 files = [
     {file = "types-python-dateutil-2.8.19.14.tar.gz", hash = "sha256:1f4f10ac98bb8b16ade9dbee3518d9ace017821d94b057a425b069f834737f4b"},
     {file = "types_python_dateutil-2.8.19.14-py3-none-any.whl", hash = "sha256:f977b8de27787639986b4e28963263fd0e5158942b3ecef91b9335c130cb1ce9"},
+]
+
+[[package]]
+name = "types-setuptools"
+version = "75.6.0.20241126"
+description = "Typing stubs for setuptools"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types_setuptools-75.6.0.20241126-py3-none-any.whl", hash = "sha256:aaae310a0e27033c1da8457d4d26ac673b0c8a0de7272d6d4708e263f2ea3b9b"},
+    {file = "types_setuptools-75.6.0.20241126.tar.gz", hash = "sha256:7bf25ad4be39740e469f9268b6beddda6e088891fa5a27e985c6ce68bf62ace0"},
 ]
 
 [[package]]
@@ -2672,4 +2672,4 @@ plugins = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.0"
-content-hash = "af40040169eed27512d6c410555090b114596c1cabc2db893ecbe36cc25a91cd"
+content-hash = "18332649b028357816abdf722df1d35f3937fd766781dbe40af7e9219da4c46c"
