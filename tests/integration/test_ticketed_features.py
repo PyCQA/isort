@@ -1,4 +1,5 @@
 """Tests that need installation of other packages."""
+
 # TODO: find a way to install example-isort-formatting-plugin to pass tests
 # from io import StringIO
 

@@ -1,4 +1,5 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
+
 from io import StringIO
 
 import pytest
@@ -230,7 +231,7 @@ from somewhere import \\
 
 
 def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304():
-    """Ensure sre_parse is idenified as STDLIB.
+    """Ensure sre_parse is identified as STDLIB.
     See: https://github.com/pycqa/isort/issues/1304.
     """
     assert (
@@ -353,7 +354,7 @@ from .. import foo
 
 def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280():
     """Test to ensure isort doesn't rewrite imports in the from of import y.x into from y import x.
-    This is because they are not technically fully equivalent to eachother and can introduce broken
+    This is because they are not technically fully equivalent to each other and can introduce broken
     behaviour.
     See: https://github.com/pycqa/isort/issues/1280
     """
@@ -624,7 +625,7 @@ from ..fileB import b_var
 
 
 def test_isort_should_be_able_to_add_independent_of_doc_string_placement_issue_1420():
-    """isort should be able to know when an import requested to be added is sucesfully added,
+    """isort should be able to know when an import requested to be added is successfully added,
     independent of where the top doc string is located.
     See: https://github.com/PyCQA/isort/issues/1420
     """

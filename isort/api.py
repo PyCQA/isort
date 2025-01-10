@@ -442,9 +442,9 @@ def sort_file(
                                         file_input=source_file.stream.read(),
                                         file_output=output_stream.read(),
                                         file_path=actual_file_path,
-                                        output=None
-                                        if show_diff is True
-                                        else cast(TextIO, show_diff),
+                                        output=(
+                                            None if show_diff is True else cast(TextIO, show_diff)
+                                        ),
                                         color_output=config.color_output,
                                     )
                                     if show_diff or (

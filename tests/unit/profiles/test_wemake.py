@@ -3,6 +3,7 @@
 Snippets are taken directly from the wemake-python-styleguide project here:
 https://github.com/wemake-services/wemake-python-styleguide
 """
+
 from functools import partial
 
 from ..utils import isort_test
