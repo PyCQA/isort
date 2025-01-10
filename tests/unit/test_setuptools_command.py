@@ -3,7 +3,7 @@ from isort import setuptools_commands
 
 def test_isort_command_smoke(src_dir):
     """A basic smoke test for the setuptools_commands command"""
-    from distutils.dist import Distribution
+    from setuptools.dist import Distribution
 
     command = setuptools_commands.ISortCommand(Distribution())
     command.distribution.packages = ["isort"]
