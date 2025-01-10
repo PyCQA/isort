@@ -17,6 +17,7 @@ import cProfile
     google_isort_test(
         """from a import z
 from a.b import c
+from a.b import import_me
 """
     )
 
