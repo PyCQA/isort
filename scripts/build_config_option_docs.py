@@ -167,6 +167,14 @@ extend_skip_glob=my_*_module.py,test/*
 extend_skip_glob = ["my_*_module.py", "test/*"]
 """,
     ),
+    "exclude_glob": Example(
+        cfg="""
+exclude_glob=docs/**
+""",
+        pyproject_toml="""
+exclude_glob = ["docs/**"]
+""",
+    ),
     "known_third_party": Example(
         cfg="""
 known_third_party=my_module1,my_module2
