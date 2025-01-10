@@ -17,7 +17,7 @@ def _as_config(kw) -> isort.Config:
         return isort.Config(**kw)
 
 
-def configs() -> st.SearchStrategy[isort.Config]:
+def configs() -> st.SearchStrategy:
     """Generate arbitrary Config objects."""
     skip = {
         "line_ending",

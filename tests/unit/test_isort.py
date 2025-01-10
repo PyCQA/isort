@@ -10,9 +10,8 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
 
-import py
 import pytest
 
 import isort
@@ -24,6 +23,8 @@ from isort.utils import exists_case_sensitive
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
+    from typing import Dict  # noqa: F401
+
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
@@ -1630,13 +1631,13 @@ def test_multiline_import() -> None:
     assert isort.code(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
 
     # test again with a custom configuration
-    custom_configuration = {
+    custom_configuration: dict[str, Any] = {
         "force_single_line": True,
         "line_length": 120,
         "known_first_party": ["asdf", "qwer"],
         "default_section": "THIRDPARTY",
         "forced_separate": "asdf",
-    }  # type: Dict[str, Any]
+    }
     expected_output = (
         "from pkg import more_stuff\n" "from pkg import other_suff\n" "from pkg import stuff\n"
     )
@@ -4259,12 +4260,12 @@ import ujson # NOQA
     assert isort.code(test_input.lower(), honor_noqa=True) == test_output_honor_noqa.lower()
 
 
-def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
+def test_extract_multiline_output_wrap_setting_from_a_config_file(tmp_path: Path) -> None:
     editorconfig_contents = ["root = true", " [*.py]", "multi_line_output = 5"]
-    config_file = tmpdir.join(".editorconfig")
-    config_file.write("\n".join(editorconfig_contents))
+    config_file = tmp_path / ".editorconfig"
+    config_file.write_text("\n".join(editorconfig_contents))
 
-    config = Config(settings_path=str(tmpdir))
+    config = Config(settings_path=str(tmp_path))
     assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 

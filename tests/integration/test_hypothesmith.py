@@ -33,7 +33,7 @@ def _record_targets(code: str, prefix: str = "") -> str:
     return code
 
 
-def configs(**force_strategies: st.SearchStrategy[isort.Config]) -> st.SearchStrategy[isort.Config]:
+def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy:
     """Generate arbitrary Config objects."""
     skip = {
         "line_ending",
