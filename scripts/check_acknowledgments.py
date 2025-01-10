@@ -46,13 +46,11 @@ async def main():
             )
             results = response.json()
             contributors.extend(
-                (
-                    contributor
-                    for contributor in results
-                    if contributor["type"] == GITHUB_USER_TYPE
-                    and contributor["login"] not in IGNORED_AUTHOR_LOGINS
-                    and f"@{contributor['login'].lower()}" not in ACKNOWLEDGEMENTS
-                )
+                contributor
+                for contributor in results
+                if contributor["type"] == GITHUB_USER_TYPE
+                and contributor["login"] not in IGNORED_AUTHOR_LOGINS
+                and f"@{contributor['login'].lower()}" not in ACKNOWLEDGEMENTS
             )
 
         unacknowledged_users = await asyncio.gather(
