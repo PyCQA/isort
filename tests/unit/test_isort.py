@@ -10,7 +10,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
 
 import pytest
 
@@ -23,6 +23,8 @@ from isort.utils import exists_case_sensitive
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
+    from typing import Dict  # noqa: F401
+
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
