@@ -252,14 +252,7 @@ class _Config:
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 12
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
