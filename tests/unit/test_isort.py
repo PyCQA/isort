@@ -4260,7 +4260,7 @@ import ujson # NOQA
 
 def test_extract_multiline_output_wrap_setting_from_a_config_file(tmp_path: Path) -> None:
     editorconfig_contents = ["root = true", " [*.py]", "multi_line_output = 5"]
-    config_file = tmp_path.joinpath(".editorconfig")
+    config_file = tmp_path / ".editorconfig"
     config_file.write_text("\n".join(editorconfig_contents))
 
     config = Config(settings_path=str(tmp_path))

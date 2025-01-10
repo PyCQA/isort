@@ -1094,14 +1094,14 @@ import a
         return capsys.readouterr()
 
     subprocess.run(["git", "init", str(tmp_path)])
-    python_file = tmp_path.joinpath("has_imports.py")
+    python_file = tmp_path / "has_imports.py"
     python_file.write_text(import_content)
-    tmp_path.joinpath("no_imports.py").write_text("...")
+    (tmp_path / "no_imports.py").write_text("...")
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
     assert "has_imports.py" in error and "no_imports.py" not in error
 
-    tmp_path.joinpath(".gitignore").write_text("has_imports.py")
+    (tmp_path / ".gitignore").write_text("has_imports.py")
 
     out, error = main_check([str(python_file), "--check"])
     assert "has_imports.py" in error and "no_imports.py" not in error
@@ -1110,9 +1110,9 @@ import a
     assert "Skipped" in out
 
     # Should work with nested directories
-    tmp_path.joinpath("nested_dir").mkdir()
-    tmp_path.joinpath(".gitignore").write_text("nested_dir/has_imports.py")
-    subfolder_file = tmp_path.joinpath("nested_dir/has_imports.py")
+    (tmp_path / "nested_dir").mkdir()
+    (tmp_path / ".gitignore").write_text("nested_dir/has_imports.py")
+    subfolder_file = tmp_path / "nested_dir/has_imports.py"
     subfolder_file.write_text(import_content)
 
     out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files", "--check"])
@@ -1125,7 +1125,7 @@ import a
     out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
     assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
 
-    tmp_path.joinpath(".gitignore").write_text(
+    (tmp_path / ".gitignore").write_text(
         """
 nested_dir/has_imports.py
 has_imports.py
@@ -1138,18 +1138,18 @@ has_imports.py
 
     # Should work with multiple git projects
 
-    shutil.rmtree(tmp_path.joinpath(".git"))
-    tmp_path.joinpath(".gitignore").unlink()
+    shutil.rmtree(tmp_path / ".git")
+    (tmp_path / ".gitignore").unlink()
 
     # git_project0
     # | has_imports_ignored.py ignored
     # | has_imports.py should check
-    git_project0 = tmp_path.joinpath("git_project0")
+    git_project0 = tmp_path / "git_project0"
     git_project0.mkdir()
     subprocess.run(["git", "init", str(git_project0)])
-    git_project0.joinpath(".gitignore").write_text("has_imports_ignored.py")
-    git_project0.joinpath("has_imports_ignored.py").write_text(import_content)
-    git_project0.joinpath("has_imports.py").write_text(import_content)
+    (git_project0 / ".gitignore").write_text("has_imports_ignored.py")
+    (git_project0 / "has_imports_ignored.py").write_text(import_content)
+    (git_project0 / "has_imports.py").write_text(import_content)
 
     # git_project1
     # | has_imports.py should check
@@ -1158,23 +1158,23 @@ has_imports.py
     #   | has_imports.py should check
     # | nested_dir_ignored ignored
     #   | has_imports.py ignored from folder
-    git_project1 = tmp_path.joinpath("git_project1")
+    git_project1 = tmp_path / "git_project1"
     git_project1.mkdir()
     subprocess.run(["git", "init", str(git_project1)])
-    git_project1.joinpath(".gitignore").write_text(
+    (git_project1 / ".gitignore").write_text(
         """
 nested_dir/has_imports_ignored.py
 nested_dir_ignored
 """
     )
-    git_project1.joinpath("has_imports.py").write_text(import_content)
-    nested_dir = git_project1.joinpath("nested_dir")
+    (git_project1 / "has_imports.py").write_text(import_content)
+    nested_dir = git_project1 / "nested_dir"
     nested_dir.mkdir()
-    nested_dir.joinpath("has_imports.py").write_text(import_content)
-    nested_dir.joinpath("has_imports_ignored.py").write_text(import_content)
-    nested_ignored_dir = git_project1.joinpath("nested_dir_ignored")
+    (nested_dir / "has_imports.py").write_text(import_content)
+    (nested_dir / "has_imports_ignored.py").write_text(import_content)
+    nested_ignored_dir = git_project1 / "nested_dir_ignored"
     nested_ignored_dir.mkdir()
-    nested_ignored_dir.joinpath("has_imports.py").write_text(import_content)
+    (nested_ignored_dir / "has_imports.py").write_text(import_content)
 
     should_check = [
         "/has_imports.py",
@@ -1189,22 +1189,22 @@ nested_dir_ignored
     if os.name == "nt":
         should_check = [sc.replace("/", "\\") for sc in should_check]
 
-    assert all(f"{str(tmp_path)}{file}" in error for file in should_check)
+    assert all(f"{tmp_path}{file}" in error for file in should_check)
 
     out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files"])
 
-    assert all(f"{str(tmp_path)}{file}" in out for file in should_check)
+    assert all(f"{tmp_path}{file}" in out for file in should_check)
 
     # Should work when git project contains symlinks
 
     if os.name != "nt":
-        git_project0.joinpath("has_imports_ignored.py").write_text(import_content)
-        git_project0.joinpath("has_imports.py").write_text(import_content)
-        tmp_path.joinpath("has_imports.py").write_text(import_content)
-        tmp_path.joinpath("nested_dir").joinpath("has_imports.py").write_text(import_content)
-        git_project0.joinpath("ignore_link.py").symlink_to(tmp_path.joinpath("has_imports.py"))
-        git_project0.joinpath("ignore_link").symlink_to(tmp_path.joinpath("nested_dir"))
-        gitignore = git_project0.joinpath(".gitignore")
+        (git_project0 / "has_imports_ignored.py").write_text(import_content)
+        (git_project0 / "has_imports.py").write_text(import_content)
+        (tmp_path / "has_imports.py").write_text(import_content)
+        (tmp_path / "nested_dir" / "has_imports.py").write_text(import_content)
+        (git_project0 / "ignore_link.py").symlink_to(tmp_path / "has_imports.py")
+        (git_project0 / "ignore_link").symlink_to(tmp_path / "nested_dir")
+        gitignore = git_project0 / ".gitignore"
         gitignore.write_text(gitignore.read_text() + "ignore_link.py\nignore_link")
 
         out, error = main_check(
@@ -1213,11 +1213,11 @@ nested_dir_ignored
 
         should_check = ["/git_project0/has_imports.py"]
 
-        assert all(f"{str(tmp_path)}{file}" in error for file in should_check)
+        assert all(f"{tmp_path}{file}" in error for file in should_check)
 
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
-        assert all(f"{str(tmp_path)}{file}" in out for file in should_check)
+        assert all(f"{tmp_path}{file}" in out for file in should_check)
 
 
 def test_multiple_configs(capsys, tmpdir):
