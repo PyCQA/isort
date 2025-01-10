@@ -1629,7 +1629,7 @@ def test_multiline_import() -> None:
     assert isort.code(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
 
     # test again with a custom configuration
-    custom_configuration: Dict[str, Any] = {
+    custom_configuration: dict[str, Any] = {
         "force_single_line": True,
         "line_length": 120,
         "known_first_party": ["asdf", "qwer"],
