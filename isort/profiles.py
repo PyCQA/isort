@@ -1,4 +1,5 @@
 """Common profiles are defined here to be easily used within a project using --profile {name}"""
+
 from typing import Any, Dict
 
 black = {

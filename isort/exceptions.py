@@ -1,4 +1,5 @@
 """All isort specific exception classes should be defined here"""
+
 from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
