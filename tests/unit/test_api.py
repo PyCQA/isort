@@ -94,6 +94,13 @@ def test_find_imports_in_file(imperfect):
     assert "b" in [found_import.module for found_import in found_imports]
 
 
+def test_find_imports_in_file_error(tmpdir):
+    broken_link = tmpdir.join("broken_link.py")
+    broken_link.mksymlinkto("not-exist")
+    with pytest.warns(UserWarning):
+        assert not list(api.find_imports_in_file(broken_link))
+
+
 def test_find_imports_in_code():
     code = """
 from x.y import z as a

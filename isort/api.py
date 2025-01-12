@@ -588,15 +588,18 @@ def find_imports_in_file(
     - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
-    with io.File.read(filename) as source_file:
-        yield from find_imports_in_stream(
-            input_stream=source_file.stream,
-            config=config,
-            file_path=file_path or source_file.path,
-            unique=unique,
-            top_only=top_only,
-            **config_kwargs,
-        )
+    try:
+        with io.File.read(filename) as source_file:
+            yield from find_imports_in_stream(
+                input_stream=source_file.stream,
+                config=config,
+                file_path=file_path or source_file.path,
+                unique=unique,
+                top_only=top_only,
+                **config_kwargs,
+            )
+    except OSError as error:
+        warn(f"Unable to parse file {filename} due to {error}")
 
 
 def find_imports_in_paths(
