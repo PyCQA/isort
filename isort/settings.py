@@ -345,7 +345,7 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "#custom_config_files for more information."
+                    "#custom-config-files for more information."
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
