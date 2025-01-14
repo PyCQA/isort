@@ -1,8 +1,9 @@
 [flake8]
 max-line-length = 100
 # Ignore non PEP 8 compliant rules as suggested by black
+# E203: https://github.com/psf/black/blob/3fab5ade71bccf80ae0a5af76729099869adea56/docs/the_black_code_style/current_style.md#slices
 extend-ignore =
-    E203,  # https://github.com/psf/black/blob/master/docs/the_black_code_style.md#slices
+    E203,
     E501,
     B017
 exclude = _vendored
