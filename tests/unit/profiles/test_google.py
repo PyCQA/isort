@@ -141,8 +141,7 @@ import functools
 import inspect
 import itertools as it
 import threading
-from typing import (Any, Callable, Iterable, List, NamedTuple, Optional,
-                    Sequence, Tuple, TypeVar, Union)
+from typing import Any, Callable, Iterable, List, NamedTuple, Optional, Sequence, Tuple, TypeVar, Union
 from warnings import warn
 import weakref
 
