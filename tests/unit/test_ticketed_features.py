@@ -531,6 +531,7 @@ from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going i
         "test_scan_static_reflection_predictor import (  # noqa: F401\n"
         "    data as static_test,\n)\n",
         profile="black",
+        split_on_trailing_comma=False,
         show_diff=True,
     )
 

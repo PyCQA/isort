@@ -408,6 +408,7 @@ from many_stop_words import (
 """,
         show_diff=True,
         profile="black",
+        split_on_trailing_comma=False,
     )
 
 
@@ -663,7 +664,7 @@ from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component 
     MyLovelyCompanyTeamProjectComponent as component,  # DRY
 )
 """
-    assert isort.code(input_text, profile="black") == input_text
+    assert isort.code(input_text, profile="black", split_on_trailing_comma=False) == input_text
 
 
 def test_isort_doesnt_misplace_add_import_issue_1445():
@@ -1504,6 +1505,7 @@ def test_isort_adding_second_comma_issue_1621():
 """,
         profile="black",
         show_diff=True,
+        split_on_trailing_comma=False,
     )
     assert (
         isort.code(

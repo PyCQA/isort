@@ -447,8 +447,8 @@ def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
 
 def test_black_trailing_comma():
     black_test(
-    "from x import (a, b, c,)\n",
-    """\
+        "from x import (a, b, c,)\n",
+        """\
 from x import (
     a,
     b,
