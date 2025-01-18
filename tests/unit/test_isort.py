@@ -5576,6 +5576,17 @@ def test_split_on_trailing_comma() -> None:
     assert output == expected_output
 
 
+def test_split_on_trailing_comma_wih_as() -> None:
+    test_input = "from lib import (a as b,)"
+    expected_output = """from lib import a as b
+"""
+
+    output = isort.code(test_input, split_on_trailing_comma=True)
+    assert output == expected_output
+
+    output = isort.code(expected_output, split_on_trailing_comma=True)
+    assert output == expected_output
+
 def test_infinite_loop_in_unmatched_parenthesis() -> None:
     test_input = "from os import ("
 
