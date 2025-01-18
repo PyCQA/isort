@@ -48,7 +48,7 @@ setuptools = {version = "*", optional = true}
 colors = ["colorama"]
 plugins = ["setuptools"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 bandit = ">=1.7.7"
 black = ">=24.3.0"
 colorama = ">=0.4.6"
