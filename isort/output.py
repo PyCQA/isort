@@ -239,7 +239,9 @@ def sorted_imports(
 
     return _output_as_string(formatted_output, parsed.line_separator)
 
-
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled. 
+# skipcq: PY-R1000
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
