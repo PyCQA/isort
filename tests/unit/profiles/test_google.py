@@ -17,6 +17,7 @@ import cProfile
     google_isort_test(
         """from a import z
 from a.b import c
+from a.b import import_me
 """
     )
 
@@ -140,8 +141,7 @@ import functools
 import inspect
 import itertools as it
 import threading
-from typing import (Any, Callable, Iterable, List, NamedTuple, Optional,
-                    Sequence, Tuple, TypeVar, Union)
+from typing import Any, Callable, Iterable, List, NamedTuple, Optional, Sequence, Tuple, TypeVar, Union
 from warnings import warn
 import weakref
 

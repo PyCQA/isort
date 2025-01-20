@@ -92,9 +92,9 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                         )
                         else ""
                     )
-                    line_parts[
-                        -1
-                    ] = f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
+                    line_parts[-1] = (
+                        f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
+                    )
                 next_line = []
                 while (len(content) + 2) > (
                     config.wrap_length or config.line_length

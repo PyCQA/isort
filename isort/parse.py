@@ -1,4 +1,5 @@
 """Defines parsing functions used by isort for parsing import definitions"""
+
 import re
 from collections import OrderedDict, defaultdict
 from functools import partial
@@ -475,9 +476,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         import_from, {}
                     )
                     existing_comment = nested_from_comments.get(just_imports[0], "")
-                    nested_from_comments[
-                        just_imports[0]
-                    ] = f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    nested_from_comments[just_imports[0]] = (
+                        f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    )
                     comments = []
 
                 if comments and attach_comments_to is None:

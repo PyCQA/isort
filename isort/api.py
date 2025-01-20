@@ -363,6 +363,9 @@ def _file_output_stream_context(filename: Union[str, Path], source_file: File) -
         yield output_stream
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
 def sort_file(
     filename: Union[str, Path],
     extension: Optional[str] = None,
@@ -442,9 +445,9 @@ def sort_file(
                                         file_input=source_file.stream.read(),
                                         file_output=output_stream.read(),
                                         file_path=actual_file_path,
-                                        output=None
-                                        if show_diff is True
-                                        else cast(TextIO, show_diff),
+                                        output=(
+                                            None if show_diff is True else cast(TextIO, show_diff)
+                                        ),
                                         color_output=config.color_output,
                                     )
                                     if show_diff or (
@@ -466,12 +469,9 @@ def sort_file(
                             if not config.quiet:
                                 print(f"Fixing {source_file.path}")
                     finally:
-                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            if not config.overwrite_in_place:  # pragma: no branch
-                                tmp_file = _tmp_file(source_file)
-                                tmp_file.unlink()
-                        except FileNotFoundError:
-                            pass  # pragma: no cover
+                        if not config.overwrite_in_place:  # pragma: no branch
+                            tmp_file = _tmp_file(source_file)
+                            tmp_file.unlink(missing_ok=True)
                 else:
                     changed = sort_stream(
                         input_stream=source_file.stream,

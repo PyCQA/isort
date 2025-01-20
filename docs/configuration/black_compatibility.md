@@ -34,7 +34,6 @@ language: python
 python:
   - "3.10"
   - "3.9"
-  - "3.8"
 
 install:
   - pip install -r requirements-dev.txt
@@ -56,8 +55,8 @@ See [built-in profiles](https://pycqa.github.io/isort/docs/configuration/profile
 You can also set the profile directly when integrating isort within pre-commit.
 
 ```yaml
-- repo: https://github.com/pycqa/isort
-    rev: 5.11.5
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]

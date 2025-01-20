@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -251,14 +252,7 @@ class _Config:
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 12
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -553,8 +547,7 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -761,9 +754,11 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths
