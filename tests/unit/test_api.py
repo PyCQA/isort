@@ -1,4 +1,5 @@
 """Tests the isort API module"""
+
 import os
 from io import StringIO
 from unittest.mock import MagicMock, patch

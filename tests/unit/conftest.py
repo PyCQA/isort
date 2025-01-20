@@ -1,4 +1,5 @@
 """isort test wide fixtures and configuration"""
+
 import os
 from pathlib import Path
 

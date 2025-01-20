@@ -1,6 +1,7 @@
 """Fast stream based import identification.
 Eventually this will likely replace parse.py
 """
+
 from functools import partial
 from pathlib import Path
 from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
