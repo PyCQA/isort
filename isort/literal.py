@@ -56,7 +56,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         raise LiteralParsingFailure(code, error)
 
     expected_type, sort_function = type_mapping[sort_type]
-    if type(value) != expected_type:
+    if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
     printer = ISortPrettyPrinter(config)

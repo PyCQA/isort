@@ -1,4 +1,5 @@
 """Contains all logic related to placing an import within a certain section."""
+
 import importlib
 from fnmatch import fnmatch
 from functools import lru_cache
