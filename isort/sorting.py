@@ -117,7 +117,7 @@ def naturally(
     else:
 
         def key_callback(text: str) -> List[Any]:
-            return _natural_keys(key(text))  # type: ignore
+            return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 

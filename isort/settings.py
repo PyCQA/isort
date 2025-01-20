@@ -858,7 +858,8 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
                         and config_key.endswith("}")
                         and extension
                         in map(
-                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
+                            lambda text: text.strip(),
+                            config_key[len("*.{") : -1].split(","),  # noqa
                         )
                     ):
                         settings.update(config.items(config_key))
