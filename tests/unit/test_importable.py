@@ -1,4 +1,5 @@
 """Basic set of tests to ensure entire code base is importable"""
+
 import pytest
 
 
@@ -36,6 +37,7 @@ def test_importable():
     import isort.stdlibs.py310
     import isort.stdlibs.py311
     import isort.stdlibs.py312
+    import isort.stdlibs.py313
     import isort.utils
     import isort.wrap
     import isort.wrap_modes
