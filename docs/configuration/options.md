@@ -910,7 +910,7 @@ Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mod
 **Type:** Bool  
 **Default:** `False`  
 **Config default:** `false`  
-**Python & Config File Name:** split_on_trailing_comma
+**Python & Config File Name:** split_on_trailing_comma  
 **CLI Flags:**
 
 - --split-on-trailing-comma
@@ -1516,7 +1516,7 @@ If `True` isort will follow symbolic links when doing recursive sorting.
 
 ## Indented Import Headings
 
-If `True` isort will apply import headings to indended imports the same way it does unindented ones.
+If `True` isort will apply import headings to indented imports the same way it does unindented ones.
 
 **Type:** Bool  
 **Default:** `True`  

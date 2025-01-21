@@ -1,4 +1,5 @@
 """Finders try to find right section for passed module name"""
+
 import importlib.machinery
 import inspect
 import os
@@ -28,7 +29,7 @@ try:
     from pip_api import parse_requirements  # type: ignore
 
 except ImportError:
-    parse_requirements = None
+    parse_requirements = None  # type: ignore[assignment]
 
 
 @contextmanager
@@ -232,7 +233,6 @@ class ReqsBaseFinder(BaseFinder):
                 import_name, _, pypi_name = line.strip().partition(":")
                 mappings[pypi_name] = import_name
             return mappings
-            # return dict(tuple(line.strip().split(":")[::-1]) for line in f)
 
     def _load_names(self) -> List[str]:
         """Return list of thirdparty modules from requirements"""

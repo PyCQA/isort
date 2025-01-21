@@ -1,4 +1,5 @@
 """Defines all sections isort uses by default"""
+
 from typing import Tuple
 
 FUTURE: str = "FUTURE"

@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -45,9 +46,12 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
-    tomli: Any
+    tomllib: Any
 else:
-    from ._vendored import tomli
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        from ._vendored import tomli as tomllib
 
 _SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
@@ -248,14 +252,7 @@ class _Config:
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 12
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -342,7 +339,7 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "/#custom_config_files for more information."
+                    "#custom-config-files for more information."
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -550,8 +547,7 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -758,9 +754,11 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths
@@ -831,7 +829,7 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
 
     if file_path.endswith(".toml"):
         with open(file_path, "rb") as bin_config_file:
-            config = tomli.load(bin_config_file)
+            config = tomllib.load(bin_config_file)
         for section in sections:
             config_section = config
             for key in section.split("."):
@@ -860,7 +858,8 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
                         and config_key.endswith("}")
                         and extension
                         in map(
-                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
+                            lambda text: text.strip(),
+                            config_key[len("*.{") : -1].split(","),  # noqa
                         )
                     ):
                         settings.update(config.items(config_key))

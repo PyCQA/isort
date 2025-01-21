@@ -1,4 +1,5 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
+
 import argparse
 import functools
 import json
@@ -51,7 +52,7 @@ DEPRECATED_SINGLE_DASH_ARGS = {
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
-Nothing to do: no files or paths have have been passed in!
+Nothing to do: no files or paths have been passed in!
 
 Try one of the following:
 
@@ -1200,6 +1201,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     config=config,
                     check=check,
                     ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
                     config_trie=config_trie,

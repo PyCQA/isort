@@ -3,7 +3,7 @@ line-length = 100
 
 [tool.poetry]
 name = "isort"
-version = "5.12.0"
+version = "5.13.2"
 description = "A Python utility / library to sort Python imports."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -20,10 +20,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
@@ -39,67 +40,76 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.0"
-pipreqs = {version = "*", optional = true}
-requirementslib = {version = "*", optional = true}
-pip-api = {version = "*", optional = true}
-colorama = {version = ">=0.4.3", optional = true}
+python = ">=3.9.0"
+colorama = {version = ">=0.4.6", optional = true}
 setuptools = {version = "*", optional = true}
 
 [tool.poetry.extras]
 colors = ["colorama"]
 plugins = ["setuptools"]
 
-[tool.poetry.dev-dependencies]
-bandit = ">=1.6"
-black = ">=22.6.0"
+[tool.poetry.group.dev.dependencies]
+bandit = ">=1.7.7"
+black = ">=24.3.0"
+colorama = ">=0.4.6"
 coverage = {version = ">=6.5.0", extras = ["toml"]}
 cruft = ">=2.12.0"
 example-isort-sorting-plugin = ">=0.1.0"
 example-shared-isort-profile = ">=0.1.0"
 flake8 = ">=3.8.4"
-flake8-bugbear = ">=22.12.6,<23.0.0"
+flake8-bugbear = ">=22.12.12"
 httpx = ">=0.13.3"
-hypothesmith = ">=0.1.3"
-#hypothesis-auto = { version = ">=1.0.0" }
 hypothesis = ">=6.10.1"
-ipython = ">=7.16"
-mypy = ">=0.902,<1.0.0"
-pytest = ">=6.0"
-pytest-mock = ">=1.10"
-pep8-naming = ">=0.8.2"
-portray = ">=1.8.0"
-requirementslib = ">=1.5"
-pipreqs = ">=0.4.9"
-pip_api = ">=0.0.12"
-pylama = ">=7.7"
-pip = ">=21.1.1"
-py = ">=1.11.0"
-safety = ">=2.2.0"
-smmap2 = ">=3.0.1"
-gitdb2 = ">=4.0.2"
+hypothesmith = ">=0.1.3"
 libcst = ">=0.3.18"
+mypy = ">=1.14.1"
 mypy-extensions = ">=0.4.3"
+pep8-naming = ">=0.8.2"
+pip = ">=21.1.1"
+pip_api = ">=0.0.12"
+pipreqs = ">=0.4.9"
+portray = ">=1.8.0"
 pre-commit = ">=2.13.0"
+pylama = ">=7.7"
+pytest = ">=7.4.2"
 pytest-benchmark = ">=3.4.1"
+pytest-mock = ">=1.10"
+requirementslib = ">=1.5"
+safety = ">=2.2.0"
+stdlibs = ">=2024.10.21.16"
 toml = ">=0.10.2"
-types-pkg-resources = ">=0.1.2"
 types-colorama = ">=0.4.2"
+types-setuptools = ">=70.0.0.20240523"
 types-toml = ">=0.1.3"
 vulture = ">=1.0"
-jinja2 = "<3.1.0"
 
 [tool.coverage.paths]
-source = ["src", "*/site-packages"]
+source = [
+    "isort/",
+    ".tox/*/lib/python*/site-packages/isort/",
+    ".tox/*/lib/site-packages/isort/"
+]
 tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["git_portfolio", "tests"]
+source = ["isort", "tests"]
+omit = [
+    "isort/_vendored/*",
+    "tests/*",
+    "isort/deprecated/*",
+]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+fail_under = 99
+exclude_lines = [
+    "pragma: no cover",
+    "except ImportError:",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
 
 [tool.poetry.scripts]
 isort = "isort.main:main"
@@ -126,7 +136,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-python_version = 3.8
+python_version = 3.9
 strict = true
 follow_imports = "silent"
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"
@@ -136,3 +146,10 @@ module = "tests.*"
 allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
+
+[tool.isort]
+profile = "hug"
+src_paths = ["isort", "tests"]
+skip = [
+    "tests/unit/example_crlf_file.py"
+]

@@ -4,8 +4,43 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
-### 5.12.1 [in progress]
+### 5.13.2 December 13 2023
+
+   - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72
+   - Confine pre-commit to stages (#2213) @davidculley
+   - Fixed colors extras (#2212) @staticdev
+
+### 5.13.1 December 11 2023
+
+   - Fixed integration tests (#2208) @bp72
+   - Fixed normalizing imports from more than one level of parent modules (issue/2152) (#2191) @bp72
+   - Remove optional dependencies without extras (#2207) @staticdev
+
+### 5.13.0 December 9 2023
+
+  - Cleanup deprecated extras (#2089) @staticdev
   - Fixed #1989: settings lookup when working in stream based mode
+  - Fixed 80 line length for wemake linter (#2183) @skatromb
+  - Add support for Python 3.12 (#2175) @hugovk
+  - Fixed: add newest version to pre-commit docs (#2190) @AzulGarza
+  - Fixed assertions in test_git_hook (#2196) @mgorny
+  - Removed check for include_trailing_comma for the Hanging Indent wrap mode (#2192) @bp72
+  - Use the standard library tomllib on sufficiently new python (#2202) @eli-schwartz
+  - Update pre-commit.md version number (#2197) @nicobako
+  - doc: Update black_compatibility.md (#2177) @JSS95
+  - Fixed safety sept 2023 (#2178) @staticdev
+  - docs: fix black profile documentation (#2163) @nijel
+  - Fixed typo: indended -> indented (#2161) @vadimkerr
+  - Docs(configuration/options.md): fix missing trailing spaces for hard linebreak (#2157) @JoeyTeng
+  - Update pre-commit.md (#2148) @godiard
+  - chore: move configurations to pyproject.toml (#2115) @SauravMaheshkar
+  - Fixed typo in README (#2112) @stefmolin
+  - Update version in pre-commit setup to avoid installation issue with poetry (#2103) @stefmolin
+  - Skip .pytype directory by default. (#2098) @manueljacob
+  - Fixed a tip block styling in the Config Files section (#2097) @Klavionik
+  - Do not cache configuration files (#1995) @kaste
+  - Derive settings_path from --filename (#1992) @kaste
+  - Fixed year of version 5.12.0 in CHANGELOG.md (#2082) @DjLegolas
   
 ### 5.12.0 January 28 2023
 

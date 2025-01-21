@@ -66,7 +66,7 @@ def section_key(line: str, config: Config) -> str:
         if match:  # pragma: no cover - regex always matches if line starts with "from ."
             line = f"from {' '.join(match.groups())}"
     if config.group_by_package and line.strip().startswith("from"):
-        line = line.split(" import", 1)[0]
+        line = line.split(" import ", 1)[0]
 
     if config.lexicographical:
         line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
@@ -117,7 +117,7 @@ def naturally(
     else:
 
         def key_callback(text: str) -> List[Any]:
-            return _natural_keys(key(text))  # type: ignore
+            return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 

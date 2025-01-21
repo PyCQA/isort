@@ -1,5 +1,6 @@
 import os
 import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -58,6 +59,7 @@ class Trie:
         return last_stored_config
 
 
+@lru_cache(maxsize=1000)
 def exists_case_sensitive(path: str) -> bool:
     """Returns if the given path exists and also matches the case on Windows.
 
@@ -66,7 +68,7 @@ def exists_case_sensitive(path: str) -> bool:
     Python can only import using the case of the real file.
     """
     result = os.path.exists(path)
-    if (sys.platform.startswith("win") or sys.platform == "darwin") and result:  # pragma: no cover
+    if result and (sys.platform.startswith("win") or sys.platform == "darwin"):  # pragma: no cover
         directory, basename = os.path.split(path)
         result = basename in os.listdir(directory)
     return result

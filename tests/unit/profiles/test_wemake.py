@@ -3,6 +3,7 @@
 Snippets are taken directly from the wemake-python-styleguide project here:
 https://github.com/wemake-services/wemake-python-styleguide
 """
+
 from functools import partial
 
 from ..utils import isort_test
@@ -84,4 +85,36 @@ from wemake_python_styleguide.transformations.ast.enhancements import (
 @final
 class _ClassVisitor(ast.NodeVisitor): ...
 """
+    )
+
+
+def test_wemake_snippet_four():
+    """80 line length should not be fixed"""
+    wemake_isort_test(
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
+""",
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
+""",
+    )
+
+
+def test_wemake_snippet_five():
+    """81 line length should be fixed"""
+    wemake_isort_test(
+        """
+from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union1
+""",
+        """
+from typing import (
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union1,
+)
+""",
     )

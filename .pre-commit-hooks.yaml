@@ -1,8 +1,9 @@
 -   id: isort
     name: isort
     entry: isort
+    stages: [pre-commit, pre-merge-commit, pre-push, manual]
     require_serial: true
     language: python
     types_or: [cython, pyi, python]
     args: ['--filter-files']
-    minimum_pre_commit_version: '2.9.2'
+    minimum_pre_commit_version: '3.2.0'

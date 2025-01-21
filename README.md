@@ -3,8 +3,8 @@
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
-[![Test Status](https://github.com/pycqa/isort/workflows/Test/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ATest)
-[![Lint Status](https://github.com/pycqa/isort/workflows/Lint/badge.svg?branch=develop)](https://github.com/pycqa/isort/actions?query=workflow%3ALint)
+[![Test](https://github.com/PyCQA/isort/actions/workflows/test.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/test.yml)
+[![Lint](https://github.com/PyCQA/isort/actions/workflows/lint.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/lint.yml)
 [![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/main/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/isort/)
 [![Join the chat at https://gitter.im/timothycrosley/isort](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/isort?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -19,11 +19,11 @@ _________________
 
 isort your imports, so you don't have to.
 
-isort is a Python utility / library to sort imports alphabetically, and
-automatically separated into sections and by type. It provides a command line
+isort is a Python utility / library to sort imports alphabetically and
+automatically separate into sections and by type. It provides a command line
 utility, Python library and [plugins for various
 editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
-quickly sort all your imports. It requires Python 3.8+ to run but
+quickly sort all your imports. It requires Python 3.9+ to run but
 supports formatting Python 2 code too.
 
 - [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try.html)
