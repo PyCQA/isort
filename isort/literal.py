@@ -86,7 +86,7 @@ def register_type(
 
 @register_type("dict", dict)
 def _dict(value: Dict[Any, Any], printer: ISortPrettyPrinter) -> str:
-    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))  # type: ignore
+    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))
 
 
 @register_type("list", list)

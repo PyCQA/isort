@@ -5551,7 +5551,7 @@ def test_find_imports_in_stream() -> None:
     """Ensure that find_imports_in_stream can work with nonseekable streams like STDOUT"""
 
     class NonSeekableTestStream(StringIO):
-        def seek(self, position):
+        def seek(self, offset: int, whence: int = os.SEEK_SET, /) -> int:
             raise OSError("Stream is not seekable")
 
         def seekable(self):
