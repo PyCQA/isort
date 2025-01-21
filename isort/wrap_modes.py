@@ -1,4 +1,5 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
+
 import enum
 from inspect import signature
 from typing import Any, Callable, Dict, List
@@ -141,9 +142,6 @@ def hanging_indent(**interface: Any) -> str:
             )
         interface["statement"] = next_statement
 
-    interface[
-        "statement"
-    ] = f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''}"
     if interface["comments"]:
         statement_with_comments = isort.comments.add_to_line(
             interface["comments"],

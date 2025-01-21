@@ -130,7 +130,7 @@ description_mapping = {
     "git_ignore": "If `True` isort will honor ignores within locally defined .git_ignore files.",
     "formatting_function": "The fully qualified Python path of a function to apply to format code sorted by isort.",
     "group_by_package": "If `True` isort will automatically create section groups by the top-level package they come from.",
-    "indented_import_headings": "If `True` isort will apply import headings to indended imports the same way it does unindented ones.",
+    "indented_import_headings": "If `True` isort will apply import headings to indented imports the same way it does unindented ones.",
     "import_headings": "A mapping of import sections to import heading comments that should show above them.",
     "import_footers": "A mapping of import sections to import footer comments that should show below them.",
 }

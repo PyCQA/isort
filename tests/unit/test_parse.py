@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -58,7 +59,7 @@ def test_fuzz__infer_line_separator(contents):
 
 @given(import_string=st.text())
 def test_fuzz__strip_syntax(import_string):
-    parse._strip_syntax(import_string=import_string)
+    parse.strip_syntax(import_string=import_string)
 
 
 @given(line=st.text(), config=st.builds(Config))
@@ -81,3 +82,29 @@ def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
         section_comments=section_comments,
         needs_import=needs_import,
     )
+
+
+@pytest.mark.parametrize(
+    "raw_line, expected",
+    (
+        ("from . cimport a", "from . cimport a"),
+        ("from.cimport a", "from . cimport a"),
+        ("from..cimport a", "from .. cimport a"),
+        ("from . import a", "from . import a"),
+        ("from.import a", "from . import a"),
+        ("from..import a", "from .. import a"),
+        ("import *", "import *"),
+        ("import*", "import *"),
+        ("from . import a", "from . import a"),
+        ("from .import a", "from . import a"),
+        ("from ..import a", "from .. import a"),
+        ("from . cimport a", "from . cimport a"),
+        ("from .cimport a", "from . cimport a"),
+        ("from ..cimport a", "from .. cimport a"),
+        ("from\t.\timport a", "from . import a"),
+    ),
+)
+def test_normalize_line(raw_line, expected):
+    line, returned_raw_line = parse.normalize_line(raw_line)
+    assert line == expected
+    assert returned_raw_line == raw_line
