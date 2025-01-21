@@ -17,7 +17,7 @@ def _as_config(kw) -> isort.Config:
         return isort.Config(**kw)
 
 
-def configs() -> st.SearchStrategy[isort.Config]:
+def configs() -> st.SearchStrategy:
     """Generate arbitrary Config objects."""
     skip = {
         "line_ending",
@@ -977,7 +977,7 @@ else:  # 2.x
         virtual_env="",
         conda_env="",
         ensure_newline_before_comments=False,
-        directory="/home/abuild/rpmbuild/BUILD/isort-5.5.1",
+        directory="/home/abuild/rpmbuild/BUILD/isort-5.11.0",
         profile="",
         honor_noqa=False,
         old_finders=False,
@@ -1842,7 +1842,7 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
         virtual_env="",
         conda_env="",
         ensure_newline_before_comments=False,
-        directory="/home/abuild/rpmbuild/BUILD/isort-5.5.1",
+        directory="/home/abuild/rpmbuild/BUILD/isort-5.11.0",
         profile="",
         honor_noqa=False,
         old_finders=False,

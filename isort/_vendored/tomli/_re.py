@@ -32,7 +32,7 @@ RE_NUMBER = re.compile(
 )
 RE_LOCALTIME = re.compile(_TIME_RE_STR)
 RE_DATETIME = re.compile(
-    fr"""
+    rf"""
 ([0-9]{{4}})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])  # date, e.g. 1988-10-27
 (?:
     [T ]

@@ -66,7 +66,7 @@ def section_key(line: str, config: Config) -> str:
         if match:  # pragma: no cover - regex always matches if line starts with "from ."
             line = f"from {' '.join(match.groups())}"
     if config.group_by_package and line.strip().startswith("from"):
-        line = line.split(" import", 1)[0]
+        line = line.split(" import ", 1)[0]
 
     if config.lexicographical:
         line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
@@ -75,7 +75,7 @@ def section_key(line: str, config: Config) -> str:
         line = re.sub("^import ", "", line)
     if config.sort_relative_in_force_sorted_sections:
         sep = " " if config.reverse_relative else "_"
-        line = re.sub(r"^(\.+)", fr"\1{sep}", line)
+        line = re.sub(r"^(\.+)", rf"\1{sep}", line)
     if line.split(" ")[0] in config.force_to_top:
         section = "A"
     # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
@@ -117,7 +117,7 @@ def naturally(
     else:
 
         def key_callback(text: str) -> List[Any]:
-            return _natural_keys(key(text))  # type: ignore
+            return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 

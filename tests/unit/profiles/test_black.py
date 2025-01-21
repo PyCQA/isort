@@ -10,7 +10,7 @@ def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
         return black.format_file_contents(
             code,
             fast=True,
-            mode=black.FileMode(  # type: ignore
+            mode=black.FileMode(
                 is_pyi=is_pyi,
                 line_length=line_length,
             ),
@@ -19,20 +19,25 @@ def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
         return code
 
 
-def black_test(code: str, expected_output: str = ""):
+def black_test(code: str, expected_output: str = "", *, is_pyi: bool = False, **config_kwargs):
     """Tests that the given code:
     - Behaves the same when formatted multiple times with isort.
     - Agrees with black formatting.
     - Matches the desired output or itself if none is provided.
     """
     expected_output = expected_output or code
+    config_kwargs = {
+        "extension": "pyi" if is_pyi else None,
+        "profile": "black",
+        **config_kwargs,
+    }
 
     # output should stay consistent over multiple runs
-    output = isort.code(code, profile="black")
-    assert output == isort.code(code, profile="black")
+    output = isort.code(code, **config_kwargs)
+    assert output == isort.code(code, **config_kwargs)
 
     # output should agree with black
-    black_output = black_format(output)
+    black_output = black_format(output, is_pyi=is_pyi)
     assert output == black_output
 
     # output should match expected output
@@ -367,5 +372,87 @@ if TYPE_CHECKING:
     import colorama  # noqa: F401
 
 DEFAULT_LINE_LENGTH = 88
+""",
+    )
+
+
+def test_black_pyi_file():
+    """Test consistent code formatting between isort and black for `.pyi` files.
+
+    black only allows no more than two consecutive blank lines in a `.pyi` file.
+    """
+
+    black_test(
+        """# comment
+
+
+import math
+
+from typing import Sequence
+import numpy as np
+
+
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+
+
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+""",
+        """# comment
+
+
+import math
+from typing import Sequence
+
+import numpy as np
+
+
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+
+
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+""",
+        is_pyi=False,
+        lines_before_imports=2,
+        lines_after_imports=2,
+    )
+
+    black_test(
+        """# comment
+
+
+import math
+
+from typing import Sequence
+import numpy as np
+
+
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+""",
+        """# comment
+
+import math
+from typing import Sequence
+
+import numpy as np
+
+def add(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
+""",
+        is_pyi=True,
+        lines_before_imports=2,  # will be ignored
+        lines_after_imports=2,  # will be ignored
+    )
+
+
+def test_black_trailing_comma():
+    black_test(
+        "from x import (a, b, c,)\n",
+        """\
+from x import (
+    a,
+    b,
+    c,
+)
 """,
     )

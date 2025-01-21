@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "example_isort_formatting_plugin"
-version = "0.0.5"
+version = "0.1.1"
 description = "An example plugin that modifies isort formatting using black."
 authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
@@ -9,12 +9,12 @@ license = "MIT"
 example = "example_isort_formatting_plugin:black_format_import_section"
 
 [tool.poetry.dependencies]
-python = ">=3.6.2"
-isort = "^5.1.4"
-black = ">20.08b1"
+python = ">=3.10.0"
+isort = ">=5.12.0"
+black = ">=24.3.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"

@@ -1,4 +1,5 @@
 """Finders try to find right section for passed module name"""
+
 import importlib.machinery
 import inspect
 import os
@@ -28,13 +29,7 @@ try:
     from pip_api import parse_requirements  # type: ignore
 
 except ImportError:
-    parse_requirements = None
-
-try:
-    from requirementslib import Pipfile  # type: ignore
-
-except ImportError:
-    Pipfile = None
+    parse_requirements = None  # type: ignore[assignment]
 
 
 @contextmanager
@@ -63,7 +58,7 @@ class ForcedSeparateFinder(BaseFinder):
             # Ensure all forced_separate patterns will match to end of string
             path_glob = forced_separate
             if not forced_separate.endswith("*"):
-                path_glob = "%s*" % forced_separate
+                path_glob = f"{forced_separate}*"
 
             if fnmatch(module_name, path_glob) or fnmatch(module_name, "." + path_glob):
                 return forced_separate
@@ -238,7 +233,6 @@ class ReqsBaseFinder(BaseFinder):
                 import_name, _, pypi_name = line.strip().partition(":")
                 mappings[pypi_name] = import_name
             return mappings
-            # return dict(tuple(line.strip().split(":")[::-1]) for line in f)
 
     def _load_names(self) -> List[str]:
         """Return list of thirdparty modules from requirements"""
@@ -262,7 +256,7 @@ class ReqsBaseFinder(BaseFinder):
         if os.path.isfile(path):
             path = os.path.dirname(path)
 
-        for path in self._get_parents(path):
+        for path in self._get_parents(path):  # noqa
             yield from self._get_files_from_dir(path)
 
     def _normalize_name(self, name: str) -> str:
@@ -338,26 +332,12 @@ class RequirementsFinder(ReqsBaseFinder):
         result = []
 
         with chdir(os.path.dirname(path)):
-            requirements = parse_requirements(path)
+            requirements = parse_requirements(Path(path))
             for req in requirements.values():
                 if req.name:
                     result.append(req.name)
 
         return result
-
-
-class PipfileFinder(ReqsBaseFinder):
-    enabled = bool(Pipfile)
-
-    def _get_names(self, path: str) -> Iterator[str]:
-        with chdir(path):
-            project = Pipfile.load(path)
-            for req in project.packages:
-                yield req.name
-
-    def _get_files_from_dir(self, path: str) -> Iterator[str]:
-        if "Pipfile" in os.listdir(path):
-            yield path
 
 
 class DefaultFinder(BaseFinder):
@@ -371,7 +351,6 @@ class FindersManager:
         LocalFinder,
         KnownPatternFinder,
         PathFinder,
-        PipfileFinder,
         RequirementsFinder,
         DefaultFinder,
     )

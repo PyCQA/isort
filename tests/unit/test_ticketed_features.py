@@ -1,18 +1,20 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+
+import warnings
 from functools import partial
 from io import StringIO
 
 import pytest
 
 import isort
-from isort import Config, api, exceptions
+from isort import Config, exceptions
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
     """Test to ensure even if a semicolon is in the decorator in the line following an import
-    the correct line spacing detrmination will be made.
+    the correct line spacing determination will be made.
     See: https://github.com/pycqa/isort/issues/1178.
     """
     assert isort.check_code(
@@ -237,15 +239,6 @@ def test_isort_supports_shared_profiles_issue_970():
         assert isort.code("import a", profile="madeupfake") == "import a\n"  # non-existent profile
 
 
-def test_isort_supports_formatting_plugins_issue_1353():
-    """Test to ensure isort provides a way to create and share formatting plugins.
-    See: https://github.com/pycqa/isort/issues/1353.
-    """
-    assert isort.code("import a", formatter="example") == "import a\n"  # formatting plugin
-    with pytest.raises(exceptions.FormattingPluginDoesNotExist):
-        assert isort.code("import a", formatter="madeupfake") == "import a\n"  # non-existent plugin
-
-
 def test_treating_comments_as_code_issue_1357():
     """Test to ensure isort provides a way to treat comments as code.
     See: https://github.com/pycqa/isort/issues/1357
@@ -363,175 +356,6 @@ import a
 import a
 import c
 """
-    )
-
-
-def test_isort_literals_issue_1358():
-    assert (
-        isort.code(
-            """
-import x
-import a
-
-
-# isort: list
-__all__ = ["b", "a", "b"]
-
-# isort: unique-list
-__all__ = ["b", "a", "b"]
-
-# isort: tuple
-__all__ = ("b", "a", "b")
-
-# isort: unique-tuple
-__all__ = ("b", "a", "b")
-
-# isort: set
-__all__ = {"b", "a", "b"}
-
-
-def method():
-    # isort: list
-    x = ["b", "a"]
-
-
-# isort: dict
-y = {"z": "z", "b": "b", "b": "c"}"""
-        )
-        == """
-import a
-import x
-
-# isort: list
-__all__ = ['a', 'b', 'b']
-
-# isort: unique-list
-__all__ = ['a', 'b']
-
-# isort: tuple
-__all__ = ('a', 'b', 'b')
-
-# isort: unique-tuple
-__all__ = ('a', 'b')
-
-# isort: set
-__all__ = {'a', 'b'}
-
-
-def method():
-    # isort: list
-    x = ['a', 'b']
-
-
-# isort: dict
-y = {'b': 'c', 'z': 'z'}"""
-    )
-    assert (
-        isort.code(
-            """
-import x
-import a
-
-
-# isort: list
-__all__ = ["b", "a", "b"]
-
-# isort: unique-list
-__all__ = ["b", "a", "b"]
-
-# isort: tuple
-__all__ = ("b", "a", "b")
-
-# isort: unique-tuple
-__all__ = ("b", "a", "b")
-
-# isort: set
-__all__ = {"b", "a", "b"}
-
-
-def method():
-    # isort: list
-    x = ["b", "a"]
-
-
-# isort: assignments
-d = 1
-b = 2
-a = 3
-
-# isort: dict
-y = {"z": "z", "b": "b", "b": "c"}""",
-            formatter="example",
-        )
-        == """
-import a
-import x
-
-# isort: list
-__all__ = ["a", "b", "b"]
-
-# isort: unique-list
-__all__ = ["a", "b"]
-
-# isort: tuple
-__all__ = ("a", "b", "b")
-
-# isort: unique-tuple
-__all__ = ("a", "b")
-
-# isort: set
-__all__ = {"a", "b"}
-
-
-def method():
-    # isort: list
-    x = ["a", "b"]
-
-
-# isort: assignments
-a = 3
-b = 2
-d = 1
-
-# isort: dict
-y = {"b": "c", "z": "z"}"""
-    )
-    assert api.sort_stream(
-        input_stream=StringIO(
-            """
-import a
-import x
-
-# isort: list
-__all__ = ["b", "a", "b"]
-
-# isort: unique-list
-__all__ = ["b", "a", "b"]
-
-# isort: tuple
-__all__ = ("b", "a", "b")
-
-# isort: unique-tuple
-__all__ = ("b", "a", "b")
-
-# isort: set
-__all__ = {"b", "a", "b"}
-
-
-def method():
-    # isort: list
-    x = ["b", "a"]
-
-
-# isort: assignments
-d = 1
-b = 2
-a = 3
-
-# isort: dict
-y = {"z": "z", "b": "b", "b": "c"}""",
-        ),
-        output_stream=StringIO(),
     )
 
 
@@ -733,7 +557,6 @@ def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
     assert not out
 
     # Present in an automatically loaded configuration file
-    isort.settings._find_config.cache_clear()
     settings_file.write(
         """
 [isort]
@@ -788,16 +611,15 @@ quiet = true
     with pytest.warns(UserWarning):
         assert not Config(settings_file=str(settings_file)).quiet
 
-    isort.settings._get_config_data.cache_clear()
     settings_file.write(
         """
 [isort]
 quiet = true
 """
     )
-    with pytest.warns(None) as warning:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         assert Config(settings_file=str(settings_file)).quiet
-    assert not warning
 
 
 def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
@@ -1234,3 +1056,20 @@ def test_sort_configurable_sort_issue_1732() -> None:
     )
     with pytest.raises(exceptions.SortingFunctionDoesNotExist):
         isort.code(test_input, sort_order="round")
+
+
+def test_cython_pure_python_imports_2062():
+    """Test to ensure an import form a cython.cimports remains import, not cimport.
+    See: https://github.com/pycqa/isort/issues/2062.
+    """
+    assert isort.check_code(
+        """
+import cython
+from cython.cimports.libc import math
+
+
+def use_libc_math():
+    return math.ceil(5.5)
+""",
+        show_diff=True,
+    )

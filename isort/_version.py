@@ -1,1 +1,3 @@
-__version__ = "5.10.1"
+from importlib import metadata
+
+__version__ = metadata.version("isort")

@@ -1,4 +1,5 @@
 """Contains all logic related to placing an import within a certain section."""
+
 import importlib
 from fnmatch import fnmatch
 from functools import lru_cache
@@ -34,7 +35,7 @@ def _forced_separate(name: str, config: Config) -> Optional[Tuple[str, str]]:
         # Ensure all forced_separate patterns will match to end of string
         path_glob = forced_separate
         if not forced_separate.endswith("*"):
-            path_glob = "%s*" % forced_separate
+            path_glob = f"{forced_separate}*"
 
         if fnmatch(name, path_glob) or fnmatch(name, "." + path_glob):
             return (forced_separate, f"Matched forced_separate ({forced_separate}) config value.")

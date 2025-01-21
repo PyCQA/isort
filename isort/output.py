@@ -209,16 +209,20 @@ def sorted_imports(
                     break
 
             if config.lines_after_imports != -1:
-                formatted_output[imports_tail:0] = [
-                    "" for line in range(config.lines_after_imports)
-                ]
+                lines_after_imports = config.lines_after_imports
+                if config.profile == "black" and extension == "pyi":  # special case for black
+                    lines_after_imports = 1
+                formatted_output[imports_tail:0] = ["" for line in range(lines_after_imports)]
             elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
                 formatted_output[imports_tail:0] = ["", ""]
             else:
                 formatted_output[imports_tail:0] = [""]
 
             if config.lines_before_imports != -1:
-                formatted_output[:0] = ["" for line in range(config.lines_before_imports)]
+                lines_before_imports = config.lines_before_imports
+                if config.profile == "black" and extension == "pyi":  # special case for black
+                    lines_before_imports = 1
+                formatted_output[:0] = ["" for line in range(lines_before_imports)]
 
     if parsed.place_imports:
         new_out_lines = []
@@ -236,6 +240,9 @@ def sorted_imports(
     return _output_as_string(formatted_output, parsed.line_separator)
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled.
+# skipcq: PY-R1000
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
@@ -505,7 +512,21 @@ def _with_from_imports(
                 ):
                     do_multiline_reformat = True
 
-                if do_multiline_reformat:
+                if (
+                    import_statement
+                    and config.split_on_trailing_comma
+                    and module in parsed.trailing_commas
+                ):
+                    import_statement = wrap.import_statement(
+                        import_start=import_start,
+                        from_imports=from_import_section,
+                        comments=comments,
+                        line_separator=parsed.line_separator,
+                        config=config,
+                        explode=True,
+                    )
+
+                elif do_multiline_reformat:
                     import_statement = wrap.import_statement(
                         import_start=import_start,
                         from_imports=from_import_section,
@@ -530,7 +551,7 @@ def _with_from_imports(
                             > config.line_length
                         ):
                             import_statement = other_import_statement
-                if not do_multiline_reformat and len(import_statement) > config.line_length:
+                elif len(import_statement) > config.line_length:
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)
 
             if import_statement:

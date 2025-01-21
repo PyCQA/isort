@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from isort import api
@@ -7,7 +9,7 @@ fixed_content = "import a\nimport b\n"
 
 
 @pytest.fixture
-def imperfect(tmpdir) -> None:
+def imperfect(tmpdir) -> Any:
     imperfect_file = tmpdir.join("test_needs_changes.py")
     imperfect_file.write_text(imperfect_content, "utf8")
     return imperfect_file

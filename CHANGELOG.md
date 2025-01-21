@@ -4,6 +4,103 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.13.2 December 13 2023
+
+   - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72
+   - Confine pre-commit to stages (#2213) @davidculley
+   - Fixed colors extras (#2212) @staticdev
+
+### 5.13.1 December 11 2023
+
+   - Fixed integration tests (#2208) @bp72
+   - Fixed normalizing imports from more than one level of parent modules (issue/2152) (#2191) @bp72
+   - Remove optional dependencies without extras (#2207) @staticdev
+
+### 5.13.0 December 9 2023
+
+  - Cleanup deprecated extras (#2089) @staticdev
+  - Fixed #1989: settings lookup when working in stream based mode
+  - Fixed 80 line length for wemake linter (#2183) @skatromb
+  - Add support for Python 3.12 (#2175) @hugovk
+  - Fixed: add newest version to pre-commit docs (#2190) @AzulGarza
+  - Fixed assertions in test_git_hook (#2196) @mgorny
+  - Removed check for include_trailing_comma for the Hanging Indent wrap mode (#2192) @bp72
+  - Use the standard library tomllib on sufficiently new python (#2202) @eli-schwartz
+  - Update pre-commit.md version number (#2197) @nicobako
+  - doc: Update black_compatibility.md (#2177) @JSS95
+  - Fixed safety sept 2023 (#2178) @staticdev
+  - docs: fix black profile documentation (#2163) @nijel
+  - Fixed typo: indended -> indented (#2161) @vadimkerr
+  - Docs(configuration/options.md): fix missing trailing spaces for hard linebreak (#2157) @JoeyTeng
+  - Update pre-commit.md (#2148) @godiard
+  - chore: move configurations to pyproject.toml (#2115) @SauravMaheshkar
+  - Fixed typo in README (#2112) @stefmolin
+  - Update version in pre-commit setup to avoid installation issue with poetry (#2103) @stefmolin
+  - Skip .pytype directory by default. (#2098) @manueljacob
+  - Fixed a tip block styling in the Config Files section (#2097) @Klavionik
+  - Do not cache configuration files (#1995) @kaste
+  - Derive settings_path from --filename (#1992) @kaste
+  - Fixed year of version 5.12.0 in CHANGELOG.md (#2082) @DjLegolas
+  
+### 5.12.0 January 28 2023
+
+  - Removed support for Python 3.7
+  - Fixed incompatiblity with latest poetry version
+  - Added support for directory limitations within built in git hook
+
+### 5.11.5 January 30 2023 [hotfix]
+  - Fixed incompatiblity with latest poetry version
+
+### 5.11.4 December 21 2022
+
+  - Fixed #2038 (again): stop installing documentation files to top-level site-packages (#2057) @mgorny
+  - CI: only run release workflows for upstream (#2052) @hugovk
+  - Tests: remove obsolete toml import from the test suite (#1978) @mgorny
+  - CI: bump Poetry 1.3.1 (#2058) @staticdev
+
+### 5.11.3 December 16 2022
+
+  - Fixed #2007: settings for py3.11 (#2040) @staticdev
+  - Fixed #2038: packaging pypoetry (#2042) @staticdev
+  - Docs: renable portray (#2043) @timothycrosley
+  - Ci: add minimum GitHub token permissions for workflows (#1969) @varunsh-coder
+  - Ci: general CI improvements (#2041) @staticdev
+  - Ci: add release workflow (#2026) @staticdev
+
+### 5.11.2 December 12 2022
+
+  - Hotfix #2034: isort --version is not accurate on 5.11.x releases (#2034) @gschaffner
+
+### 5.11.1 December 12 2022
+
+  - Hotfix #2031: only call `colorama.init` if `colorama` is available (#2032) @tomaarsen
+
+### 5.11.0 December 12 2022
+
+  - Added official support for Python 3.11 (#1996, #2008, #2011) @staticdev
+  - Dropped support for Python 3.6 (#2019) @barrelful
+  - Fixed problematic tests (#2021, #2022) @staticdev
+  - Fixed #1960: Rich compatibility (#1961) @ofek
+  - Fixed #1945, #1986: Python 4.0 upper bound dependency resolving issues @staticdev
+  - Fixed Pyodide CDN URL (#1991) @andersk
+  - Docs: clarify description of use_parentheses (#1941) @mgedmin
+  - Fixed #1976: `black` compatibility for `.pyi` files @XuehaiPan
+  - Implemented #1683: magic trailing comma option (#1876) @legau
+  - Add missing space in unrecoverable exception message (#1933) @andersk
+  - Fixed #1895: skip-gitignore: use allow list, not deny list @bmalehorn
+  - Fixed #1917: infinite loop for unmatched parenthesis (#1919) @anirudnits
+  - Docs: shared profiles (#1896) @matthewhughes934
+  - Fixed build-backend values in the example plugins (#1892) @mgorny
+  - Remove reference to jamescurtin/isort-action (#1885) @AndrewLane
+  - Split long cython import lines (#1931) @davidcollins001
+  - Update plone profile: copy of `black`, plus three settings. (#1926) @mauritsvanrees
+  - Fixed #1815, #1862: Add a command-line flag to sort all re-exports (#1863) @parafoxia
+  - Fixed #1854: `lines_before_imports` appending lines after comments (#1861) @legau
+  - Remove redundant `multi_line_output = 3` from "Compatibility with black" (#1858) @jdufresne
+  - Add tox config example (#1856) @umonaca
+  - Docs: add examples for frozenset and tuple settings (#1822) @sgaist
+  - Docs: add multiple config documentation (#1850) @anirudnits
+
 ### 5.10.1 November 8 2021
   - Fixed #1819: Occasional inconsistency with multiple src paths.
   - Fixed #1840: skip_file ignored when on the first docstring line

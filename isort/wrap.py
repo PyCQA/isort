@@ -4,7 +4,7 @@ from typing import List, Optional, Sequence
 
 from .settings import DEFAULT_CONFIG, Config
 from .wrap_modes import WrapModes as Modes
-from .wrap_modes import formatter_from_string
+from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 
 def import_statement(
@@ -14,12 +14,19 @@ def import_statement(
     line_separator: str = "\n",
     config: Config = DEFAULT_CONFIG,
     multi_line_output: Optional[Modes] = None,
+    explode: bool = False,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
-    formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
+    if explode:
+        formatter = vertical_hanging_indent
+        line_length = 1
+        include_trailing_comma = True
+    else:
+        formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)
+        line_length = config.wrap_length or config.line_length
+        include_trailing_comma = config.include_trailing_comma
     dynamic_indent = " " * (len(import_start) + 1)
     indent = config.indent
-    line_length = config.wrap_length or config.line_length
     statement = formatter(
         statement=import_start,
         imports=copy.copy(from_imports),
@@ -29,7 +36,7 @@ def import_statement(
         comments=comments,
         line_separator=line_separator,
         comment_prefix=config.comment_prefix,
-        include_trailing_comma=config.include_trailing_comma,
+        include_trailing_comma=include_trailing_comma,
         remove_comments=config.ignore_comments,
     )
     if config.balanced_wrapping:
@@ -52,7 +59,7 @@ def import_statement(
                 comments=comments,
                 line_separator=line_separator,
                 comment_prefix=config.comment_prefix,
-                include_trailing_comma=config.include_trailing_comma,
+                include_trailing_comma=include_trailing_comma,
                 remove_comments=config.ignore_comments,
             )
             lines = new_import_statement.split(line_separator)
@@ -69,7 +76,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
         comment = None
         if "#" in content:
             line_without_comment, comment = content.split("#", 1)
-        for splitter in ("import ", ".", "as "):
+        for splitter in ("import ", "cimport ", ".", "as "):
             exp = r"\b" + re.escape(splitter) + r"\b"
             if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
                 splitter
@@ -85,9 +92,9 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                         )
                         else ""
                     )
-                    line_parts[
-                        -1
-                    ] = f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
+                    line_parts[-1] = (
+                        f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
+                    )
                 next_line = []
                 while (len(content) + 2) > (
                     config.wrap_length or config.line_length
@@ -115,20 +122,21 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                             _separator = line_separator
                         else:
                             _separator = ""
-                        _comment = ""
+                        noqa_comment = ""
                         if comment and "noqa" in comment:
-                            _comment = f"{config.comment_prefix}{comment}"
+                            noqa_comment = f"{config.comment_prefix}{comment}"
                             cont_line = cont_line.rstrip()
                             _comma = "," if config.include_trailing_comma else ""
                         output = (
-                            f"{content}{splitter}({_comment}"
+                            f"{content}{splitter}({noqa_comment}"
                             f"{line_separator}{cont_line}{_comma}{_separator})"
                         )
-                    lines = output.split(line_separator)
-                    if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
-                        content, comment = lines[-1].split(config.comment_prefix, 1)
-                        lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
-                    return line_separator.join(lines)
+                        lines = output.split(line_separator)
+                        if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
+                            content, comment = lines[-1].split(config.comment_prefix, 1)
+                            lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
+                        output = line_separator.join(lines)
+                    return output
                 return f"{content}{splitter}\\{line_separator}{cont_line}"
     elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
         return f"{content}{config.comment_prefix} NOQA"

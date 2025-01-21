@@ -1,4 +1,5 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
+
 import argparse
 import functools
 import json
@@ -51,7 +52,7 @@ DEPRECATED_SINGLE_DASH_ARGS = {
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
-Nothing to do: no files or paths have have been passed in!
+Nothing to do: no files or paths have been passed in!
 
 Try one of the following:
 
@@ -120,7 +121,7 @@ def _print_hard_fail(
 ) -> None:
     """Fail on unrecoverable exception with custom message."""
     message = message or (
-        f"Unrecoverable exception thrown when parsing {offending_file or ''}!"
+        f"Unrecoverable exception thrown when parsing {offending_file or ''}! "
         "This should NEVER happen.\n"
         "If encountered, please open an issue: https://github.com/PyCQA/isort/issues/new"
     )
@@ -323,6 +324,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Override the format used to print success.",
     )
     general_group.add_argument(
+        "--srx",
         "--sort-reexports",
         dest="sort_reexports",
         action="store_true",
@@ -714,6 +716,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         dest="star_first",
         action="store_true",
     )
+    output_group.add_argument(
+        "--split-on-trailing-comma",
+        help="Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode",
+        dest="split_on_trailing_comma",
+        action="store_true",
+    )
 
     section_group.add_argument(
         "--sd",
@@ -960,7 +968,7 @@ def _preconvert(item: Any) -> Union[str, List[Any]]:
         return str(item)
     if callable(item) and hasattr(item, "__name__"):
         return str(item.__name__)
-    raise TypeError("Unserializable object {} of type {}".format(item, type(item)))
+    raise TypeError(f"Unserializable object {item} of type {type(item)}")
 
 
 def identify_imports_main(
@@ -1081,7 +1089,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         return
     if "settings_path" not in arguments:
         arguments["settings_path"] = (
-            os.path.abspath(file_names[0] if file_names else ".") or os.getcwd()
+            arguments.get("filename", None) or os.getcwd()
+            if file_names == ["-"]
+            else os.path.abspath(file_names[0] if file_names else ".")
         )
         if not os.path.isdir(arguments["settings_path"]):
             arguments["settings_path"] = os.path.dirname(arguments["settings_path"])
@@ -1191,6 +1201,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                     config=config,
                     check=check,
                     ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
                     write_to_stdout=write_to_stdout,
                     extension=ext_format,
                     config_trie=config_trie,

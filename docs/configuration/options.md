@@ -57,10 +57,10 @@ Force specific imports to the top of their appropriate section.
 
 ## Skip
 
-Files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+Files that isort should skip over. If you want to skip multiple files you should specify twice: `--skip file1 --skip file2`. Values can be file names, directory names or file paths. To skip all files in a nested path, use [`--skip-glob`](#skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
-**Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
+**Default:** `('.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.pytype' '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv')`  
 **Config default:** `['.bzr', '.direnv', '.eggs', '.git', '.hg', '.mypy_cache', '.nox', '.pants.d', '.svn', '.tox', '.venv', '__pypackages__', '_build', 'buck-out', 'build', 'dist', 'node_modules', 'venv']`  
 **Python & Config File Name:** skip  
 **CLI Flags:**
@@ -87,7 +87,7 @@ skip = [".gitignore", ".dockerignore"]
 
 ## Extend Skip
 
-Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path use --skip-glob.
+Extends --skip to add additional files that isort should skip over. If you want to skip multiple files you should specify twice: --skip file1 --skip file2. Values can be file names, directory names or file paths. To skip all files in a nested path, use [`--skip-glob`](#skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -116,7 +116,7 @@ extend_skip = [".md", ".json"]
 
 ## Skip Glob
 
-Files that isort should skip over.
+Files that isort should skip over. To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -147,7 +147,7 @@ skip_glob = ["docs/*"]
 
 ## Extend Skip Glob
 
-Additional files that isort should skip over (extending --skip-glob).
+Additional files that isort should skip over (extending --skip-glob). To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
 
 **Type:** List of Strings  
 **Default:** `frozenset()`  
@@ -177,7 +177,8 @@ extend_skip_glob = ["my_*_module.py", "test/*"]
 
 ## Skip Gitignore
 
-Treat project as a git repository and ignore files listed in .gitignore.
+Treat project as a git repository and ignore files listed in .gitignore. To even skip matching files that have been specified on the command line, use [`--filter-files`](#filter-files).
+
 NOTE: This requires git to be installed and accessible from the same shell as isort.
 
 **Type:** Bool  
@@ -230,6 +231,19 @@ Forces line endings to the specified value. If not set, values will be guessed p
 
 - --le
 - --line-ending
+
+## Sort Re-exports
+
+Specifies whether to sort re-exports (`__all__` collections) automatically.
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** sort_reexports  
+**CLI Flags:**
+
+- --srx
+- --sort-reexports
 
 ## Sections
 
@@ -762,7 +776,7 @@ Balances wrapping to produce the most consistent line length possible
 
 ## Use Parentheses
 
-Use parentheses for line continuation on length limit instead of slashes. **NOTE**: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.
+Use parentheses for line continuation on length limit instead of backslashes. **NOTE**: This is separate from wrap modes, and only affects how individual lines that  are too long get continued, not sections of multiple imports.
 
 **Type:** Bool  
 **Default:** `False`  
@@ -889,6 +903,17 @@ Includes a trailing comma on multi line imports that include parentheses.
 
 - --tc
 - --trailing-comma
+## Split on Trailing Comma
+
+Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode. This follows Black style magic comma.
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** split_on_trailing_comma  
+**CLI Flags:**
+
+- --split-on-trailing-comma
 
 ## From First
 
@@ -1132,7 +1157,10 @@ Inserts a blank line before a comment following an import.
 
 ## Profile
 
-Base profile type to use for configuration. Profiles include: black, django, pycharm, google, open_stack, plone, attrs, hug, wemake, appnexus. As well as any shared profiles.
+Base profile type to use for configuration. Profiles include: black, django,
+pycharm, google, open\_stack, plone, attrs, hug, wemake, appnexus. As well as
+any [shared
+profiles](https://pycqa.github.io/isort/docs/howto/shared_profiles.html).
 
 **Type:** String  
 **Default:** ` `  
@@ -1488,7 +1516,7 @@ If `True` isort will follow symbolic links when doing recursive sorting.
 
 ## Indented Import Headings
 
-If `True` isort will apply import headings to indended imports the same way it does unindented ones.
+If `True` isort will apply import headings to indented imports the same way it does unindented ones.
 
 **Type:** Bool  
 **Default:** `True`  

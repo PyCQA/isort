@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -10,7 +11,7 @@ import re
 import stat
 import subprocess  # nosec: Needed for gitignore support.
 import sys
-from functools import lru_cache
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -30,7 +31,6 @@ from typing import (
 from warnings import warn
 
 from . import sorting, stdlibs
-from ._future import dataclass, field
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
@@ -38,7 +38,7 @@ from .exceptions import (
     SortingFunctionDoesNotExist,
     UnsupportedSettings,
 )
-from .profiles import profiles
+from .profiles import profiles as profiles
 from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
@@ -46,11 +46,14 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
-    tomli: Any
+    tomllib: Any
 else:
-    from ._vendored import tomli
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        from ._vendored import tomli as tomllib
 
-_SHEBANG_RE = re.compile(br"^#!.*\bpython[23w]?\b")
+_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
@@ -90,6 +93,7 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
         ".direnv",
         "node_modules",
         "__pypackages__",
+        ".pytype",
     }
 )
 
@@ -238,23 +242,17 @@ class _Config:
     reverse_sort: bool = False
     star_first: bool = False
     import_dependencies = Dict[str, str]
-    git_ignore: Dict[Path, Set[Path]] = field(default_factory=dict)
+    git_ls_files: Dict[Path, Set[str]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
     sort_reexports: bool = False
+    split_on_trailing_comma: bool = False
 
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 10
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -317,7 +315,7 @@ class Config(_Config):
             config_vars.pop("_skips")
             config_vars.pop("_skip_globs")
             config_vars.pop("_sorting_function")
-            super().__init__(**config_vars)  # type: ignore
+            super().__init__(**config_vars)
             return
 
         # We can't use self.quiet to conditionally show warnings before super.__init__() is called
@@ -341,7 +339,7 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "/#custom_config_files for more information."
+                    "#custom-config-files for more information."
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -524,7 +522,7 @@ class Config(_Config):
         if unsupported_config_errors:
             raise UnsupportedSettings(unsupported_config_errors)
 
-        super().__init__(sources=tuple(sources), **combined_config)  # type: ignore
+        super().__init__(sources=tuple(sources), **combined_config)
 
     def is_supported_filetype(self, file_name: str) -> bool:
         _root, ext = os.path.splitext(file_name)
@@ -549,10 +547,9 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
-    def _check_folder_gitignore(self, folder: str) -> Optional[Path]:
+    def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
@@ -563,26 +560,30 @@ class Config(_Config):
 
         git_folder = Path(topfolder_result.rstrip()).resolve()
 
-        files: List[str] = []
-        # don't check symlinks; either part of the repo and would be checked
-        # twice, or is external to the repo and git won't know anything about it
-        for root, _dirs, git_files in os.walk(git_folder, followlinks=False):
-            if ".git" in _dirs:
-                _dirs.remove(".git")
-            for git_file in git_files:
-                files.append(os.path.join(root, git_file))
-        git_options = ["-C", str(git_folder), "-c", "core.quotePath="]
-        try:
-            ignored = subprocess.check_output(  # nosec # skipcq: PYL-W1510
-                ["git", *git_options, "check-ignore", "-z", "--stdin", "--no-index"],
+        # files committed to git
+        tracked_files = (
+            subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", str(git_folder), "ls-files", "-z"],
                 encoding="utf-8",
                 env=env,
-                input="\0".join(files),
             )
-        except subprocess.CalledProcessError:
-            return None
+            .rstrip("\0")
+            .split("\0")
+        )
+        # files that haven't been committed yet, but aren't ignored
+        tracked_files_others = (
+            subprocess.check_output(  # nosec # skipcq: PYL-W1510
+                ["git", "-C", str(git_folder), "ls-files", "-z", "--others", "--exclude-standard"],
+                encoding="utf-8",
+                env=env,
+            )
+            .rstrip("\0")
+            .split("\0")
+        )
 
-        self.git_ignore[git_folder] = {Path(f) for f in ignored.rstrip("\0").split("\0")}
+        self.git_ls_files[git_folder] = {
+            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
+        }
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -624,14 +625,20 @@ class Config(_Config):
             git_folder = None
 
             file_paths = [file_path, file_path.resolve()]
-            for folder in self.git_ignore:
+            for folder in self.git_ls_files:
                 if any(folder in path.parents for path in file_paths):
                     git_folder = folder
                     break
             else:
-                git_folder = self._check_folder_gitignore(str(file_path.parent))
+                git_folder = self._check_folder_git_ls_files(str(file_path.parent))
 
-            if git_folder and any(path in self.git_ignore[git_folder] for path in file_paths):
+            # git_ls_files are good files you should parse. If you're not in the allow list, skip.
+
+            if (
+                git_folder
+                and not file_path.is_dir()
+                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
+            ):
                 return True
 
         return False
@@ -747,15 +754,16 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths
 
 
-@lru_cache()
 def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     current_directory = path
     tries = 0
@@ -788,7 +796,6 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
     return (path, {})
 
 
-@lru_cache()
 def find_all_configs(path: str) -> Trie:
     """
     Looks for config files in the path provided and in all of its sub-directories.
@@ -797,7 +804,7 @@ def find_all_configs(path: str) -> Trie:
     """
     trie_root = Trie("default", {})
 
-    for (dirpath, _, _) in os.walk(path):
+    for dirpath, _, _ in os.walk(path):
         for config_file_name in CONFIG_SOURCES:
             potential_config_file = os.path.join(dirpath, config_file_name)
             if os.path.isfile(potential_config_file):
@@ -817,13 +824,12 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-@lru_cache()
-def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
+def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any]:
     settings: Dict[str, Any] = {}
 
     if file_path.endswith(".toml"):
         with open(file_path, "rb") as bin_config_file:
-            config = tomli.load(bin_config_file)
+            config = tomllib.load(bin_config_file)
         for section in sections:
             config_section = config
             for key in section.split("."):
@@ -852,7 +858,8 @@ def _get_config_data(file_path: str, sections: Tuple[str]) -> Dict[str, Any]:
                         and config_key.endswith("}")
                         and extension
                         in map(
-                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
+                            lambda text: text.strip(),
+                            config_key[len("*.{") : -1].split(","),  # noqa
                         )
                     ):
                         settings.update(config.items(config_key))

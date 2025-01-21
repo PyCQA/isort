@@ -259,6 +259,24 @@ def test_fuzz_hanging_indent(
         reject()
 
 
+@pytest.mark.parametrize("include_trailing_comma", (True, False))
+def test_hanging_indent__with_include_trailing_comma__expect_same_result(include_trailing_comma):
+    result = isort.wrap_modes.hanging_indent(
+        statement="from datetime import ",
+        imports=["datetime", "time", "timedelta", "timezone", "tzinfo"],
+        white_space=" ",
+        indent="    ",
+        line_length=50,
+        comments=[],
+        line_separator="\n",
+        comment_prefix=" #",
+        include_trailing_comma=include_trailing_comma,
+        remove_comments=False,
+    )
+
+    assert result == "from datetime import datetime, time, timedelta, \\\n    timezone, tzinfo"
+
+
 @given(
     statement=st.text(),
     imports=st.lists(st.text()),

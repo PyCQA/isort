@@ -1,0 +1,16 @@
+---
+name: Release Drafter
+
+"on":
+  push:
+    branches:
+      - main
+
+jobs:
+  draft_release:
+    if: github.repository_owner == 'PyCQA'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

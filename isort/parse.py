@@ -1,8 +1,10 @@
 """Defines parsing functions used by isort for parsing import definitions"""
+
+import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple
 from warnings import warn
 
 from . import place
@@ -36,18 +38,18 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
-def _normalize_line(raw_line: str) -> Tuple[str, str]:
+def normalize_line(raw_line: str) -> Tuple[str, str]:
     """Normalizes import related statements in the provided line.
 
     Returns (normalized_line: str, raw_line: str)
     """
-    line = raw_line.replace("from.import ", "from . import ")
-    line = line.replace("from.cimport ", "from . cimport ")
+    line = re.sub(r"from(\.+)cimport ", r"from \g<1> cimport ", raw_line)
+    line = re.sub(r"from(\.+)import ", r"from \g<1> import ", line)
     line = line.replace("import*", "import *")
-    line = line.replace(" .import ", " . import ")
-    line = line.replace(" .cimport ", " . cimport ")
+    line = re.sub(r" (\.+)import ", r" \g<1> import ", line)
+    line = re.sub(r" (\.+)cimport ", r" \g<1> cimport ", line)
     line = line.replace("\t", " ")
-    return (line, raw_line)
+    return line, raw_line
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
@@ -63,7 +65,7 @@ def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
     return None
 
 
-def _strip_syntax(import_string: str) -> str:
+def strip_syntax(import_string: str) -> str:
     import_string = import_string.replace("_import", "[[i]]")
     import_string = import_string.replace("_cimport", "[[ci]]")
     for remove_syntax in ["\\", "(", ")", ","]:
@@ -138,6 +140,7 @@ class ParsedContent(NamedTuple):
     line_separator: str
     sections: Any
     verbose_output: List[str]
+    trailing_commas: Set[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -175,6 +178,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "nested": {},
         "above": {"straight": {}, "from": {}},
     }
+
+    trailing_commas: Set[str] = set()
 
     index = 0
     import_index = -1
@@ -238,7 +243,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and not commentless.rstrip().endswith(")")
                             and import_index < line_count
                         ):
-
                             while import_index < line_count and not commentless.rstrip().endswith(
                                 ")"
                             ):
@@ -261,7 +265,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
-            line, raw_line = _normalize_line(statement)
+            line, raw_line = normalize_line(statement)
             type_of_import = import_type(line, config) or ""
             raw_lines = [raw_line]
             if not type_of_import:
@@ -273,7 +277,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment else []
-            line_parts = [part for part in _strip_syntax(import_string).strip().split(" ") if part]
+            line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
             if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
@@ -283,7 +287,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     index += 1
                     if new_comment:
                         comments.append(new_comment)
-                    stripped_line = _strip_syntax(line).strip()
+                    stripped_line = strip_syntax(line).strip()
                     if (
                         type_of_import == "from"
                         and stripped_line
@@ -307,7 +311,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and ")" not in line.split("#")[0]
                         and index < line_count
                     ):
-                        stripped_line = _strip_syntax(line).strip()
+                        stripped_line = strip_syntax(line).strip()
                         if (
                             type_of_import == "from"
                             and stripped_line
@@ -323,7 +327,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             index += 1
                             if new_comment:
                                 comments.append(new_comment)
-                            stripped_line = _strip_syntax(line).strip()
+                            stripped_line = strip_syntax(line).strip()
                             if (
                                 type_of_import == "from"
                                 and stripped_line
@@ -334,7 +338,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             import_string += line_separator + line
                             raw_lines.append(line)
 
-                    stripped_line = _strip_syntax(line).strip()
+                    stripped_line = strip_syntax(line).strip()
                     if (
                         type_of_import == "from"
                         and stripped_line
@@ -375,7 +379,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
-                for item in _strip_syntax(import_string).split()
+                for item in strip_syntax(import_string).split()
             ]
 
             attach_comments_to: Optional[List[Any]] = None
@@ -472,9 +476,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         import_from, {}
                     )
                     existing_comment = nested_from_comments.get(just_imports[0], "")
-                    nested_from_comments[
-                        just_imports[0]
-                    ] = f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    nested_from_comments[just_imports[0]] = (
+                        f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    )
                     comments = []
 
                 if comments and attach_comments_to is None:
@@ -515,6 +519,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
+
+                if (
+                    just_imports
+                    and just_imports[-1]
+                    and "," in import_string.split(just_imports[-1])[-1]
+                ):
+                    trailing_commas.add(import_from)
             else:
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
@@ -526,7 +537,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         comments = []
 
                     if len(out_lines) > max(import_index, +1, 1) - 1:
-
                         last = out_lines[-1].rstrip() if out_lines else ""
                         while (
                             last.startswith("#")
@@ -587,4 +597,5 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line_separator=line_separator,
         sections=config.sections,
         verbose_output=verbose_output,
+        trailing_commas=trailing_commas,
     )

@@ -1,4 +1,5 @@
 """Basic set of tests to ensure entire code base is importable"""
+
 import pytest
 
 
@@ -6,8 +7,6 @@ def test_importable():
     """Simple smoketest to ensure all isort modules are importable"""
 
     import isort
-    import isort._future
-    import isort._future._dataclasses
     import isort._version
     import isort.api
     import isort.comments
@@ -31,9 +30,14 @@ def test_importable():
     import isort.stdlibs.py2
     import isort.stdlibs.py3
     import isort.stdlibs.py27
-    import isort.stdlibs.py35
     import isort.stdlibs.py36
     import isort.stdlibs.py37
+    import isort.stdlibs.py38
+    import isort.stdlibs.py39
+    import isort.stdlibs.py310
+    import isort.stdlibs.py311
+    import isort.stdlibs.py312
+    import isort.stdlibs.py313
     import isort.utils
     import isort.wrap
     import isort.wrap_modes

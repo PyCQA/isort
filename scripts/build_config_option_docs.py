@@ -1,9 +1,9 @@
 #! /bin/env python
+import dataclasses
 import os
 from textwrap import dedent
 from typing import Any, Dict, Generator, Iterable, Optional, Type
 
-from isort._future import dataclass
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
 
@@ -34,7 +34,7 @@ profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html).
 parser = _build_arg_parser()
 
 
-@dataclass
+@dataclasses.dataclass
 class Example:
     section_complete: str = ""
     cfg: str = ""
@@ -130,7 +130,7 @@ description_mapping = {
     "git_ignore": "If `True` isort will honor ignores within locally defined .git_ignore files.",
     "formatting_function": "The fully qualified Python path of a function to apply to format code sorted by isort.",
     "group_by_package": "If `True` isort will automatically create section groups by the top-level package they come from.",
-    "indented_import_headings": "If `True` isort will apply import headings to indended imports the same way it does unindented ones.",
+    "indented_import_headings": "If `True` isort will apply import headings to indented imports the same way it does unindented ones.",
     "import_headings": "A mapping of import sections to import heading comments that should show above them.",
     "import_footers": "A mapping of import sections to import footer comments that should show below them.",
 }
@@ -309,7 +309,7 @@ py_version=39
 }
 
 
-@dataclass
+@dataclasses.dataclass
 class ConfigOption:
     name: str
     type: Type = str

@@ -7,7 +7,7 @@ import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
 
 from . import output, parse
-from .exceptions import FileSkipComment
+from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
 
@@ -24,13 +24,11 @@ CODE_SORT_COMMENTS = (
     "# isort: unique-tuple",
     "# isort: assignments",
 )
-LITERAL_TYPE_MAPPING = {
-    "(": "tuple",
-    "[": "list",
-    "{": "dict",
-}
+LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def process(
     input_stream: TextIO,
     output_stream: TextIO,
@@ -78,8 +76,8 @@ def process(
     end_of_file: bool = False
     verbose_output: List[str] = []
     lines_before: List[str] = []
-    auto_reexporting: bool = False
-    line_index: int = 0
+    is_reexport: bool = False
+    reexport_rollback: int = 0
 
     if config.float_to_top:
         new_input = ""
@@ -137,6 +135,9 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
+                if is_reexport:
+                    output_stream.seek(output_stream.tell() - reexport_rollback)
+                    reexport_rollback = 0
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
                         code_sorting_section,
@@ -152,7 +153,9 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                line_index += output_stream.write(sorted_code)
+                output_stream.write(sorted_code)
+                if is_reexport:
+                    output_stream.truncate()
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
@@ -233,12 +236,13 @@ def process(
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                 elif config.sort_reexports and stripped_line.startswith("__all__"):
-                    code_sorting = LITERAL_TYPE_MAPPING[stripped_line.split(" = ")[1][0]]
+                    _, rhs = stripped_line.split("=")
+                    code_sorting = LITERAL_TYPE_MAPPING.get(rhs.lstrip()[0], "tuple")
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                     code_sorting_section += line
-                    auto_reexporting = True
-                    line_index -= len(line) - 1
+                    reexport_rollback = len(line)
+                    is_reexport = True
                 elif code_sorting:
                     if not stripped_line:
                         sorted_code = textwrap.indent(
@@ -256,14 +260,17 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-                        if auto_reexporting:
-                            output_stream.seek(line_index, 0)
-                        line_index += output_stream.write(sorted_code)
+                        if is_reexport:
+                            output_stream.seek(output_stream.tell() - reexport_rollback)
+                            reexport_rollback = 0
+                        output_stream.write(sorted_code)
+                        if is_reexport:
+                            output_stream.truncate()
                         not_imports = True
                         code_sorting = False
                         code_sorting_section = ""
                         code_sorting_indent = ""
-                        auto_reexporting = False
+                        is_reexport = False
                     else:
                         code_sorting_section += line
                         line = ""
@@ -303,6 +310,10 @@ def process(
                         else:
                             while ")" not in stripped_line:
                                 line = input_stream.readline()
+
+                                if not line:  # end of file without closing parenthesis
+                                    raise ExistingSyntaxErrors("Parenthesis is not closed")
+
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
 
@@ -322,7 +333,10 @@ def process(
                             or " cimport " in import_statement
                             or " cimport*" in import_statement
                             or " cimport(" in import_statement
-                            or ".cimport" in import_statement
+                            or (
+                                ".cimport" in import_statement
+                                and "cython.cimports" not in import_statement
+                            )  # Allow pure python imports. See #2062
                         ):
                             cimport_statement = True
 
@@ -350,10 +364,7 @@ def process(
                 else:
                     not_imports = True
 
-        line_index += len(line)
-
         if not_imports:
-
             if not was_in_quote and config.lines_before_imports > -1:
                 if line.strip() == "":
                     lines_before += line
