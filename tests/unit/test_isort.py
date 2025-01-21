@@ -2721,7 +2721,7 @@ def test_pyproject_conf_file(tmpdir) -> None:
     conf_file_data = (
         "[build-system]\n"
         'requires = ["setuptools", "wheel"]\n'
-        "[tool.poetry]\n"
+        "[project]\n"
         'name = "isort"\n'
         'version = "0.1.0"\n'
         'license = "MIT"\n'
