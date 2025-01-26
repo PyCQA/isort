@@ -135,6 +135,11 @@ palette = {scheme = "isort"}
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[dependency-groups]
+dev = [
+    "hatch>=1.14.0",
+]
+
 [tool.mypy]
 python_version = 3.9
 strict = true
