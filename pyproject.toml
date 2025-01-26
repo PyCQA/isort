@@ -141,6 +141,11 @@ palette = {scheme = "isort"}
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
+[dependency-groups]
+dev = [
+    "hatch>=1.14.0",
+]
+
 [tool.mypy]
 python_version = 3.9
 strict = true

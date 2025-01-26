@@ -25,15 +25,9 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Upgrade pip
+      - name: Install dependencies
         run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
-
-      - name: Install Hatch
-        run: |
-          pip install --constraint=.github/workflows/hatch-constraints.txt hatch
-          hatch --version
+          uv sync --all-extras --frozen
 
       - name: Install UV
         uses: astral-sh/setup-uv@v5
