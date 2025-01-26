@@ -1,11 +1,11 @@
 [tool.black]
 line-length = 100
 
-[project]
+[tool.poetry]
 name = "isort"
-dynamic = ["version"]
+version = "5.13.2"
 description = "A Python utility / library to sort Python imports."
-authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
+authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pycqa/isort"
@@ -38,66 +38,50 @@ include = [
     { path = "CHANGELOG.md", format = "sdist" },
     { path = "LICENSE", format = "sdist" },
 ]
-requires-python = ">=3.9.0"
 
-dependencies = []
+[tool.poetry.dependencies]
+python = ">=3.9.0"
+colorama = {version = ">=0.4.6", optional = true}
+setuptools = {version = "*", optional = true}
 
-[tool.hatch.version]
-source = "vcs"
+[tool.poetry.extras]
+colors = ["colorama"]
+plugins = ["setuptools"]
 
-[tool.hatch.version.raw-options]
-local_scheme = "no-local-version"
-
-[project.scripts]
-isort = "isort.main:main"
-isort-identify-imports = "isort.main:identify_imports_main"
-
-[project.entry-points."distutils.commands"]
-isort = "isort.setuptools_commands:ISortCommand"
-
-[project.entry-points."pylama.linter"]
-isort = "isort.pylama_isort:Linter"
-
-[project.optional-dependencies]
-optional = [
-    "colorama>=0.4.6",
-    "setuptools",
-]
-dev = [
-    "bandit>=1.7.7",
-    "black>=24.3.0",
-    "colorama>=0.4.6",
-    "coverage[toml]>=6.5.0",
-    "cruft>=2.12.0",
-    "example-isort-sorting-plugin>=0.1.0",
-    "example-shared-isort-profile>=0.1.0",
-    "flake8>=3.8.4",
-    "flake8-bugbear>=22.12.12",
-    "httpx>=0.13.3",
-    "hypothesis>=6.10.1",
-    "hypothesmith>=0.1.3",
-    "libcst>=0.3.18",
-    "mypy>=1.14.1",
-    "mypy-extensions>=0.4.3",
-    "pep8-naming>=0.8.2",
-    "pip>=21.1.1",
-    "pip_api>=0.0.12",
-    "pipreqs>=0.4.9",
-    "portray>=1.8.0",
-    "pre-commit>=2.13.0",
-    "pylama>=7.7",
-    "pytest>=7.4.2",
-    "pytest-benchmark>=3.4.1",
-    "pytest-mock>=1.10",
-    "requirementslib>=1.5",
-    "safety>=2.2.0",
-    "stdlibs>=2024.10.21.16",
-    "toml>=0.10.2",
-    "types-colorama>=0.4.2",
-    "types-setuptools>=70.0.0.20240523",
-    "types-toml>=0.1.3",
-    "vulture>=1.0",
-]
+[tool.poetry.group.dev.dependencies]
+bandit = ">=1.7.7"
+black = ">=24.3.0"
+colorama = ">=0.4.6"
+coverage = {version = ">=6.5.0", extras = ["toml"]}
+cruft = ">=2.12.0"
+example-isort-sorting-plugin = ">=0.1.0"
+example-shared-isort-profile = ">=0.1.0"
+flake8 = ">=3.8.4"
+flake8-bugbear = ">=22.12.12"
+httpx = ">=0.13.3"
+hypothesis = ">=6.10.1"
+hypothesmith = ">=0.1.3"
+libcst = ">=0.3.18"
+mypy = ">=1.14.1"
+mypy-extensions = ">=0.4.3"
+pep8-naming = ">=0.8.2"
+pip = ">=21.1.1"
+pip_api = ">=0.0.12"
+pipreqs = ">=0.4.9"
+portray = ">=1.8.0"
+pre-commit = ">=2.13.0"
+pylama = ">=7.7"
+pytest = ">=7.4.2"
+pytest-benchmark = ">=3.4.1"
+pytest-mock = ">=1.10"
+requirementslib = ">=1.5"
+safety = ">=2.2.0"
+stdlibs = ">=2024.10.21.16"
+toml = ">=0.10.2"
+types-colorama = ">=0.4.2"
+types-setuptools = ">=70.0.0.20240523"
+types-toml = ">=0.1.3"
+vulture = ">=1.0"
 
 [tool.coverage.paths]
 source = [
@@ -127,6 +111,16 @@ exclude_lines = [
     "raise NotImplementedError",
 ]
 
+[tool.poetry.scripts]
+isort = "isort.main:main"
+isort-identify-imports = "isort.main:identify_imports_main"
+
+[tool.poetry.plugins."distutils.commands"]
+isort = "isort.setuptools_commands:ISortCommand"
+
+[tool.poetry.plugins."pylama.linter"]
+isort = "isort.pylama_isort:Linter"
+
 [tool.portray.mkdocs]
 edit_uri = "https://github.com/pycqa/isort/edit/main/"
 extra_css = ["art/stylesheets/extra.css"]
@@ -138,8 +132,8 @@ logo = "art/logo.png"
 palette = {scheme = "isort"}
 
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 python_version = 3.9
