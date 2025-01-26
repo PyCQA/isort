@@ -3,8 +3,8 @@ name: Release
 
 "on":
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
 
 jobs:
   release:
@@ -17,35 +17,45 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set Tag env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Upgrade pip
         run: |
           pip install --constraint=.github/workflows/constraints.txt pip
           pip --version
 
-      - name: Install Hatch
+      - name: Install Poetry
         run: |
-          pip install --constraint=.github/workflows/hatch-constraints.txt hatch
-          hatch --version
-
-      - name: Install UV
-        uses: astral-sh/setup-uv@v5
+          pip install --constraint=.github/workflows/poetry-constraints.txt poetry
+          poetry --version
 
       - name: Check if there is a parent commit
         id: check-parent-commit
         run: |
           echo "::set-output name=sha::$(git rev-parse --verify --quiet HEAD^)"
 
+      - name: Detect and tag new version
+        id: check-version
+        if: steps.check-parent-commit.outputs.sha
+        uses: salsify/action-detect-and-tag-new-version@v2
+        with:
+          tag-template: "{VERSION}"
+          version-command: |
+            bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
+
+      - name: Bump version for developmental release
+        if: "! steps.check-version.outputs.tag"
+        run: |
+          poetry version patch &&
+          version=$(poetry version | awk '{ print $2 }') &&
+          poetry version $version.dev.$(date +%s)
+
       - name: Build package
         run: |
-          uv build
+          poetry build --ansi
 
       - name: Publish package on PyPI
         if: steps.check-version.outputs.tag

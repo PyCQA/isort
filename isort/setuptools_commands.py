@@ -1,7 +1,7 @@
 import glob
 import os
 import sys
-from typing import Any, Iterator
+from typing import Any, Dict, Iterator, List
 from warnings import warn
 
 import setuptools
@@ -16,6 +16,7 @@ class ISortCommand(setuptools.Command):
     """
 
     description = "Run isort on modules registered in setuptools"
+    user_options: List[Any] = []
 
     def initialize_options(self) -> None:
         default_settings = vars(DEFAULT_CONFIG).copy()
@@ -24,7 +25,7 @@ class ISortCommand(setuptools.Command):
 
     def finalize_options(self) -> None:
         """Get options from config files."""
-        self.arguments: dict[str, Any] = {}  # skipcq: PYL-W0201
+        self.arguments: Dict[str, Any] = {}  # skipcq: PYL-W0201
         self.arguments["settings_path"] = os.getcwd()
 
     def distribution_files(self) -> Iterator[str]:
