@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-poetry run isort --profile hug isort/ tests/ scripts/
-poetry run isort --profile hug example_*/
-poetry run black isort/ tests/ scripts/
-poetry run black example_*/
+uv run isort --profile hug isort/ tests/ scripts/
+uv run isort --profile hug example_*/
+uv run black isort/ tests/ scripts/
+uv run black example_*/
