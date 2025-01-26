@@ -3,7 +3,7 @@ line-length = 100
 
 [project]
 name = "isort"
-version = "5.13.2"
+dynamic = ["version"]
 description = "A Python utility / library to sort Python imports."
 authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
@@ -41,6 +41,12 @@ include = [
 requires-python = ">=3.9.0"
 
 dependencies = []
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
 
 [project.scripts]
 isort = "isort.main:main"
@@ -132,7 +138,7 @@ logo = "art/logo.png"
 palette = {scheme = "isort"}
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.mypy]
