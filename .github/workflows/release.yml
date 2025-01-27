@@ -31,6 +31,8 @@ jobs:
 
       - name: Install UV
         uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.5.24"
 
       - name: Check if there is a parent commit
         id: check-parent-commit
