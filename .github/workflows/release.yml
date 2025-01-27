@@ -4,7 +4,7 @@ name: Release
 "on":
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   release:
@@ -25,14 +25,14 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras --frozen
-
       - name: Install UV
         uses: astral-sh/setup-uv@v5
         with:
           version: ">=0.5.24"
+
+      - name: Install dependencies
+        run: |
+          uv sync --all-extras --frozen
 
       - name: Check if there is a parent commit
         id: check-parent-commit
@@ -44,10 +44,8 @@ jobs:
           uv build
 
       - name: Publish package on PyPI
-        if: steps.check-version.outputs.tag
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Publish the release notes
