@@ -197,14 +197,12 @@ def test_get_config_data_with_toml_and_utf8(tmpdir):
     # Exception: UnicodeDecodeError: 'gbk' codec can't decode byte 0x84 in position 57
     test_config.write_text(
         """
-[tool.poetry]
-
+[project]
 description = "基于FastAPI + Mysql的 TodoList"  # Exception: UnicodeDecodeError
 name = "TodoList"
 version = "0.1.0"
 
 [tool.isort]
-
 multi_line_output = 3
 
 """,

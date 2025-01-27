@@ -1,8 +1,10 @@
-ARG VERSION=3
-FROM python:$VERSION
+FROM python:3.13
 
-# Install pip and poetry
-RUN python -m pip install --upgrade pip && python -m pip install poetry
+WORKDIR /isort
+COPY pyproject.toml uv.lock /isort/
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.5.24 /uv /uvx /bin/
 
 # Setup as minimal a stub project as possible, simply to allow caching base dependencies
 # between builds.
@@ -13,14 +15,11 @@ RUN mkdir -p /isort/tests
 RUN touch /isort/isort/__init__.py
 RUN touch /isort/tests/__init__.py
 RUN touch /isort/README.md
-WORKDIR /isort
-COPY pyproject.toml poetry.lock /isort/
-RUN poetry install
+COPY . /isort
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0 uv sync --all-extras --frozen
 
 # Install latest code for actual project
 RUN rm -rf /isort
-COPY . /isort
-RUN poetry install
 
 # Run full test suite
 CMD /isort/scripts/test.sh
