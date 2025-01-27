@@ -16,6 +16,8 @@ class ISortCommand(setuptools.Command):
     """
 
     description = "Run isort on modules registered in setuptools"
+    # Potentially unused variable - check if can be safely removed
+    user_options: list[Any] = []  # type: ignore[misc]
 
     def initialize_options(self) -> None:
         default_settings = vars(DEFAULT_CONFIG).copy()
