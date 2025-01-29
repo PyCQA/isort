@@ -876,7 +876,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--python-version",
         action="store",
         dest="py_version",
-        choices=tuple(VALID_PY_TARGETS) + ("auto",),
+        choices=(*tuple(VALID_PY_TARGETS), "auto"),
         help="Tells isort to set the known standard library based on the specified Python "
         "version. Default is to assume any Python 3 version could be the target, and use a union "
         "of all stdlib modules across versions. If auto is specified, the version of the "

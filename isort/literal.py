@@ -96,7 +96,7 @@ def _list(value: List[Any], printer: ISortPrettyPrinter) -> str:
 
 @register_type("unique-list", list)
 def _unique_list(value: List[Any], printer: ISortPrettyPrinter) -> str:
-    return printer.pformat(list(sorted(set(value))))
+    return printer.pformat(sorted(set(value)))
 
 
 @register_type("set", set)
