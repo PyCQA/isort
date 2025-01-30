@@ -31,11 +31,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-urls = { Changelog = "https://github.com/pycqa/isort/blob/main/CHANGELOG.md" }
+urls = { changelog = "https://github.com/PyCQA/isort/releases" }
 include = [
     { path = "tests", format = "sdist" },
     { path = "ACKNOWLEDGEMENTS.md", format = "sdist" },
-    { path = "CHANGELOG.md", format = "sdist" },
     { path = "LICENSE", format = "sdist" },
 ]
 requires-python = ">=3.9.0"
