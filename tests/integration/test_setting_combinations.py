@@ -181,6 +181,7 @@ else:  # 2.x
             }
         ),
         skip_glob=frozenset(),
+        exclude_glob=frozenset(),
         skip_gitignore=True,
         line_length=79,
         wrap_length=0,
@@ -615,6 +616,7 @@ else:  # 2.x
                     }
                 ),
                 "skip_glob": frozenset(),
+                "exclude_glob": frozenset(),
                 "skip_gitignore": False,
                 "line_length": 79,
                 "wrap_length": 0,
@@ -1046,6 +1048,7 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
             }
         ),
         skip_glob=frozenset(),
+        exclude_glob=frozenset(),
         skip_gitignore=True,
         line_length=79,
         wrap_length=0,
@@ -1480,6 +1483,7 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
                     }
                 ),
                 "skip_glob": frozenset(),
+                "exclude_glob": frozenset(),
                 "skip_gitignore": False,
                 "line_length": 79,
                 "wrap_length": 0,
