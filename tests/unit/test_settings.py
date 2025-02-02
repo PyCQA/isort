@@ -239,6 +239,7 @@ profile=django
     pyproject_toml = """
 [tool.isort]
 profile = "hug"
+src_paths = ["src"]
 """
 
     isort_cfg = """
@@ -255,11 +256,13 @@ something = nothing
     dir2 = tmpdir / "subdir2"
     dir3 = tmpdir / "subdir3"
     dir4 = tmpdir / "subdir4"
+    dir_skip = tmpdir / ".venv"
 
     dir1.mkdir()
     dir2.mkdir()
     dir3.mkdir()
     dir4.mkdir()
+    dir_skip.mkdir()
 
     setup_cfg_file = dir1 / "setup.cfg"
     setup_cfg_file.write_text(setup_cfg, "utf-8")
@@ -273,19 +276,30 @@ something = nothing
     pyproject_toml_file_broken = dir4 / "pyproject.toml"
     pyproject_toml_file_broken.write_text(pyproject_toml_broken, "utf-8")
 
+    pyproject_toml_file_skip = dir_skip / "pyproject.toml"
+    pyproject_toml_file_skip.write_text(pyproject_toml, "utf-8")
+
     config_trie = settings.find_all_configs(str(tmpdir))
 
     config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
     assert config_info_1[0] == str(setup_cfg_file) and config_info_1[1]["profile"] == "django"
+    assert set(Config(**config_info_1[1]).src_paths) == {Path(dir1), Path(dir1, "src")}
 
     config_info_2 = config_trie.search(str(dir2 / "test2.py"))
     assert config_info_2[0] == str(pyproject_toml_file)
     assert config_info_2[0] == str(pyproject_toml_file) and config_info_2[1]["profile"] == "hug"
+    assert set(Config(**config_info_2[1]).src_paths) == {Path(dir2, "src")}
 
     config_info_3 = config_trie.search(str(dir3 / "test3.py"))
     assert config_info_3[0] == str(isort_cfg_file)
     assert config_info_3[0] == str(isort_cfg_file) and config_info_3[1]["profile"] == "black"
+    assert set(Config(**config_info_3[1]).src_paths) == {Path(dir3), Path(dir3, "src")}
 
     config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"
+    assert set(Config(**config_info_4[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
+
+    config_info_skip = config_trie.search(str(dir_skip / "skip.py"))
+    assert config_info_skip[0] == "default"
+    assert set(Config(**config_info_skip[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
