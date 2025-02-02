@@ -569,7 +569,7 @@ def _with_straight_imports(
 ) -> List[str]:
     output: List[str] = []
 
-    as_imports = any((module in parsed.as_map["straight"] for module in straight_modules))
+    as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)
 
     # combine_straight_imports only works for bare imports, 'as' imports not included
     if config.combine_straight_imports and not as_imports:
