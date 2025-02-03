@@ -11,6 +11,7 @@ from .identify import STATEMENT_DECLARATIONS
 from .place import module_with_reason
 from .settings import DEFAULT_CONFIG, Config
 
+
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
