@@ -8,9 +8,13 @@ from isort.format import format_simplified
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
+from .place import module_with_reason
 from .settings import DEFAULT_CONFIG, Config
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled.
+# skipcq: PY-R1000
 def sorted_imports(
     parsed: parse.ParsedContent,
     config: Config = DEFAULT_CONFIG,
@@ -148,6 +152,38 @@ def sorted_imports(
                 ):  # pragma: no branch
                     section_output.append("")  # Empty line for black compatibility
                     section_output.append(section_comment_end)
+
+            if section in config.separate_packages:
+                group_keys: Set[str] = set()
+                comments_above: List[str] = []
+                processed_section_output: List[str] = []
+                for section_line in section_output:
+                    if section_line.startswith("#"):
+                        comments_above.append(section_line)
+                        continue
+
+                    package_name: str = section_line.split(" ")[1]
+                    _, reason = module_with_reason(package_name, config)
+
+                    if "Matched configured known pattern" in reason:
+                        package_depth = len(reason.split(".")) - 1  # minus 1 for re.compile
+                        key = ".".join(package_name.split(".")[: package_depth + 1])
+                    else:
+                        key = package_name.split(".")[0]
+
+                    if key not in group_keys:
+                        if group_keys:
+                            processed_section_output.append("")
+
+                        group_keys.add(key)
+
+                    if comments_above:
+                        processed_section_output.extend(comments_above)
+                        comments_above = []
+
+                    processed_section_output.append(section_line)
+
+                section_output = processed_section_output
 
             if pending_lines_before or not no_lines_before:
                 output += [""] * config.lines_between_sections
