@@ -10,9 +10,8 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
 
-import py
 import pytest
 
 import isort
@@ -24,6 +23,8 @@ from isort.utils import exists_case_sensitive
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
+    from typing import Dict  # noqa: F401
+
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
@@ -1630,13 +1631,13 @@ def test_multiline_import() -> None:
     assert isort.code(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
 
     # test again with a custom configuration
-    custom_configuration = {
+    custom_configuration: dict[str, Any] = {
         "force_single_line": True,
         "line_length": 120,
         "known_first_party": ["asdf", "qwer"],
         "default_section": "THIRDPARTY",
         "forced_separate": "asdf",
-    }  # type: Dict[str, Any]
+    }
     expected_output = (
         "from pkg import more_stuff\n" "from pkg import other_suff\n" "from pkg import stuff\n"
     )
@@ -2720,7 +2721,7 @@ def test_pyproject_conf_file(tmpdir) -> None:
     conf_file_data = (
         "[build-system]\n"
         'requires = ["setuptools", "wheel"]\n'
-        "[tool.poetry]\n"
+        "[project]\n"
         'name = "isort"\n'
         'version = "0.1.0"\n'
         'license = "MIT"\n'
@@ -3065,6 +3066,7 @@ def test_third_party_case_sensitive() -> None:
 
 def test_exists_case_sensitive_file(tmpdir) -> None:
     """Test exists_case_sensitive function for a file."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("module.py").ensure(file=1)
     assert exists_case_sensitive(str(tmpdir.join("module.py")))
     assert not exists_case_sensitive(str(tmpdir.join("MODULE.py")))
@@ -3072,6 +3074,7 @@ def test_exists_case_sensitive_file(tmpdir) -> None:
 
 def test_exists_case_sensitive_directory(tmpdir) -> None:
     """Test exists_case_sensitive function for a directory."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("pkg").ensure(dir=1)
     assert exists_case_sensitive(str(tmpdir.join("pkg")))
     assert not exists_case_sensitive(str(tmpdir.join("PKG")))
@@ -4259,12 +4262,12 @@ import ujson # NOQA
     assert isort.code(test_input.lower(), honor_noqa=True) == test_output_honor_noqa.lower()
 
 
-def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
+def test_extract_multiline_output_wrap_setting_from_a_config_file(tmp_path: Path) -> None:
     editorconfig_contents = ["root = true", " [*.py]", "multi_line_output = 5"]
-    config_file = tmpdir.join(".editorconfig")
-    config_file.write("\n".join(editorconfig_contents))
+    config_file = tmp_path / ".editorconfig"
+    config_file.write_text("\n".join(editorconfig_contents))
 
-    config = Config(settings_path=str(tmpdir))
+    config = Config(settings_path=str(tmp_path))
     assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
@@ -5548,7 +5551,7 @@ def test_find_imports_in_stream() -> None:
     """Ensure that find_imports_in_stream can work with nonseekable streams like STDOUT"""
 
     class NonSeekableTestStream(StringIO):
-        def seek(self, position):
+        def seek(self, offset: int, whence: int = os.SEEK_SET, /) -> int:
             raise OSError("Stream is not seekable")
 
         def seekable(self):
@@ -5566,6 +5569,18 @@ def test_split_on_trailing_comma() -> None:
     b,
     c,
 )
+"""
+
+    output = isort.code(test_input, split_on_trailing_comma=True)
+    assert output == expected_output
+
+    output = isort.code(expected_output, split_on_trailing_comma=True)
+    assert output == expected_output
+
+
+def test_split_on_trailing_comma_wih_as() -> None:
+    test_input = "from lib import (a as b,)"
+    expected_output = """from lib import a as b
 """
 
     output = isort.code(test_input, split_on_trailing_comma=True)

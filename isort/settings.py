@@ -253,14 +253,7 @@ class _Config:
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 12
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -347,7 +340,7 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "/#custom_config_files for more information."
+                    "#custom-config-files for more information."
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -866,7 +859,8 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
                         and config_key.endswith("}")
                         and extension
                         in map(
-                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
+                            lambda text: text.strip(),
+                            config_key[len("*.{") : -1].split(","),  # noqa
                         )
                     ):
                         settings.update(config.items(config_key))

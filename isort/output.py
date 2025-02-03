@@ -273,6 +273,9 @@ def sorted_imports(
     return _output_as_string(formatted_output, parsed.line_separator)
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled.
+# skipcq: PY-R1000
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
@@ -542,7 +545,11 @@ def _with_from_imports(
                 ):
                     do_multiline_reformat = True
 
-                if config.split_on_trailing_comma and module in parsed.trailing_commas:
+                if (
+                    import_statement
+                    and config.split_on_trailing_comma
+                    and module in parsed.trailing_commas
+                ):
                     import_statement = wrap.import_statement(
                         import_start=import_start,
                         from_imports=from_import_section,

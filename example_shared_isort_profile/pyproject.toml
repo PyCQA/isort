@@ -1,18 +1,14 @@
-[tool.poetry]
+[project]
 name = "example_shared_isort_profile"
 version = "0.1.0"
 description = "An example shared isort profile"
-authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
+authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
+requires-python = ">=3.9.0"
 
-[tool.poetry.plugins."isort.profiles"]
+[project.entry-points."isort.profiles"]
 example = "example_shared_isort_profile:PROFILE"
 
-[tool.poetry.dependencies]
-python = ">=3.7"
-
-[tool.poetry.dev-dependencies]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

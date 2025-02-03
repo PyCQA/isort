@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
@@ -29,18 +29,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - name: Upgrade pip
-        run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
-
-      - name: Install Poetry
-        run: |
-          pip install --constraint=.github/workflows/poetry-constraints.txt poetry
-          poetry --version
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.5.24"
 
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --all-extras --frozen
 
       - name: Test
         shell: bash

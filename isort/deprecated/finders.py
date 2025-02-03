@@ -29,7 +29,7 @@ try:
     from pip_api import parse_requirements  # type: ignore
 
 except ImportError:
-    parse_requirements = None
+    parse_requirements = None  # type: ignore[assignment]
 
 
 @contextmanager
