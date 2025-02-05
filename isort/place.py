@@ -71,7 +71,7 @@ def _src_path(
         src_paths = config.src_paths
 
     root_module_name, *nested_module = name.split(".", 1)
-    new_prefix = prefix + (root_module_name,)
+    new_prefix = (*prefix, root_module_name)
     namespace = ".".join(new_prefix)
 
     for src_path in src_paths:
