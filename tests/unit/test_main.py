@@ -1292,11 +1292,11 @@ import b
     main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
     out, _ = capsys.readouterr()
 
-    assert f"{setup_cfg_file!s} used for file {file1!s}" in out
-    assert f"{pyproject_toml_file!s} used for file {file2!s}" in out
-    assert f"{isort_cfg_file!s} used for file {file3!s}" in out
-    assert f"default used for file {file4!s}" in out
-    assert f"default used for file {file5!s}" in out
+    assert f"{setup_cfg_file} used for file {file1}" in out
+    assert f"{pyproject_toml_file} used for file {file2}" in out
+    assert f"{isort_cfg_file} used for file {file3}" in out
+    assert f"default used for file {file4}" in out
+    assert f"default used for file {file5}" in out
 
     assert (
         file1.read()
@@ -1353,7 +1353,7 @@ from a import x, y, z
 
     _, err = capsys.readouterr()
 
-    assert f"{file6!s} Imports are incorrectly sorted and/or formatted" in err
+    assert f"{file6} Imports are incorrectly sorted and/or formatted" in err
 
 
 def test_multiple_src_paths(tmpdir, capsys):
