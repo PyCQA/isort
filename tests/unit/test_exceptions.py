@@ -86,7 +86,7 @@ class TestLiteralParsingFailure(TestISortError):
 
     def test_variables(self):
         assert self.instance.code == "x = ["
-        assert self.instance.original_error == SyntaxError
+        assert self.instance.original_error is SyntaxError
 
 
 class TestLiteralSortTypeMismatch(TestISortError):
@@ -96,8 +96,8 @@ class TestLiteralSortTypeMismatch(TestISortError):
         )
 
     def test_variables(self):
-        assert self.instance.kind == tuple
-        assert self.instance.expected_kind == list
+        assert self.instance.kind is tuple
+        assert self.instance.expected_kind is list
 
 
 class TestAssignmentsFormatMismatch(TestISortError):

@@ -133,6 +133,7 @@ dev = [
     "pytest-benchmark>=3.4.1",
     "pytest-mock>=1.10",
     "requirementslib>=1.5",
+    "ruff>=0.9.6",
     "safety>=2.2.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
@@ -168,6 +169,37 @@ module = "tests.*"
 allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
+
+[tool.ruff]
+line-length = 100
+lint.select = [
+    "ASYNC",
+    "B",
+    "C4",
+    "C90",
+    "E",
+    "F",
+    "FLY",
+    "PIE",
+    "S",
+    "W",
+]
+lint.ignore = [
+    "B017",
+    "B028",
+    "B904",
+    "E203",
+    "E501",
+]
+lint.exclude = [ "_vendored" ]
+lint.mccabe.max-complexity = 91  # Default is 10
+
+[tool.ruff.lint.per-file-ignores]
+"isort/hooks.py" = [ "S603" ]
+"isort/settings.py" = [ "S603", "S607" ]
+"tests/*" = [ "S" ]
+"tests/unit/example_crlf_file.py" = [ "F401" ]
+"tests/unit/test_wrap_modes.py" = [ "PIE804" ]
 
 [tool.isort]
 profile = "hug"
