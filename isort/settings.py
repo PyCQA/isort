@@ -437,7 +437,7 @@ class Config(_Config):
             if section in SECTION_DEFAULTS:
                 continue
 
-            if not section.lower() in known_other:
+            if section.lower() not in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
@@ -857,10 +857,7 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
                         config_key.startswith("*.{")
                         and config_key.endswith("}")
                         and extension
-                        in map(
-                            lambda text: text.strip(),
-                            config_key[len("*.{") : -1].split(","),  # noqa
-                        )
+                        in (text.strip() for text in config_key[len("*.{") : -1].split(","))
                     ):
                         settings.update(config.items(config_key))
 
@@ -895,11 +892,11 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)
-            if existing_value_type == tuple:
+            if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
-            elif existing_value_type == frozenset:
+            elif existing_value_type is frozenset:
                 settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
-            elif existing_value_type == bool:
+            elif existing_value_type is bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
                     value = _as_bool(value)

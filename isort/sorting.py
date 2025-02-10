@@ -90,7 +90,7 @@ def section_key(line: str, config: Config) -> str:
                 module_name = module_name.lower()
             if not config.order_by_type:
                 names = names.lower()
-            line = " import ".join([module_name, names])
+            line = f"{module_name} import {names}"
         elif not config.case_sensitive:
             line = line.lower()
     elif not config.order_by_type:
