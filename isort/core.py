@@ -201,9 +201,7 @@ def process(
             was_in_quote = bool(in_quote)
             if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
                 char_index = 0
-                if first_comment_index_start == -1 and (
-                    line.startswith('"') or line.startswith("'")
-                ):
+                if first_comment_index_start == -1 and (line.startswith(('"', "'"))):
                     first_comment_index_start = index
                 while char_index < len(line):
                     if line[char_index] == "\\":
@@ -477,7 +475,7 @@ def process(
                         output_stream.write(new_line)
                         stripped_line = new_line.strip().split("#")[0]
 
-                if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
+                if stripped_line.startswith(("raise", "yield")):
                     while stripped_line.endswith("\\"):
                         new_line = input_stream.readline()
                         if not new_line:
