@@ -22,11 +22,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
 
       - name: Install UV
         uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           version: ">=0.5.24"
 
       - name: Install dependencies
