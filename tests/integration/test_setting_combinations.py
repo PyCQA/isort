@@ -58,7 +58,7 @@ def configs() -> st.SearchStrategy:
         "force_grid_wrap": st.integers(0, 20),
         "profile": st.sampled_from(sorted(isort.settings.profiles)),
         "sort_order": st.sampled_from(sorted(("native", "natural", "natural_plus"))),
-        "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
+        "py_version": st.sampled_from(("auto", *isort.settings.VALID_PY_TARGETS)),
     }
     kwargs = {**inferred_kwargs, **specific}
     return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)
