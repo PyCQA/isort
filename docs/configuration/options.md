@@ -1049,6 +1049,49 @@ Separate packages within the listed sections with newlines.
 **Python & Config File Name:** separate_packages  
 **CLI Flags:** **Not Supported**
 
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+separate_packages=THIRDPARTY
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+separate_packages = ["THIRDPARTY"]
+```
+
+### Example before:
+```python
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+from django_filters import BooleanFilter
+from junitparser import JUnitXml
+from loguru import logger
+```
+
+### Example after:
+```python
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+
+from django_filters import BooleanFilter
+
+from junitparser import JUnitXml
+
+from loguru import logger
+```
+
 ## Ignore Whitespace
 
 Tells isort to ignore whitespace differences when --check-only is being used.
