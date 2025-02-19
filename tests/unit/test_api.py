@@ -95,10 +95,10 @@ def test_find_imports_in_file(imperfect):
 
 
 def test_find_imports_in_file_error(tmpdir):
-    broken_link = tmpdir.join("broken_link.py")
-    broken_link.mksymlinkto("not-exist")
+    test_path = tmpdir.join("test_path.py")
+    test_path.mkdir()
     with pytest.warns(UserWarning):
-        assert not list(api.find_imports_in_file(broken_link))
+        assert not list(api.find_imports_in_file(test_path))
 
 
 def test_find_imports_in_code():
