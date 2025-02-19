@@ -10,5 +10,5 @@ uv run --with=Flake8-pyproject flake8 isort/ tests/
 uv run ruff check
  # 51457: https://github.com/tiangolo/typer/discussions/674
  # 72715: https://github.com/timothycrosley/portray/issues/95
-uv run safety check -i 72715 -i 51457 -i 59587
+uv run safety scan -i 72715 -i 51457 -i 59587
 uv run bandit -r isort/ -x isort/_vendored
