@@ -10,7 +10,7 @@ _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
 
 
-def module_key(
+def module_key(  # noqa: PLR0913
     module_name: str,
     config: Config,
     sub_imports: bool = False,
@@ -18,6 +18,12 @@ def module_key(
     section_name: Optional[Any] = None,
     straight_import: Optional[bool] = False,
 ) -> str:
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 6 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     match = re.match(r"^(\.+)\s*(.*)", module_name)
     if match:
         sep = " " if config.reverse_relative else "_"
@@ -54,7 +60,14 @@ def module_key(
     return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
-def section_key(line: str, config: Config) -> str:
+def section_key(line: str, config: Config) -> str:  # noqa: C901,PLR0912
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 13 vs 10 recommended.
+    * There are currently 13 branches vs 12 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     section = "B"
 
     if (

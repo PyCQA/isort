@@ -29,7 +29,7 @@ LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
-def process(
+def process(  # noqa: C901,PLR0912,PLR0915
     input_stream: TextIO,
     output_stream: TextIO,
     extension: str = "py",
@@ -51,6 +51,14 @@ def process(
 
     Returns `True` if there were changes that needed to be made (errors present) from what
     was provided in the input_stream, otherwise `False`.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 91 vs 10 recommended.
+    * There are currently 104 branches vs 12 recommended.
+    * There are currently 293 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     line_separator: str = config.line_ending
     add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
