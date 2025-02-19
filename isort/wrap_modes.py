@@ -333,7 +333,7 @@ def hanging_indent_with_parentheses(**interface: Any) -> str:
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
         if (
-            not interface["line_separator"] in interface["statement"]
+            interface["line_separator"] not in interface["statement"]
             and "#" in interface["statement"]
         ):  # pragma: no cover # TODO: fix, this is because of test run inconsistency.
             line, comments = interface["statement"].split("#", 1)

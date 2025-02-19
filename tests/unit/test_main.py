@@ -177,7 +177,7 @@ def test_main(capsys, tmpdir):
     assert main.QUICK_GUIDE in out
 
     # Unless the config is requested, in which case it will be returned alone as JSON
-    main.main(base_args + ["--show-config"])
+    main.main([*base_args, "--show-config"])
     out, error = capsys.readouterr()
     returned_config = json.loads(out)
     assert returned_config
@@ -207,9 +207,12 @@ verbose=true
     )
     config_args = ["--settings-path", str(config_file)]
     main.main(
-        config_args
-        + ["--virtual-env", "/random-root-folder-that-cant-exist-right?"]
-        + ["--show-config"]
+        [
+            *config_args,
+            "--virtual-env",
+            "/random-root-folder-that-cant-exist-right?",
+            "--show-config",
+        ]
     )
     out, error = capsys.readouterr()
     assert json.loads(out)["profile"] == "hug"
@@ -223,7 +226,7 @@ import a
 """
         )
     )
-    main.main(config_args + ["-"], stdin=input_content)
+    main.main([*config_args, "-"], stdin=input_content)
     out, error = capsys.readouterr()
     assert (
         out
@@ -244,7 +247,7 @@ import a
 """
         )
     )
-    main.main(config_args + ["-", "--diff"], stdin=input_content)
+    main.main([*config_args, "-", "--diff"], stdin=input_content)
     out, error = capsys.readouterr()
     assert not error
     assert "+" in out
@@ -264,7 +267,7 @@ import a
     )
 
     with pytest.raises(SystemExit):
-        main.main(config_args + ["-", "--check-only"], stdin=input_content_check)
+        main.main([*config_args, "-", "--check-only"], stdin=input_content_check)
     out, error = capsys.readouterr()
     assert error == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
 
@@ -1289,11 +1292,11 @@ import b
     main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
     out, _ = capsys.readouterr()
 
-    assert f"{str(setup_cfg_file)} used for file {str(file1)}" in out
-    assert f"{str(pyproject_toml_file)} used for file {str(file2)}" in out
-    assert f"{str(isort_cfg_file)} used for file {str(file3)}" in out
-    assert f"default used for file {str(file4)}" in out
-    assert f"default used for file {str(file5)}" in out
+    assert f"{setup_cfg_file} used for file {file1}" in out
+    assert f"{pyproject_toml_file} used for file {file2}" in out
+    assert f"{isort_cfg_file} used for file {file3}" in out
+    assert f"default used for file {file4}" in out
+    assert f"default used for file {file5}" in out
 
     assert (
         file1.read()
@@ -1350,7 +1353,7 @@ from a import x, y, z
 
     _, err = capsys.readouterr()
 
-    assert f"{str(file6)} Imports are incorrectly sorted and/or formatted" in err
+    assert f"{file6} Imports are incorrectly sorted and/or formatted" in err
 
 
 def test_multiple_src_paths(tmpdir, capsys):

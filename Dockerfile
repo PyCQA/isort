@@ -4,7 +4,7 @@ WORKDIR /isort
 COPY pyproject.toml uv.lock /isort/
 
 # Install uv
-COPY --from=ghcr.io/astral-sh/uv:0.5.24 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 
 # Setup as minimal a stub project as possible, simply to allow caching base dependencies
 # between builds.
