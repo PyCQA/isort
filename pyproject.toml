@@ -133,6 +133,7 @@ dev = [
     "pytest-benchmark>=3.4.1",
     "pytest-mock>=1.10",
     "requirementslib>=1.5",
+    "ruff>=0.9.6",
     "safety>=2.2.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
@@ -168,6 +169,49 @@ module = "tests.*"
 allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
+
+[tool.ruff]
+line-length = 100
+lint.select = [
+    "ASYNC",
+    "B",
+    "C4",
+    "C90",
+    "E",
+    "F",
+    "FLY",
+    "PERF",
+    "PIE",
+    "PLC",
+    "PLE",
+    "RUF",
+    "S",
+    "UP",
+    "W",
+]
+lint.ignore = [
+    "B017",
+    "B028",
+    "B904",
+    "E203",
+    "E501",
+    "PERF203",
+    "RUF100",
+    "UP006",
+    "UP035",
+]
+lint.exclude = [ "isort/_vendored/*" ]
+lint.mccabe.max-complexity = 91  # Default is 10
+
+[tool.ruff.lint.per-file-ignores]
+"isort/deprecated/finders.py" = [ "UP034" ]
+"isort/hooks.py" = [ "S603" ]
+"isort/output.py" = [ "PLC0206" ]
+"isort/settings.py" = [ "PLC0414", "S603", "S607" ]
+"isort/setuptools_commands.py" = [ "RUF012" ]
+"tests/*" = [ "RUF001", "S" ]
+"tests/unit/example_crlf_file.py" = [ "F401" ]
+"tests/unit/test_wrap_modes.py" = [ "PIE804" ]
 
 [tool.isort]
 profile = "hug"

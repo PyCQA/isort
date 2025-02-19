@@ -892,11 +892,11 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)
-            if existing_value_type == tuple:
+            if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
-            elif existing_value_type == frozenset:
+            elif existing_value_type is frozenset:
                 settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
-            elif existing_value_type == bool:
+            elif existing_value_type is bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
                     value = _as_bool(value)
