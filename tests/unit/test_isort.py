@@ -4337,9 +4337,8 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
 
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
-    with pytest.raises(
-        Exception
-    ):  # without the settings path provided: the command should not skip & identify errors
+    with pytest.raises(subprocess.CalledProcessError):
+        # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
     result = subprocess.run(
         ["isort", ".", "--check-only", "--settings-path=conf/.isort.cfg"],
