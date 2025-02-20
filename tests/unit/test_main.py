@@ -1102,12 +1102,14 @@ import a
     (tmp_path / "no_imports.py").write_text("...")
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "no_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "no_imports.py" not in error
 
     (tmp_path / ".gitignore").write_text("has_imports.py")
 
     out, error = main_check([str(python_file), "--check"])
-    assert "has_imports.py" in error and "no_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "no_imports.py" not in error
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
     assert "Skipped" in out
@@ -1119,14 +1121,16 @@ import a
     subfolder_file.write_text(import_content)
 
     out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "nested_dir/has_imports.py" not in error
 
     # Should work with relative path
     currentdir = os.getcwd()
     os.chdir(tmp_path)
 
     out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "nested_dir/has_imports.py" not in error
 
     (tmp_path / ".gitignore").write_text(
         """
