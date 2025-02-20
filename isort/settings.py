@@ -339,7 +339,8 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "#custom-config-files for more information."
+                    "#custom-config-files for more information.",
+                    stacklevel=2,
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -407,7 +408,8 @@ class Config(_Config):
                             f"Default to {section_name} if unsure."
                             "\n\n"
                             "See: https://pycqa.github.io/isort/"
-                            "#custom-sections-and-ordering."
+                            "#custom-sections-and-ordering.",
+                            stacklevel=2,
                         )
                     else:
                         combined_config[section_name] = frozenset(value)
@@ -419,7 +421,8 @@ class Config(_Config):
                             " included in `sections` config option:"
                             f" {combined_config.get('sections', SECTION_DEFAULTS)}.\n\n"
                             "See: https://pycqa.github.io/isort/"
-                            "#custom-sections-and-ordering."
+                            "#custom-sections-and-ordering.",
+                            stacklevel=2,
                         )
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
@@ -442,7 +445,8 @@ class Config(_Config):
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
                     "is defined. "
-                    f"The following known_SECTION config options are defined: {config_keys}."
+                    f"The following known_SECTION config options are defined: {config_keys}.",
+                    stacklevel=2,
                 )
 
         if "directory" not in combined_config:
@@ -495,7 +499,8 @@ class Config(_Config):
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
                     "Please see the 5.0.0 upgrade guide: "
-                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
+                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
+                    stacklevel=2,
                 )
 
         if known_other:
@@ -777,7 +782,10 @@ def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
                         potential_config_file, CONFIG_SECTIONS[config_file_name]
                     )
                 except Exception:
-                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    warn(
+                        f"Failed to pull configuration information from {potential_config_file}",
+                        stacklevel=2,
+                    )
                     config_data = {}
                 if config_data:
                     return (current_directory, config_data)
@@ -814,7 +822,10 @@ def find_all_configs(path: str) -> Trie:
                         potential_config_file, CONFIG_SECTIONS[config_file_name]
                     )
                 except Exception:
-                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    warn(
+                        f"Failed to pull configuration information from {potential_config_file}",
+                        stacklevel=2,
+                    )
                     config_data = {}
 
                 if config_data:
