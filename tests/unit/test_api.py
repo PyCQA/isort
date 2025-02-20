@@ -1,4 +1,5 @@
 """Tests the isort API module"""
+
 import os
 from io import StringIO
 from unittest.mock import MagicMock, patch
@@ -91,6 +92,13 @@ def test_sort_code_string_mixed_newlines():
 def test_find_imports_in_file(imperfect):
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]
+
+
+def test_find_imports_in_file_error(tmpdir):
+    test_path = tmpdir.join("test_path.py")
+    test_path.mkdir()
+    with pytest.warns(UserWarning):
+        assert not list(api.find_imports_in_file(test_path))
 
 
 def test_find_imports_in_code():

@@ -51,7 +51,7 @@ def module_key(
         or str(section_name).lower() in config.length_sort_sections
     )
     _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
-    return f"{module_name in config.force_to_top and 'A' or 'B'}{prefix}{_length_sort_maybe}"
+    return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
@@ -66,7 +66,7 @@ def section_key(line: str, config: Config) -> str:
         if match:  # pragma: no cover - regex always matches if line starts with "from ."
             line = f"from {' '.join(match.groups())}"
     if config.group_by_package and line.strip().startswith("from"):
-        line = line.split(" import", 1)[0]
+        line = line.split(" import ", 1)[0]
 
     if config.lexicographical:
         line = _import_line_intro_re.sub("", _import_line_midline_import_re.sub(".", line))
@@ -90,7 +90,7 @@ def section_key(line: str, config: Config) -> str:
                 module_name = module_name.lower()
             if not config.order_by_type:
                 names = names.lower()
-            line = " import ".join([module_name, names])
+            line = f"{module_name} import {names}"
         elif not config.case_sensitive:
             line = line.lower()
     elif not config.order_by_type:
@@ -117,7 +117,7 @@ def naturally(
     else:
 
         def key_callback(text: str) -> List[Any]:
-            return _natural_keys(key(text))  # type: ignore
+            return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 

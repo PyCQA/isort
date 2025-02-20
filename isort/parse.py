@@ -1,4 +1,5 @@
 """Defines parsing functions used by isort for parsing import definitions"""
+
 import re
 from collections import OrderedDict, defaultdict
 from functools import partial
@@ -475,9 +476,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         import_from, {}
                     )
                     existing_comment = nested_from_comments.get(just_imports[0], "")
-                    nested_from_comments[
-                        just_imports[0]
-                    ] = f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    nested_from_comments[just_imports[0]] = (
+                        f"{existing_comment}{'; ' if existing_comment else ''}{'; '.join(comments)}"
+                    )
                     comments = []
 
                 if comments and attach_comments_to is None:
@@ -492,7 +493,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and "isort:imports-" not in last
                         and "isort: imports-" not in last
                         and not config.treat_all_comments_as_code
-                        and not last.strip() in config.treat_comments_as_code
+                        and last.strip() not in config.treat_comments_as_code
                     ):
                         categorized_comments["above"]["from"].setdefault(import_from, []).insert(
                             0, out_lines.pop(-1)
@@ -544,7 +545,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and "isort:imports-" not in last
                             and "isort: imports-" not in last
                             and not config.treat_all_comments_as_code
-                            and not last.strip() in config.treat_comments_as_code
+                            and last.strip() not in config.treat_comments_as_code
                         ):
                             categorized_comments["above"]["straight"].setdefault(module, []).insert(
                                 0, out_lines.pop(-1)

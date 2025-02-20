@@ -21,7 +21,7 @@ class TestFindersManager:
 
         with patch(
             "isort.deprecated.finders.FindersManager._default_finders_classes",
-            FindersManager._default_finders_classes + (ExceptionOnInit,),  # type: ignore
+            (*FindersManager._default_finders_classes, ExceptionOnInit),
         ):
             assert FindersManager(settings.Config(verbose=True))
 

@@ -1,9 +1,10 @@
 import json
 import os
+import pathlib
+import shutil
 import subprocess
 from datetime import datetime
 
-import py
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -176,7 +177,7 @@ def test_main(capsys, tmpdir):
     assert main.QUICK_GUIDE in out
 
     # Unless the config is requested, in which case it will be returned alone as JSON
-    main.main(base_args + ["--show-config"])
+    main.main([*base_args, "--show-config"])
     out, error = capsys.readouterr()
     returned_config = json.loads(out)
     assert returned_config
@@ -206,9 +207,12 @@ verbose=true
     )
     config_args = ["--settings-path", str(config_file)]
     main.main(
-        config_args
-        + ["--virtual-env", "/random-root-folder-that-cant-exist-right?"]
-        + ["--show-config"]
+        [
+            *config_args,
+            "--virtual-env",
+            "/random-root-folder-that-cant-exist-right?",
+            "--show-config",
+        ]
     )
     out, error = capsys.readouterr()
     assert json.loads(out)["profile"] == "hug"
@@ -222,7 +226,7 @@ import a
 """
         )
     )
-    main.main(config_args + ["-"], stdin=input_content)
+    main.main([*config_args, "-"], stdin=input_content)
     out, error = capsys.readouterr()
     assert (
         out
@@ -243,7 +247,7 @@ import a
 """
         )
     )
-    main.main(config_args + ["-", "--diff"], stdin=input_content)
+    main.main([*config_args, "-", "--diff"], stdin=input_content)
     out, error = capsys.readouterr()
     assert not error
     assert "+" in out
@@ -263,7 +267,7 @@ import a
     )
 
     with pytest.raises(SystemExit):
-        main.main(config_args + ["-", "--check-only"], stdin=input_content_check)
+        main.main([*config_args, "-", "--check-only"], stdin=input_content_check)
     out, error = capsys.readouterr()
     assert error == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
 
@@ -1079,7 +1083,7 @@ def test_identify_imports_main(tmpdir, capsys):
     assert len(out.split("\n")) == 3
 
 
-def test_gitignore(capsys, tmpdir: py.path.local):
+def test_gitignore(capsys, tmp_path: pathlib.Path):
     import_content = """
 import b
 import a
@@ -1092,15 +1096,15 @@ import a
             pass
         return capsys.readouterr()
 
-    subprocess.run(["git", "init", str(tmpdir)])
-    python_file = tmpdir.join("has_imports.py")
-    python_file.write(import_content)
-    tmpdir.join("no_imports.py").write("...")
+    subprocess.run(["git", "init", str(tmp_path)])
+    python_file = tmp_path / "has_imports.py"
+    python_file.write_text(import_content)
+    (tmp_path / "no_imports.py").write_text("...")
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
     assert "has_imports.py" in error and "no_imports.py" not in error
 
-    tmpdir.join(".gitignore").write("has_imports.py")
+    (tmp_path / ".gitignore").write_text("has_imports.py")
 
     out, error = main_check([str(python_file), "--check"])
     assert "has_imports.py" in error and "no_imports.py" not in error
@@ -1109,22 +1113,22 @@ import a
     assert "Skipped" in out
 
     # Should work with nested directories
-    tmpdir.mkdir("nested_dir")
-    tmpdir.join(".gitignore").write("nested_dir/has_imports.py")
-    subfolder_file = tmpdir.join("nested_dir/has_imports.py")
-    subfolder_file.write(import_content)
+    (tmp_path / "nested_dir").mkdir()
+    (tmp_path / ".gitignore").write_text("nested_dir/has_imports.py")
+    subfolder_file = tmp_path / "nested_dir/has_imports.py"
+    subfolder_file.write_text(import_content)
 
-    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files", "--check"])
+    out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files", "--check"])
     assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
 
     # Should work with relative path
     currentdir = os.getcwd()
-    os.chdir(tmpdir)
+    os.chdir(tmp_path)
 
     out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
     assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
 
-    tmpdir.join(".gitignore").write(
+    (tmp_path / ".gitignore").write_text(
         """
 nested_dir/has_imports.py
 has_imports.py
@@ -1137,17 +1141,18 @@ has_imports.py
 
     # Should work with multiple git projects
 
-    tmpdir.join(".git").remove()
-    tmpdir.join(".gitignore").remove()
+    shutil.rmtree(tmp_path / ".git")
+    (tmp_path / ".gitignore").unlink()
 
     # git_project0
     # | has_imports_ignored.py ignored
     # | has_imports.py should check
-    git_project0 = tmpdir.mkdir("git_project0")
+    git_project0 = tmp_path / "git_project0"
+    git_project0.mkdir()
     subprocess.run(["git", "init", str(git_project0)])
-    git_project0.join(".gitignore").write("has_imports_ignored.py")
-    git_project0.join("has_imports_ignored.py").write(import_content)
-    git_project0.join("has_imports.py").write(import_content)
+    (git_project0 / ".gitignore").write_text("has_imports_ignored.py")
+    (git_project0 / "has_imports_ignored.py").write_text(import_content)
+    (git_project0 / "has_imports.py").write_text(import_content)
 
     # git_project1
     # | has_imports.py should check
@@ -1156,19 +1161,23 @@ has_imports.py
     #   | has_imports.py should check
     # | nested_dir_ignored ignored
     #   | has_imports.py ignored from folder
-    git_project1 = tmpdir.mkdir("git_project1")
+    git_project1 = tmp_path / "git_project1"
+    git_project1.mkdir()
     subprocess.run(["git", "init", str(git_project1)])
-    git_project1.join(".gitignore").write(
+    (git_project1 / ".gitignore").write_text(
         """
 nested_dir/has_imports_ignored.py
 nested_dir_ignored
 """
     )
-    git_project1.join("has_imports.py").write(import_content)
-    nested_dir = git_project1.mkdir("nested_dir")
-    nested_dir.join("has_imports.py").write(import_content)
-    nested_dir.join("has_imports_ignored.py").write(import_content)
-    git_project1.mkdir("nested_dir_ignored").join("has_imports.py").write(import_content)
+    (git_project1 / "has_imports.py").write_text(import_content)
+    nested_dir = git_project1 / "nested_dir"
+    nested_dir.mkdir()
+    (nested_dir / "has_imports.py").write_text(import_content)
+    (nested_dir / "has_imports_ignored.py").write_text(import_content)
+    nested_ignored_dir = git_project1 / "nested_dir_ignored"
+    nested_ignored_dir.mkdir()
+    (nested_ignored_dir / "has_imports.py").write_text(import_content)
 
     should_check = [
         "/has_imports.py",
@@ -1178,27 +1187,28 @@ nested_dir_ignored
         "/git_project1/nested_dir/has_imports.py",
     ]
 
-    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files", "--check"])
+    out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files", "--check"])
 
     if os.name == "nt":
         should_check = [sc.replace("/", "\\") for sc in should_check]
 
-    assert all(f"{str(tmpdir)}{file}" in error for file in should_check)
+    assert all(f"{tmp_path}{file}" in error for file in should_check)
 
-    out, error = main_check([str(tmpdir), "--skip-gitignore", "--filter-files"])
+    out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files"])
 
-    assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
+    assert all(f"{tmp_path}{file}" in out for file in should_check)
 
     # Should work when git project contains symlinks
 
     if os.name != "nt":
-        git_project0.join("has_imports_ignored.py").write(import_content)
-        git_project0.join("has_imports.py").write(import_content)
-        tmpdir.join("has_imports.py").write(import_content)
-        tmpdir.join("nested_dir").join("has_imports.py").write(import_content)
-        git_project0.join("ignore_link.py").mksymlinkto(tmpdir.join("has_imports.py"))
-        git_project0.join("ignore_link").mksymlinkto(tmpdir.join("nested_dir"))
-        git_project0.join(".gitignore").write("ignore_link.py\nignore_link", mode="a")
+        (git_project0 / "has_imports_ignored.py").write_text(import_content)
+        (git_project0 / "has_imports.py").write_text(import_content)
+        (tmp_path / "has_imports.py").write_text(import_content)
+        (tmp_path / "nested_dir" / "has_imports.py").write_text(import_content)
+        (git_project0 / "ignore_link.py").symlink_to(tmp_path / "has_imports.py")
+        (git_project0 / "ignore_link").symlink_to(tmp_path / "nested_dir")
+        gitignore = git_project0 / ".gitignore"
+        gitignore.write_text(gitignore.read_text() + "ignore_link.py\nignore_link")
 
         out, error = main_check(
             [str(git_project0), "--skip-gitignore", "--filter-files", "--check"]
@@ -1206,11 +1216,11 @@ nested_dir_ignored
 
         should_check = ["/git_project0/has_imports.py"]
 
-        assert all(f"{str(tmpdir)}{file}" in error for file in should_check)
+        assert all(f"{tmp_path}{file}" in error for file in should_check)
 
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
-        assert all(f"{str(tmpdir)}{file}" in out for file in should_check)
+        assert all(f"{tmp_path}{file}" in out for file in should_check)
 
 
 def test_multiple_configs(capsys, tmpdir):
@@ -1282,11 +1292,11 @@ import b
     main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
     out, _ = capsys.readouterr()
 
-    assert f"{str(setup_cfg_file)} used for file {str(file1)}" in out
-    assert f"{str(pyproject_toml_file)} used for file {str(file2)}" in out
-    assert f"{str(isort_cfg_file)} used for file {str(file3)}" in out
-    assert f"default used for file {str(file4)}" in out
-    assert f"default used for file {str(file5)}" in out
+    assert f"{setup_cfg_file} used for file {file1}" in out
+    assert f"{pyproject_toml_file} used for file {file2}" in out
+    assert f"{isort_cfg_file} used for file {file3}" in out
+    assert f"default used for file {file4}" in out
+    assert f"default used for file {file5}" in out
 
     assert (
         file1.read()
@@ -1343,7 +1353,7 @@ from a import x, y, z
 
     _, err = capsys.readouterr()
 
-    assert f"{str(file6)} Imports are incorrectly sorted and/or formatted" in err
+    assert f"{file6} Imports are incorrectly sorted and/or formatted" in err
 
 
 def test_multiple_src_paths(tmpdir, capsys):

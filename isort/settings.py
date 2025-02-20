@@ -2,6 +2,7 @@
 
 Defines how the default settings for isort should be loaded
 """
+
 import configparser
 import fnmatch
 import os
@@ -251,14 +252,7 @@ class _Config:
     def __post_init__(self) -> None:
         py_version = self.py_version
         if py_version == "auto":  # pragma: no cover
-            if sys.version_info.major == 2 and sys.version_info.minor <= 6:
-                py_version = "2"
-            elif sys.version_info.major == 3 and (
-                sys.version_info.minor <= 5 or sys.version_info.minor >= 12
-            ):
-                py_version = "3"
-            else:
-                py_version = f"{sys.version_info.major}{sys.version_info.minor}"
+            py_version = f"{sys.version_info.major}{sys.version_info.minor}"
 
         if py_version not in VALID_PY_TARGETS:
             raise ValueError(
@@ -345,7 +339,7 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "/#custom_config_files for more information."
+                    "#custom-config-files for more information."
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -443,7 +437,7 @@ class Config(_Config):
             if section in SECTION_DEFAULTS:
                 continue
 
-            if not section.lower() in known_other:
+            if section.lower() not in known_other:
                 config_keys = ", ".join(known_other.keys())
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
@@ -553,8 +547,7 @@ class Config(_Config):
                 line = fp.readline(100)
         except OSError:
             return False
-        else:
-            return bool(_SHEBANG_RE.match(line))
+        return bool(_SHEBANG_RE.match(line))
 
     def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -761,9 +754,11 @@ def _as_list(value: str) -> List[str]:
 
 def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     paths = {
-        os.path.join(cwd, value)
-        if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
-        else value
+        (
+            os.path.join(cwd, value)
+            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            else value
+        )
         for value in values
     }
     return paths
@@ -857,14 +852,12 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
         for section in sections:
             if section.startswith("*.{") and section.endswith("}"):
                 extension = section[len("*.{") : -1]
-                for config_key in config.keys():
+                for config_key in config:
                     if (
                         config_key.startswith("*.{")
                         and config_key.endswith("}")
                         and extension
-                        in map(
-                            lambda text: text.strip(), config_key[len("*.{") : -1].split(",")  # type: ignore # noqa
-                        )
+                        in (text.strip() for text in config_key[len("*.{") : -1].split(","))
                     ):
                         settings.update(config.items(config_key))
 
@@ -881,10 +874,10 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
                 indent_size = settings.pop("tab_width", "").strip()
 
             if indent_style == "space":
-                settings["indent"] = " " * (indent_size and int(indent_size) or 4)
+                settings["indent"] = " " * ((indent_size and int(indent_size)) or 4)
 
             elif indent_style == "tab":
-                settings["indent"] = "\t" * (indent_size and int(indent_size) or 1)
+                settings["indent"] = "\t" * ((indent_size and int(indent_size)) or 1)
 
             max_line_length = settings.pop("max_line_length", "").strip()
             if max_line_length and (max_line_length == "off" or max_line_length.isdigit()):
@@ -894,16 +887,16 @@ def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any
             settings = {
                 key: value
                 for key, value in settings.items()
-                if key in _DEFAULT_SETTINGS.keys() or key.startswith(KNOWN_PREFIX)
+                if key in _DEFAULT_SETTINGS or key.startswith(KNOWN_PREFIX)
             }
 
         for key, value in settings.items():
             existing_value_type = _get_str_to_type_converter(key)
-            if existing_value_type == tuple:
+            if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
-            elif existing_value_type == frozenset:
+            elif existing_value_type is frozenset:
                 settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
-            elif existing_value_type == bool:
+            elif existing_value_type is bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
                     value = _as_bool(value)

@@ -1,6 +1,6 @@
 #! /bin/env python
 import os
-from typing import Any, Dict, Generator, Iterable, Type
+from typing import Any, Dict
 
 from isort.profiles import profiles
 
@@ -20,7 +20,7 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 
 
 def format_profile(profile_name: str, profile: Dict[str, Any]) -> str:
-    options = "\n".join(f" - **{name}**: `{repr(value)}`" for name, value in profile.items())
+    options = "\n".join(f" - **{name}**: `{value!r}`" for name, value in profile.items())
     return f"""
 #{profile_name}
 
