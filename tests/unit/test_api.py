@@ -74,7 +74,7 @@ def test_check_file_with_changes(capsys, imperfect) -> None:
 
 
 def test_sorted_imports_multiple_configs() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You can either specify custom configuration options"):
         api.sort_code_string("import os", config=Config(line_length=80), line_length=80)
 
 
