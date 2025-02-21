@@ -17,7 +17,7 @@ def formatter_from_string(name: str) -> Callable[..., str]:
     return _wrap_modes.get(name.upper(), grid)
 
 
-def _wrap_mode_interface(
+def _wrap_mode_interface(  # noqa: PLR0913
     statement: str,
     imports: List[str],
     white_space: str,
@@ -29,7 +29,6 @@ def _wrap_mode_interface(
     include_trailing_comma: bool,
     remove_comments: bool,
 ) -> str:
-    """Defines the common interface used by all wrap mode functions"""
     return ""
 
 
