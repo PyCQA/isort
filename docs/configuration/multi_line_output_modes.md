@@ -36,7 +36,7 @@ from third_party import (
     lib1,
     lib2,
     lib3,
-    lib4,
+    lib4
 )
 ```
 
@@ -93,7 +93,7 @@ from third_party import (
 
 ## 9 - Vertical Prefix From Module Import
 
-Starts a new line with the same `from MODULE import ` prefix when lines are longer than the line length limit.
+Starts a new line with the same `from MODULE import` prefix when lines are longer than the line length limit.
 
 ```python
 from third_party import lib1, lib2, lib3
