@@ -460,9 +460,8 @@ class Config(_Config):
 
         path_root = Path(combined_config.get("directory", project_root)).resolve()
         path_root = path_root if path_root.is_dir() else path_root.parent
-        if "src_paths" not in combined_config:
-            combined_config["src_paths"] = (path_root / "src", path_root)
-        else:
+
+        if "src_paths" in combined_config:
             src_paths: List[Path] = []
             for src_path in combined_config.get("src_paths", ()):
                 full_paths = (
@@ -473,6 +472,8 @@ class Config(_Config):
                         src_paths.append(path)
 
             combined_config["src_paths"] = tuple(src_paths)
+        else:
+            combined_config["src_paths"] = (path_root / "src", path_root)
 
         if "formatter" in combined_config:
             import pkg_resources

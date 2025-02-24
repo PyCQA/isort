@@ -1117,6 +1117,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
 
     if "src_paths" in config_dict:
         config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
+        config_dict.setdefault("directory", os.getcwd())
 
     config = Config(**config_dict)
     if show_config:
