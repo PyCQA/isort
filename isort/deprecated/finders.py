@@ -236,10 +236,9 @@ class ReqsBaseFinder(BaseFinder):
 
     def _load_names(self) -> List[str]:
         """Return list of thirdparty modules from requirements"""
-        names = []
+        names: List[str] = []
         for path in self._get_files():
-            for name in self._get_names(path):
-                names.append(self._normalize_name(name))
+            names.extend(self._normalize_name(name) for name in self._get_names(path))
         return names
 
     @staticmethod
@@ -298,7 +297,7 @@ class RequirementsFinder(ReqsBaseFinder):
     @classmethod
     @lru_cache(maxsize=16)
     def _get_files_from_dir_cached(cls, path: str) -> List[str]:
-        results = []
+        results: List[str] = []
 
         for fname in os.listdir(path):
             if "requirements" not in fname:
@@ -308,9 +307,11 @@ class RequirementsFinder(ReqsBaseFinder):
             # *requirements*/*.{txt,in}
             if os.path.isdir(full_path):
                 for subfile_name in os.listdir(full_path):
-                    for ext in cls.exts:
-                        if subfile_name.endswith(ext):
-                            results.append(os.path.join(full_path, subfile_name))
+                    results.extend(
+                        os.path.join(full_path, subfile_name)
+                        for ext in cls.ext  # type: ignore[attr-defined]
+                        if subfile_name.endswith(ext)
+                    )
                 continue
 
             # *requirements*.{txt,in}
@@ -329,13 +330,11 @@ class RequirementsFinder(ReqsBaseFinder):
     @classmethod
     @lru_cache(maxsize=16)
     def _get_names_cached(cls, path: str) -> List[str]:
-        result = []
+        result: List[str] = []
 
         with chdir(os.path.dirname(path)):
             requirements = parse_requirements(Path(path))
-            for req in requirements.values():
-                if req.name:
-                    result.append(req.name)
+            result.extend(req.name for req in requirements.values() if req.name)
 
         return result
 

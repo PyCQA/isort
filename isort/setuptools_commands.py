@@ -1,7 +1,7 @@
 import glob
 import os
 import sys
-from typing import Any, Dict, Iterator, List
+from typing import Any, Iterator
 from warnings import warn
 
 import setuptools
@@ -16,7 +16,8 @@ class ISortCommand(setuptools.Command):
     """
 
     description = "Run isort on modules registered in setuptools"
-    user_options: List[Any] = []
+    # Potentially unused variable - check if can be safely removed
+    user_options: list[Any] = []  # type: ignore[misc]
 
     def initialize_options(self) -> None:
         default_settings = vars(DEFAULT_CONFIG).copy()
@@ -25,7 +26,7 @@ class ISortCommand(setuptools.Command):
 
     def finalize_options(self) -> None:
         """Get options from config files."""
-        self.arguments: Dict[str, Any] = {}  # skipcq: PYL-W0201
+        self.arguments: dict[str, Any] = {}  # skipcq: PYL-W0201
         self.arguments["settings_path"] = os.getcwd()
 
     def distribution_files(self) -> Iterator[str]:
@@ -56,6 +57,6 @@ class ISortCommand(setuptools.Command):
                     if not api.check_file(python_file, **arguments):
                         wrong_sorted_files = True  # pragma: no cover
                 except OSError as error:  # pragma: no cover
-                    warn(f"Unable to parse file {python_file} due to {error}")
+                    warn(f"Unable to parse file {python_file} due to {error}", stacklevel=2)
         if wrong_sorted_files:
             sys.exit(1)  # pragma: no cover

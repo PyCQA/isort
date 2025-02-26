@@ -41,7 +41,7 @@ def sorted_imports(
                 parsed.imports[section].get("straight", {})
             )
             parsed.imports["no_sections"]["from"].update(parsed.imports[section].get("from", {}))
-        sections = base_sections + ("no_sections",)
+        sections = (*base_sections, "no_sections")
 
     output: List[str] = []
     seen_headings: Set[str] = set()
@@ -338,7 +338,7 @@ def _with_from_imports(
                     )
                     if comment:
                         single_import_line += (
-                            f"{comments and ';' or config.comment_prefix} " f"{comment}"
+                            f"{(comments and ';') or config.comment_prefix} " f"{comment}"
                         )
                     if from_import in as_imports:
                         if (
@@ -467,7 +467,7 @@ def _with_from_imports(
                             comment_prefix=config.comment_prefix,
                         )
                         single_import_line += (
-                            f"{use_comments and ';' or config.comment_prefix} " f"{comment}"
+                            f"{(use_comments and ';') or config.comment_prefix} " f"{comment}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
@@ -569,7 +569,7 @@ def _with_straight_imports(
 ) -> List[str]:
     output: List[str] = []
 
-    as_imports = any((module in parsed.as_map["straight"] for module in straight_modules))
+    as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)
 
     # combine_straight_imports only works for bare imports, 'as' imports not included
     if config.combine_straight_imports and not as_imports:
@@ -662,7 +662,7 @@ def _ensure_newline_before_comment(output: List[str]) -> List[str]:
     def is_comment(line: Optional[str]) -> bool:
         return line.startswith("#") if line else False
 
-    for line, prev_line in zip(output, [None] + output):  # type: ignore
+    for line, prev_line in zip(output, [None, *output]):
         if is_comment(line) and prev_line != "" and not is_comment(prev_line):
             new_output.append("")
         new_output.append(line)
@@ -672,5 +672,5 @@ def _ensure_newline_before_comment(output: List[str]) -> List[str]:
 def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List[str]) -> List[str]:
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
     if star_comment:
-        return comments + [star_comment]
+        return [*comments, star_comment]
     return comments

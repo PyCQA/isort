@@ -3,8 +3,8 @@ name: Release
 
 "on":
   push:
-    branches:
-      - main
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   release:
@@ -17,51 +17,35 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Set Tag env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
-      - name: Upgrade pip
-        run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.6.0"
 
-      - name: Install Poetry
+      - name: Install dependencies
         run: |
-          pip install --constraint=.github/workflows/poetry-constraints.txt poetry
-          poetry --version
+          uv sync --all-extras --frozen
 
       - name: Check if there is a parent commit
         id: check-parent-commit
         run: |
           echo "::set-output name=sha::$(git rev-parse --verify --quiet HEAD^)"
 
-      - name: Detect and tag new version
-        id: check-version
-        if: steps.check-parent-commit.outputs.sha
-        uses: salsify/action-detect-and-tag-new-version@v2
-        with:
-          tag-template: "{VERSION}"
-          version-command: |
-            bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
-
-      - name: Bump version for developmental release
-        if: "! steps.check-version.outputs.tag"
-        run: |
-          poetry version patch &&
-          version=$(poetry version | awk '{ print $2 }') &&
-          poetry version $version.dev.$(date +%s)
-
       - name: Build package
         run: |
-          poetry build --ansi
+          uv build
 
       - name: Publish package on PyPI
-        if: steps.check-version.outputs.tag
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Publish the release notes

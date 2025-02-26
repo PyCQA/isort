@@ -12,9 +12,9 @@ from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
-IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*") + CIMPORT_IDENTIFIERS
+IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*", *CIMPORT_IDENTIFIERS)
 DOCSTRING_INDICATORS = ('"""', "'''")
-COMMENT_INDICATORS = DOCSTRING_INDICATORS + ("'", '"', "#")
+COMMENT_INDICATORS = (*DOCSTRING_INDICATORS, "'", '"', "#")
 CODE_SORT_COMMENTS = (
     "# isort: list",
     "# isort: dict",
@@ -180,11 +180,11 @@ def process(
                     add_imports = [
                         import_to_add
                         for import_to_add in add_imports
-                        if not import_to_add == import_not_to_add
+                        if import_to_add != import_not_to_add
                     ]
 
             if (
-                (index == 0 or (index in (1, 2) and not contains_imports))
+                (index == 0 or (index in {1, 2} and not contains_imports))
                 and stripped_line.startswith("#")
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
@@ -199,11 +199,9 @@ def process(
                 first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
-            if (not stripped_line.startswith("#") or in_quote) and '"' in line or "'" in line:
+            if ((not stripped_line.startswith("#") or in_quote) and '"' in line) or "'" in line:
                 char_index = 0
-                if first_comment_index_start == -1 and (
-                    line.startswith('"') or line.startswith("'")
-                ):
+                if first_comment_index_start == -1 and line.startswith(('"', "'")):
                     first_comment_index_start = index
                 while char_index < len(line):
                     if line[char_index] == "\\":
@@ -287,9 +285,8 @@ def process(
                     indent = line[: -len(line.lstrip())]
                 elif not (stripped_line or contains_imports):
                     not_imports = True
-                elif (
-                    not stripped_line
-                    or stripped_line.startswith("#")
+                elif not stripped_line or (
+                    stripped_line.startswith("#")
                     and (not indent or indent + line.lstrip() == line)
                     and not config.treat_all_comments_as_code
                     and stripped_line not in config.treat_comments_as_code
@@ -477,7 +474,7 @@ def process(
                         output_stream.write(new_line)
                         stripped_line = new_line.strip().split("#")[0]
 
-                if stripped_line.startswith("raise") or stripped_line.startswith("yield"):
+                if stripped_line.startswith(("raise", "yield")):
                     while stripped_line.endswith("\\"):
                         new_line = input_stream.readline()
                         if not new_line:

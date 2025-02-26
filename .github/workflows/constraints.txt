@@ -1,2 +1,0 @@
-pip==23.2
-virtualenv==20.17.1

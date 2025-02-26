@@ -102,11 +102,11 @@ def sort_imports(
             skipped = True
         return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
-        warn(f"Unable to parse file {file_name} due to {error}")
+        warn(f"Unable to parse file {file_name} due to {error}", stacklevel=2)
         return None
     except UnsupportedEncoding:
         if config.verbose:
-            warn(f"Encoding not supported for {file_name}")
+            warn(f"Encoding not supported for {file_name}", stacklevel=2)
         return SortAttempt(incorrectly_sorted, skipped, False)
     except ISortError as error:
         _print_hard_fail(config, message=str(error))
@@ -876,7 +876,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--python-version",
         action="store",
         dest="py_version",
-        choices=tuple(VALID_PY_TARGETS) + ("auto",),
+        choices=(*tuple(VALID_PY_TARGETS), "auto"),
         help="Tells isort to set the known standard library based on the specified Python "
         "version. Default is to assume any Python 3 version could be the target, and use a union "
         "of all stdlib modules across versions. If auto is specified, the version of the "
@@ -1079,7 +1079,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         venv = arguments["virtual_env"]
         arguments["virtual_env"] = os.path.abspath(venv)
         if not os.path.isdir(arguments["virtual_env"]):
-            warn(f"virtual_env dir does not exist: {arguments['virtual_env']}")
+            warn(f"virtual_env dir does not exist: {arguments['virtual_env']}", stacklevel=2)
 
     file_names = arguments.pop("files", [])
     if not file_names and not show_config:
@@ -1260,7 +1260,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if num_broken and not config.quiet:
             if config.verbose:
                 for was_broken in broken:
-                    warn(f"{was_broken} was broken path, make sure it exists correctly")
+                    warn(
+                        f"{was_broken} was broken path, make sure it exists correctly", stacklevel=2
+                    )
             print(f"Broken {num_broken} paths")
 
         if num_broken > 0 and is_no_attempt:
@@ -1272,16 +1274,19 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if remapped_deprecated_args:
             warn(
                 "W0502: The following deprecated single dash CLI flags were used and translated: "
-                f"{', '.join(remapped_deprecated_args)}!"
+                f"{', '.join(remapped_deprecated_args)}!",
+                stacklevel=2,
             )
         if deprecated_flags:
             warn(
                 "W0501: The following deprecated CLI flags were used and ignored: "
-                f"{', '.join(deprecated_flags)}!"
+                f"{', '.join(deprecated_flags)}!",
+                stacklevel=2,
             )
         warn(
             "W0500: Please see the 5.0.0 Upgrade guide: "
-            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
+            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
+            stacklevel=2,
         )
 
     if wrong_sorted_files:

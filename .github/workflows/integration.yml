@@ -22,20 +22,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
 
-      - name: Upgrade pip
-        run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
-          pip --version
-
-      - name: Install Poetry
-        run: |
-          pipx install --pip-args=--constraint=.github/workflows/poetry-constraints.txt poetry
-          poetry --version
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          version: ">=0.6.0"
 
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --all-extras --frozen
 
       - name: Test integration
         run: ./scripts/test_integration.sh

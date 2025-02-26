@@ -451,7 +451,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if placed_module == "":
                     warn(
                         f"could not place module {import_from} of line {line} --"
-                        " Do you need to define a default section?"
+                        " Do you need to define a default section?",
+                        stacklevel=2,
                     )
 
                 if placed_module and placed_module not in imports:
@@ -493,7 +494,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and "isort:imports-" not in last
                         and "isort: imports-" not in last
                         and not config.treat_all_comments_as_code
-                        and not last.strip() in config.treat_comments_as_code
+                        and last.strip() not in config.treat_comments_as_code
                     ):
                         categorized_comments["above"]["from"].setdefault(import_from, []).insert(
                             0, out_lines.pop(-1)
@@ -545,7 +546,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             and "isort:imports-" not in last
                             and "isort: imports-" not in last
                             and not config.treat_all_comments_as_code
-                            and not last.strip() in config.treat_comments_as_code
+                            and last.strip() not in config.treat_comments_as_code
                         ):
                             categorized_comments["above"]["straight"].setdefault(module, []).insert(
                                 0, out_lines.pop(-1)
@@ -569,7 +570,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module == "":
                         warn(
                             f"could not place module {module} of line {line} --"
-                            " Do you need to define a default section?"
+                            " Do you need to define a default section?",
+                            stacklevel=2,
                         )
                         imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
 
