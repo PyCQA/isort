@@ -180,6 +180,7 @@ lint.select = [
     "PIE",
     "PLC",
     "PLE",
+    "PT",
     "RUF",
     "S",
     "UP",

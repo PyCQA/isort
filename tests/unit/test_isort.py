@@ -231,7 +231,7 @@ def test_line_length() -> None:
     test_input = (
         "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="wrap_length must be set lower than or equal to line_le"):
         test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
     assert (
         isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99)
@@ -3777,7 +3777,7 @@ def test_argument_parsing() -> None:
     assert args["only_sections"] is True
 
 
-@pytest.mark.parametrize("multiprocess", (False, True))
+@pytest.mark.parametrize("multiprocess", [False, True])
 def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     from isort.main import main
 
@@ -3805,7 +3805,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
         assert str(tmpdir.join("file2.py")) in out
 
 
-@pytest.mark.parametrize("quiet", (False, True))
+@pytest.mark.parametrize("quiet", [False, True])
 def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
@@ -3822,7 +3822,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     assert bool(out) != quiet
 
 
-@pytest.mark.parametrize("enabled", (False, True))
+@pytest.mark.parametrize("enabled", [False, True])
 def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
@@ -3864,11 +3864,11 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
 
 @pytest.mark.parametrize(
     "skip_glob_assert",
-    (
+    [
         ([], 0, {os.sep.join(("code", "file.py"))}),
         (["**/*.py"], 1, set()),
         (["*/code/*.py"], 1, set()),
-    ),
+    ],
 )
 def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
     skip_glob, skipped_count, file_names_expected = skip_glob_assert
