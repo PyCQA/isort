@@ -2676,7 +2676,7 @@ def test_top_of_line_comments() -> None:
 
 
 def test_basic_comment() -> None:
-    """Test to ensure a basic comment wont crash isort"""
+    """Test to ensure a basic comment won't crash isort"""
     test_input = "import logging\n# Foo\nimport os\n"
     assert isort.code(test_input) == test_input
 
@@ -3011,7 +3011,7 @@ def test_import_by_paren_issue_375() -> None:
 
 
 def test_import_by_paren_issue_460() -> None:
-    """Test to ensure isort can doesnt move comments around"""
+    """Test to ensure isort can doesn't move comments around"""
     test_input = """
 # First comment
 # Second comment
