@@ -94,9 +94,9 @@ from kopf.structs import bodies, configuration, containers, diffs, \\
     )
 
 
-@pytest.mark.parametrize("include_trailing_comma", (False, True))
-@pytest.mark.parametrize("line_length", (18, 19))
-@pytest.mark.parametrize("multi_line_output", (4, 5))
+@pytest.mark.parametrize("include_trailing_comma", [False, True])
+@pytest.mark.parametrize("line_length", [18, 19])
+@pytest.mark.parametrize("multi_line_output", [4, 5])
 def test_vertical_grid_size_near_line_length(
     multi_line_output: int,
     line_length: int,
@@ -259,7 +259,7 @@ def test_fuzz_hanging_indent(
         reject()
 
 
-@pytest.mark.parametrize("include_trailing_comma", (True, False))
+@pytest.mark.parametrize("include_trailing_comma", [True, False])
 def test_hanging_indent__with_include_trailing_comma__expect_same_result(include_trailing_comma):
     result = isort.wrap_modes.hanging_indent(
         statement="from datetime import ",

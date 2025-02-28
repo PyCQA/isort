@@ -451,7 +451,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if placed_module == "":
                     warn(
                         f"could not place module {import_from} of line {line} --"
-                        " Do you need to define a default section?"
+                        " Do you need to define a default section?",
+                        stacklevel=2,
                     )
 
                 if placed_module and placed_module not in imports:
@@ -569,7 +570,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module == "":
                         warn(
                             f"could not place module {module} of line {line} --"
-                            " Do you need to define a default section?"
+                            " Do you need to define a default section?",
+                            stacklevel=2,
                         )
                         imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
 

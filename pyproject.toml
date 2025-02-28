@@ -134,7 +134,6 @@ dev = [
     "pytest-mock>=1.10",
     "requirementslib>=1.5",
     "ruff>=0.9.6",
-    "safety>=2.2.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
     "types-colorama>=0.4.2",
@@ -147,10 +146,7 @@ dev = [
 max-line-length = 100
 # Ignore non PEP 8 compliant rules as suggested by black
 # E203: https://github.com/psf/black/blob/3fab5ade71bccf80ae0a5af76729099869adea56/docs/the_black_code_style/current_style.md#slices
-extend-ignore = [
-    "B017",
-    "E203",
-]
+extend-ignore = [ "E203" ]
 exclude = "_vendored"
 per-file-ignores = [
     "tests/unit/example_crlf_file.py:F401",
@@ -184,16 +180,14 @@ lint.select = [
     "PIE",
     "PLC",
     "PLE",
+    "PT",
     "RUF",
     "S",
     "UP",
     "W",
 ]
 lint.ignore = [
-    "B017",
-    "B028",
     "B904",
-    "E203",
     "E501",
     "PERF203",
     "RUF100",

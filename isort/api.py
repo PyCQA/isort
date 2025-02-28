@@ -199,7 +199,8 @@ def sort_stream(
                 raise ExistingSyntaxErrors(content_source)
             if config.verbose:
                 warn(
-                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                    f"{content_source} Python AST errors found but ignored due to Cython extension",
+                    stacklevel=2,
                 )
         input_stream = StringIO(file_content)
 
@@ -227,7 +228,8 @@ def sort_stream(
                 raise IntroducedSyntaxErrors(content_source)
             if config.verbose:
                 warn(
-                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                    f"{content_source} Python AST errors found but ignored due to Cython extension",
+                    stacklevel=2,
                 )
         if _internal_output != output_stream:
             output_stream.write(_internal_output.read())
@@ -494,9 +496,12 @@ def sort_file(
                     source_file.stream.close()
 
         except ExistingSyntaxErrors:
-            warn(f"{actual_file_path} unable to sort due to existing syntax errors")
+            warn(f"{actual_file_path} unable to sort due to existing syntax errors", stacklevel=2)
         except IntroducedSyntaxErrors:  # pragma: no cover
-            warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
+            warn(
+                f"{actual_file_path} unable to sort as isort introduces new syntax errors",
+                stacklevel=2,
+            )
 
         return changed
 
@@ -599,7 +604,7 @@ def find_imports_in_file(
                 **config_kwargs,
             )
     except OSError as error:
-        warn(f"Unable to parse file {filename} due to {error}")
+        warn(f"Unable to parse file {filename} due to {error}", stacklevel=2)
 
 
 def find_imports_in_paths(
