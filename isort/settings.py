@@ -9,7 +9,7 @@ import os
 import posixpath
 import re
 import stat
-import subprocess  # nosec: Needed for gitignore support.
+import subprocess  # nosec # Needed for gitignore support.
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
