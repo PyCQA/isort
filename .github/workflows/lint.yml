@@ -33,4 +33,4 @@ jobs:
         run: uv sync --all-extras --frozen
 
       - name: Lint
-        run: ./scripts/lint.sh
+        run: uv run --with tox-uv tox -e lint

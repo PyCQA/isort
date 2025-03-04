@@ -38,8 +38,7 @@ jobs:
         run: uv sync --all-extras --frozen
 
       - name: Test
-        shell: bash
-        run: ./scripts/test.sh
+        run: uv run --with tox-uv tox -e py,coverage_report-ci
 
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
