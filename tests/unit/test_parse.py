@@ -99,7 +99,9 @@ def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
         ("from ..import a", "from .. import a"),
         ("from .cimport a", "from . cimport a"),
         ("from ..cimport a", "from .. cimport a"),
-        ("from\t.\timport a", "from . import a"),
+        ("from\t\t.\t\timport\t\ta", "from . import a"),
+        ("from \t __future__ \t import \t annotations", "from __future__ import annotations"),
+        ("from..x import y", "from ..x import y"),
     ],
 )
 def test_normalize_line(raw_line, expected):
