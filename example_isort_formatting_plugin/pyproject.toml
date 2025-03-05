@@ -1,20 +1,18 @@
-[tool.poetry]
+[project]
 name = "example_isort_formatting_plugin"
 version = "0.1.1"
 description = "An example plugin that modifies isort formatting using black."
-authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
+authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
+requires-python = ">=3.9.0"
+dependencies = [
+    "isort>=5.13.2",
+    "black>=24.3.0",
+]
 
-[tool.poetry.plugins."isort.formatters"]
+[project.entry-points."isort.formatters"]
 example = "example_isort_formatting_plugin:black_format_import_section"
 
-[tool.poetry.dependencies]
-python = ">=3.7.0"
-isort = ">=5.11.0"
-black = ">=22.8.0"
-
-[tool.poetry.dev-dependencies]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

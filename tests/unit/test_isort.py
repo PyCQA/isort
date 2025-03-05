@@ -2,6 +2,7 @@
 
 Should be ran using py.test by simply running py.test in the isort project directory
 """
+
 import os
 import os.path
 import subprocess
@@ -9,9 +10,8 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
 
-import py
 import pytest
 
 import isort
@@ -23,6 +23,8 @@ from isort.utils import exists_case_sensitive
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
+    from typing import Dict  # noqa: F401
+
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
@@ -229,7 +231,7 @@ def test_line_length() -> None:
     test_input = (
         "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="wrap_length must be set lower than or equal to line_le"):
         test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
     assert (
         isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99)
@@ -1629,13 +1631,13 @@ def test_multiline_import() -> None:
     assert isort.code(test_input) == ("from pkg import more_stuff, other_suff, stuff\n")
 
     # test again with a custom configuration
-    custom_configuration = {
+    custom_configuration: dict[str, Any] = {
         "force_single_line": True,
         "line_length": 120,
         "known_first_party": ["asdf", "qwer"],
         "default_section": "THIRDPARTY",
         "forced_separate": "asdf",
-    }  # type: Dict[str, Any]
+    }
     expected_output = (
         "from pkg import more_stuff\n" "from pkg import other_suff\n" "from pkg import stuff\n"
     )
@@ -2674,7 +2676,7 @@ def test_top_of_line_comments() -> None:
 
 
 def test_basic_comment() -> None:
-    """Test to ensure a basic comment wont crash isort"""
+    """Test to ensure a basic comment won't crash isort"""
     test_input = "import logging\n# Foo\nimport os\n"
     assert isort.code(test_input) == test_input
 
@@ -2719,7 +2721,7 @@ def test_pyproject_conf_file(tmpdir) -> None:
     conf_file_data = (
         "[build-system]\n"
         'requires = ["setuptools", "wheel"]\n'
-        "[tool.poetry]\n"
+        "[project]\n"
         'name = "isort"\n'
         'version = "0.1.0"\n'
         'license = "MIT"\n'
@@ -3009,7 +3011,7 @@ def test_import_by_paren_issue_375() -> None:
 
 
 def test_import_by_paren_issue_460() -> None:
-    """Test to ensure isort can doesnt move comments around"""
+    """Test to ensure isort can doesn't move comments around"""
     test_input = """
 # First comment
 # Second comment
@@ -3017,7 +3019,7 @@ def test_import_by_paren_issue_460() -> None:
 import io
 import os
 """
-    assert isort.code((test_input)) == test_input
+    assert isort.code(test_input) == test_input
 
 
 def test_function_with_docstring() -> None:
@@ -3064,6 +3066,7 @@ def test_third_party_case_sensitive() -> None:
 
 def test_exists_case_sensitive_file(tmpdir) -> None:
     """Test exists_case_sensitive function for a file."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("module.py").ensure(file=1)
     assert exists_case_sensitive(str(tmpdir.join("module.py")))
     assert not exists_case_sensitive(str(tmpdir.join("MODULE.py")))
@@ -3071,6 +3074,7 @@ def test_exists_case_sensitive_file(tmpdir) -> None:
 
 def test_exists_case_sensitive_directory(tmpdir) -> None:
     """Test exists_case_sensitive function for a directory."""
+    exists_case_sensitive.cache_clear()
     tmpdir.join("pkg").ensure(dir=1)
     assert exists_case_sensitive(str(tmpdir.join("pkg")))
     assert not exists_case_sensitive(str(tmpdir.join("PKG")))
@@ -3773,13 +3777,13 @@ def test_argument_parsing() -> None:
     assert args["only_sections"] is True
 
 
-@pytest.mark.parametrize("multiprocess", (False, True))
+@pytest.mark.parametrize("multiprocess", [False, True])
 def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
     from isort.main import main
 
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
     tmpdir.join("file2.py").write(
-        ("import collections\nimport time\n\nimport abc" "\n\n\nimport isort")
+        "import collections\nimport time\n\nimport abc" "\n\n\nimport isort"
     )
     arguments = [str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
@@ -3801,7 +3805,7 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
         assert str(tmpdir.join("file2.py")) in out
 
 
-@pytest.mark.parametrize("quiet", (False, True))
+@pytest.mark.parametrize("quiet", [False, True])
 def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
@@ -3818,7 +3822,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     assert bool(out) != quiet
 
 
-@pytest.mark.parametrize("enabled", (False, True))
+@pytest.mark.parametrize("enabled", [False, True])
 def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
@@ -3860,11 +3864,11 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
 
 @pytest.mark.parametrize(
     "skip_glob_assert",
-    (
+    [
         ([], 0, {os.sep.join(("code", "file.py"))}),
         (["**/*.py"], 1, set()),
         (["*/code/*.py"], 1, set()),
-    ),
+    ],
 )
 def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
     skip_glob, skipped_count, file_names_expected = skip_glob_assert
@@ -4258,12 +4262,12 @@ import ujson # NOQA
     assert isort.code(test_input.lower(), honor_noqa=True) == test_output_honor_noqa.lower()
 
 
-def test_extract_multiline_output_wrap_setting_from_a_config_file(tmpdir: py.path.local) -> None:
+def test_extract_multiline_output_wrap_setting_from_a_config_file(tmp_path: Path) -> None:
     editorconfig_contents = ["root = true", " [*.py]", "multi_line_output = 5"]
-    config_file = tmpdir.join(".editorconfig")
-    config_file.write("\n".join(editorconfig_contents))
+    config_file = tmp_path / ".editorconfig"
+    config_file.write_text("\n".join(editorconfig_contents))
 
-    config = Config(settings_path=str(tmpdir))
+    config = Config(settings_path=str(tmp_path))
     assert config.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED
 
 
@@ -4333,9 +4337,8 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
 
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
-    with pytest.raises(
-        Exception
-    ):  # without the settings path provided: the command should not skip & identify errors
+    with pytest.raises(subprocess.CalledProcessError):
+        # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
     result = subprocess.run(
         ["isort", ".", "--check-only", "--settings-path=conf/.isort.cfg"],
@@ -5547,7 +5550,7 @@ def test_find_imports_in_stream() -> None:
     """Ensure that find_imports_in_stream can work with nonseekable streams like STDOUT"""
 
     class NonSeekableTestStream(StringIO):
-        def seek(self, position):
+        def seek(self, offset: int, whence: int = os.SEEK_SET, /) -> int:
             raise OSError("Stream is not seekable")
 
         def seekable(self):
@@ -5565,6 +5568,18 @@ def test_split_on_trailing_comma() -> None:
     b,
     c,
 )
+"""
+
+    output = isort.code(test_input, split_on_trailing_comma=True)
+    assert output == expected_output
+
+    output = isort.code(expected_output, split_on_trailing_comma=True)
+    assert output == expected_output
+
+
+def test_split_on_trailing_comma_wih_as() -> None:
+    test_input = "from lib import (a as b,)"
+    expected_output = """from lib import a as b
 """
 
     output = isort.code(test_input, split_on_trailing_comma=True)
@@ -5669,5 +5684,60 @@ def test_reexport_not_last_line() -> None:
     expd_output = """__all__ = ('bar', 'foo')
 
     meme = "rickroll"
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_import() -> None:
+    test_input = """from m import (
+    bar,
+    foo,
+)
+__all__ = [
+    "foo",
+    "bar",
+]
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_in_center() -> None:
+    test_input = """from m import (
+    bar,
+    foo,
+)
+__all__ = [
+    "foo",
+    "bar",
+]
+
+test
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+
+test
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_multiline_long_rollback() -> None:
+    test_input = """from m import foo, bar
+__all__ = [                            "foo",
+    "bar",
+]
+
+test
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+
+test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output

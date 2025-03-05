@@ -1,19 +1,17 @@
-[tool.poetry]
+[project]
 name = "example_isort_sorting_plugin"
 version = "0.1.0"
 description = "An example plugin that modifies isorts sorting order to provide an even more natural sort by utilizing natsort."
-authors = ["Timothy Crosley <timothy.crosley@gmail.com>"]
+authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
+requires-python = ">=3.9.0"
+dependencies = [
+    "natsort>=7.1.1"
+]
 
-[tool.poetry.plugins."isort.sort_function"]
+[project.entry-points."isort.sort_function"]
 natural_plus = "example_isort_sorting_plugin:natural_plus"
 
-[tool.poetry.dependencies]
-python = ">=3.7"
-natsort = ">=7.1.1"
-
-[tool.poetry.dev-dependencies]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

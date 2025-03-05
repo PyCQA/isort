@@ -193,13 +193,14 @@ def sort_stream(
     if config.atomic:
         try:
             file_content = input_stream.read()
-            compile(file_content, content_source, "exec", 0, 1)
+            compile(file_content, content_source, "exec", flags=0, dont_inherit=True)
         except SyntaxError:
             if extension not in CYTHON_EXTENSIONS:
                 raise ExistingSyntaxErrors(content_source)
             if config.verbose:
                 warn(
-                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                    f"{content_source} Python AST errors found but ignored due to Cython extension",
+                    stacklevel=2,
                 )
         input_stream = StringIO(file_content)
 
@@ -220,14 +221,15 @@ def sort_stream(
     if config.atomic:
         _internal_output.seek(0)
         try:
-            compile(_internal_output.read(), content_source, "exec", 0, 1)
+            compile(_internal_output.read(), content_source, "exec", flags=0, dont_inherit=True)
             _internal_output.seek(0)
         except SyntaxError:  # pragma: no cover
             if extension not in CYTHON_EXTENSIONS:
                 raise IntroducedSyntaxErrors(content_source)
             if config.verbose:
                 warn(
-                    f"{content_source} Python AST errors found but ignored due to Cython extension"
+                    f"{content_source} Python AST errors found but ignored due to Cython extension",
+                    stacklevel=2,
                 )
         if _internal_output != output_stream:
             output_stream.write(_internal_output.read())
@@ -363,6 +365,9 @@ def _file_output_stream_context(filename: Union[str, Path], source_file: File) -
         yield output_stream
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
 def sort_file(
     filename: Union[str, Path],
     extension: Optional[str] = None,
@@ -442,9 +447,9 @@ def sort_file(
                                         file_input=source_file.stream.read(),
                                         file_output=output_stream.read(),
                                         file_path=actual_file_path,
-                                        output=None
-                                        if show_diff is True
-                                        else cast(TextIO, show_diff),
+                                        output=(
+                                            None if show_diff is True else cast(TextIO, show_diff)
+                                        ),
                                         color_output=config.color_output,
                                     )
                                     if show_diff or (
@@ -466,12 +471,9 @@ def sort_file(
                             if not config.quiet:
                                 print(f"Fixing {source_file.path}")
                     finally:
-                        try:  # Python 3.8+: use `missing_ok=True` instead of try except.
-                            if not config.overwrite_in_place:  # pragma: no branch
-                                tmp_file = _tmp_file(source_file)
-                                tmp_file.unlink()
-                        except FileNotFoundError:
-                            pass  # pragma: no cover
+                        if not config.overwrite_in_place:  # pragma: no branch
+                            tmp_file = _tmp_file(source_file)
+                            tmp_file.unlink(missing_ok=True)
                 else:
                     changed = sort_stream(
                         input_stream=source_file.stream,
@@ -494,9 +496,12 @@ def sort_file(
                     source_file.stream.close()
 
         except ExistingSyntaxErrors:
-            warn(f"{actual_file_path} unable to sort due to existing syntax errors")
+            warn(f"{actual_file_path} unable to sort due to existing syntax errors", stacklevel=2)
         except IntroducedSyntaxErrors:  # pragma: no cover
-            warn(f"{actual_file_path} unable to sort as isort introduces new syntax errors")
+            warn(
+                f"{actual_file_path} unable to sort as isort introduces new syntax errors",
+                stacklevel=2,
+            )
 
         return changed
 
@@ -588,15 +593,18 @@ def find_imports_in_file(
     - **top_only**: If True, only return imports that occur before the first function or class.
     - ****config_kwargs**: Any config modifications.
     """
-    with io.File.read(filename) as source_file:
-        yield from find_imports_in_stream(
-            input_stream=source_file.stream,
-            config=config,
-            file_path=file_path or source_file.path,
-            unique=unique,
-            top_only=top_only,
-            **config_kwargs,
-        )
+    try:
+        with io.File.read(filename) as source_file:
+            yield from find_imports_in_stream(
+                input_stream=source_file.stream,
+                config=config,
+                file_path=file_path or source_file.path,
+                unique=unique,
+                top_only=top_only,
+                **config_kwargs,
+            )
+    except OSError as error:
+        warn(f"Unable to parse file {filename} due to {error}", stacklevel=2)
 
 
 def find_imports_in_paths(

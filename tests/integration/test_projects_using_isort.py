@@ -6,11 +6,14 @@ NOTE: If you use isort within a public repository, please feel empowered to add 
 It is important to isort that as few regressions as possible are experienced by our users.
 Having your project tested here is the most sure way to keep those regressions form ever happening.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
 from subprocess import check_call
 from typing import Generator, Sequence
+
+import pytest
 
 from isort.main import main
 
@@ -25,6 +28,10 @@ def run_isort(arguments: Generator[str, None, None] | Sequence[str]):
     main(["--check-only", "--diff", *arguments])
 
 
+@pytest.mark.xfail(
+    reason="Project is incorrectly formatted after PR #2236, should be fixed "
+    "after a release and the project formatting again."
+)
 def test_django(tmpdir):
     git_clone("https://github.com/django/django.git", tmpdir)
     run_isort(

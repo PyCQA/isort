@@ -1,0 +1,32 @@
+---
+name: Release Dev
+
+"on":
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    if: github.repository_owner == 'PyCQA'
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.6.0"
+
+      - name: Build package
+        run: |
+          uv build

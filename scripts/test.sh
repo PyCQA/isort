@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euxo pipefail
 
-poetry run coverage run --parallel -m pytest tests/unit/ -s --ignore=tests/unit/test_deprecated_finders.py
-poetry run coverage combine
-poetry run coverage report
-poetry run coverage xml
+uv run coverage run --parallel -m pytest tests/unit/ -s --ignore=tests/unit/test_deprecated_finders.py
+uv run coverage combine
+uv run coverage report
+uv run coverage xml

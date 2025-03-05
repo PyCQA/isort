@@ -1,6 +1,8 @@
 """A growing set of tests designed to ensure when isort implements a feature described in a ticket
 it fully works as defined in the associated ticket.
 """
+
+import warnings
 from functools import partial
 from io import StringIO
 
@@ -615,9 +617,9 @@ quiet = true
 quiet = true
 """
     )
-    with pytest.warns(None) as warning:  # type: ignore
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         assert Config(settings_file=str(settings_file)).quiet
-    assert not warning
 
 
 def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
@@ -627,7 +629,7 @@ def test_float_to_top_should_respect_existing_newlines_between_imports_issue_150
     See: https://github.com/PyCQA/isort/issues/1502
     """
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 import a
@@ -638,7 +640,7 @@ x = 1
         show_diff=True,
     )
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -651,7 +653,7 @@ x = 1
     )
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -662,7 +664,7 @@ x = 1
             float_to_top=True,
             add_imports=["import b"],
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -675,7 +677,7 @@ x = 1
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -687,7 +689,7 @@ import a
 """,
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import a
 
@@ -699,7 +701,7 @@ def my_function():
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -709,7 +711,7 @@ def my_function():
             add_imports=["import os"],
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import os
 

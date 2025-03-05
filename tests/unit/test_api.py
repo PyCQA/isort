@@ -1,4 +1,5 @@
 """Tests the isort API module"""
+
 import os
 from io import StringIO
 from unittest.mock import MagicMock, patch
@@ -46,7 +47,7 @@ def test_sort_file_to_stdout(capsys, imperfect) -> None:
 
 
 def test_other_ask_to_apply(imperfect) -> None:
-    # First show diff, but ensure change wont get written by asking to apply
+    # First show diff, but ensure change won't get written by asking to apply
     # and ensuring answer is no.
     with patch("isort.format.input", MagicMock(return_value="n")):
         assert not api.sort_file(imperfect, ask_to_apply=True)
@@ -73,7 +74,7 @@ def test_check_file_with_changes(capsys, imperfect) -> None:
 
 
 def test_sorted_imports_multiple_configs() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You can either specify custom configuration options"):
         api.sort_code_string("import os", config=Config(line_length=80), line_length=80)
 
 
@@ -91,6 +92,13 @@ def test_sort_code_string_mixed_newlines():
 def test_find_imports_in_file(imperfect):
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]
+
+
+def test_find_imports_in_file_error(tmpdir):
+    test_path = tmpdir.join("test_path.py")
+    test_path.mkdir()
+    with pytest.warns(UserWarning):
+        assert not list(api.find_imports_in_file(test_path))
 
 
 def test_find_imports_in_code():

@@ -56,7 +56,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         raise LiteralParsingFailure(code, error)
 
     expected_type, sort_function = type_mapping[sort_type]
-    if type(value) != expected_type:
+    if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
     printer = ISortPrettyPrinter(config)
@@ -86,7 +86,7 @@ def register_type(
 
 @register_type("dict", dict)
 def _dict(value: Dict[Any, Any], printer: ISortPrettyPrinter) -> str:
-    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))  # type: ignore
+    return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))
 
 
 @register_type("list", list)
@@ -96,7 +96,7 @@ def _list(value: List[Any], printer: ISortPrettyPrinter) -> str:
 
 @register_type("unique-list", list)
 def _unique_list(value: List[Any], printer: ISortPrettyPrinter) -> str:
-    return printer.pformat(list(sorted(set(value))))
+    return printer.pformat(sorted(set(value)))
 
 
 @register_type("set", set)
