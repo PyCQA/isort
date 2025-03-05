@@ -495,7 +495,7 @@ def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
     isort.file(test_path / "example_crlf_file.py", show_diff=diff_output)
     diff_output.seek(0)
     assert diff_output.read().endswith(
-        "-1,5 +1,5 @@\n+import a\r\n import b\r\n" "-import a\r\n \r\n \r\n def func():\r\n"
+        "-1,5 +1,5 @@\n+import a\r\n import b\r\n-import a\r\n \r\n \r\n def func():\r\n"
     )
 
 

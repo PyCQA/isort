@@ -338,7 +338,7 @@ def _with_from_imports(
                     )
                     if comment:
                         single_import_line += (
-                            f"{(comments and ';') or config.comment_prefix} " f"{comment}"
+                            f"{(comments and ';') or config.comment_prefix} {comment}"
                         )
                     if from_import in as_imports:
                         if (
@@ -467,7 +467,7 @@ def _with_from_imports(
                             comment_prefix=config.comment_prefix,
                         )
                         single_import_line += (
-                            f"{(use_comments and ';') or config.comment_prefix} " f"{comment}"
+                            f"{(use_comments and ';') or config.comment_prefix} {comment}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
@@ -486,7 +486,7 @@ def _with_from_imports(
                     )
                 import_statement = with_comments(
                     comments,
-                    import_start + (", ").join(from_import_section),
+                    import_start + ", ".join(from_import_section),
                     removed=config.ignore_comments,
                     comment_prefix=config.comment_prefix,
                 )
