@@ -31,7 +31,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-urls = { changelog = "https://github.com/PyCQA/isort/releases" }
 include = [
     { path = "tests", format = "sdist" },
     { path = "ACKNOWLEDGEMENTS.md", format = "sdist" },
@@ -40,6 +39,12 @@ include = [
 requires-python = ">=3.9.0"
 
 dependencies = []
+
+[project.urls]
+Homepage = "https://pycqa.github.io/isort/index.html"
+Documentation = "https://pycqa.github.io/isort/index.html"
+Repository = "https://github.com/PyCQA/isort"
+Changelog = "https://github.com/PyCQA/isort/releases"
 
 [tool.hatch.version]
 source = "vcs"
