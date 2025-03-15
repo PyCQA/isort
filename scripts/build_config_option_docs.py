@@ -109,17 +109,23 @@ description_mapping = {
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
     "sections": "What sections isort should display imports for and in what order",
-    "known_other": "known_OTHER is how imports of custom sections are defined. "
-    "OTHER is a placeholder for the custom section name.",
-    "comment_prefix": "Allows customizing how isort prefixes comments that it adds or modifies on import lines"
-    "Generally `  #` (two spaces before a pound symbol) is use, though one space is also common.",
+    "known_other": (
+        "known_OTHER is how imports of custom sections are defined. "
+        "OTHER is a placeholder for the custom section name."
+    ),
+    "comment_prefix": (
+        "Allows customizing how isort prefixes comments that it adds or modifies on import lines"
+        "Generally `  #` (two spaces before a pound symbol) is use, though one space is also common."
+    ),
     "lines_before_imports": "The number of blank lines to place before imports. -1 for automatic determination",
     "lines_after_imports": "The number of blank lines to place after imports. -1 for automatic determination",
     "lines_between_sections": "The number of lines to place between sections",
     "lines_between_types": "The number of lines to place between direct and from imports",
-    "lexicographical": "Lexicographical order is strictly alphabetical order. "
-    "For example by default isort will sort `1, 10, 2` into `1, 2, 10` - but with "
-    "lexicographical sorting enabled it will remain `1, 10, 2`.",
+    "lexicographical": (
+        "Lexicographical order is strictly alphabetical order. "
+        "For example by default isort will sort `1, 10, 2` into `1, 2, 10` - but with "
+        "lexicographical sorting enabled it will remain `1, 10, 2`."
+    ),
     "ignore_comments": "If enabled, isort will strip comments that exist within import lines.",
     "constants": "An override list of tokens to always recognize as a CONSTANT for order_by_type regardless of casing.",
     "classes": "An override list of tokens to always recognize as a Class for order_by_type regardless of casing.",
