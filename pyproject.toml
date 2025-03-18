@@ -76,6 +76,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
+parallel = true
 source = ["isort", "tests"]
 omit = [
     "isort/_vendored/*",
@@ -141,6 +142,8 @@ dev = [
     "ruff>=0.9.6",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
+    "tox>=4.24.1",
+    "tox-uv>=1.25.0",
     "types-colorama>=0.4.2",
     "types-setuptools>=70.0.0.20240523",
     "types-toml>=0.1.3",
