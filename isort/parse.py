@@ -38,8 +38,8 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
-_from_absolute_normalizer_pattern = re.compile(r"from[\t ]+(.+?)[\t ]+(c?import)[\t ]+")
-_from_relative_normalizer_pattern = re.compile(r"from[\t ]*(\.+[^\t ]*?)[\t ]*(c?import)[\t ]+")
+_FROM_ABSOLUTE_NORMALIZER_PATTERN = re.compile(r"from[\t ]+(.+?)[\t ]+(c?import)[\t ]+")
+_FROM_RELATIVE_NORMALIZER_PATTERN = re.compile(r"from[\t ]*(\.+[^\t ]*?)[\t ]*(c?import)[\t ]+")
 
 
 def normalize_line(raw_line: str) -> Tuple[str, str]:
@@ -47,8 +47,8 @@ def normalize_line(raw_line: str) -> Tuple[str, str]:
 
     Returns (normalized_line: str, raw_line: str)
     """
-    line = _from_absolute_normalizer_pattern.sub(r"from \g<1> \g<2> ", raw_line)
-    line = _from_relative_normalizer_pattern.sub(r"from \g<1> \g<2> ", line)
+    line = _FROM_ABSOLUTE_NORMALIZER_PATTERN.sub(r"from \g<1> \g<2> ", raw_line)
+    line = _FROM_RELATIVE_NORMALIZER_PATTERN.sub(r"from \g<1> \g<2> ", line)
     line = line.replace("import*", "import *")
     return line, raw_line
 
