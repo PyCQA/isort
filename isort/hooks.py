@@ -5,7 +5,7 @@ usage:
 """
 
 import os
-import subprocess  # nosec - Needed for hook
+import subprocess  # nosec
 from pathlib import Path
 from typing import List, Optional
 
@@ -18,7 +18,7 @@ def get_output(command: List[str]) -> str:
     :param str command: the command to run
     :returns: the stdout output of the command
     """
-    result = subprocess.run(command, stdout=subprocess.PIPE, check=True)  # nosec - trusted input
+    result = subprocess.run(command, stdout=subprocess.PIPE, check=True)  # nosec
     return result.stdout.decode()
 
 
