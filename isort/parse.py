@@ -80,7 +80,7 @@ def strip_syntax(import_string: str) -> str:
     return import_string.replace("{ ", "{|").replace(" }", "|}")
 
 
-def skip_line(
+def skip_line(  # noqa: C901
     line: str,
     in_quote: str,
     index: int,
@@ -93,6 +93,12 @@ def skip_line(
 
     (skip_line: bool,
      in_quote: str,)
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 12 vs 10 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     should_skip = bool(in_quote)
     if '"' in line or "'" in line:
@@ -143,8 +149,19 @@ class ParsedContent(NamedTuple):
     trailing_commas: Set[str]
 
 
-def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
-    """Parses a python file taking out and categorizing imports."""
+def file_contents(  # noqa: C901,PLR0912,PLR0915
+    contents: str, config: Config = DEFAULT_CONFIG
+) -> ParsedContent:
+    """Parses a python file taking out and categorizing imports.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 80 vs 10 recommended.
+    * There are currently 93 branches vs 12 recommended.
+    * There are currently 258 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     line_separator: str = config.line_ending or _infer_line_separator(contents)
     in_lines = contents.splitlines()
     if contents and contents[-1] in ("\n", "\r"):
