@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euxo pipefail
 
 uv run coverage run --parallel -m pytest tests/unit/ -s --ignore=tests/unit/test_deprecated_finders.py

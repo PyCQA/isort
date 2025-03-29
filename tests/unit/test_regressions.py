@@ -924,7 +924,7 @@ def bar():
 
     assert (
         isort.code(
-            '''#!/bin/bash
+            '''#!/usr/bin/env bash
 """My comment
 
 
@@ -939,7 +939,7 @@ def bar():
 ''',
             float_to_top=True,
         )
-        == '''#!/bin/bash
+        == '''#!/usr/bin/env bash
 """My comment
 
 
@@ -958,7 +958,7 @@ def bar():
 
     assert (
         isort.code(
-            '''#!/bin/bash
+            '''#!/usr/bin/env bash
 
 """My comment
 
@@ -974,7 +974,7 @@ def bar():
 ''',
             float_to_top=True,
         )
-        == '''#!/bin/bash
+        == '''#!/usr/bin/env bash
 
 """My comment
 
@@ -1171,7 +1171,7 @@ def test_isort_float_to_top_correctly_identifies_single_line_comments_1499():
     """
     assert (
         isort.code(
-            '''#!/bin/bash
+            '''#!/usr/bin/env bash
 """My comment"""
 def foo():
     pass
@@ -1184,7 +1184,7 @@ def bar():
             float_to_top=True,
         )
         == (
-            '''#!/bin/bash
+            '''#!/usr/bin/env bash
 """My comment"""
 import a
 
@@ -1200,7 +1200,7 @@ def bar():
     )
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 def foo():
     pass
@@ -1213,7 +1213,7 @@ def bar():
             float_to_top=True,
         )
         == (
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 import a
 
@@ -1229,7 +1229,7 @@ def bar():
     )
 
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 import a
 
