@@ -21,10 +21,10 @@ for version_info, version_module in VERSIONS.items():
     version = ".".join(version_info)
 
     # Any modules we want to enforce across Python versions stdlib can be included in set init
-    modules = {"_ast", "posixpath", "ntpath", "sre_constants", "sre_parse", "sre_compile", "sre"}
+    modules = {"_ast", "posixpath", "ntpath", "sre_parse", "sre_compile", "sre"}
 
     modules |= version_module.module_names
-    modules -= {"__future__", "__main__", "antigravity", "this"}
+    modules -= {"__future__", "__main__"}
 
     path = PATH.format("".join(version_info))
     with open(path, "w") as stdlib_file:
