@@ -66,7 +66,7 @@ class ImportKey(Enum):
     ALIAS = 4
 
 
-def sort_code_string(
+def sort_code_string(  # noqa: PLR0913
     code: str,
     extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
@@ -85,6 +85,12 @@ def sort_code_string(
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 6 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     input_stream = StringIO(code)
     output_stream = StringIO()
@@ -102,7 +108,7 @@ def sort_code_string(
     return output_stream.read()
 
 
-def check_code_string(
+def check_code_string(  # noqa: PLR0913
     code: str,
     show_diff: Union[bool, TextIO] = False,
     extension: Optional[str] = None,
@@ -122,6 +128,12 @@ def check_code_string(
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 6 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
     return check_stream(
@@ -134,7 +146,7 @@ def check_code_string(
     )
 
 
-def sort_stream(
+def sort_stream(  # noqa: C901,PLR0913,PLR0912
     input_stream: TextIO,
     output_stream: TextIO,
     extension: Optional[str] = None,
@@ -157,6 +169,14 @@ def sort_stream(
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
     TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 14 vs 10 recommended.
+    * There are currently 8 function argurments vs 5 recommended.
+    * There are currently 13 branches vs 12 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     extension = extension or (file_path and file_path.suffix.lstrip(".")) or "py"
     if show_diff:
@@ -237,7 +257,7 @@ def sort_stream(
     return changed
 
 
-def check_stream(
+def check_stream(  # noqa: PLR0913
     input_stream: TextIO,
     show_diff: Union[bool, TextIO] = False,
     extension: Optional[str] = None,
@@ -257,6 +277,12 @@ def check_stream(
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 6 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     config = _config(path=file_path, config=config, **config_kwargs)
 
@@ -304,7 +330,7 @@ def check_stream(
     return False
 
 
-def check_file(
+def check_file(  # noqa: PLR0913
     filename: Union[str, Path],
     show_diff: Union[bool, TextIO] = False,
     config: Config = DEFAULT_CONFIG,
@@ -324,6 +350,12 @@ def check_file(
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 6 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     file_config: Config = config
 
@@ -368,7 +400,7 @@ def _file_output_stream_context(filename: Union[str, Path], source_file: File) -
 # Ignore DeepSource cyclomatic complexity check for this function. It is one
 # the main entrypoints so sort of expected to be complex.
 # skipcq: PY-R1000
-def sort_file(
+def sort_file(  # noqa: C901,PLR0913,PLR0912,PLR0915
     filename: Union[str, Path],
     extension: Optional[str] = None,
     config: Config = DEFAULT_CONFIG,
@@ -395,6 +427,15 @@ def sort_file(
     - **output**: If a TextIO is provided, results will be written there rather than replacing
     the original file content.
     - ****config_kwargs**: Any config modifications.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 18 vs 10 recommended.
+    * There are currently 9 function argurments vs 5 recommended.
+    * There are currently 21 branches vs 12 recommended.
+    * There are currently 59 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     file_config: Config = config
 

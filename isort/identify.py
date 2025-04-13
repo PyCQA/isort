@@ -40,13 +40,22 @@ class Import(NamedTuple):
         )
 
 
-def imports(
+def imports(  # noqa: C901,PLR0912,PLR0915
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
     file_path: Optional[Path] = None,
     top_only: bool = False,
 ) -> Iterator[Import]:
-    """Parses a python file taking out and categorizing imports."""
+    """Parses a python file taking out and categorizing imports.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 33 vs 10 recommended.
+    * There are currently 40 branches vs 12 recommended.
+    * There are currently 109 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     in_quote = ""
 
     indexed_input = enumerate(input_stream)
