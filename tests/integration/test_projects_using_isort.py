@@ -29,8 +29,10 @@ def run_isort(arguments: Generator[str, None, None] | Sequence[str]):
 
 
 @pytest.mark.xfail(
-    reason="Project is incorrectly formatted after PR #2236, should be fixed "
-    "after a release and the project formatting again."
+    reason=(
+        "Project is incorrectly formatted after PR #2236, should be fixed "
+        "after a release and the project formatting again."
+    )
 )
 def test_django(tmpdir):
     git_clone("https://github.com/django/django.git", tmpdir)
