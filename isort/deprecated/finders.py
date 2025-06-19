@@ -309,7 +309,7 @@ class RequirementsFinder(ReqsBaseFinder):
                 for subfile_name in os.listdir(full_path):
                     results.extend(
                         os.path.join(full_path, subfile_name)
-                        for ext in cls.ext  # type: ignore[attr-defined]
+                        for ext in cls.exts
                         if subfile_name.endswith(ext)
                     )
                 continue
