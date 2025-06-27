@@ -77,7 +77,7 @@ def process(
             output_seekable = True
         except Exception:
             output_seekable = False
-    
+            
     # Use internal buffer if output stream is not seekable and we might need reexport sorting
     internal_output = None
     if not output_seekable and config.sort_reexports:
@@ -112,7 +112,6 @@ def process(
     lines_before: List[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
-    reexport_start_index = None
 
     if config.float_to_top:
         new_input = ""
@@ -169,27 +168,26 @@ def process(
             if not line_separator:
                 line_separator = "\n"
 
-            if code_sorting and code_sorting_section:
-                if is_reexport:
-                    if output_seekable:
-                        _output_stream.seek(_output_stream.tell() - reexport_rollback)
+            if code_sorting and code_sorting_section and is_reexport:
+                if output_seekable:
+                    _output_stream.seek(_output_stream.tell() - reexport_rollback)
+                    reexport_rollback = 0
+                else:
+                    if not output_seekable and reexport_rollback > 0:
+                        current_value = _output_stream.getvalue()
+                        # Find the last occurrence of '__all__' and truncate to its index
+                        idx = current_value.rfind('__all__')
+                        if idx != -1:
+                            # Truncate to the start of the line containing __all__
+                            line_start = current_value.rfind('\n', 0, idx)
+                            if line_start == -1:
+                                line_start = 0
+                            else:
+                                line_start += 1
+                            _output_stream.seek(0)
+                            _output_stream.truncate(0)
+                            _output_stream.write(current_value[:line_start])
                         reexport_rollback = 0
-                    else:
-                        if not output_seekable and reexport_rollback > 0:
-                            current_value = _output_stream.getvalue()
-                            # Find the last occurrence of '__all__' and truncate to its index
-                            idx = current_value.rfind('__all__')
-                            if idx != -1:
-                                # Truncate to the start of the line containing __all__
-                                line_start = current_value.rfind('\n', 0, idx)
-                                if line_start == -1:
-                                    line_start = 0
-                                else:
-                                    line_start += 1
-                                _output_stream.seek(0)
-                                _output_stream.truncate(0)
-                                _output_stream.write(current_value[:line_start])
-                            reexport_rollback = 0
                     sorted_code = textwrap.indent(
                         isort.literal.assignment(
                             code_sorting_section,
@@ -291,22 +289,21 @@ def process(
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                     code_sorting_section += line
-                    if is_reexport:
-                        if not output_seekable and reexport_rollback > 0:
-                            current_value = _output_stream.getvalue()
-                            # Find the last occurrence of '__all__' and truncate to its index
-                            idx = current_value.rfind('__all__')
-                            if idx != -1:
-                                # Truncate to the start of the line containing __all__
-                                line_start = current_value.rfind('\n', 0, idx)
-                                if line_start == -1:
-                                    line_start = 0
-                                else:
-                                    line_start += 1
-                                _output_stream.seek(0)
-                                _output_stream.truncate(0)
-                                _output_stream.write(current_value[:line_start])
-                            reexport_rollback = 0
+                    if is_reexport and not output_seekable and reexport_rollback > 0:
+                        current_value = _output_stream.getvalue()
+                        # Find the last occurrence of '__all__' and truncate to its index
+                        idx = current_value.rfind('__all__')
+                        if idx != -1:
+                            # Truncate to the start of the line containing __all__
+                            line_start = current_value.rfind('\n', 0, idx)
+                            if line_start == -1:
+                                line_start = 0
+                            else:
+                                line_start += 1
+                            _output_stream.seek(0)
+                            _output_stream.truncate(0)
+                            _output_stream.write(current_value[:line_start])
+                        reexport_rollback = 0
                     reexport_rollback = len(line)
                     is_reexport = True
                 elif code_sorting:
@@ -333,7 +330,8 @@ def process(
                             else:
                                 if not output_seekable and reexport_rollback > 0:
                                     current_value = _output_stream.getvalue()
-                                    # Find the last occurrence of '__all__' and truncate to its index
+                                    """ Find the last occurrence of '__all__' 
+                                    and truncate to its index"""
                                     idx = current_value.rfind('__all__')
                                     if idx != -1:
                                         # Truncate to the start of the line containing __all__
