@@ -4,6 +4,10 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 5.13.3 (Unreleased)
+
+   - Fixed #2393: Calling isort with --sort-reexports with input from stdin fails due to non-seekable streams @jasur-py
+
 ### 5.13.2 December 13 2023
 
    - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72

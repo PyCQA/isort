@@ -5741,3 +5741,86 @@ __all__ = ['bar', 'foo']
 test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_non_seekable_stream() -> None:
+    """Test that reexport sorting works with non-seekable streams like stdout"""
+    from io import StringIO
+    
+    test_input = """from test import B, A
+__all__ = ["B", "A"]"""
+    
+    expected_output = """from test import A, B
+
+__all__ = ['A', 'B']"""
+    
+    # Test with a non-seekable stream (simulating stdout)
+    input_stream = StringIO(test_input)
+    output_stream = StringIO()
+    
+    # Mock sys.stdout to be non-seekable
+    original_stdout = sys.stdout
+    try:
+        sys.stdout = output_stream
+        api.sort_stream(
+            input_stream=input_stream,
+            output_stream=output_stream,
+            config=Config(sort_reexports=True),
+        )
+        output_stream.seek(0)
+        result = output_stream.read()
+        assert result == expected_output
+    finally:
+        sys.stdout = original_stdout
+
+def test_reexport_non_seekable_stream() -> None:
+    """Test that reexport sorting works with non-seekable streams like stdout"""
+    from io import StringIO
+    
+    test_input = """from test import B, A
+__all__ = ["B", "A"]"""
+    
+    expected_output = """from test import A, B
+
+__all__ = ['A', 'B']"""
+    
+    # Test with a non-seekable stream (simulating stdout)
+    input_stream = StringIO(test_input)
+    
+    # Create a non-seekable output stream that allows reading the result
+    class NonSeekableStream(StringIO):
+        def __init__(self):
+            super().__init__()
+            self._allow_seek = False
+        
+        def seek(self, *args, **kwargs):
+            if not self._allow_seek:
+                raise OSError("Stream is not seekable")
+            return super().seek(*args, **kwargs)
+        
+        def tell(self, *args, **kwargs):
+            if not self._allow_seek:
+                raise OSError("Stream is not seekable")
+            return super().tell(*args, **kwargs)
+        
+        def truncate(self, *args, **kwargs):
+            if not self._allow_seek:
+                raise OSError("Stream is not seekable")
+            return super().truncate(*args, **kwargs)
+        
+        def allow_seek(self):
+            self._allow_seek = True
+    
+    output_stream = NonSeekableStream()
+    
+    api.sort_stream(
+        input_stream=input_stream,
+        output_stream=output_stream,
+        config=Config(sort_reexports=True),
+    )
+    
+    # Allow seeking to read the result
+    output_stream.allow_seek()
+    output_stream.seek(0)
+    result = output_stream.read()
+    assert result == expected_output
