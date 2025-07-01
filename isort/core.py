@@ -77,7 +77,6 @@ def process(
             output_seekable = True
         except Exception:
             output_seekable = False
-            
     # Use internal buffer if output stream is not seekable and we might need reexport sorting
     internal_output = None
     if not output_seekable and config.sort_reexports:
