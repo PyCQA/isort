@@ -330,8 +330,8 @@ def process(
                             else:
                                 if not output_seekable and reexport_rollback > 0:
                                     current_value = _output_stream.getvalue()
-                                    """ Find the last occurrence of '__all__' 
-                                    and truncate to its index"""
+                                    # Find the last occurrence of '__all__'
+                                    # and truncate to its index
                                     idx = current_value.rfind('__all__')
                                     if idx != -1:
                                         # Truncate to the start of the line containing __all__
