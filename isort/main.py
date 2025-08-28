@@ -1117,9 +1117,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
     if "src_paths" in config_dict:
-        config_dict["src_paths"] = {
-            Path(src_path).resolve() for src_path in config_dict.get("src_paths", ())
-        }
+        config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
+        config_dict.setdefault("directory", os.getcwd())
 
     config = Config(**config_dict)
     if show_config:
