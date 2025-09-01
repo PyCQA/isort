@@ -45,6 +45,11 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
+if sys.version_info < (3, 10):  # pragma: no cover
+    from importlib_metadata import entry_points
+else:
+    from importlib.metadata import entry_points
+
 if TYPE_CHECKING:
     tomllib: Any
 else:
@@ -356,9 +361,7 @@ class Config(_Config):
         profile: Dict[str, Any] = {}
         if profile_name:
             if profile_name not in profiles:
-                import pkg_resources
-
-                for plugin in pkg_resources.iter_entry_points("isort.profiles"):
+                for plugin in entry_points(group="isort.profiles"):
                     profiles.setdefault(plugin.name, plugin.load())
 
             if profile_name not in profiles:
@@ -473,9 +476,7 @@ class Config(_Config):
             combined_config["src_paths"] = tuple(src_paths)
 
         if "formatter" in combined_config:
-            import pkg_resources
-
-            for plugin in pkg_resources.iter_entry_points("isort.formatters"):
+            for plugin in entry_points(group="isort.formatters"):
                 if plugin.name == combined_config["formatter"]:
                     combined_config["formatting_function"] = plugin.load()
                     break
@@ -715,9 +716,7 @@ class Config(_Config):
             self._sorting_function = sorted
         else:
             available_sort_orders = ["natural", "native"]
-            import pkg_resources
-
-            for sort_plugin in pkg_resources.iter_entry_points("isort.sort_function"):
+            for sort_plugin in entry_points(group="isort.sort_function"):
                 available_sort_orders.append(sort_plugin.name)
                 if sort_plugin.name == self.sort_order:
                     self._sorting_function = sort_plugin.load()
