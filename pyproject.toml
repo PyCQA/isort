@@ -180,6 +180,10 @@ allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
 
+[[tool.mypy.overrides]]
+module = "importlib_metadata.*"
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 100
 lint.select = [

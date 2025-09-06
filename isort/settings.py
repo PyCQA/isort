@@ -45,12 +45,12 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-if sys.version_info < (3, 10):  # pragma: no cover
-    from importlib_metadata import entry_points
-else:
-    from importlib.metadata import entry_points
-
 if TYPE_CHECKING:
+    if sys.version_info < (3, 10):  # pragma: no cover
+        EntryPoints = Any
+    else:
+        from importlib.metadata import EntryPoints
+
     tomllib: Any
 else:
     if sys.version_info >= (3, 11):
@@ -935,6 +935,19 @@ def _as_bool(value: str) -> bool:
         return _STR_BOOLEAN_MAPPING[value.lower()]
     except KeyError:
         raise ValueError(f"invalid truth value {value}")
+
+
+def entry_points(group: str) -> "EntryPoints":
+    """Call entry_point after lazy loading it.
+
+    TODO: The reason for lazy loading here are unknown.
+    """
+    if sys.version_info < (3, 10):  # pragma: no cover
+        from importlib_metadata import entry_points
+    else:
+        from importlib.metadata import entry_points
+
+    return entry_points(group=group)
 
 
 DEFAULT_CONFIG = Config()
