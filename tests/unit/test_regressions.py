@@ -1875,11 +1875,7 @@ class Bar:
 def test_isort_should_produce_the_same_code_on_subsequent_runs_issue_1799(tmpdir):
     code = """import sys
 
-if sys.version_info[:2] >= (3, 8):
-    # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
-    from importlib.metadata import PackageNotFoundError, version  # pragma: no cover
-else:
-    from importlib_metadata import PackageNotFoundError, version  # pragma: no cover
+from importlib.metadata import PackageNotFoundError, version
 """
     config_file = tmpdir.join(".isort.cfg")
     config_file.write(
