@@ -3,6 +3,7 @@
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
+[![Python Version](https://img.shields.io/pypi/pyversions/isort)][pypi status]
 [![Test](https://github.com/PyCQA/isort/actions/workflows/test.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/test.yml)
 [![Lint](https://github.com/PyCQA/isort/actions/workflows/lint.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/lint.yml)
 [![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/main/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
@@ -12,6 +13,8 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/pycqa/isort/?ref=repository-badge)
+
+[pypi status]: https://pypi.org/project/isort/
 _________________
 
 [Read Latest Documentation](https://pycqa.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/pycqa/isort/)
