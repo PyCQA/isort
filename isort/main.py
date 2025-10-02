@@ -1175,7 +1175,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             filtered_files = []
             for file_name in file_names:
                 if config.is_skipped(Path(file_name)):
-                    skipped.append(file_name)
+                    skipped.append(str(Path(file_name).resolve()))
                 else:
                     filtered_files.append(file_name)
             file_names = filtered_files
