@@ -197,8 +197,7 @@ lint.select = [
     "FLY",
     "PERF",
     "PIE",
-    "PLC",
-    "PLE",
+    "PL",
     "PT",
     "RUF",
     "S",
@@ -209,12 +208,14 @@ lint.ignore = [
     "B904",
     "E501",
     "PERF203",
+    "PLR5501",
+    "PLW",
     "RUF100",
     "UP006",
     "UP035",
 ]
-lint.exclude = [ "isort/_vendored/*" ]
-lint.mccabe.max-complexity = 91  # Default is 10
+lint.exclude = [ "isort/_vendored/*", "isort/deprecated/*" ]
+lint.pylint.allow-magic-value-types = [ "bytes", "int", "str" ]
 
 [tool.ruff.lint.per-file-ignores]
 "isort/deprecated/finders.py" = [ "UP034" ]
@@ -224,7 +225,8 @@ lint.mccabe.max-complexity = 91  # Default is 10
 "isort/setuptools_commands.py" = [ "RUF012" ]
 "tests/*" = [ "RUF001", "S" ]
 "tests/unit/example_crlf_file.py" = [ "F401" ]
-"tests/unit/test_wrap_modes.py" = [ "PIE804" ]
+"tests/unit/test_main.py" = [ "PLR0915" ]
+"tests/unit/test_wrap_modes.py" = [ "PIE804", "PLR0913" ]
 
 [tool.isort]
 profile = "hug"

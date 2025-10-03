@@ -131,7 +131,13 @@ def _print_hard_fail(
     printer.error(message)
 
 
-def _build_arg_parser() -> argparse.ArgumentParser:
+def _build_arg_parser() -> argparse.ArgumentParser:  # noqa: PLR0915
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 113 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     parser = argparse.ArgumentParser(
         description="Sort Python import definitions alphabetically "
         "within logical sections. Run with no arguments to see a quick "
@@ -1057,7 +1063,17 @@ def identify_imports_main(
             print(str(identified_import))
 
 
-def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
+def main(  # noqa: C901,PLR0912,PLR0915
+    argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None
+) -> None:
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 46 vs 10 recommended.
+    * There are currently 51 branches vs 12 recommended.
+    * There are currently 138 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     arguments = parse_args(argv)
     if arguments.get("show_version"):
         print(ASCII_ART)
