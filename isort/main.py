@@ -364,14 +364,22 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     target_group.add_argument(
         "--sg",
         "--skip-glob",
+        "--exclude",
         help="Files that isort should skip over.",
         dest="skip_glob",
         action="append",
     )
     target_group.add_argument(
         "--extend-skip-glob",
+        "--extend-exclude",
         help="Additional files that isort should skip over (extending --skip-glob).",
         dest="extend_skip_glob",
+        action="append",
+    )
+    target_group.add_argument(
+        "--exclude-glob",
+        help="Files that isort should skip over, In a glob notation.",
+        dest="exclude_glob",
         action="append",
     )
     target_group.add_argument(
@@ -1251,8 +1259,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
                 for was_skipped in skipped:
                     print(
                         f"{was_skipped} was skipped as it's listed in 'skip' setting, "
-                        "matches a glob in 'skip_glob' setting, or is in a .gitignore file with "
-                        "--skip-gitignore enabled."
+                        "matches in 'exclude' setting or matches a glob in 'exclude-glob', "
+                        "or is in a .gitignore file with --skip-gitignore enabled."
                     )
             print(f"Skipped {num_skipped} files")
 

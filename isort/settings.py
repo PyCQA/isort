@@ -156,6 +156,7 @@ class _Config:
     extend_skip: FrozenSet[str] = frozenset()
     skip_glob: FrozenSet[str] = frozenset()
     extend_skip_glob: FrozenSet[str] = frozenset()
+    exclude_glob: FrozenSet[str] = frozenset()
     skip_gitignore: bool = False
     line_length: int = 79
     wrap_length: int = 0
@@ -308,6 +309,7 @@ class Config(_Config):
         self._section_comments_end: Optional[Tuple[str, ...]] = None
         self._skips: Optional[FrozenSet[str]] = None
         self._skip_globs: Optional[FrozenSet[str]] = None
+        self._exclude_globs: Optional[FrozenSet[str]] = None
         self._sorting_function: Optional[Callable[..., List[str]]] = None
 
         if config:
@@ -319,6 +321,7 @@ class Config(_Config):
             config_vars.pop("_section_comments_end")
             config_vars.pop("_skips")
             config_vars.pop("_skip_globs")
+            config_vars.pop("_exclude_globs")
             config_vars.pop("_sorting_function")
             super().__init__(**config_vars)
             return
@@ -621,6 +624,10 @@ class Config(_Config):
             if fnmatch.fnmatch(file_name, sglob) or fnmatch.fnmatch("/" + file_name, sglob):
                 return True
 
+        for exclude_glob in self.exclude_globs:
+            if file_path in Path(self.directory).glob(exclude_glob):
+                return True
+
         if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
             return True
 
@@ -704,6 +711,14 @@ class Config(_Config):
 
         self._skip_globs = self.skip_glob.union(self.extend_skip_glob)
         return self._skip_globs
+
+    @property
+    def exclude_globs(self) -> FrozenSet[str]:
+        if self._exclude_globs is not None:
+            return self._exclude_globs
+
+        self._exclude_globs = self.exclude_glob
+        return self._exclude_globs
 
     @property
     def sorting_function(self) -> Callable[..., List[str]]:
