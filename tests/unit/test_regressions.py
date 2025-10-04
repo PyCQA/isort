@@ -1,10 +1,11 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
 
+import os
 from io import StringIO
 
-import pytest
-
 import isort
+import isort.main
+import pytest
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -1896,3 +1897,31 @@ import_heading_thirdparty=external
     assert isort.code(code, config=settings) == isort.code(
         isort.code(code, config=settings), config=settings
     )
+
+
+def test_isort_should_include_all_src_paths_in_config_issue_2001(tmp_path):
+    code = """import external
+import local
+"""
+
+    sorted_code = """import external
+
+import local
+"""
+
+    # "src" is used by default, so it needs a different name
+    src_dir = tmp_path.joinpath("code")
+    src_dir.mkdir()
+
+    src_file = src_dir.joinpath("needs_changes.py")
+    src_file.write_text(code)
+    local_module = src_dir.joinpath("local.py")
+    local_module.write_text("# Comment")
+
+    # Necessary to test CLI behavior, only affects this test
+    os.chdir(tmp_path)
+
+    isort.main.main(["."])
+    assert src_file.read_text() == code
+    isort.main.main(["--src", src_dir.name, "."])
+    assert src_file.read_text() == sorted_code
