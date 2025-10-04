@@ -5741,3 +5741,16 @@ __all__ = ['bar', 'foo']
 test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_noqa_multiline_hanging_indent() -> None:
+    test_input = (
+        "from aaaaaaa import bbbbbbbbbbbbbbbbb, ccccccccccccccccccc, dddddddddddddddd"
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, \\\n"
+        "    fffffffffffffffffffff  # noqa: E402\n"
+        "\n"
+        "print(fffffffffffffffffffff)\n"
+        "print(dddddddddddddddd)\n"
+    )
+    output = isort.code(test_input, line_length=120, multi_line_output=WrapModes.HANGING_INDENT)
+    assert output == test_input

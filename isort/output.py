@@ -454,6 +454,17 @@ def _with_from_imports(
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
                     if comment:
+                        # If the comment is a noqa and hanging indent wrapping is used,
+                        # keep the name in the main list and hoist the comment to the statement.
+                        if (
+                            comment.lower().startswith("noqa")
+                            and config.multi_line_output
+                            == wrap.Modes.HANGING_INDENT  # type: ignore[attr-defined]
+                        ):
+                            comments = list(comments) if comments else []
+                            comments.append(comment)
+                            continue
+
                         from_imports.remove(from_import)
                         if from_imports:
                             use_comments = []
