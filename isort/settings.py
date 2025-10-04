@@ -9,7 +9,7 @@ import os
 import posixpath
 import re
 import stat
-import subprocess  # nosec: Needed for gitignore support.
+import subprocess  # nosec # Needed for gitignore support.
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -46,6 +46,11 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
+    if sys.version_info < (3, 10):  # pragma: no cover
+        EntryPoints = Any
+    else:
+        from importlib.metadata import EntryPoints
+
     tomllib: Any
 else:
     if sys.version_info >= (3, 11):
@@ -356,9 +361,7 @@ class Config(_Config):
         profile: Dict[str, Any] = {}
         if profile_name:
             if profile_name not in profiles:
-                import pkg_resources
-
-                for plugin in pkg_resources.iter_entry_points("isort.profiles"):
+                for plugin in entry_points(group="isort.profiles"):
                     profiles.setdefault(plugin.name, plugin.load())
 
             if profile_name not in profiles:
@@ -473,9 +476,7 @@ class Config(_Config):
             combined_config["src_paths"] = tuple(src_paths)
 
         if "formatter" in combined_config:
-            import pkg_resources
-
-            for plugin in pkg_resources.iter_entry_points("isort.formatters"):
+            for plugin in entry_points(group="isort.formatters"):
                 if plugin.name == combined_config["formatter"]:
                     combined_config["formatting_function"] = plugin.load()
                     break
@@ -715,9 +716,7 @@ class Config(_Config):
             self._sorting_function = sorted
         else:
             available_sort_orders = ["natural", "native"]
-            import pkg_resources
-
-            for sort_plugin in pkg_resources.iter_entry_points("isort.sort_function"):
+            for sort_plugin in entry_points(group="isort.sort_function"):
                 available_sort_orders.append(sort_plugin.name)
                 if sort_plugin.name == self.sort_order:
                     self._sorting_function = sort_plugin.load()
@@ -936,6 +935,19 @@ def _as_bool(value: str) -> bool:
         return _STR_BOOLEAN_MAPPING[value.lower()]
     except KeyError:
         raise ValueError(f"invalid truth value {value}")
+
+
+def entry_points(group: str) -> "EntryPoints":
+    """Call entry_point after lazy loading it.
+
+    TODO: The reason for lazy loading here are unknown.
+    """
+    if sys.version_info < (3, 10):  # pragma: no cover
+        from importlib_metadata import entry_points
+    else:
+        from importlib.metadata import entry_points
+
+    return entry_points(group=group)
 
 
 DEFAULT_CONFIG = Config()
