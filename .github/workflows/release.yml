@@ -28,7 +28,7 @@ jobs:
       - name: Install UV
         uses: astral-sh/setup-uv@v6
         with:
-          version: ">=0.6.0"
+          version-file: "pyproject.toml"
 
       - name: Install dependencies
         run: |

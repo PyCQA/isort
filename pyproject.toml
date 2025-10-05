@@ -154,6 +154,7 @@ dev = [
     "types-colorama>=0.4.2",
     "types-setuptools>=70.0.0.20240523",
     "types-toml>=0.1.3",
+    "uv>=0.6.0",
     "vulture>=1.0",
 ]
 
