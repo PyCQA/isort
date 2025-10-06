@@ -380,7 +380,7 @@ def sort_file(
     output: Optional[TextIO] = None,
     **config_kwargs: Any,
 ) -> bool:
-    """Sorts and formats any groups of imports imports within the provided file or Path.
+    """Sorts and formats any groups of imports within the provided file or Path.
      Returns `True` if the file has been changed, otherwise `False`.
 
     - **filename**: The name or Path of the file to format.
