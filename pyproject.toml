@@ -57,6 +57,8 @@ Changelog = "https://github.com/PyCQA/isort/releases"
 source = "vcs"
 
 [tool.hatch.version.raw-options]
+# Fallback needed because of https://github.com/dependabot/dependabot-core/issues/12340
+fallback_version = "0.0.0"
 local_scheme = "no-local-version"
 
 [project.scripts]
