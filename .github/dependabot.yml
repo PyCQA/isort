@@ -9,11 +9,3 @@ updates:
       github-actions:
         patterns:
           - "*"
-  - package-ecosystem: "uv"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    groups:
-      uv:
-        patterns:
-          - "*"
