@@ -1,7 +1,8 @@
 import copy
 import itertools
+from collections.abc import Iterable
 from functools import partial
-from typing import Any, Iterable, List, Optional, Set, Tuple, Type
+from typing import Any, Optional
 
 from isort.format import format_simplified
 
@@ -25,14 +26,14 @@ def sorted_imports(
     if parsed.import_index == -1:
         return _output_as_string(parsed.lines_without_imports, parsed.line_separator)
 
-    formatted_output: List[str] = parsed.lines_without_imports.copy()
+    formatted_output: list[str] = parsed.lines_without_imports.copy()
     remove_imports = [format_simplified(removal) for removal in config.remove_imports]
 
     sections: Iterable[str] = itertools.chain(parsed.sections, config.forced_separate)
 
     if config.no_sections:
         parsed.imports["no_sections"] = {"straight": {}, "from": {}}
-        base_sections: Tuple[str, ...] = ()
+        base_sections: tuple[str, ...] = ()
         for section in sections:
             if section == "FUTURE":
                 base_sections = ("FUTURE",)
@@ -43,8 +44,8 @@ def sorted_imports(
             parsed.imports["no_sections"]["from"].update(parsed.imports[section].get("from", {}))
         sections = (*base_sections, "no_sections")
 
-    output: List[str] = []
-    seen_headings: Set[str] = set()
+    output: list[str] = []
+    seen_headings: set[str] = set()
     pending_lines_before = False
     for section in sections:
         straight_modules = parsed.imports[section]["straight"]
@@ -95,7 +96,7 @@ def sorted_imports(
         if config.force_sort_within_sections:
             # collapse comments
             comments_above = []
-            new_section_output: List[str] = []
+            new_section_output: list[str] = []
             for line in section_output:
                 if not line:
                     continue
@@ -248,10 +249,10 @@ def _with_from_imports(
     config: Config,
     from_modules: Iterable[str],
     section: str,
-    remove_imports: List[str],
+    remove_imports: list[str],
     import_type: str,
-) -> List[str]:
-    output: List[str] = []
+) -> list[str]:
+    output: list[str] = []
     for module in from_modules:
         if module in remove_imports:
             continue
@@ -575,10 +576,10 @@ def _with_straight_imports(
     config: Config,
     straight_modules: Iterable[str],
     section: str,
-    remove_imports: List[str],
+    remove_imports: list[str],
     import_type: str,
-) -> List[str]:
-    output: List[str] = []
+) -> list[str]:
+    output: list[str] = []
 
     as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)
 
@@ -587,8 +588,8 @@ def _with_straight_imports(
         if not straight_modules:
             return []
 
-        above_comments: List[str] = []
-        inline_comments: List[str] = []
+        above_comments: list[str] = []
+        inline_comments: list[str] = []
 
         for module in straight_modules:
             if module in parsed.categorized_comments["above"]["straight"]:
@@ -644,11 +645,11 @@ def _with_straight_imports(
     return output
 
 
-def _output_as_string(lines: List[str], line_separator: str) -> str:
+def _output_as_string(lines: list[str], line_separator: str) -> str:
     return line_separator.join(_normalize_empty_lines(lines))
 
 
-def _normalize_empty_lines(lines: List[str]) -> List[str]:
+def _normalize_empty_lines(lines: list[str]) -> list[str]:
     while lines and lines[-1].strip() == "":
         lines.pop(-1)
 
@@ -657,18 +658,18 @@ def _normalize_empty_lines(lines: List[str]) -> List[str]:
 
 
 class _LineWithComments(str):
-    comments: List[str]
+    comments: list[str]
 
     def __new__(
-        cls: Type["_LineWithComments"], value: Any, comments: List[str]
+        cls: type["_LineWithComments"], value: Any, comments: list[str]
     ) -> "_LineWithComments":
         instance = super().__new__(cls, value)
         instance.comments = comments
         return instance
 
 
-def _ensure_newline_before_comment(output: List[str]) -> List[str]:
-    new_output: List[str] = []
+def _ensure_newline_before_comment(output: list[str]) -> list[str]:
+    new_output: list[str] = []
 
     def is_comment(line: Optional[str]) -> bool:
         return line.startswith("#") if line else False
@@ -680,7 +681,7 @@ def _ensure_newline_before_comment(output: List[str]) -> List[str]:
     return new_output
 
 
-def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: List[str]) -> List[str]:
+def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list[str]) -> list[str]:
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
     if star_comment:
         return [*comments, star_comment]

@@ -17,11 +17,12 @@ __all__ = (
 import contextlib
 import shutil
 import sys
+from collections.abc import Iterator
 from enum import Enum
 from io import StringIO
 from itertools import chain
 from pathlib import Path
-from typing import Any, Iterator, Optional, Set, TextIO, Union, cast
+from typing import Any, Optional, TextIO, Union, cast
 from warnings import warn
 
 from isort import core
@@ -539,7 +540,7 @@ def find_imports_in_stream(
     file_path: Optional[Path] = None,
     unique: Union[bool, ImportKey] = False,
     top_only: bool = False,
-    _seen: Optional[Set[str]] = None,
+    _seen: Optional[set[str]] = None,
     **config_kwargs: Any,
 ) -> Iterator[identify.Import]:
     """Finds and returns all imports within the provided code stream.
@@ -559,7 +560,7 @@ def find_imports_in_stream(
     if not unique:
         yield from identified_imports
 
-    seen: Set[str] = set() if _seen is None else _seen
+    seen: set[str] = set() if _seen is None else _seen
     for identified_import in identified_imports:
         if unique in (True, ImportKey.ALIAS):
             key = identified_import.statement()
@@ -626,7 +627,7 @@ def find_imports_in_paths(
     - ****config_kwargs**: Any config modifications.
     """
     config = _config(config=config, **config_kwargs)
-    seen: Optional[Set[str]] = set() if unique else None
+    seen: Optional[set[str]] = set() if unique else None
     yield from chain(
         *(
             find_imports_in_file(

@@ -3,7 +3,6 @@ import asyncio
 import sys
 from getpass import getpass
 from pathlib import Path
-from typing import Dict
 
 import httpx
 import hug
@@ -21,7 +20,7 @@ _ACK_FILE = Path(__file__).parent.parent / "docs" / "contributing" / "4.-acknowl
 ACKNOWLEDGEMENTS = _ACK_FILE.read_text().lower()
 
 
-def _user_info(user: Dict[str, str], verbose=False) -> str:
+def _user_info(user: dict[str, str], verbose=False) -> str:
     login = "@" + user["login"]
     name = user.get("name")
     display_name = f"{name} ({login})" if name else login

@@ -1,5 +1,6 @@
 import re
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
     from .settings import Config
@@ -104,19 +105,19 @@ def sort(
     to_sort: Iterable[str],
     key: Optional[Callable[[str], Any]] = None,
     reverse: bool = False,
-) -> List[str]:
+) -> list[str]:
     return config.sorting_function(to_sort, key=key, reverse=reverse)
 
 
 def naturally(
     to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
-) -> List[str]:
+) -> list[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
     else:
 
-        def key_callback(text: str) -> List[Any]:
+        def key_callback(text: str) -> list[Any]:
             return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
@@ -126,5 +127,5 @@ def _atoi(text: str) -> Any:
     return int(text) if text.isdigit() else text
 
 
-def _natural_keys(text: str) -> List[Any]:
+def _natural_keys(text: str) -> list[Any]:
     return [_atoi(c) for c in re.split(r"(\d+)", text)]

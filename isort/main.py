@@ -5,10 +5,11 @@ import functools
 import json
 import os
 import sys
+from collections.abc import Sequence
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Optional, Union
 from warnings import warn
 
 from . import __version__, api, files, sections
@@ -924,7 +925,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+def parse_args(argv: Optional[Sequence[str]] = None) -> dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
     remapped_deprecated_args = []
     for index, arg in enumerate(argv):
@@ -958,7 +959,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     return arguments
 
 
-def _preconvert(item: Any) -> Union[str, List[Any]]:
+def _preconvert(item: Any) -> Union[str, list[Any]]:
     """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
@@ -1168,8 +1169,8 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             )
             printer.error("Filename override is intended only for stream (-) sorting.")
             sys.exit(1)
-        skipped: List[str] = []
-        broken: List[str] = []
+        skipped: list[str] = []
+        broken: list[str] = []
 
         if config.filter_files:
             filtered_files = []

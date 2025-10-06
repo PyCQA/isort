@@ -1,10 +1,11 @@
 """Contains all logic related to placing an import within a certain section."""
 
 import importlib
+from collections.abc import Iterable
 from fnmatch import fnmatch
 from functools import lru_cache
 from pathlib import Path
-from typing import FrozenSet, Iterable, Optional, Tuple
+from typing import Optional
 
 from isort import sections
 from isort.settings import DEFAULT_CONFIG, Config
@@ -19,7 +20,7 @@ def module(name: str, config: Config = DEFAULT_CONFIG) -> str:
 
 
 @lru_cache(maxsize=1000)
-def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> Tuple[str, str]:
+def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> tuple[str, str]:
     """Returns the section placement for the given module name alongside the reasoning."""
     return (
         _forced_separate(name, config)
@@ -30,7 +31,7 @@ def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> Tuple[str,
     )
 
 
-def _forced_separate(name: str, config: Config) -> Optional[Tuple[str, str]]:
+def _forced_separate(name: str, config: Config) -> Optional[tuple[str, str]]:
     for forced_separate in config.forced_separate:
         # Ensure all forced_separate patterns will match to end of string
         path_glob = forced_separate
@@ -43,14 +44,14 @@ def _forced_separate(name: str, config: Config) -> Optional[Tuple[str, str]]:
     return None
 
 
-def _local(name: str, config: Config) -> Optional[Tuple[str, str]]:
+def _local(name: str, config: Config) -> Optional[tuple[str, str]]:
     if name.startswith("."):
         return (LOCAL, "Module name started with a dot.")
 
     return None
 
 
-def _known_pattern(name: str, config: Config) -> Optional[Tuple[str, str]]:
+def _known_pattern(name: str, config: Config) -> Optional[tuple[str, str]]:
     parts = name.split(".")
     module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
     for module_name_to_check in module_names_to_check:
@@ -65,8 +66,8 @@ def _src_path(
     name: str,
     config: Config,
     src_paths: Optional[Iterable[Path]] = None,
-    prefix: Tuple[str, ...] = (),
-) -> Optional[Tuple[str, str]]:
+    prefix: tuple[str, ...] = (),
+) -> Optional[tuple[str, str]]:
     if src_paths is None:
         src_paths = config.src_paths
 
@@ -111,7 +112,7 @@ def _is_package(path: Path) -> bool:
     return exists_case_sensitive(str(path)) and path.is_dir()
 
 
-def _is_namespace_package(path: Path, src_extensions: FrozenSet[str]) -> bool:
+def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
     if not _is_package(path):
         return False
 

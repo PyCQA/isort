@@ -1,7 +1,8 @@
 import glob
 import os
 import sys
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 from warnings import warn
 
 import setuptools

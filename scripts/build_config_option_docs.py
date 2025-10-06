@@ -2,7 +2,8 @@
 import dataclasses
 import os
 from textwrap import dedent
-from typing import Any, Dict, Generator, Iterable, Optional, Type
+from typing import Any, Optional
+from collections.abc import Generator, Iterable
 
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
@@ -104,7 +105,7 @@ class Example:
         return self.section_complete
 
 
-description_mapping: Dict[str, str]
+description_mapping: dict[str, str]
 description_mapping = {
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
@@ -135,7 +136,7 @@ description_mapping = {
     "import_footers": "A mapping of import sections to import footer comments that should show below them.",
 }
 
-example_mapping: Dict[str, Example]
+example_mapping: dict[str, Example]
 example_mapping = {
     "skip": Example(
         cfg="""
@@ -312,7 +313,7 @@ py_version=39
 @dataclasses.dataclass
 class ConfigOption:
     name: str
-    type: Type = str
+    type: type = str
     default: Any = ""
     config_name: str = "**Not Supported**"
     cli_options: Iterable[str] = (" **Not Supported**",)

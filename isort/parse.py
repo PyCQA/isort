@@ -4,7 +4,7 @@ import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple, TypedDict
+from typing import TYPE_CHECKING, Any, NamedTuple, Optional, TypedDict
 from warnings import warn
 
 from . import place
@@ -14,15 +14,15 @@ from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
     CommentsAboveDict = TypedDict(
-        "CommentsAboveDict", {"straight": Dict[str, Any], "from": Dict[str, Any]}
+        "CommentsAboveDict", {"straight": dict[str, Any], "from": dict[str, Any]}
     )
 
     CommentsDict = TypedDict(
         "CommentsDict",
         {
-            "from": Dict[str, Any],
-            "straight": Dict[str, Any],
-            "nested": Dict[str, Any],
+            "from": dict[str, Any],
+            "straight": dict[str, Any],
+            "nested": dict[str, Any],
             "above": CommentsAboveDict,
         },
     )
@@ -36,7 +36,7 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
-def normalize_line(raw_line: str) -> Tuple[str, str]:
+def normalize_line(raw_line: str) -> tuple[str, str]:
     """Normalizes import related statements in the provided line.
 
     Returns (normalized_line: str, raw_line: str)
@@ -82,9 +82,9 @@ def skip_line(
     line: str,
     in_quote: str,
     index: int,
-    section_comments: Tuple[str, ...],
+    section_comments: tuple[str, ...],
     needs_import: bool = True,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """Determine if a given line should be skipped.
 
     Returns back a tuple containing:
@@ -125,20 +125,20 @@ def skip_line(
 
 
 class ParsedContent(NamedTuple):
-    in_lines: List[str]
-    lines_without_imports: List[str]
+    in_lines: list[str]
+    lines_without_imports: list[str]
     import_index: int
-    place_imports: Dict[str, List[str]]
-    import_placements: Dict[str, str]
-    as_map: Dict[str, Dict[str, List[str]]]
-    imports: Dict[str, Dict[str, Any]]
+    place_imports: dict[str, list[str]]
+    import_placements: dict[str, str]
+    as_map: dict[str, dict[str, list[str]]]
+    imports: dict[str, dict[str, Any]]
     categorized_comments: "CommentsDict"
     change_count: int
     original_line_count: int
     line_separator: str
     sections: Any
-    verbose_output: List[str]
-    trailing_commas: Set[str]
+    verbose_output: list[str]
+    trailing_commas: set[str]
 
 
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
@@ -159,14 +159,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
     line_count = len(in_lines)
 
-    place_imports: Dict[str, List[str]] = {}
-    import_placements: Dict[str, str] = {}
-    as_map: Dict[str, Dict[str, List[str]]] = {
+    place_imports: dict[str, list[str]] = {}
+    import_placements: dict[str, str] = {}
+    as_map: dict[str, dict[str, list[str]]] = {
         "straight": defaultdict(list),
         "from": defaultdict(list),
     }
-    imports: OrderedDict[str, Dict[str, Any]] = OrderedDict()
-    verbose_output: List[str] = []
+    imports: OrderedDict[str, dict[str, Any]] = OrderedDict()
+    verbose_output: list[str] = []
 
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
@@ -177,7 +177,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "above": {"straight": {}, "from": {}},
     }
 
-    trailing_commas: Set[str] = set()
+    trailing_commas: set[str] = set()
 
     index = 0
     import_index = -1
@@ -380,7 +380,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for item in strip_syntax(import_string).split()
             ]
 
-            attach_comments_to: Optional[List[Any]] = None
+            attach_comments_to: Optional[list[Any]] = None
             direct_imports = just_imports[1:]
             straight_import = True
             top_level_module = ""

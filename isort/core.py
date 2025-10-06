@@ -1,7 +1,7 @@
 import textwrap
 from io import StringIO
 from itertools import chain
-from typing import List, TextIO, Union
+from typing import TextIO, Union
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
@@ -53,7 +53,7 @@ def process(
     was provided in the input_stream, otherwise `False`.
     """
     line_separator: str = config.line_ending
-    add_imports: List[str] = [format_natural(addition) for addition in config.add_imports]
+    add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
@@ -74,8 +74,8 @@ def process(
     made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
-    verbose_output: List[str] = []
-    lines_before: List[str] = []
+    verbose_output: list[str] = []
+    lines_before: list[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
 

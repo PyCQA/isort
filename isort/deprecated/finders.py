@@ -8,12 +8,14 @@ import re
 import sys
 import sysconfig
 from abc import ABCMeta, abstractmethod
+from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from fnmatch import fnmatch
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Pattern, Sequence, Tuple, Type
+from re import Pattern
+from typing import Optional
 
 from isort import sections
 from isort.settings import KNOWN_SECTION_MAPPING, Config
@@ -76,7 +78,7 @@ class KnownPatternFinder(BaseFinder):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
 
-        self.known_patterns: List[Tuple[Pattern[str], str]] = []
+        self.known_patterns: list[tuple[Pattern[str], str]] = []
         for placement in reversed(config.sections):
             known_placement = KNOWN_SECTION_MAPPING.get(placement, placement).lower()
             config_key = f"known_{known_placement}"
@@ -92,7 +94,7 @@ class KnownPatternFinder(BaseFinder):
                 regexp = "^" + known_pattern.replace("*", ".*").replace("?", ".?") + "$"
                 self.known_patterns.append((re.compile(regexp), placement))
 
-    def _parse_known_pattern(self, pattern: str) -> List[str]:
+    def _parse_known_pattern(self, pattern: str) -> list[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
@@ -217,7 +219,7 @@ class ReqsBaseFinder(BaseFinder):
         raise NotImplementedError
 
     @staticmethod
-    def _load_mapping() -> Optional[Dict[str, str]]:
+    def _load_mapping() -> Optional[dict[str, str]]:
         """Return list of mappings `package_name -> module_name`
 
         Example:
@@ -228,15 +230,15 @@ class ReqsBaseFinder(BaseFinder):
         path = os.path.dirname(inspect.getfile(pipreqs))
         path = os.path.join(path, "mapping")
         with open(path) as f:
-            mappings: Dict[str, str] = {}  # pypi_name: import_name
+            mappings: dict[str, str] = {}  # pypi_name: import_name
             for line in f:
                 import_name, _, pypi_name = line.strip().partition(":")
                 mappings[pypi_name] = import_name
             return mappings
 
-    def _load_names(self) -> List[str]:
+    def _load_names(self) -> list[str]:
         """Return list of thirdparty modules from requirements"""
-        names: List[str] = []
+        names: list[str] = []
         for path in self._get_files():
             names.extend(self._normalize_name(name) for name in self._get_names(path))
         return names
@@ -296,8 +298,8 @@ class RequirementsFinder(ReqsBaseFinder):
 
     @classmethod
     @lru_cache(maxsize=16)
-    def _get_files_from_dir_cached(cls, path: str) -> List[str]:
-        results: List[str] = []
+    def _get_files_from_dir_cached(cls, path: str) -> list[str]:
+        results: list[str] = []
 
         for fname in os.listdir(path):
             if "requirements" not in fname:
@@ -329,8 +331,8 @@ class RequirementsFinder(ReqsBaseFinder):
 
     @classmethod
     @lru_cache(maxsize=16)
-    def _get_names_cached(cls, path: str) -> List[str]:
-        result: List[str] = []
+    def _get_names_cached(cls, path: str) -> list[str]:
+        result: list[str] = []
 
         with chdir(os.path.dirname(path)):
             requirements = parse_requirements(Path(path))
@@ -345,7 +347,7 @@ class DefaultFinder(BaseFinder):
 
 
 class FindersManager:
-    _default_finders_classes: Sequence[Type[BaseFinder]] = (
+    _default_finders_classes: Sequence[type[BaseFinder]] = (
         ForcedSeparateFinder,
         LocalFinder,
         KnownPatternFinder,
@@ -355,13 +357,13 @@ class FindersManager:
     )
 
     def __init__(
-        self, config: Config, finder_classes: Optional[Iterable[Type[BaseFinder]]] = None
+        self, config: Config, finder_classes: Optional[Iterable[type[BaseFinder]]] = None
     ) -> None:
         self.verbose: bool = config.verbose
 
         if finder_classes is None:
             finder_classes = self._default_finders_classes
-        finders: List[BaseFinder] = []
+        finders: list[BaseFinder] = []
         for finder_cls in finder_classes:
             try:
                 finders.append(finder_cls(config))
@@ -372,7 +374,7 @@ class FindersManager:
                         f"{finder_cls.__name__} encountered an error ({exception}) during "
                         "instantiation and cannot be used"
                     )
-        self.finders: Tuple[BaseFinder, ...] = tuple(finders)
+        self.finders: tuple[BaseFinder, ...] = tuple(finders)
 
     def find(self, module_name: str) -> Optional[str]:
         for finder in self.finders:

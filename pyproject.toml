@@ -185,6 +185,7 @@ module = "importlib_metadata.*"
 ignore_missing_imports = true
 
 [tool.ruff]
+target-version = "py39"
 line-length = 100
 lint.select = [
     "ASYNC",
@@ -209,8 +210,6 @@ lint.ignore = [
     "E501",
     "PERF203",
     "RUF100",
-    "UP006",
-    "UP035",
 ]
 lint.exclude = [ "isort/_vendored/*" ]
 lint.mccabe.max-complexity = 91  # Default is 10

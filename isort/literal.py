@@ -1,6 +1,6 @@
 import ast
 from pprint import PrettyPrinter
-from typing import Any, Callable, Dict, List, Set, Tuple
+from typing import Any, Callable
 
 from isort.exceptions import (
     AssignmentsFormatMismatch,
@@ -17,7 +17,7 @@ class ISortPrettyPrinter(PrettyPrinter):
         super().__init__(width=config.line_length, compact=True)
 
 
-type_mapping: Dict[str, Tuple[type, Callable[[Any, ISortPrettyPrinter], str]]] = {}
+type_mapping: dict[str, tuple[type, Callable[[Any, ISortPrettyPrinter], str]]] = {}
 
 
 def assignments(code: str) -> str:
@@ -85,30 +85,30 @@ def register_type(
 
 
 @register_type("dict", dict)
-def _dict(value: Dict[Any, Any], printer: ISortPrettyPrinter) -> str:
+def _dict(value: dict[Any, Any], printer: ISortPrettyPrinter) -> str:
     return printer.pformat(dict(sorted(value.items(), key=lambda item: item[1])))
 
 
 @register_type("list", list)
-def _list(value: List[Any], printer: ISortPrettyPrinter) -> str:
+def _list(value: list[Any], printer: ISortPrettyPrinter) -> str:
     return printer.pformat(sorted(value))
 
 
 @register_type("unique-list", list)
-def _unique_list(value: List[Any], printer: ISortPrettyPrinter) -> str:
+def _unique_list(value: list[Any], printer: ISortPrettyPrinter) -> str:
     return printer.pformat(sorted(set(value)))
 
 
 @register_type("set", set)
-def _set(value: Set[Any], printer: ISortPrettyPrinter) -> str:
+def _set(value: set[Any], printer: ISortPrettyPrinter) -> str:
     return "{" + printer.pformat(tuple(sorted(value)))[1:-1] + "}"
 
 
 @register_type("tuple", tuple)
-def _tuple(value: Tuple[Any, ...], printer: ISortPrettyPrinter) -> str:
+def _tuple(value: tuple[Any, ...], printer: ISortPrettyPrinter) -> str:
     return printer.pformat(tuple(sorted(value)))
 
 
 @register_type("unique-tuple", tuple)
-def _unique_tuple(value: Tuple[Any, ...], printer: ISortPrettyPrinter) -> str:
+def _unique_tuple(value: tuple[Any, ...], printer: ISortPrettyPrinter) -> str:
     return printer.pformat(tuple(sorted(set(value))))

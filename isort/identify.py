@@ -2,16 +2,17 @@
 Eventually this will likely replace parse.py
 """
 
+from collections.abc import Iterator
 from functools import partial
 from pathlib import Path
-from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
+from typing import NamedTuple, Optional, TextIO
 
 from isort.parse import normalize_line, skip_line, strip_syntax
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
-STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
+STATEMENT_DECLARATIONS: tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 class Import(NamedTuple):
