@@ -223,7 +223,6 @@ lint.mccabe.max-complexity = 91  # Default is 10
 "isort/setuptools_commands.py" = [ "RUF012" ]
 "tests/*" = [ "RUF001", "S" ]
 "tests/unit/example_crlf_file.py" = [ "F401" ]
-"tests/unit/test_wrap_modes.py" = [ "PIE804" ]
 
 [tool.isort]
 profile = "hug"
