@@ -1,7 +1,8 @@
 import os
 import sys
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Optional
 
 from pylama.lint import Linter as BaseLinter  # type: ignore
 
@@ -25,8 +26,8 @@ class Linter(BaseLinter):  # type: ignore
         return path.endswith(".py")
 
     def run(
-        self, path: str, params: Optional[Dict[str, Any]] = None, **meta: Any
-    ) -> List[Dict[str, Any]]:
+        self, path: str, params: Optional[dict[str, Any]] = None, **meta: Any
+    ) -> list[dict[str, Any]]:
         """Lint the file. Return an array of error dicts if appropriate."""
         with suppress_stdout():
             try:

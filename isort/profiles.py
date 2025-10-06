@@ -1,6 +1,6 @@
 """Common profiles are defined here to be easily used within a project using --profile {name}"""
 
-from typing import Any, Dict
+from typing import Any
 
 black = {
     "multi_line_output": 3,
@@ -82,7 +82,7 @@ appnexus = {
     "no_lines_before": "LOCALFOLDER",
 }
 
-profiles: Dict[str, Dict[str, Any]] = {
+profiles: dict[str, dict[str, Any]] = {
     "black": black,
     "django": django,
     "pycharm": pycharm,

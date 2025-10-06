@@ -10,7 +10,8 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any
+from collections.abc import Iterator
 
 import pytest
 
@@ -23,8 +24,6 @@ from isort.utils import exists_case_sensitive
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
-    from typing import Dict  # noqa: F401
-
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
@@ -2626,7 +2625,7 @@ def test_alphabetic_sorting() -> None:
     options = {
         "force_single_line": True,
         "force_alphabetical_sort_within_sections": True,
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
 
     output = isort.code(test_input, **options)
     assert output == test_input
@@ -2641,7 +2640,7 @@ def test_alphabetic_sorting_multi_line() -> None:
         "from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
         "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n"
     )
-    options = {"force_alphabetical_sort_within_sections": True}  # type: Dict[str, Any]
+    options = {"force_alphabetical_sort_within_sections": True}  # type: dict[str, Any]
     assert isort.code(test_input, **options) == test_input
 
 
@@ -3052,7 +3051,7 @@ def test_plone_style() -> None:
         "import unittest\n"
         "import Zope\n"
     )
-    options = {"force_single_line": True, "force_alphabetical_sort": True}  # type: Dict[str, Any]
+    options = {"force_single_line": True, "force_alphabetical_sort": True}  # type: dict[str, Any]
     assert isort.code(test_input, **options) == test_input
 
 
@@ -3084,7 +3083,7 @@ def test_sys_path_mutation(tmpdir) -> None:
     """Test to ensure sys.path is not modified"""
     tmpdir.mkdir("src").mkdir("a")
     test_input = "from myproject import test"
-    options = {"virtual_env": str(tmpdir)}  # type: Dict[str, Any]
+    options = {"virtual_env": str(tmpdir)}  # type: dict[str, Any]
     expected_length = len(sys.path)
     isort.code(test_input, **options)
     assert len(sys.path) == expected_length
@@ -3833,8 +3832,8 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         config = Config(directory=str(tmpdir))
     else:
         config = Config(skip=[], directory=str(tmpdir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     codes = [str(tmpdir)]
     files.find(codes, config, skipped, broken)
 
@@ -3870,15 +3869,15 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         (["*/code/*.py"], 1, set()),
     ],
 )
-def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
+def test_skip_glob(tmpdir, skip_glob_assert: tuple[list[str], int, set[str]]) -> None:
     skip_glob, skipped_count, file_names_expected = skip_glob_assert
     base_dir = tmpdir.mkdir("build")
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in files.find([str(base_dir)], config, skipped, broken)
@@ -3891,8 +3890,8 @@ def test_broken(tmpdir) -> None:
     base_dir = tmpdir.mkdir("broken")
 
     config = Config(directory=str(base_dir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in files.find(["not-exist"], config, skipped, broken)
@@ -4415,7 +4414,7 @@ def test_failing_file_check_916() -> None:
         "indent": "    ",
         "multi_line_output": 3,
         "lines_after_imports": 2,
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     assert isort.code(test_input, **settings) == expected_output
     assert isort.code(expected_output, **settings) == expected_output
     assert api.check_code_string(expected_output, **settings)
@@ -4428,7 +4427,7 @@ def test_import_heading_issue_905() -> None:
         "import_heading_firstparty": "Local imports",
         "known_third_party": ["numpy"],
         "known_first_party": ["oklib"],
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     test_input = (
         "# Standard library imports\n"
         "from os import path as osp\n"
@@ -4496,7 +4495,7 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
             "THREE",
             "FOUR",
         ],
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     test_input = (
         "import os\n"
         "# noinspection PyUnresolvedReferences\n"

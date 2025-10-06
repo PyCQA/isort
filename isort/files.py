@@ -1,15 +1,15 @@
 import os
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Iterable, Iterator, List, Set
 
 from isort.settings import Config
 
 
 def find(
-    paths: Iterable[str], config: Config, skipped: List[str], broken: List[str]
+    paths: Iterable[str], config: Config, skipped: list[str], broken: list[str]
 ) -> Iterator[str]:
     """Fines and provides an iterator for all Python source files defined in paths."""
-    visited_dirs: Set[Path] = set()
+    visited_dirs: set[Path] = set()
 
     for path in paths:
         if os.path.isdir(path):

@@ -1,11 +1,10 @@
 from io import StringIO
-from typing import List
 
 from isort import Config, identify
 from isort.identify import Import
 
 
-def imports_in_code(code: str, **kwargs) -> List[identify.Import]:
+def imports_in_code(code: str, **kwargs) -> list[identify.Import]:
     return list(identify.imports(StringIO(code), **kwargs))
 
 

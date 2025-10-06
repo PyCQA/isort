@@ -2,11 +2,11 @@
 
 import enum
 from inspect import signature
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable
 
 import isort.comments
 
-_wrap_modes: Dict[str, Callable[..., str]] = {}
+_wrap_modes: dict[str, Callable[..., str]] = {}
 
 
 def from_string(value: str) -> "WrapModes":
@@ -19,11 +19,11 @@ def formatter_from_string(name: str) -> Callable[..., str]:
 
 def _wrap_mode_interface(
     statement: str,
-    imports: List[str],
+    imports: list[str],
     white_space: str,
     indent: str,
     line_length: int,
-    comments: List[str],
+    comments: list[str],
     line_separator: str,
     comment_prefix: str,
     include_trailing_comma: bool,

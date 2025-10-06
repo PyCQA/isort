@@ -2,16 +2,16 @@ import os
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 
 class TrieNode:
-    def __init__(self, config_file: str = "", config_data: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, config_file: str = "", config_data: Optional[dict[str, Any]] = None) -> None:
         if not config_data:
             config_data = {}
 
-        self.nodes: Dict[str, TrieNode] = {}
-        self.config_info: Tuple[str, Dict[str, Any]] = (config_file, config_data)
+        self.nodes: dict[str, TrieNode] = {}
+        self.config_info: tuple[str, dict[str, Any]] = (config_file, config_data)
 
 
 class Trie:
@@ -20,10 +20,10 @@ class Trie:
     associated with each file
     """
 
-    def __init__(self, config_file: str = "", config_data: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, config_file: str = "", config_data: Optional[dict[str, Any]] = None) -> None:
         self.root: TrieNode = TrieNode(config_file, config_data)
 
-    def insert(self, config_file: str, config_data: Dict[str, Any]) -> None:
+    def insert(self, config_file: str, config_data: dict[str, Any]) -> None:
         resolved_config_path_as_tuple = Path(config_file).parent.resolve().parts
 
         temp = self.root
@@ -36,7 +36,7 @@ class Trie:
 
         temp.config_info = (config_file, config_data)
 
-    def search(self, filename: str) -> Tuple[str, Dict[str, Any]]:
+    def search(self, filename: str) -> tuple[str, dict[str, Any]]:
         """
         Returns the closest config relative to filename by doing a depth
         first search on the prefix tree.
@@ -45,7 +45,7 @@ class Trie:
 
         temp = self.root
 
-        last_stored_config: Tuple[str, Dict[str, Any]] = ("", {})
+        last_stored_config: tuple[str, dict[str, Any]] = ("", {})
 
         for path in resolved_file_path_as_tuple:
             if temp.config_info[0]:
