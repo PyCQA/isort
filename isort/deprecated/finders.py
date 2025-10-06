@@ -369,10 +369,8 @@ class FindersManager:
                 # if one finder fails to instantiate isort can continue using the rest
                 if self.verbose:
                     print(
-                        (
-                            f"{finder_cls.__name__} encountered an error ({exception}) during "
-                            "instantiation and cannot be used"
-                        )
+                        f"{finder_cls.__name__} encountered an error ({exception}) during "
+                        "instantiation and cannot be used"
                     )
         self.finders: Tuple[BaseFinder, ...] = tuple(finders)
 
