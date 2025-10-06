@@ -4,7 +4,7 @@ import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set, Tuple, TypedDict
 from warnings import warn
 
 from . import place
@@ -13,8 +13,6 @@ from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
-    from mypy_extensions import TypedDict
-
     CommentsAboveDict = TypedDict(
         "CommentsAboveDict", {"straight": Dict[str, Any], "from": Dict[str, Any]}
     )
