@@ -20,7 +20,6 @@ def test_importable():
     import isort.parse
     import isort.place
     import isort.profiles
-    import isort.pylama_isort
     import isort.sections
     import isort.settings
     import isort.setuptools_commands

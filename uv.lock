@@ -933,7 +933,6 @@ dev = [
     { name = "pipreqs" },
     { name = "portray" },
     { name = "pre-commit" },
-    { name = "pylama" },
     { name = "pytest" },
     { name = "pytest-benchmark" },
     { name = "ruff" },
@@ -980,7 +979,6 @@ dev = [
     { name = "pipreqs", specifier = ">=0.4.9" },
     { name = "portray", specifier = ">=1.8.0" },
     { name = "pre-commit", specifier = ">=2.13.0" },
-    { name = "pylama", specifier = ">=7.7" },
     { name = "pytest", specifier = ">=7.4.2" },
     { name = "pytest-benchmark", specifier = ">=3.4.1" },
     { name = "ruff", specifier = ">=0.9.6" },
@@ -1796,18 +1794,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pydocstyle"
-version = "6.3.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "snowballstemmer" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/5c/d5385ca59fd065e3c6a5fe19f9bc9d5ea7f2509fa8c9c22fb6b2031dd953/pydocstyle-6.3.0.tar.gz", hash = "sha256:7ce43f0c0ac87b07494eb9c0b462c0b73e6ff276807f204d6b53edc72b7e44e1", size = 36796, upload-time = "2023-01-17T20:29:19.838Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/ea/99ddefac41971acad68f14114f38261c1f27dac0b3ec529824ebc739bdaa/pydocstyle-6.3.0-py3-none-any.whl", hash = "sha256:118762d452a49d6b05e194ef344a55822987a462831ade91ec5c06fd2169d019", size = 38038, upload-time = "2023-01-17T20:29:18.094Z" },
-]
-
-[[package]]
 name = "pyflakes"
 version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1823,21 +1809,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/7c/2d/c3338d48ea6cc0feb8446d8e6937e1408088a72a39937982cc6111d17f84/pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f", size = 4968581, upload-time = "2025-01-06T17:26:30.443Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c", size = 1225293, upload-time = "2025-01-06T17:26:25.553Z" },
-]
-
-[[package]]
-name = "pylama"
-version = "8.4.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "mccabe" },
-    { name = "pycodestyle" },
-    { name = "pydocstyle" },
-    { name = "pyflakes" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/4f/b6e14fa7fcc805bdfc970c2505535722bcfac7d2a2ad4da826f4865dc0ef/pylama-8.4.1.tar.gz", hash = "sha256:2d4f7aecfb5b7466216d48610c7d6bad1c3990c29cdd392ad08259b161e486f6", size = 33616, upload-time = "2022-08-08T11:27:28.752Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4d/3c/11be5c276f593f70d858db28e913449af76f07a1fb60612ef4131edc4527/pylama-8.4.1-py3-none-any.whl", hash = "sha256:5bbdbf5b620aba7206d688ed9fc917ecd3d73e15ec1a89647037a09fa3a86e60", size = 33151, upload-time = "2022-08-08T11:27:26.957Z" },
 ]
 
 [[package]]
@@ -2339,15 +2310,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a2/87/a6771e1546d97e7e041b6ae58d80074f81b7d5121207425c964ddf5cfdbd/sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc", size = 20372, upload-time = "2024-02-25T23:20:04.057Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2", size = 10235, upload-time = "2024-02-25T23:20:01.196Z" },
-]
-
-[[package]]
-name = "snowballstemmer"
-version = "2.2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/44/7b/af302bebf22c749c56c9c3e8ae13190b5b5db37a33d9068652e8f73b7089/snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1", size = 86699, upload-time = "2021-11-16T18:38:38.009Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/dc/c02e01294f7265e63a7315fe086dd1df7dacb9f840a804da846b96d01b96/snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a", size = 93002, upload-time = "2021-11-16T18:38:34.792Z" },
 ]
 
 [[package]]
