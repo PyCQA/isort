@@ -11,7 +11,7 @@ from .identify import STATEMENT_DECLARATIONS
 from .settings import DEFAULT_CONFIG, Config
 
 
-def sorted_imports(
+def sorted_imports(  # noqa: C901,PLR0912,PLR0915
     parsed: parse.ParsedContent,
     config: Config = DEFAULT_CONFIG,
     extension: str = "py",
@@ -21,6 +21,13 @@ def sorted_imports(
 
     (at the index of the first import) sorted alphabetically and split between groups
 
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 49 vs 10 recommended.
+    * There are currently 53 branches vs 12 recommended.
+    * There are currently 133 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
     """
     if parsed.import_index == -1:
         return _output_as_string(parsed.lines_without_imports, parsed.line_separator)
@@ -243,7 +250,7 @@ def sorted_imports(
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
-def _with_from_imports(
+def _with_from_imports(  # noqa: C901,PLR0913,PLR0912,PLR0915
     parsed: parse.ParsedContent,
     config: Config,
     from_modules: Iterable[str],
@@ -251,6 +258,15 @@ def _with_from_imports(
     remove_imports: List[str],
     import_type: str,
 ) -> List[str]:
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 43 vs 10 recommended.
+    * There are currently 6 function argurments vs 5 recommended.
+    * There are currently 47 branches vs 12 recommended.
+    * There are currently 110 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     output: List[str] = []
     for module in from_modules:
         if module in remove_imports:
@@ -570,7 +586,7 @@ def _with_from_imports(
     return output
 
 
-def _with_straight_imports(
+def _with_straight_imports(  # noqa: C901,PLR0913,PLR0912
     parsed: parse.ParsedContent,
     config: Config,
     straight_modules: Iterable[str],
@@ -578,6 +594,14 @@ def _with_straight_imports(
     remove_imports: List[str],
     import_type: str,
 ) -> List[str]:
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 13 vs 10 recommended.
+    * There are currently 6 function argurments vs 5 recommended.
+    * There are currently 15 branches vs 12 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     output: List[str] = []
 
     as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)

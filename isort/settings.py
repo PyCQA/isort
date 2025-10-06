@@ -296,13 +296,21 @@ _DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
 
 
 class Config(_Config):
-    def __init__(
+    def __init__(  # noqa: C901,PLR0912,PLR0915
         self,
         settings_file: str = "",
         settings_path: str = "",
         config: Optional[_Config] = None,
         **config_overrides: Any,
     ):
+        """Future modifications should consider refactoring to reduce complexity.
+
+        * The McCabe cyclomatic complexity is currently 15 vs 10 recommended.
+        * There are currently 7 return statements vs 6 recommended.
+        * There are currently 16 branches vs 12 recommended.
+
+        To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+        """
         self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
         self._section_comments: Optional[Tuple[str, ...]] = None
         self._section_comments_end: Optional[Tuple[str, ...]] = None
@@ -592,8 +600,17 @@ class Config(_Config):
         }
         return git_folder
 
-    def is_skipped(self, file_path: Path) -> bool:
-        """Returns True if the file and/or folder should be skipped based on current settings."""
+    def is_skipped(self, file_path: Path) -> bool:  # noqa: C901,PLR0911,PLR0912
+        """Returns True if the file and/or folder should be skipped based on current settings.
+
+        Future modifications should consider refactoring to reduce complexity.
+
+        * The McCabe cyclomatic complexity is currently 15 vs 10 recommended.
+        * There are currently 7 return statements vs 6 recommended.
+        * There are currently 16 branches vs 12 recommended.
+
+        To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+        """
         if self.directory and Path(self.directory) in file_path.resolve().parents:
             file_name = os.path.relpath(file_path.resolve(), self.directory)
         else:
@@ -834,7 +851,17 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any]:
+def _get_config_data(  # noqa: C901,PLR0912,PLR0915
+    file_path: str, sections: Tuple[str, ...]
+) -> Dict[str, Any]:
+    """Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 27 vs 10 recommended.
+    * There are currently 28 branches vs 12 recommended.
+    * There are currently 62 statements vs 50 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     settings: Dict[str, Any] = {}
 
     if file_path.endswith(".toml"):

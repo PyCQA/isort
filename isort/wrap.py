@@ -7,7 +7,7 @@ from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 
-def import_statement(
+def import_statement(  # noqa: PLR0913
     import_start: str,
     from_imports: List[str],
     comments: Sequence[str] = (),
@@ -16,7 +16,14 @@ def import_statement(
     multi_line_output: Optional[Modes] = None,
     explode: bool = False,
 ) -> str:
-    """Returns a multi-line wrapped form of the provided from import statement."""
+    """Returns a multi-line wrapped form of the provided from import statement.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * There are currently 7 function argurments vs 5 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     if explode:
         formatter = vertical_hanging_indent
         line_length = 1
@@ -68,8 +75,18 @@ def import_statement(
     return statement
 
 
-def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
-    """Returns a line wrapped to the specified line-length, if possible."""
+def line(  # noqa: C901,PLR0912
+    content: str, line_separator: str, config: Config = DEFAULT_CONFIG
+) -> str:
+    """Returns a line wrapped to the specified line-length, if possible.
+
+    Future modifications should consider refactoring to reduce complexity.
+
+    * The McCabe cyclomatic complexity is currently 14 vs 10 recommended.
+    * There are currently 15 branches vs 12 recommended.
+
+    To revalidate these numbers, run `ruff check --select=C901,PLR091`.
+    """
     wrap_mode = config.multi_line_output
     if len(content) > config.line_length and wrap_mode != Modes.NOQA:  # type: ignore
         line_without_comment = content
