@@ -4,6 +4,72 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 6.1.0 October 1 2025 
+
+   - Update docs discussions channel (#2410) @staticdev
+   - Add python 3.14 classifier and badge (#2409) @staticdev
+   - Drop use of non-standard pkg_resources API (#2405) @dvarrazzo
+   - Use working isort version in pre-commit example (#2402) @iainelder
+   - fix typo in _get_files_from_dir_cached test (#2392) @tiltingpenguin
+   - Resolve bandit warnings (#2379) @kurtmckee
+   - Add tox for cross-platform, parallel test suite execution (#2378) @kurtmckee
+   - Add Project URLs to PyPI Side Panel (#2387) @guillermodotn
+   - Fix typos (#2376) @co63oc
+   - Add make bash scripts portable (#2377) @staticdev
+   - Bump actions/checkout from 4 to 5 in the github-actions group (#2406) @dependabot[bot]
+   - Bump astral-sh/setup-uv from 5 to 6 in the github-actions group (#2395) @dependabot[bot]
+
+### 6.0.1 Febuary 26 2025
+
+   - fix multi_line_output_modes docs (#2096) @xinydev
+   - Ruff rules PT for pytest (#2372) @cclauss
+   - Ruff rules B017, B028, and E203 (#2371) @cclauss
+   - Lint Python code with ruff (#2359) @cclauss
+   - Fix test_find_imports_in_file_error failing on Windows (#2369) @kobarity
+   - Move flake8 settings into pyproject.toml (#2360) @cclauss
+   - Upgrade to uv>=0.6.0 and enable-cache (#2364) @cclauss
+   - Apply some ruff rules (#2353) @cclauss
+   - Add OSError handling in find_imports_in_file (#2331) @kobarity
+   - Link GH as changelog (#2354) @staticdev
+   - Remove Safety (#2373) @staticdev
+
+### 6.0.0 January 27 2025
+
+   - Remove support for Python 3.8 (#2327) @DanielNoord 
+   - Python 3.13 support (#2306) @mayty
+   - Updates round 3 (#2334) @matthewhughes934
+   - Speed up exists_case_sensitive calls (#2264) @correctmost
+   - nit: Fix deprecation message link (#2220) @syou6162
+   - Ensure that split_on_trailing_comma works with as imports (#2340) @DanielNoord
+   - Black profile: enable magic comma (#2236) @MrMino
+   - Fix google style test (#2336) @DanielNoord
+   - Update line_length and single_line_exclusions in google profile (#2149) @jagapiou
+   - Updates round 2 (#2329) @matthewhughes934
+   - Dependency updates round 1 (#2325) @matthewhughes934
+   - Run pre-commit autoupdate (#2321) @kurtmckee
+   - Allow --diff to be used with --jobs (#2302) @mnakama
+   - wemake has 80 chars hard limit, not 79 (#2241) @sobolevn
+   - Fix errors on main (#2320) @DanielNoord
+   - Fixed syntax error (#2289) @Sergio-prog
+   - fix: typo (#2298) @Rotzbua
+   - Fix sort_reexports code mangling (#2283) @Helveg
+   - fix: correct group by package tokenization (#2136) @glasnt
+   - Fix isort-action usage documentation (#2297) @jamescurtin
+   - Fix CDN for Ace (#2127) @abitrolly
+   - Fix help text (#2229) @stweil
+   - docs: fix spelling mistake (#2249) @cachho
+   - UV replacement of Poetry (#2349) @staticdev
+   - Make actions happy (#2311) @matthewhughes934
+   - Fix GitHub Actions badges (#2326) @hugovk
+   - Eliminate actions/cache@v2 usage (#2322) @kurtmckee
+   - feat: add dependabot for GH action update (#2300) @Rotzbua
+   - Update stage names for pre-commit (#2296) @matthewhughes934
+   - Bump poetry to 2.0.1 (#2341) @DanielNoord
+   - Fix misc unsafe dependencies (#2345) @staticdev
+   - Bump the github-actions group across 1 directory with 5 updates (#2324) @dependabot[bot]
+   - Bump gitpython from 3.1.40 to 3.1.41 (#2223) @dependabot[bot]
+   - Bump jinja2 from 3.1.2 to 3.1.3 (#2224) @dependabot[bot]
+
 ### 5.13.2 December 13 2023
 
    - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72
