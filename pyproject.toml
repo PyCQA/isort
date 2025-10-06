@@ -66,9 +66,6 @@ isort-identify-imports = "isort.main:identify_imports_main"
 [project.entry-points."distutils.commands"]
 isort = "isort.setuptools_commands:ISortCommand"
 
-[project.entry-points."pylama.linter"]
-isort = "isort.pylama_isort:Linter"
-
 [project.optional-dependencies]
 colors = ["colorama"]
 plugins = ["setuptools"]
@@ -140,10 +137,8 @@ dev = [
     "pipreqs>=0.4.9",
     "portray>=1.8.0",
     "pre-commit>=2.13.0",
-    "pylama>=7.7",
     "pytest>=7.4.2",
     "pytest-benchmark>=3.4.1",
-    "requirementslib>=1.5",
     "ruff>=0.9.6",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
