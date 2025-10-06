@@ -140,6 +140,7 @@ dev = [
     "pytest>=7.4.2",
     "pytest-benchmark>=3.4.1",
     "ruff>=0.9.6",
+    "setuptools>=75.8.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
     "tox>=4.24.1",
