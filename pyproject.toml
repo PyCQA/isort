@@ -144,7 +144,6 @@ dev = [
     "pylama>=7.7",
     "pytest>=7.4.2",
     "pytest-benchmark>=3.4.1",
-    "pytest-mock>=1.10",
     "requirementslib>=1.5",
     "ruff>=0.9.6",
     "stdlibs>=2024.10.21.16",

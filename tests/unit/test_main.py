@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import subprocess
 from datetime import datetime
+import unittest.mock
 
 import pytest
 from hypothesis import given
@@ -54,11 +55,15 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore # noqa
 
 
-def test_sort_imports_error_handling(tmpdir, mocker, capsys):
+def test_sort_imports_error_handling(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
-    with pytest.raises(IndexError):
+    with (
+        unittest.mock.patch(
+            "isort.core.process", side_effect=IndexError("Example unhandled exception")
+        ),
+        pytest.raises(IndexError),
+    ):
         main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
 
     out, error = capsys.readouterr()
