@@ -115,7 +115,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.7.7",
+    "bandit>=1.8.6",
     "black>=24.3.0",
     "colorama>=0.4.6",
     "coverage[toml]>=6.5.0",
