@@ -1015,7 +1015,7 @@ dev = [
     { name = "httpx", specifier = ">=0.13.3" },
     { name = "hypothesis", specifier = ">=6.140.3" },
     { name = "hypothesmith", specifier = ">=0.3.3" },
-    { name = "libcst", specifier = ">=0.3.18" },
+    { name = "libcst", specifier = ">=1.8.5" },
     { name = "mypy", specifier = ">=1.14.1" },
     { name = "pep8-naming", specifier = ">=0.8.2" },
     { name = "pip", specifier = ">=21.1.1" },
