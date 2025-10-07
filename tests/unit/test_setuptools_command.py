@@ -1,5 +1,6 @@
-from isort import setuptools_commands
 from setuptools.dist import Distribution
+
+from isort import setuptools_commands
 
 
 def test_isort_command_smoke(src_dir):
