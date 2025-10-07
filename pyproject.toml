@@ -138,7 +138,7 @@ dev = [
     "portray>=1.8.0",
     "pytest>=8.4.2",
     "pytest-benchmark>=5.1.0",
-    "ruff>=0.9.6",
+    "ruff>=0.13.3",
     "setuptools>=75.8.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
@@ -203,6 +203,7 @@ lint.ignore = [
     "B904",
     "E501",
     "PERF203",
+    "PT030", # Too much work to turn on for now
     "RUF100",
 ]
 lint.exclude = [ "isort/_vendored/*" ]

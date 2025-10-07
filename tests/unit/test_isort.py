@@ -20,6 +20,8 @@ from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
 from isort.settings import Config
 from isort.utils import exists_case_sensitive
+from isort.main import parse_args
+from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
@@ -3762,12 +3764,10 @@ def test_monkey_patched_urllib() -> None:
     with pytest.raises(ImportError):
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
-        from urllib import quote  # type: ignore  # noqa: F401
+        from urllib import quote  # type: ignore  # noqa: F401, PLC0415
 
 
 def test_argument_parsing() -> None:
-    from isort.main import parse_args
-
     args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py", "--os"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
@@ -3778,8 +3778,6 @@ def test_argument_parsing() -> None:
 
 @pytest.mark.parametrize("multiprocess", [False, True])
 def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
-    from isort.main import main
-
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
     tmpdir.join("file2.py").write(
         "import collections\nimport time\n\nimport abc" "\n\n\nimport isort"
@@ -3808,7 +3806,6 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
 def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
-    from isort.main import main
 
     tmpdir.join("file1.py").write("import re\nimport os")
     tmpdir.join("file2.py").write("")
@@ -4602,8 +4599,6 @@ def test_move_class_issue_751() -> None:
 
 
 def test_python_version() -> None:
-    from isort.main import parse_args
-
     # test that the py_version can be added as flag
     args = parse_args(["--py=27"])
     assert args["py_version"] == "27"

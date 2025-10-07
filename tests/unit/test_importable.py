@@ -1,5 +1,7 @@
 """Basic set of tests to ensure entire code base is importable"""
 
+# ruff: noqa: PLC0415
+
 import pytest
 
 

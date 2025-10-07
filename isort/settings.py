@@ -931,9 +931,9 @@ def entry_points(group: str) -> "EntryPoints":
     TODO: The reason for lazy loading here are unknown.
     """
     if sys.version_info < (3, 10):  # pragma: no cover
-        from importlib_metadata import entry_points as ep
+        from importlib_metadata import entry_points as ep  # noqa: PLC0415
     else:
-        from importlib.metadata import entry_points as ep
+        from importlib.metadata import entry_points as ep  # noqa: PLC0415
 
     return ep(group=group)
 

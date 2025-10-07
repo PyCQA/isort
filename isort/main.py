@@ -1193,7 +1193,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             print(ASCII_ART)
 
         if jobs:
-            import multiprocessing
+            import multiprocessing  # noqa: PLC0415
 
             executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
             attempt_iterator = executor.imap(

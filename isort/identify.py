@@ -159,7 +159,7 @@ def imports(
 
                 from_import = parts[0].split(" ")
                 import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
+                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
                 )
 
             just_imports = [
