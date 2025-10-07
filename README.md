@@ -275,6 +275,44 @@ pre-commit script to check Python code before committing.
 
 [More info here.](https://pycqa.github.io/isort/docs/configuration/git_hook.html)
 
+## Docker
+
+isort is available as a Docker image on the GitHub Container Registry.
+
+To sort imports and modify files:
+
+```bash
+docker run -it --rm \
+    -v $(pwd):/code \
+    -v $(pwd)/pyproject.toml:/code/pyproject.toml \
+    -w /code \
+    ghcr.io/pycqa/isort:latest \
+    isort
+```
+
+To check imports without modifying files:
+
+```bash
+docker run -it --rm \
+    -v $(pwd):/code \
+    -v $(pwd)/pyproject.toml:/code/pyproject.toml \
+    -w /code ghcr.io/pycqa/isort:latest \
+    --check-only --diff isort
+```
+
+To check files in GitLab Continuous Integration, add the following job to your `.gitlab-ci.yml`:
+
+```yaml
+stages:
+  - lint
+
+isort:
+  stage: lint
+  image: ghcr.io/pycqa/isort:latest
+  script:
+    - isort --check-only --diff .
+```
+
 ## Setuptools integration
 
 Upon installation, isort enables a `setuptools` command that checks
