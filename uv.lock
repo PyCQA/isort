@@ -1005,7 +1005,7 @@ dev = [
     { name = "black", specifier = ">=25.9.0" },
     { name = "colorama", specifier = ">=0.4.6" },
     { name = "coverage", extras = ["toml"], specifier = ">=7.10.7" },
-    { name = "cruft", specifier = ">=2.12.0" },
+    { name = "cruft", specifier = ">=2.16.0" },
     { name = "example-isort-sorting-plugin", specifier = ">=0.1.0" },
     { name = "example-shared-isort-profile", specifier = ">=0.1.0" },
     { name = "flake8", specifier = ">=3.8.4" },
