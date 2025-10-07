@@ -23,7 +23,6 @@ def test_importable():
     import isort.profiles
     import isort.sections
     import isort.settings
-    import isort.setuptools_commands
     import isort.sorting
     import isort.stdlibs
     import isort.stdlibs.all

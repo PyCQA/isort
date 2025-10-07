@@ -748,9 +748,6 @@ source = { editable = "." }
 colors = [
     { name = "colorama" },
 ]
-plugins = [
-    { name = "setuptools" },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -776,23 +773,18 @@ dev = [
     { name = "pytest" },
     { name = "pytest-benchmark" },
     { name = "ruff" },
-    { name = "setuptools" },
     { name = "stdlibs" },
     { name = "toml" },
     { name = "tox" },
     { name = "tox-uv" },
     { name = "types-colorama" },
-    { name = "types-setuptools" },
     { name = "types-toml" },
     { name = "uv" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "colorama", marker = "extra == 'colors'" },
-    { name = "setuptools", marker = "extra == 'plugins'" },
-]
-provides-extras = ["colors", "plugins"]
+requires-dist = [{ name = "colorama", marker = "extra == 'colors'" }]
+provides-extras = ["colors"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -818,13 +810,11 @@ dev = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-benchmark", specifier = ">=5.1.0" },
     { name = "ruff", specifier = ">=0.13.3" },
-    { name = "setuptools", specifier = ">=75.8.0" },
     { name = "stdlibs", specifier = ">=2024.10.21.16" },
     { name = "toml", specifier = ">=0.10.2" },
     { name = "tox", specifier = ">=4.30.3" },
     { name = "tox-uv", specifier = ">=1.28.0" },
     { name = "types-colorama", specifier = ">=0.4.2" },
-    { name = "types-setuptools", specifier = ">=70.0.0.20240523" },
     { name = "types-toml", specifier = ">=0.1.3" },
     { name = "uv", specifier = ">=0.8.23" },
 ]
@@ -1647,15 +1637,6 @@ wheels = [
 ]
 
 [[package]]
-name = "setuptools"
-version = "75.8.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/92/ec/089608b791d210aec4e7f97488e67ab0d33add3efccb83a056cbafe3a2a6/setuptools-75.8.0.tar.gz", hash = "sha256:c5afc8f407c626b8313a86e10311dd3f661c6cd9c09d4bf8c15c0e11f9f2b0e6", size = 1343222, upload-time = "2025-01-08T18:28:23.98Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/8a/b9dc7678803429e4a3bc9ba462fa3dd9066824d3c607490235c6a796be5a/setuptools-75.8.0-py3-none-any.whl", hash = "sha256:e3982f444617239225d675215d51f6ba05f845d4eec313da4418fdbb56fb27e3", size = 1228782, upload-time = "2025-01-08T18:28:20.912Z" },
-]
-
-[[package]]
 name = "shellingham"
 version = "1.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1901,15 +1882,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a9/60/47d92293d9bc521cd2301e423a358abfac0ad409b3a1606d8fbae1321961/types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb", size = 13802, upload-time = "2024-12-06T02:56:41.019Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/b3/ca41df24db5eb99b00d97f89d7674a90cb6b3134c52fb8121b6d8d30f15c/types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53", size = 14384, upload-time = "2024-12-06T02:56:39.412Z" },
-]
-
-[[package]]
-name = "types-setuptools"
-version = "75.8.0.20250110"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f7/42/5713e90d4f9683f2301d900f33e4fc2405ad8ac224dda30f6cb7f4cd215b/types_setuptools-75.8.0.20250110.tar.gz", hash = "sha256:96f7ec8bbd6e0a54ea180d66ad68ad7a1d7954e7281a710ea2de75e355545271", size = 48185, upload-time = "2025-01-10T02:45:52.085Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/a3/dbfd106751b11c728cec21cc62cbfe7ff7391b935c4b6e8f0bdc2e6fd541/types_setuptools-75.8.0.20250110-py3-none-any.whl", hash = "sha256:a9f12980bbf9bcdc23ecd80755789085bad6bfce4060c2275bc2b4ca9f2bc480", size = 71521, upload-time = "2025-01-10T02:45:49.873Z" },
 ]
 
 [[package]]
