@@ -151,7 +151,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     out_lines = []
     original_line_count = len(in_lines)
     if config.old_finders:
-        from .deprecated.finders import FindersManager
+        from .deprecated.finders import FindersManager  # noqa: PLC0415
 
         finder = FindersManager(config=config).find
     else:
@@ -372,7 +372,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 from_import = parts[0].split(" ")
                 import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
+                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
                 )
 
             just_imports = [

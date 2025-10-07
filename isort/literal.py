@@ -76,7 +76,7 @@ def register_type(
     """Registers a new literal sort type."""
 
     def wrap(
-        function: Callable[[Any, ISortPrettyPrinter], str]
+        function: Callable[[Any, ISortPrettyPrinter], str],
     ) -> Callable[[Any, ISortPrettyPrinter], str]:
         type_mapping[name] = (kind, function)
         return function

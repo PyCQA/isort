@@ -34,7 +34,7 @@ class TestConfig:
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")
 
     def test_invalid_pyversion(self):
-        with pytest.raises(ValueError, match="The python version 10 is not supported."):
+        with pytest.raises(ValueError, match=r"The python version 10 is not supported."):
             Config(py_version=10)
 
     def test_invalid_profile(self):

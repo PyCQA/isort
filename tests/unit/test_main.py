@@ -66,7 +66,7 @@ def test_sort_imports_error_handling(tmpdir, capsys):
     ):
         main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
 
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
     assert "Unrecoverable exception thrown when parsing" in error
 
 
@@ -189,16 +189,19 @@ def test_main(capsys, tmpdir):
     assert returned_config["virtual_env"] == str(tmpdir)
 
     # This should work even if settings path is not provided
-    main.main(base_args[2:] + ["--show-config"])
+    main.main([*base_args[2:], "--show-config"])
     out, error = capsys.readouterr()
     assert json.loads(out)["virtual_env"] == str(tmpdir)
 
     # This should raise an error if an invalid settings path is provided
     with pytest.raises(InvalidSettingsPath):
         main.main(
-            base_args[2:]
-            + ["--show-config"]
-            + ["--settings-path", "/random-root-folder-that-cant-exist-right?"]
+            [
+                *base_args[2:],
+                "--show-config",
+                "--settings-path",
+                "/random-root-folder-that-cant-exist-right?",
+            ]
         )
 
     # Should be able to set settings path to a file
@@ -894,7 +897,7 @@ __revision__ = 'יייי'
     # should throw an error if only unsupported encoding provided
     with pytest.raises(SystemExit):
         main.main([str(tmp_file)])
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
 
     assert "No valid encodings." in error
 
@@ -903,7 +906,7 @@ __revision__ = 'יייי'
     normal_file.write("import os\nimport sys")
 
     main.main([str(tmp_file), str(normal_file), "--verbose"])
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
 
 
 def test_stream_skip_file(tmpdir, capsys):
@@ -914,13 +917,13 @@ import a
 """
     stream_with_skip = as_stream(input_with_skip)
     main.main(["-"], stdin=stream_with_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert out == input_with_skip
 
     input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
     stream_without_skip = as_stream(input_without_skip)
     main.main(["-"], stdin=stream_without_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert (
         out
         == """
@@ -933,7 +936,7 @@ import b
     atomic_input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
     stream_without_skip = as_stream(atomic_input_without_skip)
     main.main(["-", "--atomic"], stdin=stream_without_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert (
         out
         == """
