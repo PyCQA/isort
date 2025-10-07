@@ -1113,14 +1113,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     all_attempt_broken = False
     no_valid_encodings = False
 
-    config_trie: Optional[Trie] = None
-    if resolve_all_configs:
-        config_trie = find_all_configs(config_dict.pop("config_root", "."))
-
     if "src_paths" in config_dict:
         config_dict["src_paths"] = {
             Path(src_path).resolve() for src_path in config_dict.get("src_paths", ())
         }
+
+    config_trie: Optional[Trie] = None
+    if resolve_all_configs:
+        config_trie = find_all_configs(config_dict.pop("config_root", "."), config_dict)
 
     config = Config(**config_dict)
     if show_config:
