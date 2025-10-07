@@ -844,16 +844,16 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.124.1"
+version = "6.140.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/df/bf/f887421cc40ef306f1c85d0ad8e6dee965010652fad57e687221221f386d/hypothesis-6.124.1.tar.gz", hash = "sha256:6e21995c3cb3198ef7e60853acce1fbaa6c16de59c2fb3158845664dfe639bd9", size = 420693, upload-time = "2025-01-18T00:47:41.843Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/18/7f/946343e32881b56adc0eba64e428ad2f85251f9ef16e3e4ec1b6ab80199b/hypothesis-6.140.3.tar.gz", hash = "sha256:4f4a09bf77af21e0cc3dffed1ea639812dc75d38f81308ec9fb0e33f8557b0cb", size = 466925, upload-time = "2025-10-04T22:29:44.499Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cc/34/599882a0dab7615cd6cbf326e11b7ac3dc2e5ee349ef3af551e70ea07237/hypothesis-6.124.1-py3-none-any.whl", hash = "sha256:40c8be982d3a79b26d5ae11b6606189784f1654f3c750ffcb99fc5b352d5e2ba", size = 483566, upload-time = "2025-01-18T00:47:37.059Z" },
+    { url = "https://files.pythonhosted.org/packages/65/2a/0553ac2a8af432df92f2ffc05ca97e7ed64e00c97a371b019ae2690de325/hypothesis-6.140.3-py3-none-any.whl", hash = "sha256:a2cfff51641a58a56081f5c90ae1da6ccf3d043404f411805f7f0e0d75742d0e", size = 534534, upload-time = "2025-10-04T22:29:40.635Z" },
 ]
 
 [package.optional-dependencies]
@@ -1013,8 +1013,8 @@ dev = [
     { name = "flake8-pyproject", specifier = ">=1.2.3" },
     { name = "hatch", specifier = ">=1.14.0" },
     { name = "httpx", specifier = ">=0.13.3" },
-    { name = "hypothesis", specifier = ">=6.10.1" },
-    { name = "hypothesmith", specifier = ">=0.1.3" },
+    { name = "hypothesis", specifier = ">=6.140.3" },
+    { name = "hypothesmith", specifier = ">=0.3.3" },
     { name = "libcst", specifier = ">=0.3.18" },
     { name = "mypy", specifier = ">=1.14.1" },
     { name = "pep8-naming", specifier = ">=0.8.2" },
