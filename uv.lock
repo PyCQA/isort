@@ -262,15 +262,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cfgv"
-version = "3.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/11/74/539e56497d9bd1d484fd863dd69cbbfa653cd2aa27abfe35653494d85e94/cfgv-3.4.0.tar.gz", hash = "sha256:e52591d4c5f5dead8e0f673fb16db7949d2cfb3f7da4582893288f0ded8fe560", size = 7114, upload-time = "2023-08-12T20:38:17.776Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/55/51844dd50c4fc7a33b653bfaba4c2456f06955289ca770a5dbd5fd267374/cfgv-3.4.0-py2.py3-none-any.whl", hash = "sha256:b7265b1f29fd3316bfcd2b330d63d024f2bfd8bcb8b0272f8e19a504856c48f9", size = 7249, upload-time = "2023-08-12T20:38:16.269Z" },
-]
-
-[[package]]
 name = "chardet"
 version = "5.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -875,15 +866,6 @@ wheels = [
 ]
 
 [[package]]
-name = "identify"
-version = "2.6.6"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/82/bf/c68c46601bacd4c6fb4dd751a42b6e7087240eaabc6487f2ef7a48e0e8fc/identify-2.6.6.tar.gz", hash = "sha256:7bec12768ed44ea4761efb47806f0a41f86e7c0a5fdf5950d4648c90eca7e251", size = 99217, upload-time = "2025-01-20T20:38:02.989Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/a1/68a395c17eeefb04917034bd0a1bfa765e7654fa150cca473d669aa3afb5/identify-2.6.6-py2.py3-none-any.whl", hash = "sha256:cbd1810bce79f8b671ecb20f53ee0ae8e86ae84b557de31d89709dc2a48ba881", size = 99083, upload-time = "2025-01-20T20:38:00.261Z" },
-]
-
-[[package]]
 name = "idna"
 version = "3.10"
 source = { registry = "https://pypi.org/simple" }
@@ -975,7 +957,6 @@ dev = [
     { name = "pip-api" },
     { name = "pipreqs" },
     { name = "portray" },
-    { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-benchmark" },
     { name = "ruff" },
@@ -1022,7 +1003,6 @@ dev = [
     { name = "pip-api", specifier = ">=0.0.12" },
     { name = "pipreqs", specifier = ">=0.4.9" },
     { name = "portray", specifier = ">=1.8.0" },
-    { name = "pre-commit", specifier = ">=2.13.0" },
     { name = "pytest", specifier = ">=7.4.2" },
     { name = "pytest-benchmark", specifier = ">=3.4.1" },
     { name = "ruff", specifier = ">=0.9.6" },
@@ -1628,15 +1608,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nodeenv"
-version = "1.9.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/43/16/fc88b08840de0e0a72a2f9d8c6bae36be573e475a6326ae854bcc549fc45/nodeenv-1.9.1.tar.gz", hash = "sha256:6ec12890a2dab7946721edbfbcd91f3319c6ccc9aec47be7c7e6b7011ee6645f", size = 47437, upload-time = "2024-06-04T18:44:11.171Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/1d/1b658dbd2b9fa9c4c9f32accbfc0205d532c8c6194dc0f2a4c0428e7128a/nodeenv-1.9.1-py2.py3-none-any.whl", hash = "sha256:ba11c9782d29c27c70ffbdda2d7415098754709be8a7056d79a737cd901155c9", size = 22314, upload-time = "2024-06-04T18:44:08.352Z" },
-]
-
-[[package]]
 name = "packaging"
 version = "24.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1801,22 +1772,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/31/c5/647feff9c1a65c403594e51e8ebc9eb93b71e77808c159cf688970585715/portray-1.8.0.tar.gz", hash = "sha256:a9dd2973a0235051c5b68a29390c3eeee192dc248cc2d944452ee9c02423b47d", size = 13590, upload-time = "2022-12-19T08:59:45.579Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/99/73ee12584f7186b99ce07f130a1f8b727e72008f4f767552c227ff1a5fb7/portray-1.8.0-py3-none-any.whl", hash = "sha256:c7ee981b51f9b41b60b04c1351e1b61edd291049d10c45f7c8f05897caa6a931", size = 14211, upload-time = "2022-12-19T08:59:43.882Z" },
-]
-
-[[package]]
-name = "pre-commit"
-version = "4.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "cfgv" },
-    { name = "identify" },
-    { name = "nodeenv" },
-    { name = "pyyaml" },
-    { name = "virtualenv" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/2a/13/b62d075317d8686071eb843f0bb1f195eb332f48869d3c31a4c6f1e063ac/pre_commit-4.1.0.tar.gz", hash = "sha256:ae3f018575a588e30dfddfab9a05448bfbd6b73d78709617b5a2b853549716d4", size = 193330, upload-time = "2025-01-20T18:31:48.681Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/b3/df14c580d82b9627d173ceea305ba898dca135feb360b6d84019d0803d3b/pre_commit-4.1.0-py2.py3-none-any.whl", hash = "sha256:d29e7cb346295bcc1cc75fc3e92e343495e3ea0196c9ec6ba53f49f10ab6ae7b", size = 220560, upload-time = "2025-01-20T18:31:47.319Z" },
 ]
 
 [[package]]

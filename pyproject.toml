@@ -136,7 +136,6 @@ dev = [
     "pip_api>=0.0.12",
     "pipreqs>=0.4.9",
     "portray>=1.8.0",
-    "pre-commit>=2.13.0",
     "pytest>=7.4.2",
     "pytest-benchmark>=3.4.1",
     "ruff>=0.9.6",
