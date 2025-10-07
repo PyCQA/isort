@@ -1017,7 +1017,7 @@ dev = [
     { name = "hypothesmith", specifier = ">=0.3.3" },
     { name = "libcst", specifier = ">=1.8.5" },
     { name = "mypy", specifier = ">=1.18.2" },
-    { name = "pep8-naming", specifier = ">=0.8.2" },
+    { name = "pep8-naming", specifier = ">=0.15.1" },
     { name = "pip", specifier = ">=21.1.1" },
     { name = "pip-api", specifier = ">=0.0.12" },
     { name = "pipreqs", specifier = ">=0.4.9" },
@@ -1698,14 +1698,14 @@ wheels = [
 
 [[package]]
 name = "pep8-naming"
-version = "0.14.1"
+version = "0.15.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "flake8" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/be/8e/1de32e908d8b008bb9352bfe7749aedecb71e2793d36c7ee342716acd1ec/pep8-naming-0.14.1.tar.gz", hash = "sha256:1ef228ae80875557eb6c1549deafed4dabbf3261cfcafa12f773fe0db9be8a36", size = 16546, upload-time = "2024-05-17T14:08:44.862Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/59/c32862134635ba231d45f1711035550dc38246396c27269a4cde4bfe18d2/pep8_naming-0.15.1.tar.gz", hash = "sha256:f6f4a499aba2deeda93c1f26ccc02f3da32b035c8b2db9696b730ef2c9639d29", size = 17640, upload-time = "2025-05-05T20:43:12.555Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/a2/450b71d1a87fcee50a7b994a53b1c68fc6a6b718df0eb035f2bffb2d3a4f/pep8_naming-0.14.1-py3-none-any.whl", hash = "sha256:63f514fc777d715f935faf185dedd679ab99526a7f2f503abb61587877f7b1c5", size = 8859, upload-time = "2024-05-17T14:08:42.738Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/78/25281540f1121acaa78926f599a17ce102b8971bc20b096fa7fb6b5b59c1/pep8_naming-0.15.1-py3-none-any.whl", hash = "sha256:eb63925e7fd9e028c7f7ee7b1e413ec03d1ee5de0e627012102ee0222c273c86", size = 9561, upload-time = "2025-05-05T20:43:11.626Z" },
 ]
 
 [[package]]
