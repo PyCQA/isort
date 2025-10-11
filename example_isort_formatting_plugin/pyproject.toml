@@ -4,7 +4,7 @@ version = "0.1.1"
 description = "An example plugin that modifies isort formatting using black."
 authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 dependencies = [
     "isort>=5.13.2",
     "black>=24.3.0",

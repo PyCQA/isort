@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "An example plugin that modifies isorts sorting order to provide an even more natural sort by utilizing natsort."
 authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 dependencies = [
     "natsort>=7.1.1"
 ]

@@ -1,5 +1,6 @@
 version = 1
-requires-python = ">=3.9.0"
+revision = 3
+requires-python = ">=3.10.0"
 
 [[package]]
 name = "example-shared-isort-profile"

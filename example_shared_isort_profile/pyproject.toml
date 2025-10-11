@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "An example shared isort profile"
 authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 
 [project.entry-points."isort.profiles"]
 example = "example_shared_isort_profile:PROFILE"

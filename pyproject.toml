@@ -20,7 +20,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -37,15 +36,9 @@ include = [
     { path = "ACKNOWLEDGEMENTS.md", format = "sdist" },
     { path = "LICENSE", format = "sdist" },
 ]
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 
-dependencies = [
-    # we only need the entry_points() function, which appeared in the stdlib
-    # in Python 3.10.
-    # importlib_metadata 4.6 is the version matching stdlib 3.10
-    # See grid at https://pypi.org/project/importlib-metadata/
-    "importlib_metadata >= 4.6.0; python_version < '3.10'",
-]
+dependencies = []
 
 [project.urls]
 Homepage = "https://pycqa.github.io/isort/index.html"
@@ -163,7 +156,7 @@ per-file-ignores = [
 ]
 
 [tool.mypy]
-python_version = 3.9
+python_version = "3.10"
 strict = true
 follow_imports = "silent"
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"

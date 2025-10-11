@@ -33,7 +33,6 @@ A demo of how this would look like in your _.travis.yml_
 language: python
 python:
   - "3.10"
-  - "3.9"
 
 install:
   - pip install -r requirements-dev.txt
