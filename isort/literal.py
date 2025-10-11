@@ -1,6 +1,7 @@
 import ast
+from collections.abc import Callable
 from pprint import PrettyPrinter
-from typing import Any, Callable
+from typing import Any
 
 from isort.exceptions import (
     AssignmentsFormatMismatch,

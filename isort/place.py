@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from fnmatch import fnmatch
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
 
 from isort import sections
 from isort.settings import DEFAULT_CONFIG, Config
@@ -31,7 +30,7 @@ def module_with_reason(name: str, config: Config = DEFAULT_CONFIG) -> tuple[str,
     )
 
 
-def _forced_separate(name: str, config: Config) -> Optional[tuple[str, str]]:
+def _forced_separate(name: str, config: Config) -> tuple[str, str] | None:
     for forced_separate in config.forced_separate:
         # Ensure all forced_separate patterns will match to end of string
         path_glob = forced_separate
@@ -44,14 +43,14 @@ def _forced_separate(name: str, config: Config) -> Optional[tuple[str, str]]:
     return None
 
 
-def _local(name: str, config: Config) -> Optional[tuple[str, str]]:
+def _local(name: str, config: Config) -> tuple[str, str] | None:
     if name.startswith("."):
         return (LOCAL, "Module name started with a dot.")
 
     return None
 
 
-def _known_pattern(name: str, config: Config) -> Optional[tuple[str, str]]:
+def _known_pattern(name: str, config: Config) -> tuple[str, str] | None:
     parts = name.split(".")
     module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
     for module_name_to_check in module_names_to_check:
@@ -65,9 +64,9 @@ def _known_pattern(name: str, config: Config) -> Optional[tuple[str, str]]:
 def _src_path(
     name: str,
     config: Config,
-    src_paths: Optional[Iterable[Path]] = None,
+    src_paths: Iterable[Path] | None = None,
     prefix: tuple[str, ...] = (),
-) -> Optional[tuple[str, str]]:
+) -> tuple[str, str] | None:
     if src_paths is None:
         src_paths = config.src_paths
 

@@ -2,7 +2,7 @@
 
 from functools import partial
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 from .profiles import profiles
 
@@ -113,7 +113,7 @@ class LiteralParsingFailure(ISortError):
     the given data structure.
     """
 
-    def __init__(self, code: str, original_error: Union[Exception, type[Exception]]):
+    def __init__(self, code: str, original_error: Exception | type[Exception]):
         super().__init__(
             f"isort failed to parse the given literal {code}. It's important to note "
             "that isort literal sorting only supports simple literals parsable by "
@@ -181,7 +181,7 @@ class UnsupportedSettings(ISortError):
 class UnsupportedEncoding(ISortError):
     """Raised when isort encounters an encoding error while trying to read a file"""
 
-    def __init__(self, filename: Union[str, Path]):
+    def __init__(self, filename: str | Path):
         super().__init__(f"Unknown or unsupported encoding in {filename}")
         self.filename = filename
 

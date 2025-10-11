@@ -11,11 +11,11 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from re import Pattern
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any
 from warnings import warn
 
 from . import sorting, stdlibs
@@ -34,10 +34,7 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):  # pragma: no cover
-        EntryPoints = Any
-    else:
-        from importlib.metadata import EntryPoints
+    from importlib.metadata import EntryPoints
 
     tomllib: Any
 else:
@@ -212,7 +209,7 @@ class _Config:
     float_to_top: bool = False
     filter_files: bool = False
     formatter: str = ""
-    formatting_function: Optional[Callable[[str, str, object], str]] = None
+    formatting_function: Callable[[str, str, object], str] | None = None
     color_output: bool = False
     treat_comments_as_code: frozenset[str] = frozenset()
     treat_all_comments_as_code: bool = False
@@ -288,15 +285,15 @@ class Config(_Config):
         self,
         settings_file: str = "",
         settings_path: str = "",
-        config: Optional[_Config] = None,
+        config: _Config | None = None,
         **config_overrides: Any,
     ):
-        self._known_patterns: Optional[list[tuple[Pattern[str], str]]] = None
-        self._section_comments: Optional[tuple[str, ...]] = None
-        self._section_comments_end: Optional[tuple[str, ...]] = None
-        self._skips: Optional[frozenset[str]] = None
-        self._skip_globs: Optional[frozenset[str]] = None
-        self._sorting_function: Optional[Callable[..., list[str]]] = None
+        self._known_patterns: list[tuple[Pattern[str], str]] | None = None
+        self._section_comments: tuple[str, ...] | None = None
+        self._section_comments_end: tuple[str, ...] | None = None
+        self._skips: frozenset[str] | None = None
+        self._skip_globs: frozenset[str] | None = None
+        self._sorting_function: Callable[..., list[str]] | None = None
 
         if config:
             config_vars = vars(config).copy()
@@ -543,7 +540,7 @@ class Config(_Config):
             return False
         return bool(_SHEBANG_RE.match(line))
 
-    def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
+    def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
@@ -728,10 +725,8 @@ class Config(_Config):
         return patterns
 
 
-def _get_str_to_type_converter(setting_name: str) -> Union[Callable[[str], Any], type[Any]]:
-    type_converter: Union[Callable[[str], Any], type[Any]] = type(
-        _DEFAULT_SETTINGS.get(setting_name, "")
-    )
+def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any] | type[Any]:
+    type_converter: Callable[[str], Any] | type[Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
@@ -930,10 +925,7 @@ def entry_points(group: str) -> "EntryPoints":
 
     TODO: The reason for lazy loading here are unknown.
     """
-    if sys.version_info < (3, 10):  # pragma: no cover
-        from importlib_metadata import entry_points as ep  # noqa: PLC0415
-    else:
-        from importlib.metadata import entry_points as ep  # noqa: PLC0415
+    from importlib.metadata import entry_points as ep  # noqa: PLC0415
 
     return ep(group=group)
 

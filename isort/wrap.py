@@ -1,7 +1,6 @@
 import copy
 import re
 from collections.abc import Sequence
-from typing import Optional
 
 from .settings import DEFAULT_CONFIG, Config
 from .wrap_modes import WrapModes as Modes
@@ -14,7 +13,7 @@ def import_statement(
     comments: Sequence[str] = (),
     line_separator: str = "\n",
     config: Config = DEFAULT_CONFIG,
-    multi_line_output: Optional[Modes] = None,
+    multi_line_output: Modes | None = None,
     explode: bool = False,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""

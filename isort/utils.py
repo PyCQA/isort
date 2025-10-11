@@ -2,11 +2,11 @@ import os
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class TrieNode:
-    def __init__(self, config_file: str = "", config_data: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, config_file: str = "", config_data: dict[str, Any] | None = None) -> None:
         if not config_data:
             config_data = {}
 
@@ -20,7 +20,7 @@ class Trie:
     associated with each file
     """
 
-    def __init__(self, config_file: str = "", config_data: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, config_file: str = "", config_data: dict[str, Any] | None = None) -> None:
         self.root: TrieNode = TrieNode(config_file, config_data)
 
     def insert(self, config_file: str, config_data: dict[str, Any]) -> None:

@@ -7,7 +7,6 @@ usage:
 import os
 import subprocess  # nosec
 from pathlib import Path
-from typing import Optional
 
 from isort import Config, api, exceptions
 
@@ -37,7 +36,7 @@ def git_hook(
     modify: bool = False,
     lazy: bool = False,
     settings_file: str = "",
-    directories: Optional[list[str]] = None,
+    directories: list[str] | None = None,
 ) -> int:
     """Git pre-commit hook to check staged files for isort errors
 

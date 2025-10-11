@@ -1,7 +1,7 @@
 import textwrap
 from io import StringIO
 from itertools import chain
-from typing import TextIO, Union
+from typing import TextIO
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
@@ -67,7 +67,7 @@ def process(
     indent: str = ""
     isort_off: bool = False
     skip_file: bool = False
-    code_sorting: Union[bool, str] = False
+    code_sorting: bool | str = False
     code_sorting_section: str = ""
     code_sorting_indent: str = ""
     cimports: bool = False

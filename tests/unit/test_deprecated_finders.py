@@ -2,7 +2,6 @@ import importlib.machinery
 import os
 import posixpath
 from pathlib import Path
-from typing import Optional
 from unittest.mock import patch
 
 from isort import sections, settings
@@ -31,7 +30,7 @@ class TestFindersManager:
 
     def test_find_broken_finder(self):
         class ExceptionOnFind(finders.BaseFinder):
-            def find(self, module_name: str) -> Optional[str]:
+            def find(self, module_name: str) -> str | None:
                 raise ValueError("test")
 
         assert (

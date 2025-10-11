@@ -15,7 +15,6 @@ from functools import lru_cache
 from glob import glob
 from pathlib import Path
 from re import Pattern
-from typing import Optional
 
 from isort import sections
 from isort.settings import KNOWN_SECTION_MAPPING, Config
@@ -50,12 +49,12 @@ class BaseFinder(metaclass=ABCMeta):
         self.config = config
 
     @abstractmethod
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         raise NotImplementedError
 
 
 class ForcedSeparateFinder(BaseFinder):
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         for forced_separate in self.config.forced_separate:
             # Ensure all forced_separate patterns will match to end of string
             path_glob = forced_separate
@@ -68,7 +67,7 @@ class ForcedSeparateFinder(BaseFinder):
 
 
 class LocalFinder(BaseFinder):
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         if module_name.startswith("."):
             return "LOCALFOLDER"
         return None
@@ -107,7 +106,7 @@ class KnownPatternFinder(BaseFinder):
 
         return patterns
 
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         # Try to find most specific placement instruction match (if any)
         parts = module_name.split(".")
         module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
@@ -165,7 +164,7 @@ class PathFinder(BaseFinder):
             if system_path not in self.paths:
                 self.paths.append(system_path)
 
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         for prefix in self.paths:
             package_path = "/".join((prefix, module_name.split(".")[0]))
             path_obj = Path(package_path).resolve()
@@ -219,7 +218,7 @@ class ReqsBaseFinder(BaseFinder):
         raise NotImplementedError
 
     @staticmethod
-    def _load_mapping() -> Optional[dict[str, str]]:
+    def _load_mapping() -> dict[str, str] | None:
         """Return list of mappings `package_name -> module_name`
 
         Example:
@@ -272,7 +271,7 @@ class ReqsBaseFinder(BaseFinder):
             name = self.mapping.get(name.replace("-", "_"), name)
         return name.lower().replace("-", "_")
 
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         # required lib not installed yet
         if not self.enabled:
             return None
@@ -342,7 +341,7 @@ class RequirementsFinder(ReqsBaseFinder):
 
 
 class DefaultFinder(BaseFinder):
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         return self.config.default_section
 
 
@@ -357,7 +356,7 @@ class FindersManager:
     )
 
     def __init__(
-        self, config: Config, finder_classes: Optional[Iterable[type[BaseFinder]]] = None
+        self, config: Config, finder_classes: Iterable[type[BaseFinder]] | None = None
     ) -> None:
         self.verbose: bool = config.verbose
 
@@ -376,7 +375,7 @@ class FindersManager:
                     )
         self.finders: tuple[BaseFinder, ...] = tuple(finders)
 
-    def find(self, module_name: str) -> Optional[str]:
+    def find(self, module_name: str) -> str | None:
         for finder in self.finders:
             try:
                 section = finder.find(module_name)
