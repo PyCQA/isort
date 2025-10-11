@@ -2,7 +2,7 @@ import copy
 import itertools
 from collections.abc import Iterable
 from functools import partial
-from typing import Any, Optional
+from typing import Any
 
 from isort.format import format_simplified
 
@@ -285,7 +285,7 @@ def _with_from_imports(
             from_import: [
                 f"{from_import} as {as_module}" for as_module in parsed.as_map["from"][sub_module]
             ]
-            for from_import, sub_module in zip(from_imports, sub_modules)
+            for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
             if sub_module in parsed.as_map["from"]
         }
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
@@ -671,10 +671,10 @@ class _LineWithComments(str):
 def _ensure_newline_before_comment(output: list[str]) -> list[str]:
     new_output: list[str] = []
 
-    def is_comment(line: Optional[str]) -> bool:
+    def is_comment(line: str | None) -> bool:
         return line.startswith("#") if line else False
 
-    for line, prev_line in zip(output, [None, *output]):
+    for line, prev_line in zip(output, [None, *output], strict=False):
         if is_comment(line) and prev_line != "" and not is_comment(prev_line):
             new_output.append("")
         new_output.append(line)

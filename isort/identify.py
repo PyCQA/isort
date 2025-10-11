@@ -5,7 +5,7 @@ Eventually this will likely replace parse.py
 from collections.abc import Iterator
 from functools import partial
 from pathlib import Path
-from typing import NamedTuple, Optional, TextIO
+from typing import NamedTuple, TextIO
 
 from isort.parse import normalize_line, skip_line, strip_syntax
 
@@ -19,10 +19,10 @@ class Import(NamedTuple):
     line_number: int
     indented: bool
     module: str
-    attribute: Optional[str] = None
-    alias: Optional[str] = None
+    attribute: str | None = None
+    alias: str | None = None
     cimport: bool = False
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
 
     def statement(self) -> str:
         import_cmd = "cimport" if self.cimport else "import"
@@ -44,7 +44,7 @@ class Import(NamedTuple):
 def imports(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
-    file_path: Optional[Path] = None,
+    file_path: Path | None = None,
     top_only: bool = False,
 ) -> Iterator[Import]:
     """Parses a python file taking out and categorizing imports."""

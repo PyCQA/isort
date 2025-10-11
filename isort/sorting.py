@@ -1,6 +1,6 @@
 import re
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .settings import Config
@@ -16,8 +16,8 @@ def module_key(
     config: Config,
     sub_imports: bool = False,
     ignore_case: bool = False,
-    section_name: Optional[Any] = None,
-    straight_import: Optional[bool] = False,
+    section_name: Any | None = None,
+    straight_import: bool | None = False,
 ) -> str:
     match = re.match(r"^(\.+)\s*(.*)", module_name)
     if match:
@@ -103,14 +103,14 @@ def section_key(line: str, config: Config) -> str:
 def sort(
     config: Config,
     to_sort: Iterable[str],
-    key: Optional[Callable[[str], Any]] = None,
+    key: Callable[[str], Any] | None = None,
     reverse: bool = False,
 ) -> list[str]:
     return config.sorting_function(to_sort, key=key, reverse=reverse)
 
 
 def naturally(
-    to_sort: Iterable[str], key: Optional[Callable[[str], Any]] = None, reverse: bool = False
+    to_sort: Iterable[str], key: Callable[[str], Any] | None = None, reverse: bool = False
 ) -> list[str]:
     """Returns a naturally sorted list"""
     if key is None:

@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 def parse(line: str) -> tuple[str, str]:
     """Parses import lines for comments and returns back the
     import statement and the associated comment.
@@ -13,7 +10,7 @@ def parse(line: str) -> tuple[str, str]:
 
 
 def add_to_line(
-    comments: Optional[list[str]],
+    comments: list[str] | None,
     original_string: str = "",
     removed: bool = False,
     comment_prefix: str = "",

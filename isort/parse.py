@@ -4,7 +4,7 @@ import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, TypedDict
+from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict
 from warnings import warn
 
 from . import place
@@ -50,7 +50,7 @@ def normalize_line(raw_line: str) -> tuple[str, str]:
     return line, raw_line
 
 
-def import_type(line: str, config: Config = DEFAULT_CONFIG) -> Optional[str]:
+def import_type(line: str, config: Config = DEFAULT_CONFIG) -> str | None:
     """If the current line is an import line it will return its type (from or straight)"""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
@@ -380,7 +380,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for item in strip_syntax(import_string).split()
             ]
 
-            attach_comments_to: Optional[list[Any]] = None
+            attach_comments_to: list[Any] | None = None
             direct_imports = just_imports[1:]
             straight_import = True
             top_level_module = ""

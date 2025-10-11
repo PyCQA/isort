@@ -1,8 +1,9 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
 
 import enum
+from collections.abc import Callable
 from inspect import signature
-from typing import Any, Callable
+from typing import Any
 
 import isort.comments
 
