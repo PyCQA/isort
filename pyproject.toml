@@ -1,6 +1,3 @@
-[tool.black]
-line-length = 100
-
 [project]
 name = "isort"
 dynamic = ["version"]

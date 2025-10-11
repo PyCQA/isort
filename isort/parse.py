@@ -460,9 +460,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment:
-                        categorized_comments["nested"].setdefault(import_from, {})[
-                            import_name
-                        ] = associated_comment
+                        categorized_comments["nested"].setdefault(import_from, {})[import_name] = (
+                            associated_comment
+                        )
                         if associated_comment in comments:  # pragma: no branch
                             comments.pop(comments.index(associated_comment))
                 if (

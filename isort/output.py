@@ -339,7 +339,7 @@ def _with_from_imports(
                     )
                     if comment:
                         single_import_line += (
-                            f"{(comments and ';') or config.comment_prefix} " f"{comment}"
+                            f"{(comments and ';') or config.comment_prefix} {comment}"
                         )
                     if from_import in as_imports:
                         if (
@@ -459,8 +459,7 @@ def _with_from_imports(
                         # keep the name in the main list and hoist the comment to the statement.
                         if (
                             comment.lower().startswith("noqa")
-                            and config.multi_line_output
-                            == wrap.Modes.HANGING_INDENT  # type: ignore[attr-defined]
+                            and config.multi_line_output == wrap.Modes.HANGING_INDENT  # type: ignore[attr-defined] # noqa: E501
                         ):
                             comments = list(comments) if comments else []
                             comments.append(comment)
@@ -479,7 +478,7 @@ def _with_from_imports(
                             comment_prefix=config.comment_prefix,
                         )
                         single_import_line += (
-                            f"{(use_comments and ';') or config.comment_prefix} " f"{comment}"
+                            f"{(use_comments and ';') or config.comment_prefix} {comment}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
@@ -519,8 +518,7 @@ def _with_from_imports(
                 if (
                     len(import_statement) > config.line_length
                     and len(from_import_section) > 0
-                    and config.multi_line_output
-                    not in (wrap.Modes.GRID, wrap.Modes.VERTICAL)  # type: ignore
+                    and config.multi_line_output not in (wrap.Modes.GRID, wrap.Modes.VERTICAL)  # type: ignore # noqa: E501
                 ):
                     do_multiline_reformat = True
 

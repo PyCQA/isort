@@ -24,13 +24,13 @@ def format_profile(profile_name: str, profile: dict[str, Any]) -> str:
     return f"""
 #{profile_name}
 
-{profile.get('description', '')}
+{profile.get("description", "")}
 {options}
 """
 
 
 def document_text() -> str:
-    return f"{HEADER}{''.join(format_profile(profile_name,  profile) for profile_name, profile in profiles.items())}"
+    return f"{HEADER}{''.join(format_profile(profile_name, profile) for profile_name, profile in profiles.items())}"
 
 
 def write_document():

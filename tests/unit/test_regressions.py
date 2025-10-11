@@ -495,7 +495,7 @@ def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
     isort.file(test_path / "example_crlf_file.py", show_diff=diff_output)
     diff_output.seek(0)
     assert diff_output.read().endswith(
-        "-1,5 +1,5 @@\n+import a\r\n import b\r\n" "-import a\r\n \r\n \r\n def func():\r\n"
+        "-1,5 +1,5 @@\n+import a\r\n import b\r\n-import a\r\n \r\n \r\n def func():\r\n"
     )
 
 
@@ -1169,9 +1169,8 @@ def test_isort_float_to_top_correctly_identifies_single_line_comments_1499():
     one line.
     See: https://github.com/PyCQA/isort/issues/1499
     """
-    assert (
-        isort.code(
-            '''#!/usr/bin/env bash
+    assert isort.code(
+        '''#!/usr/bin/env bash
 """My comment"""
 def foo():
     pass
@@ -1181,10 +1180,9 @@ import a
 def bar():
     pass
 ''',
-            float_to_top=True,
-        )
-        == (
-            '''#!/usr/bin/env bash
+        float_to_top=True,
+    ) == (
+        '''#!/usr/bin/env bash
 """My comment"""
 import a
 
@@ -1196,11 +1194,9 @@ def foo():
 def bar():
     pass
 '''
-        )
     )
-    assert (
-        isort.code(
-            """#!/usr/bin/env bash
+    assert isort.code(
+        """#!/usr/bin/env bash
 '''My comment'''
 def foo():
     pass
@@ -1210,10 +1206,9 @@ import a
 def bar():
     pass
 """,
-            float_to_top=True,
-        )
-        == (
-            """#!/usr/bin/env bash
+        float_to_top=True,
+    ) == (
+        """#!/usr/bin/env bash
 '''My comment'''
 import a
 
@@ -1225,7 +1220,6 @@ def foo():
 def bar():
     pass
 """
-        )
     )
 
     assert isort.check_code(
