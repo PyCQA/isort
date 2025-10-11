@@ -1050,12 +1050,12 @@ import os
 
 
 def test_identify_imports_main(tmpdir, capsys):
-    file_content = "import mod2\nimport mod2\n" "a = 1\n" "import mod1\n"
+    file_content = "import mod2\nimport mod2\na = 1\nimport mod1\n"
     some_file = tmpdir.join("some_file.py")
     some_file.write(file_content)
     file_imports = f"{some_file}:1 import mod2\n{some_file}:4 import mod1\n"
     file_imports_with_dupes = (
-        f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n" f"{some_file}:4 import mod1\n"
+        f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n{some_file}:4 import mod1\n"
     )
 
     main.identify_imports_main([str(some_file), "--unique"])

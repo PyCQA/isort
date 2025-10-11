@@ -31,8 +31,7 @@ class ExistingSyntaxErrors(ISortError):
 
     def __init__(self, file_path: str):
         super().__init__(
-            f"isort was told to sort imports within code that contains syntax errors: "
-            f"{file_path}."
+            f"isort was told to sort imports within code that contains syntax errors: {file_path}."
         )
         self.file_path = file_path
 
