@@ -691,10 +691,10 @@ def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list
     return comments
 
 
-def _separate_packages(section_output: List[str], config: Config) -> List[str]:
-    group_keys: Set[str] = set()
-    comments_above: List[str] = []
-    processed_section_output: List[str] = []
+def _separate_packages(section_output: list[str], config: Config) -> list[str]:
+    group_keys: set[str] = set()
+    comments_above: list[str] = []
+    processed_section_output: list[str] = []
 
     for section_line in section_output:
         if section_line.startswith("#"):
