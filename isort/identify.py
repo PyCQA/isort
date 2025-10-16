@@ -2,26 +2,27 @@
 Eventually this will likely replace parse.py
 """
 
+from collections.abc import Iterator
 from functools import partial
 from pathlib import Path
-from typing import Iterator, NamedTuple, Optional, TextIO, Tuple
+from typing import NamedTuple, TextIO
 
 from isort.parse import normalize_line, skip_line, strip_syntax
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
-STATEMENT_DECLARATIONS: Tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
+STATEMENT_DECLARATIONS: tuple[str, ...] = ("def ", "cdef ", "cpdef ", "class ", "@", "async def")
 
 
 class Import(NamedTuple):
     line_number: int
     indented: bool
     module: str
-    attribute: Optional[str] = None
-    alias: Optional[str] = None
+    attribute: str | None = None
+    alias: str | None = None
     cimport: bool = False
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
 
     def statement(self) -> str:
         import_cmd = "cimport" if self.cimport else "import"
@@ -43,7 +44,7 @@ class Import(NamedTuple):
 def imports(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
-    file_path: Optional[Path] = None,
+    file_path: Path | None = None,
     top_only: bool = False,
 ) -> Iterator[Import]:
     """Parses a python file taking out and categorizing imports."""
@@ -158,7 +159,7 @@ def imports(
 
                 from_import = parts[0].split(" ")
                 import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:])] + parts[1:]
+                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
                 )
 
             just_imports = [

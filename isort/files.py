@@ -1,15 +1,15 @@
 import os
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Iterable, Iterator, List, Set
 
 from isort.settings import Config
 
 
 def find(
-    paths: Iterable[str], config: Config, skipped: List[str], broken: List[str]
+    paths: Iterable[str], config: Config, skipped: list[str], broken: list[str]
 ) -> Iterator[str]:
     """Fines and provides an iterator for all Python source files defined in paths."""
-    visited_dirs: Set[Path] = set()
+    visited_dirs: set[Path] = set()
 
     for path in paths:
         if os.path.isdir(path):
@@ -21,7 +21,7 @@ def find(
                     full_path = base_path / dirname
                     resolved_path = full_path.resolve()
                     if config.is_skipped(full_path):
-                        skipped.append(dirname)
+                        skipped.append(str(full_path))
                         dirnames.remove(dirname)
                     else:
                         if resolved_path in visited_dirs:  # pragma: no cover
@@ -32,7 +32,7 @@ def find(
                     filepath = os.path.join(dirpath, filename)
                     if config.is_supported_filetype(filepath):
                         if config.is_skipped(Path(os.path.abspath(filepath))):
-                            skipped.append(filename)
+                            skipped.append(os.path.abspath(filepath))
                         else:
                             yield filepath
         elif not os.path.exists(path):

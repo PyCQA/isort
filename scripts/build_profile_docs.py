@@ -1,6 +1,6 @@
 #! /bin/env python
 import os
-from typing import Any, Dict
+from typing import Any
 
 from isort.profiles import profiles
 
@@ -19,18 +19,18 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
 """
 
 
-def format_profile(profile_name: str, profile: Dict[str, Any]) -> str:
+def format_profile(profile_name: str, profile: dict[str, Any]) -> str:
     options = "\n".join(f" - **{name}**: `{value!r}`" for name, value in profile.items())
     return f"""
 #{profile_name}
 
-{profile.get('description', '')}
+{profile.get("description", "")}
 {options}
 """
 
 
 def document_text() -> str:
-    return f"{HEADER}{''.join(format_profile(profile_name,  profile) for profile_name, profile in profiles.items())}"
+    return f"{HEADER}{''.join(format_profile(profile_name, profile) for profile_name, profile in profiles.items())}"
 
 
 def write_document():

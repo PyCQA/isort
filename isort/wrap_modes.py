@@ -1,12 +1,13 @@
 """Defines all wrap modes that can be used when outputting formatted imports"""
 
 import enum
+from collections.abc import Callable
 from inspect import signature
-from typing import Any, Callable, Dict, List
+from typing import Any
 
 import isort.comments
 
-_wrap_modes: Dict[str, Callable[..., str]] = {}
+_wrap_modes: dict[str, Callable[..., str]] = {}
 
 
 def from_string(value: str) -> "WrapModes":
@@ -19,11 +20,11 @@ def formatter_from_string(name: str) -> Callable[..., str]:
 
 def _wrap_mode_interface(
     statement: str,
-    imports: List[str],
+    imports: list[str],
     white_space: str,
     indent: str,
     line_length: int,
-    comments: List[str],
+    comments: list[str],
     line_separator: str,
     comment_prefix: str,
     include_trailing_comma: bool,
@@ -264,7 +265,7 @@ def vertical_hanging_indent_bracket(**interface: Any) -> str:
     if not interface["imports"]:
         return ""
     statement = vertical_hanging_indent(**interface)
-    return f'{statement[:-1]}{interface["indent"]})'
+    return f"{statement[:-1]}{interface['indent']})"
 
 
 @_wrap_mode

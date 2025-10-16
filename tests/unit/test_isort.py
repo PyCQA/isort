@@ -10,7 +10,8 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Iterator, List, Set, Tuple
+from typing import TYPE_CHECKING, Any
+from collections.abc import Iterator
 
 import pytest
 
@@ -19,12 +20,12 @@ from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
 from isort.settings import Config
 from isort.utils import exists_case_sensitive
+from isort.main import parse_args
+from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
 if TYPE_CHECKING:
-    from typing import Dict  # noqa: F401
-
     WrapModes: Any
 else:
     from isort.wrap_modes import WrapModes
@@ -75,7 +76,7 @@ def test_happy_path() -> None:
     test_input = "import sys\nimport os\nimport myproject.test\nimport django.settings"
     test_output = isort.code(test_input, known_first_party=["myproject"])
     assert test_output == (
-        "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
+        "import os\nimport sys\n\nimport django.settings\n\nimport myproject.test\n"
     )
 
 
@@ -113,12 +114,10 @@ def test_correct_space_between_imports() -> None:
     test_output_method = isort.code(test_input_method)
     assert test_output_method == ("import sys\n\n\ndef my_method():\n    print('hello world')\n")
 
-    test_input_decorator = (
-        "import sys\n" "@my_decorator\n" "def my_method():\n" "    print('hello world')\n"
-    )
+    test_input_decorator = "import sys\n@my_decorator\ndef my_method():\n    print('hello world')\n"
     test_output_decorator = isort.code(test_input_decorator)
     assert test_output_decorator == (
-        "import sys\n" "\n" "\n" "@my_decorator\n" "def my_method():\n" "    print('hello world')\n"
+        "import sys\n\n\n@my_decorator\ndef my_method():\n    print('hello world')\n"
     )
 
     test_input_class = "import sys\nclass MyClass(object):\n    pass\n"
@@ -231,7 +230,7 @@ def test_line_length() -> None:
     test_input = (
         "from .test import a_very_long_function_name_that_exceeds_the_normal_pep8_line_length\n"
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="wrap_length must be set lower than or equal to line_le"):
         test_output = isort.code(code=REALLY_LONG_IMPORT, line_length=80, wrap_length=99)
     assert (
         isort.code(REALLY_LONG_IMPORT, line_length=100, wrap_length=99)
@@ -852,12 +851,7 @@ def test_add_imports() -> None:
     test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\n\n"
     test_output = isort.code(code=test_input, add_imports=["import lib4", "import lib7"])
     assert test_output == (
-        "import lib1\n"
-        "import lib2\n"
-        "import lib4\n"
-        "import lib5\n"
-        "import lib6\n"
-        "import lib7\n"
+        "import lib1\nimport lib2\nimport lib4\nimport lib5\nimport lib6\nimport lib7\n"
     )
 
     # Using simplified syntax
@@ -874,7 +868,7 @@ def test_add_imports() -> None:
     )
 
     # On a file that has no pre-existing imports
-    test_input = '"""Module docstring"""\n' "class MyClass(object):\n    pass\n"
+    test_input = '"""Module docstring"""\nclass MyClass(object):\n    pass\n'
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
         '"""Module docstring"""\n'
@@ -887,7 +881,7 @@ def test_add_imports() -> None:
 
     # On a file that has no pre-existing imports and a multiline docstring
     test_input = (
-        '"""Module docstring\n\nWith a second line\n"""\n' "class MyClass(object):\n    pass\n"
+        '"""Module docstring\n\nWith a second line\n"""\nclass MyClass(object):\n    pass\n'
     )
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
@@ -905,9 +899,7 @@ def test_add_imports() -> None:
     # On a file that has no pre-existing imports and a multiline docstring.
     # In this example, the closing quotes for the docstring are on the final
     # line rather than a separate one.
-    test_input = (
-        '"""Module docstring\n\nWith a second line"""\n' "class MyClass(object):\n    pass\n"
-    )
+    test_input = '"""Module docstring\n\nWith a second line"""\nclass MyClass(object):\n    pass\n'
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
         '"""Module docstring\n'
@@ -924,7 +916,7 @@ def test_add_imports() -> None:
     test_input = "class MyClass(object):\n    pass\n"
     test_output = isort.code(code=test_input, add_imports=["from __future__ import print_function"])
     assert test_output == (
-        "from __future__ import print_function\n" "\n" "\n" "class MyClass(object):\n" "    pass\n"
+        "from __future__ import print_function\n\n\nclass MyClass(object):\n    pass\n"
     )
 
     # On a file with no content what so ever
@@ -945,9 +937,7 @@ def test_remove_imports() -> None:
     assert test_output == "import lib1\nimport lib5\n"
 
     # Using natural syntax
-    test_input = (
-        "import lib6\n" "import lib2\n" "import lib5\n" "import lib1\n" "from lib8 import a"
-    )
+    test_input = "import lib6\nimport lib2\nimport lib5\nimport lib1\nfrom lib8 import a"
     test_output = isort.code(
         code=test_input, remove_imports=["import lib2", "import lib6", "from lib8 import a"]
     )
@@ -982,16 +972,16 @@ def test_explicitly_local_import() -> None:
 
 def test_quotes_in_file() -> None:
     """Ensure imports within triple quotes don't get imported."""
-    test_input = "import os\n\n" '"""\n' "Let us\nimport foo\nokay?\n" '"""\n'
+    test_input = 'import os\n\n"""\nLet us\nimport foo\nokay?\n"""\n'
     assert isort.code(test_input) == test_input
 
-    test_input = "import os\n\n" '\'"""\'\n' "import foo\n"
+    test_input = 'import os\n\n\'"""\'\nimport foo\n'
     assert isort.code(test_input) == test_input
 
-    test_input = "import os\n\n" '"""Let us"""\n' "import foo\n\n" '"""okay?"""\n'
+    test_input = 'import os\n\n"""Let us"""\nimport foo\n\n"""okay?"""\n'
     assert isort.code(test_input) == test_input
 
-    test_input = "import os\n\n" '#"""\n' "import foo\n" '#"""'
+    test_input = 'import os\n\n#"""\nimport foo\n#"""'
     assert isort.code(test_input) == ('import os\n\nimport foo\n\n#"""\n#"""\n')
 
     test_input = "import os\n\n'\\\nimport foo'\n"
@@ -1108,14 +1098,14 @@ def test_default_section() -> None:
         code=test_input, known_third_party=["django"], default_section="FIRSTPARTY"
     )
     assert test_output == (
-        "import os\n" "import sys\n" "\n" "import django.settings\n" "\n" "import myproject.test\n"
+        "import os\nimport sys\n\nimport django.settings\n\nimport myproject.test\n"
     )
 
     test_output_custom = isort.code(
         code=test_input, known_third_party=["django"], default_section="STDLIB"
     )
     assert test_output_custom == (
-        "import myproject.test\n" "import os\n" "import sys\n" "\n" "import django.settings\n"
+        "import myproject.test\nimport os\nimport sys\n\nimport django.settings\n"
     )
 
 
@@ -1223,9 +1213,7 @@ def test_force_single_line_imports() -> None:
         "from third_party import lib22\n"
     )
 
-    test_input = (
-        "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
-    )
+    test_input = "from third_party import lib_a, lib_b, lib_d\nfrom third_party.lib_c import lib1\n"
     test_output = isort.code(
         code=test_input, multi_line_output=WrapModes.GRID, line_length=40, force_single_line=True
     )
@@ -1249,9 +1237,7 @@ def test_force_single_line_long_imports() -> None:
 
 
 def test_force_single_line_imports_and_sort_within_sections() -> None:
-    test_input = (
-        "from third_party import lib_a, lib_b, lib_d\n" "from third_party.lib_c import lib1\n"
-    )
+    test_input = "from third_party import lib_a, lib_b, lib_d\nfrom third_party.lib_c import lib1\n"
     test_output = isort.code(
         code=test_input,
         multi_line_output=WrapModes.GRID,
@@ -1639,7 +1625,7 @@ def test_multiline_import() -> None:
         "forced_separate": "asdf",
     }
     expected_output = (
-        "from pkg import more_stuff\n" "from pkg import other_suff\n" "from pkg import stuff\n"
+        "from pkg import more_stuff\nfrom pkg import other_suff\nfrom pkg import stuff\n"
     )
     assert isort.code(test_input, **custom_configuration) == expected_output
 
@@ -1715,12 +1701,12 @@ def test_order_by_type() -> None:
     )
 
 
-def test_custom_lines_before_import_section() -> None:
-    """Test the case where the number of lines to output after imports has been explicitly set."""
-    test_input = """from a import b
-
-foo = 'bar'
-"""
+@pytest.mark.parametrize("has_body", [True, False])
+def test_custom_lines_before_import_section(has_body: bool) -> None:
+    """Test the case where the number of lines to output before imports has been explicitly set."""
+    test_input = "from a import b\n"
+    if has_body:
+        test_input += "\nfoo = 'bar'\n"
 
     ln = "\n"
 
@@ -1768,41 +1754,23 @@ def test_smart_lines_after_import_section() -> None:
     assert isort.code(test_input) == ("from a import b\n\n\nasync def my_function():\n    pass\n")
 
     # two spaces if a method or class after imports - even if comment before function
-    test_input = (
-        "from a import b\n" "# comment should be ignored\n" "def my_function():\n" "    pass\n"
-    )
+    test_input = "from a import b\n# comment should be ignored\ndef my_function():\n    pass\n"
     assert isort.code(test_input) == (
-        "from a import b\n"
-        "\n"
-        "\n"
-        "# comment should be ignored\n"
-        "def my_function():\n"
-        "    pass\n"
+        "from a import b\n\n\n# comment should be ignored\ndef my_function():\n    pass\n"
     )
 
     # the same logic does not apply to doc strings
     test_input = (
-        "from a import b\n"
-        '"""\n'
-        "    comment should be ignored\n"
-        '"""\n'
-        "def my_function():\n"
-        "    pass\n"
+        'from a import b\n"""\n    comment should be ignored\n"""\ndef my_function():\n    pass\n'
     )
     assert isort.code(test_input) == (
-        "from a import b\n"
-        "\n"
-        '"""\n'
-        "    comment should be ignored\n"
-        '"""\n'
-        "def my_function():\n"
-        "    pass\n"
+        'from a import b\n\n"""\n    comment should be ignored\n"""\ndef my_function():\n    pass\n'
     )
 
     # Ensure logic doesn't incorrectly skip over assignments to multi-line strings
     test_input = 'from a import b\nX = """test\n"""\ndef my_function():\n    pass\n'
     assert isort.code(test_input) == (
-        "from a import b\n" "\n" 'X = """test\n' '"""\n' "def my_function():\n" "    pass\n"
+        'from a import b\n\nX = """test\n"""\ndef my_function():\n    pass\n'
     )
 
 
@@ -1866,11 +1834,9 @@ def test_keep_comments() -> None:
     )
 
     # Test case where imports comments make imports extend pass the line length
-    test_input = (
-        "from a import b # My Comment1\n" "from a import c # My Comment2\n" "from a import d\n"
-    )
+    test_input = "from a import b # My Comment1\nfrom a import c # My Comment2\nfrom a import d\n"
     assert isort.code(test_input, line_length=45) == (
-        "from a import b  # My Comment1\n" "from a import c  # My Comment2\n" "from a import d\n"
+        "from a import b  # My Comment1\nfrom a import c  # My Comment2\nfrom a import d\n"
     )
 
     # Test case where imports with comments will be beyond line length limit
@@ -1889,9 +1855,7 @@ def test_keep_comments() -> None:
 
     # Test that 'import ... as ...' comments are not collected inappropriately
     test_input = (
-        "from a import b as bb  # b comment\n"
-        "from a import c as cc  # c comment\n"
-        "from a import d\n"
+        "from a import b as bb  # b comment\nfrom a import c as cc  # c comment\nfrom a import d\n"
     )
     assert isort.code(test_input) == test_input
     assert isort.code(test_input, combine_as_imports=True) == (
@@ -1929,7 +1893,7 @@ def test_include_trailing_comma() -> None:
         include_trailing_comma=True,
     )
     assert test_output_grid == (
-        "from third_party import (lib1, lib2,\n" "                         lib3, lib4,)\n"
+        "from third_party import (lib1, lib2,\n                         lib3, lib4,)\n"
     )
 
     test_output_vertical = isort.code(
@@ -1952,7 +1916,7 @@ def test_include_trailing_comma() -> None:
         include_trailing_comma=True,
     )
     assert test_output_vertical_indent == (
-        "from third_party import (\n" "    lib1,\n" "    lib2,\n" "    lib3,\n" "    lib4,\n" ")\n"
+        "from third_party import (\n    lib1,\n    lib2,\n    lib3,\n    lib4,\n)\n"
     )
 
     test_output_vertical_grid = isort.code(
@@ -2164,9 +2128,7 @@ def test_long_line_comments() -> None:
 
 def test_tab_character_in_import() -> None:
     """Ensure isort correctly handles import statements that contain a tab character"""
-    test_input = (
-        "from __future__ import print_function\n" "from __future__ import\tprint_function\n"
-    )
+    test_input = "from __future__ import print_function\nfrom __future__ import\tprint_function\n"
     assert isort.code(test_input) == "from __future__ import print_function\n"
 
 
@@ -2429,10 +2391,7 @@ def test_from_first() -> None:
 def test_top_comments() -> None:
     """Ensure correct behavior with top comments"""
     test_input = (
-        "# -*- encoding: utf-8 -*-\n"
-        "# Test comment\n"
-        "#\n"
-        "from __future__ import unicode_literals\n"
+        "# -*- encoding: utf-8 -*-\n# Test comment\n#\nfrom __future__ import unicode_literals\n"
     )
     assert isort.code(test_input) == test_input
 
@@ -2504,22 +2463,15 @@ from foo import (
 
 def test_uses_jinja_variables() -> None:
     """Test a basic set of imports that use jinja variables"""
-    test_input = (
-        "import sys\n" "import os\n" "import myproject.{ test }\n" "import django.{ settings }"
-    )
+    test_input = "import sys\nimport os\nimport myproject.{ test }\nimport django.{ settings }"
     test_output = isort.code(
         code=test_input, known_third_party=["django"], known_first_party=["myproject"]
     )
     assert test_output == (
-        "import os\n"
-        "import sys\n"
-        "\n"
-        "import django.{ settings }\n"
-        "\n"
-        "import myproject.{ test }\n"
+        "import os\nimport sys\n\nimport django.{ settings }\n\nimport myproject.{ test }\n"
     )
 
-    test_input = "import {{ cookiecutter.repo_name }}\n" "from foo import {{ cookiecutter.bar }}\n"
+    test_input = "import {{ cookiecutter.repo_name }}\nfrom foo import {{ cookiecutter.bar }}\n"
     assert isort.code(test_input) == test_input
 
 
@@ -2626,7 +2578,7 @@ def test_alphabetic_sorting() -> None:
     options = {
         "force_single_line": True,
         "force_alphabetical_sort_within_sections": True,
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
 
     output = isort.code(test_input, **options)
     assert output == test_input
@@ -2641,7 +2593,7 @@ def test_alphabetic_sorting_multi_line() -> None:
         "from a import (CONSTANT_A, cONSTANT_B, CONSTANT_C, CONSTANT_D, CONSTANT_E,\n"
         "               CONSTANT_F, CONSTANT_G, CONSTANT_H, CONSTANT_I, CONSTANT_J)\n"
     )
-    options = {"force_alphabetical_sort_within_sections": True}  # type: Dict[str, Any]
+    options = {"force_alphabetical_sort_within_sections": True}  # type: dict[str, Any]
     assert isort.code(test_input, **options) == test_input
 
 
@@ -2676,7 +2628,7 @@ def test_top_of_line_comments() -> None:
 
 
 def test_basic_comment() -> None:
-    """Test to ensure a basic comment wont crash isort"""
+    """Test to ensure a basic comment won't crash isort"""
     test_input = "import logging\n# Foo\nimport os\n"
     assert isort.code(test_input) == test_input
 
@@ -2685,7 +2637,7 @@ def test_shouldnt_add_lines() -> None:
     """Ensure that isort doesn't add a blank line when a top of import comment is present,
     See: issue #316
     """
-    test_input = '"""Text"""\n' "# This is a comment\nimport pkg_resources\n"
+    test_input = '"""Text"""\n# This is a comment\nimport pkg_resources\n'
     assert isort.code(test_input) == test_input
 
 
@@ -2760,7 +2712,7 @@ def test_alphabetic_sorting_no_newlines() -> None:
     test_output = isort.code(code=test_input, force_alphabetical_sort_within_sections=True)
     assert test_input == test_output
 
-    test_input = "import os\n" "import unittest\n" "\n" "from a import b\n" "\n" "\n" "print(1)\n"
+    test_input = "import os\nimport unittest\n\nfrom a import b\n\n\nprint(1)\n"
     test_output = isort.code(
         code=test_input, force_alphabetical_sort_within_sections=True, lines_after_imports=2
     )
@@ -2770,10 +2722,7 @@ def test_alphabetic_sorting_no_newlines() -> None:
 def test_sort_within_section() -> None:
     """Test to ensure its possible to force isort to sort within sections"""
     test_input = (
-        "from Foob import ar\n"
-        "import foo\n"
-        "from foo import bar\n"
-        "from foo.bar import Quux, baz\n"
+        "from Foob import ar\nimport foo\nfrom foo import bar\nfrom foo.bar import Quux, baz\n"
     )
     test_output = isort.code(test_input, force_sort_within_sections=True)
     assert test_output == test_input
@@ -2809,9 +2758,7 @@ def test_sort_within_section() -> None:
     )
     assert test_output == test_input
 
-    test_input = (
-        "from Foob import ar\n" "import foo\n" "from foo import Quux\n" "from foo import baz\n"
-    )
+    test_input = "from Foob import ar\nimport foo\nfrom foo import Quux\nfrom foo import baz\n"
     test_output = isort.code(
         code=test_input,
         case_sensitive=True,
@@ -2825,10 +2772,7 @@ def test_sort_within_section() -> None:
 def test_sort_within_section_case_honored() -> None:
     """Ensure isort can do partial case-sensitive sorting in force-sorted sections"""
     test_input = (
-        "import foo\n"
-        "from foo import bar\n"
-        "from foo.bar import Quux, baz\n"
-        "from Foob import ar\n"
+        "import foo\nfrom foo import bar\nfrom foo.bar import Quux, baz\nfrom Foob import ar\n"
     )
     test_output = isort.code(
         test_input, force_sort_within_sections=True, honor_case_in_force_sorted_sections=True
@@ -2868,9 +2812,7 @@ def test_sort_within_section_case_honored() -> None:
     )
     assert test_output == test_input
 
-    test_input = (
-        "from Foob import ar\n" "import foo\n" "from foo import Quux\n" "from foo import baz\n"
-    )
+    test_input = "from Foob import ar\nimport foo\nfrom foo import Quux\nfrom foo import baz\n"
     test_output = isort.code(
         code=test_input,
         case_sensitive=True,
@@ -3011,7 +2953,7 @@ def test_import_by_paren_issue_375() -> None:
 
 
 def test_import_by_paren_issue_460() -> None:
-    """Test to ensure isort can doesnt move comments around"""
+    """Test to ensure isort can doesn't move comments around"""
     test_input = """
 # First comment
 # Second comment
@@ -3027,7 +2969,7 @@ def test_function_with_docstring() -> None:
     function with a docstring
     """
     add_imports = ["from __future__ import unicode_literals"]
-    test_input = "def foo():\n" '    """ Single line triple quoted doctring """\n' "    pass\n"
+    test_input = 'def foo():\n    """ Single line triple quoted doctring """\n    pass\n'
     expected_output = (
         "from __future__ import unicode_literals\n"
         "\n"
@@ -3052,7 +2994,7 @@ def test_plone_style() -> None:
         "import unittest\n"
         "import Zope\n"
     )
-    options = {"force_single_line": True, "force_alphabetical_sort": True}  # type: Dict[str, Any]
+    options = {"force_single_line": True, "force_alphabetical_sort": True}  # type: dict[str, Any]
     assert isort.code(test_input, **options) == test_input
 
 
@@ -3084,7 +3026,7 @@ def test_sys_path_mutation(tmpdir) -> None:
     """Test to ensure sys.path is not modified"""
     tmpdir.mkdir("src").mkdir("a")
     test_input = "from myproject import test"
-    options = {"virtual_env": str(tmpdir)}  # type: Dict[str, Any]
+    options = {"virtual_env": str(tmpdir)}  # type: dict[str, Any]
     expected_length = len(sys.path)
     isort.code(test_input, **options)
     assert len(sys.path) == expected_length
@@ -3119,13 +3061,7 @@ def test_import_inside_class_issue_432() -> None:
     """
     test_input = "# coding=utf-8\nclass Foo:\n    def bar(self):\n        pass\n"
     expected_output = (
-        "# coding=utf-8\n"
-        "import baz\n"
-        "\n"
-        "\n"
-        "class Foo:\n"
-        "    def bar(self):\n"
-        "        pass\n"
+        "# coding=utf-8\nimport baz\n\n\nclass Foo:\n    def bar(self):\n        pass\n"
     )
     assert isort.code(test_input, add_imports=["import baz"]) == expected_output
 
@@ -3139,13 +3075,13 @@ def test_wildcard_import_without_space_issue_496() -> None:
 
 def test_import_line_mangles_issues_491() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
-    test_input = "import os  # ([\n\n" 'print("hi")\n'
+    test_input = 'import os  # ([\n\nprint("hi")\n'
     assert isort.code(test_input) == test_input
 
 
 def test_import_line_mangles_issues_505() -> None:
     """Test to ensure comment on import with parens doesn't cause issues"""
-    test_input = "from sys import *  # (\n\n\ndef test():\n" '    print("Test print")\n'
+    test_input = 'from sys import *  # (\n\n\ndef test():\n    print("Test print")\n'
     assert isort.code(test_input) == test_input
 
 
@@ -3736,12 +3672,7 @@ def test_new_lines_are_preserved() -> None:
 def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
     config_file = tmpdir.join("setup.cfg")
     config_file.write(
-        "[isort]\n"
-        "forced_separate:\n"
-        "   separate1\n"
-        "   separate2\n"
-        "   separate3\n"
-        "   separate4\n"
+        "[isort]\nforced_separate:\n   separate1\n   separate2\n   separate3\n   separate4\n"
     )
 
     test_input = (
@@ -3763,12 +3694,10 @@ def test_monkey_patched_urllib() -> None:
     with pytest.raises(ImportError):
         # Previous versions of isort monkey patched urllib which caused unusual
         # importing for other projects.
-        from urllib import quote  # type: ignore  # noqa: F401
+        from urllib import quote  # type: ignore  # noqa: F401, PLC0415
 
 
 def test_argument_parsing() -> None:
-    from isort.main import parse_args
-
     args = parse_args(["--dt", "-t", "foo", "--skip=bar", "baz.py", "--os"])
     assert args["order_by_type"] is False
     assert args["force_to_top"] == ["foo"]
@@ -3777,14 +3706,10 @@ def test_argument_parsing() -> None:
     assert args["only_sections"] is True
 
 
-@pytest.mark.parametrize("multiprocess", (False, True))
+@pytest.mark.parametrize("multiprocess", [False, True])
 def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
-    from isort.main import main
-
     tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
-    tmpdir.join("file2.py").write(
-        "import collections\nimport time\n\nimport abc" "\n\n\nimport isort"
-    )
+    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
     arguments = [str(tmpdir), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
@@ -3805,11 +3730,10 @@ def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
         assert str(tmpdir.join("file2.py")) in out
 
 
-@pytest.mark.parametrize("quiet", (False, True))
+@pytest.mark.parametrize("quiet", [False, True])
 def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
-    from isort.main import main
 
     tmpdir.join("file1.py").write("import re\nimport os")
     tmpdir.join("file2.py").write("")
@@ -3822,7 +3746,7 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
     assert bool(out) != quiet
 
 
-@pytest.mark.parametrize("enabled", (False, True))
+@pytest.mark.parametrize("enabled", [False, True])
 def test_safety_skips(tmpdir, enabled: bool) -> None:
     tmpdir.join("victim.py").write("# ...")
     toxdir = tmpdir.mkdir(".tox")
@@ -3833,8 +3757,8 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         config = Config(directory=str(tmpdir))
     else:
         config = Config(skip=[], directory=str(tmpdir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     codes = [str(tmpdir)]
     files.find(codes, config, skipped, broken)
 
@@ -3864,21 +3788,21 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
 
 @pytest.mark.parametrize(
     "skip_glob_assert",
-    (
+    [
         ([], 0, {os.sep.join(("code", "file.py"))}),
         (["**/*.py"], 1, set()),
         (["*/code/*.py"], 1, set()),
-    ),
+    ],
 )
-def test_skip_glob(tmpdir, skip_glob_assert: Tuple[List[str], int, Set[str]]) -> None:
+def test_skip_glob(tmpdir, skip_glob_assert: tuple[list[str], int, set[str]]) -> None:
     skip_glob, skipped_count, file_names_expected = skip_glob_assert
     base_dir = tmpdir.mkdir("build")
     code_dir = base_dir.mkdir("code")
     code_dir.join("file.py").write("import os")
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in files.find([str(base_dir)], config, skipped, broken)
@@ -3891,8 +3815,8 @@ def test_broken(tmpdir) -> None:
     base_dir = tmpdir.mkdir("broken")
 
     config = Config(directory=str(base_dir))
-    skipped: List[str] = []
-    broken: List[str] = []
+    skipped: list[str] = []
+    broken: list[str] = []
     file_names = {
         os.path.relpath(f, str(base_dir))
         for f in files.find(["not-exist"], config, skipped, broken)
@@ -3966,10 +3890,7 @@ def test_multiple_as_imports() -> None:
     assert test_output == "from a import b as b, b as bb, b as bb_\n"
 
     test_input = (
-        "from a import b\n"
-        "from a import b as b\n"
-        "from a import b as bb\n"
-        "from a import b as bb_\n"
+        "from a import b\nfrom a import b as b\nfrom a import b as bb\nfrom a import b as bb_\n"
     )
     test_output = isort.code(test_input)
     assert test_output == test_input
@@ -3977,10 +3898,7 @@ def test_multiple_as_imports() -> None:
     assert test_output == "from a import b, b as b, b as bb, b as bb_\n"
 
     test_input = (
-        "from a import b as e\n"
-        "from a import b as c\n"
-        "from a import b\n"
-        "from a import b as f\n"
+        "from a import b as e\nfrom a import b as c\nfrom a import b\nfrom a import b as f\n"
     )
     test_output = isort.code(test_input)
     assert (
@@ -4036,11 +3954,7 @@ def test_all_imports_from_single_module() -> None:
         "from a import w, x, y, z\n"
     )
     test_input = (
-        "import a\n"
-        "from a import *\n"
-        "from a import z, x, y\n"
-        "from a import b\n"
-        "from a import w\n"
+        "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
     )
     test_output = isort.code(
         code=test_input,
@@ -4120,11 +4034,7 @@ from a import i as j
         "from a import e as f\n"
     )
     test_input = (
-        "import a\n"
-        "from a import *\n"
-        "from a import z, x, y\n"
-        "from a import b\n"
-        "from a import w\n"
+        "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
     )
     test_output = isort.code(
         code=test_input,
@@ -4211,11 +4121,7 @@ from a import i as j
         "from a import z\n"
     )
     test_input = (
-        "import a\n"
-        "from a import *\n"
-        "from a import z, x, y\n"
-        "from a import b\n"
-        "from a import w\n"
+        "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
     )
     test_output = isort.code(
         code=test_input,
@@ -4306,9 +4212,7 @@ def test_to_ensure_empty_line_not_added_to_file_start_issue_889() -> None:
 
 
 def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys) -> None:
-    test_input = (
-        "import os\n" "import sys\n" "\n" "\x0c\n" "def my_function():\n" '    print("hi")\n'
-    )
+    test_input = 'import os\nimport sys\n\n\x0c\ndef my_function():\n    print("hi")\n'
     isort.code(test_input, ignore_whitespace=True)
     out, err = capsys.readouterr()
     assert out == ""
@@ -4325,21 +4229,20 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
     base_dir = tmpdir.mkdir("project")
     config_dir = base_dir.mkdir("conf")
     config_dir.join(".isort.cfg").write(
-        "[isort]\n" "skip =\n" "    file_to_be_skipped.py\n" "skip_glob =\n" "    *glob_skip*\n"
+        "[isort]\nskip =\n    file_to_be_skipped.py\nskip_glob =\n    *glob_skip*\n"
     )
 
     base_dir.join("file_glob_skip.py").write(
-        "import os\n\n" 'print("Hello World")\n' "\nimport sys\nimport os\n"
+        'import os\n\nprint("Hello World")\n\nimport sys\nimport os\n'
     )
     base_dir.join("file_to_be_skipped.py").write(
-        "import os\n\n" 'print("Hello World")' "\nimport sys\nimport os\n"
+        'import os\n\nprint("Hello World")\nimport sys\nimport os\n'
     )
 
     test_run_directory = os.getcwd()
     os.chdir(str(base_dir))
-    with pytest.raises(
-        Exception
-    ):  # without the settings path provided: the command should not skip & identify errors
+    with pytest.raises(subprocess.CalledProcessError):
+        # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
     result = subprocess.run(
         ["isort", ".", "--check-only", "--settings-path=conf/.isort.cfg"],
@@ -4363,11 +4266,11 @@ def test_skip_paths_issue_938(tmpdir) -> None:
         "skip_glob =\n"
         "    migrations/**.py\n"
     )
-    base_dir.join("dont_skip.py").write("import os\n\n" 'print("Hello World")' "\nimport sys\n")
+    base_dir.join("dont_skip.py").write('import os\n\nprint("Hello World")\nimport sys\n')
 
     migrations_dir = base_dir.mkdir("migrations")
     migrations_dir.join("file_glob_skip.py").write(
-        "import os\n\n" 'print("Hello World")\n' "\nimport sys\n"
+        'import os\n\nprint("Hello World")\n\nimport sys\n'
     )
 
     test_run_directory = os.getcwd()
@@ -4400,9 +4303,7 @@ def test_skip_paths_issue_938(tmpdir) -> None:
 
 def test_failing_file_check_916() -> None:
     test_input = (
-        "#!/usr/bin/env python\n"
-        "# -*- coding: utf-8 -*-\n"
-        "from __future__ import unicode_literals\n"
+        "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\nfrom __future__ import unicode_literals\n"
     )
     expected_output = (
         "#!/usr/bin/env python\n"
@@ -4416,7 +4317,7 @@ def test_failing_file_check_916() -> None:
         "indent": "    ",
         "multi_line_output": 3,
         "lines_after_imports": 2,
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     assert isort.code(test_input, **settings) == expected_output
     assert isort.code(expected_output, **settings) == expected_output
     assert api.check_code_string(expected_output, **settings)
@@ -4429,7 +4330,7 @@ def test_import_heading_issue_905() -> None:
         "import_heading_firstparty": "Local imports",
         "known_third_party": ["numpy"],
         "known_first_party": ["oklib"],
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     test_input = (
         "# Standard library imports\n"
         "from os import path as osp\n"
@@ -4471,9 +4372,9 @@ def test_isort_keeps_comments_issue_691() -> None:
 
 
 def test_isort_multiline_with_tab_issue_1714() -> None:
-    test_input = "from sys \\ \n" "\timport version\n" "print(version)\n"
+    test_input = "from sys \\ \n\timport version\nprint(version)\n"
 
-    expected_output = "from sys import version\n" "\n" "print(version)\n"
+    expected_output = "from sys import version\n\nprint(version)\n"
 
     assert isort.code(test_input) == expected_output
 
@@ -4497,7 +4398,7 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
             "THREE",
             "FOUR",
         ],
-    }  # type: Dict[str, Any]
+    }  # type: dict[str, Any]
     test_input = (
         "import os\n"
         "# noinspection PyUnresolvedReferences\n"
@@ -4604,8 +4505,6 @@ def test_move_class_issue_751() -> None:
 
 
 def test_python_version() -> None:
-    from isort.main import parse_args
-
     # test that the py_version can be added as flag
     args = parse_args(["--py=27"])
     assert args["py_version"] == "27"
@@ -5487,20 +5386,18 @@ def test_only_sections() -> None:
 def test_combine_straight_imports() -> None:
     """Tests to ensure that combine_straight_imports works correctly"""
 
-    test_input = (
-        "import os\n" "import sys\n" "# this is a comment\n" "import math  # inline comment\n"
-    )
+    test_input = "import os\nimport sys\n# this is a comment\nimport math  # inline comment\n"
 
     assert isort.code(test_input, combine_straight_imports=True) == (
-        "# this is a comment\n" "import math, os, sys  # inline comment\n"
+        "# this is a comment\nimport math, os, sys  # inline comment\n"
     )
 
     # test to ensure that combine_straight_import works with only_sections
 
-    test_input = "import sys, os\n" "import a\n" "import math\n" "import b\n"
+    test_input = "import sys, os\nimport a\nimport math\nimport b\n"
 
     assert isort.code(test_input, combine_straight_imports=True, only_sections=True) == (
-        "import sys, os, math\n" "\n" "import a, b\n"
+        "import sys, os, math\n\nimport a, b\n"
     )
 
 
@@ -5557,7 +5454,7 @@ def test_find_imports_in_stream() -> None:
         def seekable(self):
             return False
 
-    test_input = NonSeekableTestStream("import m2\n" "import m1\n" "not_import = 7")
+    test_input = NonSeekableTestStream("import m2\nimport m1\nnot_import = 7")
     identified_imports = list(map(str, api.find_imports_in_stream(test_input)))
     assert identified_imports == [":1 import m2", ":2 import m1"]
 
@@ -5742,3 +5639,16 @@ __all__ = ['bar', 'foo']
 test
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_noqa_multiline_hanging_indent() -> None:
+    test_input = (
+        "from aaaaaaa import bbbbbbbbbbbbbbbbb, ccccccccccccccccccc, dddddddddddddddd"
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, \\\n"
+        "    fffffffffffffffffffff  # noqa: E402\n"
+        "\n"
+        "print(fffffffffffffffffffff)\n"
+        "print(dddddddddddddddd)\n"
+    )
+    output = isort.code(test_input, line_length=120, multi_line_output=WrapModes.HANGING_INDENT)
+    assert output == test_input

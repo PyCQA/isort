@@ -18,10 +18,9 @@ class TestConfig:
     def test_init_unsupported_settings_fails_gracefully(self):
         with pytest.raises(exceptions.UnsupportedSettings):
             Config(apply=True)
-        try:
+        with pytest.raises(exceptions.UnsupportedSettings) as error:
             Config(apply=True)
-        except exceptions.UnsupportedSettings as error:
-            assert error.unsupported_settings == {"apply": {"value": True, "source": "runtime"}}
+        assert error.value.unsupported_settings == {"apply": {"value": True, "source": "runtime"}}
 
     def test_known_settings(self):
         assert Config(known_third_party=["one"]).known_third_party == frozenset({"one"})
@@ -35,7 +34,7 @@ class TestConfig:
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")
 
     def test_invalid_pyversion(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"The python version 10 is not supported."):
             Config(py_version=10)
 
     def test_invalid_profile(self):
@@ -222,11 +221,11 @@ def test_as_bool():
     assert settings._as_bool("FALSE") is False
     assert settings._as_bool("faLSE") is False
     assert settings._as_bool("f") is False
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="invalid truth value"):
         settings._as_bool("")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="invalid truth value falsey"):
         settings._as_bool("falsey")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="invalid truth value truthy"):
         settings._as_bool("truthy")
 
 
@@ -277,15 +276,18 @@ something = nothing
 
     config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
-    assert config_info_1[0] == str(setup_cfg_file) and config_info_1[1]["profile"] == "django"
+    assert config_info_1[0] == str(setup_cfg_file)
+    assert config_info_1[1]["profile"] == "django"
 
     config_info_2 = config_trie.search(str(dir2 / "test2.py"))
     assert config_info_2[0] == str(pyproject_toml_file)
-    assert config_info_2[0] == str(pyproject_toml_file) and config_info_2[1]["profile"] == "hug"
+    assert config_info_2[0] == str(pyproject_toml_file)
+    assert config_info_2[1]["profile"] == "hug"
 
     config_info_3 = config_trie.search(str(dir3 / "test3.py"))
     assert config_info_3[0] == str(isort_cfg_file)
-    assert config_info_3[0] == str(isort_cfg_file) and config_info_3[1]["profile"] == "black"
+    assert config_info_3[0] == str(isort_cfg_file)
+    assert config_info_3[1]["profile"] == "black"
 
     config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"

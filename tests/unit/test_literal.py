@@ -15,7 +15,7 @@ def test_invalid_syntax():
 
 
 def test_invalid_sort_type():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"Trying to sort using an undefined sort_type. Defined"):
         isort.literal.assignment("x = [1, 2, 3", "tuple-list-not-exist", "py")
 
 

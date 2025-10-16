@@ -16,21 +16,21 @@ jobs:
         python-version: ["3.12"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install UV
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-          version: ">=0.6.0"
+          version-file: "pyproject.toml"
 
       - name: Install dependencies
         run: uv sync --all-extras --frozen
 
       - name: Lint
-        run: ./scripts/lint.sh
+        run: uv run --with tox-uv tox -e lint

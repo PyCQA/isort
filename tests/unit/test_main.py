@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import subprocess
 from datetime import datetime
+import unittest.mock
 
 import pytest
 from hypothesis import given
@@ -54,14 +55,18 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore # noqa
 
 
-def test_sort_imports_error_handling(tmpdir, mocker, capsys):
+def test_sort_imports_error_handling(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
-    mocker.patch("isort.core.process").side_effect = IndexError("Example unhandled exception")
-    with pytest.raises(IndexError):
+    with (
+        unittest.mock.patch(
+            "isort.core.process", side_effect=IndexError("Example unhandled exception")
+        ),
+        pytest.raises(IndexError),
+    ):
         main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
 
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
     assert "Unrecoverable exception thrown when parsing" in error
 
 
@@ -184,16 +189,19 @@ def test_main(capsys, tmpdir):
     assert returned_config["virtual_env"] == str(tmpdir)
 
     # This should work even if settings path is not provided
-    main.main(base_args[2:] + ["--show-config"])
+    main.main([*base_args[2:], "--show-config"])
     out, error = capsys.readouterr()
     assert json.loads(out)["virtual_env"] == str(tmpdir)
 
     # This should raise an error if an invalid settings path is provided
     with pytest.raises(InvalidSettingsPath):
         main.main(
-            base_args[2:]
-            + ["--show-config"]
-            + ["--settings-path", "/random-root-folder-that-cant-exist-right?"]
+            [
+                *base_args[2:],
+                "--show-config",
+                "--settings-path",
+                "/random-root-folder-that-cant-exist-right?",
+            ]
         )
 
     # Should be able to set settings path to a file
@@ -889,7 +897,7 @@ __revision__ = 'יייי'
     # should throw an error if only unsupported encoding provided
     with pytest.raises(SystemExit):
         main.main([str(tmp_file)])
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
 
     assert "No valid encodings." in error
 
@@ -898,7 +906,7 @@ __revision__ = 'יייי'
     normal_file.write("import os\nimport sys")
 
     main.main([str(tmp_file), str(normal_file), "--verbose"])
-    out, error = capsys.readouterr()
+    _, error = capsys.readouterr()
 
 
 def test_stream_skip_file(tmpdir, capsys):
@@ -909,13 +917,13 @@ import a
 """
     stream_with_skip = as_stream(input_with_skip)
     main.main(["-"], stdin=stream_with_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert out == input_with_skip
 
     input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
     stream_without_skip = as_stream(input_without_skip)
     main.main(["-"], stdin=stream_without_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert (
         out
         == """
@@ -928,7 +936,7 @@ import b
     atomic_input_without_skip = input_with_skip.replace("isort: skip_file", "generic comment")
     stream_without_skip = as_stream(atomic_input_without_skip)
     main.main(["-", "--atomic"], stdin=stream_without_skip)
-    out, error = capsys.readouterr()
+    out, _ = capsys.readouterr()
     assert (
         out
         == """
@@ -1042,12 +1050,12 @@ import os
 
 
 def test_identify_imports_main(tmpdir, capsys):
-    file_content = "import mod2\nimport mod2\n" "a = 1\n" "import mod1\n"
+    file_content = "import mod2\nimport mod2\na = 1\nimport mod1\n"
     some_file = tmpdir.join("some_file.py")
     some_file.write(file_content)
     file_imports = f"{some_file}:1 import mod2\n{some_file}:4 import mod1\n"
     file_imports_with_dupes = (
-        f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n" f"{some_file}:4 import mod1\n"
+        f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n{some_file}:4 import mod1\n"
     )
 
     main.identify_imports_main([str(some_file), "--unique"])
@@ -1102,12 +1110,14 @@ import a
     (tmp_path / "no_imports.py").write_text("...")
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "no_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "no_imports.py" not in error
 
     (tmp_path / ".gitignore").write_text("has_imports.py")
 
     out, error = main_check([str(python_file), "--check"])
-    assert "has_imports.py" in error and "no_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "no_imports.py" not in error
 
     out, error = main_check([str(python_file), "--skip-gitignore", "--filter-files", "--check"])
     assert "Skipped" in out
@@ -1119,14 +1129,16 @@ import a
     subfolder_file.write_text(import_content)
 
     out, error = main_check([str(tmp_path), "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "nested_dir/has_imports.py" not in error
 
     # Should work with relative path
     currentdir = os.getcwd()
     os.chdir(tmp_path)
 
     out, error = main_check([".", "--skip-gitignore", "--filter-files", "--check"])
-    assert "has_imports.py" in error and "nested_dir/has_imports.py" not in error
+    assert "has_imports.py" in error
+    assert "nested_dir/has_imports.py" not in error
 
     (tmp_path / ".gitignore").write_text(
         """

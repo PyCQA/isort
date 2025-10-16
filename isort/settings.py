@@ -9,25 +9,13 @@ import os
 import posixpath
 import re
 import stat
-import subprocess  # nosec: Needed for gitignore support.
+import subprocess  # nosec # Needed for gitignore support.
 import sys
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    FrozenSet,
-    Iterable,
-    List,
-    Optional,
-    Pattern,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from re import Pattern
+from typing import TYPE_CHECKING, Any
 from warnings import warn
 
 from . import sorting, stdlibs
@@ -46,6 +34,8 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
+    from importlib.metadata import EntryPoints
+
     tomllib: Any
 else:
     if sys.version_info >= (3, 11):
@@ -57,23 +47,23 @@ _SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
-FILE_SKIP_COMMENTS: Tuple[str, ...] = (
+FILE_SKIP_COMMENTS: tuple[str, ...] = (
     "isort:" + "skip_file",
     "isort: " + "skip_file",
 )  # Concatenated to avoid this file being skipped
 MAX_CONFIG_SEARCH_DEPTH: int = 25  # The number of parent directories to for a config file within
-STOP_CONFIG_SEARCH_ON_DIRS: Tuple[str, ...] = (".git", ".hg")
-VALID_PY_TARGETS: Tuple[str, ...] = tuple(
+STOP_CONFIG_SEARCH_ON_DIRS: tuple[str, ...] = (".git", ".hg")
+VALID_PY_TARGETS: tuple[str, ...] = tuple(
     target.replace("py", "") for target in dir(stdlibs) if not target.startswith("_")
 )
-CONFIG_SOURCES: Tuple[str, ...] = (
+CONFIG_SOURCES: tuple[str, ...] = (
     ".isort.cfg",
     "pyproject.toml",
     "setup.cfg",
     "tox.ini",
     ".editorconfig",
 )
-DEFAULT_SKIP: FrozenSet[str] = frozenset(
+DEFAULT_SKIP: frozenset[str] = frozenset(
     {
         ".venv",
         "venv",
@@ -97,19 +87,19 @@ DEFAULT_SKIP: FrozenSet[str] = frozenset(
     }
 )
 
-CONFIG_SECTIONS: Dict[str, Tuple[str, ...]] = {
+CONFIG_SECTIONS: dict[str, tuple[str, ...]] = {
     ".isort.cfg": ("settings", "isort"),
     "pyproject.toml": ("tool.isort",),
     "setup.cfg": ("isort", "tool:isort"),
     "tox.ini": ("isort", "tool:isort"),
     ".editorconfig": ("*", "*.py", "**.py", "*.{py}"),
 }
-FALLBACK_CONFIG_SECTIONS: Tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
+FALLBACK_CONFIG_SECTIONS: tuple[str, ...] = ("isort", "tool:isort", "tool.isort")
 
 IMPORT_HEADING_PREFIX = "import_heading_"
 IMPORT_FOOTER_PREFIX = "import_footer_"
 KNOWN_PREFIX = "known_"
-KNOWN_SECTION_MAPPING: Dict[str, str] = {
+KNOWN_SECTION_MAPPING: dict[str, str] = {
     STDLIB: "STANDARD_LIBRARY",
     FUTURE: "FUTURE_LIBRARY",
     FIRSTPARTY: "FIRST_PARTY",
@@ -146,40 +136,40 @@ class _Config:
     """
 
     py_version: str = "3"
-    force_to_top: FrozenSet[str] = frozenset()
-    skip: FrozenSet[str] = DEFAULT_SKIP
-    extend_skip: FrozenSet[str] = frozenset()
-    skip_glob: FrozenSet[str] = frozenset()
-    extend_skip_glob: FrozenSet[str] = frozenset()
+    force_to_top: frozenset[str] = frozenset()
+    skip: frozenset[str] = DEFAULT_SKIP
+    extend_skip: frozenset[str] = frozenset()
+    skip_glob: frozenset[str] = frozenset()
+    extend_skip_glob: frozenset[str] = frozenset()
     skip_gitignore: bool = False
     line_length: int = 79
     wrap_length: int = 0
     line_ending: str = ""
-    sections: Tuple[str, ...] = SECTION_DEFAULTS
+    sections: tuple[str, ...] = SECTION_DEFAULTS
     no_sections: bool = False
-    known_future_library: FrozenSet[str] = frozenset(("__future__",))
-    known_third_party: FrozenSet[str] = frozenset()
-    known_first_party: FrozenSet[str] = frozenset()
-    known_local_folder: FrozenSet[str] = frozenset()
-    known_standard_library: FrozenSet[str] = frozenset()
-    extra_standard_library: FrozenSet[str] = frozenset()
-    known_other: Dict[str, FrozenSet[str]] = field(default_factory=dict)
+    known_future_library: frozenset[str] = frozenset(("__future__",))
+    known_third_party: frozenset[str] = frozenset()
+    known_first_party: frozenset[str] = frozenset()
+    known_local_folder: frozenset[str] = frozenset()
+    known_standard_library: frozenset[str] = frozenset()
+    extra_standard_library: frozenset[str] = frozenset()
+    known_other: dict[str, frozenset[str]] = field(default_factory=dict)
     multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
-    forced_separate: Tuple[str, ...] = ()
+    forced_separate: tuple[str, ...] = ()
     indent: str = " " * 4
     comment_prefix: str = "  #"
     length_sort: bool = False
     length_sort_straight: bool = False
-    length_sort_sections: FrozenSet[str] = frozenset()
-    add_imports: FrozenSet[str] = frozenset()
-    remove_imports: FrozenSet[str] = frozenset()
+    length_sort_sections: frozenset[str] = frozenset()
+    add_imports: frozenset[str] = frozenset()
+    remove_imports: frozenset[str] = frozenset()
     append_only: bool = False
     reverse_relative: bool = False
     force_single_line: bool = False
-    single_line_exclusions: Tuple[str, ...] = ()
+    single_line_exclusions: tuple[str, ...] = ()
     default_section: str = THIRDPARTY
-    import_headings: Dict[str, str] = field(default_factory=dict)
-    import_footers: Dict[str, str] = field(default_factory=dict)
+    import_headings: dict[str, str] = field(default_factory=dict)
+    import_footers: dict[str, str] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False
     order_by_type: bool = True
@@ -203,38 +193,38 @@ class _Config:
     group_by_package: bool = False
     separate_packages: FrozenSet[str] = frozenset()
     ignore_whitespace: bool = False
-    no_lines_before: FrozenSet[str] = frozenset()
+    no_lines_before: frozenset[str] = frozenset()
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: Tuple[Dict[str, Any], ...] = ()
+    sources: tuple[dict[str, Any], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
     directory: str = ""
     profile: str = ""
     honor_noqa: bool = False
-    src_paths: Tuple[Path, ...] = ()
+    src_paths: tuple[Path, ...] = ()
     old_finders: bool = False
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
     filter_files: bool = False
     formatter: str = ""
-    formatting_function: Optional[Callable[[str, str, object], str]] = None
+    formatting_function: Callable[[str, str, object], str] | None = None
     color_output: bool = False
-    treat_comments_as_code: FrozenSet[str] = frozenset()
+    treat_comments_as_code: frozenset[str] = frozenset()
     treat_all_comments_as_code: bool = False
-    supported_extensions: FrozenSet[str] = SUPPORTED_EXTENSIONS
-    blocked_extensions: FrozenSet[str] = BLOCKED_EXTENSIONS
-    constants: FrozenSet[str] = frozenset()
-    classes: FrozenSet[str] = frozenset()
-    variables: FrozenSet[str] = frozenset()
+    supported_extensions: frozenset[str] = SUPPORTED_EXTENSIONS
+    blocked_extensions: frozenset[str] = BLOCKED_EXTENSIONS
+    constants: frozenset[str] = frozenset()
+    classes: frozenset[str] = frozenset()
+    variables: frozenset[str] = frozenset()
     dedup_headings: bool = False
     only_sections: bool = False
     only_modified: bool = False
     combine_straight_imports: bool = False
     auto_identify_namespace_packages: bool = True
-    namespace_packages: FrozenSet[str] = frozenset()
+    namespace_packages: frozenset[str] = frozenset()
     follow_links: bool = True
     indented_import_headings: bool = True
     honor_case_in_force_sorted_sections: bool = False
@@ -242,8 +232,8 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
-    import_dependencies = Dict[str, str]
-    git_ls_files: Dict[Path, Set[str]] = field(default_factory=dict)
+    import_dependencies = dict[str, str]
+    git_ls_files: dict[Path, set[str]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
@@ -296,15 +286,15 @@ class Config(_Config):
         self,
         settings_file: str = "",
         settings_path: str = "",
-        config: Optional[_Config] = None,
+        config: _Config | None = None,
         **config_overrides: Any,
     ):
-        self._known_patterns: Optional[List[Tuple[Pattern[str], str]]] = None
-        self._section_comments: Optional[Tuple[str, ...]] = None
-        self._section_comments_end: Optional[Tuple[str, ...]] = None
-        self._skips: Optional[FrozenSet[str]] = None
-        self._skip_globs: Optional[FrozenSet[str]] = None
-        self._sorting_function: Optional[Callable[..., List[str]]] = None
+        self._known_patterns: list[tuple[Pattern[str], str]] | None = None
+        self._section_comments: tuple[str, ...] | None = None
+        self._section_comments_end: tuple[str, ...] | None = None
+        self._skips: frozenset[str] | None = None
+        self._skip_globs: frozenset[str] | None = None
+        self._sorting_function: Callable[..., list[str]] | None = None
 
         if config:
             config_vars = vars(config).copy()
@@ -324,9 +314,9 @@ class Config(_Config):
         # Therefore we extract quiet early here in a variable and use that in warning conditions.
         quiet = config_overrides.get("quiet", False)
 
-        sources: List[Dict[str, Any]] = [_DEFAULT_SETTINGS]
+        sources: list[dict[str, Any]] = [_DEFAULT_SETTINGS]
 
-        config_settings: Dict[str, Any]
+        config_settings: dict[str, Any]
         project_root: str
         if settings_file:
             config_settings = _get_config_data(
@@ -340,7 +330,8 @@ class Config(_Config):
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
                     "See: https://pycqa.github.io/isort/docs/configuration/config_files"
-                    "#custom-config-files for more information."
+                    "#custom-config-files for more information.",
+                    stacklevel=2,
                 )
         elif settings_path:
             if not os.path.exists(settings_path):
@@ -353,12 +344,10 @@ class Config(_Config):
             project_root = os.getcwd()
 
         profile_name = config_overrides.get("profile", config_settings.get("profile", ""))
-        profile: Dict[str, Any] = {}
+        profile: dict[str, Any] = {}
         if profile_name:
             if profile_name not in profiles:
-                import pkg_resources
-
-                for plugin in pkg_resources.iter_entry_points("isort.profiles"):
+                for plugin in entry_points(group="isort.profiles"):
                     profiles.setdefault(plugin.name, plugin.load())
 
             if profile_name not in profiles:
@@ -408,7 +397,8 @@ class Config(_Config):
                             f"Default to {section_name} if unsure."
                             "\n\n"
                             "See: https://pycqa.github.io/isort/"
-                            "#custom-sections-and-ordering."
+                            "#custom-sections-and-ordering.",
+                            stacklevel=2,
                         )
                     else:
                         combined_config[section_name] = frozenset(value)
@@ -420,7 +410,8 @@ class Config(_Config):
                             " included in `sections` config option:"
                             f" {combined_config.get('sections', SECTION_DEFAULTS)}.\n\n"
                             "See: https://pycqa.github.io/isort/"
-                            "#custom-sections-and-ordering."
+                            "#custom-sections-and-ordering.",
+                            stacklevel=2,
                         )
             if key.startswith(IMPORT_HEADING_PREFIX):
                 import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
@@ -443,7 +434,8 @@ class Config(_Config):
                 warn(
                     f"`sections` setting includes {section}, but no known_{section.lower()} "
                     "is defined. "
-                    f"The following known_SECTION config options are defined: {config_keys}."
+                    f"The following known_SECTION config options are defined: {config_keys}.",
+                    stacklevel=2,
                 )
 
         if "directory" not in combined_config:
@@ -458,7 +450,7 @@ class Config(_Config):
         if "src_paths" not in combined_config:
             combined_config["src_paths"] = (path_root / "src", path_root)
         else:
-            src_paths: List[Path] = []
+            src_paths: list[Path] = []
             for src_path in combined_config.get("src_paths", ()):
                 full_paths = (
                     path_root.glob(src_path) if "*" in str(src_path) else [path_root / src_path]
@@ -470,9 +462,7 @@ class Config(_Config):
             combined_config["src_paths"] = tuple(src_paths)
 
         if "formatter" in combined_config:
-            import pkg_resources
-
-            for plugin in pkg_resources.iter_entry_points("isort.formatters"):
+            for plugin in entry_points(group="isort.formatters"):
                 if plugin.name == combined_config["formatter"]:
                     combined_config["formatting_function"] = plugin.load()
                     break
@@ -496,7 +486,8 @@ class Config(_Config):
                     "W0503: Deprecated config options were used: "
                     f"{', '.join(deprecated_options_used)}."
                     "Please see the 5.0.0 upgrade guide: "
-                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
+                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
+                    stacklevel=2,
                 )
 
         if known_other:
@@ -550,7 +541,7 @@ class Config(_Config):
             return False
         return bool(_SHEBANG_RE.match(line))
 
-    def _check_folder_git_ls_files(self, folder: str) -> Optional[Path]:
+    def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}
         try:
             topfolder_result = subprocess.check_output(  # nosec # skipcq: PYL-W1510
@@ -645,7 +636,7 @@ class Config(_Config):
         return False
 
     @property
-    def known_patterns(self) -> List[Tuple[Pattern[str], str]]:
+    def known_patterns(self) -> list[tuple[Pattern[str], str]]:
         if self._known_patterns is not None:
             return self._known_patterns
 
@@ -669,7 +660,7 @@ class Config(_Config):
         return self._known_patterns
 
     @property
-    def section_comments(self) -> Tuple[str, ...]:
+    def section_comments(self) -> tuple[str, ...]:
         if self._section_comments is not None:
             return self._section_comments
 
@@ -677,7 +668,7 @@ class Config(_Config):
         return self._section_comments
 
     @property
-    def section_comments_end(self) -> Tuple[str, ...]:
+    def section_comments_end(self) -> tuple[str, ...]:
         if self._section_comments_end is not None:
             return self._section_comments_end
 
@@ -685,7 +676,7 @@ class Config(_Config):
         return self._section_comments_end
 
     @property
-    def skips(self) -> FrozenSet[str]:
+    def skips(self) -> frozenset[str]:
         if self._skips is not None:
             return self._skips
 
@@ -693,7 +684,7 @@ class Config(_Config):
         return self._skips
 
     @property
-    def skip_globs(self) -> FrozenSet[str]:
+    def skip_globs(self) -> frozenset[str]:
         if self._skip_globs is not None:
             return self._skip_globs
 
@@ -701,7 +692,7 @@ class Config(_Config):
         return self._skip_globs
 
     @property
-    def sorting_function(self) -> Callable[..., List[str]]:
+    def sorting_function(self) -> Callable[..., list[str]]:
         if self._sorting_function is not None:
             return self._sorting_function
 
@@ -711,9 +702,7 @@ class Config(_Config):
             self._sorting_function = sorted
         else:
             available_sort_orders = ["natural", "native"]
-            import pkg_resources
-
-            for sort_plugin in pkg_resources.iter_entry_points("isort.sort_function"):
+            for sort_plugin in entry_points(group="isort.sort_function"):
                 available_sort_orders.append(sort_plugin.name)
                 if sort_plugin.name == self.sort_order:
                     self._sorting_function = sort_plugin.load()
@@ -723,7 +712,7 @@ class Config(_Config):
 
         return self._sorting_function
 
-    def _parse_known_pattern(self, pattern: str) -> List[str]:
+    def _parse_known_pattern(self, pattern: str) -> list[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
         if pattern.endswith(os.path.sep):
             patterns = [
@@ -737,23 +726,21 @@ class Config(_Config):
         return patterns
 
 
-def _get_str_to_type_converter(setting_name: str) -> Union[Callable[[str], Any], Type[Any]]:
-    type_converter: Union[Callable[[str], Any], Type[Any]] = type(
-        _DEFAULT_SETTINGS.get(setting_name, "")
-    )
+def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any] | type[Any]:
+    type_converter: Callable[[str], Any] | type[Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
 
 
-def _as_list(value: str) -> List[str]:
+def _as_list(value: str) -> list[str]:
     if isinstance(value, list):
         return [item.strip() for item in value]
     filtered = [item.strip() for item in value.replace("\n", ",").split(",") if item.strip()]
     return filtered
 
 
-def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
+def _abspaths(cwd: str, values: Iterable[str]) -> set[str]:
     paths = {
         (
             os.path.join(cwd, value)
@@ -765,20 +752,23 @@ def _abspaths(cwd: str, values: Iterable[str]) -> Set[str]:
     return paths
 
 
-def _find_config(path: str) -> Tuple[str, Dict[str, Any]]:
+def _find_config(path: str) -> tuple[str, dict[str, Any]]:
     current_directory = path
     tries = 0
     while current_directory and tries < MAX_CONFIG_SEARCH_DEPTH:
         for config_file_name in CONFIG_SOURCES:
             potential_config_file = os.path.join(current_directory, config_file_name)
             if os.path.isfile(potential_config_file):
-                config_data: Dict[str, Any]
+                config_data: dict[str, Any]
                 try:
                     config_data = _get_config_data(
                         potential_config_file, CONFIG_SECTIONS[config_file_name]
                     )
                 except Exception:
-                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    warn(
+                        f"Failed to pull configuration information from {potential_config_file}",
+                        stacklevel=2,
+                    )
                     config_data = {}
                 if config_data:
                     return (current_directory, config_data)
@@ -809,13 +799,16 @@ def find_all_configs(path: str) -> Trie:
         for config_file_name in CONFIG_SOURCES:
             potential_config_file = os.path.join(dirpath, config_file_name)
             if os.path.isfile(potential_config_file):
-                config_data: Dict[str, Any]
+                config_data: dict[str, Any]
                 try:
                     config_data = _get_config_data(
                         potential_config_file, CONFIG_SECTIONS[config_file_name]
                     )
                 except Exception:
-                    warn(f"Failed to pull configuration information from {potential_config_file}")
+                    warn(
+                        f"Failed to pull configuration information from {potential_config_file}",
+                        stacklevel=2,
+                    )
                     config_data = {}
 
                 if config_data:
@@ -825,8 +818,8 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-def _get_config_data(file_path: str, sections: Tuple[str, ...]) -> Dict[str, Any]:
-    settings: Dict[str, Any] = {}
+def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any]:
+    settings: dict[str, Any] = {}
 
     if file_path.endswith(".toml"):
         with open(file_path, "rb") as bin_config_file:
@@ -926,6 +919,16 @@ def _as_bool(value: str) -> bool:
         return _STR_BOOLEAN_MAPPING[value.lower()]
     except KeyError:
         raise ValueError(f"invalid truth value {value}")
+
+
+def entry_points(group: str) -> "EntryPoints":
+    """Call entry_point after lazy loading it.
+
+    TODO: The reason for lazy loading here are unknown.
+    """
+    from importlib.metadata import entry_points as ep  # noqa: PLC0415
+
+    return ep(group=group)
 
 
 DEFAULT_CONFIG = Config()

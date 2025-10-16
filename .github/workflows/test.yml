@@ -17,29 +17,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+          check-latest: true
 
       - name: Install UV
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-          version: ">=0.6.0"
+          version-file: "pyproject.toml"
 
       - name: Install dependencies
         run: uv sync --all-extras --frozen
 
       - name: Test
-        shell: bash
-        run: ./scripts/test.sh
+        run: uv run --with tox-uv tox -e py,coverage_report-ci
 
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'

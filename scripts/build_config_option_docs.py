@@ -2,7 +2,8 @@
 import dataclasses
 import os
 from textwrap import dedent
-from typing import Any, Dict, Generator, Iterable, Optional, Type
+from typing import Any
+from collections.abc import Generator, Iterable
 
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
@@ -104,7 +105,7 @@ class Example:
         return self.section_complete
 
 
-description_mapping: Dict[str, str]
+description_mapping: dict[str, str]
 description_mapping = {
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
@@ -135,7 +136,7 @@ description_mapping = {
     "import_footers": "A mapping of import sections to import footer comments that should show below them.",
 }
 
-example_mapping: Dict[str, Example]
+example_mapping: dict[str, Example]
 example_mapping = {
     "skip": Example(
         cfg="""
@@ -312,12 +313,12 @@ py_version=39
 @dataclasses.dataclass
 class ConfigOption:
     name: str
-    type: Type = str
+    type: type = str
     default: Any = ""
     config_name: str = "**Not Supported**"
     cli_options: Iterable[str] = (" **Not Supported**",)
     description: str = "**No Description**"
-    example: Optional[Example] = None
+    example: Example | None = None
 
     def __str__(self):
         if self.name in IGNORED:
@@ -368,7 +369,7 @@ def config_options() -> Generator[ConfigOption, None, None]:
     cli_actions = {action.dest: action for action in parser._actions}
     for name, default in config.items():
         extra_kwargs = {}
-        description: Optional[str] = description_mapping.get(name, None)
+        description: str | None = description_mapping.get(name, None)
 
         cli = cli_actions.pop(name, None)
         if cli:
@@ -395,7 +396,7 @@ def config_options() -> Generator[ConfigOption, None, None]:
 
     for name, cli in cli_actions.items():
         extra_kwargs = {}
-        description: Optional[str] = description_mapping.get(name, None)
+        description: str | None = description_mapping.get(name, None)
         if cli.type:
             extra_kwargs["type"] = cli.type
         elif cli.default is not None:

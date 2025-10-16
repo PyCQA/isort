@@ -1,5 +1,7 @@
 """Basic set of tests to ensure entire code base is importable"""
 
+# ruff: noqa: PLC0415
+
 import pytest
 
 
@@ -20,7 +22,6 @@ def test_importable():
     import isort.parse
     import isort.place
     import isort.profiles
-    import isort.pylama_isort
     import isort.sections
     import isort.settings
     import isort.setuptools_commands
@@ -38,6 +39,7 @@ def test_importable():
     import isort.stdlibs.py311
     import isort.stdlibs.py312
     import isort.stdlibs.py313
+    import isort.stdlibs.py314
     import isort.utils
     import isort.wrap
     import isort.wrap_modes

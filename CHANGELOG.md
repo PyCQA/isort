@@ -4,6 +4,28 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+### 6.1.0 October 1 2025 
+
+   - Add python 3.14 classifier and badge (#2409) @staticdev
+   - Drop use of non-standard pkg_resources API (#2405) @dvarrazzo
+
+### 6.0.1 Febuary 26 2025
+
+   - Add OSError handling in find_imports_in_file (#2331) @kobarity
+
+### 6.0.0 January 27 2025
+
+   - Remove support for Python 3.8 (#2327) @DanielNoord 
+   - Python 3.13 support (#2306) @mayty
+   - Speed up exists_case_sensitive calls (#2264) @correctmost
+   - Ensure that split_on_trailing_comma works with as imports (#2340) @DanielNoord
+   - Black profile: enable magic comma (#2236) @MrMino
+   - Update line_length and single_line_exclusions in google profile (#2149) @jagapiou
+   - Allow --diff to be used with --jobs (#2302) @mnakama
+   - Fix wemake profile to have correct character limit (#2241) @sobolevn
+   - Fix sort_reexports code mangling (#2283) @Helveg
+   - Fix correct group by package tokenization (#2136) @glasnt
+
 ### 5.13.2 December 13 2023
 
    - Apply the bracket fix from issue #471 only for use_parentheses=True (#2184) @bp72

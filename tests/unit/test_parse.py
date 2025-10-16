@@ -85,8 +85,8 @@ def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
 
 
 @pytest.mark.parametrize(
-    "raw_line, expected",
-    (
+    ("raw_line", "expected"),
+    [
         ("from . cimport a", "from . cimport a"),
         ("from.cimport a", "from . cimport a"),
         ("from..cimport a", "from .. cimport a"),
@@ -95,14 +95,14 @@ def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
         ("from..import a", "from .. import a"),
         ("import *", "import *"),
         ("import*", "import *"),
-        ("from . import a", "from . import a"),
+        ("from . import a", "from . import a"),  # noqa: PT014
         ("from .import a", "from . import a"),
         ("from ..import a", "from .. import a"),
-        ("from . cimport a", "from . cimport a"),
+        ("from . cimport a", "from . cimport a"),  # noqa: PT014
         ("from .cimport a", "from . cimport a"),
         ("from ..cimport a", "from .. cimport a"),
         ("from\t.\timport a", "from . import a"),
-    ),
+    ],
 )
 def test_normalize_line(raw_line, expected):
     line, returned_raw_line = parse.normalize_line(raw_line)

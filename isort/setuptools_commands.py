@@ -1,7 +1,8 @@
 import glob
 import os
 import sys
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 from warnings import warn
 
 import setuptools
@@ -57,6 +58,6 @@ class ISortCommand(setuptools.Command):
                     if not api.check_file(python_file, **arguments):
                         wrong_sorted_files = True  # pragma: no cover
                 except OSError as error:  # pragma: no cover
-                    warn(f"Unable to parse file {python_file} due to {error}")
+                    warn(f"Unable to parse file {python_file} due to {error}", stacklevel=2)
         if wrong_sorted_files:
             sys.exit(1)  # pragma: no cover

@@ -30,7 +30,7 @@ class TestFindersManager:
 
     def test_find_broken_finder(self):
         class ExceptionOnFind(finders.BaseFinder):
-            def find(*args, **kwargs):
+            def find(self, module_name: str) -> str | None:
                 raise ValueError("test")
 
         assert (

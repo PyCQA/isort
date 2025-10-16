@@ -629,7 +629,7 @@ def test_float_to_top_should_respect_existing_newlines_between_imports_issue_150
     See: https://github.com/PyCQA/isort/issues/1502
     """
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 import a
@@ -640,7 +640,7 @@ x = 1
         show_diff=True,
     )
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -653,7 +653,7 @@ x = 1
     )
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -664,7 +664,7 @@ x = 1
             float_to_top=True,
             add_imports=["import b"],
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -677,7 +677,7 @@ x = 1
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -689,7 +689,7 @@ import a
 """,
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import a
 
@@ -701,7 +701,7 @@ def my_function():
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -711,7 +711,7 @@ def my_function():
             add_imports=["import os"],
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import os
 

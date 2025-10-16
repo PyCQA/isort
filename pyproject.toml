@@ -1,6 +1,3 @@
-[tool.black]
-line-length = 100
-
 [project]
 name = "isort"
 dynamic = ["version"]
@@ -20,26 +17,31 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-urls = { changelog = "https://github.com/PyCQA/isort/releases" }
 include = [
     { path = "tests", format = "sdist" },
     { path = "ACKNOWLEDGEMENTS.md", format = "sdist" },
     { path = "LICENSE", format = "sdist" },
 ]
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 
 dependencies = []
+
+[project.urls]
+Homepage = "https://pycqa.github.io/isort/index.html"
+Documentation = "https://pycqa.github.io/isort/index.html"
+Repository = "https://github.com/PyCQA/isort"
+Changelog = "https://github.com/PyCQA/isort/releases"
 
 [tool.hatch.version]
 source = "vcs"
@@ -53,9 +55,6 @@ isort-identify-imports = "isort.main:identify_imports_main"
 
 [project.entry-points."distutils.commands"]
 isort = "isort.setuptools_commands:ISortCommand"
-
-[project.entry-points."pylama.linter"]
-isort = "isort.pylama_isort:Linter"
 
 [project.optional-dependencies]
 colors = ["colorama"]
@@ -71,6 +70,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
+parallel = true
 source = ["isort", "tests"]
 omit = [
     "isort/_vendored/*",
@@ -105,52 +105,46 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.7.7",
-    "black>=24.3.0",
+    "bandit>=1.8.6",
+    "black>=25.9.0",
     "colorama>=0.4.6",
-    "coverage[toml]>=6.5.0",
-    "cruft>=2.12.0",
+    "coverage[toml]>=7.10.7",
+    "cruft>=2.16.0",
     "example-isort-sorting-plugin>=0.1.0",
     "example-shared-isort-profile>=0.1.0",
-    "flake8>=3.8.4",
-    "flake8-bugbear>=22.12.12",
+    "flake8>=7.3.0",
+    "flake8-bugbear>=24.12.12",
     "flake8-pyproject>=1.2.3",
     "hatch>=1.14.0",
     "httpx>=0.13.3",
-    "hypothesis>=6.10.1",
-    "hypothesmith>=0.1.3",
-    "libcst>=0.3.18",
-    "mypy>=1.14.1",
-    "mypy-extensions>=0.4.3",
-    "pep8-naming>=0.8.2",
+    "hypothesis>=6.140.3",
+    "hypothesmith>=0.3.3",
+    "libcst>=1.8.5",
+    "mypy>=1.18.2",
+    "pep8-naming>=0.15.1",
     "pip>=21.1.1",
     "pip_api>=0.0.12",
     "pipreqs>=0.4.9",
     "portray>=1.8.0",
-    "pre-commit>=2.13.0",
-    "pylama>=7.7",
-    "pytest>=7.4.2",
-    "pytest-benchmark>=3.4.1",
-    "pytest-mock>=1.10",
-    "requirementslib>=1.5",
-    "ruff>=0.9.6",
-    "safety>=2.2.0",
+    "pytest>=8.4.2",
+    "pytest-benchmark>=5.1.0",
+    "ruff>=0.13.3",
+    "setuptools>=75.8.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
+    "tox>=4.30.3",
+    "tox-uv>=1.28.0",
     "types-colorama>=0.4.2",
     "types-setuptools>=70.0.0.20240523",
     "types-toml>=0.1.3",
-    "vulture>=1.0",
+    "uv>=0.8.23",
 ]
 
 [tool.flake8]
 max-line-length = 100
 # Ignore non PEP 8 compliant rules as suggested by black
 # E203: https://github.com/psf/black/blob/3fab5ade71bccf80ae0a5af76729099869adea56/docs/the_black_code_style/current_style.md#slices
-extend-ignore = [
-    "B017",
-    "E203",
-]
+extend-ignore = [ "E203" ]
 exclude = "_vendored"
 per-file-ignores = [
     "tests/unit/example_crlf_file.py:F401",
@@ -159,7 +153,7 @@ per-file-ignores = [
 ]
 
 [tool.mypy]
-python_version = 3.9
+python_version = "3.10"
 strict = true
 follow_imports = "silent"
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"
@@ -170,7 +164,12 @@ allow_untyped_defs = true
 allow_incomplete_defs = true
 allow_untyped_calls = true
 
+[[tool.mypy.overrides]]
+module = "importlib_metadata.*"
+ignore_missing_imports = true
+
 [tool.ruff]
+target-version = "py310"
 line-length = 100
 lint.select = [
     "ASYNC",
@@ -184,34 +183,29 @@ lint.select = [
     "PIE",
     "PLC",
     "PLE",
+    "PT",
     "RUF",
     "S",
     "UP",
     "W",
 ]
 lint.ignore = [
-    "B017",
-    "B028",
     "B904",
-    "E203",
     "E501",
     "PERF203",
+    "PT030", # Too much work to turn on for now
     "RUF100",
-    "UP006",
-    "UP035",
 ]
 lint.exclude = [ "isort/_vendored/*" ]
 lint.mccabe.max-complexity = 91  # Default is 10
 
 [tool.ruff.lint.per-file-ignores]
-"isort/deprecated/finders.py" = [ "UP034" ]
 "isort/hooks.py" = [ "S603" ]
 "isort/output.py" = [ "PLC0206" ]
 "isort/settings.py" = [ "PLC0414", "S603", "S607" ]
 "isort/setuptools_commands.py" = [ "RUF012" ]
 "tests/*" = [ "RUF001", "S" ]
 "tests/unit/example_crlf_file.py" = [ "F401" ]
-"tests/unit/test_wrap_modes.py" = [ "PIE804" ]
 
 [tool.isort]
 profile = "hug"

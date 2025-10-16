@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 from difflib import unified_diff
 from pathlib import Path
-from typing import Optional, TextIO
+from typing import TextIO
 
 try:
     import colorama
@@ -44,8 +44,8 @@ def show_unified_diff(
     *,
     file_input: str,
     file_output: str,
-    file_path: Optional[Path],
-    output: Optional[TextIO] = None,
+    file_path: Path | None,
+    output: TextIO | None = None,
     color_output: bool = False,
 ) -> None:
     """Shows a unified_diff for the provided input and output against the provided file path.
@@ -94,7 +94,7 @@ class BasicPrinter:
     ERROR = "ERROR"
     SUCCESS = "SUCCESS"
 
-    def __init__(self, error: str, success: str, output: Optional[TextIO] = None):
+    def __init__(self, error: str, success: str, output: TextIO | None = None):
         self.output = output or sys.stdout
         self.success_message = success
         self.error_message = error
@@ -110,7 +110,7 @@ class BasicPrinter:
 
 
 class ColoramaPrinter(BasicPrinter):
-    def __init__(self, error: str, success: str, output: Optional[TextIO]):
+    def __init__(self, error: str, success: str, output: TextIO | None):
         super().__init__(error, success, output=output)
 
         # Note: this constants are instance variables instead ofs class variables
@@ -121,7 +121,7 @@ class ColoramaPrinter(BasicPrinter):
         self.REMOVED_LINE = colorama.Fore.RED
 
     @staticmethod
-    def style_text(text: str, style: Optional[str] = None) -> str:
+    def style_text(text: str, style: str | None = None) -> str:
         if style is None:
             return text
         return style + text + str(colorama.Style.RESET_ALL)
@@ -136,7 +136,7 @@ class ColoramaPrinter(BasicPrinter):
 
 
 def create_terminal_printer(
-    color: bool, output: Optional[TextIO] = None, error: str = "", success: str = ""
+    color: bool, output: TextIO | None = None, error: str = "", success: str = ""
 ) -> BasicPrinter:
     if color and colorama_unavailable:
         no_colorama_message = (

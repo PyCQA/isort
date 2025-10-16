@@ -1,6 +1,6 @@
 import copy
 import re
-from typing import List, Optional, Sequence
+from collections.abc import Sequence
 
 from .settings import DEFAULT_CONFIG, Config
 from .wrap_modes import WrapModes as Modes
@@ -9,11 +9,11 @@ from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 def import_statement(
     import_start: str,
-    from_imports: List[str],
+    from_imports: list[str],
     comments: Sequence[str] = (),
     line_separator: str = "\n",
     config: Config = DEFAULT_CONFIG,
-    multi_line_output: Optional[Modes] = None,
+    multi_line_output: Modes | None = None,
     explode: bool = False,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
