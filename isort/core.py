@@ -159,7 +159,9 @@ def process(
         else:
             stripped_line = line.strip()
             if stripped_line and not line_separator:
-                line_separator = line[len(line.rstrip()) :].replace(" ", "").replace("\t", "")
+                line_separator = (
+                    line[len(line.rstrip()) :].replace(" ", "").replace("\t", "").replace("\f", "")
+                )
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
