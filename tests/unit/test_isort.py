@@ -3443,6 +3443,17 @@ def test_ensure_line_endings_are_preserved_issue_493() -> None:
     assert isort.code(test_input) == test_input
 
 
+@pytest.mark.parametrize("ws", [" ", "\t", "\f"])
+def test_line_endings_are_detected_ignoring_whitespace(ws: str) -> None:
+    """Test to ensure line endings are not converted"""
+    test_input = f"# foo{ws}\r\nimport a\r\n\r\ncimport z\r\n"
+    assert isort.code(test_input) == test_input
+    test_input = f"# foo{ws}\rimport a\r\rcimport z\r"
+    assert isort.code(test_input) == test_input
+    test_input = f"# foo{ws}\nimport a\n\ncimport z\n"
+    assert isort.code(test_input) == test_input
+
+
 def test_not_splitted_sections() -> None:
     whiteline = "\n"
     stdlib_section = "import unittest\n"
