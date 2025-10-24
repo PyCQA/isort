@@ -4222,9 +4222,13 @@ def test_to_ensure_empty_line_not_added_to_file_start_issue_889() -> None:
     assert isort.code(test_input) == test_input
 
 
-def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(capsys) -> None:
-    test_input = 'import os\nimport sys\n\n\x0c\ndef my_function():\n    print("hi")\n'
-    isort.code(test_input, ignore_whitespace=True)
+@pytest.mark.parametrize("ws", ["", " ", "\t", "\f", "\n"])
+def test_to_ensure_correctly_handling_of_whitespace_only_issue_811(
+    ws: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    test_input = f'import os\nimport sys\n\n{ws}\ndef my_function():\n    print("hi")\n'
+    assert isort.check_code(test_input, ignore_whitespace=True)
     out, err = capsys.readouterr()
     assert out == ""
     assert err == ""
