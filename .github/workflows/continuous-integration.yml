@@ -8,29 +8,96 @@ name: CI
 permissions:
   contents: read
 
+env:
+  DEFAULT_PYTHON: "3.14"
+
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - &checkout
+        name: Check out the repository
+        uses: actions/checkout@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          fetch-depth: 2
 
-      - name: Install UV
+      - &setup-python
+        name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+          check-latest: true
+
+      - &setup-uv
+        name: Install UV
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           version-file: "pyproject.toml"
 
-      - name: Install dependencies
+      - &install-dependencies
+        name: Install dependencies
         run: uv sync --all-extras --frozen
 
       - name: Lint
         run: uv run --with tox-uv tox -e lint
+
+  build:
+    if: github.repository_owner == 'PyCQA'
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - *checkout
+      - *setup-python
+      - *setup-uv
+
+      - name: Build package
+        run: uv build
+
+  test:
+    name: Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      FORCE_COLOR: 1
+
+    steps:
+      - *checkout
+     
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+          check-latest: true
+
+      - *setup-uv
+      - *install-dependencies
+
+      - name: Run tests
+        run: uv run --with tox-uv tox -e py,coverage_report-ci
+
+      - name: Report Coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == ${{ env.DEFAULT_PYTHON }}
+        uses: codecov/codecov-action@v5
+
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - *checkout
+      - *setup-python
+      - *setup-uv
+      - *install-dependencies
+
+      - name: Test integration
+        run: ./scripts/test_integration.sh
