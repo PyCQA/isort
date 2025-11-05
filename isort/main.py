@@ -1059,6 +1059,9 @@ def identify_imports_main(
             print(str(identified_import))
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
 def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
