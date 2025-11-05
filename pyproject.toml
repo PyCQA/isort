@@ -213,3 +213,15 @@ src_paths = ["isort", "tests"]
 skip = [
     "tests/unit/example_crlf_file.py"
 ]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "error",
+  # isort raies many UserWarnings itself, ignore these globally as it is too much work to disable
+  # these per warning for now.
+  "ignore::UserWarning:",
+  # We don't really care about randomizing paths and don't want to add another hypothesis dependency
+  "ignore:.*from_type\\(thing=Path\\).*:hypothesis.errors.SmallSearchSpaceWarning",
+  # Used by pip-api. To be removed when we remove that deprecated finder.
+  "ignore:.*sre_constants.*:DeprecationWarning",
+]
