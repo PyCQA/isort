@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from collections.abc import Sequence
+from contextlib import AbstractContextManager, nullcontext
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
@@ -1193,58 +1194,65 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             print(ASCII_ART)
 
         if jobs:
-            import multiprocessing  # noqa: PLC0415
+            import multiprocessing.pool  # noqa: PLC0415
 
-            executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
-            attempt_iterator = executor.imap(
-                functools.partial(
-                    sort_imports,
-                    config=config,
-                    check=check,
-                    ask_to_apply=ask_to_apply,
-                    show_diff=show_diff,
-                    write_to_stdout=write_to_stdout,
-                    extension=ext_format,
-                    config_trie=config_trie,
-                ),
-                file_names,
+            executor_ctx: multiprocessing.pool.Pool | AbstractContextManager[None] = (
+                multiprocessing.pool.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
             )
         else:
-            # https://github.com/python/typeshed/pull/2814
-            attempt_iterator = (
-                sort_imports(  # type: ignore
-                    file_name,
-                    config=config,
-                    check=check,
-                    ask_to_apply=ask_to_apply,
-                    show_diff=show_diff,
-                    write_to_stdout=write_to_stdout,
-                    extension=ext_format,
-                    config_trie=config_trie,
-                )
-                for file_name in file_names
-            )
+            executor_ctx = nullcontext()
 
-        # If any files passed in are missing considered as error, should be removed
-        is_no_attempt = True
-        any_encoding_valid = False
-        for sort_attempt in attempt_iterator:
-            if not sort_attempt:
-                continue  # pragma: no cover - shouldn't happen, satisfies type constraint
-            incorrectly_sorted = sort_attempt.incorrectly_sorted
-            if arguments.get("check", False) and incorrectly_sorted:
-                wrong_sorted_files = True
-            if sort_attempt.skipped:
-                num_skipped += (
-                    1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+        with executor_ctx as executor:
+            if executor is not None:
+                attempt_iterator = executor.imap(
+                    functools.partial(
+                        sort_imports,
+                        config=config,
+                        check=check,
+                        ask_to_apply=ask_to_apply,
+                        show_diff=show_diff,
+                        write_to_stdout=write_to_stdout,
+                        extension=ext_format,
+                        config_trie=config_trie,
+                    ),
+                    file_names,
                 )
-
-            if not sort_attempt.supported_encoding:
-                num_invalid_encoding += 1
             else:
-                any_encoding_valid = True
+                # https://github.com/python/typeshed/pull/2814
+                attempt_iterator = (
+                    sort_imports(  # type: ignore
+                        file_name,
+                        config=config,
+                        check=check,
+                        ask_to_apply=ask_to_apply,
+                        show_diff=show_diff,
+                        write_to_stdout=write_to_stdout,
+                        extension=ext_format,
+                        config_trie=config_trie,
+                    )
+                    for file_name in file_names
+                )
 
-            is_no_attempt = False
+            # If any files passed in are missing considered as error, should be removed
+            is_no_attempt = True
+            any_encoding_valid = False
+            for sort_attempt in attempt_iterator:
+                if not sort_attempt:
+                    continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+                incorrectly_sorted = sort_attempt.incorrectly_sorted
+                if arguments.get("check", False) and incorrectly_sorted:
+                    wrong_sorted_files = True
+                if sort_attempt.skipped:
+                    num_skipped += (
+                        1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+                    )
+
+                if not sort_attempt.supported_encoding:
+                    num_invalid_encoding += 1
+                else:
+                    any_encoding_valid = True
+
+                is_no_attempt = False
 
         num_skipped += len(skipped)
         if num_skipped and not config.quiet:
