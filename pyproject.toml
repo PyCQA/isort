@@ -224,4 +224,7 @@ filterwarnings = [
   "ignore:.*from_type\\(thing=Path\\).*:hypothesis.errors.SmallSearchSpaceWarning",
   # Used by pip-api. To be removed when we remove that deprecated finder.
   "ignore:.*sre_constants.*:DeprecationWarning",
+  # Many escape sequence warnings in transitive dependencies from pipreqs. To be removed when we
+  # remove that deprecated finder.
+  "ignore:.*invalid escape sequence.*:SyntaxWarning",
 ]
