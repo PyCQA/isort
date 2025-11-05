@@ -1,5 +1,5 @@
 ---
-name: Lint
+name: CI
 
 "on":
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
