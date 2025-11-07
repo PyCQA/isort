@@ -12,7 +12,6 @@ def test_importable():
     import isort._version
     import isort.api
     import isort.comments
-    import isort.deprecated.finders
     import isort.exceptions
     import isort.format
     import isort.hooks

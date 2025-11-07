@@ -287,13 +287,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         f"Profiles include: {', '.join(profiles.keys())}. As well as any shared profiles.",
     )
     general_group.add_argument(
-        "--old-finders",
-        "--magic-placement",
-        dest="old_finders",
-        action="store_true",
-        help="Use the old deprecated finder logic that relies on environment introspection magic.",
-    )
-    general_group.add_argument(
         "-j",
         "--jobs",
         help="Number of files to process in parallel. Negative value means use number of CPUs.",

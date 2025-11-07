@@ -150,12 +150,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
     out_lines = []
     original_line_count = len(in_lines)
-    if config.old_finders:
-        from .deprecated.finders import FindersManager  # noqa: PLC0415
-
-        finder = FindersManager(config=config).find
-    else:
-        finder = partial(place.module, config=config)
+    finder = partial(place.module, config=config)
 
     line_count = len(in_lines)
 

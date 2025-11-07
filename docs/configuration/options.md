@@ -1213,19 +1213,6 @@ src_paths = ["src", "tests"]
 
 ```
 
-## Old Finders
-
-Use the old deprecated finder logic that relies on environment introspection magic.
-
-**Type:** Bool  
-**Default:** `False`  
-**Config default:** `false`  
-**Python & Config File Name:** old_finders  
-**CLI Flags:**
-
-- --old-finders
-- --magic-placement
-
 ## Remove Redundant Aliases
 
 Tells isort to remove redundant aliases from imports, such as `import os as os`. This defaults to `False` simply because some projects use these seemingly useless  aliases to signify intent and change behaviour.

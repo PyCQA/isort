@@ -965,9 +965,6 @@ def test_explicitly_local_import() -> None:
     assert isort.code(test_input) == (
         "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
     )
-    assert isort.code(test_input, old_finders=True) == (
-        "import lib1\nimport lib2\n\nimport .lib6\nfrom . import lib7\n"
-    )
 
 
 def test_quotes_in_file() -> None:
@@ -1069,7 +1066,6 @@ def test_forced_separate() -> None:
             known_third_party=["django"],
             line_length=120,
             order_by_type=False,
-            old_finders=True,
         )
         == test_input
     )
@@ -1077,16 +1073,6 @@ def test_forced_separate() -> None:
     test_input = "from .foo import bar\n\nfrom .y import ca\n"
     assert (
         isort.code(code=test_input, forced_separate=[".y"], line_length=120, order_by_type=False)
-        == test_input
-    )
-    assert (
-        isort.code(
-            code=test_input,
-            forced_separate=[".y"],
-            line_length=120,
-            order_by_type=False,
-            old_finders=True,
-        )
         == test_input
     )
 
@@ -1155,25 +1141,14 @@ def test_known_pattern_path_expansion(tmpdir) -> None:
         known_first_party=["src/", "this", "kate_plugin"],
         directory=str(tmpdir),
     )
-    test_output_old_finder = isort.code(
-        code=test_input,
-        default_section="FIRSTPARTY",
-        old_finders=True,
-        known_first_party=["src/", "this", "kate_plugin"],
-        directory=str(tmpdir),
-    )
-    assert (
-        test_output_old_finder
-        == test_output
-        == (
-            "import os\n"
-            "import sys\n"
-            "\n"
-            "import bar\n"
-            "import this\n"
-            "from foo import settings\n"
-            "from kate_plugin import isort_plugin\n"
-        )
+    assert test_output == (
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "import bar\n"
+        "import this\n"
+        "from foo import settings\n"
+        "from kate_plugin import isort_plugin\n"
     )
 
 
@@ -3030,7 +3005,6 @@ def test_sys_path_mutation(tmpdir) -> None:
     expected_length = len(sys.path)
     isort.code(test_input, **options)
     assert len(sys.path) == expected_length
-    isort.code(test_input, old_finders=True, **options)
 
 
 def test_long_single_line() -> None:
@@ -4994,7 +4968,6 @@ IF CEF_VERSION == 3:
     from web_request_client_cef3 cimport *
 """
     assert isort.code(test_input).strip() == expected_output.strip()
-    assert isort.code(test_input, old_finders=True).strip() == expected_output.strip()
 
 
 def test_cdef_support():

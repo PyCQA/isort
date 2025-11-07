@@ -75,7 +75,6 @@ source = ["isort", "tests"]
 omit = [
     "isort/_vendored/*",
     "tests/*",
-    "isort/deprecated/*",
 ]
 
 [tool.coverage.report]
@@ -123,8 +122,6 @@ dev = [
     "mypy>=1.18.2",
     "pep8-naming>=0.15.1",
     "pip>=21.1.1",
-    "pip_api>=0.0.12",
-    "pipreqs>=0.4.9",
     "portray>=1.8.0",
     "pytest>=8.4.2",
     "pytest-benchmark>=5.1.0",
