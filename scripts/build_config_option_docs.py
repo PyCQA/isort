@@ -1,9 +1,9 @@
 #! /bin/env python
 import dataclasses
 import os
+from collections.abc import Generator, Iterable
 from textwrap import dedent
 from typing import Any
-from collections.abc import Generator, Iterable
 
 from isort.main import _build_arg_parser
 from isort.settings import _DEFAULT_SETTINGS as config
