@@ -204,7 +204,6 @@ class _Config:
     profile: str = ""
     honor_noqa: bool = False
     src_paths: tuple[Path, ...] = ()
-    old_finders: bool = False
     remove_redundant_aliases: bool = False
     float_to_top: bool = False
     filter_files: bool = False
