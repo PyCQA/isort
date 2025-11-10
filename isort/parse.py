@@ -141,6 +141,9 @@ class ParsedContent(NamedTuple):
     trailing_commas: set[str]
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
@@ -451,7 +454,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if placed_module and placed_module not in imports:
                     raise MissingSection(import_module=import_from, section=placed_module)
 
-                root = imports[placed_module][type_of_import]  # type: ignore
+                root = imports[placed_module][type_of_import]
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment:
@@ -571,10 +574,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module and placed_module not in imports:
                         raise MissingSection(import_module=module, section=placed_module)
 
-                    straight_import |= imports[placed_module][type_of_import].get(  # type: ignore
-                        module, False
-                    )
-                    imports[placed_module][type_of_import][module] = straight_import  # type: ignore
+                    straight_import |= imports[placed_module][type_of_import].get(module, False)
+                    imports[placed_module][type_of_import][module] = straight_import
 
     change_count = len(out_lines) - original_line_count
 
