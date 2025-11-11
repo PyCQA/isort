@@ -339,10 +339,12 @@ def process(
                         ):
                             cimport_statement = True
 
-                        if cimport_statement != cimports or (
+                        if cimport_statement != cimports:
+                            indent = new_indent
+                        if (
                             new_indent != indent
                             and import_section
-                            and (not did_contain_imports or len(new_indent) < len(indent))
+                            and (not did_contain_imports and len(new_indent) < len(indent))
                         ):
                             indent = new_indent
                             if import_section:
@@ -420,7 +422,7 @@ def process(
 
                     if indent:
                         import_section = "".join(
-                            line[len(indent) :] for line in import_section.splitlines(keepends=True)
+                            line[len(line) - len(line.lstrip()) :] for line in import_section.splitlines(keepends=True)
                         )
 
                     parsed_content = parse.file_contents(import_section, config=config)
