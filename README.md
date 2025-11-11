@@ -275,13 +275,6 @@ pre-commit script to check Python code before committing.
 
 [More info here.](https://pycqa.github.io/isort/docs/configuration/git_hook.html)
 
-## Setuptools integration
-
-Upon installation, isort enables a `setuptools` command that checks
-Python files declared by your project.
-
-[More info here.](https://pycqa.github.io/isort/docs/configuration/setuptools_integration.html)
-
 ## Spread the word
 
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)

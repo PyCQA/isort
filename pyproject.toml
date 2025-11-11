@@ -53,12 +53,8 @@ local_scheme = "no-local-version"
 isort = "isort.main:main"
 isort-identify-imports = "isort.main:identify_imports_main"
 
-[project.entry-points."distutils.commands"]
-isort = "isort.setuptools_commands:ISortCommand"
-
 [project.optional-dependencies]
 colors = ["colorama"]
-plugins = ["setuptools"]
 
 [tool.coverage.paths]
 source = [
@@ -126,13 +122,11 @@ dev = [
     "pytest>=8.4.2",
     "pytest-benchmark>=5.1.0",
     "ruff>=0.13.3",
-    "setuptools>=75.8.0",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
     "tox>=4.30.3",
     "tox-uv>=1.28.0",
     "types-colorama>=0.4.2",
-    "types-setuptools>=70.0.0.20240523",
     "types-toml>=0.1.3",
     "uv>=0.8.23",
 ]
@@ -200,7 +194,6 @@ lint.mccabe.max-complexity = 91  # Default is 10
 "isort/hooks.py" = [ "S603" ]
 "isort/output.py" = [ "PLC0206" ]
 "isort/settings.py" = [ "PLC0414", "S603", "S607" ]
-"isort/setuptools_commands.py" = [ "RUF012" ]
 "tests/*" = [ "RUF001", "S" ]
 "tests/unit/example_crlf_file.py" = [ "F401" ]
 
