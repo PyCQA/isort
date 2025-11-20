@@ -8,7 +8,7 @@ from isort.settings import Config
 def find(
     paths: Iterable[str], config: Config, skipped: list[str], broken: list[str]
 ) -> Iterator[str]:
-    """Fines and provides an iterator for all Python source files defined in paths."""
+    """Finds and provides an iterator for all Python source files defined in paths."""
     visited_dirs: set[Path] = set()
 
     for path in paths:
