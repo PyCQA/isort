@@ -499,7 +499,10 @@ Force certain sub modules to show separately
 **Default:** `()`  
 **Config default:** `[]`  
 **Python & Config File Name:** forced_separate  
-**CLI Flags:** **Not Supported**
+**CLI Flags:**
+
+- --fs
+- --forced-separate
 
 **Examples:**
 
