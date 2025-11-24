@@ -9,6 +9,7 @@ from isort.format import format_simplified
 from . import parse, sorting, wrap
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
+from .place import module_with_reason
 from .settings import DEFAULT_CONFIG, Config
 
 
@@ -149,6 +150,9 @@ def sorted_imports(
                 ):  # pragma: no branch
                     section_output.append("")  # Empty line for black compatibility
                     section_output.append(section_comment_end)
+
+            if section in config.separate_packages:
+                section_output = _separate_packages(section_output, config)
 
             if pending_lines_before or not no_lines_before:
                 output += [""] * config.lines_between_sections
@@ -685,3 +689,37 @@ def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list
     if star_comment:
         return [*comments, star_comment]
     return comments
+
+
+def _separate_packages(section_output: list[str], config: Config) -> list[str]:
+    group_keys: set[str] = set()
+    comments_above: list[str] = []
+    processed_section_output: list[str] = []
+
+    for section_line in section_output:
+        if section_line.startswith("#"):
+            comments_above.append(section_line)
+            continue
+
+        package_name: str = section_line.split(" ")[1]
+        _, reason = module_with_reason(package_name, config)
+
+        if "Matched configured known pattern" in reason:
+            package_depth = len(reason.split(".")) - 1  # minus 1 for re.compile
+            key = ".".join(package_name.split(".")[: package_depth + 1])
+        else:
+            key = package_name.split(".")[0]
+
+        if key not in group_keys:
+            if group_keys:
+                processed_section_output.append("")
+
+            group_keys.add(key)
+
+        if comments_above:
+            processed_section_output.extend(comments_above)
+            comments_above = []
+
+        processed_section_output.append(section_line)
+
+    return processed_section_output
