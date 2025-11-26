@@ -325,6 +325,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Automatically sort all re-exports (module level __all__ collections)",
     )
+    general_group.add_argument(
+        "--list-profiles",
+        dest="list_profiles",
+        action="store_true",
+        help="Lists the available profiles and exits.",
+    )
 
     target_group.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."
@@ -466,7 +472,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--cs",
         "--combine-star",
-        dest="combine_star",
         action="store_true",
         help="Ensures that if a star import is present, "
         "nothing else is imported from that namespace.",
@@ -565,8 +570,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--ot",
         "--order-by-type",
-        dest="order_by_type",
         action="store_true",
+        dest="order_by_type",
         help="Order imports by type, which is determined by case, in addition to alphabetically.\n"
         "\n**NOTE**: type here refers to the implied type from the import name capitalization.\n"
         ' isort does not do type introspection for the imports. These "types" are simply: '
@@ -591,14 +596,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--rr",
         "--reverse-relative",
-        dest="reverse_relative",
         action="store_true",
+        dest="reverse_relative",
         help="Reverse order of relative imports.",
     )
     output_group.add_argument(
         "--reverse-sort",
-        dest="reverse_sort",
         action="store_true",
+        dest="reverse_sort",
         help="Reverses the ordering of imports.",
     )
     output_group.add_argument(
@@ -610,8 +615,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     inline_args_group.add_argument(
         "--sl",
         "--force-single-line-imports",
-        dest="force_single_line",
         action="store_true",
+        dest="force_single_line",
         help="Forces all from imports to appear on their own line",
     )
     output_group.add_argument(
@@ -624,15 +629,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--tc",
         "--trailing-comma",
-        dest="include_trailing_comma",
         action="store_true",
+        dest="include_trailing_comma",
         help="Includes a trailing comma on multi line imports that include parentheses.",
     )
     output_group.add_argument(
         "--up",
         "--use-parentheses",
-        dest="use_parentheses",
         action="store_true",
+        dest="use_parentheses",
         help="Use parentheses for line continuation on length limit instead of slashes."
         " **NOTE**: This is separate from wrap modes, and only affects how individual lines that "
         " are too long get continued, not sections of multiple imports.",
@@ -649,21 +654,21 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "--wl",
         "--wrap-length",
-        dest="wrap_length",
         type=int,
+        dest="wrap_length",
         help="Specifies how long lines that are wrapped should be, if not set line_length is used."
         "\nNOTE: wrap_length must be LOWER than or equal to line_length.",
     )
     output_group.add_argument(
         "--case-sensitive",
-        dest="case_sensitive",
         action="store_true",
+        dest="case_sensitive",
         help="Tells isort to include casing when sorting module names",
     )
     output_group.add_argument(
         "--remove-redundant-aliases",
-        dest="remove_redundant_aliases",
         action="store_true",
+        dest="remove_redundant_aliases",
         help=(
             "Tells isort to remove redundant aliases from imports, such as `import os as os`."
             " This defaults to `False` simply because some projects use these seemingly useless "
@@ -672,32 +677,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     output_group.add_argument(
         "--honor-noqa",
-        dest="honor_noqa",
         action="store_true",
+        dest="honor_noqa",
         help="Tells isort to honor noqa comments to enforce skipping those comments.",
     )
     output_group.add_argument(
         "--treat-comment-as-code",
-        dest="treat_comments_as_code",
         action="append",
+        dest="treat_comments_as_code",
         help="Tells isort to treat the specified single line comment(s) as if they are code.",
     )
     output_group.add_argument(
         "--treat-all-comment-as-code",
-        dest="treat_all_comments_as_code",
         action="store_true",
+        dest="treat_all_comments_as_code",
         help="Tells isort to treat all single line comments as if they are code.",
     )
     output_group.add_argument(
         "--formatter",
-        dest="formatter",
         type=str,
+        dest="formatter",
         help="Specifies the name of a formatting plugin to use when producing output.",
     )
     output_group.add_argument(
         "--color",
-        dest="color_output",
         action="store_true",
+        dest="color_output",
         help="Tells isort to use color in terminal output.",
     )
     output_group.add_argument(
@@ -707,15 +712,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     output_group.add_argument(
         "--star-first",
-        help="Forces star imports above others to avoid overriding directly imported variables.",
-        dest="star_first",
         action="store_true",
+        dest="star_first",
+        help="Forces star imports above others to avoid overriding directly imported variables.",
     )
     output_group.add_argument(
         "--split-on-trailing-comma",
-        help="Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode",
-        dest="split_on_trailing_comma",
         action="store_true",
+        dest="split_on_trailing_comma",
+        help="Split imports list followed by a trailing comma into VERTICAL_HANGING_INDENT mode",
     )
 
     section_group.add_argument(
@@ -727,8 +732,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     section_group.add_argument(
         "--only-sections",
         "--os",
-        dest="only_sections",
         action="store_true",
+        dest="only_sections",
         help="Causes imports to be sorted based on their sections like STDLIB, THIRDPARTY, etc. "
         "Within sections, the imports are ordered by their import style and the imports with "
         "the same style maintain their relative positions.",
@@ -736,9 +741,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     section_group.add_argument(
         "--ds",
         "--no-sections",
-        help="Put all imports into the same section bucket",
-        dest="no_sections",
         action="store_true",
+        dest="no_sections",
+        help="Put all imports into the same section bucket",
     )
     section_group.add_argument(
         "--fas",
@@ -782,30 +787,30 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     section_group.add_argument(
         "-t",
         "--top",
-        help="Force specific imports to the top of their appropriate section.",
-        dest="force_to_top",
         action="append",
+        dest="force_to_top",
+        help="Force specific imports to the top of their appropriate section.",
     )
     section_group.add_argument(
         "--combine-straight-imports",
         "--csi",
-        dest="combine_straight_imports",
         action="store_true",
+        dest="combine_straight_imports",
         help="Combines all the bare straight imports of the same section in a single line. "
         "Won't work with sections which have 'as' imports",
     )
     section_group.add_argument(
         "--nlb",
         "--no-lines-before",
-        help="Sections which should not be split with previous by empty lines",
-        dest="no_lines_before",
         action="append",
+        dest="no_lines_before",
+        help="Sections which should not be split with previous by empty lines",
     )
     section_group.add_argument(
         "--src",
         "--src-path",
-        dest="src_paths",
         action="append",
+        dest="src_paths",
         help="Add an explicitly defined source path "
         "(modules within src paths have their imports automatically categorized as first_party)."
         " Glob expansion (`*` and `**`) is supported for this option.",
@@ -813,21 +818,21 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     section_group.add_argument(
         "-b",
         "--builtin",
-        dest="known_standard_library",
         action="append",
+        dest="known_standard_library",
         help="Force isort to recognize a module as part of Python's standard library.",
     )
     section_group.add_argument(
         "--extra-builtin",
-        dest="extra_standard_library",
         action="append",
+        dest="extra_standard_library",
         help="Extra modules to be included in the list of ones in Python's standard library.",
     )
     section_group.add_argument(
         "-f",
         "--future",
-        dest="known_future_library",
         action="append",
+        dest="known_future_library",
         help="Force isort to recognize a module as part of Python's internal future compatibility "
         "libraries. WARNING: this overrides the behavior of __future__ handling and therefore"
         " can result in code that can't execute. If you're looking to add dependencies such "
@@ -838,21 +843,21 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     section_group.add_argument(
         "-o",
         "--thirdparty",
-        dest="known_third_party",
         action="append",
+        dest="known_third_party",
         help="Force isort to recognize a module as being part of a third party library.",
     )
     section_group.add_argument(
         "-p",
         "--project",
-        dest="known_first_party",
         action="append",
+        dest="known_first_party",
         help="Force isort to recognize a module as being part of the current python project.",
     )
     section_group.add_argument(
         "--known-local-folder",
-        dest="known_local_folder",
         action="append",
+        dest="known_local_folder",
         help="Force isort to recognize a module as being a local folder. "
         "Generally, this is reserved for relative imports (from . import module).",
     )
@@ -882,37 +887,37 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     # deprecated options
     deprecated_group.add_argument(
         "--recursive",
-        dest="deprecated_flags",
         action="append_const",
         const="--recursive",
+        dest="deprecated_flags",
         help=argparse.SUPPRESS,
     )
     deprecated_group.add_argument(
-        "-rc", dest="deprecated_flags", action="append_const", const="-rc", help=argparse.SUPPRESS
+        "-rc", action="append_const", const="-rc", dest="deprecated_flags", help=argparse.SUPPRESS
     )
     deprecated_group.add_argument(
         "--dont-skip",
-        dest="deprecated_flags",
         action="append_const",
         const="--dont-skip",
+        dest="deprecated_flags",
         help=argparse.SUPPRESS,
     )
     deprecated_group.add_argument(
-        "-ns", dest="deprecated_flags", action="append_const", const="-ns", help=argparse.SUPPRESS
+        "-ns", action="append_const", const="-ns", dest="deprecated_flags", help=argparse.SUPPRESS
     )
     deprecated_group.add_argument(
         "--apply",
-        dest="deprecated_flags",
         action="append_const",
         const="--apply",
+        dest="deprecated_flags",
         help=argparse.SUPPRESS,
     )
     deprecated_group.add_argument(
         "-k",
         "--keep-direct-and-as",
-        dest="deprecated_flags",
         action="append_const",
         const="--keep-direct-and-as",
+        dest="deprecated_flags",
         help=argparse.SUPPRESS,
     )
 
@@ -1006,7 +1011,7 @@ def identify_imports_main(
         default=False,
         help="If true, isort will only identify the unique top level modules imported.",
     )
-    uniqueness.add_argument(
+    uniqueness.add.argument(
         "--modules",
         dest="unique",
         action="store_const",
@@ -1014,7 +1019,7 @@ def identify_imports_main(
         default=False,
         help="If true, isort will only identify the unique modules imported.",
     )
-    uniqueness.add_argument(
+    uniqueness.add.argument(
         "--attributes",
         dest="unique",
         action="store_const",
@@ -1059,6 +1064,12 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
     arguments = parse_args(argv)
     if arguments.get("show_version"):
         print(ASCII_ART)
+        return
+
+    if arguments.get("list_profiles"):
+        print("Available profiles:")
+        for profile in profiles.keys():
+            print(f"- {profile}")
         return
 
     show_config: bool = arguments.pop("show_config", False)

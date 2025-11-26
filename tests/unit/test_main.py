@@ -1410,3 +1410,18 @@ from tests.something import something_else
 """
         )
         assert "from-type place_module for tests.something returned FIRSTPARTY" in out
+
+
+def test_list_profiles(capsys):
+    main.main(["--list-profiles"])
+    out, error = capsys.readouterr()
+    assert "Available profiles:" in out
+    assert "black" in out
+    assert "django" in out
+    assert "google" in out
+    assert "hug" in out
+    assert "open_stack" in out
+    assert "plone" in out
+    assert "pycharm" in out
+    assert "wemake" in out
+    assert not error
