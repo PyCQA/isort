@@ -5640,3 +5640,74 @@ def test_noqa_multiline_hanging_indent() -> None:
     )
     output = isort.code(test_input, line_length=120, multi_line_output=WrapModes.HANGING_INDENT)
     assert output == test_input
+
+
+@pytest.mark.parametrize(
+    (
+        "actual_imports",
+        "expected_sort",
+    ),
+    [
+        (
+            ("from __future__ import annotations\nimport __future__\n"),
+            ("from __future__ import annotations\nimport __future__\n"),
+        ),
+        (
+            (
+                "import __future__\n\n"
+                "from __future__ import generator_stop\n"
+                "from __future__ import annotations\n\n"
+                "from concurrent.futures import ThreadPoolExecutor\n\n"
+            ),
+            (
+                "from __future__ import annotations, generator_stop\n"
+                "import __future__\n\n"
+                "from concurrent.futures import ThreadPoolExecutor\n"
+            ),
+        ),
+        (
+            ("from __future__ import annotations\nimport sys\n"),
+            ("from __future__ import annotations\n\nimport sys\n"),
+        ),
+        (("import __future__\nimport sys\n"), ("import __future__\n\nimport sys\n")),
+        (
+            ("import __future__ as future\nfrom __future__ import annotations\n"),
+            ("from __future__ import annotations\nimport __future__ as future\n"),
+        ),
+        (
+            ("# Copyright 2026\nimport __future__\nfrom __future__ import annotations\n"),
+            ("# Copyright 2026\nfrom __future__ import annotations\nimport __future__\n"),
+        ),
+        (
+            ("import __future__\nfrom __future__ import *\n"),
+            ("from __future__ import *\nimport __future__\n"),
+        ),
+        (
+            (
+                "from __future__ import annotations\n"
+                "import __future__\n"
+                "from __future__ import annotations\n"
+            ),
+            ("from __future__ import annotations\nimport __future__\n"),
+        ),
+        (
+            (
+                "import sys\n"
+                "from __future__ import annotations\n"
+                "import os\n"
+                "import __future__\n"
+                "from pathlib import Path\n"
+            ),
+            (
+                "from __future__ import annotations\n"
+                "import __future__\n\n"
+                "import os\n"
+                "import sys\n"
+                "from pathlib import Path\n"
+            ),
+        ),
+    ],
+)
+def test_dunder_future_import(actual_imports: str, expected_sort: str) -> None:
+    output = isort.code(actual_imports)
+    assert output == expected_sort

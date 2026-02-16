@@ -12,6 +12,8 @@ from .identify import STATEMENT_DECLARATIONS
 from .settings import DEFAULT_CONFIG, Config
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def sorted_imports(
     parsed: parse.ParsedContent,
     config: Config = DEFAULT_CONFIG,
@@ -88,7 +90,7 @@ def sorted_imports(
         lines_between = [""] * (
             config.lines_between_types if from_modules and straight_modules else 0
         )
-        if config.from_first:
+        if config.from_first or section == "FUTURE":
             section_output = from_imports + lines_between + straight_imports
         else:
             section_output = straight_imports + lines_between + from_imports
