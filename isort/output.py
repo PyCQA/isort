@@ -153,16 +153,6 @@ def sorted_imports(
             if pending_lines_before or not no_lines_before:
                 output += [""] * config.lines_between_sections
 
-            # if (
-            #     section == "FUTURE"
-            #     and len(section_output) > 1
-            #     and not section_output[0].startswith("from")
-            # ):
-            #     print(">>> section", section)
-            #     print(">>> output", section_output)
-            #     section_output = [section_output[1], section_output[0]]
-            #     print(">>> output", section_output)
-
             output += section_output
 
             pending_lines_before = False
@@ -236,7 +226,6 @@ def sorted_imports(
             else:
                 formatted_output[imports_tail:0] = [""]
 
-    # print(">>> formatted_output", formatted_output)
     if parsed.place_imports:
         new_out_lines = []
         for index, line in enumerate(formatted_output):
