@@ -420,7 +420,8 @@ def process(
 
                     if indent:
                         import_section = "".join(
-                            line[len(indent) :] for line in import_section.splitlines(keepends=True)
+                            line[len(indent) :] if line.startswith(indent) else line
+                            for line in import_section.splitlines(keepends=True)
                         )
 
                     parsed_content = parse.file_contents(import_section, config=config)

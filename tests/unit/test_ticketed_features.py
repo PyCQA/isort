@@ -1073,3 +1073,17 @@ def use_libc_math():
 """,
         show_diff=True,
     )
+
+
+def test_unindented_comment_in_indented_block_issue_1899():
+    """Test that unindented comments before indented imports are not corrupted.
+
+    See: https://github.com/PyCQA/isort/issues/1899
+    """
+    test_input = """import sys
+
+if True:
+# this will get cut off
+    import os
+"""
+    assert isort.code(test_input) == test_input
