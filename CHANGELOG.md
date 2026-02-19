@@ -6,6 +6,8 @@ Find out more about isort's release policy [here](https://pycqa.github.io/isort/
 
 ### Unreleased
 
+### 8.0.0 February 19 2026 
+
   - Removed `--old-finders` and `--magic-placement` flags and `old_finders` configuration option. The legacy finder logic that relied on environment introspection has been removed (#2445) @joao-faria-dev
   - Update the `plone` profile to not clash with `black` (#2456) @ale-rt
 
