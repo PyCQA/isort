@@ -498,6 +498,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "length. If 0 is passed in (the global default) only line length is considered.",
     )
     output_group.add_argument(
+        "--fs",
+        "--forced-separate",
+        dest="forced_separate",
+        action="append",
+        help="Force specified sub modules to show separately. To specify multiple modules, "
+        "use the argument multiple times: --forced-separate typing --forced-separate six.",
+    )
+    output_group.add_argument(
         "-i",
         "--indent",
         help='String to place for indents defaults to "    " (4 spaces).',
