@@ -31,6 +31,7 @@ stdlib = {
     "collections",
     "colorsys",
     "compileall",
+    "compression",
     "concurrent",
     "configparser",
     "contextlib",
