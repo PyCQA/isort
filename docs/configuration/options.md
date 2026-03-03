@@ -803,6 +803,16 @@ Order imports by type, which is determined by case, in addition to alphabeticall
 - --ot
 - --order-by-type
 
+## Order By Qualified Name
+
+Order imports by their full module path. That is, `from foo.bar import wow` would be ordered before `from foo import baz` (since `foo.bar.wow` < `foo.baz`).
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** order_by_qualified_name  
+**CLI Flags:** **Not Supported**
+
 ## Atomic
 
 Ensures the output doesn't save if the resulting file contains syntax errors.

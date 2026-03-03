@@ -173,6 +173,7 @@ class _Config:
     balanced_wrapping: bool = False
     use_parentheses: bool = False
     order_by_type: bool = True
+    order_by_qualified_name: bool = False
     atomic: bool = False
     lines_before_imports: int = -1
     lines_after_imports: int = -1

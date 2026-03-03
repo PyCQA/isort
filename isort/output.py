@@ -63,10 +63,17 @@ def sorted_imports(
 
         from_modules = parsed.imports[section]["from"]
         if not config.only_sections:
+            _from_modules = from_modules
             from_modules = sorting.sort(
                 config,
                 from_modules,
-                key=lambda key: sorting.module_key(key, config, section_name=section),
+                key=lambda key: sorting.module_key(
+                    f"{key}.{min(_from_modules[key])}"
+                    if config.order_by_qualified_name and _from_modules[key]
+                    else key,
+                    config,
+                    section_name=section,
+                ),
                 reverse=config.reverse_sort,
             )
 
