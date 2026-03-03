@@ -1676,6 +1676,29 @@ def test_order_by_type() -> None:
     )
 
 
+def test_order_by_qualified_name() -> None:
+    # Without option: sorted by module name ("foo" < "foo.bar")
+    test_input = "from foo.bar import wow\nfrom foo import baz\n"
+    assert isort.code(test_input, order_by_qualified_name=False) == (
+        "from foo import baz\nfrom foo.bar import wow\n"
+    )
+    # With option: sorted by fully qualified path ("foo.bar.wow" < "foo.baz")
+    assert isort.code(test_input, order_by_qualified_name=True) == (
+        "from foo.bar import wow\nfrom foo import baz\n"
+    )
+    # Multiple imports from the same module use the first alphabetically
+    test_input = "from foo import zebra\nfrom foo.bar import wow\n"
+    assert isort.code(test_input, order_by_qualified_name=True) == (
+        "from foo.bar import wow\nfrom foo import zebra\n"
+    )
+    # Multiple imports on one line: key uses the first import name alphabetically
+    # "from foo import qux, zebra" -> key "foo.qux" > "foo.bar.wow"
+    test_input = "from foo import qux, zebra\nfrom foo.bar import wow\n"
+    assert isort.code(test_input, order_by_qualified_name=True) == (
+        "from foo.bar import wow\nfrom foo import qux, zebra\n"
+    )
+
+
 @pytest.mark.parametrize("has_body", [True, False])
 def test_custom_lines_before_import_section(has_body: bool) -> None:
     """Test the case where the number of lines to output before imports has been explicitly set."""
