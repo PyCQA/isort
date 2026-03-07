@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-from stdlibs import py38, py39, py310, py311, py312, py313, py314
+from stdlibs import py38, py39, py310, py311, py312, py313, py314, py315
 
 URL = "https://docs.python.org/{}/objects.inv"
 PATH = "isort/stdlibs/py{}.py"
@@ -13,6 +13,7 @@ VERSIONS = [
     py312,
     py313,
     py314,
+    py315,
 ]
 
 DOCSTRING = """
