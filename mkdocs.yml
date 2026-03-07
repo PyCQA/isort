@@ -1,2 +1,50 @@
-docs_dir: rtd
-site_name: "isort redirect"
+site_name: isort
+site_description: A Python utility / library to sort Python imports.
+site_url: https://pycqa.github.io/isort/
+repo_url: https://github.com/PyCQA/isort
+repo_name: PyCQA/isort
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    scheme: isort
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Quick Start:
+      - Try isort: quick_start/0.-try.md
+      - Install: quick_start/1.-install.md
+      - CLI Usage: quick_start/2.-cli.md
+      - Python API: quick_start/3.-api.md
+  - Configuration:
+      - Options: configuration/options.md
+      - Config Files: configuration/config_files.md
+      - Profiles: configuration/profiles.md
+      - Pre-commit: configuration/pre-commit.md
+      - Black Compatibility: configuration/black_compatibility.md
+      - Git Hook: configuration/git_hook.md
+      - GitHub Action: configuration/github_action.md
+      - Action Comments: configuration/action_comments.md
+      - Add/Remove Imports: configuration/add_or_remove_imports.md
+      - Custom Sections: configuration/custom_sections_and_ordering.md
+      - Multi-line Output Modes: configuration/multi_line_output_modes.md
+  - How-To Guides:
+      - Shared Profiles: howto/shared_profiles.md
+  - Major Releases:
+      - Introducing isort 5: major_releases/introducing_isort_5.md
+      - Release Policy: major_releases/release_policy.md
+  - Upgrade Guides:
+      - 5.0.0: upgrade_guides/5.0.0.md
+  - Warning & Error Codes:
+      - W0500: warning_and_error_codes/W0500.md
+  - Contributing:
+      - Contributing Guide: contributing/1.-contributing-guide.md
+      - Coding Standards: contributing/2.-coding-standard.md
+      - Code of Conduct: contributing/3.-code-of-conduct.md
+      - Acknowledgements: contributing/4.-acknowledgements.md
