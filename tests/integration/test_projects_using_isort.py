@@ -13,8 +13,6 @@ from collections.abc import Generator, Sequence
 from pathlib import Path
 from subprocess import check_call
 
-import pytest
-
 from isort.main import main
 
 
@@ -28,10 +26,6 @@ def run_isort(arguments: Generator[str, None, None] | Sequence[str]):
     main(["--check-only", "--diff", *arguments])
 
 
-@pytest.mark.xfail(
-    reason="Project is incorrectly formatted after PR #2236, should be fixed "
-    "after a release and the project formatting again."
-)
 def test_django(tmpdir):
     git_clone("https://github.com/django/django.git", tmpdir)
     run_isort(

@@ -2,11 +2,19 @@ import ast
 from typing import get_type_hints
 
 import hypothesis
-import libcst
 from hypothesis import strategies as st
-from hypothesmith import from_grammar, from_node
 
 import isort
+
+try:
+    # As of writing, libcst does not support Python 3.15. Since we only run these tests on 3.14
+    # anyway, we just skip them if libcst isn't available.
+    import libcst
+    from hypothesmith import from_grammar, from_node
+
+    skip_tests = False
+except ImportError:
+    skip_tests = True
 
 
 def _as_config(kw) -> isort.Config:
@@ -71,27 +79,33 @@ def configs(**force_strategies: st.SearchStrategy) -> st.SearchStrategy:
 
 st.register_type_strategy(isort.Config, configs())
 
+if not skip_tests:
 
-@hypothesis.example("import A\nimportA\r\n\n", isort.Config(), False)
-@hypothesis.given(
-    source_code=st.lists(
-        from_grammar(auto_target=False)
-        | from_node(auto_target=False)
-        | from_node(libcst.Import, auto_target=False)
-        | from_node(libcst.ImportFrom, auto_target=False),
-        min_size=1,
-        max_size=10,
-    ).map("\n".join),
-    config=st.builds(isort.Config),
-    disregard_skip=st.booleans(),
-)
-@hypothesis.seed(235738473415671197623909623354096762459)
-@hypothesis.settings(
-    suppress_health_check=[hypothesis.HealthCheck.too_slow, hypothesis.HealthCheck.filter_too_much]
-)
-def test_isort_is_idempotent(source_code: str, config: isort.Config, disregard_skip: bool) -> None:
-    # NOTE: if this test finds a bug, please notify @Zac-HD so that it can be added to the
-    #       Hypothesmith trophy case.  This really helps with research impact evaluations!
-    _record_targets(source_code)
-    result = isort.code(source_code, config=config, disregard_skip=disregard_skip)
-    assert result == isort.code(result, config=config, disregard_skip=disregard_skip)
+    @hypothesis.example("import A\nimportA\r\n\n", isort.Config(), False)
+    @hypothesis.given(
+        source_code=st.lists(
+            from_grammar(auto_target=False)
+            | from_node(auto_target=False)
+            | from_node(libcst.Import, auto_target=False)
+            | from_node(libcst.ImportFrom, auto_target=False),
+            min_size=1,
+            max_size=10,
+        ).map("\n".join),
+        config=st.builds(isort.Config),
+        disregard_skip=st.booleans(),
+    )
+    @hypothesis.seed(235738473415671197623909623354096762459)
+    @hypothesis.settings(
+        suppress_health_check=[
+            hypothesis.HealthCheck.too_slow,
+            hypothesis.HealthCheck.filter_too_much,
+        ]
+    )
+    def test_isort_is_idempotent(
+        source_code: str, config: isort.Config, disregard_skip: bool
+    ) -> None:
+        # NOTE: if this test finds a bug, please notify @Zac-HD so that it can be added to the
+        #       Hypothesmith trophy case.  This really helps with research impact evaluations!
+        _record_targets(source_code)
+        result = isort.code(source_code, config=config, disregard_skip=disregard_skip)
+        assert result == isort.code(result, config=config, disregard_skip=disregard_skip)
