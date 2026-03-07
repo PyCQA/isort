@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-from stdlibs import py38, py39, py310, py311, py312, py313, py314
+from stdlibs import py38, py39, py310, py311, py312, py313, py314, py315
 
 PATH = "isort/stdlibs/py{}.py"
 VERSIONS = [
@@ -12,6 +12,7 @@ VERSIONS = [
     py312,
     py313,
     py314,
+    py315,
 ]
 
 DOCSTRING = """
