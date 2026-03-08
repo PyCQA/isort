@@ -294,7 +294,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     import_string += line_separator + line
                     raw_lines.append(line)
             else:
-                while line.strip().endswith("\\"):
+                while line.strip().endswith("\\") and index < line_count:
                     line, new_comment = parse_comments(in_lines[index])
                     line = line.lstrip()
                     index += 1
