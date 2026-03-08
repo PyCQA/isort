@@ -1410,3 +1410,41 @@ from tests.something import something_else
 """
         )
         assert "from-type place_module for tests.something returned FIRSTPARTY" in out
+
+
+def test_stdin_disregards_skip(tmp_path: pathlib.Path, capsys):
+    """Ensure that skip options are disregarded when sorting streamed (stdin) input.
+
+    When isort is used to sort a streamed file (e.g. via editor integration),
+    skip conditions such as --skip-gitignore should not prevent the file from
+    being processed, as the file contents are already provided explicitly.
+    See: https://github.com/PyCQA/isort/pull/2002
+    """
+    import_content = "\nimport b\nimport a\n"
+    sorted_content = "\nimport a\nimport b\n"
+
+    # Set up a git repo with a .gitignore that would normally skip the file
+    subprocess.run(["git", "init", str(tmp_path)], capture_output=True, check=True)
+    (tmp_path / ".gitignore").write_text("file.py")
+
+    input_stream = as_stream(import_content)
+
+    # With --skip-gitignore and --filename pointing to an ignored file,
+    # the stream should still be sorted (disregard_skip=True for stdin)
+    main.main(
+        ["-", "--skip-gitignore", "--filename", str(tmp_path / "file.py")],
+        stdin=input_stream,
+    )
+    out, _ = capsys.readouterr()
+    assert out == sorted_content
+
+    # Also verify --check mode disregards skip for stdin
+    input_stream = as_stream(import_content)
+    with pytest.raises(SystemExit) as exc_info:
+        main.main(
+            ["-", "--skip-gitignore", "--filename", str(tmp_path / "file.py"), "--check"],
+            stdin=input_stream,
+        )
+    assert exc_info.value.code != 0
+    _, err = capsys.readouterr()
+    assert "incorrectly sorted" in err
