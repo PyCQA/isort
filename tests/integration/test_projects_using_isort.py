@@ -44,6 +44,9 @@ def test_plone(tmpdir):
     run_isort([str(tmpdir / "src"), "--skip", "languagefallback.py"])
 
 
+@pytest.mark.skip(
+    "Skip for now as #2295 introduce a breaking change. Can be re-enabled after pandas has updated."
+)
 def test_pandas(tmpdir):
     git_clone("https://github.com/pandas-dev/pandas.git", tmpdir)
     run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py"))
