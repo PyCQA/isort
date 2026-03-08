@@ -5475,6 +5475,58 @@ def test_split_on_trailing_comma_wih_as() -> None:
     assert output == expected_output
 
 
+def test_split_on_trailing_comma_stable_with_mixed_as_imports() -> None:
+    """Regression test for https://github.com/PyCQA/isort/issues/2352.
+
+    isort should produce stable output when a module has both aliased and non-aliased
+    imports with --profile black (which enables split_on_trailing_comma). A single
+    non-aliased import remaining after the aliased imports should not be force-wrapped
+    into multi-line format merely because a trailing comma was recorded for the module.
+    """
+    # Test case from the original issue report
+    test_input = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+from django.db.models.sql.compiler import SQLUpdateCompiler
+"""
+    expected_output = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+from django.db.models.sql.compiler import SQLUpdateCompiler
+"""
+    output = isort.code(test_input, profile="black", known_first_party=["django"])
+    assert output == expected_output
+
+    # Verify stability: running isort a second time should not change the output
+    output2 = isort.code(output, profile="black", known_first_party=["django"])
+    assert output2 == expected_output
+
+    # Test the stability scenario: aliased import with trailing comma should not
+    # cause the following non-aliased import to be force-wrapped
+    test_input2 = """from another_file_aaaaaaaaaaaaaaaaaa import (
+    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
+)
+from another_file_aaaaaaaaaaaaaaaaaa import some_func
+"""
+    expected_output2 = """from another_file_aaaaaaaaaaaaaaaaaa import (
+    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
+)
+from another_file_aaaaaaaaaaaaaaaaaa import some_func
+"""
+    output3 = isort.code(test_input2, profile="black")
+    assert output3 == expected_output2
+
+    # Verify stability
+    output3b = isort.code(output3, profile="black")
+    assert output3b == expected_output2
+
+
 def test_infinite_loop_in_unmatched_parenthesis() -> None:
     test_input = "from os import ("
 
