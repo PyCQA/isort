@@ -629,7 +629,7 @@ def test_float_to_top_should_respect_existing_newlines_between_imports_issue_150
     See: https://github.com/PyCQA/isort/issues/1502
     """
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 import a
@@ -640,7 +640,7 @@ x = 1
         show_diff=True,
     )
     assert isort.check_code(
-        """#!/bin/bash
+        """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -653,7 +653,7 @@ x = 1
     )
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -664,7 +664,7 @@ x = 1
             float_to_top=True,
             add_imports=["import b"],
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -677,7 +677,7 @@ x = 1
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -689,7 +689,7 @@ import a
 """,
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import a
 
@@ -701,7 +701,7 @@ def my_function():
 
     assert (
         isort.code(
-            """#!/bin/bash
+            """#!/usr/bin/env bash
 '''My comment'''
 
 
@@ -711,7 +711,7 @@ def my_function():
             add_imports=["import os"],
             float_to_top=True,
         )
-        == """#!/bin/bash
+        == """#!/usr/bin/env bash
 '''My comment'''
 import os
 
@@ -1072,4 +1072,126 @@ def use_libc_math():
     return math.ceil(5.5)
 """,
         show_diff=True,
+    )
+
+
+def test_unindented_comment_in_indented_block_issue_1899():
+    """Test that unindented comments before indented imports are not corrupted.
+
+    See: https://github.com/PyCQA/isort/issues/1899
+    """
+    test_input = """import sys
+
+if True:
+# this will get cut off
+    import os
+"""
+    assert isort.code(test_input) == test_input
+
+
+def test_sort_separate_packages_issue_2104():
+    """
+    Test to ensure that packages within a section can be separated by blank lines.
+    See: https://github.com/PyCQA/isort/issues/2104
+    """
+
+    # Base case as described in issue
+    assert (
+        isort.code(
+            """
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+from django_filters import BooleanFilter
+from junitparser import JUnitXml
+from junitparser import TestSuite
+from loguru import logger
+""",
+            force_single_line=True,
+            separate_packages=["THIRDPARTY"],
+        )
+        == """
+import os
+import sys
+
+from django.db.models.signals import m2m_changed
+from django.utils import functional
+
+from django_filters import BooleanFilter
+
+from junitparser import JUnitXml
+from junitparser import TestSuite
+
+from loguru import logger
+"""
+    )
+
+    # Check that multiline comments aren't broken up
+    assert (
+        isort.code(
+            """
+from junitparser import TestSuite
+# Some multiline
+# comment
+from loguru import logger
+""",
+            force_single_line=True,
+            separate_packages=["THIRDPARTY"],
+        )
+        == """
+from junitparser import TestSuite
+
+# Some multiline
+# comment
+from loguru import logger
+"""
+    )
+
+    # Check it works for custom sections
+    assert (
+        isort.code(
+            """
+import os
+from package2 import bar
+from package1 import foo
+            """,
+            force_single_line=True,
+            known_MYPACKAGES=["package1", "package2"],
+            sections=["STDLIB", "MYPACKAGES"],
+            separate_packages=["MYPACKAGES"],
+        )
+        == """
+import os
+
+from package1 import foo
+
+from package2 import bar
+"""
+    )
+
+    # Check it works for packages with deeper nesting
+    assert (
+        isort.code(
+            """
+import os
+from package2 import bar
+from package1.a.b import foo
+from package1.a.c import baz
+            """,
+            force_single_line=True,
+            known_MYPACKAGES=["package1.a", "package2"],
+            sections=["STDLIB", "MYPACKAGES"],
+            separate_packages=["MYPACKAGES"],
+        )
+        == """
+import os
+
+from package1.a.b import foo
+
+from package1.a.c import baz
+
+from package2 import bar
+"""
     )

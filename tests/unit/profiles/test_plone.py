@@ -17,7 +17,6 @@ from plone.testing import z2
 
 import plone.app.multilingualindexes
 
-
 PAMI_FIXTURE = PloneWithPackageLayer(
     bases=(PLONE_APP_MULTILINGUAL_PRESET_FIXTURE,),
     name="PAMILayer:Fixture",
@@ -54,7 +53,6 @@ from zope.component import getMultiAdapter
 from zope.component import queryAdapter
 from zope.globalrequest import getRequest
 
-
 logger = getLogger(__name__)
 """
     )
@@ -68,8 +66,39 @@ from zope.interface import provider
 
 import logging
 
-
 logger = logging.getLogger(__name__)
+
+"""
+    )
+
+
+def test_plone_code_snippet_four():
+    plone_isort_test(
+        """# -*- coding: utf-8 -*-
+from plone.app.querystring.interfaces import IQueryModifier
+from zope.interface import provider
+
+import logging
+
+
+def my_function():
+    pass
+
+"""
+    )
+
+
+def test_plone_code_snippet_five():
+    plone_isort_test(
+        """# -*- coding: utf-8 -*-
+from plone.app.querystring.interfaces import IQueryModifier
+from zope.interface import provider
+
+import logging
+
+
+class MyClass:
+    pass
 
 """
     )

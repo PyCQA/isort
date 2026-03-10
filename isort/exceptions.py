@@ -2,7 +2,7 @@
 
 from functools import partial
 from pathlib import Path
-from typing import Any, Dict, List, Type, Union
+from typing import Any
 
 from .profiles import profiles
 
@@ -31,8 +31,7 @@ class ExistingSyntaxErrors(ISortError):
 
     def __init__(self, file_path: str):
         super().__init__(
-            f"isort was told to sort imports within code that contains syntax errors: "
-            f"{file_path}."
+            f"isort was told to sort imports within code that contains syntax errors: {file_path}."
         )
         self.file_path = file_path
 
@@ -91,7 +90,7 @@ class ProfileDoesNotExist(ISortError):
 class SortingFunctionDoesNotExist(ISortError):
     """Raised when the specified sorting function isn't available"""
 
-    def __init__(self, sort_order: str, available_sort_orders: List[str]):
+    def __init__(self, sort_order: str, available_sort_orders: list[str]):
         super().__init__(
             f"Specified sort_order of {sort_order} does not exist. "
             f"Available sort_orders: {','.join(available_sort_orders)}."
@@ -113,7 +112,7 @@ class LiteralParsingFailure(ISortError):
     the given data structure.
     """
 
-    def __init__(self, code: str, original_error: Union[Exception, Type[Exception]]):
+    def __init__(self, code: str, original_error: Exception | type[Exception]):
         super().__init__(
             f"isort failed to parse the given literal {code}. It's important to note "
             "that isort literal sorting only supports simple literals parsable by "
@@ -164,7 +163,7 @@ class UnsupportedSettings(ISortError):
     def _format_option(name: str, value: Any, source: str) -> str:
         return f"\t- {name} = {value}  (source: '{source}')"
 
-    def __init__(self, unsupported_settings: Dict[str, Dict[str, str]]):
+    def __init__(self, unsupported_settings: dict[str, dict[str, str]]):
         errors = "\n".join(
             self._format_option(name, **option) for name, option in unsupported_settings.items()
         )
@@ -181,7 +180,7 @@ class UnsupportedSettings(ISortError):
 class UnsupportedEncoding(ISortError):
     """Raised when isort encounters an encoding error while trying to read a file"""
 
-    def __init__(self, filename: Union[str, Path]):
+    def __init__(self, filename: str | Path):
         super().__init__(f"Unknown or unsupported encoding in {filename}")
         self.filename = filename
 

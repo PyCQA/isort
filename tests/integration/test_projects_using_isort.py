@@ -9,9 +9,9 @@ Having your project tested here is the most sure way to keep those regressions f
 
 from __future__ import annotations
 
+from collections.abc import Generator, Sequence
 from pathlib import Path
 from subprocess import check_call
-from typing import Generator, Sequence
 
 import pytest
 

@@ -1,7 +1,4 @@
-from typing import List, Optional, Tuple
-
-
-def parse(line: str) -> Tuple[str, str]:
+def parse(line: str) -> tuple[str, str]:
     """Parses import lines for comments and returns back the
     import statement and the associated comment.
     """
@@ -13,7 +10,7 @@ def parse(line: str) -> Tuple[str, str]:
 
 
 def add_to_line(
-    comments: Optional[List[str]],
+    comments: list[str] | None,
     original_string: str = "",
     removed: bool = False,
     comment_prefix: str = "",
@@ -25,7 +22,7 @@ def add_to_line(
     if not comments:
         return original_string
 
-    unique_comments: List[str] = []
+    unique_comments: list[str] = []
     for comment in comments:
         if comment not in unique_comments:
             unique_comments.append(comment)

@@ -22,8 +22,8 @@ def test_import_statement():
 
 
 @pytest.mark.parametrize(
-    "multi_line_output, expected",
-    (
+    ("multi_line_output", "expected"),
+    [
         (
             WrapModes.VERTICAL_HANGING_INDENT,  # type: ignore
             """from a import (
@@ -35,7 +35,7 @@ def test_import_statement():
             """from a import (
     b as c)  # comment that is long enough that this import doesn't fit in one line (parens)""",
         ),
-    ),
+    ],
 )
 def test_line__comment_with_brackets__expects_unchanged_comment(multi_line_output, expected):
     content = (

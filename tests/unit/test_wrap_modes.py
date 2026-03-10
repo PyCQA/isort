@@ -16,52 +16,46 @@ def test_auto_saved():
     """hypothesis_auto tests cases that have been saved to ensure they run each test cycle"""
     assert (
         wrap_modes.noqa(
-            **{
-                "comment_prefix": "-\U000bf82c\x0c\U0004608f\x10%",
-                "comments": [],
-                "imports": [],
-                "include_trailing_comma": False,
-                "indent": "0\x19",
-                "line_length": -19659,
-                "line_separator": "\x15\x0b\U00086494\x1d\U000e00a2\U000ee216\U0006708a\x03\x1f",
-                "remove_comments": False,
-                "statement": "\U00092452",
-                "white_space": "\U000a7322\U000c20e3-\U0010eae4\x07\x14\U0007d486",
-            }
+            comment_prefix="-\U000bf82c\x0c\U0004608f\x10%",
+            comments=[],
+            imports=[],
+            include_trailing_comma=False,
+            indent="0\x19",
+            line_length=-19659,
+            line_separator="\x15\x0b\U00086494\x1d\U000e00a2\U000ee216\U0006708a\x03\x1f",
+            remove_comments=False,
+            statement="\U00092452",
+            white_space="\U000a7322\U000c20e3-\U0010eae4\x07\x14\U0007d486",
         )
         == "\U00092452-\U000bf82c\x0c\U0004608f\x10% NOQA"
     )
     assert (
         wrap_modes.noqa(
-            **{
-                "comment_prefix": '\x12\x07\U0009e994🁣"\U000ae787\x0e',
-                "comments": ["\x00\U0001ae99\U0005c3e7\U0004d08e", "\x1e", "", ""],
-                "imports": ["*"],
-                "include_trailing_comma": True,
-                "indent": "",
-                "line_length": 31492,
-                "line_separator": "\U00071610\U0005bfbc",
-                "remove_comments": False,
-                "statement": "",
-                "white_space": "\x08\x01ⷓ\x16%\U0006cd8c",
-            }
+            comment_prefix='\x12\x07\U0009e994🁣"\U000ae787\x0e',
+            comments=["\x00\U0001ae99\U0005c3e7\U0004d08e", "\x1e", "", ""],
+            imports=["*"],
+            include_trailing_comma=True,
+            indent="",
+            line_length=31492,
+            line_separator="\U00071610\U0005bfbc",
+            remove_comments=False,
+            statement="",
+            white_space="\x08\x01ⷓ\x16%\U0006cd8c",
         )
         == '*\x12\x07\U0009e994🁣"\U000ae787\x0e \x00\U0001ae99\U0005c3e7\U0004d08e \x1e  '
     )
     assert (
         wrap_modes.noqa(
-            **{
-                "comment_prefix": "  #",
-                "comments": ["NOQA", "THERE"],
-                "imports": [],
-                "include_trailing_comma": False,
-                "indent": "0\x19",
-                "line_length": -19659,
-                "line_separator": "\n",
-                "remove_comments": False,
-                "statement": "hi",
-                "white_space": " ",
-            }
+            comment_prefix="  #",
+            comments=["NOQA", "THERE"],
+            imports=[],
+            include_trailing_comma=False,
+            indent="0\x19",
+            line_length=-19659,
+            line_separator="\n",
+            remove_comments=False,
+            statement="hi",
+            white_space=" ",
         )
         == "hi  # NOQA THERE"
     )
@@ -94,9 +88,9 @@ from kopf.structs import bodies, configuration, containers, diffs, \\
     )
 
 
-@pytest.mark.parametrize("include_trailing_comma", (False, True))
-@pytest.mark.parametrize("line_length", (18, 19))
-@pytest.mark.parametrize("multi_line_output", (4, 5))
+@pytest.mark.parametrize("include_trailing_comma", [False, True])
+@pytest.mark.parametrize("line_length", [18, 19])
+@pytest.mark.parametrize("multi_line_output", [4, 5])
 def test_vertical_grid_size_near_line_length(
     multi_line_output: int,
     line_length: int,
@@ -259,7 +253,7 @@ def test_fuzz_hanging_indent(
         reject()
 
 
-@pytest.mark.parametrize("include_trailing_comma", (True, False))
+@pytest.mark.parametrize("include_trailing_comma", [True, False])
 def test_hanging_indent__with_include_trailing_comma__expect_same_result(include_trailing_comma):
     result = isort.wrap_modes.hanging_indent(
         statement="from datetime import ",

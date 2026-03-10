@@ -58,7 +58,7 @@ def configs() -> st.SearchStrategy:
         "force_grid_wrap": st.integers(0, 20),
         "profile": st.sampled_from(sorted(isort.settings.profiles)),
         "sort_order": st.sampled_from(sorted(("native", "natural", "natural_plus"))),
-        "py_version": st.sampled_from(("auto",) + isort.settings.VALID_PY_TARGETS),
+        "py_version": st.sampled_from(("auto", *isort.settings.VALID_PY_TARGETS)),
     }
     kwargs = {**inferred_kwargs, **specific}
     return st.fixed_dictionaries({}, optional=kwargs).map(_as_config)
@@ -896,7 +896,6 @@ else:  # 2.x
                 "profile": "",
                 "honor_noqa": False,
                 "src_paths": frozenset(),
-                "old_finders": False,
                 "remove_redundant_aliases": False,
                 "float_to_top": False,
                 "filter_files": False,
@@ -980,7 +979,6 @@ else:  # 2.x
         directory="/home/abuild/rpmbuild/BUILD/isort-5.11.0",
         profile="",
         honor_noqa=False,
-        old_finders=False,
         remove_redundant_aliases=False,
         float_to_top=False,
         filter_files=False,
@@ -1761,7 +1759,6 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
                 "profile": "",
                 "honor_noqa": False,
                 "src_paths": frozenset(),
-                "old_finders": False,
                 "remove_redundant_aliases": False,
                 "float_to_top": False,
                 "filter_files": False,
@@ -1845,7 +1842,6 @@ def test_isort_is_idempotent(config: isort.Config, disregard_skip: bool) -> None
         directory="/home/abuild/rpmbuild/BUILD/isort-5.11.0",
         profile="",
         honor_noqa=False,
-        old_finders=False,
         remove_redundant_aliases=False,
         float_to_top=False,
         filter_files=False,

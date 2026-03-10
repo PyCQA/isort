@@ -9,7 +9,7 @@ To use isort's official pre-commit integration add the following config:
 
 ```yaml
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.1.0
     hooks:
       - id: isort
         name: isort (python)
@@ -20,7 +20,7 @@ over different file types (ex: python vs cython vs pyi) you can do so with the f
 
 ```yaml
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.1.0
     hooks:
       - id: isort
         name: isort (python)

@@ -5,10 +5,12 @@ import functools
 import json
 import os
 import sys
+from collections.abc import Sequence
+from contextlib import AbstractContextManager, nullcontext
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any
 from warnings import warn
 
 from . import __version__, api, files, sections
@@ -79,7 +81,7 @@ def sort_imports(
     ask_to_apply: bool = False,
     write_to_stdout: bool = False,
     **kwargs: Any,
-) -> Optional[SortAttempt]:
+) -> SortAttempt | None:
     incorrectly_sorted: bool = False
     skipped: bool = False
     try:
@@ -102,11 +104,11 @@ def sort_imports(
             skipped = True
         return SortAttempt(incorrectly_sorted, skipped, True)
     except (OSError, ValueError) as error:
-        warn(f"Unable to parse file {file_name} due to {error}")
+        warn(f"Unable to parse file {file_name} due to {error}", stacklevel=2)
         return None
     except UnsupportedEncoding:
         if config.verbose:
-            warn(f"Encoding not supported for {file_name}")
+            warn(f"Encoding not supported for {file_name}", stacklevel=2)
         return SortAttempt(incorrectly_sorted, skipped, False)
     except ISortError as error:
         _print_hard_fail(config, message=str(error))
@@ -117,7 +119,7 @@ def sort_imports(
 
 
 def _print_hard_fail(
-    config: Config, offending_file: Optional[str] = None, message: Optional[str] = None
+    config: Config, offending_file: str | None = None, message: str | None = None
 ) -> None:
     """Fail on unrecoverable exception with custom message."""
     message = message or (
@@ -283,13 +285,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         type=str,
         help="Base profile type to use for configuration. "
         f"Profiles include: {', '.join(profiles.keys())}. As well as any shared profiles.",
-    )
-    general_group.add_argument(
-        "--old-finders",
-        "--magic-placement",
-        dest="old_finders",
-        action="store_true",
-        help="Use the old deprecated finder logic that relies on environment introspection magic.",
     )
     general_group.add_argument(
         "-j",
@@ -876,7 +871,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--python-version",
         action="store",
         dest="py_version",
-        choices=tuple(VALID_PY_TARGETS) + ("auto",),
+        choices=(*tuple(VALID_PY_TARGETS), "auto"),
         help="Tells isort to set the known standard library based on the specified Python "
         "version. Default is to assume any Python 3 version could be the target, and use a union "
         "of all stdlib modules across versions. If auto is specified, the version of the "
@@ -924,7 +919,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
     remapped_deprecated_args = []
     for index, arg in enumerate(argv):
@@ -958,7 +953,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     return arguments
 
 
-def _preconvert(item: Any) -> Union[str, List[Any]]:
+def _preconvert(item: Any) -> str | list[Any]:
     """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
@@ -972,7 +967,7 @@ def _preconvert(item: Any) -> Union[str, List[Any]]:
 
 
 def identify_imports_main(
-    argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None
+    argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None
 ) -> None:
     parser = argparse.ArgumentParser(
         description="Get all import definitions from a given file."
@@ -1057,7 +1052,10 @@ def identify_imports_main(
             print(str(identified_import))
 
 
-def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = None) -> None:
+# Ignore DeepSource cyclomatic complexity check for this function. It is one
+# the main entrypoints so sort of expected to be complex.
+# skipcq: PY-R1000
+def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
         print(ASCII_ART)
@@ -1079,7 +1077,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         venv = arguments["virtual_env"]
         arguments["virtual_env"] = os.path.abspath(venv)
         if not os.path.isdir(arguments["virtual_env"]):
-            warn(f"virtual_env dir does not exist: {arguments['virtual_env']}")
+            warn(f"virtual_env dir does not exist: {arguments['virtual_env']}", stacklevel=2)
 
     file_names = arguments.pop("files", [])
     if not file_names and not show_config:
@@ -1112,7 +1110,7 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
     all_attempt_broken = False
     no_valid_encodings = False
 
-    config_trie: Optional[Trie] = None
+    config_trie: Trie | None = None
     if resolve_all_configs:
         config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
@@ -1168,14 +1166,14 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             )
             printer.error("Filename override is intended only for stream (-) sorting.")
             sys.exit(1)
-        skipped: List[str] = []
-        broken: List[str] = []
+        skipped: list[str] = []
+        broken: list[str] = []
 
         if config.filter_files:
             filtered_files = []
             for file_name in file_names:
                 if config.is_skipped(Path(file_name)):
-                    skipped.append(file_name)
+                    skipped.append(str(Path(file_name).resolve()))
                 else:
                     filtered_files.append(file_name)
             file_names = filtered_files
@@ -1192,58 +1190,65 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
             print(ASCII_ART)
 
         if jobs:
-            import multiprocessing
+            import multiprocessing.pool  # noqa: PLC0415
 
-            executor = multiprocessing.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
-            attempt_iterator = executor.imap(
-                functools.partial(
-                    sort_imports,
-                    config=config,
-                    check=check,
-                    ask_to_apply=ask_to_apply,
-                    show_diff=show_diff,
-                    write_to_stdout=write_to_stdout,
-                    extension=ext_format,
-                    config_trie=config_trie,
-                ),
-                file_names,
+            executor_ctx: multiprocessing.pool.Pool | AbstractContextManager[None] = (
+                multiprocessing.pool.Pool(jobs if jobs > 0 else multiprocessing.cpu_count())
             )
         else:
-            # https://github.com/python/typeshed/pull/2814
-            attempt_iterator = (
-                sort_imports(  # type: ignore
-                    file_name,
-                    config=config,
-                    check=check,
-                    ask_to_apply=ask_to_apply,
-                    show_diff=show_diff,
-                    write_to_stdout=write_to_stdout,
-                    extension=ext_format,
-                    config_trie=config_trie,
-                )
-                for file_name in file_names
-            )
+            executor_ctx = nullcontext()
 
-        # If any files passed in are missing considered as error, should be removed
-        is_no_attempt = True
-        any_encoding_valid = False
-        for sort_attempt in attempt_iterator:
-            if not sort_attempt:
-                continue  # pragma: no cover - shouldn't happen, satisfies type constraint
-            incorrectly_sorted = sort_attempt.incorrectly_sorted
-            if arguments.get("check", False) and incorrectly_sorted:
-                wrong_sorted_files = True
-            if sort_attempt.skipped:
-                num_skipped += (
-                    1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+        with executor_ctx as executor:
+            if executor is not None:
+                attempt_iterator = executor.imap(
+                    functools.partial(
+                        sort_imports,
+                        config=config,
+                        check=check,
+                        ask_to_apply=ask_to_apply,
+                        show_diff=show_diff,
+                        write_to_stdout=write_to_stdout,
+                        extension=ext_format,
+                        config_trie=config_trie,
+                    ),
+                    file_names,
                 )
-
-            if not sort_attempt.supported_encoding:
-                num_invalid_encoding += 1
             else:
-                any_encoding_valid = True
+                # https://github.com/python/typeshed/pull/2814
+                attempt_iterator = (
+                    sort_imports(  # type: ignore
+                        file_name,
+                        config=config,
+                        check=check,
+                        ask_to_apply=ask_to_apply,
+                        show_diff=show_diff,
+                        write_to_stdout=write_to_stdout,
+                        extension=ext_format,
+                        config_trie=config_trie,
+                    )
+                    for file_name in file_names
+                )
 
-            is_no_attempt = False
+            # If any files passed in are missing considered as error, should be removed
+            is_no_attempt = True
+            any_encoding_valid = False
+            for sort_attempt in attempt_iterator:
+                if not sort_attempt:
+                    continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+                incorrectly_sorted = sort_attempt.incorrectly_sorted
+                if arguments.get("check", False) and incorrectly_sorted:
+                    wrong_sorted_files = True
+                if sort_attempt.skipped:
+                    num_skipped += (
+                        1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
+                    )
+
+                if not sort_attempt.supported_encoding:
+                    num_invalid_encoding += 1
+                else:
+                    any_encoding_valid = True
+
+                is_no_attempt = False
 
         num_skipped += len(skipped)
         if num_skipped and not config.quiet:
@@ -1260,7 +1265,9 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if num_broken and not config.quiet:
             if config.verbose:
                 for was_broken in broken:
-                    warn(f"{was_broken} was broken path, make sure it exists correctly")
+                    warn(
+                        f"{was_broken} was broken path, make sure it exists correctly", stacklevel=2
+                    )
             print(f"Broken {num_broken} paths")
 
         if num_broken > 0 and is_no_attempt:
@@ -1272,16 +1279,19 @@ def main(argv: Optional[Sequence[str]] = None, stdin: Optional[TextIOWrapper] = 
         if remapped_deprecated_args:
             warn(
                 "W0502: The following deprecated single dash CLI flags were used and translated: "
-                f"{', '.join(remapped_deprecated_args)}!"
+                f"{', '.join(remapped_deprecated_args)}!",
+                stacklevel=2,
             )
         if deprecated_flags:
             warn(
                 "W0501: The following deprecated CLI flags were used and ignored: "
-                f"{', '.join(deprecated_flags)}!"
+                f"{', '.join(deprecated_flags)}!",
+                stacklevel=2,
             )
         warn(
             "W0500: Please see the 5.0.0 Upgrade guide: "
-            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html"
+            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
+            stacklevel=2,
         )
 
     if wrong_sorted_files:

@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from isort import io
+from isort.exceptions import UnsupportedEncoding
 
 
 class TestFile:
@@ -15,7 +16,7 @@ import Ὡ
 """
         test_file = tmpdir.join("file.py")
         test_file.write(test_file_content)
-        with pytest.raises(Exception):
+        with pytest.raises(UnicodeDecodeError):
             with io.File.read(str(test_file)) as file_handler:
                 file_handler.stream.read()
 
@@ -27,7 +28,7 @@ import Ὡ
         assert file_obj.extension == "py"
 
     def test_open(self, tmpdir):
-        with pytest.raises(Exception):
+        with pytest.raises(FileNotFoundError):
             io.File._open("THISCANTBEAREALFILEὩὩὩὩὩὩὩὩὩὩὩὩ.ὩὩὩὩὩ")
 
         def raise_arbitrary_exception(*args, **kwargs):
@@ -39,5 +40,5 @@ import Ὡ
 
         # correctly responds to error determining encoding
         with patch("tokenize.detect_encoding", raise_arbitrary_exception):
-            with pytest.raises(Exception):
+            with pytest.raises(UnsupportedEncoding):
                 io.File._open(str(test_file))

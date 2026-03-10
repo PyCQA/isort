@@ -3,10 +3,11 @@
 import dataclasses
 import re
 import tokenize
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Any, Callable, Iterator, TextIO, Union
+from typing import Any, TextIO
 
 from isort.exceptions import UnsupportedEncoding
 
@@ -20,7 +21,7 @@ class File:
     encoding: str
 
     @staticmethod
-    def detect_encoding(filename: Union[str, Path], readline: Callable[[], bytes]) -> str:
+    def detect_encoding(filename: str | Path, readline: Callable[[], bytes]) -> str:
         try:
             return tokenize.detect_encoding(readline)[0]
         except Exception:
@@ -36,7 +37,7 @@ class File:
         return self.path.suffix.lstrip(".")
 
     @staticmethod
-    def _open(filename: Union[str, Path]) -> TextIOWrapper:
+    def _open(filename: str | Path) -> TextIOWrapper:
         """Open a file in read only mode using the encoding detected by
         detect_encoding().
         """
@@ -53,7 +54,7 @@ class File:
 
     @staticmethod
     @contextmanager
-    def read(filename: Union[str, Path]) -> Iterator["File"]:
+    def read(filename: str | Path) -> Iterator["File"]:
         file_path = Path(filename).resolve()
         stream = None
         try:

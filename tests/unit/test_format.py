@@ -105,7 +105,8 @@ def test_colored_printer_diff_output(capsys):
 def test_colorama_not_available_handled_gracefully(capsys):
     with pytest.raises(SystemExit) as system_exit:
         _ = isort.format.create_terminal_printer(color=True)
-    assert system_exit.value.code and int(system_exit.value.code) > 0
+    assert system_exit.value.code
+    assert int(system_exit.value.code) > 0
     _, err = capsys.readouterr()
     assert "colorama" in err
     assert "colors extra" in err
