@@ -7,7 +7,13 @@ from functools import partial
 from pathlib import Path
 from typing import NamedTuple, TextIO
 
-from isort._parse_utils import normalize_from_import_string, normalize_line, skip_line, strip_syntax
+from isort._parse_utils import (
+    collect_import_continuation,
+    normalize_from_import_string,
+    normalize_line,
+    skip_line,
+    strip_syntax,
+)
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
@@ -110,44 +116,15 @@ def imports(
                 file_path=file_path,
             )
 
-            if "(" in line.split("#", 1)[0]:
-                while not line.split("#")[0].strip().endswith(")"):
-                    try:
-                        index, next_line = next(indexed_input)
-                    except StopIteration:
-                        break
+            def _get_next_line() -> tuple[str, str | None]:
+                nonlocal index
+                idx, next_raw = next(indexed_input)
+                index = idx
+                return parse_comments(next_raw)
 
-                    line, _ = parse_comments(next_line)
-                    import_string += "\n" + line
-            else:
-                while line.strip().endswith("\\"):
-                    try:
-                        index, next_line = next(indexed_input)
-                    except StopIteration:
-                        break
-
-                    line, _ = parse_comments(next_line)
-
-                    # Still need to check for parentheses after an escaped line
-                    if "(" in line.split("#")[0] and ")" not in line.split("#")[0]:
-                        import_string += "\n" + line
-
-                        while not line.split("#")[0].strip().endswith(")"):
-                            try:
-                                index, next_line = next(indexed_input)
-                            except StopIteration:
-                                break
-                            line, _ = parse_comments(next_line)
-                            import_string += "\n" + line
-                    else:
-                        if import_string.strip().endswith(
-                            (" import", " cimport")
-                        ) or line.strip().startswith(("import ", "cimport ")):
-                            import_string += "\n" + line
-                        else:
-                            import_string = (
-                                import_string.rstrip().rstrip("\\") + " " + line.lstrip()
-                            )
+            line, import_string, _ = collect_import_continuation(
+                line, import_string, _get_next_line
+            )
 
             if type_of_import == "from":
                 import_string, cimports = normalize_from_import_string(import_string, cimports)

@@ -9,6 +9,7 @@ from warnings import warn
 from . import place
 from ._parse_utils import (
     _infer_line_separator,
+    collect_import_continuation,
     normalize_from_import_string,
     normalize_line,
     skip_line,
@@ -36,6 +37,7 @@ if TYPE_CHECKING:
 # Re-export for backward compatibility
 __all__ = [
     "_infer_line_separator",
+    "collect_import_continuation",
     "normalize_from_import_string",
     "normalize_line",
     "skip_line",
@@ -209,77 +211,30 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
-            if "(" in line.split("#", 1)[0] and index < line_count:
-                while not line.split("#")[0].strip().endswith(")") and index < line_count:
-                    line, new_comment = parse_comments(in_lines[index])
-                    index += 1
-                    if new_comment:
-                        comments.append(new_comment)
-                    stripped_line = strip_syntax(line).strip()
-                    if (
-                        type_of_import == "from"
-                        and stripped_line
-                        and " " not in stripped_line.replace(" as ", "")
-                        and new_comment
-                    ):
-                        nested_comments[stripped_line] = comments[-1]
-                    import_string += line_separator + line
-                    raw_lines.append(line)
-            else:
-                while line.strip().endswith("\\") and index < line_count:
-                    line, new_comment = parse_comments(in_lines[index])
-                    line = line.lstrip()
-                    index += 1
-                    if new_comment:
-                        comments.append(new_comment)
+            def _get_next_line() -> tuple[str, str | None]:
+                nonlocal index
+                if index >= line_count:
+                    raise StopIteration
+                result = parse_comments(in_lines[index])
+                index += 1
+                return result
 
-                    # Still need to check for parentheses after an escaped line
-                    if (
-                        "(" in line.split("#")[0]
-                        and ")" not in line.split("#")[0]
-                        and index < line_count
-                    ):
-                        stripped_line = strip_syntax(line).strip()
-                        if (
-                            type_of_import == "from"
-                            and stripped_line
-                            and " " not in stripped_line.replace(" as ", "")
-                            and new_comment
-                        ):
-                            nested_comments[stripped_line] = comments[-1]
-                        import_string += line_separator + line
-                        raw_lines.append(line)
-
-                        while not line.split("#")[0].strip().endswith(")") and index < line_count:
-                            line, new_comment = parse_comments(in_lines[index])
-                            index += 1
-                            if new_comment:
-                                comments.append(new_comment)
-                            stripped_line = strip_syntax(line).strip()
-                            if (
-                                type_of_import == "from"
-                                and stripped_line
-                                and " " not in stripped_line.replace(" as ", "")
-                                and new_comment
-                            ):
-                                nested_comments[stripped_line] = comments[-1]
-                            import_string += line_separator + line
-                            raw_lines.append(line)
-
-                    stripped_line = strip_syntax(line).strip()
-                    if (
-                        type_of_import == "from"
-                        and stripped_line
-                        and " " not in stripped_line.replace(" as ", "")
-                        and new_comment
-                    ):
-                        nested_comments[stripped_line] = comments[-1]
-                    if import_string.strip().endswith(
-                        (" import", " cimport")
-                    ) or line.strip().startswith(("import ", "cimport ")):
-                        import_string += line_separator + line
-                    else:
-                        import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+            line, import_string, extra_lines = collect_import_continuation(
+                line, import_string, _get_next_line, line_separator
+            )
+            for extra_line, new_comment, appended_with_separator in extra_lines:
+                if new_comment:
+                    comments.append(new_comment)
+                stripped_line = strip_syntax(extra_line).strip()
+                if (
+                    type_of_import == "from"
+                    and stripped_line
+                    and " " not in stripped_line.replace(" as ", "")
+                    and new_comment
+                ):
+                    nested_comments[stripped_line] = new_comment
+                if appended_with_separator:
+                    raw_lines.append(extra_line)
 
             if type_of_import == "from":
                 cimports: bool

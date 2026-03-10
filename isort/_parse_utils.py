@@ -1,6 +1,7 @@
 """Shared low-level parsing utilities used by both parse.py and identify.py."""
 
 import re
+from collections.abc import Callable
 
 
 def _infer_line_separator(contents: str) -> str:
@@ -84,6 +85,79 @@ def skip_line(
                 should_skip = True
 
     return (bool(should_skip or in_quote), in_quote)
+
+
+def collect_import_continuation(
+    line: str,
+    import_string: str,
+    get_next_line: Callable[[], tuple[str, str | None]],
+    line_separator: str = "\n",
+) -> tuple[str, str, list[tuple[str, str | None, bool]]]:
+    """Collect continuation lines for a multi-line import statement.
+
+    Handles both parenthesised imports ``from X import (`` + newline + ``    Y, Z)``
+    and backslash-continued imports ``import Y, \\`` + newline + ``    Z``.
+
+    Args:
+        line: The first (already comment-stripped) line of the import.
+        import_string: The import string accumulated so far for this line.
+        get_next_line: Callable that returns ``(stripped_line, comment_or_None)``
+            for the next input line.  Must raise :exc:`StopIteration` when the
+            input is exhausted.
+        line_separator: Separator used when joining continuation lines
+            (default: ``"\\n"``).
+
+    Returns:
+        ``(final_line, complete_import_string, extra_lines)``
+
+        *extra_lines* is a list of ``(line, comment, appended_with_separator)``
+        tuples for every additional line consumed.  The boolean flag is
+        ``True`` when the line was appended to *import_string* with
+        *line_separator*, and ``False`` when it was joined inline with ``" "``
+        (backslash-join branch).  Callers that track per-line comments or
+        raw-line lists can inspect this list to reconstruct their own state.
+    """
+    extra_lines: list[tuple[str, str | None, bool]] = []
+
+    if "(" in line.split("#", 1)[0]:
+        while not line.split("#")[0].strip().endswith(")"):
+            try:
+                line, comment = get_next_line()
+            except StopIteration:
+                break
+            extra_lines.append((line, comment, True))
+            import_string += line_separator + line
+    else:
+        while line.strip().endswith("\\"):
+            try:
+                line, comment = get_next_line()
+            except StopIteration:
+                break
+            line = line.lstrip()
+
+            # Still need to check for parentheses after an escaped line
+            if "(" in line.split("#")[0] and ")" not in line.split("#")[0]:
+                extra_lines.append((line, comment, True))
+                import_string += line_separator + line
+
+                while not line.split("#")[0].strip().endswith(")"):
+                    try:
+                        line, comment = get_next_line()
+                    except StopIteration:
+                        break
+                    extra_lines.append((line, comment, True))
+                    import_string += line_separator + line
+            else:
+                if import_string.strip().endswith(
+                    (" import", " cimport")
+                ) or line.strip().startswith(("import ", "cimport ")):
+                    extra_lines.append((line, comment, True))
+                    import_string += line_separator + line
+                else:
+                    extra_lines.append((line, comment, False))
+                    import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+
+    return line, import_string, extra_lines
 
 
 def normalize_from_import_string(
