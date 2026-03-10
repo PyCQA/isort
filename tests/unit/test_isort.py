@@ -5574,6 +5574,25 @@ def test_reexport_not_last_line() -> None:
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
 
+def test_strip_leading_characters_with_odd_indentation() -> None:
+    """Test to ensure that isort doesn't strip away leading characters
+    with odd indentation (issue #2087).
+
+    Note: '#this comment breaks' intentionally has no space after '#' to test
+    the specific case where a zero-indented comment precedes an indented import.
+    """
+    test_input = """
+#!/usr/bin/env python3
+
+if True:
+#this comment breaks
+    # this is another comment
+    import sys
+    """
+
+    assert isort.code(test_input) == test_input
+
+
 def test_reexport_multiline_import() -> None:
     test_input = """from m import (
     bar,
