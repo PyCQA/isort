@@ -5719,6 +5719,42 @@ test
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
 
+def test_reexport_multiline_no_trailing_blank_line() -> None:
+    """Test that sort_reexports works when __all__ is followed immediately by
+    another assignment without a blank line (issue: too many values to unpack).
+    """
+    test_input = """#!/usr/bin/env python
+import importlib.metadata
+
+__all__ = [
+    "FooType",
+    "BarType",
+    "some_method",
+]
+__version__ = importlib.metadata.version("my-package")
+"""
+    expd_output = """#!/usr/bin/env python
+import importlib.metadata
+
+__all__ = ['BarType', 'FooType', 'some_method']
+__version__ = importlib.metadata.version("my-package")
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_singleline_no_trailing_blank_line() -> None:
+    """Test that sort_reexports works for single-line __all__ followed immediately
+    by another assignment without a blank line.
+    """
+    test_input = """__all__ = ('foo', 'bar')
+__version__ = '1.0'
+"""
+    expd_output = """__all__ = ('bar', 'foo')
+__version__ = '1.0'
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
 def test_noqa_multiline_hanging_indent() -> None:
     test_input = (
         "from aaaaaaa import bbbbbbbbbbbbbbbbb, ccccccccccccccccccc, dddddddddddddddd"
