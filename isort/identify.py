@@ -7,7 +7,7 @@ from functools import partial
 from pathlib import Path
 from typing import NamedTuple, TextIO
 
-from isort.parse import normalize_line, skip_line, strip_syntax
+from isort._parse_utils import normalize_line, skip_line, strip_syntax
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
