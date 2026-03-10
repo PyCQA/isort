@@ -47,6 +47,8 @@ class Import(NamedTuple):
         )
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def imports(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,

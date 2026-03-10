@@ -568,6 +568,8 @@ def _with_from_imports(
     return output
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def _with_straight_imports(
     parsed: parse.ParsedContent,
     config: Config,

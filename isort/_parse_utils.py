@@ -43,6 +43,8 @@ class SkipLineResult(NamedTuple):
     in_quote: str
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineResult:
     """Determine if a given line should be skipped."""
     should_skip = bool(in_quote)
@@ -94,7 +96,7 @@ def collect_import_continuation(
     get_next_line: Callable[[], tuple[str, str | None]],
     line_separator: str = "\n",
 ) -> ImportContinuationResult:
-    """Collect continuation lines for a multi-line import statement.
+    r"""Collect continuation lines for a multi-line import statement.
 
     Handles both parenthesised imports ``from X import (`` + newline + ``    Y, Z)``
     and backslash-continued imports ``import Y, \\`` + newline + ``    Z``.
