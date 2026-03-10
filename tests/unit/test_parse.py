@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from isort import parse
+from isort import _parse_utils, parse
 from isort.settings import Config
 
 TEST_CONTENTS = """
@@ -59,7 +59,7 @@ def test_fuzz__infer_line_separator(contents):
 
 @given(import_string=st.text())
 def test_fuzz__strip_syntax(import_string):
-    parse.strip_syntax(import_string=import_string)
+    _parse_utils.strip_syntax(import_string=import_string)
 
 
 @given(line=st.text(), config=st.builds(Config))
@@ -67,21 +67,9 @@ def test_fuzz_import_type(line, config):
     parse.import_type(line=line, config=config)
 
 
-@given(
-    line=st.text(),
-    in_quote=st.text(),
-    index=st.integers(),
-    section_comments=st.lists(st.text()),
-    needs_import=st.booleans(),
-)
-def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
-    parse.skip_line(
-        line=line,
-        in_quote=in_quote,
-        index=index,
-        section_comments=section_comments,
-        needs_import=needs_import,
-    )
+@given(line=st.text(), in_quote=st.text(), needs_import=st.booleans())
+def test_fuzz_skip_line(line, in_quote, needs_import):
+    _parse_utils.skip_line(line=line, in_quote=in_quote, needs_import=needs_import)
 
 
 @pytest.mark.parametrize(
@@ -105,6 +93,6 @@ def test_fuzz_skip_line(line, in_quote, index, section_comments, needs_import):
     ],
 )
 def test_normalize_line(raw_line, expected):
-    line, returned_raw_line = parse.normalize_line(raw_line)
+    line, returned_raw_line = _parse_utils.normalize_line(raw_line)
     assert line == expected
     assert returned_raw_line == raw_line

@@ -58,9 +58,7 @@ def imports(
 
     indexed_input = enumerate(input_stream)
     for index, raw_line in indexed_input:
-        (skipping_line, in_quote) = skip_line(
-            raw_line, in_quote=in_quote, index=index, section_comments=config.section_comments
-        )
+        (skipping_line, in_quote) = skip_line(raw_line, in_quote=in_quote)
 
         if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
             break
@@ -104,30 +102,27 @@ def imports(
             normalized_import_string = (
                 import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
             )
-            cimports: bool = (
-                " cimport " in normalized_import_string
-                or normalized_import_string.startswith("cimport")
-            )
+
             identified_import = partial(
                 Import,
                 index + 1,  # line numbers use 1 based indexing
                 raw_line.startswith((" ", "\t")),
-                cimport=cimports,
                 file_path=file_path,
             )
 
-            def _get_next_line() -> tuple[str, str | None]:
-                nonlocal index
-                idx, next_raw = next(indexed_input)
-                index = idx
-                return parse_comments(next_raw)
-
-            line, import_string, _ = collect_import_continuation(
-                line, import_string, _get_next_line
+            _, import_string, _ = collect_import_continuation(
+                line,
+                import_string,
+                # We can disregard `index` here because it is no longer accessed after this line.
+                lambda: parse_comments(next(indexed_input)[1]),
             )
 
             if type_of_import == "from":
-                import_string, cimports = normalize_from_import_string(import_string, cimports)
+                import_string = normalize_from_import_string(import_string)
+
+            cimports: bool = " cimport " in import_string or import_string.startswith("cimport")
+
+            identified_import = partial(identified_import, cimport=cimports)
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")

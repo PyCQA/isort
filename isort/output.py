@@ -6,7 +6,7 @@ from typing import Any
 
 from isort.format import format_simplified
 
-from . import parse, sorting, wrap
+from . import _parse_utils, parse, sorting, wrap
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
 from .settings import DEFAULT_CONFIG, Config
@@ -198,12 +198,8 @@ def sorted_imports(
             tail = formatted_output[imports_tail:]
 
             for index, line in enumerate(tail):  # pragma: no branch
-                should_skip, in_quote, *_ = parse.skip_line(
-                    line,
-                    in_quote="",
-                    index=len(formatted_output),
-                    section_comments=config.section_comments,
-                    needs_import=False,
+                should_skip, in_quote = _parse_utils.skip_line(
+                    line, in_quote="", needs_import=False
                 )
                 if not should_skip and line.strip():
                     if (

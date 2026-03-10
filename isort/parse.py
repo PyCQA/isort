@@ -8,7 +8,6 @@ from warnings import warn
 
 from . import place
 from ._parse_utils import (
-    _infer_line_separator,
     collect_import_continuation,
     normalize_from_import_string,
     normalize_line,
@@ -34,15 +33,13 @@ if TYPE_CHECKING:
         },
     )
 
-# Re-export for backward compatibility
-__all__ = [
-    "_infer_line_separator",
-    "collect_import_continuation",
-    "normalize_from_import_string",
-    "normalize_line",
-    "skip_line",
-    "strip_syntax",
-]
+
+def _infer_line_separator(contents: str) -> str:
+    if "\r\n" in contents:
+        return "\r\n"
+    if "\r" in contents:
+        return "\r"
+    return "\n"
 
 
 def import_type(line: str, config: Config = DEFAULT_CONFIG) -> str | None:
@@ -118,9 +115,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line = in_lines[index]
         index += 1
         statement_index = index
-        (skipping_line, in_quote) = skip_line(
-            line, in_quote=in_quote, index=index, section_comments=config.section_comments
-        )
+        (skipping_line, in_quote) = skip_line(line, in_quote=in_quote)
 
         if (
             line in config.section_comments or line in config.section_comments_end
@@ -222,23 +217,21 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             line, import_string, extra_lines = collect_import_continuation(
                 line, import_string, _get_next_line, line_separator
             )
-            for extra_line, new_comment, appended_with_separator in extra_lines:
-                if new_comment:
-                    comments.append(new_comment)
-                stripped_line = strip_syntax(extra_line).strip()
-                if (
-                    type_of_import == "from"
-                    and stripped_line
-                    and " " not in stripped_line.replace(" as ", "")
-                    and new_comment
-                ):
-                    nested_comments[stripped_line] = new_comment
-                if appended_with_separator:
-                    raw_lines.append(extra_line)
+            for extra_line in extra_lines:
+                raw_lines.append(extra_line.line)
+                # If during parsing of the continuation lines we encounter a comment, we record it.
+                if extra_line.comment:
+                    comments.append(extra_line.comment)
+                    stripped_line = strip_syntax(extra_line.line).strip()
+                    if (
+                        type_of_import == "from"
+                        and stripped_line
+                        and " " not in stripped_line.replace(" as ", "")
+                    ):
+                        nested_comments[stripped_line] = extra_line.comment
 
             if type_of_import == "from":
-                cimports: bool
-                import_string, cimports = normalize_from_import_string(import_string)
+                import_string = normalize_from_import_string(import_string)
                 if "import " not in import_string:
                     out_lines.extend(raw_lines)
                     continue
