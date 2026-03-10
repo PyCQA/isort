@@ -385,6 +385,12 @@ def _with_from_imports(
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
                     comments = None
             else:
+                # Tracks whether any aliased imports were emitted before the grouped
+                # non-aliased imports in this pass of the outer loop.  When True it
+                # suppresses the split_on_trailing_comma explode behaviour for the
+                # non-aliased group, because those imports are not the sole content
+                # of the statement and forcing them onto individual lines would break
+                # the intended output structure.
                 processed_as_imports_this_iteration = False
                 while from_imports and from_imports[0] in as_imports:
                     processed_as_imports_this_iteration = True
