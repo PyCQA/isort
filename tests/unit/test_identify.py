@@ -247,6 +247,22 @@ from os \\
             file_path=None,
         )
     ]
+    assert imports_in_code(
+        """
+from os \\
+    cimport (
+        system"""
+    ) == [
+        Import(
+            line_number=2,
+            indented=False,
+            module="os",
+            attribute="system",
+            alias=None,
+            cimport=True,
+            file_path=None,
+        )
+    ]
 
 
 def test_aliases():

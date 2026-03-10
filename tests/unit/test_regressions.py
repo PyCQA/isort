@@ -1890,3 +1890,11 @@ import_heading_thirdparty=external
     assert isort.code(code, config=settings) == isort.code(
         isort.code(code, config=settings), config=settings
     )
+
+
+def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893():
+    """Ensure isort doesn't raise an IndexError on valid input ending with a backslash
+    without a trailing newline, as was the case in issue #1893:
+    https://github.com/PyCQA/isort/issues/1893
+    """
+    assert isort.code("import os #\\") == "import os  # \\\n"

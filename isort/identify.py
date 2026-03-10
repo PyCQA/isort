@@ -7,8 +7,14 @@ from functools import partial
 from pathlib import Path
 from typing import NamedTuple, TextIO
 
-from isort.parse import normalize_line, skip_line, strip_syntax
-
+from ._parse_utils import (
+    collect_import_continuation,
+    import_type,
+    normalize_from_import_string,
+    normalize_line,
+    skip_line,
+    strip_syntax,
+)
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
@@ -41,6 +47,8 @@ class Import(NamedTuple):
         )
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def imports(
     input_stream: TextIO,
     config: Config = DEFAULT_CONFIG,
@@ -52,9 +60,7 @@ def imports(
 
     indexed_input = enumerate(input_stream)
     for index, raw_line in indexed_input:
-        (skipping_line, in_quote) = skip_line(
-            raw_line, in_quote=in_quote, index=index, section_comments=config.section_comments
-        )
+        (skipping_line, in_quote) = skip_line(raw_line, in_quote=in_quote)
 
         if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
             break
@@ -87,80 +93,32 @@ def imports(
 
         for statement in statements:
             line, _raw_line = normalize_line(statement)
-            if line.startswith(("import ", "cimport ")):
-                type_of_import = "straight"
-            elif line.startswith("from "):
-                type_of_import = "from"
-            else:
+            type_of_import = import_type(line, config)
+            if type_of_import is None:
                 continue  # pragma: no cover
 
             import_string, _ = parse_comments(line)
-            normalized_import_string = (
-                import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
-            )
-            cimports: bool = (
-                " cimport " in normalized_import_string
-                or normalized_import_string.startswith("cimport")
-            )
+
             identified_import = partial(
                 Import,
                 index + 1,  # line numbers use 1 based indexing
                 raw_line.startswith((" ", "\t")),
-                cimport=cimports,
                 file_path=file_path,
             )
 
-            if "(" in line.split("#", 1)[0]:
-                while not line.split("#")[0].strip().endswith(")"):
-                    try:
-                        index, next_line = next(indexed_input)
-                    except StopIteration:
-                        break
-
-                    line, _ = parse_comments(next_line)
-                    import_string += "\n" + line
-            else:
-                while line.strip().endswith("\\"):
-                    try:
-                        index, next_line = next(indexed_input)
-                    except StopIteration:
-                        break
-
-                    line, _ = parse_comments(next_line)
-
-                    # Still need to check for parentheses after an escaped line
-                    if "(" in line.split("#")[0] and ")" not in line.split("#")[0]:
-                        import_string += "\n" + line
-
-                        while not line.split("#")[0].strip().endswith(")"):
-                            try:
-                                index, next_line = next(indexed_input)
-                            except StopIteration:
-                                break
-                            line, _ = parse_comments(next_line)
-                            import_string += "\n" + line
-                    else:
-                        if import_string.strip().endswith(
-                            (" import", " cimport")
-                        ) or line.strip().startswith(("import ", "cimport ")):
-                            import_string += "\n" + line
-                        else:
-                            import_string = (
-                                import_string.rstrip().rstrip("\\") + " " + line.lstrip()
-                            )
+            _, import_string, _ = collect_import_continuation(
+                line,
+                import_string,
+                # We can disregard `index` here because it is no longer accessed after this line.
+                lambda: parse_comments(next(indexed_input)[1]),
+            )
 
             if type_of_import == "from":
-                import_string = (
-                    import_string.replace("import(", "import (")
-                    .replace("\\", " ")
-                    .replace("\n", " ")
-                )
-                parts = import_string.split(" cimport " if cimports else " import ")
+                import_string = normalize_from_import_string(import_string)
 
-                from_import = parts[0].split(" ")
-                import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
-                )
+            cimports: bool = " cimport " in import_string or import_string.startswith("cimport")
+
+            identified_import = partial(identified_import, cimport=cimports)
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")

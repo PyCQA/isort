@@ -1,6 +1,5 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 
-import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
@@ -8,6 +7,14 @@ from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict
 from warnings import warn
 
 from . import place
+from ._parse_utils import (
+    collect_import_continuation,
+    import_type,
+    normalize_from_import_string,
+    normalize_line,
+    skip_line,
+    strip_syntax,
+)
 from .comments import parse as parse_comments
 from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
@@ -34,94 +41,6 @@ def _infer_line_separator(contents: str) -> str:
     if "\r" in contents:
         return "\r"
     return "\n"
-
-
-def normalize_line(raw_line: str) -> tuple[str, str]:
-    """Normalizes import related statements in the provided line.
-
-    Returns (normalized_line: str, raw_line: str)
-    """
-    line = re.sub(r"from(\.+)cimport ", r"from \g<1> cimport ", raw_line)
-    line = re.sub(r"from(\.+)import ", r"from \g<1> import ", line)
-    line = line.replace("import*", "import *")
-    line = re.sub(r" (\.+)import ", r" \g<1> import ", line)
-    line = re.sub(r" (\.+)cimport ", r" \g<1> cimport ", line)
-    line = line.replace("\t", " ")
-    return line, raw_line
-
-
-def import_type(line: str, config: Config = DEFAULT_CONFIG) -> str | None:
-    """If the current line is an import line it will return its type (from or straight)"""
-    if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
-        return None
-    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
-        return None
-    if line.startswith(("import ", "cimport ")):
-        return "straight"
-    if line.startswith("from "):
-        return "from"
-    return None
-
-
-def strip_syntax(import_string: str) -> str:
-    import_string = import_string.replace("_import", "[[i]]")
-    import_string = import_string.replace("_cimport", "[[ci]]")
-    for remove_syntax in ["\\", "(", ")", ","]:
-        import_string = import_string.replace(remove_syntax, " ")
-    import_list = import_string.split()
-    for key in ("from", "import", "cimport"):
-        if key in import_list:
-            import_list.remove(key)
-    import_string = " ".join(import_list)
-    import_string = import_string.replace("[[i]]", "_import")
-    import_string = import_string.replace("[[ci]]", "_cimport")
-    return import_string.replace("{ ", "{|").replace(" }", "|}")
-
-
-def skip_line(
-    line: str,
-    in_quote: str,
-    index: int,
-    section_comments: tuple[str, ...],
-    needs_import: bool = True,
-) -> tuple[bool, str]:
-    """Determine if a given line should be skipped.
-
-    Returns back a tuple containing:
-
-    (skip_line: bool,
-     in_quote: str,)
-    """
-    should_skip = bool(in_quote)
-    if '"' in line or "'" in line:
-        char_index = 0
-        while char_index < len(line):
-            if line[char_index] == "\\":
-                char_index += 1
-            elif in_quote:
-                if line[char_index : char_index + len(in_quote)] == in_quote:
-                    in_quote = ""
-            elif line[char_index] in ("'", '"'):
-                long_quote = line[char_index : char_index + 3]
-                if long_quote in ('"""', "'''"):
-                    in_quote = long_quote
-                    char_index += 2
-                else:
-                    in_quote = line[char_index]
-            elif line[char_index] == "#":
-                break
-            char_index += 1
-
-    if ";" in line.split("#")[0] and needs_import:
-        for part in (part.strip() for part in line.split(";")):
-            if (
-                part
-                and not part.startswith("from ")
-                and not part.startswith(("import ", "cimport "))
-            ):
-                should_skip = True
-
-    return (bool(should_skip or in_quote), in_quote)
 
 
 class ParsedContent(NamedTuple):
@@ -184,9 +103,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line = in_lines[index]
         index += 1
         statement_index = index
-        (skipping_line, in_quote) = skip_line(
-            line, in_quote=in_quote, index=index, section_comments=config.section_comments
-        )
+        (skipping_line, in_quote) = skip_line(line, in_quote=in_quote)
 
         if (
             line in config.section_comments or line in config.section_comments_end
@@ -277,101 +194,35 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
-            if "(" in line.split("#", 1)[0] and index < line_count:
-                while not line.split("#")[0].strip().endswith(")") and index < line_count:
-                    line, new_comment = parse_comments(in_lines[index])
-                    index += 1
-                    if new_comment:
-                        comments.append(new_comment)
-                    stripped_line = strip_syntax(line).strip()
+            def _get_next_line() -> tuple[str, str | None]:
+                nonlocal index
+                if index >= line_count:
+                    raise StopIteration
+                result = parse_comments(in_lines[index])
+                index += 1
+                return result
+
+            line, import_string, extra_lines = collect_import_continuation(
+                line, import_string, _get_next_line, line_separator
+            )
+            for extra_line in extra_lines:
+                raw_lines.append(extra_line.line)
+                # If during parsing of the continuation lines we encounter a comment, we record it.
+                if extra_line.comment:
+                    comments.append(extra_line.comment)
+                    stripped_line = strip_syntax(extra_line.line).strip()
                     if (
                         type_of_import == "from"
                         and stripped_line
                         and " " not in stripped_line.replace(" as ", "")
-                        and new_comment
                     ):
-                        nested_comments[stripped_line] = comments[-1]
-                    import_string += line_separator + line
-                    raw_lines.append(line)
-            else:
-                while line.strip().endswith("\\"):
-                    line, new_comment = parse_comments(in_lines[index])
-                    line = line.lstrip()
-                    index += 1
-                    if new_comment:
-                        comments.append(new_comment)
-
-                    # Still need to check for parentheses after an escaped line
-                    if (
-                        "(" in line.split("#")[0]
-                        and ")" not in line.split("#")[0]
-                        and index < line_count
-                    ):
-                        stripped_line = strip_syntax(line).strip()
-                        if (
-                            type_of_import == "from"
-                            and stripped_line
-                            and " " not in stripped_line.replace(" as ", "")
-                            and new_comment
-                        ):
-                            nested_comments[stripped_line] = comments[-1]
-                        import_string += line_separator + line
-                        raw_lines.append(line)
-
-                        while not line.split("#")[0].strip().endswith(")") and index < line_count:
-                            line, new_comment = parse_comments(in_lines[index])
-                            index += 1
-                            if new_comment:
-                                comments.append(new_comment)
-                            stripped_line = strip_syntax(line).strip()
-                            if (
-                                type_of_import == "from"
-                                and stripped_line
-                                and " " not in stripped_line.replace(" as ", "")
-                                and new_comment
-                            ):
-                                nested_comments[stripped_line] = comments[-1]
-                            import_string += line_separator + line
-                            raw_lines.append(line)
-
-                    stripped_line = strip_syntax(line).strip()
-                    if (
-                        type_of_import == "from"
-                        and stripped_line
-                        and " " not in stripped_line.replace(" as ", "")
-                        and new_comment
-                    ):
-                        nested_comments[stripped_line] = comments[-1]
-                    if import_string.strip().endswith(
-                        (" import", " cimport")
-                    ) or line.strip().startswith(("import ", "cimport ")):
-                        import_string += line_separator + line
-                    else:
-                        import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+                        nested_comments[stripped_line] = extra_line.comment
 
             if type_of_import == "from":
-                cimports: bool
-                import_string = (
-                    import_string.replace("import(", "import (")
-                    .replace("\\", " ")
-                    .replace("\n", " ")
-                )
+                import_string = normalize_from_import_string(import_string)
                 if "import " not in import_string:
                     out_lines.extend(raw_lines)
                     continue
-
-                if " cimport " in import_string:
-                    parts = import_string.split(" cimport ")
-                    cimports = True
-
-                else:
-                    parts = import_string.split(" import ")
-                    cimports = False
-
-                from_import = parts[0].split(" ")
-                import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
-                )
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
