@@ -7,7 +7,7 @@ from functools import partial
 from pathlib import Path
 from typing import NamedTuple, TextIO
 
-from isort._parse_utils import normalize_line, skip_line, strip_syntax
+from isort._parse_utils import normalize_from_import_string, normalize_line, skip_line, strip_syntax
 
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
@@ -150,17 +150,7 @@ def imports(
                             )
 
             if type_of_import == "from":
-                import_string = (
-                    import_string.replace("import(", "import (")
-                    .replace("\\", " ")
-                    .replace("\n", " ")
-                )
-                parts = import_string.split(" cimport " if cimports else " import ")
-
-                from_import = parts[0].split(" ")
-                import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
-                )
+                import_string, cimports = normalize_from_import_string(import_string, cimports)
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")

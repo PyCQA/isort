@@ -84,3 +84,41 @@ def skip_line(
                 should_skip = True
 
     return (bool(should_skip or in_quote), in_quote)
+
+
+def normalize_from_import_string(
+    import_string: str, cimports: bool | None = None
+) -> tuple[str, bool]:
+    """Normalize a ``from … import …`` string, handling line-continuation characters.
+
+    Removes ``import(``, backslash continuations and embedded newlines, then
+    reconstructs the canonical ``from X import Y, Z`` form.
+
+    Returns ``(normalized_string, is_cimport)``.
+
+    *cimports* controls whether to split on ``" cimport "`` or ``" import "``:
+
+    * Pass ``None`` (the default) to auto-detect from the normalized string.
+      This is the appropriate choice when ``cimports`` has not yet been
+      determined (e.g. in ``parse.file_contents``).
+    * Pass an explicit ``bool`` when the caller has already determined whether
+      this is a cimport statement from an earlier inspection of the line
+      (e.g. in ``identify.imports``).  The caller is responsible for ensuring
+      the value is consistent with the actual import string.
+    """
+    import_string = (
+        import_string.replace("import(", "import (")
+        .replace("\\", " ")
+        .replace("\n", " ")
+    )
+    if cimports is None:
+        cimports = " cimport " in import_string
+    parts = import_string.split(" cimport " if cimports else " import ")
+    from_import = parts[0].split(" ")
+    return (
+        (" cimport " if cimports else " import ").join(
+            [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
+        ),
+        cimports,
+    )
+

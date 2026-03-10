@@ -7,7 +7,13 @@ from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict
 from warnings import warn
 
 from . import place
-from ._parse_utils import _infer_line_separator, normalize_line, skip_line, strip_syntax
+from ._parse_utils import (
+    _infer_line_separator,
+    normalize_from_import_string,
+    normalize_line,
+    skip_line,
+    strip_syntax,
+)
 from .comments import parse as parse_comments
 from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
@@ -30,6 +36,7 @@ if TYPE_CHECKING:
 # Re-export for backward compatibility
 __all__ = [
     "_infer_line_separator",
+    "normalize_from_import_string",
     "normalize_line",
     "skip_line",
     "strip_syntax",
@@ -276,27 +283,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             if type_of_import == "from":
                 cimports: bool
-                import_string = (
-                    import_string.replace("import(", "import (")
-                    .replace("\\", " ")
-                    .replace("\n", " ")
-                )
+                import_string, cimports = normalize_from_import_string(import_string)
                 if "import " not in import_string:
                     out_lines.extend(raw_lines)
                     continue
-
-                if " cimport " in import_string:
-                    parts = import_string.split(" cimport ")
-                    cimports = True
-
-                else:
-                    parts = import_string.split(" import ")
-                    cimports = False
-
-                from_import = parts[0].split(" ")
-                import_string = (" cimport " if cimports else " import ").join(
-                    [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
-                )
 
             just_imports = [
                 item.replace("{|", "{ ").replace("|}", " }")
