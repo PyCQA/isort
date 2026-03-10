@@ -2,7 +2,9 @@
 
 import re
 from collections.abc import Callable
-from typing import NamedTuple
+from typing import Literal, NamedTuple
+
+from .settings import Config
 
 
 class NormalizeLineResult(NamedTuple):
@@ -159,3 +161,17 @@ def normalize_from_import_string(import_string: str) -> str:
     return (" cimport " if cimports else " import ").join(
         [from_import[0] + " " + "".join(from_import[1:]), *parts[1:]]
     )
+
+
+# TODO: Return a `StrEnum` once we no longer support Python 3.10.
+def import_type(line: str, config: Config) -> Literal["from", "straight"] | None:
+    """If the current line is an import line it will return its type (from or straight)"""
+    if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
+        return None
+    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
+        return None
+    if line.startswith(("import ", "cimport ")):
+        return "straight"
+    if line.startswith("from "):
+        return "from"
+    return None

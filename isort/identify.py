@@ -7,14 +7,14 @@ from functools import partial
 from pathlib import Path
 from typing import NamedTuple, TextIO
 
-from isort._parse_utils import (
+from ._parse_utils import (
     collect_import_continuation,
+    import_type,
     normalize_from_import_string,
     normalize_line,
     skip_line,
     strip_syntax,
 )
-
 from .comments import parse as parse_comments
 from .settings import DEFAULT_CONFIG, Config
 
@@ -91,17 +91,11 @@ def imports(
 
         for statement in statements:
             line, _raw_line = normalize_line(statement)
-            if line.startswith(("import ", "cimport ")):
-                type_of_import = "straight"
-            elif line.startswith("from "):
-                type_of_import = "from"
-            else:
+            type_of_import = import_type(line, config)
+            if type_of_import is None:
                 continue  # pragma: no cover
 
             import_string, _ = parse_comments(line)
-            normalized_import_string = (
-                import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
-            )
 
             identified_import = partial(
                 Import,

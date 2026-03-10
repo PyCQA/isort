@@ -9,6 +9,7 @@ from warnings import warn
 from . import place
 from ._parse_utils import (
     collect_import_continuation,
+    import_type,
     normalize_from_import_string,
     normalize_line,
     skip_line,
@@ -40,19 +41,6 @@ def _infer_line_separator(contents: str) -> str:
     if "\r" in contents:
         return "\r"
     return "\n"
-
-
-def import_type(line: str, config: Config = DEFAULT_CONFIG) -> str | None:
-    """If the current line is an import line it will return its type (from or straight)"""
-    if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
-        return None
-    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
-        return None
-    if line.startswith(("import ", "cimport ")):
-        return "straight"
-    if line.startswith("from "):
-        return "from"
-    return None
 
 
 class ParsedContent(NamedTuple):

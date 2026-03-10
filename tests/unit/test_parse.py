@@ -64,7 +64,7 @@ def test_fuzz__strip_syntax(import_string):
 
 @given(line=st.text(), config=st.builds(Config))
 def test_fuzz_import_type(line, config):
-    parse.import_type(line=line, config=config)
+    _parse_utils.import_type(line=line, config=config)
 
 
 @given(line=st.text(), in_quote=st.text(), needs_import=st.booleans())
