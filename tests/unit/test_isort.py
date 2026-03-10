@@ -7,21 +7,20 @@ import os
 import os.path
 import subprocess
 import sys
+from collections.abc import Iterator
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, Any
-from collections.abc import Iterator
 
 import pytest
 
 import isort
 from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
+from isort.main import main, parse_args
 from isort.settings import Config
 from isort.utils import exists_case_sensitive
-from isort.main import parse_args
-from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
@@ -5475,13 +5474,13 @@ def test_split_on_trailing_comma_wih_as() -> None:
     assert output == expected_output
 
 
-def test_split_on_trailing_comma_stable_with_mixed_as_imports() -> None:
+def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> None:
     """Regression test for https://github.com/PyCQA/isort/issues/2352.
 
-    isort should produce stable output when a module has both aliased and non-aliased
-    imports with --profile black (which enables split_on_trailing_comma). A single
-    non-aliased import remaining after the aliased imports should not be force-wrapped
-    into multi-line format merely because a trailing comma was recorded for the module.
+    isort should produce stable output when a module has both aliased and non-aliased imports with
+    `include_trailing_comma` enabled. A single non-aliased import remaining after the aliased
+    imports should not be force-wrapped into multi-line format merely because a trailing comma was
+    recorded for the module.
     """
     # Test case from the original issue report
     test_input = """from django.db.models.sql.compiler import (
@@ -5492,39 +5491,77 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports() -> None:
 from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
 from django.db.models.sql.compiler import SQLUpdateCompiler
 """
-    expected_output = """from django.db.models.sql.compiler import (
+    output = isort.code(
+        test_input,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+    )
+    assert output == test_input
+
+    expected_output_with_combine = """from django.db.models.sql.compiler import (
     SQLAggregateCompiler,
     SQLCompiler,
     SQLDeleteCompiler,
+    SQLInsertCompiler as BaseSQLInsertCompiler,
+    SQLUpdateCompiler,
 )
-from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
-from django.db.models.sql.compiler import SQLUpdateCompiler
 """
-    output = isort.code(test_input, profile="black", known_first_party=["django"])
+    output = isort.code(
+        test_input,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+        combine_as_imports=True,
+    )
+    assert (
+        output
+        == expected_output_with_combine
+        == isort.code(
+            expected_output_with_combine,
+            include_trailing_comma=True,
+            split_on_trailing_comma=True,
+            line_length=88,
+            combine_as_imports=True,
+        )
+    )
+
+
+def test_split_on_trailing_comma_stable_with_use_parentheses_2352() -> None:
+    """Regression test for https://github.com/PyCQA/isort/issues/2352.
+
+    isort should produce stable output when a module has both aliased and non-aliased imports with
+    `include_trailing_comma` and `use_parentheses` enabled. A single non-aliased import remaining
+    after the aliased imports should not be force-wrapped into multi-line format merely because a
+    trailing comma was recorded for the module.
+    """
+    test_input = r"""
+from another_file_aaaaaaaaaaaaaaaaaa import \
+    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED
+from another_file_aaaaaaaaaaaaaaaaaa import some_func
+"""
+
+    expected_output = """
+from another_file_aaaaaaaaaaaaaaaaaa import (
+    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
+)
+from another_file_aaaaaaaaaaaaaaaaaa import some_func
+"""
+
+    output = isort.code(
+        test_input,
+        include_trailing_comma=True,
+        use_parentheses=True,
+        multi_line_output=3,
+    )
     assert output == expected_output
-
-    # Verify stability: running isort a second time should not change the output
-    output2 = isort.code(output, profile="black", known_first_party=["django"])
-    assert output2 == expected_output
-
-    # Test the stability scenario: aliased import with trailing comma should not
-    # cause the following non-aliased import to be force-wrapped
-    test_input2 = """from another_file_aaaaaaaaaaaaaaaaaa import (
-    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
-)
-from another_file_aaaaaaaaaaaaaaaaaa import some_func
-"""
-    expected_output2 = """from another_file_aaaaaaaaaaaaaaaaaa import (
-    SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
-)
-from another_file_aaaaaaaaaaaaaaaaaa import some_func
-"""
-    output3 = isort.code(test_input2, profile="black")
-    assert output3 == expected_output2
-
-    # Verify stability
-    output3b = isort.code(output3, profile="black")
-    assert output3b == expected_output2
+    # Run again on actual output
+    assert output == isort.code(
+        output,
+        include_trailing_comma=True,
+        use_parentheses=True,
+        multi_line_output=3,
+    )
 
 
 def test_infinite_loop_in_unmatched_parenthesis() -> None:
