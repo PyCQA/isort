@@ -114,6 +114,7 @@ dev = [
     "pytest-benchmark>=5.1.0",
     "ruff>=0.13.3",
     "sphinx>=7.4.7",
+    "sphinx-immaterial>=0.13.9",
     "stdlibs>=2024.10.21.16",
     "toml>=0.10.2",
     "tox>=4.30.3",
