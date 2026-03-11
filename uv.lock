@@ -797,17 +797,11 @@ dev = [
     { name = "hypothesmith" },
     { name = "libcst" },
     { name = "mypy" },
-    { name = "myst-parser", version = "4.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "myst-parser", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pep8-naming" },
     { name = "pip" },
     { name = "pytest" },
     { name = "pytest-benchmark" },
     { name = "ruff" },
-    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "sphinx", version = "9.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
-    { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "sphinx-immaterial" },
     { name = "stdlibs" },
     { name = "toml" },
     { name = "tox" },
@@ -815,6 +809,14 @@ dev = [
     { name = "types-colorama" },
     { name = "types-toml" },
     { name = "uv" },
+]
+docs = [
+    { name = "myst-parser", version = "4.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "myst-parser", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "sphinx", version = "9.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
+    { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "sphinx-immaterial" },
 ]
 
 [package.metadata]
@@ -839,14 +841,11 @@ dev = [
     { name = "hypothesmith", specifier = ">=0.3.3" },
     { name = "libcst", specifier = ">=1.8.5" },
     { name = "mypy", specifier = ">=1.18.2" },
-    { name = "myst-parser", specifier = ">=4.0.1" },
     { name = "pep8-naming", specifier = ">=0.15.1" },
     { name = "pip", specifier = ">=21.1.1" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-benchmark", specifier = ">=5.1.0" },
     { name = "ruff", specifier = ">=0.13.3" },
-    { name = "sphinx", specifier = ">=7.4.7" },
-    { name = "sphinx-immaterial", specifier = ">=0.13.9" },
     { name = "stdlibs", specifier = ">=2024.10.21.16" },
     { name = "toml", specifier = ">=0.10.2" },
     { name = "tox", specifier = ">=4.30.3" },
@@ -854,6 +853,11 @@ dev = [
     { name = "types-colorama", specifier = ">=0.4.2" },
     { name = "types-toml", specifier = ">=0.1.3" },
     { name = "uv", specifier = ">=0.8.23" },
+]
+docs = [
+    { name = "myst-parser", specifier = ">=4.0.1" },
+    { name = "sphinx", specifier = ">=7.4.7" },
+    { name = "sphinx-immaterial", specifier = ">=0.13.9" },
 ]
 
 [[package]]
