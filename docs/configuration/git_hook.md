@@ -29,6 +29,7 @@ path to settings_file. If no path is specifically requested, `git_hook` will
 search for the configuration file starting at the directory containing the first
 staged file, as per `git diff-index` ordering, and going upward in the directory
 structure until a valid configuration file is found or
-[`MAX_CONFIG_SEARCH_DEPTH`](src/config.py:35) directories are checked.
+`MAX_CONFIG_SEARCH_DEPTH` directories are checked. Check the source code for the
+current value of this variable.
 The settings_file parameter is used to support users who keep their configuration
 file in a directory that might not be a parent of all the other files.

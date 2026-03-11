@@ -4,6 +4,8 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
 
+## Releases
+
 ### Unreleased
 
 ### 8.0.0 February 19 2026 
