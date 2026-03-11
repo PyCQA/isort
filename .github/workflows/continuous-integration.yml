@@ -113,4 +113,4 @@ jobs:
       - *install-dependencies
 
       - name: Build docs
-        run: uv run sphinx-build -n -W --keep-going -b html docs docs/_build/html
+        run: uv run sphinx-build --nitpicky --fail-on-warning --write-all --fresh-env --builder html docs docs/_build/html
