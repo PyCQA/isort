@@ -75,3 +75,6 @@ pyvenv.cfg
 
 # mypy
 .mypy_cache
+
+# Sphinx documentation build
+docs/_build/

@@ -1,9 +1,9 @@
 Using isort with pre-commit
-========
+===========================
 
 isort provides official support for [pre-commit](https://pre-commit.com/).
 
-### isort pre-commit step
+## isort pre-commit step
 
 To use isort's official pre-commit integration add the following config:
 
@@ -32,7 +32,7 @@ over different file types (ex: python vs cython vs pyi) you can do so with the f
         types: [pyi]
 ```
 
-### seed-isort-config
+## seed-isort-config
 
 Older versions of isort used a lot of magic to determine import placement, that could easily break when running on CI/CD.
 To fix this, a utility called `seed-isort-config` was created. Since isort 5 however, the project has drastically improved its placement

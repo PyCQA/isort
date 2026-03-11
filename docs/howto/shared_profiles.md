@@ -9,7 +9,7 @@ a dictionary exposing profile settings under `isort.profiles`. An example is
 available [within the `isort`
 repo](https://github.com/PyCQA/isort/tree/main/example_shared_isort_profile)
 
-### Example `.isort.cfg`
+## Example `.isort.cfg`
 
 ```
 [options.entry_points]
