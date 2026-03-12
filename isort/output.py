@@ -340,9 +340,10 @@ def _with_from_imports(
                     comment = (
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
-                    if comment:
+                    if comment is not None:
+                        comment_text = f" {comment}" if comment else ""
                         single_import_line += (
-                            f"{(comments and ';') or config.comment_prefix} {comment}"
+                            f"{(comments and ';') or config.comment_prefix}{comment_text}"
                         )
                     if from_import in as_imports:
                         if (
@@ -410,7 +411,7 @@ def _with_from_imports(
                             .get(module, {})
                             .pop(from_import, None)
                         )
-                        if specific_comment:
+                        if specific_comment is not None:
                             from_comments.append(specific_comment)
                         output.append(
                             wrap.line(
@@ -432,7 +433,7 @@ def _with_from_imports(
                             .get(module, {})
                             .pop(as_import, None)
                         )
-                        if specific_comment:
+                        if specific_comment is not None:
                             from_comments.append(specific_comment)
 
                         output.append(
@@ -465,7 +466,7 @@ def _with_from_imports(
                     comment = (
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
-                    if comment:
+                    if comment is not None:
                         # If the comment is a noqa and hanging indent wrapping is used,
                         # keep the name in the main list and hoist the comment to the statement.
                         if (
@@ -488,8 +489,9 @@ def _with_from_imports(
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
                         )
+                        comment_text = f" {comment}" if comment else ""
                         single_import_line += (
-                            f"{(use_comments and ';') or config.comment_prefix} {comment}"
+                            f"{(use_comments and ';') or config.comment_prefix}{comment_text}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
@@ -610,17 +612,17 @@ def _with_straight_imports(
                 inline_comments.extend(parsed.categorized_comments["straight"][module])
 
         combined_straight_imports = ", ".join(straight_modules)
-        if inline_comments:
-            combined_inline_comments = " ".join(inline_comments)
-        else:
-            combined_inline_comments = ""
 
         output.extend(above_comments)
 
-        if combined_inline_comments:
-            output.append(
-                f"{import_type} {combined_straight_imports}  # {combined_inline_comments}"
-            )
+        if inline_comments:
+            combined_inline_comments = " ".join(c for c in inline_comments if c)
+            if combined_inline_comments:
+                output.append(
+                    f"{import_type} {combined_straight_imports}  # {combined_inline_comments}"
+                )
+            else:
+                output.append(f"{import_type} {combined_straight_imports}  #")
         else:
             output.append(f"{import_type} {combined_straight_imports}")
 
