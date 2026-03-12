@@ -1967,8 +1967,9 @@ from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[
     short_line = """\
 from mod import ( # My comment
 attr as alias  # type: ignore[attr-defined]
-)"""
+)
+"""
     assert (
         isort.code(short_line, profile="black")
-        == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment"
+        == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
