@@ -1892,6 +1892,15 @@ import_heading_thirdparty=external
     )
 
 
+def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports():
+    """isort check_code should not report incorrectly sorted imports when
+    float_to_top and add_imports are used together and the import is already present.
+    See: https://github.com/PyCQA/isort/issues/1971
+    """
+    kwargs = {"float_to_top": True, "add_imports": ["import os"]}
+    assert isort.check_code(isort.code("1\n", **kwargs), **kwargs)
+
+
 def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893():
     """Ensure isort doesn't raise an IndexError on valid input ending with a backslash
     without a trailing newline, as was the case in issue #1893:
