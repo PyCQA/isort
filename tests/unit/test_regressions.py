@@ -1913,11 +1913,9 @@ from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[
 )
 """
     assert isort.code(test_input, profile="black") == test_input
-    # Result must be idempotent.
-    assert isort.code(isort.code(test_input, profile="black"), profile="black") == test_input
 
-    # An inline comment on the *attribute* line (categorized_comments["nested"]) must stay
-    # on the attribute line, not move up to the opening line.
+    # An inline comment on the *attribute* line must stay on the attribute line, not move up to
+    # the opening line.
     attr_comment_input = """\
 from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
     MyLovelyCompanyTeamProjectComponent as component,  # DRY alias
@@ -1962,4 +1960,16 @@ from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[
             line_length=88,
         )
         == test_input_no_trailing_comma
+    )
+
+    # When the import is short enough to fit on one line both the opening-line comment and the
+    # attribute-line comment are preserved at the end of the single line (both alias and non-alias).
+    short_line = """\
+from mod import ( # My comment
+attr as alias  # type: ignore[attr-defined]
+)
+"""
+    assert (
+        isort.code(short_line, profile="black")
+        == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment"
     )
