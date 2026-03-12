@@ -1898,3 +1898,19 @@ def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893
     https://github.com/PyCQA/isort/issues/1893
     """
     assert isort.code("import os #\\") == "import os  # \\\n"
+
+
+def test_comment_on_opening_line_of_aliased_import_does_not_move():
+    """Ensure isort doesn't move comments from the opening "from ... import (" line
+    to the alias attribute line when using import aliases that wrap across multiple lines.
+    See: https://github.com/PyCQA/isort/issues/2392
+    """
+    test_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute,
+)
+"""
+    # The comment should stay on the opening "import (" line, not move to the alias line
+    assert isort.code(test_input, profile="black") == test_input
+    # The result should also be idempotent
+    assert isort.code(isort.code(test_input, profile="black"), profile="black") == test_input

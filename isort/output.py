@@ -428,26 +428,73 @@ def _with_from_imports(
                         from_comments = []
 
                     for as_import in as_imports[from_import]:
+                        # Record the opening-line comments (from
+                        # categorized_comments["straight"]) BEFORE appending the
+                        # attribute-line specific_comment, so we can keep them separate.
+                        opening_line_comments = list(from_comments)
                         specific_comment = (
                             parsed.categorized_comments["nested"]
                             .get(module, {})
                             .pop(as_import, None)
                         )
+                        # Attribute-line comment comes from the nested categorized_comments.
+                        attribute_comments = (
+                            [specific_comment] if specific_comment is not None else []
+                        )
                         if specific_comment is not None:
                             from_comments.append(specific_comment)
 
-                        output.append(
-                            wrap.line(
-                                with_comments(
-                                    from_comments,
-                                    import_start + as_import,
+                        import_line = import_start + as_import
+                        if opening_line_comments and config.use_parentheses:
+                            # Opening-line comments belong on the "import (" line, not
+                            # inside the parentheses on the alias attribute line.
+                            # Wrap the import with attribute-line comments embedded,
+                            # then add opening-line comments to the opening line.
+                            base_content = with_comments(
+                                attribute_comments,
+                                import_line,
+                                removed=config.ignore_comments,
+                                comment_prefix=config.comment_prefix,
+                            )
+                            wrapped = wrap.line(base_content, parsed.line_separator, config)
+                            lines = wrapped.split(parsed.line_separator)
+                            if len(lines) > 1:
+                                opening_comment = with_comments(
+                                    opening_line_comments,
+                                    "",
                                     removed=config.ignore_comments,
                                     comment_prefix=config.comment_prefix,
-                                ),
-                                parsed.line_separator,
-                                config,
+                                )
+                                if opening_comment:
+                                    lines[0] += opening_comment
+                                output.append(parsed.line_separator.join(lines))
+                            else:
+                                # Single-line: all comments at end
+                                output.append(
+                                    wrap.line(
+                                        with_comments(
+                                            from_comments,
+                                            import_line,
+                                            removed=config.ignore_comments,
+                                            comment_prefix=config.comment_prefix,
+                                        ),
+                                        parsed.line_separator,
+                                        config,
+                                    )
+                                )
+                        else:
+                            output.append(
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_line,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
+                                    ),
+                                    parsed.line_separator,
+                                    config,
+                                )
                             )
-                        )
 
                         from_comments = []
 
