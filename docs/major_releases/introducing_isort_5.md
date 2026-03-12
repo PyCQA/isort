@@ -51,11 +51,11 @@ It also allows you to place code in-between imports without any hacks required.
 
 # Streaming architecture
 
-```python3
+```python
 import a
 import b
 ...
-∞
+# more code!
 ```
 isort has been refactored to use a streaming architecture. This means it can sort files of *any* size (even larger than the Python interpreter supports!) without breaking a sweat.
 It also means that even when sorting imports in smaller files, it is faster and more resource-efficient.
