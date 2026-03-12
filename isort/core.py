@@ -94,6 +94,7 @@ def process(
                 if line == "# isort: off\n":
                     isort_off = True
                 if current:
+                    before = current
                     if add_imports:
                         add_line_separator = line_separator or "\n"
                         current += add_line_separator + add_line_separator.join(add_imports)
@@ -101,15 +102,15 @@ def process(
                     parsed = parse.file_contents(current, config=config)
                     verbose_output += parsed.verbose_output
                     extra_space = ""
-                    while current and current[-1] == "\n":
+                    while before and before[-1] == "\n":
                         extra_space += "\n"
-                        current = current[:-1]
+                        before = before[:-1]
                     extra_space = extra_space.replace("\n", "", 1)
                     sorted_output = output.sorted_imports(
                         parsed, config, extension, import_type="import"
                     )
                     made_changes = made_changes or _has_changed(
-                        before=current,
+                        before=before,
                         after=sorted_output,
                         line_separator=parsed.line_separator,
                         ignore_whitespace=config.ignore_whitespace,
