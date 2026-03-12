@@ -1897,8 +1897,11 @@ def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports(
     float_to_top and add_imports are used together and the import is already present.
     See: https://github.com/PyCQA/isort/issues/1971
     """
-    kwargs = {"float_to_top": True, "add_imports": ["import os"]}
-    assert isort.check_code(isort.code("1\n", **kwargs), **kwargs)
+    assert isort.check_code(
+        isort.code("1\n", float_to_top=True, add_imports=["import os"]),
+        float_to_top=True,
+        add_imports=["import os"],
+    )
 
 
 def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893():
