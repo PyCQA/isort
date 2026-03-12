@@ -82,7 +82,21 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 splitter
             ):
                 line_parts = re.split(exp, line_without_comment)
-                if comment and not (config.use_parentheses and "noqa" in comment):
+                _is_vertical_mode = wrap_mode in (
+                    Modes.VERTICAL_HANGING_INDENT,  # type: ignore
+                    Modes.VERTICAL_GRID_GROUPED,  # type: ignore
+                )
+                # Determine whether the comment should be hoisted to the opening
+                # parenthesis line rather than embedded in the import line.
+                # This happens for noqa comments (when use_parentheses is True)
+                # and for all comments in vertical hanging modes (when
+                # use_parentheses is False), so that multi_line_output=3/5 is
+                # respected even without an explicit use_parentheses=True setting.
+                _hoist_comment_to_paren = comment and (
+                    (config.use_parentheses and "noqa" in comment)
+                    or (_is_vertical_mode and not config.use_parentheses)
+                )
+                if comment and not _hoist_comment_to_paren:
                     _comma_maybe = (
                         ","
                         if (
@@ -109,21 +123,18 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                     line_separator,
                     config,
                 )
-                if config.use_parentheses:
+                if config.use_parentheses or _is_vertical_mode:
                     if splitter == "as ":
                         output = f"{content}{splitter}{cont_line.lstrip()}"
                     else:
                         _comma = "," if config.include_trailing_comma and not comment else ""
 
-                        if wrap_mode in (
-                            Modes.VERTICAL_HANGING_INDENT,  # type: ignore
-                            Modes.VERTICAL_GRID_GROUPED,  # type: ignore
-                        ):
+                        if _is_vertical_mode:
                             _separator = line_separator
                         else:
                             _separator = ""
                         noqa_comment = ""
-                        if comment and "noqa" in comment:
+                        if _hoist_comment_to_paren:
                             noqa_comment = f"{config.comment_prefix}{comment}"
                             cont_line = cont_line.rstrip()
                             _comma = "," if config.include_trailing_comma else ""

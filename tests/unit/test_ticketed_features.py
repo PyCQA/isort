@@ -1197,6 +1197,37 @@ from package2 import bar
     )
 
 
+def test_combine_as_with_comments_and_vertical_hang_2316() -> None:
+    """Comments should still produce correct parentheses with multi_line_output=3.
+    See: https://github.com/PyCQA/isort/issues/2316
+    """
+    assert (
+        isort.code(
+            "from pythonosc.udp_client import SimpleUDPClient  # type: ignore[import-untyped]",
+            combine_as_imports=True,
+            multi_line_output=3,
+        )
+        == """\
+from pythonosc.udp_client import (  # type: ignore[import-untyped]
+    SimpleUDPClient
+)
+"""
+    )
+    assert (
+        isort.code(
+            "from pythonosc.udp_client import SimpleUDPClient  # type: ignore[import-untyped]",
+            combine_as_imports=True,
+            multi_line_output=3,
+            include_trailing_comma=True,
+        )
+        == """\
+from pythonosc.udp_client import (  # type: ignore[import-untyped]
+    SimpleUDPClient,
+)
+"""
+    )
+
+
 def test_isort_preserves_empty_inline_comments() -> None:
     """isort should not strip empty inline comments (bare `#`).
     See: https://github.com/PyCQA/isort/issues/1913
