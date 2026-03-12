@@ -189,7 +189,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 import_index = index - 1
             nested_comments = {}
             import_string, comment = parse_comments(line)
-            comments = [comment] if comment else []
+            comments = [comment] if comment is not None else []
             line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
             if type_of_import == "from" and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
@@ -208,7 +208,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             for extra_line in extra_lines:
                 raw_lines.append(extra_line.line)
                 # If during parsing of the continuation lines we encounter a comment, we record it.
-                if extra_line.comment:
+                if extra_line.comment is not None:
                     comments.append(extra_line.comment)
                     stripped_line = strip_syntax(extra_line.line).strip()
                     if (
@@ -253,7 +253,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                         full_name = f"{nested_module} as {as_name}"
                         associated_comment = nested_comments.get(full_name)
-                        if associated_comment:
+                        if associated_comment is not None:
                             categorized_comments["nested"].setdefault(top_level_module, {})[
                                 full_name
                             ] = associated_comment
@@ -308,7 +308,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 root = imports[placed_module][type_of_import]
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
-                    if associated_comment:
+                    if associated_comment is not None:
                         categorized_comments["nested"].setdefault(import_from, {})[import_name] = (
                             associated_comment
                         )

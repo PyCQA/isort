@@ -1195,3 +1195,22 @@ from package1.a.c import baz
 from package2 import bar
 """
     )
+
+
+def test_isort_preserves_empty_inline_comments() -> None:
+    """isort should not strip empty inline comments (bare `#`).
+    See: https://github.com/PyCQA/isort/issues/1913
+    """
+    # Straight imports
+    assert isort.code("import a  #\n") == "import a  #\n"
+
+    # From imports
+    assert isort.code("from foo import bar  #\n") == "from foo import bar  #\n"
+
+    # Should be idempotent
+    assert isort.code(isort.code("import a  #\n")) == "import a  #\n"
+    assert isort.code(isort.code("from foo import bar  #\n")) == "from foo import bar  #\n"
+
+    # Regular (non-empty) comments should still work
+    assert isort.code("import a  # comment\n") == "import a  # comment\n"
+    assert isort.code("from foo import bar  # comment\n") == "from foo import bar  # comment\n"
