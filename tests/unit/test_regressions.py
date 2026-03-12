@@ -1905,12 +1905,61 @@ def test_comment_on_opening_line_of_aliased_import_does_not_move():
     to the alias attribute line when using import aliases that wrap across multiple lines.
     See: https://github.com/PyCQA/isort/issues/2392
     """
+    # Opening-line comment (e.g. "# type: ignore") must stay on the "import (" line,
+    # not drift down to the alias attribute line.
     test_input = """\
 from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
     a_random_attribute as renamed_random_attribute,
 )
 """
-    # The comment should stay on the opening "import (" line, not move to the alias line
     assert isort.code(test_input, profile="black") == test_input
-    # The result should also be idempotent
+    # Result must be idempotent.
     assert isort.code(isort.code(test_input, profile="black"), profile="black") == test_input
+
+    # An inline comment on the *attribute* line (categorized_comments["nested"]) must stay
+    # on the attribute line, not move up to the opening line.
+    attr_comment_input = """\
+from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component import (
+    MyLovelyCompanyTeamProjectComponent as component,  # DRY alias
+)
+"""
+    assert isort.code(attr_comment_input, profile="black") == attr_comment_input
+
+    # When both an opening-line comment and an attribute-line comment are present,
+    # each must remain on its original line.
+    both_comments_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # opening comment
+    a_random_attribute as renamed_random_attribute,  # attr comment
+)
+"""
+    assert isort.code(both_comments_input, profile="black") == both_comments_input
+
+    # Non-alias imports with an opening-line comment should also keep the comment in place.
+    non_alias_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore
+    a_random_attribute,
+)
+"""
+    assert isort.code(non_alias_input, profile="black") == non_alias_input
+
+    # When the import is short enough to fit on one line the opening-line comment is
+    # preserved at the end of that single line (both alias and non-alias).
+    short_alias = "from mod import attr as alias  # type: ignore[attr-defined]\n"
+    assert isort.code(short_alias, profile="black") == short_alias
+
+    # The fix must also work when use_parentheses=True with other wrap modes
+    # (not just the Black profile's VERTICAL_HANGING_INDENT mode).
+    test_input_no_trailing_comma = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute
+)
+"""
+    assert (
+        isort.code(
+            test_input_no_trailing_comma,
+            use_parentheses=True,
+            multi_line_output=3,
+            line_length=88,
+        )
+        == test_input_no_trailing_comma
+    )

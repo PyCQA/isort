@@ -7,7 +7,7 @@ license = "MIT"
 requires-python = ">=3.10.0"
 dependencies = [
     "isort>=5.13.2",
-    "black>=26.3.1",
+    "black>=24.3.0",
 ]
 
 [project.entry-points."isort.formatters"]

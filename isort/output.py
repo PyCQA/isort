@@ -428,16 +428,23 @@ def _with_from_imports(
                         from_comments = []
 
                     for as_import in as_imports[from_import]:
-                        # Record the opening-line comments (from
-                        # categorized_comments["straight"]) BEFORE appending the
-                        # attribute-line specific_comment, so we can keep them separate.
+                        # `from_comments` at this point contains any comments that appeared on
+                        # the *opening* "from X import" line (stored in
+                        # categorized_comments["straight"]).  These are distinct from
+                        # `specific_comment`, which is an inline comment on the attribute line
+                        # itself (stored in categorized_comments["nested"]).
+                        # We snapshot `from_comments` here so that we can later distinguish
+                        # the two types: opening-line comments must stay on the "import (" line
+                        # when parentheses are used, while attribute-line comments stay on the
+                        # import attribute line.
                         opening_line_comments = list(from_comments)
                         specific_comment = (
                             parsed.categorized_comments["nested"]
                             .get(module, {})
                             .pop(as_import, None)
                         )
-                        # Attribute-line comment comes from the nested categorized_comments.
+                        # Collect the attribute-line comment (if any) separately so it can be
+                        # embedded in the attribute line regardless of wrapping mode.
                         attribute_comments = (
                             [specific_comment] if specific_comment is not None else []
                         )
@@ -446,10 +453,16 @@ def _with_from_imports(
 
                         import_line = import_start + as_import
                         if opening_line_comments and config.use_parentheses:
-                            # Opening-line comments belong on the "import (" line, not
-                            # inside the parentheses on the alias attribute line.
-                            # Wrap the import with attribute-line comments embedded,
-                            # then add opening-line comments to the opening line.
+                            # When parentheses are used, opening-line comments (e.g.
+                            # "# type: ignore") must remain on the "from X import (" line.
+                            # If we naively embedded them in the attribute string and then
+                            # called wrap.line(), the comment would end up inside the
+                            # parentheses on the alias attribute line — which is wrong for
+                            # tools like mypy that rely on the comment's physical line.
+                            #
+                            # Strategy: wrap the import with only the attribute-line comment
+                            # embedded; if the result spans multiple lines, append the
+                            # opening-line comment to the first line ("import (").
                             base_content = with_comments(
                                 attribute_comments,
                                 import_line,
@@ -459,6 +472,8 @@ def _with_from_imports(
                             wrapped = wrap.line(base_content, parsed.line_separator, config)
                             lines = wrapped.split(parsed.line_separator)
                             if len(lines) > 1:
+                                # Multi-line result: place opening-line comment on the first
+                                # line so it stays with the "import (" opening.
                                 opening_comment = with_comments(
                                     opening_line_comments,
                                     "",
@@ -469,7 +484,8 @@ def _with_from_imports(
                                     lines[0] += opening_comment
                                 output.append(parsed.line_separator.join(lines))
                             else:
-                                # Single-line: all comments at end
+                                # Single-line result: the import fits on one line, so all
+                                # comments (opening-line and attribute-line) can go at the end.
                                 output.append(
                                     wrap.line(
                                         with_comments(
