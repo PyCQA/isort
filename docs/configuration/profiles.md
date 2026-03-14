@@ -39,7 +39,8 @@ To use any of the listed profiles, use `isort --profile PROFILE_NAME` from the c
  - **force_single_line**: `True`
  - **force_sort_within_sections**: `True`
  - **lexicographical**: `True`
- - **single_line_exclusions**: `('typing',)`
+ - **line_length**: `1000`
+ - **single_line_exclusions**: `('collections.abc', 'six.moves', 'typing', 'typing_extensions')`
  - **order_by_type**: `False`
  - **group_by_package**: `True`
 
@@ -90,6 +91,7 @@ Based on black with these tweaks:
 
  - **multi_line_output**: `3`
  - **include_trailing_comma**: `True`
+ - **split_on_trailing_comma**: `True`
  - **force_grid_wrap**: `0`
  - **use_parentheses**: `True`
  - **ensure_newline_before_comments**: `True`
