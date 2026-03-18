@@ -1410,3 +1410,19 @@ from tests.something import something_else
 """
         )
         assert "from-type place_module for tests.something returned FIRSTPARTY" in out
+
+
+def test_cli_src_path_glob_pattern(tmpdir, capsys, monkeypatch):
+    service_a_src = tmpdir.mkdir("service_a").mkdir("src")
+    service_b_src = tmpdir.mkdir("service_b").mkdir("src")
+    (tmpdir / "file.py").write_text("import os\n", "utf-8")
+
+    monkeypatch.chdir(str(tmpdir))
+
+    main.main([".", "--src", "*/src/", "--show-config"])
+    out, _ = capsys.readouterr()
+    config = json.loads(out)
+    src_paths = set(config["src_paths"])
+
+    assert str(service_a_src) in src_paths
+    assert str(service_b_src) in src_paths

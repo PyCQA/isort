@@ -1123,9 +1123,9 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
     if "src_paths" in config_dict:
-        config_dict["src_paths"] = {
-            Path(src_path).resolve() for src_path in config_dict.get("src_paths", ())
-        }
+        # Keep CLI-provided values as-is so wildcard patterns can be expanded later
+        # relative to the resolved config directory.
+        config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
 
     config = Config(**config_dict)
     if show_config:
