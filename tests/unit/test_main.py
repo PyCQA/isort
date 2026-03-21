@@ -160,7 +160,7 @@ def test_ran_against_root():
 
 def test_main(capsys, tmpdir):
     base_args = [
-        "-sp",
+        "--sp",
         str(tmpdir),
         "--virtual-env",
         str(tmpdir),
@@ -352,14 +352,6 @@ import b
     main.main([str(python_file), "not-exist", "--verbose", "--check-only"])
     out, error = capsys.readouterr()
     assert "Broken" in out
-
-    # warnings should be displayed if old flags are used
-    with pytest.warns(UserWarning):
-        main.main([str(python_file), "--recursive", "-fss"])
-
-    # warnings should be displayed when streaming input is provided with old flags as well
-    with pytest.warns(UserWarning):
-        main.main(["-sp", str(config_file), "-"], stdin=input_content)
 
 
 def test_isort_filename_overrides(tmpdir, capsys):
@@ -805,45 +797,6 @@ import os
 
 import z
 from a import b, e, c
-"""
-    )
-
-    # ensures that isort warns with deprecated flags with stdin
-    input_content = as_stream(
-        """
-import sys
-import os
-"""
-    )
-
-    with pytest.warns(UserWarning):
-        main.main(["-", "-ns"], stdin=input_content)
-
-    out, error = capsys.readouterr()
-
-    assert out == (
-        """
-import os
-import sys
-"""
-    )
-
-    input_content = as_stream(
-        """
-import sys
-import os
-"""
-    )
-
-    with pytest.warns(UserWarning):
-        main.main(["-", "-k"], stdin=input_content)
-
-    out, error = capsys.readouterr()
-
-    assert out == (
-        """
-import os
-import sys
 """
     )
 

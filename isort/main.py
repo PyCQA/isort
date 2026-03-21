@@ -22,35 +22,6 @@ from .settings import VALID_PY_TARGETS, Config, find_all_configs
 from .utils import Trie
 from .wrap_modes import WrapModes
 
-DEPRECATED_SINGLE_DASH_ARGS = {
-    "-ac",
-    "-af",
-    "-ca",
-    "-cs",
-    "-df",
-    "-ds",
-    "-dt",
-    "-fas",
-    "-fass",
-    "-ff",
-    "-fgw",
-    "-fss",
-    "-lai",
-    "-lbt",
-    "-le",
-    "-ls",
-    "-nis",
-    "-nlb",
-    "-ot",
-    "-rr",
-    "-sd",
-    "-sg",
-    "-sl",
-    "-sp",
-    "-tc",
-    "-wl",
-    "-ws",
-}
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
@@ -151,7 +122,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group = parser.add_argument_group("general output options")
     inline_args_group = output_group.add_mutually_exclusive_group()
     section_group = parser.add_argument_group("section output options")
-    deprecated_group = parser.add_argument_group("deprecated options")
 
     general_group.add_argument(
         "-h",
@@ -887,58 +857,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         f"(currently: {sys.version_info.major}{sys.version_info.minor}) will be used.",
     )
 
-    # deprecated options
-    deprecated_group.add_argument(
-        "--recursive",
-        dest="deprecated_flags",
-        action="append_const",
-        const="--recursive",
-        help=argparse.SUPPRESS,
-    )
-    deprecated_group.add_argument(
-        "-rc", dest="deprecated_flags", action="append_const", const="-rc", help=argparse.SUPPRESS
-    )
-    deprecated_group.add_argument(
-        "--dont-skip",
-        dest="deprecated_flags",
-        action="append_const",
-        const="--dont-skip",
-        help=argparse.SUPPRESS,
-    )
-    deprecated_group.add_argument(
-        "-ns", dest="deprecated_flags", action="append_const", const="-ns", help=argparse.SUPPRESS
-    )
-    deprecated_group.add_argument(
-        "--apply",
-        dest="deprecated_flags",
-        action="append_const",
-        const="--apply",
-        help=argparse.SUPPRESS,
-    )
-    deprecated_group.add_argument(
-        "-k",
-        "--keep-direct-and-as",
-        dest="deprecated_flags",
-        action="append_const",
-        const="--keep-direct-and-as",
-        help=argparse.SUPPRESS,
-    )
-
     return parser
 
 
 def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
-    remapped_deprecated_args = []
-    for index, arg in enumerate(argv):
-        if arg in DEPRECATED_SINGLE_DASH_ARGS:
-            remapped_deprecated_args.append(arg)
-            argv[index] = f"-{arg}"
 
     parser = _build_arg_parser()
     arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
-    if remapped_deprecated_args:
-        arguments["remapped_deprecated_args"] = remapped_deprecated_args
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
         del arguments["dont_order_by_type"]
@@ -1108,8 +1034,6 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
     check = config_dict.pop("check", False)
     show_diff = config_dict.pop("show_diff", False)
     write_to_stdout = config_dict.pop("write_to_stdout", False)
-    deprecated_flags = config_dict.pop("deprecated_flags", False)
-    remapped_deprecated_args = config_dict.pop("remapped_deprecated_args", False)
     stream_filename = config_dict.pop("filename", None)
     ext_format = config_dict.pop("ext_format", None)
     allow_root = config_dict.pop("allow_root", None)
@@ -1282,25 +1206,6 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             all_attempt_broken = True
         if num_invalid_encoding > 0 and not any_encoding_valid:
             no_valid_encodings = True
-
-    if not config.quiet and (remapped_deprecated_args or deprecated_flags):
-        if remapped_deprecated_args:
-            warn(
-                "W0502: The following deprecated single dash CLI flags were used and translated: "
-                f"{', '.join(remapped_deprecated_args)}!",
-                stacklevel=2,
-            )
-        if deprecated_flags:
-            warn(
-                "W0501: The following deprecated CLI flags were used and ignored: "
-                f"{', '.join(deprecated_flags)}!",
-                stacklevel=2,
-            )
-        warn(
-            "W0500: Please see the 5.0.0 Upgrade guide: "
-            "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
-            stacklevel=2,
-        )
 
     if wrong_sorted_files:
         sys.exit(1)
