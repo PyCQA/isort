@@ -1245,3 +1245,17 @@ def test_isort_preserves_empty_inline_comments() -> None:
     # Regular (non-empty) comments should still work
     assert isort.code("import a  # comment\n") == "import a  # comment\n"
     assert isort.code("from foo import bar  # comment\n") == "from foo import bar  # comment\n"
+
+
+def test_comment_not_duplicated_across_from_imports_2282() -> None:
+    """isort should not copy a comment from one 'from X import' line to other lines.
+
+    See: https://github.com/PyCQA/isort/issues/2282
+    """
+    # Comment should stay only on the line with a, b - not copied to e
+    code = """\
+from foo import a, b  # comment
+from foo import c as d
+from foo import e
+"""
+    assert isort.code(code) == code
