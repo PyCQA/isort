@@ -617,6 +617,7 @@ def _with_from_imports(
                             import_statement = other_import_statement
                 elif len(import_statement) > config.line_length:
                     import_statement = wrap.line(import_statement, parsed.line_separator, config)
+                comments = None
 
             if import_statement:
                 output.append(import_statement)
