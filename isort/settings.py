@@ -109,8 +109,6 @@ KNOWN_SECTION_MAPPING: dict[str, str] = {
 
 RUNTIME_SOURCE = "runtime"
 
-DEPRECATED_SETTINGS = ("not_skip", "keep_direct_and_as_imports")
-
 _STR_BOOLEAN_MAPPING = {
     "y": True,
     "yes": True,
@@ -473,21 +471,6 @@ class Config(_Config):
         combined_config.pop("source", None)
         combined_config.pop("sources", None)
         combined_config.pop("runtime_src_paths", None)
-
-        deprecated_options_used = [
-            option for option in combined_config if option in DEPRECATED_SETTINGS
-        ]
-        if deprecated_options_used:
-            for deprecated_option in deprecated_options_used:
-                combined_config.pop(deprecated_option)
-            if not quiet:
-                warn(
-                    "W0503: Deprecated config options were used: "
-                    f"{', '.join(deprecated_options_used)}."
-                    "Please see the 5.0.0 upgrade guide: "
-                    "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
-                    stacklevel=2,
-                )
 
         if known_other:
             combined_config["known_other"] = known_other
