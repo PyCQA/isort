@@ -2052,11 +2052,11 @@ wheels = [
 
 [[package]]
 name = "stdlibs"
-version = "2024.12.3"
+version = "2026.2.26"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c4/19/1bafdce539149fbcae1d173164c297b7b7c9e59a43221555a0d359c132cc/stdlibs-2024.12.3.tar.gz", hash = "sha256:b88cf600ac0b80e3d0de0ad6f2be786786db063bccd14b897547fcd9bd7169be", size = 19440, upload-time = "2024-12-04T06:08:26.945Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/cd/2710eaacaefc8be2f520b55c313498a50a295a8378e932c70d4ea34250aa/stdlibs-2026.2.26.tar.gz", hash = "sha256:10f911bdd8d3e45b452cc187b3527e6f9d288c8a943c5f973da94c71b2757d5b", size = 20203, upload-time = "2026-02-26T23:30:04.775Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/c9/fd5ba168c09b021b71590045c5a4d9fa6923a8e88d0f52721fdbd011ca2e/stdlibs-2024.12.3-py3-none-any.whl", hash = "sha256:51be16dce7cac80c836eb0413b9397093e68857fa13eb53893b0d8c042565f93", size = 57125, upload-time = "2024-12-04T06:08:25.057Z" },
+    { url = "https://files.pythonhosted.org/packages/90/ec/b6a5a568d584659e037c8f53fc25acc79950ac32796b8861b2015446b7b2/stdlibs-2026.2.26-py3-none-any.whl", hash = "sha256:3257486216eac5ac627a3a4c5665802aca72fe7fc9e4ab1f232b1fb47bfd3db6", size = 59288, upload-time = "2026-02-26T23:30:03.597Z" },
 ]
 
 [[package]]

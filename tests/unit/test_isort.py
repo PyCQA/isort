@@ -5789,3 +5789,23 @@ def test_noqa_multiline_hanging_indent() -> None:
 def test_dunder_future_import(actual_imports: str, expected_sort: str) -> None:
     output = isort.code(actual_imports)
     assert output == expected_sort
+
+
+def test_builtin_modules() -> None:
+    test_input = (
+        "from typing import Iterable, Iterator, TypeVar, cast\n"
+        "\n"
+        "from _collections_abc import dict_items, dict_keys, dict_values\n"
+        "from python_none_objects import NoneIterable\n"
+        "from _codecs import encode\n"
+        "from nt import environ\n"
+    )
+    test_output = (
+        "from _codecs import encode\n"
+        "from _collections_abc import dict_items, dict_keys, dict_values\n"
+        "from nt import environ\n"
+        "from typing import Iterable, Iterator, TypeVar, cast\n"
+        "\n"
+        "from python_none_objects import NoneIterable\n"
+    )
+    assert isort.code(test_input) == test_output
