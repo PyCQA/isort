@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
@@ -103,15 +104,15 @@ dev = [
     "hatch>=1.14.0",
     "httpx>=0.13.3",
     "hypothesis>=6.140.3",
-    "hypothesmith>=0.3.3",
-    "libcst>=1.8.5",
+    "hypothesmith>=0.3.3; python_version < '3.15'",
+    "libcst>=1.8.5; python_version < '3.15'",
     "mypy>=1.18.2",
     "pep8-naming>=0.15.1",
     "pip>=21.1.1",
     "pytest>=8.4.2",
     "pytest-benchmark>=5.1.0",
     "ruff>=0.13.3",
-    "stdlibs>=2024.10.21.16",
+    "stdlibs>=2026.2.26",
     "toml>=0.10.2",
     "tox>=4.30.3",
     "tox-uv>=1.28.0",
@@ -206,4 +207,6 @@ filterwarnings = [
   "ignore::UserWarning",
   # We don't really care about randomizing paths and don't want to add another hypothesis dependency
   "ignore:.*from_type\\(thing=Path\\).*:hypothesis.errors.SmallSearchSpaceWarning",
+  # See https://github.com/pygments/pygments/issues/3039
+  "ignore:os.path.commonprefix().*:DeprecationWarning",
 ]
