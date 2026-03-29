@@ -13,6 +13,8 @@ from collections.abc import Generator, Sequence
 from pathlib import Path
 from subprocess import check_call
 
+import pytest
+
 from isort.main import main
 
 
