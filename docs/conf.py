@@ -13,7 +13,7 @@ html_favicon = "../art/logo.png"
 myst_heading_anchors = 2
 
 html_theme_options = {
-    "site_url": "https://pycqa.github.io/isort/index.html",
+    "site_url": "https://isort.readthedocs.io/",
     "repo_url": "https://github.com/PyCQA/isort/",
     "palette": {"primary": "deep-orange", "accent": "deep-orange"},
 }

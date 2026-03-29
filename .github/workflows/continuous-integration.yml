@@ -104,16 +104,3 @@ jobs:
 
       - name: Test integration
         run: ./scripts/test_integration.sh
-
-  docs:
-    name: Build docs
-    runs-on: ubuntu-latest
-
-    steps:
-      - *checkout
-      - *setup-python
-      - *setup-uv
-      - *install-dependencies
-
-      - name: Build docs
-        run: uv run --with tox-uv tox -e docs
