@@ -1,0 +1,19 @@
+version: 2
+
+sphinx:
+  configuration: docs/conf.py
+  fail_on_warning: true
+
+build:
+  os: ubuntu-lts-latest
+  tools:
+    python: latest
+  jobs:
+    pre_create_environment:
+        - asdf plugin add uv
+        - asdf install uv latest
+        - asdf global uv latest
+    create_environment:
+        - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
+    install:
+        - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --frozen --group docs
