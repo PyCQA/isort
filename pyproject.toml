@@ -207,6 +207,4 @@ filterwarnings = [
   "ignore::UserWarning",
   # We don't really care about randomizing paths and don't want to add another hypothesis dependency
   "ignore:.*from_type\\(thing=Path\\).*:hypothesis.errors.SmallSearchSpaceWarning",
-  # See https://github.com/pygments/pygments/issues/3039
-  "ignore:os.path.commonprefix().*:DeprecationWarning",
 ]
