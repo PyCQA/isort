@@ -75,7 +75,7 @@ Home
     :caption: Reference
     :hidden:
 
-    reference/isort
+    reference/isort/index
 
 .. toctree::
     :maxdepth: 2

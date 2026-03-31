@@ -1,0 +1,7 @@
+isort.stdlibs.py27
+==================
+
+.. automodule:: isort.stdlibs.py27
+   :members:
+   :undoc-members:
+   :show-inheritance:

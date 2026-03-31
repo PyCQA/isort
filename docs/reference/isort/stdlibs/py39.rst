@@ -1,0 +1,7 @@
+isort.stdlibs.py39
+==================
+
+.. automodule:: isort.stdlibs.py39
+   :members:
+   :undoc-members:
+   :show-inheritance:

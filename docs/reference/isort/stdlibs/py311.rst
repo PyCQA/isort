@@ -1,0 +1,7 @@
+isort.stdlibs.py311
+===================
+
+.. automodule:: isort.stdlibs.py311
+   :members:
+   :undoc-members:
+   :show-inheritance:
