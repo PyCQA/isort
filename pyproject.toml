@@ -6,8 +6,8 @@ authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {nam
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pycqa/isort"
-homepage = "https://pycqa.github.io/isort/"
-documentation = "https://pycqa.github.io/isort/"
+homepage = "https://isort.readthedocs.io//"
+documentation = "https://isort.readthedocs.io/"
 keywords = ["Refactor", "Lint", "Imports", "Sort", "Clean"]
 classifiers = [
     "Development Status :: 6 - Mature",
@@ -39,8 +39,8 @@ requires-python = ">=3.10.0"
 dependencies = []
 
 [project.urls]
-Homepage = "https://pycqa.github.io/isort/index.html"
-Documentation = "https://pycqa.github.io/isort/index.html"
+Homepage = "https://isort.readthedocs.io/"
+Documentation = "https://isort.readthedocs.io/"
 Repository = "https://github.com/PyCQA/isort"
 Changelog = "https://github.com/PyCQA/isort/releases"
 

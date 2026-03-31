@@ -34,7 +34,7 @@ Try one of the following:
     `isort . --check --diff` - Check to see if imports are correctly sorted within this project.
     `isort --help` - In-depth information about isort's available command-line options.
 
-Visit https://pycqa.github.io/isort/ for complete information about how to use isort.
+Visit https://isort.readthedocs.io/ for complete information about how to use isort.
 """
 
 
@@ -113,7 +113,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "interactive behavior."
         " "
         "If you've used isort 4 but are new to isort 5, see the upgrading guide: "
-        "https://pycqa.github.io/isort/docs/upgrade_guides/5.0.0.html",
+        "https://isort.readthedocs.io/en/latest/upgrade_guides/5.0.0.html",
         add_help=False,  # prevent help option from appearing in "optional arguments" group
     )
 

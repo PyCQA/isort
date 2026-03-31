@@ -1,4 +1,4 @@
-# Github Action
+# Github action
 
 isort provides an official [Github Action][github-action-docs] that can be used as part of a CI/CD workflow to ensure a project's imports are properly sorted.
 The action can be found on the [Github Actions Marketplace][python-isort].

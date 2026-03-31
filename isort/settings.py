@@ -13,6 +13,7 @@ import subprocess  # nosec # Needed for gitignore support.
 import sys
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
+from importlib.metadata import EntryPoints
 from pathlib import Path
 from re import Pattern
 from typing import TYPE_CHECKING, Any
@@ -34,8 +35,6 @@ from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
 if TYPE_CHECKING:
-    from importlib.metadata import EntryPoints
-
     tomllib: Any
 else:
     if sys.version_info >= (3, 11):
@@ -326,7 +325,7 @@ class Config(_Config):
                     f"A custom settings file was specified: {settings_file} but no configuration "
                     "was found inside. This can happen when [settings] is used as the config "
                     "header instead of [isort]. "
-                    "See: https://pycqa.github.io/isort/docs/configuration/config_files"
+                    "See: https://isort.readthedocs.io/en/latest/configuration/config_files.html"
                     "#custom-config-files for more information.",
                     stacklevel=2,
                 )
@@ -393,7 +392,7 @@ class Config(_Config):
                             f"Can't set both {key} and {section_name} in the same config file.\n"
                             f"Default to {section_name} if unsure."
                             "\n\n"
-                            "See: https://pycqa.github.io/isort/"
+                            "See: https://isort.readthedocs.io/en/latest/index.html"
                             "#custom-sections-and-ordering.",
                             stacklevel=2,
                         )
@@ -406,7 +405,7 @@ class Config(_Config):
                             f"`{key}` setting is defined, but {maps_to_section} is not"
                             " included in `sections` config option:"
                             f" {combined_config.get('sections', SECTION_DEFAULTS)}.\n\n"
-                            "See: https://pycqa.github.io/isort/"
+                            "See: https://isort.readthedocs.io/en/latest/index.html"
                             "#custom-sections-and-ordering.",
                             stacklevel=2,
                         )

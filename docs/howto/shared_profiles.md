@@ -1,7 +1,7 @@
-# Shared Profiles
+# Shared profiles
 
 As well as the [built in
-profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html), you
+profiles](../configuration/profiles.md), you
 can define and share your own profiles.
 
 All that's required is to create a Python package that exposes an entry point to

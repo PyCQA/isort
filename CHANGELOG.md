@@ -2,7 +2,7 @@ Changelog
 =========
 
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
-Find out more about isort's release policy [here](https://pycqa.github.io/isort/docs/major_releases/release_policy).
+Find out more about isort's release policy [here](../docs/major_releases/release_policy.md).
 
 ## Releases
 

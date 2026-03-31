@@ -1,22 +1,21 @@
-[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/pycqa/isort/main/art/logo_large.png)](https://pycqa.github.io/isort/)
+[![isort - isort your imports, so you don't have to.](https://raw.githubusercontent.com/pycqa/isort/main/art/logo_large.png)](https://isort.readthedocs.io/)
 
 ------------------------------------------------------------------------
 
 [![PyPI version](https://badge.fury.io/py/isort.svg)](https://badge.fury.io/py/isort)
 [![Python Version](https://img.shields.io/pypi/pyversions/isort)][pypi status]
-[![Test](https://github.com/PyCQA/isort/actions/workflows/test.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/test.yml)
-[![Lint](https://github.com/PyCQA/isort/actions/workflows/lint.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/lint.yml)
+[![CI](https://github.com/PyCQA/isort/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/PyCQA/isort/actions/workflows/continuous-integration.yml)
 [![Code coverage Status](https://codecov.io/gh/pycqa/isort/branch/main/graph/badge.svg)](https://codecov.io/gh/pycqa/isort)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.org/project/isort/)
 [![Downloads](https://pepy.tech/badge/isort)](https://pepy.tech/project/isort)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://isort.readthedocs.io/)
 [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/pycqa/isort/?ref=repository-badge)
 
 [pypi status]: https://pypi.org/project/isort/
 _________________
 
-[Read Latest Documentation](https://pycqa.github.io/isort/) - [Browse GitHub Code Repository](https://github.com/pycqa/isort/)
+[Read Latest Documentation](https://isort.readthedocs.io/) - [Browse GitHub Code Repository](https://github.com/pycqa/isort/)
 _________________
 
 # isort your imports, so you don't have to.
@@ -28,9 +27,9 @@ editors](https://github.com/pycqa/isort/wiki/isort-Plugins) to
 quickly sort all your imports. It requires Python 3.10+ to run but
 supports formatting Python 2 code too.
 
-- [Try isort now from your browser!](https://pycqa.github.io/isort/docs/quick_start/0.-try.html)
-- [Using black? See the isort and black compatibility guide.](https://pycqa.github.io/isort/docs/configuration/black_compatibility.html)
-- [isort has official support for pre-commit!](https://pycqa.github.io/isort/docs/configuration/pre-commit.html)
+- [Try isort now from your browser!](../docs/quick_start/0.-try.md)
+- [Using black? See the isort and black compatibility guide.](../docs/configuration/black_compatibility.md)
+- [isort has official support for pre-commit!](../docs/configuration/pre-commit.md)
 
 ![Example Usage](https://raw.github.com/pycqa/isort/main/example.gif)
 
@@ -152,7 +151,7 @@ notified.
 
 You will notice above the \"multi\_line\_output\" setting. This setting
 defines how from imports wrap when they extend past the line\_length
-limit and has [12 possible settings](https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes.html).
+limit and has [12 possible settings](../docs/configuration/multi_line_output_modes.md).
 
 ## Indentation
 
@@ -205,7 +204,7 @@ the `-e` option into the command line utility.
 isort provides configuration options to change almost every aspect of how
 imports are organized, ordered, or grouped together in sections.
 
-[Click here](https://pycqa.github.io/isort/docs/configuration/custom_sections_and_ordering.html) for an overview of all these options.
+[Click here](../docs/configuration/custom_sections_and_ordering.md) for an overview of all these options.
 
 ## Skip processing of imports (outside of configuration)
 
@@ -242,7 +241,7 @@ import a
 
 isort can be ran or configured to add / remove imports automatically.
 
-[See a complete guide here.](https://pycqa.github.io/isort/docs/configuration/add_or_remove_imports.html)
+[See a complete guide here.](../docs/configuration/add_or_remove_imports.md)
 
 ## Using isort to verify code
 
@@ -273,25 +272,25 @@ project.
 isort provides a hook function that can be integrated into your Git
 pre-commit script to check Python code before committing.
 
-[More info here.](https://pycqa.github.io/isort/docs/configuration/git_hook.html)
+[More info here.](../docs/configuration/git_hook.md)
 
 ## Spread the word
 
-[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://isort.readthedocs.io/)
 
 Place this badge at the top of your repository to let others know your project uses isort.
 
 For README.md:
 
 ```markdown
-[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Imports: isort](https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://isort.readthedocs.io/)
 ```
 
 Or README.rst:
 
 ```rst
 .. image:: https://img.shields.io/badge/imports-isort-%231674b1?style=flat&labelColor=ef8336
-    :target: https://pycqa.github.io/isort/
+    :target: https://isort.readthedocs.io/
 ```
 
 ## Security contact information

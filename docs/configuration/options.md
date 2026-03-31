@@ -5,7 +5,7 @@ isort will disagree but commit to your way of formatting. To enable this, isort 
 how you want your imports sorted, organized, and formatted.
 
 Too busy to build your perfect isort configuration? For curated common configurations, see isort's [built-in
-profiles](https://pycqa.github.io/isort/docs/configuration/profiles.html).
+profiles](./profiles.md).
 
 ## Python Version
 
@@ -1216,7 +1216,7 @@ Inserts a blank line before a comment following an import.
 Base profile type to use for configuration. Profiles include: black, django,
 pycharm, google, open\_stack, plone, attrs, hug, wemake, appnexus. As well as
 any [shared
-profiles](https://pycqa.github.io/isort/docs/howto/shared_profiles.html).
+profiles](../howto/shared_profiles.md).
 
 **Type:** String  
 **Default:** ` `  

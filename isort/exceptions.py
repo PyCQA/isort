@@ -172,7 +172,7 @@ class UnsupportedSettings(ISortError):
             "isort was provided settings that it doesn't support:\n\n"
             f"{errors}\n\n"
             "For a complete and up-to-date listing of supported settings see: "
-            "https://pycqa.github.io/isort/docs/configuration/options.\n"
+            "https://isort.readthedocs.io/en/latest/configuration/options.html.\n"
         )
         self.unsupported_settings = unsupported_settings
 
@@ -192,6 +192,6 @@ class MissingSection(ISortError):
         super().__init__(
             f"Found {import_module} import while parsing, but {section} was not included "
             "in the `sections` setting of your config. Please add it before continuing\n"
-            "See https://pycqa.github.io/isort/#custom-sections-and-ordering "
+            "See https://isort.readthedocs.io/en/latest/index.html#custom-sections-and-ordering "
             "for more info."
         )
