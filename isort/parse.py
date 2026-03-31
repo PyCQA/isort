@@ -218,6 +218,19 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     ):
                         nested_comments[stripped_line] = extra_line.comment
 
+            # If a semicolon was introduced by a backslash-continued line (i.e., the
+            # original statement had no semicolon but the merged import_string does),
+            # treat the entire multi-line construct as non-import code and output as-is.
+            # This mirrors what skip_line() does for single-line semicolons.
+            # Note: statement_index was set to `index` *after* its increment at the top
+            # of the outer while loop, so statement_index - 1 is the index of the first
+            # line of this statement in in_lines.
+            import_string_code = import_string.split("#")[0]
+            statement_code = statement.split("#")[0]
+            if ";" in import_string_code and ";" not in statement_code:
+                out_lines.extend(in_lines[statement_index - 1 : index])
+                continue
+
             if type_of_import == "from":
                 import_string = normalize_from_import_string(import_string)
                 if "import " not in import_string:
