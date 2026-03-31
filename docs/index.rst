@@ -72,6 +72,13 @@ Home
 
 .. toctree::
     :maxdepth: 2
+    :caption: Reference
+    :hidden:
+
+    reference/isort
+
+.. toctree::
+    :maxdepth: 2
     :caption: Warning and Error Codes
     :hidden:
 
