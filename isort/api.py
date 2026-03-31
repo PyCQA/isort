@@ -414,7 +414,7 @@ def sort_file(
         changed: bool = False
         try:
             if write_to_stdout:
-                changed = sort_stream(
+                return sort_stream(
                     input_stream=source_file.stream,
                     output_stream=sys.stdout,
                     config=config,
@@ -422,79 +422,79 @@ def sort_file(
                     disregard_skip=disregard_skip,
                     extension=extension,
                 )
-            else:
-                if output is None:
-                    try:
-                        if config.overwrite_in_place:
-                            output_stream_context = _in_memory_output_stream_context()
-                        else:
-                            output_stream_context = _file_output_stream_context(
-                                filename, source_file
-                            )
-                        with output_stream_context as output_stream:
-                            changed = sort_stream(
-                                input_stream=source_file.stream,
-                                output_stream=output_stream,
-                                config=config,
-                                file_path=actual_file_path,
-                                disregard_skip=disregard_skip,
-                                extension=extension,
-                            )
-                            output_stream.seek(0)
-                            if changed:
-                                if show_diff or ask_to_apply:
-                                    source_file.stream.seek(0)
-                                    show_unified_diff(
-                                        file_input=source_file.stream.read(),
-                                        file_output=output_stream.read(),
-                                        file_path=actual_file_path,
-                                        output=(
-                                            None if show_diff is True else cast(TextIO, show_diff)
-                                        ),
-                                        color_output=config.color_output,
-                                    )
-                                    if show_diff or (
-                                        ask_to_apply
-                                        and not ask_whether_to_apply_changes_to_file(
-                                            str(source_file.path)
-                                        )
-                                    ):
-                                        return False
-                                source_file.stream.close()
-                                if config.overwrite_in_place:
-                                    output_stream.seek(0)
-                                    with source_file.path.open("w") as fs:
-                                        shutil.copyfileobj(output_stream, fs)
-                        if changed:
-                            if not config.overwrite_in_place:
-                                tmp_file = _tmp_file(source_file)
-                                tmp_file.replace(source_file.path)
-                            if not config.quiet:
-                                print(f"Fixing {source_file.path}")
-                    finally:
-                        if not config.overwrite_in_place:  # pragma: no branch
-                            tmp_file = _tmp_file(source_file)
-                            tmp_file.unlink(missing_ok=True)
-                else:
-                    changed = sort_stream(
-                        input_stream=source_file.stream,
-                        output_stream=output,
-                        config=config,
-                        file_path=actual_file_path,
-                        disregard_skip=disregard_skip,
-                        extension=extension,
-                    )
-                    if changed and show_diff:
-                        source_file.stream.seek(0)
-                        output.seek(0)
-                        show_unified_diff(
-                            file_input=source_file.stream.read(),
-                            file_output=output.read(),
-                            file_path=actual_file_path,
-                            output=None if show_diff is True else show_diff,
-                            color_output=config.color_output,
+                
+            if output is None:
+                try:
+                    if config.overwrite_in_place:
+                        output_stream_context = _in_memory_output_stream_context()
+                    else:
+                        output_stream_context = _file_output_stream_context(
+                            filename, source_file
                         )
-                    source_file.stream.close()
+                    with output_stream_context as output_stream:
+                        changed = sort_stream(
+                            input_stream=source_file.stream,
+                            output_stream=output_stream,
+                            config=config,
+                            file_path=actual_file_path,
+                            disregard_skip=disregard_skip,
+                            extension=extension,
+                        )
+                        output_stream.seek(0)
+                        if changed:
+                            if show_diff or ask_to_apply:
+                                source_file.stream.seek(0)
+                                show_unified_diff(
+                                    file_input=source_file.stream.read(),
+                                    file_output=output_stream.read(),
+                                    file_path=actual_file_path,
+                                    output=(
+                                        None if show_diff is True else cast(TextIO, show_diff)
+                                    ),
+                                    color_output=config.color_output,
+                                )
+                                if show_diff or (
+                                    ask_to_apply
+                                    and not ask_whether_to_apply_changes_to_file(
+                                        str(source_file.path)
+                                    )
+                                ):
+                                    return False
+                            source_file.stream.close()
+                            if config.overwrite_in_place:
+                                output_stream.seek(0)
+                                with source_file.path.open("w") as fs:
+                                    shutil.copyfileobj(output_stream, fs)
+                    if changed:
+                        if not config.overwrite_in_place:
+                            tmp_file = _tmp_file(source_file)
+                            tmp_file.replace(source_file.path)
+                        if not config.quiet:
+                            print(f"Fixing {source_file.path}")
+                finally:
+                    if not config.overwrite_in_place:  # pragma: no branch
+                        tmp_file = _tmp_file(source_file)
+                        tmp_file.unlink(missing_ok=True)
+            else:
+                changed = sort_stream(
+                    input_stream=source_file.stream,
+                    output_stream=output,
+                    config=config,
+                    file_path=actual_file_path,
+                    disregard_skip=disregard_skip,
+                    extension=extension,
+                )
+                if changed and show_diff:
+                    source_file.stream.seek(0)
+                    output.seek(0)
+                    show_unified_diff(
+                        file_input=source_file.stream.read(),
+                        file_output=output.read(),
+                        file_path=actual_file_path,
+                        output=None if show_diff is True else show_diff,
+                        color_output=config.color_output,
+                    )
+                source_file.stream.close()
 
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors", stacklevel=2)
