@@ -363,6 +363,7 @@ def _in_memory_output_stream_context(source_file: File, changed: Event) -> Itera
 
     if changed.is_set():
         stream.seek(0)
+        source_file.stream.close()
         with source_file.path.open("w") as fs:
             shutil.copyfileobj(stream, fs)
 
@@ -493,7 +494,7 @@ def sort_file(
                 ):
                     return False
 
-            if not config.quiet:
+            if not config.quiet and not output:
                 print(f"Fixing {source_file.path}")
 
             is_changed_event.set()
