@@ -436,33 +436,24 @@ def sort_file(
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path
         config = _config(path=actual_file_path, config=file_config, **config_kwargs)
-        changed: bool = False
-        try:
-            if write_to_stdout:
-                return sort_stream(
-                    input_stream=source_file.stream,
-                    output_stream=sys.stdout,
-                    config=config,
-                    file_path=actual_file_path,
-                    disregard_skip=disregard_skip,
-                    extension=extension,
-                )
 
-            # Prepare the output stream. Using the `is_changed_event` we propagate whether the file
-            # should flush the output to the source file.
-            is_changed_event = Event()
-            if output:
-                output_stream_context: AbstractContextManager[TextIO] = nullcontext(output)
-            elif config.overwrite_in_place:
-                output_stream_context = _in_memory_output_stream_context(
-                    source_file, is_changed_event
-                )
-            else:
-                output_stream_context = _file_output_stream_context(
-                    filename, source_file, is_changed_event
-                )
+        if write_to_stdout:
+            output = sys.stdout
 
-            with output_stream_context as output_stream:
+        # Prepare the output stream. Using the `is_changed_event` we propagate whether the file
+        # should flush the output to the source file.
+        is_changed_event = Event()
+        if output:
+            output_stream_context: AbstractContextManager[TextIO] = nullcontext(output)
+        elif config.overwrite_in_place:
+            output_stream_context = _in_memory_output_stream_context(source_file, is_changed_event)
+        else:
+            output_stream_context = _file_output_stream_context(
+                filename, source_file, is_changed_event
+            )
+
+        with output_stream_context as output_stream:
+            try:
                 changed = sort_stream(
                     input_stream=source_file.stream,
                     output_stream=output_stream,
@@ -471,37 +462,43 @@ def sort_file(
                     disregard_skip=disregard_skip,
                     extension=extension,
                 )
-                if changed:
-                    if show_diff or ask_to_apply:
-                        output_stream.seek(0)
-                        source_file.stream.seek(0)
-                        show_unified_diff(
-                            file_input=source_file.stream.read(),
-                            file_output=output_stream.read(),
-                            file_path=actual_file_path,
-                            output=(None if show_diff is True else cast(TextIO, show_diff)),
-                            color_output=config.color_output,
-                        )
-                        if show_diff or (
-                            ask_to_apply
-                            and not ask_whether_to_apply_changes_to_file(str(source_file.path))
-                        ):
-                            return False
+            except ExistingSyntaxErrors:
+                warn(
+                    f"{actual_file_path} unable to sort due to existing syntax errors",
+                    stacklevel=2,
+                )
+                return False
+            except IntroducedSyntaxErrors:  # pragma: no cover
+                warn(
+                    f"{actual_file_path} unable to sort as isort introduces new syntax errors",
+                    stacklevel=2,
+                )
+                return False
 
-                    is_changed_event.set()
+            if not changed or write_to_stdout:
+                return changed
 
-                    if not config.quiet:
-                        print(f"Fixing {source_file.path}")
+            if show_diff or ask_to_apply:
+                output_stream.seek(0)
+                source_file.stream.seek(0)
+                show_unified_diff(
+                    file_input=source_file.stream.read(),
+                    file_output=output_stream.read(),
+                    file_path=actual_file_path,
+                    output=(None if show_diff is True else cast(TextIO, show_diff)),
+                    color_output=config.color_output,
+                )
+                if show_diff or (
+                    ask_to_apply and not ask_whether_to_apply_changes_to_file(str(source_file.path))
+                ):
+                    return False
 
-        except ExistingSyntaxErrors:
-            warn(f"{actual_file_path} unable to sort due to existing syntax errors", stacklevel=2)
-        except IntroducedSyntaxErrors:  # pragma: no cover
-            warn(
-                f"{actual_file_path} unable to sort as isort introduces new syntax errors",
-                stacklevel=2,
-            )
+            if not config.quiet:
+                print(f"Fixing {source_file.path}")
 
-        return changed
+            is_changed_event.set()
+
+            return True
 
 
 def find_imports_in_code(
