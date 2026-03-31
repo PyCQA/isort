@@ -494,8 +494,6 @@ def sort_file(
                         output=None if show_diff is True else show_diff,
                         color_output=config.color_output,
                     )
-                source_file.stream.close()
-
         except ExistingSyntaxErrors:
             warn(f"{actual_file_path} unable to sort due to existing syntax errors", stacklevel=2)
         except IntroducedSyntaxErrors:  # pragma: no cover
