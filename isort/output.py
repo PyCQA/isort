@@ -1,8 +1,6 @@
 import copy
 import itertools
 from collections.abc import Iterable
-from functools import partial
-from typing import Any
 
 from isort.format import format_simplified
 
@@ -99,7 +97,7 @@ def sorted_imports(
         if config.force_sort_within_sections:
             # collapse comments
             comments_above = []
-            new_section_output: list[str] = []
+            new_section_output: list[str | _LineWithComments] = []
             for line in section_output:
                 if not line:
                     continue
@@ -114,7 +112,7 @@ def sorted_imports(
             new_section_output = sorting.sort(
                 config,
                 new_section_output,
-                key=partial(sorting.section_key, config=config),
+                key=lambda line: sorting.section_key(str(line), config=config),
                 reverse=config.reverse_sort,
             )
 
@@ -712,15 +710,18 @@ def _normalize_empty_lines(lines: list[str]) -> list[str]:
     return lines
 
 
-class _LineWithComments(str):
-    comments: list[str]
+class _LineWithComments:
+    __slots__ = ("value", "comments")
 
-    def __new__(
-        cls: type["_LineWithComments"], value: Any, comments: list[str]
-    ) -> "_LineWithComments":
-        instance = super().__new__(cls, value)
-        instance.comments = comments
-        return instance
+    def __init__(self, value: str, comments: list[str]) -> None:
+        self.value = value
+        self.comments = comments
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __bool__(self) -> bool:
+        return bool(self.value)
 
 
 def _ensure_newline_before_comment(output: list[str]) -> list[str]:
