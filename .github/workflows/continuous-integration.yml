@@ -89,7 +89,7 @@ jobs:
 
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == ${{ env.DEFAULT_PYTHON }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
 
 
   integration:
