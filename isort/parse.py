@@ -8,11 +8,11 @@ from warnings import warn
 
 from . import place
 from ._parse_utils import (
+    QuoteState,
     collect_import_continuation,
     import_type,
     normalize_from_import_string,
     normalize_line,
-    skip_line,
     strip_syntax,
 )
 from .comments import parse as parse_comments
@@ -60,6 +60,92 @@ class ParsedContent(NamedTuple):
     trailing_commas: set[str]
 
 
+def _advance_import_index_for_float_to_top(
+    in_lines: list[str],
+    line: str,
+    lstripped_line: str,
+    index: int,
+    line_count: int,
+    import_index: int,
+) -> int:
+    """Return the updated *import_index* for the ``float_to_top`` special case.
+
+    Called when ``float_to_top`` is enabled and ``import_index`` has not yet
+    been set.  Either marks *index - 1* as the start of the import block (for
+    non-import statements) or advances *import_index* past any
+    ``isort:skip``-annotated multi-line import (for import statements).
+    """
+    if not lstripped_line.startswith("import") and not lstripped_line.startswith("from"):
+        import_index = index - 1
+        while import_index and not in_lines[import_index - 1]:
+            import_index -= 1
+    else:
+        commentless = line.split("#", 1)[0].strip()
+        if (
+            ("isort:skip" in line or "isort: skip" in line)
+            and "(" in commentless
+            and ")" not in commentless
+        ):
+            import_index = index
+            starting_line = line
+            while "isort:skip" in starting_line or "isort: skip" in starting_line:
+                commentless = starting_line.split("#", 1)[0]
+                if (
+                    "(" in commentless
+                    and not commentless.rstrip().endswith(")")
+                    and import_index < line_count
+                ):
+                    while import_index < line_count and not commentless.rstrip().endswith(")"):
+                        commentless = in_lines[import_index].split("#", 1)[0]
+                        import_index += 1
+                else:
+                    import_index += 1
+
+                if import_index >= line_count:
+                    break
+
+                starting_line = in_lines[import_index]
+    return import_index
+
+
+def _collect_comments_above_import(
+    out_lines: list[str],
+    import_index: int,
+    categorized_comments: "CommentsDict",
+    import_type: str,
+    import_key: str,
+    config: Config,
+    check_index: int,
+) -> int:
+    """Pop comment lines immediately above an import into *categorized_comments*.
+
+    Lines are moved from the tail of *out_lines* into
+    ``categorized_comments["above"][import_type][import_key]`` while they
+    look like plain (non-docstring, non-placement) comment lines.  Returns
+    the (possibly adjusted) *import_index*.
+    """
+    if len(out_lines) > max(import_index, 1) - 1:
+        last = out_lines[-1].rstrip() if out_lines else ""
+        while (
+            last.startswith("#")
+            and not last.endswith('"""')
+            and not last.endswith("'''")
+            and "isort:imports-" not in last
+            and "isort: imports-" not in last
+            and not config.treat_all_comments_as_code
+            and last.strip() not in config.treat_comments_as_code
+        ):
+            categorized_comments["above"][import_type].setdefault(import_key, []).insert(
+                0, out_lines.pop(-1)
+            )
+            last = out_lines[-1].rstrip() if out_lines else ""
+        if check_index - 1 == import_index:
+            import_index -= len(
+                categorized_comments["above"][import_type].get(import_key, [])
+            )
+    return import_index
+
+
 # Ignore DeepSource cyclomatic complexity check for this function. It is one
 # the main entrypoints so sort of expected to be complex.
 # skipcq: PY-R1000
@@ -98,12 +184,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
     index = 0
     import_index = -1
-    in_quote = ""
+    quote_state = QuoteState()
     while index < line_count:
         line = in_lines[index]
         index += 1
         statement_index = index
-        (skipping_line, in_quote) = skip_line(line, in_quote=in_quote)
+        skipping_line = quote_state.check_skip(line)
 
         if (
             line in config.section_comments or line in config.section_comments_end
@@ -130,44 +216,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             config.float_to_top
             and import_index == -1
             and line
-            and not in_quote
-            and not lstripped_line.startswith("#")
-            and not lstripped_line.startswith("'''")
-            and not lstripped_line.startswith('"""')
+            and not quote_state.active
+            and not lstripped_line.startswith(("#", "'''", '"""'))
         ):
-            if not lstripped_line.startswith("import") and not lstripped_line.startswith("from"):
-                import_index = index - 1
-                while import_index and not in_lines[import_index - 1]:
-                    import_index -= 1
-            else:
-                commentless = line.split("#", 1)[0].strip()
-                if (
-                    ("isort:skip" in line or "isort: skip" in line)
-                    and "(" in commentless
-                    and ")" not in commentless
-                ):
-                    import_index = index
-
-                    starting_line = line
-                    while "isort:skip" in starting_line or "isort: skip" in starting_line:
-                        commentless = starting_line.split("#", 1)[0]
-                        if (
-                            "(" in commentless
-                            and not commentless.rstrip().endswith(")")
-                            and import_index < line_count
-                        ):
-                            while import_index < line_count and not commentless.rstrip().endswith(
-                                ")"
-                            ):
-                                commentless = in_lines[import_index].split("#", 1)[0]
-                                import_index += 1
-                        else:
-                            import_index += 1
-
-                        if import_index >= line_count:
-                            break
-
-                        starting_line = in_lines[import_index]
+            import_index = _advance_import_index_for_float_to_top(
+                in_lines, line, lstripped_line, index, line_count, import_index
+            )
 
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line:
@@ -333,27 +387,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
                 if len(out_lines) > max(import_index, 1) - 1:
-                    last = out_lines[-1].rstrip() if out_lines else ""
-                    while (
-                        last.startswith("#")
-                        and not last.endswith('"""')
-                        and not last.endswith("'''")
-                        and "isort:imports-" not in last
-                        and "isort: imports-" not in last
-                        and not config.treat_all_comments_as_code
-                        and last.strip() not in config.treat_comments_as_code
-                    ):
-                        categorized_comments["above"]["from"].setdefault(import_from, []).insert(
-                            0, out_lines.pop(-1)
-                        )
-                        if out_lines:
-                            last = out_lines[-1].rstrip()
-                        else:
-                            last = ""
-                    if statement_index - 1 == import_index:  # pragma: no cover
-                        import_index -= len(
-                            categorized_comments["above"]["from"].get(import_from, [])
-                        )
+                    import_index = _collect_comments_above_import(
+                        out_lines,
+                        import_index,
+                        categorized_comments,
+                        "from",
+                        import_from,
+                        config,
+                        statement_index,
+                    )
 
                 if import_from not in root:
                     root[import_from] = OrderedDict(
@@ -384,28 +426,16 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         categorized_comments["straight"][module] = comments
                         comments = []
 
-                    if len(out_lines) > max(import_index, +1, 1) - 1:
-                        last = out_lines[-1].rstrip() if out_lines else ""
-                        while (
-                            last.startswith("#")
-                            and not last.endswith('"""')
-                            and not last.endswith("'''")
-                            and "isort:imports-" not in last
-                            and "isort: imports-" not in last
-                            and not config.treat_all_comments_as_code
-                            and last.strip() not in config.treat_comments_as_code
-                        ):
-                            categorized_comments["above"]["straight"].setdefault(module, []).insert(
-                                0, out_lines.pop(-1)
-                            )
-                            if out_lines:
-                                last = out_lines[-1].rstrip()
-                            else:
-                                last = ""
-                        if index - 1 == import_index:
-                            import_index -= len(
-                                categorized_comments["above"]["straight"].get(module, [])
-                            )
+                    if len(out_lines) > max(import_index, 1) - 1:
+                        import_index = _collect_comments_above_import(
+                            out_lines,
+                            import_index,
+                            categorized_comments,
+                            "straight",
+                            module,
+                            config,
+                            index,
+                        )
                     placed_module = finder(module)
                     if config.verbose and not config.only_modified:
                         print(f"else-type place_module for {module} returned {placed_module}")

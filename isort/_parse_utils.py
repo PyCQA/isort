@@ -43,29 +43,85 @@ class SkipLineResult(NamedTuple):
     in_quote: str
 
 
-# Ignore DeepSource cyclomatic complexity check for this function.
-# skipcq: PY-R1000
-def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineResult:
-    """Determine if a given line should be skipped."""
-    should_skip = bool(in_quote)
-    if '"' in line or "'" in line:
+class QuoteState:
+    """Tracks whether the parser is currently inside a string literal.
+
+    Maintains the current multi-character quote delimiter (e.g. ``"``,
+    ``'``, ``\"\"\"``, or ``'''``) and exposes:
+
+    * :meth:`process_line` – advance the state over all characters of a
+      source line, and
+    * :meth:`check_skip` – a convenience wrapper that also handles the
+      semicolon-separated non-import heuristic used when scanning Python
+      source for import statements.
+    """
+
+    __slots__ = ("_current",)
+
+    def __init__(self, initial: str = "") -> None:
+        self._current = initial
+
+    @property
+    def active(self) -> bool:
+        """``True`` when the parser is currently inside a string literal."""
+        return bool(self._current)
+
+    def process_line(self, line: str) -> None:
+        """Scan *line* character-by-character, updating the quote context.
+
+        Handles single-character quotes (``'`` / ``"``), triple-character
+        quotes (``'''`` / ``\"\"\"``) and backslash-escaped characters.
+        Stops processing at an unquoted ``#`` (start of a comment).
+        """
+        if '"' not in line and "'" not in line:
+            return
         char_index = 0
         while char_index < len(line):
             if line[char_index] == "\\":
-                char_index += 1
-            elif in_quote:
-                if line[char_index : char_index + len(in_quote)] == in_quote:
-                    in_quote = ""
+                char_index += 1  # skip the escaped character
+            elif self._current:
+                if line[char_index : char_index + len(self._current)] == self._current:
+                    self._current = ""
             elif line[char_index] in ("'", '"'):
                 long_quote = line[char_index : char_index + 3]
                 if long_quote in ('"""', "'''"):
-                    in_quote = long_quote
+                    self._current = long_quote
                     char_index += 2
                 else:
-                    in_quote = line[char_index]
+                    self._current = line[char_index]
             elif line[char_index] == "#":
                 break
             char_index += 1
+
+    def check_skip(self, line: str) -> bool:
+        """Return ``True`` if *line* should be skipped when parsing imports.
+
+        Advances the quote state via :meth:`process_line` and returns
+        ``True`` when the line is inside (or transitions into/out of) a
+        string literal, or when it contains a semicolon-separated
+        non-import statement.  This mirrors :func:`skip_line` with
+        ``needs_import=True``.
+        """
+        should_skip = self.active
+        self.process_line(line)
+
+        if ";" in line.split("#")[0]:
+            for part in (part.strip() for part in line.split(";")):
+                if (
+                    part
+                    and not part.startswith("from ")
+                    and not part.startswith(("import ", "cimport "))
+                ):
+                    should_skip = True
+
+        return bool(should_skip or self.active)
+
+
+def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineResult:
+    """Determine if a given line should be skipped."""
+    state = QuoteState(in_quote)
+    should_skip = state.active
+    state.process_line(line)
 
     if ";" in line.split("#")[0] and needs_import:
         for part in (part.strip() for part in line.split(";")):
@@ -76,7 +132,7 @@ def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineRe
             ):
                 should_skip = True
 
-    return SkipLineResult(should_skip=bool(should_skip or in_quote), in_quote=in_quote)
+    return SkipLineResult(should_skip=bool(should_skip or state.active), in_quote=state._current)
 
 
 class ExtraLine(NamedTuple):

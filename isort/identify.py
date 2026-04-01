@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import NamedTuple, TextIO
 
 from ._parse_utils import (
+    QuoteState,
     collect_import_continuation,
     import_type,
     normalize_from_import_string,
     normalize_line,
-    skip_line,
     strip_syntax,
 )
 from .comments import parse as parse_comments
@@ -56,13 +56,13 @@ def imports(
     top_only: bool = False,
 ) -> Iterator[Import]:
     """Parses a python file taking out and categorizing imports."""
-    in_quote = ""
+    quote_state = QuoteState()
 
     indexed_input = enumerate(input_stream)
     for index, raw_line in indexed_input:
-        (skipping_line, in_quote) = skip_line(raw_line, in_quote=in_quote)
+        skipping_line = quote_state.check_skip(raw_line)
 
-        if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
+        if top_only and not quote_state.active and raw_line.startswith(STATEMENT_DECLARATIONS):
             break
         if skipping_line:
             continue
