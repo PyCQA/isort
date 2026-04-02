@@ -1,6 +1,6 @@
-# Multi Line Output Modes
+# Multi line output modes
 
-This [config option](https://pycqa.github.io/isort/docs/configuration/options.html#multi-line-output) defines how from imports wrap when they extend past the line\_length
+This [config option](./options.md#multi-line-output) defines how from imports wrap when they extend past the line\_length
 limit and has 12 possible settings:
 
 ## 0 - Grid

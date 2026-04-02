@@ -48,19 +48,12 @@ class ImportKey(Enum):
 
     Import keys are defined from less to more specific:
 
-    from x.y import z as a
-    ______| |        |    |
-       |    |        |    |
-    PACKAGE |        |    |
-    ________|        |    |
-          |          |    |
-        MODULE       |    |
-    _________________|    |
-              |           |
-           ATTRIBUTE      |
-    ______________________|
-                  |
-                ALIAS
+        from x.y import z as a
+
+        PACKAGE: x
+        MODULE: y
+        ATTRIBUTE: z
+        ALIAS: a
     """
 
     PACKAGE = 1
@@ -86,7 +79,7 @@ def sort_code_string(
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
     input_stream = StringIO(code)
@@ -119,7 +112,7 @@ def check_code_string(
 
     - **code**: The string of code with imports that need to be sorted.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
@@ -158,7 +151,7 @@ def sort_stream(
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - ****config_kwargs**: Any config modifications.
     """
     extension = extension or (file_path and file_path.suffix.lstrip(".")) or "py"
@@ -254,7 +247,7 @@ def check_stream(
 
     - **input_stream**: The stream of code with imports that need to be sorted.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **extension**: The file extension that contains imports. Defaults to filename extension or py.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
@@ -321,7 +314,7 @@ def check_file(
 
     - **filename**: The name or Path of the file to check.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **config**: The config object to use when sorting imports.
     - **file_path**: The disk location where the code string was pulled from.
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
@@ -417,10 +410,10 @@ def sort_file(
     - **disregard_skip**: set to `True` if you want to ignore a skip set in config for this file.
     - **ask_to_apply**: If `True`, prompt before applying any changes.
     - **show_diff**: If `True` the changes that need to be done will be printed to stdout, if a
-    TextIO stream is provided results will be written to it, otherwise no diff will be computed.
+      TextIO stream is provided results will be written to it, otherwise no diff will be computed.
     - **write_to_stdout**: If `True`, write to stdout instead of the input file.
     - **output**: If a TextIO is provided, results will be written there rather than replacing
-    the original file content.
+      the original file content.
     - ****config_kwargs**: Any config modifications.
     """
     file_config: Config = config

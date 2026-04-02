@@ -1,6 +1,6 @@
-# isort Project Official Release Policy
+# Isort project official release policy
 
-isort has moved from being a simple hobby project for individuals to sort imports in their Python files
+Isort has moved from being a simple hobby project for individuals to sort imports in their Python files
 to an essential part of the CI/CD pipeline for large companies and significant Open Source projects.
 Due to this evolution, it is now of increased importance that isort maintains a level of quality, predictability, and consistency
 that gives projects big and small confidence to depend on it.

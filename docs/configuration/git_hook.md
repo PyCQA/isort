@@ -1,4 +1,4 @@
-# Git Hook
+# Git hook
 
 isort provides a hook function that can be integrated into your Git
 pre-commit script to check Python code before committing.

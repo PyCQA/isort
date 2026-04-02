@@ -1,4 +1,4 @@
-Built-in Profile for isort
+Built-in profiles for isort
 ========
 
 The following profiles are built into isort to allow easy interoperability with

@@ -1,4 +1,4 @@
-# Action Comments
+# Action comments
 
 The most basic way to configure the flow of isort within a single file is action comments. These comments are picked up and interpreted by the isort parser during parsing.
 

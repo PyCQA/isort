@@ -1,4 +1,6 @@
-# Adding an import to multiple files
+# Add or remove imports
+
+## Adding an import to multiple files
 
 isort makes it easy to add an import statement across multiple files,
 while being assured it's correctly placed.
@@ -15,7 +17,7 @@ To add an import only to files that already have imports:
 isort -a "from __future__ import print_function" --append-only *.py
 ```
 
-# Removing an import from multiple files
+## Removing an import from multiple files
 
 isort also makes it easy to remove an import from multiple files,
 without having to be concerned with how it was originally formatted.
