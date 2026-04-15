@@ -166,8 +166,10 @@ def normalize_from_import_string(import_string: str) -> str:
 
 
 # TODO: Return a `StrEnum` once we no longer support Python 3.10.
-def import_type(line: str, config: Config) -> Literal["from", "straight"] | None:
-    """If the current line is an import line it will return its type (from or straight)"""
+def import_type(
+    line: str, config: Config
+) -> Literal["from", "straight", "lazy_from", "lazy_straight"] | None:
+    """If the current line is an import line it will return its type."""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
     if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
@@ -176,4 +178,8 @@ def import_type(line: str, config: Config) -> Literal["from", "straight"] | None
         return "straight"
     if line.startswith("from "):
         return "from"
+    if line.startswith("lazy import "):
+        return "lazy_straight"
+    if line.startswith("lazy from "):
+        return "lazy_from"
     return None

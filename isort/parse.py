@@ -48,6 +48,8 @@ ParsedImports = TypedDict(
     {
         "straight": dict[str, bool],
         "from": dict[str, dict[str, bool]],
+        "lazy_straight": dict[str, bool],
+        "lazy_from": dict[str, dict[str, bool]],
     },
 )
 
@@ -95,7 +97,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     verbose_output: list[str] = []
 
     for section in chain(config.sections, config.forced_separate):
-        imports[section] = {"straight": OrderedDict(), "from": OrderedDict()}
+        imports[section] = {
+            "straight": OrderedDict(),
+            "from": OrderedDict(),
+            "lazy_straight": OrderedDict(),
+            "lazy_from": OrderedDict(),
+        }
     categorized_comments: CommentsDict = {
         "from": {},
         "straight": {},
@@ -193,6 +200,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if not type_of_import:
                 out_lines.append(raw_line)
                 continue
+
+            # Detect PEP 810 lazy imports (``lazy import X`` / ``lazy from X import Y``).
+            # We strip the ``lazy `` prefix so the rest of the parsing logic works normally
+            # on the resulting ``import X`` / ``from X import Y`` string.  The original
+            # lazy type is remembered in ``is_lazy`` and used later when storing the result.
+            is_lazy = type_of_import in ("lazy_straight", "lazy_from")
+            if is_lazy:
+                line = line[len("lazy ") :]
+                type_of_import = "straight" if type_of_import == "lazy_straight" else "from"
 
             if import_index == -1:
                 import_index = index - 1
@@ -314,7 +330,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if placed_module and placed_module not in imports:
                     raise MissingSection(import_module=import_from, section=placed_module)
 
-                root = imports[placed_module][type_of_import]
+                root = imports[placed_module]["lazy_from" if is_lazy else type_of_import]
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment is not None:
@@ -384,6 +400,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
+                assert type_of_import == "straight"  # noqa: S101 # Only needed for type checker
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
@@ -429,15 +446,27 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             " Do you need to define a default section?",
                             stacklevel=2,
                         )
-                        imports.setdefault("", {"straight": OrderedDict(), "from": OrderedDict()})
+                        imports.setdefault(
+                            "",
+                            {
+                                "straight": OrderedDict(),
+                                "from": OrderedDict(),
+                                "lazy_straight": OrderedDict(),
+                                "lazy_from": OrderedDict(),
+                            },
+                        )
 
                     if placed_module and placed_module not in imports:
                         raise MissingSection(import_module=module, section=placed_module)
 
                     straight_import |= bool(
-                        imports[placed_module][type_of_import].get(module, False)
+                        imports[placed_module]["lazy_straight" if is_lazy else type_of_import].get(
+                            module, False
+                        )
                     )
-                    imports[placed_module][type_of_import][module] = straight_import
+                    imports[placed_module]["lazy_straight" if is_lazy else type_of_import][
+                        module
+                    ] = straight_import
 
     change_count = len(out_lines) - original_line_count
 

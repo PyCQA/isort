@@ -12,7 +12,12 @@ from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
-IMPORT_START_IDENTIFIERS = ("from ", "from.import", "import ", "import*", *CIMPORT_IDENTIFIERS)
+_BASE_IMPORT_IDENTIFIERS = ("from ", "from.import", "import ", "import*")
+IMPORT_START_IDENTIFIERS = (
+    *_BASE_IMPORT_IDENTIFIERS,
+    *(f"lazy {identifier}" for identifier in _BASE_IMPORT_IDENTIFIERS),
+    *CIMPORT_IDENTIFIERS,
+)
 DOCSTRING_INDICATORS = ('"""', "'''")
 COMMENT_INDICATORS = (*DOCSTRING_INDICATORS, "'", '"', "#")
 CODE_SORT_COMMENTS = (
