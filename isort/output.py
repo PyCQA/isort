@@ -51,7 +51,7 @@ def sorted_imports(
     seen_headings: set[str] = set()
     pending_lines_before = False
     for section in sections:
-        straight_modules = parsed.imports[section]["straight"]
+        straight_modules: Iterable[str] = parsed.imports[section]["straight"]
         if not config.only_sections:
             straight_modules = sorting.sort(
                 config,
@@ -62,7 +62,7 @@ def sorted_imports(
                 reverse=config.reverse_sort,
             )
 
-        from_modules = parsed.imports[section]["from"]
+        from_modules: Iterable[str] = parsed.imports[section]["from"]
         if not config.only_sections:
             from_modules = sorting.sort(
                 config,
@@ -305,7 +305,7 @@ def _with_from_imports(
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
         only_show_as_imports = False
-        comments = parsed.categorized_comments["from"].pop(module, ())
+        comments: list[str] | None = parsed.categorized_comments["from"].pop(module, None)
         above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
         while from_imports:
             if above_comments:
@@ -519,7 +519,7 @@ def _with_from_imports(
 
                         from_imports.remove(from_import)
                         if from_imports:
-                            use_comments = []
+                            use_comments: list[str] | None = []
                         else:
                             use_comments = comments
                             comments = None

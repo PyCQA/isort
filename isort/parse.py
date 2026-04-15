@@ -3,7 +3,7 @@
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict
+from typing import TYPE_CHECKING, NamedTuple, TypedDict
 from warnings import warn
 
 from . import place
@@ -21,15 +21,15 @@ from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
     CommentsAboveDict = TypedDict(
-        "CommentsAboveDict", {"straight": dict[str, Any], "from": dict[str, Any]}
+        "CommentsAboveDict", {"straight": dict[str, list[str]], "from": dict[str, list[str]]}
     )
 
     CommentsDict = TypedDict(
         "CommentsDict",
         {
-            "from": dict[str, Any],
-            "straight": dict[str, Any],
-            "nested": dict[str, Any],
+            "from": dict[str, list[str]],
+            "straight": dict[str, list[str]],
+            "nested": dict[str, dict[str, str]],
             "above": CommentsAboveDict,
         },
     )
@@ -43,6 +43,15 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
+ParsedImports = TypedDict(
+    "ParsedImports",
+    {
+        "straight": dict[str, bool],
+        "from": dict[str, dict[str, bool]],
+    },
+)
+
+
 class ParsedContent(NamedTuple):
     in_lines: list[str]
     lines_without_imports: list[str]
@@ -50,12 +59,12 @@ class ParsedContent(NamedTuple):
     place_imports: dict[str, list[str]]
     import_placements: dict[str, str]
     as_map: dict[str, dict[str, list[str]]]
-    imports: dict[str, dict[str, Any]]
+    imports: dict[str, ParsedImports]
     categorized_comments: "CommentsDict"
     change_count: int
     original_line_count: int
     line_separator: str
-    sections: Any
+    sections: tuple[str, ...]
     verbose_output: list[str]
     trailing_commas: set[str]
 
@@ -82,7 +91,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "straight": defaultdict(list),
         "from": defaultdict(list),
     }
-    imports: OrderedDict[str, dict[str, Any]] = OrderedDict()
+    imports: OrderedDict[str, ParsedImports] = OrderedDict()
     verbose_output: list[str] = []
 
     for section in chain(config.sections, config.forced_separate):
@@ -229,7 +238,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for item in strip_syntax(import_string).split()
             ]
 
-            attach_comments_to: list[Any] | None = None
+            attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
             straight_import = True
             top_level_module = ""
@@ -425,7 +434,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module and placed_module not in imports:
                         raise MissingSection(import_module=module, section=placed_module)
 
-                    straight_import |= imports[placed_module][type_of_import].get(module, False)
+                    straight_import |= bool(
+                        imports[placed_module][type_of_import].get(module, False)
+                    )
                     imports[placed_module][type_of_import][module] = straight_import
 
     change_count = len(out_lines) - original_line_count
