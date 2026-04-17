@@ -371,6 +371,10 @@ def process(
                     continue
                 if not import_section:
                     output_stream.write("".join(lines_before))
+                made_changes = made_changes or bool(
+                    import_section
+                    and len(lines_before) != _configured_lines_before_imports(config, extension)
+                )
                 lines_before = []
 
             raw_import_section: str = import_section
@@ -515,3 +519,9 @@ def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace
             != remove_whitespace(after, line_separator=line_separator).strip()
         )
     return before.strip() != after.strip()
+
+
+def _configured_lines_before_imports(config: Config, extension: str) -> int:
+    if config.profile == "black" and extension == "pyi":
+        return 1
+    return config.lines_before_imports

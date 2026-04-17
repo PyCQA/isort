@@ -1904,6 +1904,31 @@ def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports(
     )
 
 
+@pytest.mark.parametrize(
+    ("test_input", "lines_before_imports", "expected_output"),
+    [
+        ("from a import b, x\n\nfoo = 'bar'\n", 1, "\nfrom a import b, x\n\nfoo = 'bar'\n"),
+        ("\nfrom a import b, x\n\nfoo = 'bar'\n", 0, "from a import b, x\n\nfoo = 'bar'\n"),
+    ],
+)
+def test_lines_before_imports_changes_are_reported_issue_2242(
+    test_input: str, lines_before_imports: int, expected_output: str
+) -> None:
+    output = StringIO()
+
+    changed = isort.api.sort_stream(
+        StringIO(test_input),
+        output,
+        lines_before_imports=lines_before_imports,
+    )
+
+    output.seek(0)
+    assert changed
+    assert output.read() == expected_output
+    assert not isort.check_code(test_input, lines_before_imports=lines_before_imports)
+    assert isort.check_code(expected_output, lines_before_imports=lines_before_imports)
+
+
 def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893():
     """Ensure isort doesn't raise an IndexError on valid input ending with a backslash
     without a trailing newline, as was the case in issue #1893:
