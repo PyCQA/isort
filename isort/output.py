@@ -2,7 +2,7 @@ import copy
 import itertools
 from collections.abc import Iterable
 from functools import partial
-from typing import Any
+from typing import Any, Literal
 
 from isort.format import format_simplified
 
@@ -35,96 +35,43 @@ def sorted_imports(
     sections: Iterable[str] = itertools.chain(parsed.sections, config.forced_separate)
 
     if config.no_sections:
-        parsed.imports["no_sections"] = {"straight": {}, "from": {}}
+        parsed.imports["no_sections"] = {
+            "straight": {},
+            "from": {},
+            "lazy_straight": {},
+            "lazy_from": {},
+        }
         base_sections: tuple[str, ...] = ()
         for section in sections:
             if section == "FUTURE":
                 base_sections = ("FUTURE",)
                 continue
-            parsed.imports["no_sections"]["straight"].update(
-                parsed.imports[section].get("straight", {})
+            parsed.imports["no_sections"]["straight"].update(parsed.imports[section]["straight"])
+            parsed.imports["no_sections"]["from"].update(parsed.imports[section]["from"])
+            parsed.imports["no_sections"]["lazy_straight"].update(
+                parsed.imports[section]["lazy_straight"]
             )
-            parsed.imports["no_sections"]["from"].update(parsed.imports[section].get("from", {}))
+            parsed.imports["no_sections"]["lazy_from"].update(parsed.imports[section]["lazy_from"])
         sections = (*base_sections, "no_sections")
 
     output: list[str] = []
     seen_headings: set[str] = set()
     pending_lines_before = False
     for section in sections:
-        straight_modules: Iterable[str] = parsed.imports[section]["straight"]
-        if not config.only_sections:
-            straight_modules = sorting.sort(
-                config,
-                straight_modules,
-                key=lambda key: sorting.module_key(
-                    key, config, section_name=section, straight_import=True
-                ),
-                reverse=config.reverse_sort,
-            )
-
-        from_modules: Iterable[str] = parsed.imports[section]["from"]
-        if not config.only_sections:
-            from_modules = sorting.sort(
-                config,
-                from_modules,
-                key=lambda key: sorting.module_key(key, config, section_name=section),
-                reverse=config.reverse_sort,
-            )
-
-            if config.star_first:
-                star_modules = []
-                other_modules = []
-                for module in from_modules:
-                    if "*" in parsed.imports[section]["from"][module]:
-                        star_modules.append(module)
-                    else:
-                        other_modules.append(module)
-                from_modules = star_modules + other_modules
-
-        straight_imports = _with_straight_imports(
-            parsed, config, straight_modules, section, remove_imports, import_type
-        )
-        from_imports = _with_from_imports(
-            parsed, config, from_modules, section, remove_imports, import_type
+        section_output = _build_import_group(
+            parsed, config, section, remove_imports, import_type, is_lazy=False
         )
 
-        lines_between = [""] * (
-            config.lines_between_types if from_modules and straight_modules else 0
+        # PEP 810 lazy imports always follow all eager imports within the section.
+        lazy_section_output = _build_import_group(
+            parsed, config, section, remove_imports, import_type, is_lazy=True
         )
-        if config.from_first or section == "FUTURE":
-            section_output = from_imports + lines_between + straight_imports
-        else:
-            section_output = straight_imports + lines_between + from_imports
 
-        if config.force_sort_within_sections:
-            # collapse comments
-            comments_above = []
-            new_section_output: list[str] = []
-            for line in section_output:
-                if not line:
-                    continue
-                if line.startswith("#"):
-                    comments_above.append(line)
-                elif comments_above:
-                    new_section_output.append(_LineWithComments(line, comments_above))
-                    comments_above = []
-                else:
-                    new_section_output.append(line)
-            # only_sections options is not imposed if force_sort_within_sections is True
-            new_section_output = sorting.sort(
-                config,
-                new_section_output,
-                key=partial(sorting.section_key, config=config),
-                reverse=config.reverse_sort,
-            )
-
-            # uncollapse comments
-            section_output = []
-            for line in new_section_output:
-                comments = getattr(line, "comments", ())
-                if comments:
-                    section_output.extend(comments)
-                section_output.append(str(line))
+        if lazy_section_output:
+            if section_output:
+                section_output += [""] * config.lines_between_types + lazy_section_output
+            else:
+                section_output = lazy_section_output
 
         section_name = section
         no_lines_before = section_name in config.no_lines_before
@@ -244,6 +191,96 @@ def sorted_imports(
     return _output_as_string(formatted_output, parsed.line_separator)
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
+def _build_import_group(
+    parsed: parse.ParsedContent,
+    config: Config,
+    section: str,
+    remove_imports: list[str],
+    import_type: str,
+    *,
+    is_lazy: bool,
+) -> list[str]:
+    """Build the sorted import lines for one group (eager or lazy) within a section."""
+    straight_key: Literal["lazy_straight", "straight"] = "lazy_straight" if is_lazy else "straight"
+    from_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
+
+    straight_modules: Iterable[str] = parsed.imports[section][straight_key]
+    if not config.only_sections:
+        straight_modules = sorting.sort(
+            config,
+            straight_modules,
+            key=lambda key: sorting.module_key(
+                key, config, section_name=section, straight_import=True
+            ),
+            reverse=config.reverse_sort,
+        )
+
+    from_modules: Iterable[str] = parsed.imports[section][from_key]
+    if not config.only_sections:
+        from_modules = sorting.sort(
+            config,
+            from_modules,
+            key=lambda key: sorting.module_key(key, config, section_name=section),
+            reverse=config.reverse_sort,
+        )
+
+        if not is_lazy and config.star_first:
+            star_modules = []
+            other_modules = []
+            for module in from_modules:
+                if "*" in parsed.imports[section]["from"][module]:
+                    star_modules.append(module)
+                else:
+                    other_modules.append(module)
+            from_modules = star_modules + other_modules
+
+    straight_imports = _with_straight_imports(
+        parsed, config, straight_modules, section, remove_imports, import_type, is_lazy=is_lazy
+    )
+    from_imports = _with_from_imports(
+        parsed, config, from_modules, section, remove_imports, import_type, is_lazy=is_lazy
+    )
+
+    lines_between = [""] * (config.lines_between_types if from_modules and straight_modules else 0)
+    if config.from_first or section == "FUTURE":
+        group_output = from_imports + lines_between + straight_imports
+    else:
+        group_output = straight_imports + lines_between + from_imports
+
+    if config.force_sort_within_sections:
+        # collapse comments
+        comments_above: list[str] = []
+        new_group_output: list[str] = []
+        for line in group_output:
+            if not line:
+                continue
+            if line.startswith("#"):
+                comments_above.append(line)
+            elif comments_above:
+                new_group_output.append(_LineWithComments(line, comments_above))
+                comments_above = []
+            else:
+                new_group_output.append(line)
+        # only_sections option is not imposed if force_sort_within_sections is True
+        new_group_output = sorting.sort(
+            config,
+            new_group_output,
+            key=partial(sorting.section_key, config=config),
+            reverse=config.reverse_sort,
+        )
+        # uncollapse comments
+        group_output = []
+        for line in new_group_output:
+            line_comments = getattr(line, "comments", ())
+            if line_comments:
+                group_output.extend(line_comments)
+            group_output.append(str(line))
+
+    return group_output
+
+
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
@@ -254,14 +291,21 @@ def _with_from_imports(
     section: str,
     remove_imports: list[str],
     import_type: str,
+    *,
+    is_lazy: bool,
 ) -> list[str]:
     output: list[str] = []
+    import_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
+
     for module in from_modules:
         if module in remove_imports:
             continue
 
         import_start = f"from {module} {import_type} "
-        from_imports = list(parsed.imports[section]["from"][module])
+        if is_lazy:
+            import_start = f"lazy {import_start}"
+        from_imports = list(parsed.imports[section][import_key][module])
+
         if (
             not config.no_inline_sort
             or (config.force_single_line and module not in config.single_line_exclusions)
@@ -299,7 +343,7 @@ def _with_from_imports(
             for from_import in copy.copy(from_imports):
                 if from_import in as_imports:
                     idx = from_imports.index(from_import)
-                    if parsed.imports[section]["from"][module][from_import]:
+                    if parsed.imports[section][import_key][module][from_import]:
                         from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
@@ -347,7 +391,7 @@ def _with_from_imports(
                         )
                     if from_import in as_imports:
                         if (
-                            parsed.imports[section]["from"][module][from_import]
+                            parsed.imports[section][import_key][module][from_import]
                             and not only_show_as_imports
                         ):
                             output.append(
@@ -403,7 +447,7 @@ def _with_from_imports(
                         parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
                     )
                     if (
-                        parsed.imports[section]["from"][module][from_import]
+                        parsed.imports[section][import_key][module][from_import]
                         and not only_show_as_imports
                     ):
                         specific_comment = (
@@ -540,7 +584,7 @@ def _with_from_imports(
                     from_imports[0] not in as_imports
                     or (
                         config.combine_as_imports
-                        and parsed.imports[section]["from"][module][from_import]
+                        and parsed.imports[section][import_key][module][from_import]
                     )
                 ):
                     from_import_section.append(from_imports.pop(0))
@@ -633,8 +677,12 @@ def _with_straight_imports(
     section: str,
     remove_imports: list[str],
     import_type: str,
+    *,
+    is_lazy: bool,
 ) -> list[str]:
     output: list[str] = []
+
+    import_type = f"lazy {import_type}" if is_lazy else import_type
 
     as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)
 
@@ -675,7 +723,7 @@ def _with_straight_imports(
 
         import_definition = []
         if module in parsed.as_map["straight"]:
-            if parsed.imports[section]["straight"][module]:
+            if parsed.imports[section]["lazy_straight" if is_lazy else "straight"][module]:
                 import_definition.append((f"{import_type} {module}", module))
             import_definition.extend(
                 (f"{import_type} {module} as {as_import}", f"{module} as {as_import}")
