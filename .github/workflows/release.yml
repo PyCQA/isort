@@ -11,6 +11,11 @@ jobs:
     if: github.repository_owner == 'PyCQA'
     name: Release
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/isort
+    permissions:
+      id-token: write
     steps:
       - name: Check out the repository
         uses: actions/checkout@v6
@@ -45,8 +50,6 @@ jobs:
 
       - name: Publish package on PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Publish the release notes
         uses: release-drafter/release-drafter@v7
