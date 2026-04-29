@@ -32,6 +32,38 @@ CODE_SORT_COMMENTS = (
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 
 
+def _net_open_brackets(line: str) -> int:
+    """Return the net number of open brackets in a line, correctly ignoring
+    brackets that appear inside string literals or comments.
+    """
+    depth = 0
+    in_string = ""
+    i = 0
+    while i < len(line):
+        char = line[i]
+        if in_string:
+            if char == "\\" and len(in_string) == 1:
+                i += 1  # skip the escaped character
+            elif line[i : i + len(in_string)] == in_string:
+                i += len(in_string) - 1
+                in_string = ""
+        elif char in ('"', "'"):
+            triple = line[i : i + 3]
+            if triple in ('"""', "'''"):
+                in_string = triple
+                i += 2
+            else:
+                in_string = char
+        elif char == "#":
+            break  # rest of the line is a comment
+        elif char in ("(", "[", "{"):
+            depth += 1
+        elif char in (")", "]", "}"):
+            depth -= 1
+        i += 1
+    return depth
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def process(
@@ -83,6 +115,7 @@ def process(
     lines_before: list[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
+    reexport_bracket_depth: int = 0
 
     if config.float_to_top:
         new_input = ""
@@ -242,15 +275,30 @@ def process(
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                 elif config.sort_reexports and stripped_line.startswith("__all__"):
-                    _, rhs = stripped_line.split("=")
+                    _, rhs = stripped_line.split("=", 1)
                     code_sorting = LITERAL_TYPE_MAPPING.get(rhs.lstrip()[0], "tuple")
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
                     code_sorting_section += line
                     reexport_rollback = len(line)
                     is_reexport = True
+                    reexport_bracket_depth = _net_open_brackets(stripped_line)
                 elif code_sorting:
+                    _process_section = False
                     if not stripped_line:
+                        _process_section = True
+                    elif is_reexport and reexport_bracket_depth <= 0:
+                        # The __all__ assignment is complete; process it and let
+                        # the current line be handled normally (don't set line = "")
+                        _process_section = True
+                    else:
+                        code_sorting_section += line
+                        line = ""
+                        if is_reexport:
+                            reexport_bracket_depth += _net_open_brackets(stripped_line)
+                            if reexport_bracket_depth <= 0:
+                                _process_section = True
+                    if _process_section:
                         sorted_code = textwrap.indent(
                             isort.literal.assignment(
                                 code_sorting_section,
@@ -277,9 +325,7 @@ def process(
                         code_sorting_section = ""
                         code_sorting_indent = ""
                         is_reexport = False
-                    else:
-                        code_sorting_section += line
-                        line = ""
+                        reexport_bracket_depth = 0
                 elif (
                     stripped_line in config.section_comments
                     or stripped_line in config.section_comments_end

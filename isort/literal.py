@@ -48,7 +48,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             f"Defined sort types are {', '.join(type_mapping.keys())}."
         )
 
-    variable_name, literal = code.split("=")
+    variable_name, literal = code.split("=", 1)
     variable_name = variable_name.strip()
     literal = literal.lstrip()
     try:
