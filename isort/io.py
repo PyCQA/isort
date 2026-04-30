@@ -1,7 +1,6 @@
 """Defines any IO utilities used by isort"""
 
 import dataclasses
-import re
 import tokenize
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -10,8 +9,6 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from isort.exceptions import UnsupportedEncoding
-
-_ENCODING_PATTERN = re.compile(rb"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 
 
 @dataclasses.dataclass(frozen=True)
