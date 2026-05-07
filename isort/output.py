@@ -1,4 +1,3 @@
-import copy
 import itertools
 from collections.abc import Iterable
 from functools import partial
@@ -59,7 +58,11 @@ def sorted_imports(
             parsed, cfg, section, list(remove_imports), import_type, is_lazy=True
         )
         if lazy_sec_out:
-            sec_out = sec_out + [""] * cfg.lines_between_types + lazy_sec_out if sec_out else lazy_sec_out
+            sec_out = (
+                sec_out + [""] * cfg.lines_between_types + lazy_sec_out
+                if sec_out
+                else lazy_sec_out
+            )
 
         no_lines_before = section in cfg.no_lines_before
         if sec_out:
@@ -130,7 +133,11 @@ def sorted_imports(
                     line, in_quote="", needs_import=False
                 )
                 if not should_skip and line.strip():
-                    if line.strip().startswith("#") and idx + 1 < len(tail) and tail[idx + 1].strip():
+                    if (
+                        line.strip().startswith("#")
+                        and idx + 1 < len(tail)
+                        and tail[idx + 1].strip()
+                    ):
                         continue
                     next_construct = line
                     break
