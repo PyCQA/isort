@@ -36,13 +36,6 @@ html_theme_options = {
     "palette": {"primary": "deep-orange", "accent": "deep-orange"},
 }
 
-# -- Build hooks to fix relative links in included files ---------------------
-# README.md and CHANGELOG.md use ``docs/X`` paths so links work on GitHub.
-# When Sphinx includes these files from within ``docs/``, those paths would
-# resolve to ``docs/docs/X``.  The hook below generates adjusted copies
-# (``_readme_include.md`` / ``_changelog_include.md``) that strip the leading
-# ``docs/`` prefix so that Sphinx resolves the links correctly.
-
 _GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
 
 
