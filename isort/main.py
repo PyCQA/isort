@@ -114,7 +114,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         " "
         "If you've used isort 4 but are new to isort 5, see the upgrading guide: "
         "https://isort.readthedocs.io/en/latest/upgrade_guides/5.0.0.html",
-        add_help=False,  # prevent help option from appearing in "optional arguments" group
+        add_help=False,
     )
 
     general_group = parser.add_argument_group("general options")
@@ -864,7 +864,7 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
     argv = sys.argv[1:] if argv is None else list(argv)
 
     parser = _build_arg_parser()
-    arguments = {key: value for key, value in vars(parser.parse_args(argv)).items() if value}
+    arguments = {k: v for k, v in vars(parser.parse_args(argv)).items() if v}
     if "dont_order_by_type" in arguments:
         arguments["order_by_type"] = False
         del arguments["dont_order_by_type"]
@@ -877,7 +877,7 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
             sys.exit("Can't set both --float-to-top and --dont-float-to-top.")
         else:
             arguments["float_to_top"] = False
-    multi_line_output = arguments.get("multi_line_output", None)
+    multi_line_output = arguments.get("multi_line_output")
     if multi_line_output:
         if multi_line_output.isdigit():
             arguments["multi_line_output"] = WrapModes(int(multi_line_output))
@@ -888,7 +888,6 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
 
 
 def _preconvert(item: Any) -> str | list[Any]:
-    """Preconverts objects from native types into JSONifyiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
@@ -986,9 +985,6 @@ def identify_imports_main(
             print(str(identified_import))
 
 
-# Ignore DeepSource cyclomatic complexity check for this function. It is one
-# the main entrypoints so sort of expected to be complex.
-# skipcq: PY-R1000
 def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) -> None:
     arguments = parse_args(argv)
     if arguments.get("show_version"):
@@ -1047,8 +1043,6 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
     if "src_paths" in config_dict:
-        # Keep CLI-provided values as-is so wildcard patterns can be expanded later
-        # relative to the resolved config directory.
         config_dict["src_paths"] = set(config_dict.get("src_paths", ()))
 
     config = Config(**config_dict)
@@ -1069,7 +1063,6 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
                 file_path=file_path,
                 extension=ext_format,
             )
-
             wrong_sorted_files = incorrectly_sorted
         else:
             try:
@@ -1132,23 +1125,20 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
         with executor_ctx as executor:
             if executor is not None:
-                attempt_iterator = executor.imap(
-                    functools.partial(
-                        sort_imports,
-                        config=config,
-                        check=check,
-                        ask_to_apply=ask_to_apply,
-                        show_diff=show_diff,
-                        write_to_stdout=write_to_stdout,
-                        extension=ext_format,
-                        config_trie=config_trie,
-                    ),
-                    file_names,
+                partial_sort = functools.partial(
+                    sort_imports,
+                    config=config,
+                    check=check,
+                    ask_to_apply=ask_to_apply,
+                    show_diff=show_diff,
+                    write_to_stdout=write_to_stdout,
+                    extension=ext_format,
+                    config_trie=config_trie,
                 )
+                attempt_iterator = executor.imap(partial_sort, file_names)
             else:
-                # https://github.com/python/typeshed/pull/2814
                 attempt_iterator = (
-                    sort_imports(  # type: ignore
+                    sort_imports(
                         file_name,
                         config=config,
                         check=check,
@@ -1161,25 +1151,20 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
                     for file_name in file_names
                 )
 
-            # If any files passed in are missing considered as error, should be removed
             is_no_attempt = True
             any_encoding_valid = False
             for sort_attempt in attempt_iterator:
                 if not sort_attempt:
-                    continue  # pragma: no cover - shouldn't happen, satisfies type constraint
+                    continue
                 incorrectly_sorted = sort_attempt.incorrectly_sorted
-                if arguments.get("check", False) and incorrectly_sorted:
+                if check and incorrectly_sorted:
                     wrong_sorted_files = True
                 if sort_attempt.skipped:
-                    num_skipped += (
-                        1  # pragma: no cover - shouldn't happen, due to skip in iter_source_code
-                    )
-
+                    num_skipped += 1
                 if not sort_attempt.supported_encoding:
                     num_invalid_encoding += 1
                 else:
                     any_encoding_valid = True
-
                 is_no_attempt = False
 
         num_skipped += len(skipped)

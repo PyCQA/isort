@@ -52,8 +52,8 @@ def _local(name: str, config: Config) -> tuple[str, str] | None:
 
 def _known_pattern(name: str, config: Config) -> tuple[str, str] | None:
     parts = name.split(".")
-    module_names_to_check = (".".join(parts[:first_k]) for first_k in range(len(parts), 0, -1))
-    for module_name_to_check in module_names_to_check:
+    for first_k in range(len(parts), 0, -1):
+        module_name_to_check = ".".join(parts[:first_k])
         for pattern, placement in config.known_patterns:
             if placement in config.sections and pattern.match(module_name_to_check):
                 return (placement, f"Matched configured known pattern {pattern}")
@@ -96,6 +96,7 @@ def _src_path(
     return None
 
 
+@lru_cache(maxsize=1000)
 def _is_module(path: Path) -> bool:
     return (
         exists_case_sensitive(str(path.with_suffix(".py")))
@@ -107,10 +108,12 @@ def _is_module(path: Path) -> bool:
     )
 
 
+@lru_cache(maxsize=1000)
 def _is_package(path: Path) -> bool:
     return exists_case_sensitive(str(path)) and path.is_dir()
 
 
+@lru_cache(maxsize=1000)
 def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
     if not _is_package(path):
         return False
@@ -131,15 +134,14 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
             if (
                 b"__import__('pkg_resources').declare_namespace(__name__)" not in file_start
                 and b'__import__("pkg_resources").declare_namespace(__name__)' not in file_start
-                and b"__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
-                not in file_start
-                and b'__path__ = __import__("pkgutil").extend_path(__path__, __name__)'
-                not in file_start
+                and b"__path__ = __import__('pkgutil').extend_path(__path__, __name__)" not in file_start
+                and b'__path__ = __import__("pkgutil").extend_path(__path__, __name__)' not in file_start
             ):
                 return False
     return True
 
 
+@lru_cache(maxsize=1000)
 def _src_path_is_module(src_path: Path, module_name: str) -> bool:
     return (
         module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
