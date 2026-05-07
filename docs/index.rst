@@ -1,7 +1,7 @@
 Home
 =====
 
-.. include:: ../README.md
+.. include:: _readme_include.md
     :parser: myst_parser.sphinx_
 
 .. toctree::

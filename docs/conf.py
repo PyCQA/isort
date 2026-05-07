@@ -35,3 +35,44 @@ html_theme_options = {
     "repo_name": "isort",
     "palette": {"primary": "deep-orange", "accent": "deep-orange"},
 }
+
+# -- Build hooks to fix relative links in included files ---------------------
+# README.md and CHANGELOG.md use ``docs/X`` paths so links work on GitHub.
+# When Sphinx includes these files from within ``docs/``, those paths would
+# resolve to ``docs/docs/X``.  The hook below generates adjusted copies
+# (``_readme_include.md`` / ``_changelog_include.md``) that strip the leading
+# ``docs/`` prefix so that Sphinx resolves the links correctly.
+
+_GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
+
+
+def _generate_includes(app):
+    """Create Sphinx-friendly copies of README and CHANGELOG at build time."""
+    import re
+
+    src = app.srcdir
+    pairs = [
+        (os.path.join(src, "..", "README.md"), os.path.join(src, "_readme_include.md")),
+        (os.path.join(src, "..", "CHANGELOG.md"), os.path.join(src, "_changelog_include.md")),
+    ]
+    for source, dest in pairs:
+        with open(source, encoding="utf-8") as f:
+            content = f.read()
+        # Rewrite relative links: (docs/X) -> (X)
+        content = re.sub(r"\]\(docs/", "](", content)
+        with open(dest, "w", encoding="utf-8") as f:
+            f.write(content)
+
+
+def _cleanup_includes(app, exception):
+    """Remove generated include files after the build."""
+    for name in _GENERATED_INCLUDES:
+        path = os.path.join(app.srcdir, name)
+        if os.path.exists(path):
+            os.remove(path)
+
+
+def setup(app):
+    app.connect("builder-inited", _generate_includes)
+    app.connect("build-finished", _cleanup_includes)
+
