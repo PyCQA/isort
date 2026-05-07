@@ -1,5 +1,7 @@
 import os
+import re
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -41,31 +43,30 @@ _GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
 
 def _generate_includes(app):
     """Create Sphinx-friendly copies of README and CHANGELOG at build time."""
-    import re
-
-    src = app.srcdir
+    src = Path(app.srcdir)
     pairs = [
-        (os.path.join(src, "..", "README.md"), os.path.join(src, "_readme_include.md")),
-        (os.path.join(src, "..", "CHANGELOG.md"), os.path.join(src, "_changelog_include.md")),
+        (src.parent / "README.md", src / "_readme_include.md"),
+        (src.parent / "CHANGELOG.md", src / "_changelog_include.md"),
     ]
     for source, dest in pairs:
-        with open(source, encoding="utf-8") as f:
-            content = f.read()
+        if not source.exists():
+            continue
+        content = source.read_text(encoding="utf-8")
         # Rewrite relative links: (docs/X) -> (X)
         content = re.sub(r"\]\(docs/", "](", content)
-        with open(dest, "w", encoding="utf-8") as f:
-            f.write(content)
+        dest.write_text(content, encoding="utf-8")
 
 
-def _cleanup_includes(app, exception):
+def _cleanup_includes(app, _exception):
     """Remove generated include files after the build."""
+    src = Path(app.srcdir)
     for name in _GENERATED_INCLUDES:
-        path = os.path.join(app.srcdir, name)
-        if os.path.exists(path):
-            os.remove(path)
+        path = src / name
+        if path.exists():
+            path.unlink()
 
 
 def setup(app):
+    """Register build hooks."""
     app.connect("builder-inited", _generate_includes)
     app.connect("build-finished", _cleanup_includes)
-
