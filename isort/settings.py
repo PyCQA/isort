@@ -774,7 +774,7 @@ def find_all_configs(path: str) -> Trie:
     Parses and stores any config file encountered in a trie and returns the root of
     the trie
     """
-    trie_root = Trie("default", {})
+    trie_root = Trie("default", {}, root_path=path)
 
     for dirpath, _, _ in os.walk(path):
         for config_file_name in CONFIG_SOURCES:

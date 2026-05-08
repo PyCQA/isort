@@ -327,10 +327,11 @@ def check_file(
         config_trie = config_kwargs.pop("config_trie", None)
         if config_trie:
             config_info = config_trie.search(filename)
-            if config.verbose:
+            if config_info[0] and config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
-            file_config = Config(**config_info[1])
+            if config_info[0]:
+                file_config = Config(**config_info[1])
 
     with io.File.read(filename) as source_file:
         return check_stream(
@@ -422,10 +423,11 @@ def sort_file(
         config_trie = config_kwargs.pop("config_trie", None)
         if config_trie:
             config_info = config_trie.search(filename)
-            if config.verbose:
+            if config_info[0] and config.verbose:
                 print(f"{config_info[0]} used for file {filename}")
 
-            file_config = Config(**config_info[1])
+            if config_info[0]:
+                file_config = Config(**config_info[1])
 
     with io.File.read(filename) as source_file:
         actual_file_path = file_path or source_file.path

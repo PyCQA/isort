@@ -153,6 +153,22 @@ sections=MADEUP
         main.main([str(python_file)])
 
 
+def test_resolve_all_configs_honors_skip_for_direct_file(tmp_path, capsys):
+    config_file = tmp_path / "pyproject.toml"
+    config_file.write_text("[tool.isort]\nextend_skip = ['a.py']\n")
+    python_file = tmp_path / "a.py"
+    original_content = "import sys\nimport os\n"
+    python_file.write_text(original_content)
+
+    main.main([str(python_file), "--resolve-all-configs", "--verbose"])
+
+    out, error = capsys.readouterr()
+    assert not error
+    assert "default used for file" not in out
+    assert "Skipped 1 files" in out
+    assert python_file.read_text() == original_content
+
+
 def test_ran_against_root():
     with pytest.raises(SystemExit):
         main.main(["/"])
