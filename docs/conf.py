@@ -44,17 +44,16 @@ _GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
 
 def _generate_includes(app: Any) -> None:
     """Create Sphinx-friendly copies of README and CHANGELOG at build time."""
-    import re
-    from pathlib import Path
-
     try:
-        src = Path(app.srcdir)
-        gen_dir = src / "generated"
+        # Use absolute paths based on this file's location
+        docs_dir = Path(__file__).parent.absolute()
+        root_dir = docs_dir.parent
+        gen_dir = docs_dir / "generated"
         gen_dir.mkdir(parents=True, exist_ok=True)
 
         pairs = [
-            (src.parent / "README.md", gen_dir / "_readme_include.md"),
-            (src.parent / "CHANGELOG.md", gen_dir / "_changelog_include.md"),
+            (root_dir / "README.md", gen_dir / "_readme_include.md"),
+            (root_dir / "CHANGELOG.md", gen_dir / "_changelog_include.md"),
         ]
         for source, dest in pairs:
             if source.exists():
@@ -68,11 +67,9 @@ def _generate_includes(app: Any) -> None:
 
 def _cleanup_includes(app: Any, _exception: Optional[Exception]) -> None:
     """Remove generated include files after the build."""
-    from pathlib import Path
-
     try:
-        src = Path(app.srcdir)
-        gen_dir = src / "generated"
+        docs_dir = Path(__file__).parent.absolute()
+        gen_dir = docs_dir / "generated"
         for name in _GENERATED_INCLUDES:
             path = gen_dir / name
             if path.exists():
