@@ -58,8 +58,7 @@ def _generate_includes(app: Any) -> None:
         for source, dest in pairs:
             if source.exists():
                 content = source.read_text(encoding="utf-8")
-                # Rewrite relative links: (docs/X) -> (X)
-                content = re.sub(r"\]\(docs/", "](", content)
+                content = re.sub(r"\]\(docs/", "](../", content)
                 dest.write_text(content, encoding="utf-8")
     except Exception as e:
         print(f"Warning: Failed to generate docs includes: {e}")
