@@ -1,5 +1,5 @@
 Changelog
 =========
 
-.. include:: _build/_changelog_include.md
+.. include:: generated/_changelog_include.md
     :parser: myst_parser.sphinx_
