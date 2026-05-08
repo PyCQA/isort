@@ -2,7 +2,8 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+
+from sphinx.application import Sphinx
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -39,51 +40,19 @@ html_theme_options = {
     "palette": {"primary": "deep-orange", "accent": "deep-orange"},
 }
 
-_GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
+def _generate_includes(app: Sphinx) -> None:
+    """Create Sphinx-friendly copies of some files at build time."""
+    # Use absolute paths based on this file's location
+    root_dir = Path(__file__).parent.absolute().parent
+    gen_dir = Path(__file__).parent.absolute() / "generated"
+    _GEN_DIR.mkdir(parents=True, exist_ok=True)
+
+    for file in ("CHANGELOG.md", "README.md"):
+        content = (root_dir / file).read_text(encoding="utf-8")
+        content = re.sub(r"\]\(docs/(.*?)\.md\)", r"](../\1)", content)
+        (gen_dir / file).write_text(content, encoding="utf-8")
 
 
-def _generate_includes(app: Any) -> None:
-    """Create Sphinx-friendly copies of README and CHANGELOG at build time."""
-    try:
-        # Use absolute paths based on this file's location
-        docs_dir = Path(__file__).parent.absolute()
-        root_dir = docs_dir.parent
-        gen_dir = docs_dir / "generated"
-        gen_dir.mkdir(parents=True, exist_ok=True)
-
-        pairs = [
-            (root_dir / "README.md", gen_dir / "_readme_include.md"),
-            (root_dir / "CHANGELOG.md", gen_dir / "_changelog_include.md"),
-        ]
-        for source, dest in pairs:
-            if source.exists():
-                content = source.read_text(encoding="utf-8")
-                content = re.sub(r"\]\(docs/(.*?)\.md\)", r"](../\1)", content)
-                dest.write_text(content, encoding="utf-8")
-    except Exception as e:
-        print(f"Warning: Failed to generate docs includes: {e}")
-
-
-def _cleanup_includes(app: Any, _exception: Optional[Exception]) -> None:
-    """Remove generated include files after the build."""
-    try:
-        docs_dir = Path(__file__).parent.absolute()
-        gen_dir = docs_dir / "generated"
-        for name in _GENERATED_INCLUDES:
-            path = gen_dir / name
-            if path.exists():
-                path.unlink()
-    except Exception:
-        pass
-
-
-def setup(app: Any) -> Dict[str, Any]:
+def setup(app: Sphinx) -> None:
     """Register build hooks."""
     app.connect("builder-inited", _generate_includes)
-    app.connect("build-finished", _cleanup_includes)
-
-    return {
-        "version": "0.1",
-        "parallel_read_safe": True,
-        "parallel_write_safe": True,
-    }
