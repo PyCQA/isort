@@ -1629,16 +1629,6 @@ Forces star imports above others to avoid overriding directly imported variables
 
 - --star-first
 
-## Git Ignore
-
-If `True` isort will honor ignores within locally defined .git_ignore files.
-
-**Type:** Dict  
-**Default:** `{}`  
-**Config default:** `{}`  
-**Python & Config File Name:** git_ignore  
-**CLI Flags:** **Not Supported**
-
 ## Format Error
 
 Override the format used to print errors.
