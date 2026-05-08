@@ -45,7 +45,7 @@ def _generate_includes(app: Sphinx) -> None:
     # Use absolute paths based on this file's location
     root_dir = Path(__file__).parent.absolute().parent
     gen_dir = Path(__file__).parent.absolute() / "generated"
-    _GEN_DIR.mkdir(parents=True, exist_ok=True)
+    gen_dir.mkdir(parents=True, exist_ok=True)
 
     for file in ("CHANGELOG.md", "README.md"):
         content = (root_dir / file).read_text(encoding="utf-8")
