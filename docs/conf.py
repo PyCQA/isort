@@ -40,6 +40,7 @@ html_theme_options = {
     "palette": {"primary": "deep-orange", "accent": "deep-orange"},
 }
 
+
 def _generate_includes(app: Sphinx) -> None:
     """Create Sphinx-friendly copies of some files at build time."""
     # Use absolute paths based on this file's location
