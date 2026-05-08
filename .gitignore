@@ -78,5 +78,3 @@ pyvenv.cfg
 
 # Sphinx documentation build
 docs/_build/
-docs/_readme_include.md
-docs/_changelog_include.md

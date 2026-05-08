@@ -2,6 +2,10 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any, Dict, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -41,12 +45,15 @@ html_theme_options = {
 _GENERATED_INCLUDES = ("_readme_include.md", "_changelog_include.md")
 
 
-def _generate_includes(app):
+def _generate_includes(app: "Sphinx") -> None:
     """Create Sphinx-friendly copies of README and CHANGELOG at build time."""
     src = Path(app.srcdir)
+    build_dir = src / "_build"
+    build_dir.mkdir(parents=True, exist_ok=True)
+
     pairs = [
-        (src.parent / "README.md", src / "_readme_include.md"),
-        (src.parent / "CHANGELOG.md", src / "_changelog_include.md"),
+        (src.parent / "README.md", build_dir / "_readme_include.md"),
+        (src.parent / "CHANGELOG.md", build_dir / "_changelog_include.md"),
     ]
     for source, dest in pairs:
         if not source.exists():
@@ -57,16 +64,23 @@ def _generate_includes(app):
         dest.write_text(content, encoding="utf-8")
 
 
-def _cleanup_includes(app, _exception):
+def _cleanup_includes(app: "Sphinx", _exception: Optional[Exception]) -> None:
     """Remove generated include files after the build."""
     src = Path(app.srcdir)
+    build_dir = src / "_build"
     for name in _GENERATED_INCLUDES:
-        path = src / name
+        path = build_dir / name
         if path.exists():
             path.unlink()
 
 
-def setup(app):
+def setup(app: "Sphinx") -> Dict[str, Any]:
     """Register build hooks."""
     app.connect("builder-inited", _generate_includes)
     app.connect("build-finished", _cleanup_includes)
+
+    return {
+        "version": "0.1",
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
