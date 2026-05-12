@@ -74,6 +74,23 @@ def test_git_hook(src_dir):
                 hooks.git_hook(modify=True)
 
 
+def test_git_hook_lazy(tmpdir):
+    # Write an actual unsorted file to disk & check that `lazy=True` spots it
+
+    has_problems = tmpdir.join("test_has_problems.py")
+    has_problems.write_text("import b\nimport a\n", "utf8")
+
+    # get_lines is called by git_hook to get the list of modified files to be checked
+    with patch("isort.hooks.get_lines", MagicMock(return_value=[str(has_problems)])):
+        with patch("subprocess.run", MagicMock(side_effect=RuntimeError("donotcall"))) as run_mock:
+            found_errors = hooks.git_hook(lazy=True, strict=True)
+            # subprocess.run (via get_output) should not be called when lazy=True
+            # because we're not asking git for the staged content
+            assert run_mock.call_count == 0
+
+    assert found_errors == 1
+
+
 def test_git_hook_uses_the_configuration_file_specified_in_settings_path(tmp_path: Path) -> None:
     subdirectory_path = tmp_path / "subdirectory"
     configuration_file_path = subdirectory_path / ".isort.cfg"
