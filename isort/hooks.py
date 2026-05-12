@@ -58,9 +58,10 @@ def git_hook(
 
     :return number of errors if in strict mode, 0 otherwise.
     """
-    # Get list of files modified and staged
+    # Get list of modified files which are staged for commit...
     diff_cmd = ["git", "diff-index", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "HEAD"]
     if lazy:
+        # ...or *all* modified files if lazy=True
         diff_cmd.remove("--cached")
     if directories:
         diff_cmd.extend(directories)
@@ -76,14 +77,19 @@ def git_hook(
     )
     for filename in files_modified:
         if filename.endswith(".py"):
-            # Get the staged contents of the file
-            staged_cmd = ["git", "show", f":{filename}"]
-            staged_contents = get_output(staged_cmd)
-
             try:
-                if not api.check_code_string(
-                    staged_contents, file_path=Path(filename), config=config
-                ):
+                check_passed = False
+                if lazy:
+                    # Check the file as-is on disk
+                    check_passed = api.check_file(filename, config=config)
+                else:
+                    # Read and check the git *staged* contents of the file
+                    staged_cmd = ["git", "show", f":{filename}"]
+                    staged_contents = get_output(staged_cmd)
+                    check_passed = api.check_code_string(
+                        staged_contents, file_path=Path(filename), config=config
+                    )
+                if not check_passed:
                     errors += 1
                     if modify:
                         api.sort_file(filename, config=config)
