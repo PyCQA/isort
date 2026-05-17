@@ -1060,7 +1060,18 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         if show_files:
             sys.exit("Error: can't show files for streaming input.")
 
-        input_stream = sys.stdin if stdin is None else stdin
+        if stdin is None:
+            raw = sys.stdin.buffer.read()
+            if b"\r\n" in raw:
+                line_ending = "\r\n"
+            elif b"\r" in raw:
+                line_ending = "\r"
+            else:
+                line_ending = "\n"
+            import io
+            input_stream = io.TextIOWrapper(io.BytesIO(raw), encoding=sys.stdin.encoding or "utf-8")
+        else:
+            input_stream = stdin
         if check:
             incorrectly_sorted = not api.check_stream(
                 input_stream=input_stream,
