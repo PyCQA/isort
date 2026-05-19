@@ -49,10 +49,11 @@ import a
 
 
 def test_isort_off_honors_import_and_from_imports_issue_2528():
-    """Regression test for issue #2528: ensure isort: off honors both import and from import statements.
-    
-    Previously, there was a differential behavior where isort: off would respect from imports but not
-    plain import statements. This test ensures both import types are properly handled.
+    """Regression test for issue #2528: ensure isort: off honors both import types.
+
+    Previously, there was a differential behavior where isort: off would respect
+    from imports but not plain import statements. This test ensures both import
+    types are properly handled.
     """
     # Test plain imports with isort: off
     assert (
