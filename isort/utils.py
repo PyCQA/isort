@@ -20,8 +20,14 @@ class Trie:
     associated with each file
     """
 
-    def __init__(self, config_file: str = "", config_data: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        config_file: str = "",
+        config_data: dict[str, Any] | None = None,
+        root_path: str = "",
+    ) -> None:
         self.root: TrieNode = TrieNode(config_file, config_data)
+        self.root_path: Path | None = Path(root_path).resolve() if root_path else None
 
     def insert(self, config_file: str, config_data: dict[str, Any]) -> None:
         resolved_config_path_as_tuple = Path(config_file).parent.resolve().parts
@@ -41,7 +47,14 @@ class Trie:
         Returns the closest config relative to filename by doing a depth
         first search on the prefix tree.
         """
-        resolved_file_path_as_tuple = Path(filename).resolve().parts
+        resolved_file_path = Path(filename).resolve()
+        if self.root_path:
+            try:
+                resolved_file_path.relative_to(self.root_path)
+            except ValueError:
+                return ("", {})
+
+        resolved_file_path_as_tuple = resolved_file_path.parts
 
         temp = self.root
 
