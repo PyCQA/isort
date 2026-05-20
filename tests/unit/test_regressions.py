@@ -1985,3 +1985,16 @@ attr as alias  # type: ignore[attr-defined]
         isort.code(short_line, profile="black")
         == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
+
+
+def test_semicolon_after_backslash_continuation_not_corrupted():
+    """Ensure isort doesn't corrupt imports when a backslash-continued line ends with a
+    semicolon followed by additional code, e.g.:
+
+        from os import \\
+            name; print(name)
+
+    See: https://github.com/PyCQA/isort/issues/2417
+    """
+    test_input = "from os import \\\n    name; print(name)\n"
+    assert isort.code(test_input) == test_input
