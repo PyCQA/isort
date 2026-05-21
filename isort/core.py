@@ -90,13 +90,13 @@ def process(
         isort_off = False
         for line in chain(input_stream, (None,)):
             if isort_off and line is not None:
-                if line == "# isort: on\n":
+                if "isort: on" in line or "isort:on" in line:
                     isort_off = False
                 new_input += line
             elif line in ("# isort: split\n", "# isort: off\n", None) or str(line).endswith(
                 "# isort: split\n"
-            ):
-                if line == "# isort: off\n":
+            ) or ("isort: off" in str(line) or "isort:off" in str(line)):
+                if "isort: off" in str(line) or "isort:off" in str(line):
                     isort_off = True
                 if current:
                     before = current
@@ -177,7 +177,7 @@ def process(
                     skip_file = True
 
             if not in_quote:
-                if stripped_line == "# isort: off":
+                if "isort: off" in stripped_line or "isort:off" in stripped_line:
                     isort_off = True
                 elif stripped_line.startswith("# isort: dont-add-imports"):
                     add_imports = []
@@ -233,7 +233,9 @@ def process(
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
             if not (in_quote or was_in_quote or in_top_comment):
                 if isort_off:
-                    if not skip_file and stripped_line == "# isort: on":
+                    if not skip_file and (
+                        "isort: on" in stripped_line or "isort:on" in stripped_line
+                    ):
                         isort_off = False
                 elif stripped_line.endswith("# isort: split"):
                     not_imports = True
