@@ -9,7 +9,6 @@ from isort.exceptions import (
     LiteralSortTypeMismatch,
 )
 from isort.settings import DEFAULT_CONFIG, Config
-from isort.wrap_modes import WrapModes
 
 
 class ISortPrettyPrinter(PrettyPrinter):
@@ -17,9 +16,7 @@ class ISortPrettyPrinter(PrettyPrinter):
 
     def __init__(self, config: Config, prefix_length: int = 0):
         self.config = config
-        self.available_width = (
-            config.wrap_length or config.line_length
-        ) - prefix_length
+        self.available_width = (config.wrap_length or config.line_length) - prefix_length
         super().__init__(width=self.available_width, compact=True)
 
 
@@ -37,14 +34,11 @@ def assignments(code: str) -> str:
         values[variable_name] = value
 
     return "".join(
-        f"{variable_name} = {values[variable_name]}"
-        for variable_name in sorted(values.keys())
+        f"{variable_name} = {values[variable_name]}" for variable_name in sorted(values.keys())
     )
 
 
-def assignment(
-    code: str, sort_type: str, extension: str, config: Config = DEFAULT_CONFIG
-) -> str:
+def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAULT_CONFIG) -> str:
     """Sorts the literal present within the provided code against the provided sort type,
     returning the sorted representation of the source code.
     """
@@ -81,9 +75,7 @@ def assignment(
 
 def register_type(
     name: str, kind: type
-) -> Callable[
-    [Callable[[Any, ISortPrettyPrinter], str]], Callable[[Any, ISortPrettyPrinter], str]
-]:
+) -> Callable[[Callable[[Any, ISortPrettyPrinter], str]], Callable[[Any, ISortPrettyPrinter], str]]:
     """Registers a new literal sort type."""
 
     def wrap(
@@ -97,7 +89,7 @@ def register_type(
 
 def _use_vertical_hanging_indent(printer: ISortPrettyPrinter) -> bool:
     return (
-        printer.config.multi_line_output == WrapModes.VERTICAL_HANGING_INDENT
+        printer.config.multi_line_output.name == "VERTICAL_HANGING_INDENT"
         and printer.config.use_parentheses
         and printer.config.include_trailing_comma
     )
@@ -134,9 +126,7 @@ def _format_pairs(
     opener: str,
     closer: str,
 ) -> str:
-    rendered_pairs = [
-        f"{printer.pformat(key)}: {printer.pformat(value)}" for key, value in pairs
-    ]
+    rendered_pairs = [f"{printer.pformat(key)}: {printer.pformat(value)}" for key, value in pairs]
     single_line = f"{opener}{', '.join(rendered_pairs)}{closer}"
 
     if not rendered_pairs or not _use_vertical_hanging_indent(printer):

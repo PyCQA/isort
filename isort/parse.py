@@ -400,7 +400,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
-                assert type_of_import == "straight"  # noqa: S101 # Only needed for type checker
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
@@ -459,14 +458,16 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module and placed_module not in imports:
                         raise MissingSection(import_module=module, section=placed_module)
 
-                    straight_import |= bool(
-                        imports[placed_module]["lazy_straight" if is_lazy else type_of_import].get(
-                            module, False
+                    if is_lazy:
+                        straight_import |= bool(
+                            imports[placed_module]["lazy_straight"].get(module, False)
                         )
-                    )
-                    imports[placed_module]["lazy_straight" if is_lazy else type_of_import][
-                        module
-                    ] = straight_import
+                        imports[placed_module]["lazy_straight"][module] = straight_import
+                    else:
+                        straight_import |= bool(
+                            imports[placed_module]["straight"].get(module, False)
+                        )
+                        imports[placed_module]["straight"][module] = straight_import
 
     change_count = len(out_lines) - original_line_count
 
