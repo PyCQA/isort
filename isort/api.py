@@ -203,6 +203,8 @@ def sort_stream(
         if not output_stream.readable():
             _internal_output = StringIO()
 
+    if config.sort_reexports and not _internal_output.seekable():
+        _internal_output = StringIO()
     try:
         changed = core.process(
             input_stream,

@@ -2012,3 +2012,27 @@ attr as alias  # type: ignore[attr-defined]
         isort.code(short_line, profile="black")
         == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
+
+def test_sort_reexports_with_non_seekable_stream_issue_2393():
+    """Ensure --sort-reexports does not crash when output stream is non-seekable (e.g. stdin).
+    See: https://github.com/PyCQA/isort/issues/2393
+    """
+    import sys
+    from io import StringIO
+
+    code = "from test import B, A\n__all__ = ['B', 'A']\n"
+    input_stream = StringIO(code)
+    isort.api.sort_stream(
+        input_stream=input_stream,
+        output_stream=sys.stdout,
+        sort_reexports=True,
+    )
+    input_stream = StringIO(code)
+    output_stream = StringIO()
+    isort.api.sort_stream(
+        input_stream=input_stream,
+        output_stream=output_stream,
+        sort_reexports=True,
+    )
+    output_stream.seek(0)
+    assert "import A, B" in output_stream.read()
