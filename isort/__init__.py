@@ -37,3 +37,10 @@ from .api import sort_code_string as code
 from .api import sort_file as file
 from .api import sort_stream as stream
 from .settings import Config
+from . import _parse_utils  # noqa: F401from . import parse  # noqa: F401
+from . import _parse_utils
+from . import parse
+
+__all__ += ("_parse_utils", "parse")
+from . import _parse_utils
+from . import parse

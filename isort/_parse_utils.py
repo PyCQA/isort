@@ -172,8 +172,13 @@ def import_type(
     """If the current line is an import line it will return its type."""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
-    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
-        return None
+    if (
+        "isort:skip" in line
+        or "isort: skip" in line
+        or "isort: split" in line
+        or "isort:off" in line
+        or "isort: off" in line
+    ):        return None
     if line.startswith(("import ", "cimport ")):
         return "straight"
     if line.startswith("from "):

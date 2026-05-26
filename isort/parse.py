@@ -486,3 +486,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         verbose_output=verbose_output,
         trailing_commas=trailing_commas,
     )
+
+def parse(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
+    """Parse a Python file's contents and return a ParsedContent object.
+
+    This maintains backward compatibility with older versions that exported a
+    ``parse`` function at the package level.
+    """
+    return file_contents(contents, config)
