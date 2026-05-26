@@ -414,6 +414,10 @@ def process(
                 if not contains_imports:
                     output_stream.write(import_section)
 
+                elif stripped_line == "# isort: off":
+                    # When # isort: off triggers the section processing,
+                    # preserve the imports before it as-is (do not sort/consolidate)
+                    output_stream.write(raw_import_section)
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]
                     trailing_whitespace = import_section[len(import_section.rstrip()) :]
