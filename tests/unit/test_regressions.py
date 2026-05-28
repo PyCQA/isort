@@ -2013,26 +2013,35 @@ attr as alias  # type: ignore[attr-defined]
         == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
 
+
 def test_sort_reexports_with_non_seekable_stream_issue_2393():
-    """Ensure --sort-reexports does not crash when output stream is non-seekable (e.g. stdin).
-    See: https://github.com/PyCQA/isort/issues/2393
+    """Ensure --sort-reexports raises a clear error when output stream is
+    issues #2393
     """
+    import io
     import sys
-    from io import StringIO
 
     code = "from test import B, A\n__all__ = ['B', 'A']\n"
-    input_stream = StringIO(code)
+
+    # Simulate a non-seekable stream (like a pipe/stdout)
+    class NonSeekableStream(io.StringIO):
+        def seekable(self):
+            return False
+
+    with pytest.raises(ValueError, match="sort_reexports"):
+        isort.api.sort_stream(
+            input_stream=io.StringIO(code),
+            output_stream=NonSeekableStream(),
+            sort_reexports=True,
+        )
+
+    # Seekable stream should still work correctly
+    output_stream = io.StringIO()
     isort.api.sort_stream(
-        input_stream=input_stream,
-        output_stream=sys.stdout,
-        sort_reexports=True,
-    )
-    input_stream = StringIO(code)
-    output_stream = StringIO()
-    isort.api.sort_stream(
-        input_stream=input_stream,
+        input_stream=io.StringIO(code),
         output_stream=output_stream,
         sort_reexports=True,
     )
     output_stream.seek(0)
     assert "import A, B" in output_stream.read()
+

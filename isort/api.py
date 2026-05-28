@@ -204,7 +204,10 @@ def sort_stream(
             _internal_output = StringIO()
 
     if config.sort_reexports and not _internal_output.seekable():
-        _internal_output = StringIO()
+        raise ValueError(
+            "sort_reexports requires a seekable output stream "
+            "and cannot be used with non-seekable streams such as stdout."
+        )
     try:
         changed = core.process(
             input_stream,
