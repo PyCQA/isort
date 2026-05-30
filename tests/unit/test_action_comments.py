@@ -26,7 +26,7 @@ import a
 import a
 """
     )
-    # as middle comment
+    # as middle comment — imports before # isort: off are preserved as-is
     assert (
         isort.code(
             """
@@ -39,6 +39,7 @@ import a
 """
         )
         == """
+import a
 import a
 
 # isort: off
