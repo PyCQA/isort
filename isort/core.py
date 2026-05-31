@@ -89,14 +89,17 @@ def process(
         current = ""
         isort_off = False
         for line in chain(input_stream, (None,)):
+            stripped_line = line.strip() if line is not None else None
             if isort_off and line is not None:
-                if line == "# isort: on\n":
+                if stripped_line == "# isort: on":
                     isort_off = False
                 new_input += line
-            elif line in ("# isort: split\n", "# isort: off\n", None) or str(line).endswith(
-                "# isort: split\n"
+            elif (
+                line is None
+                or stripped_line in ("# isort: split", "# isort: off")
+                or str(line).rstrip().endswith("# isort: split")
             ):
-                if line == "# isort: off\n":
+                if stripped_line == "# isort: off":
                     isort_off = True
                 if current:
                     before = current
