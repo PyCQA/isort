@@ -796,6 +796,33 @@ def bar():
     assert isort.code(to_sort, float_to_top=True) == to_sort
 
 
+def test_isort_float_to_top_respects_isort_off_with_crlf_issue_2528():
+    to_sort = """
+import b
+import a
+
+# isort: off
+pytest.importorskip('cattrs')
+
+import z
+import y
+    """
+
+    assert (
+        isort.code(to_sort, float_to_top=True)
+        == """
+import a
+import b
+
+# isort: off
+pytest.importorskip('cattrs')
+
+import z
+import y
+    """
+    )
+
+
 def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
     """isort should float existing imports to the top, if they are currently below the top.
     See: https://github.com/PyCQA/isort/issues/1382
