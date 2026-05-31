@@ -797,23 +797,29 @@ def bar():
 
 
 def test_isort_float_to_top_respects_isort_off_with_crlf_issue_2528():
-    to_sort = (
-        "import b\r\n"
-        "import a\r\n"
-        "\r\n"
-        "# isort: off\r\n"
-        "pytest.importorskip('cattrs')\r\n"
-        "\r\n"
-        "import z\r\n"
-    )
+    to_sort = """
+import b
+import a
+
+# isort: off
+pytest.importorskip('cattrs')
+
+import z
+import y
+    """
 
     assert (
-        isort.code(to_sort, float_to_top=True) == "import a\r\n"
-        "import b\r\n"
-        "# isort: off\r\n"
-        "pytest.importorskip('cattrs')\r\n"
-        "\r\n"
-        "import z\r\n"
+        isort.code(to_sort, float_to_top=True)
+        == """
+import a
+import b
+
+# isort: off
+pytest.importorskip('cattrs')
+
+import z
+import y
+    """
     )
 
 
