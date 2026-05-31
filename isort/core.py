@@ -89,7 +89,7 @@ def process(
         current = ""
         isort_off = False
         for line in chain(input_stream, (None,)):
-            stripped_line = line.strip() if line is not None else None
+            stripped_line = line.strip() if line is not None else ""
             if isort_off and line is not None:
                 if stripped_line == "# isort: on":
                     isort_off = False
