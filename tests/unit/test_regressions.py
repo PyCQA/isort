@@ -1985,3 +1985,19 @@ attr as alias  # type: ignore[attr-defined]
         isort.code(short_line, profile="black")
         == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
+
+
+def test_lf_line_endings_preserved_from_stdin_issue_2453():
+    """LF line endings should be preserved when reading from stdin on Windows.
+    See: https://github.com/PyCQA/isort/issues/2453
+    """
+    import io
+    lf_content = "import os\nimport re\n"
+    input_stream = io.TextIOWrapper(
+        io.BytesIO(lf_content.encode("utf-8")), encoding="utf-8"
+    )
+    output_stream = io.StringIO()
+    from isort import core
+    core.process(input_stream, output_stream)
+    result = output_stream.getvalue()
+    assert "\r\n" not in result, "LF input should not be converted to CRLF"
