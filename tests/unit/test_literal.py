@@ -2,6 +2,7 @@ import pytest
 
 import isort.literal
 from isort import exceptions
+from isort.settings import Config
 
 
 def test_value_mismatch():
@@ -26,3 +27,22 @@ def test_value_assignment_assignments():
 def test_assignments_invalid_section():
     with pytest.raises(exceptions.AssignmentsFormatMismatch):
         isort.literal.assignment("\n\nx = 1\nx++", "assignments", "py")
+
+
+def test_tuple_sorting_uses_black_profile_wrapping():
+    assert (
+        isort.literal.assignment(
+            'data = ("therearesuperlong", "therearesuperlong", "therearesuperlong", '
+            '"therearesuperlong", "therearesuperlong")',
+            "tuple",
+            "py",
+            Config(profile="black"),
+        )
+        == """data = (
+    'therearesuperlong',
+    'therearesuperlong',
+    'therearesuperlong',
+    'therearesuperlong',
+    'therearesuperlong',
+)"""
+    )
