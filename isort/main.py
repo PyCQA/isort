@@ -1059,6 +1059,8 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         file_path = Path(stream_filename) if stream_filename else None
         if show_files:
             sys.exit("Error: can't show files for streaming input.")
+        if config.sort_reexports:
+            sys.exit("Error: --sort-reexports is not supported with streaming input (stdin).")
 
         input_stream = sys.stdin if stdin is None else stdin
         if check:

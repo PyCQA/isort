@@ -2014,34 +2014,14 @@ attr as alias  # type: ignore[attr-defined]
     )
 
 
-def test_sort_reexports_with_non_seekable_stream_issue_2393():
-    """Ensure --sort-reexports raises a clear error when output stream is
+def test_sort_reexports_with_stdin_raises_error_issue_2393():
+    """Ensure --sort-reexports raises a clear error when used with stdin.
     issues #2393
     """
     import io
-    import sys
+    from isort.main import main as isort_main
 
-    code = "from test import B, A\n__all__ = ['B', 'A']\n"
-
-    # Simulate a non-seekable stream (like a pipe/stdout)
-    class NonSeekableStream(io.StringIO):
-        def seekable(self):
-            return False
-
-    with pytest.raises(ValueError, match="sort_reexports"):
-        isort.api.sort_stream(
-            input_stream=io.StringIO(code),
-            output_stream=NonSeekableStream(),
-            sort_reexports=True,
-        )
-
-    # Seekable stream should still work correctly
-    output_stream = io.StringIO()
-    isort.api.sort_stream(
-        input_stream=io.StringIO(code),
-        output_stream=output_stream,
-        sort_reexports=True,
-    )
-    output_stream.seek(0)
-    assert "import A, B" in output_stream.read()
-
+    fake_stdin = io.TextIOWrapper(io.BytesIO(b"from test import B, A\n"))
+    with pytest.raises(SystemExit) as exc_info:
+        isort_main(argv=["--sort-reexports", "-"], stdin=fake_stdin)
+    assert exc_info.value.code != 0
