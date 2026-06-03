@@ -1,10 +1,11 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
 
-from io import StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 
 import pytest
 
 import isort
+from isort.main import main
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -2012,3 +2013,11 @@ attr as alias  # type: ignore[attr-defined]
         isort.code(short_line, profile="black")
         == "from mod import attr as alias  # type: ignore[attr-defined]  # My comment\n"
     )
+
+
+def test_sort_reexports_with_stdin_raises_error_issue_2393():
+    """Ensure --sort-reexports raises a clear error when used with stdin."""
+    fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
+    with pytest.raises(SystemExit) as exc_info:
+        main(argv=["--sort-reexports", "-"], stdin=fake_stdin)
+    assert exc_info.value.code != 0
