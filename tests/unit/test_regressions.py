@@ -2017,7 +2017,7 @@ attr as alias  # type: ignore[attr-defined]
 
 def test_sort_reexports_with_stdin_raises_error_issue_2393():
     """Ensure --sort-reexports raises a clear error when used with stdin."""
-    fake_stdin = io.TextIOWrapper(io.BytesIO(b"from test import B, A\n"))
+    fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
     with pytest.raises(SystemExit) as exc_info:
         main(argv=["--sort-reexports", "-"], stdin=fake_stdin)
     assert exc_info.value.code != 0
