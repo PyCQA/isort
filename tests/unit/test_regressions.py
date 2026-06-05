@@ -2021,3 +2021,45 @@ def test_sort_reexports_with_stdin_raises_error_issue_2393():
     with pytest.raises(SystemExit) as exc_info:
         main(argv=["--sort-reexports", "-"], stdin=fake_stdin)
     assert exc_info.value.code != 0
+
+
+def test_split_on_trailing_comma_idempotent_with_non_default_wrap_mode():
+    """Ensure isort output is idempotent when ``split_on_trailing_comma`` and
+    ``include_trailing_comma`` are combined with a non-default ``multi_line_output`` mode.
+
+    With both options enabled, isort always appends a trailing comma when it wraps an
+    import across multiple lines.  ``split_on_trailing_comma`` then explodes any import
+    that ends with a trailing comma onto individual lines on the *next* run.  Previously
+    the explode was only applied when the *input* already carried a trailing comma, so the
+    first pass wrapped using the requested ``multi_line_output`` mode (e.g. VERTICAL or
+    GRID) and only the second pass collapsed the result to VERTICAL_HANGING_INDENT, making
+    the output unstable.
+    """
+    to_sort = "from a.b.c import (d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s)\n"
+
+    # Every multi-line wrap mode must reach a fixpoint after a single pass.
+    for multi_line_output in (0, 1, 2, 3, 4, 5):
+        first_pass = isort.code(
+            to_sort,
+            include_trailing_comma=True,
+            split_on_trailing_comma=True,
+            multi_line_output=multi_line_output,
+            line_length=40,
+        )
+        second_pass = isort.code(
+            first_pass,
+            include_trailing_comma=True,
+            split_on_trailing_comma=True,
+            multi_line_output=multi_line_output,
+            line_length=40,
+        )
+        assert first_pass == second_pass, (
+            f"not idempotent for multi_line_output={multi_line_output}"
+        )
+
+    # The Black profile sets include_trailing_comma + split_on_trailing_comma; combining it
+    # with an explicit wrap-mode override must remain stable too.
+    black_override = isort.code(to_sort, profile="black", multi_line_output=1, line_length=40)
+    assert black_override == isort.code(
+        black_override, profile="black", multi_line_output=1, line_length=40
+    )
