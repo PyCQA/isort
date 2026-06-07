@@ -619,10 +619,22 @@ def _with_from_imports(
                 ):
                     do_multiline_reformat = True
 
+                # When ``include_trailing_comma`` is enabled isort always appends a
+                # trailing comma to multi-line imports.  Combined with
+                # ``split_on_trailing_comma`` that means any import wrapped across
+                # multiple lines would gain a trailing comma and therefore be exploded
+                # onto individual lines on the *next* run.  Treat such imports as if they
+                # already carried a trailing comma so the explode happens on the first
+                # pass too, keeping the output idempotent regardless of the requested
+                # ``multi_line_output`` mode.
+                explode_on_trailing_comma = config.split_on_trailing_comma and (
+                    module in parsed.trailing_commas
+                    or (config.include_trailing_comma and do_multiline_reformat)
+                )
+
                 if (
                     import_statement
-                    and config.split_on_trailing_comma
-                    and module in parsed.trailing_commas
+                    and explode_on_trailing_comma
                     and not processed_as_imports_this_iteration
                 ):
                     import_statement = wrap.import_statement(
