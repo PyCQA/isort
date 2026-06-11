@@ -1143,6 +1143,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
                         show_diff=show_diff,
                         write_to_stdout=write_to_stdout,
                         extension=ext_format,
+                        disregard_skip=not resolve_all_configs,
                         config_trie=config_trie,
                     ),
                     file_names,
@@ -1158,6 +1159,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
                         show_diff=show_diff,
                         write_to_stdout=write_to_stdout,
                         extension=ext_format,
+                        disregard_skip=not resolve_all_configs,
                         config_trie=config_trie,
                     )
                     for file_name in file_names
