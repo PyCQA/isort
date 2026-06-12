@@ -251,7 +251,7 @@ def noqa(**interface: Any) -> str:
             <= interface["line_length"]
         ):
             return f"{retval}{interface['comment_prefix']} {comment_str}"
-        if "NOQA" in interface["comments"]:
+        if "NOQA" in comment_str.split():
             return f"{retval}{interface['comment_prefix']} {comment_str}"
         return f"{retval}{interface['comment_prefix']} NOQA {comment_str}"
 
