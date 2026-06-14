@@ -2063,3 +2063,34 @@ def test_split_on_trailing_comma_idempotent_with_non_default_wrap_mode():
     assert black_override == isort.code(
         black_override, profile="black", multi_line_output=1, line_length=40
     )
+
+
+def test_noqa_wrap_mode_idempotent_with_existing_comment():
+    """Ensure ``multi_line_output=NOQA`` does not keep prepending ``NOQA`` to an import
+    that already carries its own comment.
+
+    In NOQA mode isort appends ``# NOQA`` to imports it cannot fit on one line.  When the
+    import also has its own comment (e.g. ``# leading``) the first pass correctly produces
+    ``# NOQA leading``.  Re-parsing that line gives a single combined comment
+    ``"NOQA leading"``, so the old "already has NOQA" guard - which compared against the
+    list of comments - no longer matched and isort prepended yet another ``NOQA`` on every
+    subsequent run (``# NOQA NOQA leading``, ``# NOQA NOQA NOQA leading`` ...), never
+    reaching a fixpoint.
+    """
+    to_sort = (
+        "from a import (  # leading\n"
+        "    b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z\n"
+        ")\n"
+    )
+
+    first_pass = isort.code(to_sort, multi_line_output=7)
+    assert first_pass == (
+        "from a import b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, "
+        "v, w, x, y, z  # NOQA leading\n"
+    )
+
+    # A single NOQA must be present, and re-running must not add more of them.
+    assert first_pass.count("NOQA") == 1
+    second_pass = isort.code(first_pass, multi_line_output=7)
+    assert second_pass == first_pass
+    assert second_pass.count("NOQA") == 1
