@@ -30,6 +30,14 @@ def add_to_line(
         if comment not in unique_comments:
             unique_comments.append(comment)
     comment_text = "; ".join(unique_comments)
+    base, existing_comment = parse(original_string)
+    if existing_comment is not None:
+        # An existing comment was stripped off, leaving the whitespace that used to
+        # precede it (the previous ``comment_prefix`` spacing). Drop it so re-adding a
+        # comment does not accumulate leading spaces on every run. Bases without a
+        # comment (e.g. the indentation-only strings used by the multi-line wrap modes)
+        # are left untouched so their indentation is preserved.
+        base = base.rstrip()
     if comment_text:
-        return f"{parse(original_string)[0]}{comment_prefix} {comment_text}"
-    return f"{parse(original_string)[0]}{comment_prefix}"
+        return f"{base}{comment_prefix} {comment_text}"
+    return f"{base}{comment_prefix}"
