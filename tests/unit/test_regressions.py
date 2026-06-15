@@ -2094,3 +2094,26 @@ def test_noqa_wrap_mode_idempotent_with_existing_comment():
     second_pass = isort.code(first_pass, multi_line_output=7)
     assert second_pass == first_pass
     assert second_pass.count("NOQA") == 1
+
+
+def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
+    """A long ``as`` import in NOQA mode must not grow extra spaces before ``# NOQA``.
+
+    With ``force_single_line`` an aliased import that overflows the line length is emitted
+    on its own line and gets a ``# NOQA`` appended.  The auto-added comment is re-parsed on
+    the next run and put back through ``add_to_line``, which used to keep the whitespace that
+    had preceded the stripped ``#`` and then add the comment prefix on top of it - so every
+    pass inserted two more spaces (``import x  # NOQA`` -> ``import x    # NOQA`` -> ...),
+    never reaching a fixpoint. See issue #2394.
+    """
+    to_sort = "from my_package.my_module import super_long_file_name as super_long_alias\n"
+
+    first_pass = isort.code(to_sort, multi_line_output=7, force_single_line=True, line_length=40)
+    assert first_pass == (
+        "from my_package.my_module import super_long_file_name as super_long_alias  # NOQA\n"
+    )
+
+    second_pass = isort.code(
+        first_pass, multi_line_output=7, force_single_line=True, line_length=40
+    )
+    assert second_pass == first_pass
