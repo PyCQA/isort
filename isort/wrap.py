@@ -76,6 +76,15 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
         comment = None
         if "#" in content:
             line_without_comment, comment = content.split("#", 1)
+        # A wildcard (star) import such as ``from x.y.z import *`` cannot be
+        # wrapped: parenthesising a star (``from x.y.z import (*)``) is a
+        # SyntaxError, and the only over-long part - the dotted module path -
+        # cannot be split either.  Without this guard the ``import `` splitter
+        # below fails to match (there is no word boundary between the space and
+        # ``*``) and isort falls through to the ``.`` splitter, mangling the
+        # module path into invalid Python.  See issue #2267.
+        if line_without_comment.rstrip().endswith("import *"):
+            return content
         for splitter in ("import ", "cimport ", ".", "as "):
             exp = r"\b" + re.escape(splitter) + r"\b"
             if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(

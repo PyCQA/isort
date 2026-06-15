@@ -2117,3 +2117,43 @@ def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
         first_pass, multi_line_output=7, force_single_line=True, line_length=40
     )
     assert second_pass == first_pass
+
+
+def test_long_star_import_should_not_be_corrupted_issue_2267():
+    """Ensure an over-long wildcard import is left intact instead of being mangled.
+
+    A wildcard import such as ``from x.y.z import *`` cannot be wrapped - parenthesising a
+    star (``from x.y.z import (*)``) is a SyntaxError and the dotted module path cannot be
+    split. When the line exceeded the configured length and ``force_single_line`` was set,
+    isort used to fall through to its ``.`` splitter and rewrite the statement into invalid
+    Python, e.g.::
+
+        from very.very.(
+            line import *.long.very.very,
+        )
+
+    as reported in issue #2267: https://github.com/PyCQA/isort/issues/2267
+
+    The statement must be returned unchanged (matching Black) and must remain valid,
+    parseable Python across repeated runs.
+    """
+    test_input = (
+        "from very.very.very.very.very.very.very.very.very.very."
+        "very.very.very.very.very.very.very.very.long.line import *\n"
+    )
+
+    for kwargs in (
+        {"profile": "black", "force_single_line": True},
+        {"force_single_line": True},
+        {"profile": "black"},
+        {"profile": "black", "force_single_line": True, "combine_star": True},
+    ):
+        first_pass = isort.code(test_input, **kwargs)
+        assert first_pass == test_input, f"corrupted with {kwargs}"
+        # Must be valid Python and idempotent.
+        compile(first_pass, "<test>", "exec")
+        assert isort.code(first_pass, **kwargs) == first_pass, f"not idempotent with {kwargs}"
+
+    # A trailing comment on the wildcard import must be preserved, not dropped.
+    with_comment = test_input.rstrip("\n") + "  # noqa: F403\n"
+    assert isort.code(with_comment, profile="black", force_single_line=True) == with_comment
