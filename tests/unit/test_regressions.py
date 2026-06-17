@@ -2117,3 +2117,43 @@ def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
         first_pass, multi_line_output=7, force_single_line=True, line_length=40
     )
     assert second_pass == first_pass
+
+
+def test_combine_as_imports_keeps_comment_with_force_single_line_issue_2094():
+    """Trailing comments on aliased imports must survive ``combine_as_imports`` + \
+``force_single_line``.
+
+    With both options enabled the trailing comment on an ``as`` import was silently
+    dropped: the parser routed it to the ``__combined_as__`` bucket, which is only ever
+    emitted when the aliases are combined onto a single line - the path that
+    ``force_single_line`` never takes.  Each aliased import now keeps its own comment,
+    just like a non-aliased single import does. See issue #2094.
+    """
+    to_sort = "from m import a as alpha  # first\nfrom m import c as gamma  # second\n"
+
+    expected = "from m import a as alpha  # first\nfrom m import c as gamma  # second\n"
+
+    first_pass = isort.code(to_sort, combine_as_imports=True, force_single_line=True)
+    assert first_pass == expected
+
+    # The comment must stay attached to its own import, not be lumped together.
+    assert "a as alpha  # first" in first_pass
+    assert "c as gamma  # second" in first_pass
+
+    # Re-running must be a no-op (no dropped or duplicated comments).
+    second_pass = isort.code(first_pass, combine_as_imports=True, force_single_line=True)
+    assert second_pass == first_pass
+
+    # The exact example from the issue: every comment must be preserved (none dropped).
+    issue_example = (
+        "from some_module import the_function as some_function  # type: ignore\n"
+        "from some_other_module import another_function as yet_another_function"
+        "  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+    )
+    result = isort.code(issue_example, combine_as_imports=True, force_single_line=True)
+    assert "# type: ignore" in result
+    assert "# pylint: disable=no-name-in-module" in result
+    assert result.count("#") == issue_example.count("#")
+    # Output must remain valid, idempotent Python.
+    compile(result, "<issue_2094>", "exec")
+    assert isort.code(result, combine_as_imports=True, force_single_line=True) == result

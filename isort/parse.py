@@ -294,9 +294,31 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                     if comments and attach_comments_to is None:
                         if nested_module and config.combine_as_imports:
-                            attach_comments_to = categorized_comments["from"].setdefault(
-                                f"{top_level_module}.__combined_as__", []
-                            )
+                            if (
+                                config.force_single_line
+                                and top_level_module not in config.single_line_exclusions
+                            ):
+                                # ``force_single_line`` emits each aliased import on its own
+                                # line, so the trailing comment has to stay attached to this
+                                # specific import.  The ``__combined_as__`` bucket is only
+                                # consumed when the aliases are combined onto a single line, so
+                                # routing here would silently drop the comment (see issue #2094).
+                                # Store it per-import instead, mirroring how non-aliased single
+                                # imports keep their comment below.
+                                nested_for_module = categorized_comments["nested"].setdefault(
+                                    top_level_module, {}
+                                )
+                                existing_comment = nested_for_module.get(full_name, "")
+                                nested_for_module[full_name] = (
+                                    f"{existing_comment}"
+                                    f"{'; ' if existing_comment else ''}"
+                                    f"{'; '.join(comments)}"
+                                )
+                                comments = []
+                            else:
+                                attach_comments_to = categorized_comments["from"].setdefault(
+                                    f"{top_level_module}.__combined_as__", []
+                                )
                         else:
                             if type_of_import == "from" or (
                                 config.remove_redundant_aliases and as_name == module.split(".")[-1]
