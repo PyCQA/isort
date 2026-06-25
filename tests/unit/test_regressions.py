@@ -99,6 +99,12 @@ from starlette import status
     assert isort.code(test_input) == test_input
 
 
+def test_form_feed_blank_line_not_removed_issue_2562():
+    """Ensure isort preserves form feed as a valid blank line."""
+    test_input = 'import os\nimport sys\n\n\f\nprint("Hello, world!")\n'
+    assert isort.code(test_input) == test_input
+
+
 def test_extra_blank_line_added_nested_imports_issue_1290():
     """Ensure isort doesn't add unnecessary blank lines above nested imports.
     See: https://github.com/pycqa/isort/issues/1290

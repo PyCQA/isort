@@ -1,5 +1,6 @@
 """Defines parsing functions used by isort for parsing import definitions"""
 
+import re
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
@@ -18,6 +19,8 @@ from ._parse_utils import (
 from .comments import parse as parse_comments
 from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
+
+NEWLINE_RE = re.compile(r"\r\n|\r|\n")
 
 if TYPE_CHECKING:
     CommentsAboveDict = TypedDict(
@@ -77,9 +80,7 @@ class ParsedContent(NamedTuple):
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
-    in_lines = contents.splitlines()
-    if contents and contents[-1] in ("\n", "\r"):
-        in_lines.append("")
+    in_lines = NEWLINE_RE.split(contents) if contents else []
 
     out_lines = []
     original_line_count = len(in_lines)
