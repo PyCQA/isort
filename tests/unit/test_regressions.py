@@ -2094,3 +2094,55 @@ def test_noqa_wrap_mode_idempotent_with_existing_comment():
     second_pass = isort.code(first_pass, multi_line_output=7)
     assert second_pass == first_pass
     assert second_pass.count("NOQA") == 1
+
+
+def test_pylint_disable_next_stays_with_import_issue_2054():
+    """pylint disable-next comments should stay associated with their imports after sorting.
+
+    When a function body begins with ``# pylint: disable-next=...`` at the first or second
+    line position, isort was incorrectly treating it as a file-level top comment and writing
+    it to the output before sorting the imports.  Each comment must travel with the specific
+    import that follows it.
+
+    See: https://github.com/PyCQA/isort/issues/2054
+    """
+    test_input = """def foo():
+    # pylint: disable-next=no-name-in-module
+    from C import D
+    # pylint: disable-next=no-name-in-module
+    from A import B
+"""
+    assert isort.code(test_input) == """def foo():
+    # pylint: disable-next=no-name-in-module
+    from A import B
+    # pylint: disable-next=no-name-in-module
+    from C import D
+"""
+
+    # Single comment with one import that sorts after another import
+    test_input_single = """def bar():
+    # pylint: disable-next=no-name-in-module
+    from Z import W
+    import A
+"""
+    assert isort.code(test_input_single) == """def bar():
+    import A
+    # pylint: disable-next=no-name-in-module
+    from Z import W
+"""
+
+    # Comment preceded by a blank line inside the function body
+    test_input_blank = """def baz():
+
+    # pylint: disable-next=no-name-in-module
+    from C import D
+    from A import B
+"""
+    # After sorting, comment stays with the import it annotated (from C import D),
+    # while the unannotated import (from A import B) sorts before it.
+    assert isort.code(test_input_blank) == """def baz():
+
+    from A import B
+    # pylint: disable-next=no-name-in-module
+    from C import D
+"""

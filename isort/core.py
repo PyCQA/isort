@@ -68,6 +68,7 @@ def process(
     first_comment_index_end: int = -1
     contains_imports: bool = False
     in_top_comment: bool = False
+    top_comment_started: bool = False
     first_import_section: bool = True
     indent: str = ""
     isort_off: bool = False
@@ -195,12 +196,23 @@ def process(
                     ]
 
             if (
-                (index == 0 or (index in {1, 2} and not contains_imports))
+                (
+                    index == 0
+                    or (
+                        index in {1, 2}
+                        and not contains_imports
+                        and (
+                            top_comment_started
+                            or stripped_line.startswith("# isort:")
+                        )
+                    )
+                )
                 and stripped_line.startswith("#")
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
             ):
                 in_top_comment = True
+                top_comment_started = True
             elif in_top_comment and (
                 not line.startswith("#")
                 or stripped_line in config.section_comments
@@ -303,6 +315,8 @@ def process(
                     and stripped_line not in config.treat_comments_as_code
                 ):
                     import_section += line
+                    if not indent and stripped_line and index < 3 and not top_comment_started:
+                        indent = line[: -len(line.lstrip())]
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
                     import_statement = line
