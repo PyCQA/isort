@@ -373,12 +373,15 @@ def process(
                     not_imports = True
 
         if not_imports:
+            above_import_section: str = ""
             if not was_in_quote and config.lines_before_imports > -1:
                 if line.strip() == "" and not end_of_file:
                     lines_before += line
                     continue
                 if not import_section:
                     output_stream.write("".join(lines_before))
+                else:
+                    above_import_section = "".join(lines_before)
                 lines_before = []
 
             raw_import_section: str = import_section
@@ -451,7 +454,7 @@ def process(
                             )
 
                         made_changes = made_changes or _has_changed(
-                            before=raw_import_section,
+                            before=above_import_section + raw_import_section,
                             after=sorted_import_section,
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
@@ -522,4 +525,4 @@ def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace
             remove_whitespace(before, line_separator=line_separator).strip()
             != remove_whitespace(after, line_separator=line_separator).strip()
         )
-    return before.strip() != after.strip()
+    return before.rstrip() != after.rstrip()
