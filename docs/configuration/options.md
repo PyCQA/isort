@@ -1836,7 +1836,10 @@ One or more Python source files that need their imports sorted.
 **Python & Config File Name:** **Not Supported**  
 **CLI Flags:**
 
-- 
+- (positional argument)
+
+!!! note
+    `files` is a positional CLI argument, not a named option, so it cannot be set in config files like `pyproject.toml` or `.isort.cfg`. To avoid specifying files every time, you can run `isort .` to sort all Python files in the current directory, or use a `Makefile` target or shell alias to wrap your preferred paths.
 
 ## Dont Follow Links
 
