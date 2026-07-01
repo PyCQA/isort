@@ -22,7 +22,7 @@ jobs:
     steps:
       - &checkout
         name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -89,7 +89,7 @@ jobs:
 
       - name: Report Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == ${{ env.DEFAULT_PYTHON }}
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
 
 
   integration:
