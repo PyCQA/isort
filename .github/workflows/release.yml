@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -76,7 +76,7 @@ jobs:
           path: dist/
       - name: Sign the dists with Sigstore and upload assets to Github release
         if: github.event_name == 'release'
-        uses: sigstore/gh-action-sigstore-python@v3.3.0
+        uses: sigstore/gh-action-sigstore-python@v3.4.0
         with:
           inputs: |
             ./dist/*.tar.gz
