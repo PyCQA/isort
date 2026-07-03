@@ -2260,3 +2260,32 @@ def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_20
         to_sort, multi_line_output=7, combine_straight_imports=True, line_length=40
     )
     assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
+
+
+def test_isort_skip_is_honored_with_future_import_issue_2092():
+    """A per-line ``isort: skip`` must be honored even when a ``__future__`` import is present.
+
+    ``__future__`` imports are always floated to the very top, which used to make isort splice
+    the sorted import block ahead of a following ``# isort: skip`` line and relocate the skipped
+    import below the block - silently violating the skip directive.  The skipped import must stay
+    exactly where it is, and the result must be stable across re-runs.  See issue #2092.
+    """
+    to_sort = (
+        "from __future__ import annotations\n"
+        "\n"
+        "from foo import bar  # isort: skip\n"
+        "from bar import baz\n"
+    )
+
+    first_pass = isort.code(to_sort)
+    assert first_pass == to_sort
+    assert isort.check_code(to_sort, show_diff=True)
+
+    # An interleaved skip (between two regular imports) must keep its position rather than
+    # being sorted to the bottom of the block, and must be idempotent.
+    interleaved = "import aaa\nfrom foo import bar  # isort: skip\nimport ccc\n"
+    sorted_interleaved = isort.code(interleaved)
+    lines = sorted_interleaved.splitlines()
+    skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
+    assert lines.index("import ccc") > skip_index  # skip not relocated below the block
+    assert isort.code(sorted_interleaved) == sorted_interleaved

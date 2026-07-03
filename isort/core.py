@@ -30,6 +30,12 @@ CODE_SORT_COMMENTS = (
     "# isort: assignments",
 )
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
+SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
+
+
+def _has_skip_comment(import_statement: str) -> bool:
+    """Return whether an import statement carries a per-line ``isort: skip`` directive."""
+    return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -325,10 +331,17 @@ def process(
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
 
+                    # The second clause keeps a per-line ``isort: skip`` import exactly
+                    # where it is: when earlier imports have already been collected into
+                    # the current section, the skipped statement is treated as a section
+                    # boundary so those imports can't be sorted above it.  Without it, a
+                    # preceding import (most commonly a ``__future__`` import, which is
+                    # always floated to the top) makes isort splice the sorted block
+                    # ahead of the skipped line and relocate it below the block. See #2092.
                     if (
                         import_statement.lstrip().startswith("from")
                         and "import" not in import_statement
-                    ):
+                    ) or (contains_imports and _has_skip_comment(import_statement)):
                         line = import_statement
                         not_imports = True
                     else:
