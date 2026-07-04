@@ -2117,3 +2117,146 @@ def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
         first_pass, multi_line_output=7, force_single_line=True, line_length=40
     )
     assert second_pass == first_pass
+
+
+def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
+    """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
+
+    With ``force_single_line`` an aliased import that carries an inline comment
+    and overflows the line length must still receive ``# NOQA``. Previously
+    ``with_comments()`` wrapped ``wrap.line()``, so the length check ran on the
+    import without the comment and ``# NOQA`` was never added.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(to_sort, multi_line_output=7, force_single_line=True, line_length=40)
+    assert first_pass == (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore  # NOQA\n"
+    )
+
+    second_pass = isort.code(
+        first_pass, multi_line_output=7, force_single_line=True, line_length=40
+    )
+    assert second_pass == first_pass
+
+
+def test_noqa_added_to_long_as_import_with_opening_comment_issue_2093():
+    """A long ``as`` import with opening-line comment must get ``# NOQA`` in NOQA mode.
+
+    When ``use_parentheses`` is enabled, opening-line comments are kept on the
+    ``from X import (`` line. The ``wrap.line()`` call ran before the comment was
+    attached, so it saw a short import and never added ``# NOQA``. The fix re-runs
+    ``wrap.line()`` in NOQA mode after the comment is attached.
+    """
+    to_sort = (
+        "from my_package.my_module import (\n"
+        "    super_long_file_name as super_long_alias  # type: ignore\n"
+        ")\n"
+    )
+
+    first_pass = isort.code(to_sort, multi_line_output=7, line_length=40)
+    assert first_pass == (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore  # NOQA\n"
+    )
+
+    second_pass = isort.code(first_pass, multi_line_output=7, line_length=40)
+    assert second_pass == first_pass
+
+
+def test_noqa_added_to_long_combined_straight_imports_issue_2093():
+    """Long combined straight imports must get ``# NOQA`` in NOQA mode.
+
+    With ``combine_straight_imports`` enabled, multiple ``import`` statements
+    are merged into a single ``import a, b, c, ...`` line. Previously this line
+    was appended directly without going through ``wrap.line()``, so ``# NOQA``
+    was never added even when it exceeded the line length.
+    """
+    to_sort = "import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p\n"
+
+    first_pass = isort.code(
+        to_sort, multi_line_output=7, combine_straight_imports=True, line_length=40
+    )
+    assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  # NOQA\n")
+
+    second_pass = isort.code(
+        first_pass, multi_line_output=7, combine_straight_imports=True, line_length=40
+    )
+    assert second_pass == first_pass
+
+
+def test_noqa_added_to_long_straight_import_issue_2093():
+    """Long straight imports must get ``# NOQA`` in NOQA mode.
+
+    Straight imports (``import x`` or ``import x as y``) that exceed the line
+    length were emitted directly without going through ``wrap.line()``, so
+    ``# NOQA`` was never added. The fix wraps each import through ``wrap.line()``.
+    """
+    to_sort = "import aaaa_long_module_name as bbbb_long_alias_name\n"
+
+    first_pass = isort.code(to_sort, multi_line_output=7, line_length=40)
+    assert first_pass == "import aaaa_long_module_name as bbbb_long_alias_name  # NOQA\n"
+
+    second_pass = isort.code(first_pass, multi_line_output=7, line_length=40)
+    assert second_pass == first_pass
+
+
+def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093():
+    """A long ``as`` import with an opening-line comment and ``use_parentheses``.
+
+    When ``use_parentheses`` is enabled and the import carries an opening-line
+    comment, the comment is attached to the first line after wrapping. In NOQA
+    mode ``wrap.line()`` is re-run on that line so ``# NOQA`` is added when it
+    still exceeds the line length. In non-NOQA modes the comment is preserved on
+    the ``from X import (`` line without ``# NOQA``.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    # NOQA mode: # NOQA is appended after the opening-line comment.
+    first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
+    assert first_pass == (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # NOQA  # type: ignore\n"
+    )
+
+    # Non-NOQA mode (grid): the comment stays on the opening parenthesis line.
+    grid_pass = isort.code(to_sort, multi_line_output=0, use_parentheses=True, line_length=40)
+    assert grid_pass == (
+        "from my_package.my_module import (  # type: ignore\n"
+        "    super_long_file_name as super_long_alias)\n"
+    )
+
+    # With ignore_comments the opening-line comment is stripped, leaving # NOQA.
+    ignored_pass = isort.code(
+        to_sort,
+        multi_line_output=7,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
+    )
+    assert ignored_pass == (
+        "from my_package.my_module import super_long_file_name as super_long_alias  # NOQA\n"
+    )
+
+
+def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_2093():
+    """A bare ``#`` comment with ``combine_straight_imports`` gets ``# NOQA``.
+
+    A bare ``#`` with no text parses to an empty comment string. When such a
+    comment is present on a combined straight import that exceeds the line
+    length, the empty comment branch must still pass through ``wrap.line()`` so
+    that ``# NOQA`` is added in NOQA mode.
+    """
+    to_sort = "import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #\n"
+
+    first_pass = isort.code(
+        to_sort, multi_line_output=7, combine_straight_imports=True, line_length=40
+    )
+    assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
