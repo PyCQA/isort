@@ -153,7 +153,7 @@ def process(
                 if is_reexport:
                     # Clamp to 0: in check mode the output is a no-op stream whose tell()
                     # stays 0, so an unclamped rollback would seek to a negative position
-                    # and raise ValueError. See issue #2280.
+                    # and raise ValueError. See PR #2576.
                     output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                     reexport_rollback = 0
                 sorted_code = textwrap.indent(
@@ -280,7 +280,7 @@ def process(
                         )
                         if is_reexport:
                             # Clamp to 0 so check mode's no-op output stream (tell() == 0)
-                            # cannot produce a negative seek position. See issue #2280.
+                            # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
                         output_stream.write(sorted_code)
