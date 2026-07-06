@@ -2190,6 +2190,26 @@ def test_sort_reexports_output_is_black_stable_issue_2280():
     assert black_out == first
 
 
+def test_sort_reexports_check_mode_multiline_all_issue_2280():
+    """``--check`` on a multi-line ``__all__`` with ``--sort-reexports`` must not crash.
+
+    Check mode routes output to a null stream whose ``tell()`` is always 0. The reexport
+    handling used ``output_stream.seek(output_stream.tell() - len(first_line))`` to roll
+    back over the opening line, which went negative and raised ``ValueError: Negative seek
+    position``. Our black-compatible formatter emits multi-line ``__all__``, so ``isort
+    --check`` began crashing on isort's own output. See issue #2280.
+    """
+    # already-sorted, black-formatted multi-line __all__ (what isort itself now produces)
+    sorted_all = "__all__ = [\n" + "".join(f'    "Name{i:02d}",\n' for i in range(9)) + "]\n"
+    # check must report "no changes" without raising, in both string and stream forms
+    assert isort.check_code(sorted_all, show_diff=False, profile="black", sort_reexports=True)
+
+    # and with imports before it (the realistic module case)
+    with_imports = "from .core import A\n\n" + sorted_all
+    checked = isort.code(with_imports, profile="black", sort_reexports=True)
+    assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
