@@ -122,3 +122,17 @@ def test_long_dict_wraps_vertical_hanging_indent():
         f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(10)
     ) + "}"
     assert result == expected
+
+
+def test_value_assignment_dict():
+    assert (
+        isort.literal.assignment("x = {3: 'c', 1: 'a', 2: 'b'}", "dict", "py")
+        == 'x = {1: "a", 2: "b", 3: "c"}'
+    )
+
+
+def test_value_assignment_unique_tuple():
+    assert (
+        isort.literal.assignment("x = ('a', 'b', '1', '1')", "unique-tuple", "py")
+        == 'x = ("1", "a", "b")'
+    )

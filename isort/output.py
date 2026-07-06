@@ -403,26 +403,30 @@ def _with_from_imports(
 
                         if not config.only_sections:
                             output.extend(
-                                with_comments(
-                                    from_comments,
-                                    wrap.line(
-                                        import_start + as_import, parsed.line_separator, config
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_start + as_import,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
                                     ),
-                                    removed=config.ignore_comments,
-                                    comment_prefix=config.comment_prefix,
+                                    parsed.line_separator,
+                                    config,
                                 )
                                 for as_import in sorting.sort(config, as_imports[from_import])
                             )
 
                         else:
                             output.extend(
-                                with_comments(
-                                    from_comments,
-                                    wrap.line(
-                                        import_start + as_import, parsed.line_separator, config
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_start + as_import,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
                                     ),
-                                    removed=config.ignore_comments,
-                                    comment_prefix=config.comment_prefix,
+                                    parsed.line_separator,
+                                    config,
                                 )
                                 for as_import in as_imports[from_import]
                             )
@@ -518,6 +522,8 @@ def _with_from_imports(
                             )
                             if opening_comment:
                                 lines[0] += opening_comment
+                                if config.multi_line_output == wrap.Modes.NOQA:  # type: ignore[attr-defined] # noqa: E501
+                                    lines[0] = wrap.line(lines[0], parsed.line_separator, config)
                             output.append(parsed.line_separator.join(lines))
                         else:
                             output.append(
@@ -719,13 +725,15 @@ def _with_straight_imports(
         if inline_comments:
             combined_inline_comments = " ".join(c for c in inline_comments if c)
             if combined_inline_comments:
-                output.append(
+                line_content = (
                     f"{import_type} {combined_straight_imports}  # {combined_inline_comments}"
                 )
             else:
-                output.append(f"{import_type} {combined_straight_imports}  #")
+                line_content = f"{import_type} {combined_straight_imports}  #"
         else:
-            output.append(f"{import_type} {combined_straight_imports}")
+            line_content = f"{import_type} {combined_straight_imports}"
+
+        output.append(wrap.line(line_content, parsed.line_separator, config))
 
         return output
 
@@ -747,15 +755,16 @@ def _with_straight_imports(
         comments_above = parsed.categorized_comments["above"]["straight"].pop(module, None)
         if comments_above:
             output.extend(comments_above)
-        output.extend(
-            with_comments(
+        for idef, imodule in import_definition:
+            line_content = with_comments(
                 parsed.categorized_comments["straight"].get(imodule),
                 idef,
                 removed=config.ignore_comments,
                 comment_prefix=config.comment_prefix,
             )
-            for idef, imodule in import_definition
-        )
+            if config.multi_line_output == wrap.Modes.NOQA:  # type: ignore[attr-defined]
+                line_content = wrap.line(line_content, parsed.line_separator, config)
+            output.append(line_content)
 
     return output
 
