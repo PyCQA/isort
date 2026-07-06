@@ -79,7 +79,8 @@ def register_type(
 def _black_quote(value: str) -> str:
     """Quote a string the way black does: prefer double quotes, fall back to single
     only when it avoids escaping. Values with backslashes or control characters defer
-    to repr() so requoting can never produce invalid source."""
+    to repr() so requoting can never produce invalid source.
+    """
     if any(char in value for char in ("\\", "\n", "\r", "\t")):
         # deliberate: repr() sacrifices black-quote-normalization here to guarantee valid source
         return repr(value)
@@ -91,6 +92,9 @@ def _black_quote(value: str) -> str:
 
 
 def _repr_element(value: Any) -> str:
+    """Render a single sorted element: strings via black's quote rule, everything else
+    via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
+    """
     if isinstance(value, str):
         return _black_quote(value)
     return repr(value)
