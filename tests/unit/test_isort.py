@@ -5574,7 +5574,7 @@ def test_infinite_loop_in_unmatched_parenthesis() -> None:
 def test_reexport() -> None:
     test_input = """__all__ = ('foo', 'bar')
 """
-    expd_output = """__all__ = ('bar', 'foo')
+    expd_output = """__all__ = ("bar", "foo")
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5591,7 +5591,7 @@ def test_reexport_multiline() -> None:
     'bar',
 )
 """
-    expd_output = """__all__ = ('bar', 'foo')
+    expd_output = """__all__ = ("bar", "foo")
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5599,7 +5599,7 @@ def test_reexport_multiline() -> None:
 def test_reexport_list() -> None:
     test_input = """__all__ = ['foo', 'bar']
 """
-    expd_output = """__all__ = ['bar', 'foo']
+    expd_output = """__all__ = ["bar", "foo"]
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5607,7 +5607,7 @@ def test_reexport_list() -> None:
 def test_reexport_set() -> None:
     test_input = """__all__ = {'foo', 'bar'}
 """
-    expd_output = """__all__ = {'bar', 'foo'}
+    expd_output = """__all__ = {"bar", "foo"}
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5615,7 +5615,7 @@ def test_reexport_set() -> None:
 def test_reexport_bare() -> None:
     test_input = """__all__ = 'foo', 'bar'
 """
-    expd_output = """__all__ = ('bar', 'foo')
+    expd_output = """__all__ = ("bar", "foo")
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5623,7 +5623,7 @@ def test_reexport_bare() -> None:
 def test_reexport_no_spaces() -> None:
     test_input = """__all__=('foo', 'bar')
 """
-    expd_output = """__all__ = ('bar', 'foo')
+    expd_output = """__all__ = ("bar", "foo")
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5635,7 +5635,7 @@ def test_reexport_not_first_line() -> None:
 """
     expd_output = """import random
 
-    __all__ = ('bar', 'foo')
+    __all__ = ("bar", "foo")
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5645,7 +5645,7 @@ def test_reexport_not_last_line() -> None:
 
     meme = "rickroll"
 """
-    expd_output = """__all__ = ('bar', 'foo')
+    expd_output = """__all__ = ("bar", "foo")
 
     meme = "rickroll"
 """
@@ -5664,7 +5664,7 @@ __all__ = [
 """
     expd_output = """from m import bar, foo
 
-__all__ = ['bar', 'foo']
+__all__ = ["bar", "foo"]
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5683,7 +5683,7 @@ test
 """
     expd_output = """from m import bar, foo
 
-__all__ = ['bar', 'foo']
+__all__ = ["bar", "foo"]
 
 test
 """
@@ -5700,7 +5700,7 @@ test
 """
     expd_output = """from m import bar, foo
 
-__all__ = ['bar', 'foo']
+__all__ = ["bar", "foo"]
 
 test
 """
