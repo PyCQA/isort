@@ -2160,12 +2160,17 @@ def test_literal_dict_sort_respects_black_profile_issue_2280():
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
     single quotes, pprint-style wrapping and no trailing comma). Same root cause as #2280.
     """
-    test_input = "# isort: dict\n" + "d = {" + ", ".join(
-        f"'key_{i:02d}': 'value_{i:02d}'" for i in (3, 1, 2, 0)
-    ) + "}\n"
-    expected_output = "# isort: dict\nd = {\n" + "".join(
-        f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(4)
-    ) + "}\n"
+    test_input = (
+        "# isort: dict\n"
+        + "d = {"
+        + ", ".join(f"'key_{i:02d}': 'value_{i:02d}'" for i in (3, 1, 2, 0))
+        + "}\n"
+    )
+    expected_output = (
+        "# isort: dict\nd = {\n"
+        + "".join(f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(4))
+        + "}\n"
+    )
     assert isort.code(test_input, profile="black") == expected_output
 
 
@@ -2175,9 +2180,11 @@ def test_sort_reexports_output_is_black_stable_issue_2280():
     import black  # noqa: PLC0415
     from black.report import NothingChanged  # noqa: PLC0415
 
-    source = "__all__ = [\n" + "".join(
-        f'    "Name{i:02d}",\n' for i in (5, 3, 9, 1, 7, 2, 8, 4, 6, 0)
-    ) + "]\n"
+    source = (
+        "__all__ = [\n"
+        + "".join(f'    "Name{i:02d}",\n' for i in (5, 3, 9, 1, 7, 2, 8, 4, 6, 0))
+        + "]\n"
+    )
 
     first = isort.code(source, profile="black", sort_reexports=True)
     # isort is idempotent

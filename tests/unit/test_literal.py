@@ -47,13 +47,9 @@ def test_set_bracket_and_quotes():
 
 
 def test_long_list_wraps_vertical_hanging_indent():
-    code = (
-        "__all__ = ['" + "', '".join(f"name_{i:02d}" for i in range(12)) + "']"
-    )
+    code = "__all__ = ['" + "', '".join(f"name_{i:02d}" for i in range(12)) + "']"
     result = isort.literal.assignment(code, "list", "py", config=Config(profile="black"))
-    expected = "__all__ = [\n" + "".join(
-        f'    "name_{i:02d}",\n' for i in range(12)
-    ) + "]"
+    expected = "__all__ = [\n" + "".join(f'    "name_{i:02d}",\n' for i in range(12)) + "]"
     assert result == expected
 
 
@@ -67,7 +63,7 @@ def test_wrap_without_trailing_comma():
 
 def test_quote_fallback_for_embedded_quote():
     # value containing a double quote but no single quote -> single quotes (black rule)
-    assert isort.literal.assignment('x = [\'a"b\']', "list", "py") == "x = ['a\"b']"
+    assert isort.literal.assignment("x = ['a\"b']", "list", "py") == "x = ['a\"b']"
 
 
 def test_black_quote_prefers_double_quotes():
@@ -109,18 +105,16 @@ def test_dict_sorts_by_value_with_double_quotes():
 
 
 def test_dict_non_string_values_use_repr():
-    assert (
-        isort.literal.assignment("x = {'b': 2, 'a': 1}", "dict", "py") == 'x = {"a": 1, "b": 2}'
-    )
+    assert isort.literal.assignment("x = {'b': 2, 'a': 1}", "dict", "py") == 'x = {"a": 1, "b": 2}'
 
 
 def test_long_dict_wraps_vertical_hanging_indent():
     pairs = {f"key_{i:02d}": f"value_{i:02d}" for i in range(10)}
     code = "d = {" + ", ".join(f"'{k}': '{v}'" for k, v in pairs.items()) + "}"
     result = isort.literal.assignment(code, "dict", "py", config=Config(profile="black"))
-    expected = "d = {\n" + "".join(
-        f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(10)
-    ) + "}"
+    expected = (
+        "d = {\n" + "".join(f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(10)) + "}"
+    )
     assert result == expected
 
 
