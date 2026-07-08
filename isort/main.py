@@ -888,7 +888,7 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
 
 
 def _preconvert(item: Any) -> str | list[Any]:
-    """Preconverts objects from native types into JSONifyiable types"""
+    """Preconverts objects from native types into JSONifiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
