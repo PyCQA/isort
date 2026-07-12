@@ -1877,7 +1877,7 @@ class Bar:
         == '''"""I'm a docstring! Look at me!"""
 
 # isort: unique-list
-__all__ = ['Bar', 'Foo']
+__all__ = ["Bar", "Foo"]
 
 from typing import final  # arbitrary
 
@@ -2117,6 +2117,104 @@ def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
         first_pass, multi_line_output=7, force_single_line=True, line_length=40
     )
     assert second_pass == first_pass
+
+
+def test_sort_reexports_respects_black_profile_issue_2280():
+    """``--sort-reexports`` must honor the active formatting config, not stdlib ``pprint``.
+
+    ``isort.literal`` used to format the sorted ``__all__`` with stdlib ``pprint``, which
+    only reads ``config.line_length`` and ignores ``include_trailing_comma`` and the quote
+    style entirely.  So a long ``__all__`` under ``--profile=black`` came back
+    single-quoted, wrapped in ``pprint`` style (a bare continuation line prefixed with one
+    space) and without a trailing comma - output that black immediately reformats.  See
+    issue #2280: https://github.com/pycqa/isort/issues/2280
+
+    The sorted list must instead match what black itself produces: one element per line,
+    double quotes, a trailing comma and a hanging-indented closing bracket.
+    """
+    test_input = """__all__ = [
+    "AliasAddress",
+    "Address",
+    "BankAccountConnection",
+    "Certificate",
+    "ConcessionFee",
+    "ContactDetails",
+    "Determination",
+]
+"""
+    expected_output = """__all__ = [
+    "Address",
+    "AliasAddress",
+    "BankAccountConnection",
+    "Certificate",
+    "ConcessionFee",
+    "ContactDetails",
+    "Determination",
+]
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
+def test_literal_dict_sort_respects_black_profile_issue_2280():
+    """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
+    and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
+    single quotes, pprint-style wrapping and no trailing comma). Same root cause as #2280.
+    """
+    test_input = (
+        "# isort: dict\n"
+        + "d = {"
+        + ", ".join(f"'key_{i:02d}': 'value_{i:02d}'" for i in (3, 1, 2, 0))
+        + "}\n"
+    )
+    expected_output = (
+        "# isort: dict\nd = {\n"
+        + "".join(f'    "key_{i:02d}": "value_{i:02d}",\n' for i in range(4))
+        + "}\n"
+    )
+    assert isort.code(test_input, profile="black") == expected_output
+
+
+def test_sort_reexports_output_is_black_stable_issue_2280():
+    """isort's sorted __all__ under the black profile must be a fixpoint for both isort
+    and black (running either again changes nothing). See issue #2280."""
+    import black  # noqa: PLC0415
+    from black.report import NothingChanged  # noqa: PLC0415
+
+    source = (
+        "__all__ = [\n"
+        + "".join(f'    "Name{i:02d}",\n' for i in (5, 3, 9, 1, 7, 2, 8, 4, 6, 0))
+        + "]\n"
+    )
+
+    first = isort.code(source, profile="black", sort_reexports=True)
+    # isort is idempotent
+    assert isort.code(first, profile="black", sort_reexports=True) == first
+    # black leaves isort's output unchanged
+    try:
+        black_out = black.format_file_contents(first, fast=True, mode=black.FileMode())
+    except NothingChanged:
+        black_out = first
+    assert black_out == first
+
+
+def test_sort_reexports_check_mode_multiline_all_issue_2280():
+    """``--check`` on a multi-line ``__all__`` with ``--sort-reexports`` must not crash.
+
+    Check mode routes output to a null stream whose ``tell()`` is always 0. The reexport
+    handling used ``output_stream.seek(output_stream.tell() - len(first_line))`` to roll
+    back over the opening line, which went negative and raised ``ValueError: Negative seek
+    position``. Our black-compatible formatter emits multi-line ``__all__``, so ``isort
+    --check`` began crashing on isort's own output. See issue #2280.
+    """
+    # already-sorted, black-formatted multi-line __all__ (what isort itself now produces)
+    sorted_all = "__all__ = [\n" + "".join(f'    "Name{i:02d}",\n' for i in range(9)) + "]\n"
+    # check must report "no changes" without raising, in both string and stream forms
+    assert isort.check_code(sorted_all, show_diff=False, profile="black", sort_reexports=True)
+
+    # and with imports before it (the realistic module case)
+    with_imports = "from .core import A\n\n" + sorted_all
+    checked = isort.code(with_imports, profile="black", sort_reexports=True)
+    assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
