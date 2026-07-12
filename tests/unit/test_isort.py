@@ -5707,6 +5707,42 @@ test
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
 
+def test_sort_reexports_with_skip_comment_issue_2569() -> None:
+    """Test that sort_reexports respects isort: skip comment."""
+    test_input = """my_list = ["bee", "Albatross", "Dinosaur", "cat"]
+__all__ = my_list  # isort: skip
+"""
+    # isort: skip should prevent sorting of __all__
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == test_input
+
+
+def test_sort_reexports_with_skip_comment_inline() -> None:
+    """Test that sort_reexports respects isort: skip on literal __all__."""
+    test_input = """from m import foo, bar
+
+__all__ = ["foo", "bar"]  # isort: skip
+"""
+    # isort: skip prevents sorting of __all__ but imports still get sorted
+    expd_output = """from m import bar, foo
+
+__all__ = ["foo", "bar"]  # isort: skip
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_sort_reexports_without_skip_still_sorts() -> None:
+    """Test that sort_reexports still sorts without skip comment."""
+    test_input = """from m import foo, bar
+
+__all__ = ["foo", "bar"]
+"""
+    expd_output = """from m import bar, foo
+
+__all__ = ['bar', 'foo']
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
 def test_noqa_multiline_hanging_indent() -> None:
     test_input = (
         "from aaaaaaa import bbbbbbbbbbbbbbbbb, ccccccccccccccccccc, dddddddddddddddd"
