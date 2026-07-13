@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from importlib.metadata import EntryPoints
 from pathlib import Path
 from re import Pattern
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from warnings import warn
 
 from . import sorting, stdlibs
