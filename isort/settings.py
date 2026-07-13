@@ -34,7 +34,6 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-
 if sys.version_info >= (3, 11):
     import tomllib
 else:
