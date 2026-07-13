@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from importlib.metadata import EntryPoints
 from pathlib import Path
 from re import Pattern
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from warnings import warn
 
 from . import sorting, stdlibs
@@ -34,13 +34,10 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-if TYPE_CHECKING:
-    tomllib: Any
+if sys.version_info >= (3, 11):
+    import tomllib
 else:
-    if sys.version_info >= (3, 11):
-        import tomllib
-    else:
-        from ._vendored import tomli as tomllib
+    from ._vendored import tomli as tomllib
 
 _SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
@@ -822,22 +819,22 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
                         break
                     last_position = config_file.tell()
 
-            config = configparser.ConfigParser(strict=False)
-            config.read_file(config_file)
+            config_parser = configparser.ConfigParser(strict=False)
+            config_parser.read_file(config_file)
         for section in sections:
             if section.startswith("*.{") and section.endswith("}"):
                 extension = section[len("*.{") : -1]
-                for config_key in config:
+                for config_key in config_parser:
                     if (
                         config_key.startswith("*.{")
                         and config_key.endswith("}")
                         and extension
                         in (text.strip() for text in config_key[len("*.{") : -1].split(","))
                     ):
-                        settings.update(config.items(config_key))
+                        settings.update(config_parser.items(config_key))
 
-            elif config.has_section(section):
-                settings.update(config.items(section))
+            elif config_parser.has_section(section):
+                settings.update(config_parser.items(section))
 
     if settings:
         settings["source"] = file_path
