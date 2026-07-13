@@ -82,9 +82,7 @@ def match_to_datetime(match: re.Match[str]) -> datetime | date:
     sec = int(sec_str) if sec_str else 0
     micros = int(micros_str.ljust(6, "0")) if micros_str else 0
     if offset_sign_str:
-        tz: tzinfo | None = cached_tz(
-            offset_hour_str, offset_minute_str, offset_sign_str
-        )
+        tz: tzinfo | None = cached_tz(offset_hour_str, offset_minute_str, offset_sign_str)
     elif zulu_time:
         tz = timezone.utc
     else:  # local date-time

@@ -62,10 +62,10 @@ ILLEGAL_COMMENT_CHARS: Final = ILLEGAL_BASIC_STR_CHARS
 TOML_WS: Final = frozenset(" \t")
 TOML_WS_AND_NEWLINE: Final = TOML_WS | frozenset("\n")
 BARE_KEY_CHARS: Final = frozenset(
-    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 )
 KEY_INITIAL_CHARS: Final = BARE_KEY_CHARS | frozenset("\"'")
-HEXDIGIT_CHARS: Final = frozenset("abcdef" "ABCDEF" "0123456789")
+HEXDIGIT_CHARS: Final = frozenset("abcdefABCDEF0123456789")
 
 BASIC_STR_ESCAPE_REPLACEMENTS: Final = frozendict(
     {
@@ -104,12 +104,7 @@ class TOMLDecodeError(ValueError):
         pos: Pos | type[DEPRECATED_DEFAULT] = DEPRECATED_DEFAULT,
         *args: Any,
     ):
-        if (
-            args
-            or not isinstance(msg, str)
-            or not isinstance(doc, str)
-            or not isinstance(pos, int)
-        ):
+        if args or not isinstance(msg, str) or not isinstance(doc, str) or not isinstance(pos, int):
             import warnings
 
             warnings.warn(
@@ -167,9 +162,7 @@ def loads(__s: str, *, parse_float: ParseFloat = float) -> dict[str, Any]:
     try:
         src = __s.replace("\r\n", "\n")
     except (AttributeError, TypeError):
-        raise TypeError(
-            f"Expected str object, not '{type(__s).__qualname__}'"
-        ) from None
+        raise TypeError(f"Expected str object, not '{type(__s).__qualname__}'") from None
     pos = 0
     out = Output()
     header: Key = ()
@@ -222,9 +215,7 @@ def loads(__s: str, *, parse_float: ParseFloat = float) -> dict[str, Any]:
         except IndexError:
             break
         if char != "\n":
-            raise TOMLDecodeError(
-                "Expected newline or end of document after a statement", src, pos
-            )
+            raise TOMLDecodeError("Expected newline or end of document after a statement", src, pos)
         pos += 1
 
     return out.data.dict
@@ -365,9 +356,7 @@ def skip_comment(src: str, pos: Pos) -> Pos:
     except IndexError:
         char = None
     if char == "#":
-        return skip_until(
-            src, pos + 1, "\n", error_on=ILLEGAL_COMMENT_CHARS, error_on_eof=False
-        )
+        return skip_until(src, pos + 1, "\n", error_on=ILLEGAL_COMMENT_CHARS, error_on_eof=False)
     return pos
 
 
@@ -394,9 +383,7 @@ def create_dict_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:
         raise TOMLDecodeError("Cannot overwrite a value", src, pos) from None
 
     if not src.startswith("]", pos):
-        raise TOMLDecodeError(
-            "Expected ']' at the end of a table declaration", src, pos
-        )
+        raise TOMLDecodeError("Expected ']' at the end of a table declaration", src, pos)
     return pos + 1, key
 
 
@@ -417,15 +404,11 @@ def create_list_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:
         raise TOMLDecodeError("Cannot overwrite a value", src, pos) from None
 
     if not src.startswith("]]", pos):
-        raise TOMLDecodeError(
-            "Expected ']]' at the end of an array declaration", src, pos
-        )
+        raise TOMLDecodeError("Expected ']]' at the end of an array declaration", src, pos)
     return pos + 2, key
 
 
-def key_value_rule(
-    src: str, pos: Pos, out: Output, header: Key, parse_float: ParseFloat
-) -> Pos:
+def key_value_rule(src: str, pos: Pos, out: Output, header: Key, parse_float: ParseFloat) -> Pos:
     pos, key, value = parse_key_value_pair(src, pos, parse_float, nest_lvl=0)
     key_parent, key_stem = key[:-1], key[-1]
     abs_key_parent = header + key_parent
@@ -440,9 +423,7 @@ def key_value_rule(
         out.flags.add_pending(cont_key, Flags.EXPLICIT_NEST)
 
     if out.flags.is_(abs_key_parent, Flags.FROZEN):
-        raise TOMLDecodeError(
-            f"Cannot mutate immutable namespace {abs_key_parent}", src, pos
-        )
+        raise TOMLDecodeError(f"Cannot mutate immutable namespace {abs_key_parent}", src, pos)
 
     try:
         nest = out.data.get_or_create_nest(abs_key_parent)
@@ -489,9 +470,7 @@ def parse_key(src: str, pos: Pos) -> tuple[Pos, Key]:
         pos, key_part = parse_key_part(src, pos)
         key += (key_part,)
         if len(key) > MAX_KEY_PARTS:
-            raise RecursionError(
-                f"TOML key has more than the allowed {MAX_KEY_PARTS} parts"
-            )
+            raise RecursionError(f"TOML key has more than the allowed {MAX_KEY_PARTS} parts")
         pos = skip_chars(src, pos, TOML_WS)
 
 
@@ -578,9 +557,7 @@ def parse_inline_table(
             flags.set(key, Flags.FROZEN, recursive=True)
 
 
-def parse_basic_str_escape(
-    src: str, pos: Pos, *, multiline: bool = False
-) -> tuple[Pos, str]:
+def parse_basic_str_escape(src: str, pos: Pos, *, multiline: bool = False) -> tuple[Pos, str]:
     escape_id = src[pos : pos + 2]
     pos += 2
     if multiline and escape_id in {"\\ ", "\\\t", "\\\n"}:
@@ -620,18 +597,14 @@ def parse_hex_char(src: str, pos: Pos, hex_len: int) -> tuple[Pos, str]:
     pos += hex_len
     hex_int = int(hex_str, 16)
     if not is_unicode_scalar_value(hex_int):
-        raise TOMLDecodeError(
-            "Escaped character is not a Unicode scalar value", src, pos
-        )
+        raise TOMLDecodeError("Escaped character is not a Unicode scalar value", src, pos)
     return pos, chr(hex_int)
 
 
 def parse_literal_str(src: str, pos: Pos) -> tuple[Pos, str]:
     pos += 1  # Skip starting apostrophe
     start_pos = pos
-    pos = skip_until(
-        src, pos, "'", error_on=ILLEGAL_LITERAL_STR_CHARS, error_on_eof=True
-    )
+    pos = skip_until(src, pos, "'", error_on=ILLEGAL_LITERAL_STR_CHARS, error_on_eof=True)
     return pos + 1, src[start_pos:pos]  # Skip ending apostrophe
 
 
@@ -698,9 +671,7 @@ def parse_basic_str(src: str, pos: Pos, *, multiline: bool) -> tuple[Pos, str]:
         pos += 1
 
 
-def parse_value(
-    src: str, pos: Pos, parse_float: ParseFloat, nest_lvl: int
-) -> tuple[Pos, Any]:
+def parse_value(src: str, pos: Pos, parse_float: ParseFloat, nest_lvl: int) -> tuple[Pos, Any]:
     if nest_lvl > MAX_INLINE_NESTING:
         # Pure Python should have raised RecursionError already.
         # This ensures mypyc binaries eventually do the same.
