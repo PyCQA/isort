@@ -140,7 +140,10 @@ def _format_collection(
     if only_element_needs_comma:
         inner += ","
     single_line = f"{open_bracket}{inner}{close_bracket}"
-    if not force_multiline and prefix_length + len(single_line) <= config.line_length:
+    # Single-element tuples need a trailing comma as syntax, not as a multiline
+    # signal, so allow them to collapse even when force_multiline is on.
+    fits_on_single_line = prefix_length + len(single_line) <= config.line_length
+    if (not force_multiline or only_element_needs_comma) and fits_on_single_line:
         return single_line
 
     indent = config.indent

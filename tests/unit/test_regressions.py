@@ -2238,6 +2238,17 @@ def test_sort_reexports_preserves_trailing_comma_issue_2578():
     assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
 
 
+def test_sort_reexports_single_element_tuple_stays_black_stable_issue_2578():
+    """``--sort-reexports`` must keep a single-element ``__all__`` on one line.
+
+    The trailing comma in ``("a",)`` is syntactically required, not a magic
+    multiline signal, so black leaves ``__all__ = ("a",)`` unchanged. isort
+    should therefore produce the same output. See issue #2578.
+    """
+    test_input = "__all__ = (\"a\",)\n"
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
