@@ -130,3 +130,40 @@ def test_value_assignment_unique_tuple():
         isort.literal.assignment("x = ('a', 'b', '1', '1')", "unique-tuple", "py")
         == 'x = ("1", "a", "b")'
     )
+
+
+def test_short_list_with_trailing_comma_force_multiline():
+    """A trailing comma forces multiline output when ``split_on_trailing_comma`` is on."""
+    assert (
+        isort.literal.assignment("x = ['b', 'a',]", "list", "py", config=Config(profile="black"))
+        == 'x = [\n    "a",\n    "b",\n]'
+    )
+
+
+def test_short_tuple_with_trailing_comma_force_multiline():
+    """Same force-multiline behaviour applies to tuples used for ``__all__``."""
+    assert (
+        isort.literal.assignment("x = ('b', 'a',)", "tuple", "py", config=Config(profile="black"))
+        == 'x = (\n    "a",\n    "b",\n)'
+    )
+
+
+def test_short_list_without_trailing_comma_stays_single_line():
+    """No trailing comma means the short collection may collapse to one line."""
+    assert (
+        isort.literal.assignment("x = ['b', 'a']", "list", "py", config=Config(profile="black"))
+        == 'x = ["a", "b"]'
+    )
+
+
+def test_trailing_comma_without_split_on_trailing_comma_stays_single_line():
+    """A trailing comma only forces multiline when ``split_on_trailing_comma`` is enabled."""
+    assert (
+        isort.literal.assignment(
+            "x = ['b', 'a',]",
+            "list",
+            "py",
+            config=Config(line_length=120, split_on_trailing_comma=False),
+        )
+        == 'x = ["a", "b"]'
+    )
