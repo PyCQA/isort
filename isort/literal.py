@@ -1,6 +1,6 @@
 import ast
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Protocol
 
 from isort.exceptions import (
     AssignmentsFormatMismatch,
@@ -9,7 +9,19 @@ from isort.exceptions import (
 )
 from isort.settings import DEFAULT_CONFIG, Config
 
-type_mapping: dict[str, tuple[type, Callable[[Any, Config, int], str]]] = {}
+
+class _SortFunction(Protocol):
+    def __call__(
+        self,
+        value: Any,
+        config: Config,
+        prefix_length: int,
+        *,
+        force_multiline: bool = ...,
+    ) -> str: ...
+
+
+type_mapping: dict[str, tuple[type, _SortFunction]] = {}
 
 
 def assignments(code: str) -> str:
@@ -59,7 +71,8 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
 
     prefix_length = len(f"{variable_name} = ")
     force_multiline = had_trailing_comma and config.split_on_trailing_comma
-    sorted_value_code = f"{variable_name} = {sort_function(value, config, prefix_length, force_multiline=force_multiline)}"
+    sorted_value = sort_function(value, config, prefix_length, force_multiline=force_multiline)
+    sorted_value_code = f"{variable_name} = {sorted_value}"
     if config.formatting_function:
         sorted_value_code = config.formatting_function(
             sorted_value_code, extension, config
@@ -69,14 +82,12 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     return sorted_value_code
 
 
-def register_type(
-    name: str, kind: type
-) -> Callable[[Callable[[Any, Config, int], str]], Callable[[Any, Config, int], str]]:
+def register_type(name: str, kind: type) -> Callable[[_SortFunction], _SortFunction]:
     """Registers a new literal sort type."""
 
     def wrap(
-        function: Callable[[Any, Config, int], str],
-    ) -> Callable[[Any, Config, int], str]:
+        function: _SortFunction,
+    ) -> _SortFunction:
         type_mapping[name] = (kind, function)
         return function
 
@@ -133,45 +144,103 @@ def _format_collection(
         return single_line
 
     indent = config.indent
-    trailing = "," if (force_multiline or config.include_trailing_comma or only_element_needs_comma) else ""
+    trailing = (
+        ","
+        if (force_multiline or config.include_trailing_comma or only_element_needs_comma)
+        else ""
+    )
     body = (",\n" + indent).join(elements)
     return f"{open_bracket}\n{indent}{body}{trailing}\n{close_bracket}"
 
 
 @register_type("dict", dict)
-def _dict(value: dict[Any, Any], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _dict(
+    value: dict[Any, Any],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     items = [
         f"{_repr_element(key)}: {_repr_element(item)}"
         for key, item in sorted(value.items(), key=lambda item: item[1])
     ]
-    return _format_collection(items, "{", "}", config, prefix_length, force_multiline=force_multiline)
+    return _format_collection(
+        items, "{", "}", config, prefix_length, force_multiline=force_multiline
+    )
 
 
 @register_type("list", list)
-def _list(value: list[Any], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _list(
+    value: list[Any],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "[", "]", config, prefix_length, force_multiline=force_multiline)
+    return _format_collection(
+        elements, "[", "]", config, prefix_length, force_multiline=force_multiline
+    )
 
 
 @register_type("unique-list", list)
-def _unique_list(value: list[Any], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _unique_list(
+    value: list[Any],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "[", "]", config, prefix_length, force_multiline=force_multiline)
+    return _format_collection(
+        elements, "[", "]", config, prefix_length, force_multiline=force_multiline
+    )
 
 
 @register_type("set", set)
-def _set(value: set[Any], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _set(
+    value: set[Any],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "{", "}", config, prefix_length, force_multiline=force_multiline)
+    return _format_collection(
+        elements, "{", "}", config, prefix_length, force_multiline=force_multiline
+    )
 
 
 @register_type("tuple", tuple)
-def _tuple(value: tuple[Any, ...], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _tuple(
+    value: tuple[Any, ...],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True, force_multiline=force_multiline)
+    return _format_collection(
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        single_element_comma=True,
+        force_multiline=force_multiline,
+    )
 
 
 @register_type("unique-tuple", tuple)
-def _unique_tuple(value: tuple[Any, ...], config: Config, prefix_length: int, force_multiline: bool = False) -> str:
+def _unique_tuple(
+    value: tuple[Any, ...],
+    config: Config,
+    prefix_length: int,
+    force_multiline: bool = False,
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True, force_multiline=force_multiline)
+    return _format_collection(
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        single_element_comma=True,
+        force_multiline=force_multiline,
+    )
