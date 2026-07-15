@@ -46,3 +46,11 @@ import a
 import a
 """
     )
+
+
+def test_skip_sort_reexports():
+    code = """my_list = [\"bee\", \"Albatross\", \"Dinosaur\", \"cat\"]
+__all__ = my_list  # isort: skip
+"""
+
+    assert isort.code(code, sort_reexports=True) == code
