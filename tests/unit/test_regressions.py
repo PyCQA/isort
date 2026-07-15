@@ -2245,7 +2245,7 @@ def test_sort_reexports_single_element_tuple_stays_black_stable_issue_2578():
     multiline signal, so black leaves ``__all__ = ("a",)`` unchanged. isort
     should therefore produce the same output. See issue #2578.
     """
-    test_input = "__all__ = (\"a\",)\n"
+    test_input = '__all__ = ("a",)\n'
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
