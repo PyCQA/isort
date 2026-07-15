@@ -2217,6 +2217,26 @@ def test_sort_reexports_check_mode_multiline_all_issue_2280():
     assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
+def test_sort_reexports_preserves_trailing_comma_issue_2578():
+    """``--sort-reexports`` must keep a trailing comma in a short ``__all__`` under the black profile.
+
+    A multi-line ``__all__`` with a trailing comma should not be collapsed to a single line,
+    because black treats a trailing comma as a request for one-item-per-line formatting.
+    See issue #2578: https://github.com/PyCQA/isort/issues/2578
+    """
+    test_input = '''__all__ = (
+    "SecondClass",
+    "FirstClass",
+)
+'''
+    expected_output = '''__all__ = (
+    "FirstClass",
+    "SecondClass",
+)
+'''
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
