@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from isort.format import format_simplified
 
-from . import _parse_utils, parse, sorting, wrap
+from . import _parse_utils, parse, sorting, wrap, wrap_modes
 from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
 from .place import module_with_reason
@@ -522,7 +522,7 @@ def _with_from_imports(
                             )
                             if opening_comment:
                                 lines[0] += opening_comment
-                                if config.multi_line_output == wrap.Modes.NOQA:  # type: ignore[attr-defined] # noqa: E501
+                                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
                                     lines[0] = wrap.line(lines[0], parsed.line_separator, config)
                             output.append(parsed.line_separator.join(lines))
                         else:
@@ -561,7 +561,7 @@ def _with_from_imports(
                         # keep the name in the main list and hoist the comment to the statement.
                         if (
                             comment.lower().startswith("noqa")
-                            and config.multi_line_output == wrap.Modes.HANGING_INDENT  # type: ignore[attr-defined] # noqa: E501
+                            and config.multi_line_output == wrap_modes.WrapModes.HANGING_INDENT
                         ):
                             comments = list(comments) if comments else []
                             comments.append(comment)
@@ -621,7 +621,8 @@ def _with_from_imports(
                 if (
                     len(import_statement) > config.line_length
                     and len(from_import_section) > 0
-                    and config.multi_line_output not in (wrap.Modes.GRID, wrap.Modes.VERTICAL)  # type: ignore # noqa: E501
+                    and config.multi_line_output
+                    not in (wrap_modes.WrapModes.GRID, wrap_modes.WrapModes.VERTICAL)
                 ):
                     do_multiline_reformat = True
 
@@ -660,14 +661,14 @@ def _with_from_imports(
                         line_separator=parsed.line_separator,
                         config=config,
                     )
-                    if config.multi_line_output == wrap.Modes.GRID:  # type: ignore
+                    if config.multi_line_output == wrap_modes.WrapModes.GRID:
                         other_import_statement = wrap.import_statement(
                             import_start=import_start,
                             from_imports=from_import_section,
                             comments=comments,
                             line_separator=parsed.line_separator,
                             config=config,
-                            multi_line_output=wrap.Modes.VERTICAL_GRID,  # type: ignore
+                            multi_line_output=wrap_modes.WrapModes.VERTICAL_GRID,
                         )
                         if (
                             max(
@@ -762,7 +763,7 @@ def _with_straight_imports(
                 removed=config.ignore_comments,
                 comment_prefix=config.comment_prefix,
             )
-            if config.multi_line_output == wrap.Modes.NOQA:  # type: ignore[attr-defined]
+            if config.multi_line_output == wrap_modes.WrapModes.NOQA:
                 line_content = wrap.line(line_content, parsed.line_separator, config)
             output.append(line_content)
 

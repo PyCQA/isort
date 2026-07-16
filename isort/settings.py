@@ -278,7 +278,7 @@ class Config(_Config):
     def __init__(
         self,
         settings_file: str = "",
-        settings_path: str = "",
+        settings_path: str | Path = "",
         config: _Config | None = None,
         **config_overrides: Any,
     ):
@@ -711,7 +711,7 @@ def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any] | type
     return type_converter
 
 
-def _as_list(value: str) -> list[str]:
+def _as_list(value: str | list[str]) -> list[str]:
     if isinstance(value, list):
         return [item.strip() for item in value]
     filtered = [item.strip() for item in value.replace("\n", ",").split(",") if item.strip()]
@@ -867,7 +867,7 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
             if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
             elif existing_value_type is frozenset:
-                settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore
+                settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore[arg-type]
             elif existing_value_type is bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):

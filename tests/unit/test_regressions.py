@@ -5,6 +5,7 @@ from io import BytesIO, StringIO, TextIOWrapper
 import pytest
 
 import isort
+import isort.sections
 from isort.main import main
 
 
@@ -235,9 +236,7 @@ def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304():
     """Ensure sre_parse is identified as STDLIB.
     See: https://github.com/pycqa/isort/issues/1304.
     """
-    assert (
-        isort.place_module("sre_parse") == isort.place_module("sre") == isort.settings.STDLIB  # type: ignore # noqa
-    )
+    assert isort.place_module("sre_parse") == isort.place_module("sre") == isort.sections.STDLIB
 
 
 def test_add_imports_shouldnt_move_lower_comments_issue_1300():
