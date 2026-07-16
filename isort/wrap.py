@@ -71,7 +71,7 @@ def import_statement(
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     wrap_mode = config.multi_line_output
-    if len(content) > config.line_length and wrap_mode != Modes.NOQA:  # type: ignore
+    if len(content) > config.line_length and wrap_mode != Modes.NOQA:
         line_without_comment = content
         comment = None
         if "#" in content:
@@ -83,8 +83,8 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             ):
                 line_parts = re.split(exp, line_without_comment)
                 _is_vertical_mode = wrap_mode in (
-                    Modes.VERTICAL_HANGING_INDENT,  # type: ignore
-                    Modes.VERTICAL_GRID_GROUPED,  # type: ignore
+                    Modes.VERTICAL_HANGING_INDENT,
+                    Modes.VERTICAL_GRID_GROUPED,
                 )
                 # Determine whether the comment should be hoisted to the opening
                 # parenthesis line rather than embedded in the import line.
@@ -149,7 +149,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                         output = line_separator.join(lines)
                     return output
                 return f"{content}{splitter}\\{line_separator}{cont_line}"
-    elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:  # type: ignore
+    elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:
         return f"{content}{config.comment_prefix} NOQA"
 
     return content

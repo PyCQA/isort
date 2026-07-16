@@ -148,7 +148,7 @@ class _Config:
     known_standard_library: frozenset[str] = frozenset()
     extra_standard_library: frozenset[str] = frozenset()
     known_other: dict[str, frozenset[str]] = field(default_factory=dict)
-    multi_line_output: WrapModes = WrapModes.GRID  # type: ignore
+    multi_line_output: WrapModes = WrapModes.GRID
     forced_separate: tuple[str, ...] = ()
     indent: str = " " * 4
     comment_prefix: str = "  #"
@@ -253,8 +253,8 @@ class _Config:
                 self, "known_standard_library", frozenset(getattr(stdlibs, self.py_version).stdlib)
             )
 
-        if self.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA:  # type: ignore
-            vertical_grid_grouped = WrapModes.VERTICAL_GRID_GROUPED  # type: ignore
+        if self.multi_line_output == WrapModes.VERTICAL_GRID_GROUPED_NO_COMMA:
+            vertical_grid_grouped = WrapModes.VERTICAL_GRID_GROUPED
             object.__setattr__(self, "multi_line_output", vertical_grid_grouped)
         if self.force_alphabetical_sort:
             object.__setattr__(self, "force_alphabetical_sort_within_sections", True)

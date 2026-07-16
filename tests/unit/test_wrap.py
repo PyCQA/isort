@@ -25,13 +25,13 @@ def test_import_statement():
     ("multi_line_output", "expected"),
     [
         (
-            WrapModes.VERTICAL_HANGING_INDENT,  # type: ignore
+            WrapModes.VERTICAL_HANGING_INDENT,
             """from a import (
     b as c  # comment that is long enough that this import doesn't fit in one line (parens)
 )""",
         ),
         (
-            WrapModes.VERTICAL,  # type: ignore
+            WrapModes.VERTICAL,
             """from a import (
     b as c)  # comment that is long enough that this import doesn't fit in one line (parens)""",
         ),

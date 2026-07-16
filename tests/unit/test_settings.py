@@ -103,7 +103,7 @@ class TestConfig:
         )
 
     def test_deprecated_multi_line_output(self):
-        assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED  # type: ignore # noqa
+        assert Config(multi_line_output=6).multi_line_output == WrapModes.VERTICAL_GRID_GROUPED  # noqa
 
 
 def test_as_list():
