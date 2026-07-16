@@ -2386,3 +2386,60 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
     assert lines.index("import ccc") > skip_index  # skip not relocated below the block
     assert isort.code(sorted_interleaved) == sorted_interleaved
+
+
+
+def test_comment_only_lines_in_from_import_group_issue_1852():
+    """Comment-only lines inside a parenthesised from-import must stay as lines.
+
+    With the black profile, isort used to collapse commented-out import members
+    onto the opening ``import (`` line as a single ``# a,; b,; c`` comment. That
+    rewrites intentional WIP comments and commonly trips line-length checkers.
+    See issue #1852.
+    """
+    to_sort = (
+        "from dj_rest_auth.views import (\n"
+        "    LoginView,\n"
+        "    LogoutView,\n"
+        "    # PasswordChangeView,\n"
+        "    # PasswordResetConfirmView,\n"
+        "    # PasswordResetView,\n"
+        "    # UserDetailsView,\n"
+        ")\n"
+    )
+    expected = (
+        "from dj_rest_auth.views import (\n"
+        "    LoginView,\n"
+        "    LogoutView,\n"
+        "    # PasswordChangeView,\n"
+        "    # PasswordResetConfirmView,\n"
+        "    # PasswordResetView,\n"
+        "    # UserDetailsView,\n"
+        ")\n"
+    )
+
+    first_pass = isort.code(to_sort, profile="black", line_length=100)
+    assert first_pass == expected
+    assert "# PasswordChangeView,; PasswordResetConfirmView," not in first_pass
+    assert isort.code(first_pass, profile="black", line_length=100) == first_pass
+    assert isort.check_code(first_pass, profile="black", line_length=100, show_diff=True)
+
+    # Mixed live imports and comment-only lines should keep the comments as
+    # separate lines after the sorted live names.
+    mixed = (
+        "from foo import (\n"
+        "    zeta,\n"
+        "    # disabled\n"
+        "    alpha,\n"
+        ")\n"
+    )
+    mixed_expected = (
+        "from foo import (\n"
+        "    alpha,\n"
+        "    zeta,\n"
+        "    # disabled\n"
+        ")\n"
+    )
+    mixed_out = isort.code(mixed, profile="black")
+    assert mixed_out == mixed_expected
+    assert isort.code(mixed_out, profile="black") == mixed_out

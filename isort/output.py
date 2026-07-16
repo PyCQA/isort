@@ -284,6 +284,40 @@ def _build_import_group(
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
+def _inject_from_body_comments(
+    import_statement: str,
+    body_comments: list[str],
+    line_separator: str,
+    indent: str,
+) -> str:
+    """Re-insert comment-only lines inside a multi-line from-import statement.
+
+    Comment-only members of a parenthesised import group must stay as their own
+    indented lines.  Collapsing them onto the opening ``import (`` line produces
+    a single long ``# a,; b,; c`` comment that breaks line-length checkers.
+    See issue #1852.
+    """
+    if not body_comments:
+        return import_statement
+
+    comment_lines = [
+        f"{indent}# {comment_text}".rstrip() if comment_text else f"{indent}#"
+        for comment_text in body_comments
+    ]
+    lines = import_statement.split(line_separator)
+
+    # Preferred placement: immediately before the closing ``)`` of a multi-line
+    # parenthesised import so the comments stay inside the group.
+    for index in range(len(lines) - 1, -1, -1):
+        if lines[index].lstrip().startswith(")"):
+            lines[index:index] = comment_lines
+            return line_separator.join(lines)
+
+    # Fallback for single-line / non-parenthesised output: keep comments after
+    # the import statement rather than dropping them.
+    return line_separator.join([import_statement, *comment_lines])
+
+
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
@@ -351,6 +385,15 @@ def _with_from_imports(
         only_show_as_imports = False
         comments: list[str] | None = parsed.categorized_comments["from"].pop(module, None)
         above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+        body_comments: list[str] = list(
+            parsed.categorized_comments.get("from_body", {}).pop(module, [])
+        )
+        # Parenthesised black-style wrapping can keep comment-only import members as
+        # their own lines (issue #1852).  Other wrap modes historically collapsed those
+        # comments onto the import statement (issue #1396); preserve that behaviour.
+        if body_comments and not config.use_parentheses:
+            comments = list(comments or []) + body_comments
+            body_comments = []
         while from_imports:
             if above_comments:
                 output.extend(above_comments)
@@ -683,6 +726,14 @@ def _with_from_imports(
                 comments = None
 
             if import_statement:
+                if body_comments and not config.ignore_comments:
+                    import_statement = _inject_from_body_comments(
+                        import_statement,
+                        body_comments,
+                        parsed.line_separator,
+                        config.indent,
+                    )
+                    body_comments = []
                 output.append(import_statement)
     return output
 
