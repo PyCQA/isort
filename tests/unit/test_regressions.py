@@ -2197,6 +2197,19 @@ def test_sort_reexports_output_is_black_stable_issue_2280():
     assert black_out == first
 
 
+def test_sort_reexports_retains_trailing_comma_for_short_tuple_issue_2578():
+    source = (
+        "__all__ = (\n"
+        '    "FirstClass",\n'
+        '    "SecondClass",\n'
+        ")\n"
+    )
+    assert (
+        isort.code(source, profile="black", sort_reexports=True)
+        == '__all__ = (\n    "FirstClass",\n    "SecondClass",\n)\n'
+    )
+
+
 def test_sort_reexports_check_mode_multiline_all_issue_2280():
     """``--check`` on a multi-line ``__all__`` with ``--sort-reexports`` must not crash.
 
