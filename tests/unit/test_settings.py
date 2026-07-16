@@ -107,7 +107,7 @@ class TestConfig:
 
 
 def test_as_list():
-    assert settings._as_list([" one "]) == ["one"]  # type: ignore
+    assert settings._as_list([" one "]) == ["one"]
     assert settings._as_list("one,two") == ["one", "two"]
 
 

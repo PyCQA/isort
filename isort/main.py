@@ -5,7 +5,7 @@ import functools
 import json
 import os
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from contextlib import AbstractContextManager, nullcontext
 from gettext import gettext as _
 from io import TextIOWrapper
@@ -46,7 +46,7 @@ class SortAttempt:
 
 
 def sort_imports(
-    file_name: str,
+    file_name: str | Path,
     config: Config,
     check: bool = False,
     ask_to_apply: bool = False,
@@ -90,7 +90,7 @@ def sort_imports(
 
 
 def _print_hard_fail(
-    config: Config, offending_file: str | None = None, message: str | None = None
+    config: Config, offending_file: str | Path | None = None, message: str | None = None
 ) -> None:
     """Fail on unrecoverable exception with custom message."""
     message = message or (
@@ -1134,7 +1134,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
         with executor_ctx as executor:
             if executor is not None:
-                attempt_iterator = executor.imap(
+                attempt_iterator: Iterator[SortAttempt | None] = executor.imap(
                     functools.partial(
                         sort_imports,
                         config=config,
@@ -1150,7 +1150,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             else:
                 # https://github.com/python/typeshed/pull/2814
                 attempt_iterator = (
-                    sort_imports(  # type: ignore
+                    sort_imports(
                         file_name,
                         config=config,
                         check=check,

@@ -6,8 +6,8 @@ from isort.settings import Config
 
 
 def find(
-    paths: Iterable[str], config: Config, skipped: list[str], broken: list[str]
-) -> Iterator[str]:
+    paths: Iterable[str | Path], config: Config, skipped: list[str], broken: list[str]
+) -> Iterator[str | Path]:
     """Finds and provides an iterator for all Python source files defined in paths."""
     visited_dirs: set[Path] = set()
 
@@ -36,6 +36,6 @@ def find(
                         else:
                             yield filepath
         elif not os.path.exists(path):
-            broken.append(path)
+            broken.append(str(path))
         else:
             yield path

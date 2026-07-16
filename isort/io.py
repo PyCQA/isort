@@ -43,7 +43,7 @@ class File:
             encoding = File.detect_encoding(filename, buffer.readline)
             buffer.seek(0)
             text = TextIOWrapper(buffer, encoding, line_buffering=True, newline="")
-            text.mode = "r"  # type: ignore
+            text.mode = "r"  # type: ignore[misc]
             return text
         except Exception:
             buffer.close()

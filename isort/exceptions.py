@@ -1,5 +1,7 @@
 """All isort specific exception classes should be defined here"""
 
+from __future__ import annotations
+
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -10,14 +12,14 @@ from .profiles import profiles
 class ISortError(Exception):
     """Base isort exception object from which all isort sourced exceptions should inherit"""
 
-    def __reduce__(self):  # type: ignore
+    def __reduce__(self) -> tuple[partial[ISortError], tuple[()]]:
         return (partial(type(self), **self.__dict__), ())
 
 
 class InvalidSettingsPath(ISortError):
     """Raised when a settings path is provided that is neither a valid file or directory"""
 
-    def __init__(self, settings_path: str):
+    def __init__(self, settings_path: str | Path):
         super().__init__(
             f"isort was told to use the settings_path: {settings_path} as the base directory or "
             "file that represents the starting point of config file discovery, but it does not "
