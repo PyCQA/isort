@@ -2,7 +2,6 @@
 
 import enum
 from collections.abc import Callable
-from inspect import signature
 from typing import Any
 
 import isort.comments
@@ -35,12 +34,8 @@ def _wrap_mode_interface(
 
 
 def _wrap_mode(function: Callable[..., str]) -> Callable[..., str]:
-    """Registers an individual wrap mode. Function name and order are significant and used for
-    creating enum.
-    """
+    """Registers an individual wrap mode. Function name and order are significant."""
     _wrap_modes[function.__name__.upper()] = function
-    function.__signature__ = signature(_wrap_mode_interface)  # type: ignore
-    function.__annotations__ = _wrap_mode_interface.__annotations__
     return function
 
 
@@ -370,6 +365,16 @@ def backslash_grid(**interface: Any) -> str:
     return hanging_indent(**interface)
 
 
-WrapModes = enum.Enum(  # type: ignore
-    "WrapModes", {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
-)
+class WrapModes(enum.IntEnum):
+    GRID = 0
+    VERTICAL = 1
+    HANGING_INDENT = 2
+    VERTICAL_HANGING_INDENT = 3
+    VERTICAL_GRID = 4
+    VERTICAL_GRID_GROUPED = 5
+    VERTICAL_GRID_GROUPED_NO_COMMA = 6
+    NOQA = 7
+    VERTICAL_HANGING_INDENT_BRACKET = 8
+    VERTICAL_PREFIX_FROM_MODULE_IMPORT = 9
+    HANGING_INDENT_WITH_PARENTHESES = 10
+    BACKSLASH_GRID = 11

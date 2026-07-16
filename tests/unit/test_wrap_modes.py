@@ -4,6 +4,7 @@ from hypothesis import strategies as st
 
 import isort
 from isort import wrap_modes
+from isort.wrap_modes import WrapModes, _wrap_modes
 
 
 def test_wrap_mode_interface():
@@ -597,3 +598,13 @@ def test_fuzz_vertical_prefix_from_module_import(
         )
     except ValueError:
         reject()
+
+
+def test_enum_matches_order_of_definitions():
+    """Before isort 9.0.0 WrapModes was dynamically generated, this tests for breaking changes."""
+
+    old_enum_logic = {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}
+    new_enum_logic = {wrap_mode.name: wrap_mode.value for wrap_mode in WrapModes}
+    assert old_enum_logic == new_enum_logic, (
+        "WrapModes enum order has changed, this is a breaking change."
+    )
