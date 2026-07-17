@@ -281,9 +281,6 @@ def _build_import_group(
     return group_output
 
 
-# Ignore DeepSource cyclomatic complexity check for this function. It was
-# already complex when this check was enabled.
-# skipcq: PY-R1000
 def _inject_from_body_comments(
     import_statement: str,
     body_comments: list[str],
@@ -318,6 +315,9 @@ def _inject_from_body_comments(
     return line_separator.join([import_statement, *comment_lines])
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled.
+# skipcq: PY-R1000
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
