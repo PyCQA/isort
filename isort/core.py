@@ -121,7 +121,10 @@ def process(
                         before = before[:-1]
                     extra_space = extra_space.replace("\n", "", 1)
                     sorted_output = output.sorted_imports(
-                        parsed, config, extension, import_type="import"
+                        parsed,
+                        Config(config=config, lines_before_imports=-1),
+                        extension,
+                        import_type="import",
                     )
                     made_changes = made_changes or _has_changed(
                         before=before,

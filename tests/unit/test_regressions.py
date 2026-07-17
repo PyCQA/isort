@@ -2386,3 +2386,12 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
     assert lines.index("import ccc") > skip_index  # skip not relocated below the block
     assert isort.code(sorted_interleaved) == sorted_interleaved
+
+
+def test_lines_before_imports_with_float_to_top_issue_1935():
+    code = '"""Tmp module.\n"""\nimport os\nos.getcwd()\n'
+
+    assert (
+        isort.code(code, lines_before_imports=1, float_to_top=True)
+        == '"""Tmp module.\n"""\n\nimport os\n\nos.getcwd()\n'
+    )
