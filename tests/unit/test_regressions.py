@@ -2388,7 +2388,6 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     assert isort.code(sorted_interleaved) == sorted_interleaved
 
 
-
 def test_comment_only_lines_in_from_import_group_issue_1852():
     """Comment-only lines inside a parenthesised from-import must stay as lines.
 
