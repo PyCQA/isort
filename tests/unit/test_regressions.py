@@ -2425,20 +2425,8 @@ def test_comment_only_lines_in_from_import_group_issue_1852():
 
     # Mixed live imports and comment-only lines should keep the comments as
     # separate lines after the sorted live names.
-    mixed = (
-        "from foo import (\n"
-        "    zeta,\n"
-        "    # disabled\n"
-        "    alpha,\n"
-        ")\n"
-    )
-    mixed_expected = (
-        "from foo import (\n"
-        "    alpha,\n"
-        "    zeta,\n"
-        "    # disabled\n"
-        ")\n"
-    )
+    mixed = "from foo import (\n    zeta,\n    # disabled\n    alpha,\n)\n"
+    mixed_expected = "from foo import (\n    alpha,\n    zeta,\n    # disabled\n)\n"
     mixed_out = isort.code(mixed, profile="black")
     assert mixed_out == mixed_expected
     assert isort.code(mixed_out, profile="black") == mixed_out
