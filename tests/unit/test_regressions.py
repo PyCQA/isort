@@ -2430,3 +2430,26 @@ def test_comment_only_lines_in_from_import_group_issue_1852():
     mixed_out = isort.code(mixed, profile="black")
     assert mixed_out == mixed_expected
     assert isort.code(mixed_out, profile="black") == mixed_out
+
+
+def test_force_single_line_preserves_body_comments_issue_1852():
+    """force_single_line must not drop comment-only from-import members.
+
+    Regression against silent loss after from_body routing (issue #1852).
+    """
+    mixed = "from foo import (\n    zeta,\n    # disabled\n    alpha,\n)\n"
+    out = isort.code(mixed, profile="black", force_single_line=True)
+    assert "# disabled" in out
+    assert "from foo import alpha" in out
+    assert "from foo import zeta" in out
+    # main-compatible: comment attached to first emitted line
+    assert "from foo import alpha  # disabled" in out
+    assert isort.code(out, profile="black", force_single_line=True) == out
+
+
+def test_combine_star_folds_body_comments_issue_1852():
+    """combine_star should fold body comments onto the star statement."""
+    src = "from foo import (\n    # disabled\n    *\n)\n"
+    out = isort.code(src, combine_star=True)
+    assert out == "from foo import *  # disabled\n"
+    assert isort.code(out, combine_star=True) == out

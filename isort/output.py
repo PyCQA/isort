@@ -400,9 +400,14 @@ def _with_from_imports(
                 above_comments = None
 
             if "*" in from_imports and config.combine_star:
+                # Fold from_body comments onto the star statement (main-compatible).
+                star_comments = list(comments or ())
+                if body_comments and not config.ignore_comments:
+                    star_comments = star_comments + body_comments
+                    body_comments = []
                 import_statement = wrap.line(
                     with_comments(
-                        _with_star_comments(parsed, module, list(comments or ())),
+                        _with_star_comments(parsed, module, star_comments),
                         f"{import_start}*",
                         removed=config.ignore_comments,
                         comment_prefix=config.comment_prefix,
@@ -416,6 +421,11 @@ def _with_from_imports(
                 only_show_as_imports = True
             elif config.force_single_line and module not in config.single_line_exclusions:
                 import_statement = ""
+                # Preserve comment-only members on the first single-line import
+                # (matches pre-#1852 main behaviour for force_single_line).
+                if body_comments and not config.ignore_comments:
+                    comments = list(comments or []) + body_comments
+                    body_comments = []
                 while from_imports:
                     from_import = from_imports.pop(0)
                     single_import_line = with_comments(
