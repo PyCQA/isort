@@ -2386,3 +2386,60 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
     assert lines.index("import ccc") > skip_index  # skip not relocated below the block
     assert isort.code(sorted_interleaved) == sorted_interleaved
+
+
+def test_from_import_alias_does_not_split_plain_names_issue_2455() -> None:
+    """force_sort_within_sections must not reorder groups by wrapping parens (#2455).
+
+    Preferred merge of plain names across an alias is a larger contract change
+    (conflicts with #2352 trailing plain-after-alias stability). Normalize
+    section_key so multi-line ``import (`` / newline-indented names sort by the
+    first imported name like a single-line import.
+    """
+    test_input = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+"""
+    expected_grid = """
+from module import (AAAAAAAAAAAAAAAAAAAAAAAAAA, BBBBBBBBBBBBBBBBBBBBBBBBBB,
+                    CCCCCCCCCCCCCCCCCCCCCCCCCC)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (EEEEEEEEEEEEEEEEEEEEEEEEEE, FFFFFFFFFFFFFFFFFFFFFFFFFF,
+                    GGGGGGGGGGGGGGGGGGGGGGGGGG)
+"""
+    assert isort.code(test_input) == expected_grid
+    assert isort.code(test_input, force_sort_within_sections=True) == expected_grid
+
+    expected_black = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+"""
+    assert (
+        isort.code(
+            test_input,
+            force_sort_within_sections=True,
+            multi_line_output=3,
+            include_trailing_comma=True,
+            use_parentheses=True,
+            line_length=88,
+        )
+        == expected_black
+    )
