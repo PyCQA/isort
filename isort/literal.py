@@ -52,7 +52,7 @@ def _has_magic_trailing_comma(literal: str) -> bool:
             for token in tokenize.generate_tokens(io.StringIO(literal).readline)
             if token.type not in skip and token.string.strip()
         ]
-    except (tokenize.TokenError, IndentationError, SyntaxError):  # pragma: no cover
+    except (tokenize.TokenError, SyntaxError):  # pragma: no cover
         return False
 
     return len(tokens) >= 2 and tokens[-1].string in ")]}" and tokens[-2].string == ","
