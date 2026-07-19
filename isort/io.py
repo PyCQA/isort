@@ -66,5 +66,8 @@ class _EmptyIO(StringIO):
     def write(self, *args: Any, **kwargs: Any) -> None:  # type: ignore # skipcq: PTC-W0049
         pass
 
+    def seek(self, *args: Any, **kwargs: Any) -> int:
+        return 0
+
 
 Empty = _EmptyIO()
