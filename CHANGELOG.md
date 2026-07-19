@@ -8,6 +8,8 @@ Find out more about isort's release policy [here](docs/major_releases/release_po
 
 ### Unreleased
 
+  - Preserve form feed characters when they appear on otherwise blank lines (#2562)
+
 ### 8.0.0 February 19 2026 
 
   - Removed `--old-finders` and `--magic-placement` flags and `old_finders` configuration option. The legacy finder logic that relied on environment introspection has been removed (#2445) @joao-faria-dev

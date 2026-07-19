@@ -132,9 +132,9 @@ def sorted_imports(
 
     if output:
         imports_tail = output_at + len(output)
-        while [
-            character.strip() for character in formatted_output[imports_tail : imports_tail + 1]
-        ] == [""]:
+        while formatted_output[imports_tail : imports_tail + 1] and _is_removable_blank_line(
+            formatted_output[imports_tail]
+        ):
             formatted_output.pop(imports_tail)
 
         if config.lines_before_imports != -1:
@@ -189,6 +189,10 @@ def sorted_imports(
         formatted_output = new_out_lines
 
     return _output_as_string(formatted_output, parsed.line_separator)
+
+
+def _is_removable_blank_line(line: str) -> bool:
+    return "\f" not in line and line.strip() == ""
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
