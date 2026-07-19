@@ -1,4 +1,6 @@
 import ast
+import io
+import tokenize
 from collections.abc import Callable
 from typing import Any
 
@@ -27,6 +29,35 @@ def assignments(code: str) -> str:
     )
 
 
+def _has_magic_trailing_comma(literal: str) -> bool:
+    """Whether ``literal`` closes with a trailing comma, in black's "magic trailing
+    comma" sense: the author put it there to ask for one element per line.
+
+    Tokenizing rather than scanning the text keeps commas and brackets inside string
+    elements, and trailing comments, from being mistaken for the real closing bracket.
+    """
+    skip = frozenset(
+        {
+            tokenize.COMMENT,
+            tokenize.NL,
+            tokenize.NEWLINE,
+            tokenize.INDENT,
+            tokenize.DEDENT,
+            tokenize.ENDMARKER,
+        }
+    )
+    try:
+        tokens = [
+            token
+            for token in tokenize.generate_tokens(io.StringIO(literal).readline)
+            if token.type not in skip and token.string.strip()
+        ]
+    except (tokenize.TokenError, IndentationError, SyntaxError):  # pragma: no cover
+        return False
+
+    return len(tokens) >= 2 and tokens[-1].string in ")]}" and tokens[-2].string == ","
+
+
 def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAULT_CONFIG) -> str:
     """Sorts the literal present within the provided code against the provided sort type,
     returning the sorted representation of the source code.
@@ -50,6 +81,13 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     expected_type, sort_function = type_mapping[sort_type]
     if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
+
+    # A one-element tuple's trailing comma is syntax, not a formatting request, so it
+    # must not be read as a magic trailing comma.
+    if _has_magic_trailing_comma(literal) and not (isinstance(value, tuple) and len(value) == 1):
+        # Zero line length forces the vertical-hanging-indent branch of
+        # _format_collection, preserving the requested one-element-per-line layout.
+        config = Config(config=config, line_length=0, include_trailing_comma=True)
 
     prefix_length = len(f"{variable_name} = ")
     sorted_value_code = f"{variable_name} = {sort_function(value, config, prefix_length)}"
