@@ -2402,10 +2402,9 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     alias loop instead of being consumed here.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-    expected = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
 
     first_pass = isort.code(to_sort)
-    assert first_pass == expected
+    assert first_pass == to_sort
     assert "m as z" in first_pass
 
     # The result must already be a fixpoint - the dropped alias previously only surfaced on

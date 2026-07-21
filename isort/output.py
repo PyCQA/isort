@@ -561,12 +561,9 @@ def _with_from_imports(
                         and from_import in as_imports
                         and config.multi_line_output != wrap.Modes.NOQA  # type: ignore[attr-defined] # noqa: E501
                     ):
-                        # This name also carries an alias.  The leading-alias loop above emits
-                        # the plain name (with this comment) together with its alias on a later
-                        # pass of the outer ``while``.  Consuming it here would print only the
-                        # plain name and silently drop the alias, so put the comment back and
-                        # leave the name for that loop.  (The NOQA wrap mode appends its own
-                        # per-line suppression and keeps its existing handling.)
+                        # This name also has an alias; the leading-alias loop keeps the two
+                        # together on a later pass.  Popping the comment here would drop the
+                        # alias, so put it back and leave the name for that loop.
                         parsed.categorized_comments["nested"].setdefault(module, {})[
                             from_import
                         ] = comment
