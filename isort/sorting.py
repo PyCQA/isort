@@ -55,6 +55,15 @@ def module_key(
     return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
+def _strip_wrapping_import_paren(line: str, *, lexicographical: bool) -> str:
+    """Normalize wrapping ``import (`` for force_sort_within_sections keys."""
+    line = re.sub(r" import \(\s*", " import ", line)
+    line = re.sub(r" import\s+", " import ", line)
+    if lexicographical:
+        line = re.sub(r"\.\(\s*", ".", line)
+    return line
+
+
 def section_key(line: str, config: Config) -> str:
     section = "B"
 
@@ -78,10 +87,7 @@ def section_key(line: str, config: Config) -> str:
     # Under force_sort_within_sections that collates before ``import Alias`` and
     # can pull a later plain group ahead of an alias (issue #2455). Treat the
     # wrapping paren and following whitespace as transparent for the sort key.
-    line = re.sub(r" import \(\s*", " import ", line)
-    line = re.sub(r" import\s+", " import ", line)
-    if config.lexicographical:
-        line = re.sub(r"\.\(\s*", ".", line)
+    line = _strip_wrapping_import_paren(line, lexicographical=config.lexicographical)
     if config.sort_relative_in_force_sorted_sections:
         sep = " " if config.reverse_relative else "_"
         line = re.sub(r"^(\.+)", rf"\1{sep}", line)
