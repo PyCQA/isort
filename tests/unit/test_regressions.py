@@ -2389,30 +2389,26 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
 
 
 def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
-    """A name imported both plainly and with an alias must keep its alias when the plain
-    import carries a trailing comment and another member sorts ahead of it.
+    """A name imported both plainly (with a trailing comment) and aliased must keep its
+    alias when a sibling sorts ahead of it.
 
-    With default settings ``from x import m`` (commented) and ``from x import m as z`` are
-    combined into one module group.  The aliased ``m as z`` is only emitted by the loop that
-    walks the *leading* aliased names, so it is reached only while ``m`` sits at the front of
-    the group.  When a sibling such as ``aaa`` sorts before ``m`` that loop never sees ``m``;
-    the later "name has its own comment" pass then printed ``from x import m  # c`` and
-    removed ``m`` from the group, so ``m as z`` was silently dropped (and the output no longer
-    re-sorted cleanly).  The comment-bearing names that also have an alias must be left for the
-    alias loop instead of being consumed here.
+    ``from x import m  # c`` and ``from x import m as z`` combine into one group, and the
+    alias is only emitted while ``m`` leads that group.  When ``aaa`` sorts before ``m`` the
+    comment pass used to consume ``m`` and drop ``m as z``, which only surfaced on a second
+    run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
 
     first_pass = isort.code(to_sort)
     assert first_pass == to_sort
-    assert "m as z" in first_pass
 
-    # The result must already be a fixpoint - the dropped alias previously only surfaced on
-    # the second run.
+    # The dropped alias previously only surfaced on the second run, so the result must
+    # already be a fixpoint.
     assert isort.code(first_pass) == first_pass
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
     relative_sorted = isort.code(relative)
-    assert "one as zzz" in relative_sorted
+    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
+    assert relative_sorted == expected
     assert isort.code(relative_sorted) == relative_sorted

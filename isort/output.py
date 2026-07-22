@@ -559,7 +559,7 @@ def _with_from_imports(
                     if (
                         comment is not None
                         and from_import in as_imports
-                        and config.multi_line_output != wrap.Modes.NOQA  # type: ignore[attr-defined] # noqa: E501
+                        and config.multi_line_output != wrap_modes.WrapModes.NOQA
                     ):
                         # This name also has an alias; the leading-alias loop keeps the two
                         # together on a later pass.  Popping the comment here would drop the
