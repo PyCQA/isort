@@ -249,6 +249,10 @@ def _build_import_group(
     else:
         group_output = straight_imports + lines_between + from_imports
 
+    # #2455: merge plain from-import statements for the same module after emit.
+    # Keeps mid-path logic simple (no defer_as bookkeeping).
+    group_output = _merge_plain_from_imports(group_output, config)
+
     if config.force_sort_within_sections:
         # collapse comments
         comments_above: list[str] = []
@@ -335,32 +339,6 @@ def _with_from_imports(
             for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
             if sub_module in parsed.as_map["from"]
         }
-        # For #2455, defer a single unannotated alias so all direct names for the
-        # module share one statement before that alias is rendered. Complex alias sets,
-        # comment-bearing imports, and compatibility modes retain the established path.
-        defer_as_imports = (
-            not config.combine_as_imports
-            and not config.force_single_line
-            and not config.no_inline_sort
-            and not config.remove_redundant_aliases
-            and not config.combine_star
-            and not ("*" in from_imports and config.combine_star)
-            and any(
-                parsed.imports[section][import_key][module][from_import]
-                for from_import in from_imports
-            )
-            and not parsed.categorized_comments["from"].get(module)
-            and not any(
-                parsed.categorized_comments["straight"].get(f"{module}.{from_import}")
-                or parsed.categorized_comments["nested"].get(module, {}).get(from_import)
-                or any(
-                    parsed.categorized_comments["nested"].get(module, {}).get(as_import)
-                    for as_import in aliases
-                )
-                for from_import, aliases in as_imports.items()
-            )
-        )
-        deferred_as_imports: list[str] = []
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
             if not config.no_inline_sort:
                 for as_import in as_imports:
@@ -373,25 +351,11 @@ def _with_from_imports(
                         from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
-        elif defer_as_imports:
-            # Plain names share one import statement; aliases are emitted after it.
-            deferred_as_imports = [
-                from_import for from_import in from_imports if from_import in as_imports
-            ]
-            from_imports = [
-                from_import
-                for from_import in from_imports
-                if parsed.imports[section][import_key][module][from_import]
-            ]
 
         only_show_as_imports = False
         comments: list[str] | None = parsed.categorized_comments["from"].pop(module, None)
         above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-        while from_imports or deferred_as_imports:
-            if not from_imports:
-                from_imports = deferred_as_imports
-                deferred_as_imports = []
-                only_show_as_imports = True
+        while from_imports:
             if above_comments:
                 output.extend(above_comments)
                 above_comments = None
@@ -437,40 +401,39 @@ def _with_from_imports(
                             output.append(
                                 wrap.line(single_import_line, parsed.line_separator, config)
                             )
-                        if not defer_as_imports or only_show_as_imports:
-                            from_comments = parsed.categorized_comments["straight"].get(
-                                f"{module}.{from_import}"
+                        from_comments = parsed.categorized_comments["straight"].get(
+                            f"{module}.{from_import}"
+                        )
+
+                        if not config.only_sections:
+                            output.extend(
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_start + as_import,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
+                                    ),
+                                    parsed.line_separator,
+                                    config,
+                                )
+                                for as_import in sorting.sort(config, as_imports[from_import])
                             )
 
-                            if not config.only_sections:
-                                output.extend(
-                                    wrap.line(
-                                        with_comments(
-                                            from_comments,
-                                            import_start + as_import,
-                                            removed=config.ignore_comments,
-                                            comment_prefix=config.comment_prefix,
-                                        ),
-                                        parsed.line_separator,
-                                        config,
-                                    )
-                                    for as_import in sorting.sort(config, as_imports[from_import])
+                        else:
+                            output.extend(
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_start + as_import,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
+                                    ),
+                                    parsed.line_separator,
+                                    config,
                                 )
-
-                            else:
-                                output.extend(
-                                    wrap.line(
-                                        with_comments(
-                                            from_comments,
-                                            import_start + as_import,
-                                            removed=config.ignore_comments,
-                                            comment_prefix=config.comment_prefix,
-                                        ),
-                                        parsed.line_separator,
-                                        config,
-                                    )
-                                    for as_import in as_imports[from_import]
-                                )
+                                for as_import in as_imports[from_import]
+                            )
                     else:
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
                     comments = None
@@ -482,11 +445,7 @@ def _with_from_imports(
                 # of the statement and forcing them onto individual lines would break
                 # the intended output structure.
                 processed_as_imports_this_iteration = False
-                while (
-                    from_imports
-                    and from_imports[0] in as_imports
-                    and not (defer_as_imports and not only_show_as_imports)
-                ):
+                while from_imports and from_imports[0] in as_imports:
                     processed_as_imports_this_iteration = True
                     from_import = from_imports.pop(0)
 
@@ -634,8 +593,8 @@ def _with_from_imports(
                 while from_imports and (
                     from_imports[0] not in as_imports
                     or (
-                        (config.combine_as_imports or defer_as_imports)
-                        and parsed.imports[section][import_key][module][from_imports[0]]
+                        config.combine_as_imports
+                        and parsed.imports[section][import_key][module][from_import]
                     )
                 ):
                     from_import_section.append(from_imports.pop(0))
@@ -856,6 +815,177 @@ def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list
     if star_comment:
         return [*comments, star_comment]
     return comments
+
+
+def _merge_plain_from_imports(group_output: list[str], config: Config) -> list[str]:
+    """Post-emit preferred #2455 plain grouping (merge-at-end).
+
+    After mid-path emit, for each module:
+    - merge multiple comment-free plain from-import statements into one
+    - if comment-free plains and comment-free aliases are mixed, put the plain
+      group before the aliases
+
+    Skips force_single_line / no_inline_sort / combine_as_imports so those paths
+    keep established behaviour. Comment-bearing statements are never rewritten.
+    """
+    if (
+        not group_output
+        or config.force_single_line
+        or config.no_inline_sort
+        or config.combine_as_imports
+    ):
+        return group_output
+
+    def _parse_from(line: str) -> dict | None:
+        s = str(line)
+        stripped = s.strip()
+        if stripped.startswith("#"):
+            return None
+        lazy = False
+        work = stripped
+        if work.startswith("lazy "):
+            lazy = True
+            work = work[5:].lstrip()
+        if not work.startswith("from ") or " import " not in work:
+            return None
+        module_part, names_part = work[5:].split(" import ", 1)
+        module = module_part.strip()
+        has_comment = "#" in stripped
+        code_names = names_part.split("#", 1)[0]
+        if "*" in code_names and code_names.strip().lstrip("(").startswith("*"):
+            return None
+        raw = code_names.replace("(", " ").replace(")", " ").replace("\n", " ")
+        names: list[str] = []
+        for part in raw.split(","):
+            n = part.strip().rstrip(",")
+            if n:
+                names.append(n)
+        if not names:
+            return None
+        kinds = [(" as " in n) for n in names]
+        if any(kinds) and not all(kinds):
+            return None
+        kind = "alias" if any(kinds) else "plain"
+        indent = s[: len(s) - len(s.lstrip())]
+        return {
+            "module": module,
+            "kind": kind,
+            "names": names,
+            "has_comment": has_comment,
+            "lazy": lazy,
+            "indent": indent,
+            "had_paren": "(" in names_part,
+            "original": s,
+        }
+
+    from collections import OrderedDict
+
+    by_module: OrderedDict[str, list[tuple[int, dict]]] = OrderedDict()
+    for idx, line in enumerate(group_output):
+        info = _parse_from(str(line))
+        if info is None:
+            continue
+        by_module.setdefault(info["module"], []).append((idx, info))
+
+    drop: set[int] = set()
+    replacements: dict[int, list[str]] = {}
+
+    for module, entries in by_module.items():
+        free_plains = [
+            (i, inf)
+            for i, inf in entries
+            if inf["kind"] == "plain" and not inf["has_comment"]
+        ]
+        free_aliases = [
+            (i, inf)
+            for i, inf in entries
+            if inf["kind"] == "alias" and not inf["has_comment"]
+        ]
+        has_commented = any(inf["has_comment"] for _, inf in entries)
+        if not free_plains:
+            continue
+
+        needs_merge = len(free_plains) > 1
+        # Reorder only when the module has no comment-bearing statements, so we
+        # do not disturb comment-local identity cases (e.g. issue #2282).
+        needs_order = False
+        if free_aliases and not has_commented:
+            plain_idxs = [i for i, _ in free_plains]
+            alias_idxs = [i for i, _ in free_aliases]
+            if any(a < min(plain_idxs) for a in alias_idxs):
+                needs_order = True
+            elif min(plain_idxs) < max(alias_idxs) and max(plain_idxs) > min(alias_idxs):
+                needs_order = True
+        if not needs_merge and not needs_order:
+            continue
+
+        all_names: list[str] = []
+        seen: set[str] = set()
+        for _, inf in free_plains:
+            for n in inf["names"]:
+                if n not in seen:
+                    seen.add(n)
+                    all_names.append(n)
+        if not config.only_sections:
+            all_names = sorting.sort(
+                config,
+                all_names,
+                key=lambda key: sorting.module_key(
+                    key,
+                    config,
+                    True,
+                    config.force_alphabetical_sort_within_sections,
+                    section_name="",
+                ),
+                reverse=config.reverse_sort,
+            )
+
+        sample = free_plains[0][1]
+        indent = sample["indent"]
+        if sample["lazy"]:
+            prefix = f"{indent}lazy from {module} import "
+        else:
+            prefix = f"{indent}from {module} import "
+        use_paren = any(inf["had_paren"] for _, inf in free_plains) or (
+            len(prefix) + len(", ".join(all_names)) > config.line_length
+        )
+        if use_paren and len(all_names) > 1:
+            body = ",\n    ".join(all_names)
+            plain_stmt = f"{prefix}(\n    {body},\n)"
+        else:
+            plain_stmt = prefix + ", ".join(all_names)
+
+        if needs_order:
+            # Rewrite free plains + free aliases as plain-then-aliases at first free idx.
+            rewrite_idxs = [i for i, _ in free_plains] + [i for i, _ in free_aliases]
+            first_idx = min(rewrite_idxs)
+            new_lines = [plain_stmt]
+            for _, inf in sorted(free_aliases, key=lambda x: x[0]):
+                new_lines.append(inf["original"])
+            for idx in rewrite_idxs:
+                if idx != first_idx:
+                    drop.add(idx)
+            replacements[first_idx] = new_lines
+        else:
+            # Merge plains only; leave aliases where they are.
+            first_idx = free_plains[0][0]
+            replacements[first_idx] = [plain_stmt]
+            for idx, _ in free_plains[1:]:
+                drop.add(idx)
+
+    if not drop and not replacements:
+        return group_output
+
+    out: list[str] = []
+    for i, line in enumerate(group_output):
+        if i in drop:
+            continue
+        if i in replacements:
+            out.extend(replacements[i])
+        else:
+            out.append(line)
+    return out
+
 
 
 def _separate_packages(section_output: list[str], config: Config) -> list[str]:
