@@ -8,7 +8,8 @@ import isort
 import isort.sections
 from isort import parse
 from isort.main import main
-from isort.output import _inject_from_body_comments, _with_from_imports, with_comments
+from isort.comments import add_to_line as with_comments
+from isort.output import _inject_from_body_comments, _with_from_imports
 from isort.settings import Config
 
 
