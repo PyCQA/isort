@@ -594,7 +594,7 @@ def _with_from_imports(
                     from_imports[0] not in as_imports
                     or (
                         config.combine_as_imports
-                        and parsed.imports[section][import_key][module][from_import]
+                        and parsed.imports[section][import_key][module][from_imports[0]]
                     )
                 ):
                     from_import_section.append(from_imports.pop(0))
