@@ -2430,3 +2430,15 @@ from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
 from module import D as d
 """
     assert isort.code(single_line_input) == expected_single_line
+    assert isort.code(single_line_input, force_sort_within_sections=True) == expected_single_line
+
+    # force_sort_within_sections must not put a lexically-earlier alias before
+    # plain names from the same module after statements are re-sorted.
+    lexical_alias_first = "from module import Z\nfrom module import A as a\n"
+    expected_lexical = "from module import Z\nfrom module import A as a\n"
+    assert isort.code(lexical_alias_first) == expected_lexical
+    assert isort.code(lexical_alias_first, force_sort_within_sections=True) == expected_lexical
+    assert (
+        isort.code(lexical_alias_first, profile="black", force_sort_within_sections=True)
+        == expected_lexical
+    )

@@ -111,6 +111,14 @@ def section_key(line: str, config: Config) -> str:
     elif not config.order_by_type:
         line = line.lower()
 
+    # force_sort_within_sections re-sorts already emitted statements. Keep plain
+    # from-imports before aliases for the same module (issue #2455 final style).
+    split_module = line.split(" import ", 1)
+    if len(split_module) > 1:
+        module_name, names = split_module
+        alias_rank = "1" if " as " in names else "0"
+        line = f"{module_name} import {alias_rank}{names}"
+
     return f"{section}{len(line) if config.length_sort else ''}{line}"
 
 
