@@ -5662,15 +5662,12 @@ def test_reexport_multiline_import() -> None:
 )
 __all__ = [
     "foo",
-    "bar",
+    "bar"
 ]
 """
     expd_output = """from m import bar, foo
 
-__all__ = [
-    "bar",
-    "foo",
-]
+__all__ = ["bar", "foo"]
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5682,17 +5679,14 @@ def test_reexport_multiline_in_center() -> None:
 )
 __all__ = [
     "foo",
-    "bar",
+    "bar"
 ]
 
 test
 """
     expd_output = """from m import bar, foo
 
-__all__ = [
-    "bar",
-    "foo",
-]
+__all__ = ["bar", "foo"]
 
 test
 """
@@ -5702,17 +5696,14 @@ test
 def test_reexport_multiline_long_rollback() -> None:
     test_input = """from m import foo, bar
 __all__ = [                            "foo",
-    "bar",
+    "bar"
 ]
 
 test
 """
     expd_output = """from m import bar, foo
 
-__all__ = [
-    "bar",
-    "foo",
-]
+__all__ = ["bar", "foo"]
 
 test
 """
