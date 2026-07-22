@@ -6,7 +6,10 @@ import pytest
 
 import isort
 import isort.sections
+from isort import parse
 from isort.main import main
+from isort.output import _inject_from_body_comments, _with_from_imports, with_comments
+from isort.settings import Config
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -2419,7 +2422,6 @@ def test_comment_only_lines_in_from_import_group_issue_1852():
 
     first_pass = isort.code(to_sort, profile="black", line_length=100)
     assert first_pass == expected
-    assert "# PasswordChangeView,; PasswordResetConfirmView," not in first_pass
     assert isort.code(first_pass, profile="black", line_length=100) == first_pass
     assert isort.check_code(first_pass, profile="black", line_length=100, show_diff=True)
 
@@ -2432,24 +2434,94 @@ def test_comment_only_lines_in_from_import_group_issue_1852():
     assert isort.code(mixed_out, profile="black") == mixed_out
 
 
+def test_comment_only_empty_from_import_line_issue_1852():
+    """A bare comment-only member must stay a bare indented comment."""
+    to_sort = "from foo import (\n    zeta,\n    #\n    alpha,\n)\n"
+    expected = "from foo import (\n    alpha,\n    zeta,\n    #\n)\n"
+
+    assert isort.code(to_sort, profile="black") == expected
+
+
+def test_from_import_body_comments_without_parentheses_issue_1852():
+    """Non-parenthesised wrapping keeps body comments on the opening import line."""
+    to_sort = "from foo import (\n    zeta,\n    # disabled\n    alpha,\n)\n"
+    expected = "from foo import (  # disabled\n    alpha,\n    zeta,\n)\n"
+
+    assert isort.code(to_sort, profile="black", use_parentheses=False) == expected
+
+
 def test_force_single_line_preserves_body_comments_issue_1852():
     """force_single_line must not drop comment-only from-import members.
 
     Regression against silent loss after from_body routing (issue #1852).
     """
-    mixed = "from foo import (\n    zeta,\n    # disabled\n    alpha,\n)\n"
-    out = isort.code(mixed, profile="black", force_single_line=True)
-    assert "# disabled" in out
-    assert "from foo import alpha" in out
-    assert "from foo import zeta" in out
-    # main-compatible: comment attached to first emitted line
-    assert "from foo import alpha  # disabled" in out
-    assert isort.code(out, profile="black", force_single_line=True) == out
+    to_sort = "from foo import (\n    zeta,\n    # disabled\n    alpha,\n)\n"
+    expected = "from foo import alpha  # disabled\nfrom foo import zeta\n"
+
+    first_pass = isort.code(to_sort, profile="black", force_single_line=True)
+    assert first_pass == expected
+    assert isort.code(first_pass, profile="black", force_single_line=True) == first_pass
 
 
 def test_combine_star_folds_body_comments_issue_1852():
     """combine_star should fold body comments onto the star statement."""
-    src = "from foo import (\n    # disabled\n    *\n)\n"
-    out = isort.code(src, combine_star=True)
-    assert out == "from foo import *  # disabled\n"
-    assert isort.code(out, combine_star=True) == out
+    to_sort = "from foo import (\n    # disabled\n    *\n)\n"
+    expected = "from foo import *  # disabled\n"
+
+    first_pass = isort.code(to_sort, combine_star=True)
+    assert first_pass == expected
+    assert isort.code(first_pass, combine_star=True) == first_pass
+
+
+def test_inject_from_body_comments_branches_issue_1852():
+    """The helper retains empty comments and has a lossless single-line fallback."""
+    assert _inject_from_body_comments("from foo import alpha", [], "\n", "    ") == (
+        "from foo import alpha"
+    )
+    assert _inject_from_body_comments("from foo import alpha", ["disabled", ""], "\n", "    ") == (
+        "from foo import alpha\n    # disabled\n    #"
+    )
+    assert _inject_from_body_comments(
+        "from foo import (\n    alpha,\n)", ["disabled", ""], "\n", "    "
+    ) == ("from foo import (\n    alpha,\n    # disabled\n    #\n)")
+
+
+def test_combine_star_folds_body_comments_when_comments_are_enabled_issue_1852(monkeypatch):
+    """combine_star folds body comments only when comments are retained."""
+    parsed = parse.file_contents(
+        "from foo import (\n    # disabled\n    *\n)\n",
+        Config(combine_star=True, use_parentheses=True),
+    )
+    config = Config(combine_star=True, use_parentheses=True)
+    section = "THIRDPARTY"
+    module = "foo"
+    captured: list[list[str]] = []
+    original_with_comments = with_comments
+
+    def with_comments_probe(comments, *args, **kwargs):
+        captured.append(list(comments or []))
+        return original_with_comments(comments, *args, **kwargs)
+
+    monkeypatch.setattr("isort.output.with_comments", with_comments_probe)
+
+    assert parsed.categorized_comments["from_body"] == {module: ["disabled"]}
+    assert _with_from_imports(
+        parsed,
+        config,
+        parsed.imports[section]["from"],
+        section,
+        [],
+        "import",
+        is_lazy=False,
+    ) == ["from foo import *  # disabled"]
+    assert captured == [["disabled"]]
+
+
+def test_parse_from_body_comments_issue_1852():
+    """The parser stores only comment-only continuation members in from_body."""
+    parsed = parse.file_contents(
+        "from foo import (\n    alpha,\n    # disabled\n    beta,  # nested\n)\n", Config()
+    )
+
+    assert parsed.categorized_comments["from_body"] == {"foo": ["disabled"]}
+    assert parsed.categorized_comments["nested"] == {"foo": {"beta": "nested"}}
