@@ -2442,3 +2442,11 @@ from module import D as d
         isort.code(lexical_alias_first, profile="black", force_sort_within_sections=True)
         == expected_lexical
     )
+
+
+
+def test_from_import_alias_only_sections_issue_2455() -> None:
+    """only_sections still emits preferred plain-before-alias grouping."""
+    src = "from module import A, B as b, C\n"
+    expected = "from module import A, C\nfrom module import B as b\n"
+    assert isort.code(src, only_sections=True) == expected

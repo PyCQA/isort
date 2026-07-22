@@ -57,8 +57,12 @@ def module_key(
 
 def _strip_wrapping_import_paren(line: str, *, lexicographical: bool) -> str:
     """Normalize wrapping ``import (`` for force_sort_within_sections keys."""
+    # Collapse multi-line paren forms onto one line before keying.
+    line = line.replace("\n", " ")
     line = re.sub(r" import \(\s*", " import ", line)
+    line = re.sub(r"\s*\)\s*$", "", line)
     line = re.sub(r" import\s+", " import ", line)
+    line = re.sub(r",\s*$", "", line)
     if lexicographical:
         line = re.sub(r"\.\(\s*", ".", line)
     return line
@@ -113,9 +117,10 @@ def section_key(line: str, config: Config) -> str:
 
     # force_sort_within_sections re-sorts already emitted statements. Keep plain
     # from-imports before aliases for the same module (issue #2455 final style).
-    split_module = line.split(" import ", 1)
-    if len(split_module) > 1:
-        module_name, names = split_module
+    # Only applies to non-lexicographical keys that still contain " import ";
+    # lexicographical keys are dotted paths and must keep inter-module order.
+    if " import " in line:
+        module_name, names = line.split(" import ", 1)
         alias_rank = "1" if " as " in names else "0"
         line = f"{module_name} import {alias_rank}{names}"
 

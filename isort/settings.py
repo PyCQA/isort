@@ -28,8 +28,8 @@ from .exceptions import (
     UnsupportedSettings,
 )
 from .profiles import profiles as profiles
-from .sections import DEFAULT as SECTION_DEFAULTS
 from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
+from .sections import DEFAULT as SECTION_DEFAULTS
 from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
