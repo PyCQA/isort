@@ -2389,14 +2389,8 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
 
 
 def test_from_import_alias_does_not_split_plain_names_issue_2455() -> None:
-    """force_sort_within_sections must not reorder groups by wrapping parens (#2455).
-
-    Preferred merge of plain names across an alias is a larger contract change
-    (conflicts with #2352 trailing plain-after-alias stability). Normalize
-    section_key so multi-line ``import (`` / newline-indented names sort by the
-    first imported name like a single-line import.
-    """
-    test_input = """
+    """Plain imports from one module are merged before aliases (issue #2455)."""
+    multi_line_input = """
 from module import (
     AAAAAAAAAAAAAAAAAAAAAAAAAA,
     BBBBBBBBBBBBBBBBBBBBBBBBBB,
@@ -2409,37 +2403,30 @@ from module import (
     GGGGGGGGGGGGGGGGGGGGGGGGGG,
 )
 """
-    expected_grid = """
-from module import (AAAAAAAAAAAAAAAAAAAAAAAAAA, BBBBBBBBBBBBBBBBBBBBBBBBBB,
-                    CCCCCCCCCCCCCCCCCCCCCCCCCC)
-from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
-from module import (EEEEEEEEEEEEEEEEEEEEEEEEEE, FFFFFFFFFFFFFFFFFFFFFFFFFF,
-                    GGGGGGGGGGGGGGGGGGGGGGGGGG)
-"""
-    assert isort.code(test_input) == expected_grid
-    assert isort.code(test_input, force_sort_within_sections=True) == expected_grid
-
-    expected_black = """
+    expected_multi_line = """
 from module import (
     AAAAAAAAAAAAAAAAAAAAAAAAAA,
     BBBBBBBBBBBBBBBBBBBBBBBBBB,
     CCCCCCCCCCCCCCCCCCCCCCCCCC,
-)
-from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
-from module import (
     EEEEEEEEEEEEEEEEEEEEEEEEEE,
     FFFFFFFFFFFFFFFFFFFFFFFFFF,
     GGGGGGGGGGGGGGGGGGGGGGGGGG,
 )
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
 """
+    assert isort.code(multi_line_input, profile="black", line_length=88) == expected_multi_line
     assert (
         isort.code(
-            test_input,
+            multi_line_input,
+            profile="black",
             force_sort_within_sections=True,
-            multi_line_output=3,
-            include_trailing_comma=True,
-            use_parentheses=True,
             line_length=88,
         )
-        == expected_black
+        == expected_multi_line
     )
+
+    single_line_input = "from module import A, B, C, D as d, E, F, G\n"
+    expected_single_line = """from module import A, B, C, E, F, G
+from module import D as d
+"""
+    assert isort.code(single_line_input) == expected_single_line

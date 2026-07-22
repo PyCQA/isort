@@ -3930,13 +3930,12 @@ def test_all_imports_from_single_module() -> None:
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, w, x, y, z\n"
         "from a import b as c\n"
         "from a import b as d\n"
         "from a import e as f\n"
         "from a import g as h\n"
         "from a import i as j\n"
-        "from a import w, x, y, z\n"
     )
     test_input = (
         "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
@@ -5467,9 +5466,8 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> No
     """Regression test for https://github.com/PyCQA/isort/issues/2352.
 
     isort should produce stable output when a module has both aliased and non-aliased imports with
-    `include_trailing_comma` enabled. A single non-aliased import remaining after the aliased
-    imports should not be force-wrapped into multi-line format merely because a trailing comma was
-    recorded for the module.
+    `include_trailing_comma` enabled. Plain imports are grouped before aliases, while the trailing
+    comma still controls the formatting of the grouped plain statement.
     """
     # Test case from the original issue report
     test_input = """from django.db.models.sql.compiler import (
@@ -5480,13 +5478,27 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> No
 from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
 from django.db.models.sql.compiler import SQLUpdateCompiler
 """
+    expected_output = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+    SQLUpdateCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+"""
     output = isort.code(
         test_input,
         include_trailing_comma=True,
         split_on_trailing_comma=True,
         line_length=88,
     )
-    assert output == test_input
+    assert output == expected_output
+    assert output == isort.code(
+        output,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+    )
 
     expected_output_with_combine = """from django.db.models.sql.compiler import (
     SQLAggregateCompiler,
@@ -5520,9 +5532,8 @@ def test_split_on_trailing_comma_stable_with_use_parentheses_2352() -> None:
     """Regression test for https://github.com/PyCQA/isort/issues/2352.
 
     isort should produce stable output when a module has both aliased and non-aliased imports with
-    `include_trailing_comma` and `use_parentheses` enabled. A single non-aliased import remaining
-    after the aliased imports should not be force-wrapped into multi-line format merely because a
-    trailing comma was recorded for the module.
+    `include_trailing_comma` and `use_parentheses` enabled. Plain imports are grouped before
+    aliases, even when the alias statement needs parentheses.
     """
     test_input = r"""
 from another_file_aaaaaaaaaaaaaaaaaa import \
@@ -5531,10 +5542,10 @@ from another_file_aaaaaaaaaaaaaaaaaa import some_func
 """
 
     expected_output = """
+from another_file_aaaaaaaaaaaaaaaaaa import some_func
 from another_file_aaaaaaaaaaaaaaaaaa import (
     SOME_THING_CONSTANT as SOME_THING_CONSTANT_RENAMED,
 )
-from another_file_aaaaaaaaaaaaaaaaaa import some_func
 """
 
     output = isort.code(

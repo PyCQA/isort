@@ -335,6 +335,32 @@ def _with_from_imports(
             for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
             if sub_module in parsed.as_map["from"]
         }
+        # For #2455, defer a single unannotated alias so all direct names for the
+        # module share one statement before that alias is rendered. Complex alias sets,
+        # comment-bearing imports, and compatibility modes retain the established path.
+        defer_as_imports = (
+            not config.combine_as_imports
+            and not config.force_single_line
+            and not config.no_inline_sort
+            and not config.remove_redundant_aliases
+            and not config.combine_star
+            and not ("*" in from_imports and config.combine_star)
+            and any(
+                parsed.imports[section][import_key][module][from_import]
+                for from_import in from_imports
+            )
+            and not parsed.categorized_comments["from"].get(module)
+            and not any(
+                parsed.categorized_comments["straight"].get(f"{module}.{from_import}")
+                or parsed.categorized_comments["nested"].get(module, {}).get(from_import)
+                or any(
+                    parsed.categorized_comments["nested"].get(module, {}).get(as_import)
+                    for as_import in aliases
+                )
+                for from_import, aliases in as_imports.items()
+            )
+        )
+        deferred_as_imports: list[str] = []
         if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
             if not config.no_inline_sort:
                 for as_import in as_imports:
@@ -347,11 +373,25 @@ def _with_from_imports(
                         from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
+        elif defer_as_imports:
+            # Plain names share one import statement; aliases are emitted after it.
+            deferred_as_imports = [
+                from_import for from_import in from_imports if from_import in as_imports
+            ]
+            from_imports = [
+                from_import
+                for from_import in from_imports
+                if parsed.imports[section][import_key][module][from_import]
+            ]
 
         only_show_as_imports = False
         comments: list[str] | None = parsed.categorized_comments["from"].pop(module, None)
         above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-        while from_imports:
+        while from_imports or deferred_as_imports:
+            if not from_imports:
+                from_imports = deferred_as_imports
+                deferred_as_imports = []
+                only_show_as_imports = True
             if above_comments:
                 output.extend(above_comments)
                 above_comments = None
@@ -397,39 +437,40 @@ def _with_from_imports(
                             output.append(
                                 wrap.line(single_import_line, parsed.line_separator, config)
                             )
-                        from_comments = parsed.categorized_comments["straight"].get(
-                            f"{module}.{from_import}"
-                        )
-
-                        if not config.only_sections:
-                            output.extend(
-                                wrap.line(
-                                    with_comments(
-                                        from_comments,
-                                        import_start + as_import,
-                                        removed=config.ignore_comments,
-                                        comment_prefix=config.comment_prefix,
-                                    ),
-                                    parsed.line_separator,
-                                    config,
-                                )
-                                for as_import in sorting.sort(config, as_imports[from_import])
+                        if not defer_as_imports or only_show_as_imports:
+                            from_comments = parsed.categorized_comments["straight"].get(
+                                f"{module}.{from_import}"
                             )
 
-                        else:
-                            output.extend(
-                                wrap.line(
-                                    with_comments(
-                                        from_comments,
-                                        import_start + as_import,
-                                        removed=config.ignore_comments,
-                                        comment_prefix=config.comment_prefix,
-                                    ),
-                                    parsed.line_separator,
-                                    config,
+                            if not config.only_sections:
+                                output.extend(
+                                    wrap.line(
+                                        with_comments(
+                                            from_comments,
+                                            import_start + as_import,
+                                            removed=config.ignore_comments,
+                                            comment_prefix=config.comment_prefix,
+                                        ),
+                                        parsed.line_separator,
+                                        config,
+                                    )
+                                    for as_import in sorting.sort(config, as_imports[from_import])
                                 )
-                                for as_import in as_imports[from_import]
-                            )
+
+                            else:
+                                output.extend(
+                                    wrap.line(
+                                        with_comments(
+                                            from_comments,
+                                            import_start + as_import,
+                                            removed=config.ignore_comments,
+                                            comment_prefix=config.comment_prefix,
+                                        ),
+                                        parsed.line_separator,
+                                        config,
+                                    )
+                                    for as_import in as_imports[from_import]
+                                )
                     else:
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
                     comments = None
@@ -441,7 +482,11 @@ def _with_from_imports(
                 # of the statement and forcing them onto individual lines would break
                 # the intended output structure.
                 processed_as_imports_this_iteration = False
-                while from_imports and from_imports[0] in as_imports:
+                while (
+                    from_imports
+                    and from_imports[0] in as_imports
+                    and not (defer_as_imports and not only_show_as_imports)
+                ):
                     processed_as_imports_this_iteration = True
                     from_import = from_imports.pop(0)
 
@@ -589,8 +634,8 @@ def _with_from_imports(
                 while from_imports and (
                     from_imports[0] not in as_imports
                     or (
-                        config.combine_as_imports
-                        and parsed.imports[section][import_key][module][from_import]
+                        (config.combine_as_imports or defer_as_imports)
+                        and parsed.imports[section][import_key][module][from_imports[0]]
                     )
                 ):
                     from_import_section.append(from_imports.pop(0))
