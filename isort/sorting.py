@@ -103,7 +103,7 @@ def sort(
     key: Callable[[str], Any] | None = None,
     reverse: bool = False,
 ) -> list[str]:
-    return config.sorting_function(to_sort, key=key, reverse=reverse)
+    return config.sorting_function()(to_sort, key=key, reverse=reverse)
 
 
 def naturally(

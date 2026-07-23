@@ -1,5 +1,7 @@
 import pickle
 
+import pytest
+
 from isort import exceptions
 
 
@@ -10,6 +12,7 @@ class TestISortError:
     def test_init(self):
         assert isinstance(self.instance, exceptions.ISortError)
 
+    @pytest.mark.xfail(reason="Can't pickle if mypyc-compiled", condition=__file__.endswith(".py"))
     def test_pickleable(self):
         assert isinstance(pickle.loads(pickle.dumps(self.instance)), exceptions.ISortError)
 

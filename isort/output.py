@@ -784,17 +784,6 @@ def _normalize_empty_lines(lines: list[str]) -> list[str]:
     return lines
 
 
-class _LineWithComments(str):
-    comments: list[str]
-
-    def __new__(
-        cls: type["_LineWithComments"], value: Any, comments: list[str]
-    ) -> "_LineWithComments":
-        instance = super().__new__(cls, value)
-        instance.comments = comments
-        return instance
-
-
 def _ensure_newline_before_comment(output: list[str]) -> list[str]:
     new_output: list[str] = []
 
