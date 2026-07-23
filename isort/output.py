@@ -558,6 +558,18 @@ def _with_from_imports(
                     comment = (
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
+                    if (
+                        comment is not None
+                        and from_import in as_imports
+                        and config.multi_line_output != wrap_modes.WrapModes.NOQA
+                    ):
+                        # This name also has an alias; the leading-alias loop keeps the two
+                        # together on a later pass.  Popping the comment here would drop the
+                        # alias, so put it back and leave the name for that loop.
+                        parsed.categorized_comments["nested"].setdefault(module, {})[
+                            from_import
+                        ] = comment
+                        continue
                     if comment is not None:
                         # If the comment is a noqa and hanging indent wrapping is used,
                         # keep the name in the main list and hoist the comment to the statement.

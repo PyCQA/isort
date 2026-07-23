@@ -2386,3 +2386,29 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
     assert lines.index("import ccc") > skip_index  # skip not relocated below the block
     assert isort.code(sorted_interleaved) == sorted_interleaved
+
+
+def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
+    """A name imported both plainly (with a trailing comment) and aliased must keep its
+    alias when a sibling sorts ahead of it.
+
+    ``from x import m  # c`` and ``from x import m as z`` combine into one group, and the
+    alias is only emitted while ``m`` leads that group.  When ``aaa`` sorts before ``m`` the
+    comment pass used to consume ``m`` and drop ``m as z``, which only surfaced on a second
+    run once the group was re-sorted.
+    """
+    to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
+
+    first_pass = isort.code(to_sort)
+    assert first_pass == to_sort
+
+    # The dropped alias previously only surfaced on the second run, so the result must
+    # already be a fixpoint.
+    assert isort.code(first_pass) == first_pass
+
+    # The same holds for a relative (local-folder) import.
+    relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
+    relative_sorted = isort.code(relative)
+    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
+    assert relative_sorted == expected
+    assert isort.code(relative_sorted) == relative_sorted
