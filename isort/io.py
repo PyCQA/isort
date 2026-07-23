@@ -60,11 +60,3 @@ class File:
         finally:
             if stream is not None:
                 stream.close()
-
-
-class _EmptyIO(StringIO):
-    def write(self, *args: Any, **kwargs: Any) -> None:  # type: ignore # skipcq: PTC-W0049
-        pass
-
-
-Empty = _EmptyIO()

@@ -15,6 +15,7 @@ __all__ = (
 )
 
 import contextlib
+import os
 import shutil
 import sys
 from collections.abc import Iterator
@@ -37,7 +38,7 @@ from .exceptions import (
     IntroducedSyntaxErrors,
 )
 from .format import ask_whether_to_apply_changes_to_file, create_terminal_printer, show_unified_diff
-from .io import Empty, File
+from .io import File
 from .place import module as place_module  # noqa: F401
 from .place import module_with_reason as place_module_with_reason  # noqa: F401
 from .settings import CYTHON_EXTENSIONS, DEFAULT_CONFIG, Config
@@ -259,14 +260,15 @@ def check_stream(
     if show_diff:
         input_stream = StringIO(input_stream.read())
 
-    changed: bool = sort_stream(
-        input_stream=input_stream,
-        output_stream=Empty,
-        extension=extension,
-        config=config,
-        file_path=file_path,
-        disregard_skip=disregard_skip,
-    )
+    with open(os.devnull, "w") as sink:
+        changed: bool = sort_stream(
+            input_stream=input_stream,
+            output_stream=sink,
+            extension=extension,
+            config=config,
+            file_path=file_path,
+            disregard_skip=disregard_skip,
+        )
     printer = create_terminal_printer(
         color=config.color_output, error=config.format_error, success=config.format_success
     )
