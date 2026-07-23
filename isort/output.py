@@ -253,13 +253,15 @@ def _build_import_group(
         # collapse comments
         comments_above: list[str] = []
         new_group_output: list[str] = []
+        lines_with_comments: dict[str, list[str]] = {}
         for line in group_output:
             if not line:
                 continue
             if line.startswith("#"):
                 comments_above.append(line)
             elif comments_above:
-                new_group_output.append(_LineWithComments(line, comments_above))
+                lines_with_comments[line] = comments_above
+                new_group_output.append(line)
                 comments_above = []
             else:
                 new_group_output.append(line)
@@ -273,10 +275,10 @@ def _build_import_group(
         # uncollapse comments
         group_output = []
         for line in new_group_output:
-            line_comments = getattr(line, "comments", ())
+            line_comments = lines_with_comments.get(line)
             if line_comments:
                 group_output.extend(line_comments)
-            group_output.append(str(line))
+            group_output.append(line)
 
     return group_output
 
