@@ -1,11 +1,8 @@
 import re
 from collections.abc import Callable, Iterable
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-if TYPE_CHECKING:
-    from .settings import Config
-else:
-    Config = Any
+from .settings import Config
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")

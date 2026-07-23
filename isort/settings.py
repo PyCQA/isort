@@ -19,7 +19,7 @@ from re import Pattern
 from typing import Any
 from warnings import warn
 
-from . import sorting, stdlibs
+from . import stdlibs
 from .exceptions import (
     FormattingPluginDoesNotExist,
     InvalidSettingsPath,
@@ -675,6 +675,8 @@ class Config(_Config):
             return self._sorting_function
 
         if self.sort_order == "natural":
+            from . import sorting  # noqa: PLC0415 # Circular import...
+
             self._sorting_function = sorting.naturally
         elif self.sort_order == "native":
             self._sorting_function = sorted
