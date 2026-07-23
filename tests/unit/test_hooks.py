@@ -2,9 +2,14 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from isort import exceptions, hooks
 
 
+@pytest.mark.xfail(
+    reason="Can't use Mocks in mypyc-compiled code.", condition=__file__.endswith(".py")
+)
 def test_git_hook(src_dir):
     """Simple smoke level testing of git hooks"""
 

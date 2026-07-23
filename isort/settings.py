@@ -3,6 +3,7 @@
 Defines how the default settings for isort should be loaded
 """
 
+from dataclasses import asdict
 import configparser
 import fnmatch
 import os
@@ -225,7 +226,6 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
-    import_dependencies = dict[str, str]
     git_ls_files: dict[Path, set[str]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
@@ -266,12 +266,16 @@ class _Config:
                 "wrap_length must be set lower than or equal to line_length: "
                 f"{self.wrap_length} > {self.line_length}."
             )
+        object.__setattr__(self, "import_headings", self.import_headings or {})
+        object.__setattr__(self, "import_footers", self.import_footers or {})
+        object.__setattr__(self, "known_other", self.known_other or {})
+        object.__setattr__(self, "git_ls_files", self.git_ls_files or {})
 
     def __hash__(self) -> int:
         return id(self)
 
 
-_DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
+_DEFAULT_SETTINGS = {**asdict(_Config()), "source": "defaults"}
 
 
 class Config(_Config):
@@ -290,15 +294,15 @@ class Config(_Config):
         self._sorting_function: Callable[..., list[str]] | None = None
 
         if config:
-            config_vars = vars(config).copy()
+            config_vars = asdict(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
-            config_vars.pop("_known_patterns")
-            config_vars.pop("_section_comments")
-            config_vars.pop("_section_comments_end")
-            config_vars.pop("_skips")
-            config_vars.pop("_skip_globs")
-            config_vars.pop("_sorting_function")
+            config_vars.pop("_known_patterns", None)
+            config_vars.pop("_section_comments", None)
+            config_vars.pop("_section_comments_end", None)
+            config_vars.pop("_skips", None)
+            config_vars.pop("_skip_globs", None)
+            config_vars.pop("_sorting_function", None)
             super().__init__(**config_vars)
             return
 
@@ -669,7 +673,6 @@ class Config(_Config):
         self._skip_globs = self.skip_glob.union(self.extend_skip_glob)
         return self._skip_globs
 
-    @property
     def sorting_function(self) -> Callable[..., list[str]]:
         if self._sorting_function is not None:
             return self._sorting_function

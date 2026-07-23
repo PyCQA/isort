@@ -86,8 +86,15 @@ exclude_lines = [
 ]
 
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling", "hatch-vcs", "hatch-mypyc"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+enable-by-default = false
+dependencies = [
+    "hatch-mypyc",
+    "types-colorama>=0.4.2",
+]
 
 [dependency-groups]
 dev = [
