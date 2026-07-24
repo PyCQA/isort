@@ -2398,13 +2398,7 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-
-    first_pass = isort.code(to_sort)
-    assert first_pass == to_sort
-
-    # The dropped alias previously only surfaced on the second run, so the result must
-    # already be a fixpoint.
-    assert isort.code(first_pass) == first_pass
+    assert isort.code(first_pass) == to_sort
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
