@@ -5591,7 +5591,10 @@ def test_reexport_multiline() -> None:
     'bar',
 )
 """
-    expd_output = """__all__ = ("bar", "foo")
+    expd_output = """__all__ = (
+    "bar",
+    "foo",
+)
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
@@ -5659,7 +5662,7 @@ def test_reexport_multiline_import() -> None:
 )
 __all__ = [
     "foo",
-    "bar",
+    "bar"
 ]
 """
     expd_output = """from m import bar, foo
@@ -5676,7 +5679,7 @@ def test_reexport_multiline_in_center() -> None:
 )
 __all__ = [
     "foo",
-    "bar",
+    "bar"
 ]
 
 test
@@ -5693,7 +5696,7 @@ test
 def test_reexport_multiline_long_rollback() -> None:
     test_input = """from m import foo, bar
 __all__ = [                            "foo",
-    "bar",
+    "bar"
 ]
 
 test
@@ -5809,3 +5812,65 @@ def test_builtin_modules() -> None:
         "from python_none_objects import NoneIterable\n"
     )
     assert isort.code(test_input) == test_output
+
+
+def test_reexport_preserves_magic_trailing_comma() -> None:
+    """https://github.com/PyCQA/isort/issues/2578
+
+    A trailing comma in the original ``__all__`` is black's "magic trailing comma":
+    it asks for one element per line, even when the sorted result would fit on one.
+    """
+    test_input = """__all__ = (
+    "foo",
+    "bar",
+)
+"""
+    expd_output = """__all__ = (
+    "bar",
+    "foo",
+)
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_without_magic_trailing_comma_stays_collapsed() -> None:
+    """https://github.com/PyCQA/isort/issues/2578
+
+    Without the trailing comma the short form is kept, as before.
+    """
+    test_input = """__all__ = ("foo", "bar")
+"""
+    expd_output = """__all__ = ("bar", "foo")
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_single_element_tuple_comma_is_not_magic() -> None:
+    """https://github.com/PyCQA/isort/issues/2578
+
+    A one-element tuple's trailing comma is required syntax rather than a
+    formatting request, so it must not explode the literal.
+    """
+    test_input = """__all__ = ("foo",)
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == test_input
+
+
+def test_reexport_magic_trailing_comma_ignores_strings_and_comments() -> None:
+    """https://github.com/PyCQA/isort/issues/2578
+
+    Detection tokenizes rather than scanning text, so a closing bracket or comma
+    inside a string element, or a trailing comment, is not mistaken for the end of
+    the literal.
+    """
+    test_input = """__all__ = (
+    "b#)",
+    "a,",  # trailing comment
+)
+"""
+    expd_output = """__all__ = (
+    "a,",
+    "b#)",
+)
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
