@@ -1038,9 +1038,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
     ext_format = config_dict.pop("ext_format", None)
     allow_root = config_dict.pop("allow_root", None)
     resolve_all_configs = config_dict.pop("resolve_all_configs", False)
-    config_root_given = "config_root" in config_dict
-    config_root = config_dict.pop("config_root", ".")
-    if config_root_given and not resolve_all_configs:
+    if "config_root" in config_dict and not resolve_all_configs:
         sys.exit("Error: --config-root (--cr) has no effect without --resolve-all-configs.")
     wrong_sorted_files = False
     all_attempt_broken = False
@@ -1048,7 +1046,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
     config_trie: Trie | None = None
     if resolve_all_configs:
-        config_trie = find_all_configs(config_root)
+        config_trie = find_all_configs(config_dict.pop("config_root", "."))
 
     if "src_paths" in config_dict:
         # Keep CLI-provided values as-is so wildcard patterns can be expanded later
