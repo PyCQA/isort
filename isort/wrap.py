@@ -3,8 +3,8 @@ import re
 from collections.abc import Sequence
 
 from .settings import DEFAULT_CONFIG, Config
-from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string, vertical_hanging_indent
+from .wrap_modes import WrapModes as Modes
 
 
 def import_statement(

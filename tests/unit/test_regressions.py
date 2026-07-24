@@ -2386,3 +2386,67 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     skip_index = next(i for i, line in enumerate(lines) if "# isort: skip" in line)
     assert lines.index("import ccc") > skip_index  # skip not relocated below the block
     assert isort.code(sorted_interleaved) == sorted_interleaved
+
+
+def test_from_import_alias_does_not_split_plain_names_issue_2455() -> None:
+    """Plain imports from one module are merged before aliases (issue #2455)."""
+    multi_line_input = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+"""
+    expected_multi_line = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+"""
+    assert isort.code(multi_line_input, profile="black", line_length=88) == expected_multi_line
+    assert (
+        isort.code(
+            multi_line_input,
+            profile="black",
+            force_sort_within_sections=True,
+            line_length=88,
+        )
+        == expected_multi_line
+    )
+
+    single_line_input = "from module import A, B, C, D as d, E, F, G\n"
+    expected_single_line = """from module import A, B, C, E, F, G
+from module import D as d
+"""
+    assert isort.code(single_line_input) == expected_single_line
+    assert isort.code(single_line_input, force_sort_within_sections=True) == expected_single_line
+
+    # force_sort_within_sections must not put a lexically-earlier alias before
+    # plain names from the same module after statements are re-sorted.
+    lexical_alias_first = "from module import Z\nfrom module import A as a\n"
+    expected_lexical = "from module import Z\nfrom module import A as a\n"
+    assert isort.code(lexical_alias_first) == expected_lexical
+    assert isort.code(lexical_alias_first, force_sort_within_sections=True) == expected_lexical
+    assert (
+        isort.code(lexical_alias_first, profile="black", force_sort_within_sections=True)
+        == expected_lexical
+    )
+
+
+
+def test_from_import_alias_only_sections_issue_2455() -> None:
+    """only_sections still emits preferred plain-before-alias grouping."""
+    src = "from module import A, B as b, C\n"
+    expected = "from module import A, C\nfrom module import B as b\n"
+    assert isort.code(src, only_sections=True) == expected
