@@ -1038,13 +1038,14 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
     ext_format = config_dict.pop("ext_format", None)
     allow_root = config_dict.pop("allow_root", None)
     resolve_all_configs = config_dict.pop("resolve_all_configs", False)
+    config_root = config_dict.pop("config_root", ".")
     wrong_sorted_files = False
     all_attempt_broken = False
     no_valid_encodings = False
 
     config_trie: Trie | None = None
     if resolve_all_configs:
-        config_trie = find_all_configs(config_dict.pop("config_root", "."))
+        config_trie = find_all_configs(config_root)
 
     if "src_paths" in config_dict:
         # Keep CLI-provided values as-is so wildcard patterns can be expanded later

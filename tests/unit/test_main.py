@@ -158,6 +158,16 @@ def test_ran_against_root():
         main.main(["/"])
 
 
+def test_config_root_without_resolve_all_configs(tmpdir):
+    # --config-root should be usable on its own (it's only consulted when
+    # --resolve-all-configs is also given) instead of blowing up with
+    # UnsupportedSettings. See #1990.
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os\n")
+
+    main.main([str(python_file), "--config-root", str(tmpdir)])
+
+
 def test_main(capsys, tmpdir):
     base_args = [
         "--sp",
