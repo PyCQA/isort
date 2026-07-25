@@ -158,6 +158,17 @@ def test_ran_against_root():
         main.main(["/"])
 
 
+def test_config_root_interaction_with_resolve_all_configs(tmpdir):
+    python_file = tmpdir.join("file.py")
+    python_file.write("import os\n")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main.main([str(python_file), "--config-root", str(tmpdir)])
+    assert "--resolve-all-configs" in str(exc_info.value)
+
+    main.main([str(python_file), "--config-root", str(tmpdir), "--resolve-all-configs"])
+
+
 def test_main(capsys, tmpdir):
     base_args = [
         "--sp",
