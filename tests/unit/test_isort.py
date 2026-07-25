@@ -1703,6 +1703,30 @@ def test_custom_lines_before_import_section(has_body: bool) -> None:
     )
 
 
+def test_check_code_detects_lines_before_import_changes() -> None:
+    """check_code must return False when lines_before_imports requires adding or removing blank
+    lines before the import section, even if the imports themselves are already sorted.
+
+    Regression test for https://github.com/PyCQA/isort/issues/2242
+    """
+    code = """from a import b, x
+
+foo = 'bar'
+"""
+
+    # Adding a blank line before imports (0 present, 1 required)
+    assert isort.code(code, lines_before_imports=1) == "\n" + code
+    assert not isort.check_code(code, lines_before_imports=1)
+
+    # Removing a blank line before imports (1 present, 0 required)
+    assert isort.code("\n" + code, lines_before_imports=0) == code
+    assert not isort.check_code("\n" + code, lines_before_imports=0)
+
+    # Already correct: no change needed
+    assert isort.check_code(code, lines_before_imports=0)
+    assert isort.check_code("\n" + code, lines_before_imports=1)
+
+
 def test_custom_lines_after_import_section() -> None:
     """Test the case where the number of lines to output after imports has been explicitly set."""
     test_input = "from a import b\nfoo = 'bar'\n"
