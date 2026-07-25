@@ -158,10 +158,7 @@ def test_ran_against_root():
         main.main(["/"])
 
 
-def test_config_root_without_resolve_all_configs(tmpdir):
-    # --config-root only means anything alongside --resolve-all-configs. Used to
-    # blow up with a confusing UnsupportedSettings/config_dict crash (#1990), now
-    # it exits with a clear error instead.
+def test_config_root_interaction_with_resolve_all_configs(tmpdir):
     python_file = tmpdir.join("file.py")
     python_file.write("import os\n")
 
@@ -169,14 +166,7 @@ def test_config_root_without_resolve_all_configs(tmpdir):
         main.main([str(python_file), "--config-root", str(tmpdir)])
     assert "--resolve-all-configs" in str(exc_info.value)
 
-
-def test_config_root_with_resolve_all_configs(tmpdir):
-    python_file = tmpdir.join("file.py")
-    python_file.write("import os\n")
-
-    main.main(
-        [str(python_file), "--config-root", str(tmpdir), "--resolve-all-configs"]
-    )
+    main.main([str(python_file), "--config-root", str(tmpdir), "--resolve-all-configs"])
 
 
 def test_main(capsys, tmpdir):
