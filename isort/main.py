@@ -434,6 +434,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Combines as imports on the same line.",
     )
     output_group.add_argument(
+        "--fsai",
+        "--force-separate-as-imports",
+        dest="force_separate_as_imports",
+        action="store_true",
+        help="Forces as imports to be emitted after the plain imports of the same "
+        "module, keeping the plain imports grouped in a single statement. "
+        "Has no effect when combine-as is enabled.",
+    )
+    output_group.add_argument(
         "--cs",
         "--combine-star",
         dest="combine_star",

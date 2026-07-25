@@ -337,9 +337,10 @@ def _with_from_imports(
             for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
             if sub_module in parsed.as_map["from"]
         }
-        # when not combine_as_imports, move aliased imports to the end so that
-        # non-aliased imports stay grouped together in a single block
-        if not config.combine_as_imports and as_imports:
+        # when force_separate_as_imports (and not combine_as_imports), move aliased
+        # imports to the end so that non-aliased imports stay grouped together in a
+        # single block
+        if config.force_separate_as_imports and not config.combine_as_imports and as_imports:
             non_aliased = [imp for imp in from_imports if imp not in as_imports]
             aliased = [imp for imp in from_imports if imp in as_imports]
             from_imports = non_aliased + aliased

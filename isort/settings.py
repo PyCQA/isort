@@ -173,6 +173,7 @@ class _Config:
     lines_between_sections: int = 1
     lines_between_types: int = 0
     combine_as_imports: bool = False
+    force_separate_as_imports: bool = False
     combine_star: bool = False
     include_trailing_comma: bool = False
     from_first: bool = False
