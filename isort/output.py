@@ -132,10 +132,11 @@ def sorted_imports(
 
     if output:
         imports_tail = output_at + len(output)
+        trailing_blank_lines: list[str] = []
         while [
             character.strip() for character in formatted_output[imports_tail : imports_tail + 1]
         ] == [""]:
-            formatted_output.pop(imports_tail)
+            trailing_blank_lines.append(formatted_output.pop(imports_tail))
 
         if config.lines_before_imports != -1:
             lines_before_imports = config.lines_before_imports
@@ -169,11 +170,24 @@ def sorted_imports(
                 lines_after_imports = config.lines_after_imports
                 if config.profile == "black" and extension == "pyi":  # special case for black
                     lines_after_imports = 1
-                formatted_output[imports_tail:0] = ["" for line in range(lines_after_imports)]
             elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
-                formatted_output[imports_tail:0] = ["", ""]
+                lines_after_imports = 2
             else:
-                formatted_output[imports_tail:0] = [""]
+                lines_after_imports = 1
+
+            blank_lines = [""] * lines_after_imports
+            overflow_form_feeds = ""
+            for index, line in enumerate(trailing_blank_lines):
+                form_feeds = "".join(character for character in line if character == "\f")
+                if index < lines_after_imports:
+                    blank_lines[index] += form_feeds
+                else:
+                    overflow_form_feeds += form_feeds
+            if overflow_form_feeds:
+                formatted_output[imports_tail] = (
+                    overflow_form_feeds + formatted_output[imports_tail]
+                )
+            formatted_output[imports_tail:0] = blank_lines
 
     if parsed.place_imports:
         new_out_lines = []

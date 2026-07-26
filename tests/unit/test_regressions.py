@@ -181,6 +181,17 @@ class Something(object):
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
+def test_form_feed_blank_line_not_removed_issue_2562():
+    """Ensure isort preserves form feed as a valid blank line."""
+    test_input = 'import sys\n\n\f\nprint("!")\n'
+    assert isort.code(test_input) == 'import sys\n\n\fprint("!")\n'
+    assert isort.code(test_input, lines_after_imports=2) == test_input
+
+    test_input = 'import sys\n\n\n\fprint("!")\n'
+    assert isort.code(test_input) == 'import sys\n\n\fprint("!")\n'
+    assert isort.code(test_input, lines_after_imports=2) == test_input
+
+
 def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296():
     """Tests to ensure force_single_line setting doesn't result in lost comments.
     See: https://github.com/pycqa/isort/issues/1296
