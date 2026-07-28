@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from typing import Any, TextIO
+from typing import TextIO
 
 from isort.exceptions import UnsupportedEncoding
 
@@ -60,11 +60,3 @@ class File:
         finally:
             if stream is not None:
                 stream.close()
-
-
-class _EmptyIO(StringIO):
-    def write(self, *args: Any, **kwargs: Any) -> None:  # type: ignore # skipcq: PTC-W0049
-        pass
-
-
-Empty = _EmptyIO()

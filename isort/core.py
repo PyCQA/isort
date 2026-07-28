@@ -172,7 +172,12 @@ def process(
                     ignore_whitespace=config.ignore_whitespace,
                 )
                 output_stream.write(sorted_code)
-                if is_reexport:
+                if (
+                    is_reexport
+                    # Check if we need to truncate. If we're redirecting to `devnull` we don't need
+                    # to and don't want to call `truncate()` on it, as it will raise an exception.
+                    and output_stream.tell() > 0
+                ):
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
@@ -288,7 +293,13 @@ def process(
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
                         output_stream.write(sorted_code)
-                        if is_reexport:
+                        if (
+                            is_reexport
+                            # Check if we need to truncate. If we're redirecting to `devnull` we
+                            # don't need to and don't want to call `truncate()` on it, as it will
+                            # raise an exception.
+                            and output_stream.tell() > 0
+                        ):
                             output_stream.truncate()
                         not_imports = True
                         code_sorting = False
