@@ -8,9 +8,9 @@ import sys
 from collections.abc import Iterator, Sequence
 from contextlib import AbstractContextManager, nullcontext
 from gettext import gettext as _
-from io import TextIOWrapper
+from io import TextIOWrapper, UnsupportedOperation
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from warnings import warn
 
 from . import __version__, api, files, sections
@@ -1063,6 +1063,17 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             sys.exit("Error: can't show files for streaming input.")
         if config.sort_reexports:
             sys.exit("Error: --sort-reexports is not supported with streaming input (stdin).")
+
+        try:
+            cast(TextIOWrapper, sys.stdout).reconfigure(newline="")
+        except (AttributeError, OSError, UnsupportedOperation):
+            pass
+
+        if stdin is None:
+            try:
+                cast(TextIOWrapper, sys.stdin).reconfigure(newline="")
+            except (AttributeError, OSError, UnsupportedOperation):
+                pass
 
         input_stream = sys.stdin if stdin is None else stdin
         if check:

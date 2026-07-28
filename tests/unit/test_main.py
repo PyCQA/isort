@@ -1,8 +1,10 @@
+import io
 import json
 import os
 import pathlib
 import shutil
 import subprocess
+import sys
 from datetime import datetime
 import unittest.mock
 
@@ -1390,3 +1392,141 @@ def test_cli_src_path_glob_pattern(tmpdir, capsys, monkeypatch):
 
     assert str(service_a_src) in src_paths
     assert str(service_b_src) in src_paths
+
+
+def test_windows_stream_newline_preservation(monkeypatch):
+    class WindowsSimulationStdout(io.TextIOWrapper):
+        def __init__(self, *args, **kwargs):
+            self._newline = kwargs.get("newline", None)
+            super().__init__(*args, **kwargs)
+
+        def reconfigure(self, **kwargs):
+            if "newline" in kwargs:
+                self._newline = kwargs["newline"]
+            super().reconfigure(**kwargs)
+
+        def write(self, s: str) -> int:
+            if self._newline is None and os.linesep != "\r\n":
+                s = s.replace("\r\n", "\n").replace("\n", "\r\n")
+            return super().write(s)
+
+    class WindowsSimulationStdin(io.TextIOWrapper):
+        def __init__(self, *args, **kwargs):
+            self._newline = kwargs.get("newline", None)
+            super().__init__(*args, **kwargs)
+
+        def reconfigure(self, **kwargs):
+            if "newline" in kwargs:
+                self._newline = kwargs["newline"]
+            super().reconfigure(**kwargs)
+
+    def run_main_with_streams(args, stdin_bytes):
+        raw_in = io.BytesIO(stdin_bytes)
+        raw_out = io.BytesIO()
+
+        fake_stdin = WindowsSimulationStdin(raw_in, encoding="utf-8", write_through=True)
+        fake_stdout = WindowsSimulationStdout(raw_out, encoding="utf-8", write_through=True)
+
+        monkeypatch.setattr(sys, "stdin", fake_stdin)
+        monkeypatch.setattr(sys, "stdout", fake_stdout)
+
+        exit_code: int | str | None = 0
+        try:
+            main.main(args)
+        except SystemExit as e:
+            exit_code = e.code
+
+        fake_stdout.flush()
+        return exit_code, raw_out.getvalue()
+
+    # 1. LF input exact sorting
+    exit_code, out_bytes = run_main_with_streams(["-"], b"import b\nimport a\n")
+    assert exit_code == 0
+    assert out_bytes == b"import a\nimport b\n"
+
+    # 2. CRLF input exact sorting
+    exit_code, out_bytes = run_main_with_streams(["-"], b"import b\r\nimport a\r\n")
+    assert exit_code == 0
+    assert out_bytes == b"import a\r\nimport b\r\n"
+
+    # 3. Non-ASCII characters exact preservation
+    exit_code, out_bytes = run_main_with_streams(["-"], b"import b  # \xe2\x98\x85\nimport a\n")
+    assert exit_code == 0
+    assert out_bytes == b"import a\nimport b  # \xe2\x98\x85\n"
+
+    # 4. FileSkipped passthrough for LF
+    exit_code, out_bytes = run_main_with_streams(["-"], b"# isort: skip_file\nimport b\nimport a\n")
+    assert exit_code == 0
+    assert out_bytes == b"# isort: skip_file\nimport b\nimport a\n"
+
+    # 5. FileSkipped passthrough for CRLF
+    exit_code, out_bytes = run_main_with_streams(
+        ["-"], b"# isort: skip_file\r\nimport b\r\nimport a\r\n"
+    )
+    assert exit_code == 0
+    assert out_bytes == b"# isort: skip_file\r\nimport b\r\nimport a\r\n"
+
+    # 6. Check-only sorted
+    exit_code, out_bytes = run_main_with_streams(["-", "--check-only"], b"import a\nimport b\n")
+    assert exit_code == 0
+
+    # 7. Check-only unsorted
+    exit_code, out_bytes = run_main_with_streams(["-", "--check-only"], b"import b\nimport a\n")
+    assert exit_code == 1
+
+    # 8. Diff on LF stream with no introduced CR
+    exit_code, out_bytes = run_main_with_streams(["-", "--diff"], b"import b\nimport a\n")
+    assert b"+" in out_bytes
+    assert b"\r" not in out_bytes
+
+    # 9. Diff on CRLF stream with no introduced extra/duplicated CR
+    exit_code, out_bytes = run_main_with_streams(["-", "--diff"], b"import b\r\nimport a\r\n")
+    assert b"+" in out_bytes
+    assert b"\r\r" not in out_bytes
+
+    # 10. Injected stream (should not call reconfigure on it)
+    injected_raw = io.BytesIO(b"import b\nimport a\n")
+    injected = WindowsSimulationStdin(injected_raw, encoding="utf-8", write_through=True)
+    raw_out = io.BytesIO()
+    fake_stdout = WindowsSimulationStdout(raw_out, encoding="utf-8", write_through=True)
+    monkeypatch.setattr(sys, "stdout", fake_stdout)
+
+    with unittest.mock.patch.object(
+        injected, "reconfigure", wraps=injected.reconfigure
+    ) as mock_reconfigure:
+        try:
+            main.main(["-"], stdin=injected)
+        except SystemExit:
+            pass
+        mock_reconfigure.assert_not_called()
+
+    # 11. Stream without reconfigure (should not crash on AttributeError, OSError)
+    class StreamWithoutReconfigure:
+        def __init__(self, text):
+            self._stream = io.StringIO(text)
+
+        def read(self, *a, **kw):
+            return self._stream.read(*a, **kw)
+
+        def write(self, *a, **kw):
+            return self._stream.write(*a, **kw)
+
+        def readline(self, *a, **kw):
+            return self._stream.readline(*a, **kw)
+
+        def __iter__(self):
+            return iter(self._stream)
+
+        def flush(self):
+            pass
+
+        def isatty(self):
+            return False
+
+    old_stdin, old_stdout = sys.stdin, sys.stdout
+    sys.stdin = StreamWithoutReconfigure("import b\nimport a\n")
+    sys.stdout = StreamWithoutReconfigure("")
+    try:
+        main.main(["-"])
+    finally:
+        sys.stdin, sys.stdout = old_stdin, old_stdout
