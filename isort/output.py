@@ -2,7 +2,7 @@ import copy
 import itertools
 from collections.abc import Iterable
 from functools import partial
-from typing import Any, Literal
+from typing import Literal
 
 from isort.format import format_simplified
 
@@ -794,17 +794,6 @@ def _normalize_empty_lines(lines: list[str]) -> list[str]:
 
     lines.append("")
     return lines
-
-
-class _LineWithComments(str):
-    comments: list[str]
-
-    def __new__(
-        cls: type["_LineWithComments"], value: Any, comments: list[str]
-    ) -> "_LineWithComments":
-        instance = super().__new__(cls, value)
-        instance.comments = comments
-        return instance
 
 
 def _ensure_newline_before_comment(output: list[str]) -> list[str]:
