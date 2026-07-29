@@ -77,9 +77,13 @@ class ParsedContent(NamedTuple):
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
     line_separator: str = config.line_ending or _infer_line_separator(contents)
-    in_lines = contents.splitlines()
-    if contents and contents[-1] in ("\n", "\r"):
-        in_lines.append("")
+    # ``str.splitlines`` also treats characters such as form feed as line
+    # boundaries, even though Python's universal-newline handling does not.
+    # Normalize actual newline sequences explicitly so those characters stay
+    # attached to their source line.
+    in_lines = contents.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    if not contents:
+        in_lines = []
 
     out_lines = []
     original_line_count = len(in_lines)

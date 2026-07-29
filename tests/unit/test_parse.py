@@ -48,6 +48,19 @@ def test_file_contents():
     assert original_line_count == len(in_lines)
 
 
+def test_file_contents_empty():
+    parsed = parse.file_contents("", config=Config(default_section=""))
+    assert parsed.in_lines == []
+    assert parsed.original_line_count == 0
+
+
+@pytest.mark.parametrize("line_separator", ["\n", "\r\n", "\r"])
+def test_file_contents_splits_only_on_newlines(line_separator):
+    contents = line_separator.join(["import b", "import a", "\fpass"])
+    parsed = parse.file_contents(contents, config=Config(default_section=""))
+    assert parsed.in_lines == ["import b", "import a", "\fpass"]
+
+
 # These tests were written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
