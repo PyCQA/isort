@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
 
@@ -76,7 +76,7 @@ jobs:
           path: dist/
       - name: Sign the dists with Sigstore and upload assets to Github release
         if: github.event_name == 'release'
-        uses: sigstore/gh-action-sigstore-python@v3.4.0
+        uses: sigstore/gh-action-sigstore-python@v3.5.0
         with:
           inputs: |
             ./dist/*.tar.gz
