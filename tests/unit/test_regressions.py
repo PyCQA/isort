@@ -2253,6 +2253,36 @@ def test_sort_reexports_check_mode_multiline_all_issue_2280():
     assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
+def test_sort_reexports_preserves_short_multiline_trailing_comma_issue_2578():
+    """A short __all__ with a trailing comma should keep its explicit multiline style."""
+    test_input = """__all__ = (
+    "SecondClass",
+    "FirstClass",
+)
+"""
+    expected_output = """__all__ = (
+    "FirstClass",
+    "SecondClass",
+)
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578():
+    """The same trailing-comma preservation applies to list-style __all__ exports."""
+    test_input = """__all__ = [
+    "SecondClass",
+    "FirstClass",
+]
+"""
+    expected_output = """__all__ = [
+    "FirstClass",
+    "SecondClass",
+]
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
