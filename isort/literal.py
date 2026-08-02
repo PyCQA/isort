@@ -9,7 +9,7 @@ from isort.exceptions import (
 )
 from isort.settings import DEFAULT_CONFIG, Config
 
-type_mapping: dict[str, tuple[type, Callable[[Any, Config, int], str]]] = {}
+type_mapping: dict[str, tuple[type, Callable[[Any, Config, int, bool], str]]] = {}
 
 
 def assignments(code: str) -> str:
@@ -42,6 +42,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     variable_name, literal = code.split("=")
     variable_name = variable_name.strip()
     literal = literal.lstrip()
+    preserve_trailing_comma = config.include_trailing_comma and _has_trailing_comma(literal)
     try:
         value = ast.literal_eval(literal)
     except Exception as error:
@@ -52,7 +53,9 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
     prefix_length = len(f"{variable_name} = ")
-    sorted_value_code = f"{variable_name} = {sort_function(value, config, prefix_length)}"
+    sorted_value_code = (
+        f"{variable_name} = {sort_function(value, config, prefix_length, preserve_trailing_comma)}"
+    )
     if config.formatting_function:
         sorted_value_code = config.formatting_function(
             sorted_value_code, extension, config
@@ -64,16 +67,29 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
 
 def register_type(
     name: str, kind: type
-) -> Callable[[Callable[[Any, Config, int], str]], Callable[[Any, Config, int], str]]:
+) -> Callable[[Callable[[Any, Config, int, bool], str]], Callable[[Any, Config, int, bool], str]]:
     """Registers a new literal sort type."""
 
     def wrap(
-        function: Callable[[Any, Config, int], str],
-    ) -> Callable[[Any, Config, int], str]:
+        function: Callable[[Any, Config, int, bool], str],
+    ) -> Callable[[Any, Config, int, bool], str]:
         type_mapping[name] = (kind, function)
         return function
 
     return wrap
+
+
+def _has_trailing_comma(literal: str) -> bool:
+    """Return True when a bracketed source literal uses a final trailing comma."""
+    literal = literal.rstrip()
+    if "\n" not in literal or not literal:
+        return False
+
+    close_bracket = {"(": ")", "[": "]", "{": "}"}.get(literal[0])
+    if close_bracket is None or not literal.endswith(close_bracket):
+        return False
+
+    return literal[:-1].rstrip().endswith(",")
 
 
 def _black_quote(value: str) -> str:
@@ -106,6 +122,7 @@ def _format_collection(
     close_bracket: str,
     config: Config,
     prefix_length: int,
+    preserve_trailing_comma: bool,
     single_element_comma: bool = False,
 ) -> str:
     """Render already-rendered, sorted ``elements`` as ``open ... close`` honoring the
@@ -119,49 +136,79 @@ def _format_collection(
     if only_element_needs_comma:
         inner += ","
     single_line = f"{open_bracket}{inner}{close_bracket}"
-    if prefix_length + len(single_line) <= config.line_length:
+    if not preserve_trailing_comma and prefix_length + len(single_line) <= config.line_length:
         return single_line
 
     indent = config.indent
-    trailing = "," if (config.include_trailing_comma or only_element_needs_comma) else ""
+    trailing = (
+        ","
+        if (preserve_trailing_comma or config.include_trailing_comma or only_element_needs_comma)
+        else ""
+    )
     body = (",\n" + indent).join(elements)
     return f"{open_bracket}\n{indent}{body}{trailing}\n{close_bracket}"
 
 
 @register_type("dict", dict)
-def _dict(value: dict[Any, Any], config: Config, prefix_length: int) -> str:
+def _dict(
+    value: dict[Any, Any], config: Config, prefix_length: int, preserve_trailing_comma: bool
+) -> str:
     items = [
         f"{_repr_element(key)}: {_repr_element(item)}"
         for key, item in sorted(value.items(), key=lambda item: item[1])
     ]
-    return _format_collection(items, "{", "}", config, prefix_length)
+    return _format_collection(items, "{", "}", config, prefix_length, preserve_trailing_comma)
 
 
 @register_type("list", list)
-def _list(value: list[Any], config: Config, prefix_length: int) -> str:
+def _list(
+    value: list[Any], config: Config, prefix_length: int, preserve_trailing_comma: bool
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "[", "]", config, prefix_length)
+    return _format_collection(elements, "[", "]", config, prefix_length, preserve_trailing_comma)
 
 
 @register_type("unique-list", list)
-def _unique_list(value: list[Any], config: Config, prefix_length: int) -> str:
+def _unique_list(
+    value: list[Any], config: Config, prefix_length: int, preserve_trailing_comma: bool
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "[", "]", config, prefix_length)
+    return _format_collection(elements, "[", "]", config, prefix_length, preserve_trailing_comma)
 
 
 @register_type("set", set)
-def _set(value: set[Any], config: Config, prefix_length: int) -> str:
+def _set(value: set[Any], config: Config, prefix_length: int, preserve_trailing_comma: bool) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "{", "}", config, prefix_length)
+    return _format_collection(elements, "{", "}", config, prefix_length, preserve_trailing_comma)
 
 
 @register_type("tuple", tuple)
-def _tuple(value: tuple[Any, ...], config: Config, prefix_length: int) -> str:
+def _tuple(
+    value: tuple[Any, ...], config: Config, prefix_length: int, preserve_trailing_comma: bool
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True)
+    return _format_collection(
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        preserve_trailing_comma,
+        single_element_comma=True,
+    )
 
 
 @register_type("unique-tuple", tuple)
-def _unique_tuple(value: tuple[Any, ...], config: Config, prefix_length: int) -> str:
+def _unique_tuple(
+    value: tuple[Any, ...], config: Config, prefix_length: int, preserve_trailing_comma: bool
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True)
+    return _format_collection(
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        preserve_trailing_comma,
+        single_element_comma=True,
+    )

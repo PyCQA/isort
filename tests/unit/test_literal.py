@@ -61,6 +61,22 @@ def test_wrap_without_trailing_comma():
     assert result.endswith('"name_11"\n]')  # no trailing comma before the closing bracket
 
 
+def test_assignment_applies_formatting_function() -> None:
+    def formatting_function(code: str, extension: str, config: Config) -> str:
+        assert extension == "py"
+        assert config.formatting_function is formatting_function
+        return code.replace('"a"', '"A"')
+
+    result = isort.literal.assignment(
+        "x = ['b', 'a']", "list", "py", config=Config(formatting_function=formatting_function)
+    )
+    assert result == 'x = ["A", "b"]'
+
+
+def test_trailing_comma_detection_requires_matching_brackets() -> None:
+    assert not isort.literal._has_trailing_comma("(\n    'a',\n]")
+
+
 def test_quote_fallback_for_embedded_quote():
     # value containing a double quote but no single quote -> single quotes (black rule)
     assert isort.literal.assignment("x = ['a\"b']", "list", "py") == "x = ['a\"b']"
