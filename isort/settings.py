@@ -286,6 +286,7 @@ class Config(_Config):
         self._section_comments: tuple[str, ...] | None = None
         self._section_comments_end: tuple[str, ...] | None = None
         self._skips: frozenset[str] | None = None
+        self._posix_skips: frozenset[str] | None = None
         self._skip_globs: frozenset[str] | None = None
         self._sorting_function: Callable[..., list[str]] | None = None
 
@@ -297,6 +298,7 @@ class Config(_Config):
             config_vars.pop("_section_comments")
             config_vars.pop("_section_comments_end")
             config_vars.pop("_skips")
+            config_vars.pop("_posix_skips")
             config_vars.pop("_skip_globs")
             config_vars.pop("_sorting_function")
             super().__init__(**config_vars)
@@ -565,14 +567,14 @@ class Config(_Config):
 
         os_path = str(file_path)
 
+        # Normalize the path to POSIX-style for consistent comparison with skip paths and globs
         normalized_path = os_path.replace("\\", "/")
         if normalized_path[1:2] == ":":
             normalized_path = normalized_path[2:]
+        normalized_path = posixpath.abspath(normalized_path)
 
-        for skip_path in self.skips:
-            if posixpath.abspath(normalized_path) == posixpath.abspath(
-                skip_path.replace("\\", "/")
-            ):
+        for skip_path in self.posix_skips:
+            if normalized_path == skip_path:
                 return True
 
         position = os.path.split(file_name)
@@ -660,6 +662,17 @@ class Config(_Config):
 
         self._skips = self.skip.union(self.extend_skip)
         return self._skips
+
+    @property
+    def posix_skips(self) -> frozenset[str]:
+        """Returns a frozenset of absolute paths to skip, normalized to POSIX-style paths."""
+        if self._posix_skips is not None:
+            return self._posix_skips
+
+        self._posix_skips = frozenset(
+            posixpath.abspath(skip_path.replace("\\", "/")) for skip_path in self.skips
+        )
+        return self._posix_skips
 
     @property
     def skip_globs(self) -> frozenset[str]:
