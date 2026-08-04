@@ -372,6 +372,8 @@ def _with_from_imports(
                 output.extend(above_comments)
                 above_comments = None
 
+            aliased_from_imports: list[str] = []
+
             if "*" in from_imports and config.combine_star:
                 import_statement = wrap.line(
                     with_comments(
@@ -457,7 +459,15 @@ def _with_from_imports(
                 # of the statement and forcing them onto individual lines would break
                 # the intended output structure.
                 processed_as_imports_this_iteration = False
-                while from_imports and from_imports[0] in as_imports:
+                while (
+                    from_imports
+                    and from_imports[0] in as_imports
+                    and (
+                        config.combine_as_imports
+                        or config.no_inline_sort
+                        or not parsed.imports[section][import_key][module][from_imports[0]]
+                    )
+                ):
                     processed_as_imports_this_iteration = True
                     from_import = from_imports.pop(0)
 
@@ -612,16 +622,91 @@ def _with_from_imports(
                             f"{(use_comments and ';') or config.comment_prefix}{comment_text}"
                         )
                         output.append(wrap.line(single_import_line, parsed.line_separator, config))
+                        if (
+                            not config.combine_as_imports
+                            and not config.no_inline_sort
+                            and from_import in as_imports
+                        ):
+                            if not config.only_sections:
+                                as_imports[from_import] = sorting.sort(config, as_imports[from_import])
+                            from_comments = (
+                                parsed.categorized_comments["straight"].get(f"{module}.{from_import}")
+                                or []
+                            )
+                            for as_import in as_imports[from_import]:
+                                opening_line_comments = list(from_comments)
+                                specific_comment = (
+                                    parsed.categorized_comments["nested"]
+                                    .get(module, {})
+                                    .pop(as_import, None)
+                                )
+                                if specific_comment is not None:
+                                    from_comments.append(specific_comment)
+
+                                import_line = import_start + as_import
+                                if opening_line_comments and config.use_parentheses:
+                                    lines = wrap.line(
+                                        with_comments(
+                                            [specific_comment] if specific_comment else [],
+                                            import_line,
+                                            removed=config.ignore_comments,
+                                            comment_prefix=config.comment_prefix,
+                                        ),
+                                        parsed.line_separator,
+                                        config,
+                                    ).split(parsed.line_separator)
+
+                                    opening_comment = with_comments(
+                                        opening_line_comments,
+                                        "",
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
+                                    )
+                                    if opening_comment:
+                                        lines[0] += opening_comment
+                                        if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                                            lines[0] = wrap.line(
+                                                lines[0], parsed.line_separator, config
+                                            )
+                                    output.append(parsed.line_separator.join(lines))
+                                else:
+                                    output.append(
+                                        wrap.line(
+                                            with_comments(
+                                                from_comments,
+                                                import_line,
+                                                removed=config.ignore_comments,
+                                                comment_prefix=config.comment_prefix,
+                                            ),
+                                            parsed.line_separator,
+                                            config,
+                                        )
+                                    )
+
+                                from_comments = []
 
                 from_import_section = []
-                while from_imports and (
-                    from_imports[0] not in as_imports
-                    or (
-                        config.combine_as_imports
-                        and parsed.imports[section][import_key][module][from_import]
-                    )
-                ):
-                    from_import_section.append(from_imports.pop(0))
+                from_import_section = []
+                if config.combine_as_imports:
+                    while from_imports and (
+                        from_imports[0] not in as_imports
+                        or parsed.imports[section][import_key][module][from_import]
+                    ):
+                        from_import_section.append(from_imports.pop(0))
+                elif config.no_inline_sort:
+                    while from_imports and from_imports[0] not in as_imports:
+                        from_import_section.append(from_imports.pop(0))
+                else:
+                    for from_import in copy.copy(from_imports):
+                        if from_import in as_imports:
+                            aliased_from_imports.append(from_import)
+                        if (
+                            from_import not in as_imports
+                            or parsed.imports[section][import_key][module][from_import]
+                        ):
+                            from_import_section.append(from_import)
+                        if from_import not in as_imports or from_import in aliased_from_imports:
+                            from_imports.remove(from_import)
                 if config.combine_as_imports:
                     comments = (comments or []) + list(
                         parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())
@@ -712,6 +797,63 @@ def _with_from_imports(
 
             if import_statement:
                 output.append(import_statement)
+            if not config.combine_as_imports and not config.no_inline_sort:
+                for from_import in aliased_from_imports:
+                    if not config.only_sections:
+                        as_imports[from_import] = sorting.sort(config, as_imports[from_import])
+                    from_comments = (
+                        parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
+                    )
+
+                    for as_import in as_imports[from_import]:
+                        opening_line_comments = list(from_comments)
+                        specific_comment = (
+                            parsed.categorized_comments["nested"]
+                            .get(module, {})
+                            .pop(as_import, None)
+                        )
+                        if specific_comment is not None:
+                            from_comments.append(specific_comment)
+
+                        import_line = import_start + as_import
+                        if opening_line_comments and config.use_parentheses:
+                            lines = wrap.line(
+                                with_comments(
+                                    [specific_comment] if specific_comment else [],
+                                    import_line,
+                                    removed=config.ignore_comments,
+                                    comment_prefix=config.comment_prefix,
+                                ),
+                                parsed.line_separator,
+                                config,
+                            ).split(parsed.line_separator)
+
+                            opening_comment = with_comments(
+                                opening_line_comments,
+                                "",
+                                removed=config.ignore_comments,
+                                comment_prefix=config.comment_prefix,
+                            )
+                            if opening_comment:
+                                lines[0] += opening_comment
+                                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                                    lines[0] = wrap.line(lines[0], parsed.line_separator, config)
+                            output.append(parsed.line_separator.join(lines))
+                        else:
+                            output.append(
+                                wrap.line(
+                                    with_comments(
+                                        from_comments,
+                                        import_line,
+                                        removed=config.ignore_comments,
+                                        comment_prefix=config.comment_prefix,
+                                    ),
+                                    parsed.line_separator,
+                                    config,
+                                )
+                            )
+
+                        from_comments = []
     return output
 
 

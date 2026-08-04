@@ -3954,13 +3954,12 @@ def test_all_imports_from_single_module() -> None:
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, w, x, y, z\n"
         "from a import b as c\n"
         "from a import b as d\n"
         "from a import e as f\n"
         "from a import g as h\n"
         "from a import i as j\n"
-        "from a import w, x, y, z\n"
     )
     test_input = (
         "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
@@ -5504,13 +5503,27 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> No
 from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
 from django.db.models.sql.compiler import SQLUpdateCompiler
 """
+    expected_output = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+    SQLUpdateCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+"""
     output = isort.code(
         test_input,
         include_trailing_comma=True,
         split_on_trailing_comma=True,
         line_length=88,
     )
-    assert output == test_input
+    assert output == expected_output
+    assert output == isort.code(
+        output,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+    )
 
     expected_output_with_combine = """from django.db.models.sql.compiler import (
     SQLAggregateCompiler,
