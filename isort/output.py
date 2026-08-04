@@ -509,16 +509,18 @@ def _with_from_imports(
                         # the two types: opening-line comments must stay on the "import (" line
                         # when parentheses are used, while attribute-line comments stay on the
                         # import attribute line.
-                        opening_line_comments = list(from_comments)
                         specific_comment = (
                             parsed.categorized_comments["nested"]
                             .get(module, {})
                             .pop(as_import, None)
                         )
+                        opening_line_comments = [
+                            comment for comment in from_comments if comment != specific_comment
+                        ]
                         # Collect the attribute-line comment (if any) separately so it can be
                         # embedded in the attribute line regardless of wrapping mode.
                         if specific_comment is not None:
-                            from_comments.append(specific_comment)
+                            from_comments = [*opening_line_comments, specific_comment]
 
                         import_line = import_start + as_import
                         if opening_line_comments and config.use_parentheses:
@@ -546,11 +548,19 @@ def _with_from_imports(
                                 removed=config.ignore_comments,
                                 comment_prefix=config.comment_prefix,
                             )
-                            if opening_comment:
-                                lines[0] += opening_comment
-                                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                                    lines[0] = wrap.line(lines[0], parsed.line_separator, config)
-                            output.append(parsed.line_separator.join(lines))
+                            if len(lines) == 1:
+                                if opening_comment:
+                                    if opening_comment not in lines[0]:
+                                        lines[0] += opening_comment
+                                output.append(lines[0])
+                            else:
+                                if opening_comment:
+                                    lines[0] += opening_comment
+                                    if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                                        lines[0] = wrap.line(
+                                            lines[0], parsed.line_separator, config
+                                        )
+                                output.append(parsed.line_separator.join(lines))
                         else:
                             output.append(
                                 wrap.line(
@@ -582,18 +592,6 @@ def _with_from_imports(
                     comment = (
                         parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
                     )
-                    if (
-                        comment is not None
-                        and from_import in as_imports
-                        and config.multi_line_output != wrap_modes.WrapModes.NOQA
-                    ):
-                        # This name also has an alias; the leading-alias loop keeps the two
-                        # together on a later pass.  Popping the comment here would drop the
-                        # alias, so put it back and leave the name for that loop.
-                        parsed.categorized_comments["nested"].setdefault(module, {})[
-                            from_import
-                        ] = comment
-                        continue
                     if comment is not None:
                         # If the comment is a noqa and hanging indent wrapping is used,
                         # keep the name in the main list and hoist the comment to the statement.
@@ -605,7 +603,24 @@ def _with_from_imports(
                             comments.append(comment)
                             continue
 
-                        from_imports.remove(from_import)
+                        grouped_plain_imports = [from_import]
+                        if (
+                            from_import in as_imports
+                            and not config.combine_as_imports
+                            and not config.no_inline_sort
+                            and not only_show_as_imports
+                        ):
+                            current_index = from_imports.index(from_import)
+                            grouped_plain_imports = [
+                                candidate
+                                for candidate in from_imports[: current_index + 1]
+                                if candidate not in as_imports
+                                or parsed.imports[section][import_key][module][candidate]
+                            ]
+
+                        for grouped_plain_import in grouped_plain_imports:
+                            from_imports.remove(grouped_plain_import)
+
                         if from_imports:
                             use_comments: list[str] | None = []
                         else:
@@ -613,7 +628,7 @@ def _with_from_imports(
                             comments = None
                         single_import_line = with_comments(
                             use_comments,
-                            import_start + from_import,
+                            import_start + ", ".join(grouped_plain_imports),
                             removed=config.ignore_comments,
                             comment_prefix=config.comment_prefix,
                         )
@@ -628,9 +643,13 @@ def _with_from_imports(
                             and from_import in as_imports
                         ):
                             if not config.only_sections:
-                                as_imports[from_import] = sorting.sort(config, as_imports[from_import])
+                                as_imports[from_import] = sorting.sort(
+                                    config, as_imports[from_import]
+                                )
                             from_comments = (
-                                parsed.categorized_comments["straight"].get(f"{module}.{from_import}")
+                                parsed.categorized_comments["straight"].get(
+                                    f"{module}.{from_import}"
+                                )
                                 or []
                             )
                             for as_import in as_imports[from_import]:
@@ -686,7 +705,6 @@ def _with_from_imports(
                                 from_comments = []
 
                 from_import_section = []
-                from_import_section = []
                 if config.combine_as_imports:
                     while from_imports and (
                         from_imports[0] not in as_imports
@@ -700,9 +718,9 @@ def _with_from_imports(
                     for from_import in copy.copy(from_imports):
                         if from_import in as_imports:
                             aliased_from_imports.append(from_import)
-                        if (
-                            from_import not in as_imports
-                            or parsed.imports[section][import_key][module][from_import]
+                        if from_import not in as_imports or (
+                            parsed.imports[section][import_key][module][from_import]
+                            and not only_show_as_imports
                         ):
                             from_import_section.append(from_import)
                         if from_import not in as_imports or from_import in aliased_from_imports:
@@ -806,14 +824,16 @@ def _with_from_imports(
                     )
 
                     for as_import in as_imports[from_import]:
-                        opening_line_comments = list(from_comments)
                         specific_comment = (
                             parsed.categorized_comments["nested"]
                             .get(module, {})
                             .pop(as_import, None)
                         )
+                        opening_line_comments = [
+                            comment for comment in from_comments if comment != specific_comment
+                        ]
                         if specific_comment is not None:
-                            from_comments.append(specific_comment)
+                            from_comments = [*opening_line_comments, specific_comment]
 
                         import_line = import_start + as_import
                         if opening_line_comments and config.use_parentheses:
@@ -834,11 +854,19 @@ def _with_from_imports(
                                 removed=config.ignore_comments,
                                 comment_prefix=config.comment_prefix,
                             )
-                            if opening_comment:
-                                lines[0] += opening_comment
-                                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                                    lines[0] = wrap.line(lines[0], parsed.line_separator, config)
-                            output.append(parsed.line_separator.join(lines))
+                            if len(lines) == 1:
+                                if opening_comment:
+                                    if opening_comment not in lines[0]:
+                                        lines[0] += opening_comment
+                                output.append(lines[0])
+                            else:
+                                if opening_comment:
+                                    lines[0] += opening_comment
+                                    if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                                        lines[0] = wrap.line(
+                                            lines[0], parsed.line_separator, config
+                                        )
+                                output.append(parsed.line_separator.join(lines))
                         else:
                             output.append(
                                 wrap.line(
@@ -910,6 +938,12 @@ def _with_straight_imports(
 
     for module in straight_modules:
         if module in remove_imports:
+            comments_above = parsed.categorized_comments["above"]["straight"].pop(module, None)
+            if comments_above:
+                output.extend(comments_above)
+            inline_comments = parsed.categorized_comments["straight"].get(module, [])
+            if inline_comments:
+                output.append(with_comments(inline_comments, "#", comment_prefix=""))
             continue
 
         import_definition = []

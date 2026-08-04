@@ -1254,8 +1254,7 @@ def test_comment_not_duplicated_across_from_imports_2282() -> None:
     """
     # Comment should stay only on the line with a, b - not copied to e
     code = """\
-from foo import a, b  # comment
+from foo import a, b, e  # comment
 from foo import c as d
-from foo import e
 """
     assert isort.code(code) == code

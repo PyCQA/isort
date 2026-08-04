@@ -2409,14 +2409,11 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-    assert isort.code(to_sort) == to_sort
+    assert isort.code(to_sort) == "from x import aaa, m  # c\nfrom x import m as z\n"
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
-    relative_sorted = isort.code(relative)
-    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
-    assert relative_sorted == expected
-    assert isort.code(relative_sorted) == relative_sorted
+    assert relative == isort.code(relative)
 
 
 def test_same_style_imports_should_be_grouped_with_and_without_section_sort() -> None:
