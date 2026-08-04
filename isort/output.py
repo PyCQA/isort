@@ -548,19 +548,11 @@ def _with_from_imports(
                                 removed=config.ignore_comments,
                                 comment_prefix=config.comment_prefix,
                             )
-                            if len(lines) == 1:
-                                if opening_comment:
-                                    if opening_comment not in lines[0]:
-                                        lines[0] += opening_comment
-                                output.append(lines[0])
-                            else:
-                                if opening_comment:
-                                    lines[0] += opening_comment
-                                    if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                                        lines[0] = wrap.line(
-                                            lines[0], parsed.line_separator, config
-                                        )
-                                output.append(parsed.line_separator.join(lines))
+                            if opening_comment:
+                                lines[0] += opening_comment
+                                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                                    lines[0] = wrap.line(lines[0], parsed.line_separator, config)
+                            output.append(parsed.line_separator.join(lines))
                         else:
                             output.append(
                                 wrap.line(
