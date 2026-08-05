@@ -8,12 +8,12 @@ import json
 import os
 import sys
 from collections.abc import Iterator, Sequence
-from contextlib import AbstractContextManager, nullcontext
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 from warnings import warn
 
 from . import api, files, sections
@@ -52,6 +52,31 @@ class SortAttempt:
         # Defined explicitly as mypyc's removal of `__dict__` breaks pickling this class, which is
         # necessary when using multiple jobs.
         return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
+
+
+@contextmanager
+def _stream_with_preserved_newlines(stream: TextIO, mode: str) -> Iterator[TextIO]:
+    if not isinstance(stream, TextIOWrapper):
+        yield stream
+        return
+
+    try:
+        wrapped_stream = open(
+            stream.fileno(),
+            mode,
+            encoding=stream.encoding,
+            errors=stream.errors,
+            newline="",
+            closefd=False,
+        )
+    except OSError:
+        yield stream
+        return
+
+    try:
+        yield wrapped_stream
+    finally:
+        wrapped_stream.close()
 
 
 def sort_imports(
@@ -1073,30 +1098,33 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         if config.sort_reexports:
             sys.exit("Error: --sort-reexports is not supported with streaming input (stdin).")
 
-        input_stream = sys.stdin if stdin is None else stdin
-        if check:
-            incorrectly_sorted = not api.check_stream(
-                input_stream=input_stream,
-                config=config,
-                show_diff=show_diff,
-                file_path=file_path,
-                extension=ext_format,
-            )
-
-            wrong_sorted_files = incorrectly_sorted
-        else:
-            try:
-                api.sort_stream(
+        raw_input_stream = sys.stdin if stdin is None else stdin
+        with _stream_with_preserved_newlines(raw_input_stream, "r") as input_stream:
+            if check:
+                incorrectly_sorted = not api.check_stream(
                     input_stream=input_stream,
-                    output_stream=sys.stdout,
                     config=config,
                     show_diff=show_diff,
                     file_path=file_path,
                     extension=ext_format,
-                    raise_on_skip=False,
                 )
-            except FileSkipped:
-                sys.stdout.write(input_stream.read())
+
+                wrong_sorted_files = incorrectly_sorted
+            else:
+                try:
+                    with _stream_with_preserved_newlines(sys.stdout, "w") as output_stream:
+                        api.sort_stream(
+                            input_stream=input_stream,
+                            output_stream=output_stream,
+                            config=config,
+                            show_diff=show_diff,
+                            file_path=file_path,
+                            extension=ext_format,
+                            raise_on_skip=False,
+                        )
+                except FileSkipped:
+                    with _stream_with_preserved_newlines(sys.stdout, "w") as output_stream:
+                        output_stream.write(input_stream.read())
     elif "/" in file_names and not allow_root:
         printer = create_terminal_printer(
             color=config.color_output, error=config.format_error, success=config.format_success
