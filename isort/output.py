@@ -297,6 +297,106 @@ def _build_import_group(
     return group_output
 
 
+def _build_as_imports(
+    *,
+    from_import: str,  # Y in `from X import Y as Z`
+    as_imports: list[str],  # `Y as Z` in `from X import Y as Z`
+    import_start: str,  # `from X import ` in `from X import Y as Z`
+    line_separator: str,
+    config: Config,
+    straight_comments: list[str],
+    nested_comments: dict[str, str],
+    # Whether to include the straight import line (e.g. `from X import Y`) in the output. Can be
+    # determined by combining star imports.
+    include_straight_import: bool,
+) -> list[str]:
+    """
+    Build the import statements for a given list (`as_imports`) of aliased imports.
+    """
+    if not config.only_sections:
+        as_imports = sorting.sort(config, as_imports)
+
+    output: list[str] = []
+
+    if include_straight_import:
+        specific_comment = nested_comments.pop(from_import, None)
+        if specific_comment is not None:
+            straight_comments.append(specific_comment)
+        output.append(
+            wrap.line(
+                with_comments(
+                    straight_comments,
+                    import_start + from_import,
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
+                ),
+                line_separator,
+                config,
+            )
+        )
+        straight_comments = []
+
+    for as_import in as_imports:
+        # `We snapshot `straight_comments` here so that we can later distinguish
+        # the two types: opening-line comments must stay on the "import (" line
+        # when parentheses are used, while attribute-line comments stay on the
+        # import attribute line.
+        opening_line_comments = list(straight_comments)
+        specific_comment = nested_comments.pop(as_import, None)
+        # Collect the attribute-line comment (if any) separately so it can be
+        # embedded in the attribute line regardless of wrapping mode.
+        if specific_comment is not None:
+            straight_comments.append(specific_comment)
+
+        import_line = import_start + as_import
+        if opening_line_comments and config.use_parentheses:
+            # When parentheses are used, opening-line comments (e.g. "# noqa") must
+            # remain on the "from X import (" line. If we naively embedded them in
+            # the attribute string and then called wrap.line(), the comment would
+            # end up inside the parentheses on the alias attribute line.
+            # Wrap the import with only the attribute-line comment. Afterwards, add
+            # the opening-line comment back to the first line of the wrapped import
+            # statement.
+            lines = wrap.line(
+                with_comments(
+                    [specific_comment] if specific_comment else [],
+                    import_line,
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
+                ),
+                line_separator,
+                config,
+            ).split(line_separator)
+
+            opening_comment = with_comments(
+                opening_line_comments,
+                "",
+                removed=config.ignore_comments,
+                comment_prefix=config.comment_prefix,
+            )
+            if opening_comment:
+                lines[0] += opening_comment
+                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+                    lines[0] = wrap.line(lines[0], line_separator, config)
+            output.append(line_separator.join(lines))
+        else:
+            output.append(
+                wrap.line(
+                    with_comments(
+                        straight_comments,
+                        import_line,
+                        removed=config.ignore_comments,
+                        comment_prefix=config.comment_prefix,
+                    ),
+                    line_separator,
+                    config,
+                )
+            )
+
+        straight_comments = []
+    return output
+
+
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
@@ -462,97 +562,27 @@ def _with_from_imports(
                 processed_as_imports_this_iteration = True
                 from_import = from_imports.pop(0)
 
-                if not config.only_sections:
-                    as_imports[from_import] = sorting.sort(config, as_imports[from_import])
-                from_comments = (
-                    parsed.categorized_comments["straight"].get(f"{module}.{from_import}") or []
+                output.extend(
+                    _build_as_imports(
+                        from_import=from_import,
+                        as_imports=as_imports[from_import],
+                        import_start=import_start,
+                        line_separator=parsed.line_separator,
+                        config=config,
+                        # `from_comments` at this point contains any comments that appeared on
+                        # the *opening* "from X import" line. These are distinct from
+                        # `nested_comments`, which is an inline comment on the attribute line
+                        # itself.
+                        straight_comments=parsed.categorized_comments["straight"].get(
+                            f"{module}.{from_import}", []
+                        ),
+                        nested_comments=parsed.categorized_comments["nested"].get(module, {}),
+                        include_straight_import=(
+                            parsed.imports[section][import_key][module][from_import]
+                            and not only_show_as_imports
+                        ),
+                    )
                 )
-                if (
-                    parsed.imports[section][import_key][module][from_import]
-                    and not only_show_as_imports
-                ):
-                    specific_comment = (
-                        parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
-                    )
-                    if specific_comment is not None:
-                        from_comments.append(specific_comment)
-                    output.append(
-                        wrap.line(
-                            with_comments(
-                                from_comments,
-                                import_start + from_import,
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
-                            ),
-                            parsed.line_separator,
-                            config,
-                        )
-                    )
-                    from_comments = []
-
-                for as_import in as_imports[from_import]:
-                    # `from_comments` at this point contains any comments that appeared on
-                    # the *opening* "from X import" line. These are distinct from
-                    # `specific_comment`, which is an inline comment on the attribute line
-                    # itself. We snapshot `from_comments` here so that we can later distinguish
-                    # the two types: opening-line comments must stay on the "import (" line
-                    # when parentheses are used, while attribute-line comments stay on the
-                    # import attribute line.
-                    opening_line_comments = list(from_comments)
-                    specific_comment = (
-                        parsed.categorized_comments["nested"].get(module, {}).pop(as_import, None)
-                    )
-                    # Collect the attribute-line comment (if any) separately so it can be
-                    # embedded in the attribute line regardless of wrapping mode.
-                    if specific_comment is not None:
-                        from_comments.append(specific_comment)
-
-                    import_line = import_start + as_import
-                    if opening_line_comments and config.use_parentheses:
-                        # When parentheses are used, opening-line comments (e.g. "# noqa") must
-                        # remain on the "from X import (" line. If we naively embedded them in
-                        # the attribute string and then called wrap.line(), the comment would
-                        # end up inside the parentheses on the alias attribute line.
-                        # Wrap the import with only the attribute-line comment. Afterwards, add
-                        # the opening-line comment back to the first line of the wrapped import
-                        # statement.
-                        lines = wrap.line(
-                            with_comments(
-                                [specific_comment] if specific_comment else [],
-                                import_line,
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
-                            ),
-                            parsed.line_separator,
-                            config,
-                        ).split(parsed.line_separator)
-
-                        opening_comment = with_comments(
-                            opening_line_comments,
-                            "",
-                            removed=config.ignore_comments,
-                            comment_prefix=config.comment_prefix,
-                        )
-                        if opening_comment:
-                            lines[0] += opening_comment
-                            if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                                lines[0] = wrap.line(lines[0], parsed.line_separator, config)
-                        output.append(parsed.line_separator.join(lines))
-                    else:
-                        output.append(
-                            wrap.line(
-                                with_comments(
-                                    from_comments,
-                                    import_line,
-                                    removed=config.ignore_comments,
-                                    comment_prefix=config.comment_prefix,
-                                ),
-                                parsed.line_separator,
-                                config,
-                            )
-                        )
-
-                    from_comments = []
 
             if "*" in from_imports:
                 output.append(
