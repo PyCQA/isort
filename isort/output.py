@@ -397,6 +397,105 @@ def _build_as_imports(
     return output
 
 
+def _build_grouped_from_imports(
+    *,
+    imports: list[str],
+    comments: list[str],
+    module: str,
+    import_start: str,
+    processed_as_imports_this_iteration: bool,
+    parsed: parse.ParsedContent,
+    config: Config,
+) -> str:
+    """
+    Build a string of imports, wrapping them across multiple lines if necessary.
+    """
+    # If there are no imports to output, return an empty string. Make sure to do this after popping
+    # any comments, so that they don't remain.
+    if not imports:
+        return ""
+
+    import_statement = with_comments(
+        comments,
+        import_start + (", ").join(imports),
+        removed=config.ignore_comments,
+        comment_prefix=config.comment_prefix,
+    )
+
+    do_multiline_reformat = False
+
+    if (
+        (config.force_grid_wrap and len(imports) >= config.force_grid_wrap)
+        or (len(import_statement) > config.line_length and len(imports) > 1)
+        or (
+            # If line too long AND have imports AND we are
+            # NOT using GRID or VERTICAL wrap modes
+            len(import_statement) > config.line_length
+            and len(imports) > 0
+            and config.multi_line_output
+            not in (wrap_modes.WrapModes.GRID, wrap_modes.WrapModes.VERTICAL)
+        )
+    ):
+        do_multiline_reformat = True
+
+    if (
+        # When ``include_trailing_comma`` is enabled isort always appends a
+        # trailing comma to multi-line imports.  Combined with
+        # ``split_on_trailing_comma`` that means any import wrapped across
+        # multiple lines would gain a trailing comma and therefore be exploded
+        # onto individual lines on the *next* run.  Treat such imports as if they
+        # already carried a trailing comma so the explode happens on the first
+        # pass too, keeping the output idempotent regardless of the requested
+        # ``multi_line_output`` mode.
+        config.split_on_trailing_comma
+        and (
+            module in parsed.trailing_commas
+            or (config.include_trailing_comma and do_multiline_reformat)
+        )
+        and not processed_as_imports_this_iteration
+    ):
+        return wrap.import_statement(
+            import_start=import_start,
+            from_imports=imports,
+            comments=comments,
+            line_separator=parsed.line_separator,
+            config=config,
+            explode=True,
+        )
+
+    if do_multiline_reformat:
+        import_statement = wrap.import_statement(
+            import_start=import_start,
+            from_imports=imports,
+            comments=comments,
+            line_separator=parsed.line_separator,
+            config=config,
+        )
+        if config.multi_line_output == wrap_modes.WrapModes.GRID:
+            other_import_statement = wrap.import_statement(
+                import_start=import_start,
+                from_imports=imports,
+                comments=comments,
+                line_separator=parsed.line_separator,
+                config=config,
+                multi_line_output=wrap_modes.WrapModes.VERTICAL_GRID,
+            )
+            if (
+                max(
+                    len(import_line)
+                    for import_line in import_statement.split(parsed.line_separator)
+                )
+                > config.line_length
+            ):
+                import_statement = other_import_statement
+        return import_statement
+
+    if len(import_statement) > config.line_length:
+        return wrap.line(import_statement, parsed.line_separator, config)
+
+    return import_statement
+
+
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
@@ -464,7 +563,7 @@ def _with_from_imports(
                     else:
                         from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
-        comments: list[str] | None = parsed.categorized_comments["from"].pop(module, None)
+        comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
         above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
         if above_comments:
             output.extend(above_comments)
@@ -548,7 +647,7 @@ def _with_from_imports(
                         )
                 else:
                     output.append(wrap.line(single_import_line, parsed.line_separator, config))
-                comments = None
+                comments = []
 
         while from_imports:
             # Tracks whether any aliased imports were emitted before the grouped
@@ -627,7 +726,7 @@ def _with_from_imports(
                         use_comments: list[str] | None = []
                     else:
                         use_comments = comments
-                        comments = None
+                        comments = []
                     single_import_line = with_comments(
                         use_comments,
                         import_start + from_import,
@@ -649,96 +748,29 @@ def _with_from_imports(
                 )
             ):
                 from_import_section.append(from_imports.pop(0))
+
+            # If we are combining aliased imports we need to pop any associated comments.
             if config.combine_as_imports:
-                comments = (comments or []) + list(
-                    parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())
-                )
-            import_statement = with_comments(
-                comments,
-                import_start + (", ").join(from_import_section),
-                removed=config.ignore_comments,
-                comment_prefix=config.comment_prefix,
+                comments = [
+                    *comments,
+                    *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
+                ]
+
+            grouped_from_import_statement = _build_grouped_from_imports(
+                config=config,
+                parsed=parsed,
+                module=module,
+                imports=from_import_section,
+                import_start=import_start,
+                comments=comments,
+                processed_as_imports_this_iteration=processed_as_imports_this_iteration,
             )
-            if not from_import_section:
-                import_statement = ""
+            if grouped_from_import_statement:
+                output.append(grouped_from_import_statement)
 
-            do_multiline_reformat = False
+            # Reset comments as we have just parsed them.
+            comments = []
 
-            force_grid_wrap = config.force_grid_wrap
-            if force_grid_wrap and len(from_import_section) >= force_grid_wrap:
-                do_multiline_reformat = True
-
-            if len(import_statement) > config.line_length and len(from_import_section) > 1:
-                do_multiline_reformat = True
-
-            # If line too long AND have imports AND we are
-            # NOT using GRID or VERTICAL wrap modes
-            if (
-                len(import_statement) > config.line_length
-                and len(from_import_section) > 0
-                and config.multi_line_output
-                not in (wrap_modes.WrapModes.GRID, wrap_modes.WrapModes.VERTICAL)
-            ):
-                do_multiline_reformat = True
-
-            # When ``include_trailing_comma`` is enabled isort always appends a
-            # trailing comma to multi-line imports.  Combined with
-            # ``split_on_trailing_comma`` that means any import wrapped across
-            # multiple lines would gain a trailing comma and therefore be exploded
-            # onto individual lines on the *next* run.  Treat such imports as if they
-            # already carried a trailing comma so the explode happens on the first
-            # pass too, keeping the output idempotent regardless of the requested
-            # ``multi_line_output`` mode.
-            explode_on_trailing_comma = config.split_on_trailing_comma and (
-                module in parsed.trailing_commas
-                or (config.include_trailing_comma and do_multiline_reformat)
-            )
-
-            if (
-                import_statement
-                and explode_on_trailing_comma
-                and not processed_as_imports_this_iteration
-            ):
-                import_statement = wrap.import_statement(
-                    import_start=import_start,
-                    from_imports=from_import_section,
-                    comments=comments,
-                    line_separator=parsed.line_separator,
-                    config=config,
-                    explode=True,
-                )
-
-            elif do_multiline_reformat:
-                import_statement = wrap.import_statement(
-                    import_start=import_start,
-                    from_imports=from_import_section,
-                    comments=comments,
-                    line_separator=parsed.line_separator,
-                    config=config,
-                )
-                if config.multi_line_output == wrap_modes.WrapModes.GRID:
-                    other_import_statement = wrap.import_statement(
-                        import_start=import_start,
-                        from_imports=from_import_section,
-                        comments=comments,
-                        line_separator=parsed.line_separator,
-                        config=config,
-                        multi_line_output=wrap_modes.WrapModes.VERTICAL_GRID,
-                    )
-                    if (
-                        max(
-                            len(import_line)
-                            for import_line in import_statement.split(parsed.line_separator)
-                        )
-                        > config.line_length
-                    ):
-                        import_statement = other_import_statement
-            elif len(import_statement) > config.line_length:
-                import_statement = wrap.line(import_statement, parsed.line_separator, config)
-            comments = None
-
-            if import_statement:
-                output.append(import_statement)
     return output
 
 
