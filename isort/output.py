@@ -616,23 +616,7 @@ def _with_from_imports_for_module(
     # Handle force_single_line
     if config.force_single_line and module not in config.single_line_exclusions:
         for from_import in from_imports:
-            single_import_line = with_comments(
-                comments,
-                import_start + from_import,
-                removed=config.ignore_comments,
-                comment_prefix=config.comment_prefix,
-            )
-            comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
-            if comment is not None:
-                comment_text = f" {comment}" if comment else ""
-                single_import_line += f"{(comments and ';') or config.comment_prefix}{comment_text}"
             if from_import in as_imports:
-                if (
-                    parsed.imports[section][import_key][module][from_import]
-                    and not only_show_as_imports
-                ):
-                    output.append(wrap.line(single_import_line, parsed.line_separator, config))
-
                 output.extend(
                     _build_as_imports(
                         from_import=from_import,
@@ -640,14 +624,36 @@ def _with_from_imports_for_module(
                         import_start=import_start,
                         line_separator=parsed.line_separator,
                         config=config,
-                        straight_comments=parsed.categorized_comments["straight"].get(
-                            f"{module}.{from_import}", []
-                        ),
+                        straight_comments=[
+                            *comments,
+                            *parsed.categorized_comments["straight"].get(
+                                f"{module}.{from_import}", []
+                            ),
+                        ],
                         nested_comments=parsed.categorized_comments["nested"].get(module, {}),
-                        include_straight_import=False,
+                        include_straight_import=(
+                            parsed.imports[section][import_key][module][from_import]
+                            and not only_show_as_imports
+                        ),
                     )
                 )
             else:
+                single_import_line = with_comments(
+                    [
+                        c
+                        for c in (
+                            *comments,
+                            parsed.categorized_comments["nested"]
+                            .get(module, {})
+                            .pop(from_import, None),
+                        )
+                        if c is not None
+                    ],
+                    import_start + from_import,
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
+                )
+
                 output.append(wrap.line(single_import_line, parsed.line_separator, config))
             comments = []
         return output
