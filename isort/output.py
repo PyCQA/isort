@@ -496,9 +496,6 @@ def _build_grouped_from_imports(
     return import_statement
 
 
-# Ignore DeepSource cyclomatic complexity check for this function. It was
-# already complex when this check was enabled.
-# skipcq: PY-R1000
 def _with_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
@@ -513,263 +510,283 @@ def _with_from_imports(
     import_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
 
     for module in from_modules:
-        if module in remove_imports:
-            continue
+        module_output = _with_from_imports_for_module(
+            module=module,
+            parsed=parsed,
+            config=config,
+            section=section,
+            remove_imports=remove_imports,
+            import_type=import_type,
+            import_key=import_key,
+        )
+        if module_output is not None:
+            output.extend(module_output)
 
-        import_start = f"from {module} {import_type} "
-        if is_lazy:
-            import_start = f"lazy {import_start}"
-        from_imports = list(parsed.imports[section][import_key][module])
+    return output
 
-        if (
-            not config.no_inline_sort
-            or (config.force_single_line and module not in config.single_line_exclusions)
-        ) and not config.only_sections:
-            from_imports = sorting.sort(
+
+# Ignore DeepSource cyclomatic complexity check for this function. It was
+# already complex when this check was enabled.
+# skipcq: PY-R1000
+def _with_from_imports_for_module(
+    *,
+    module: str,
+    parsed: parse.ParsedContent,
+    config: Config,
+    section: str,
+    remove_imports: list[str],
+    import_type: str,
+    import_key: Literal["lazy_from", "from"],
+) -> list[str]:
+    """
+    Build the from-import lines for a given module and section.
+    """
+    output: list[str] = []
+    if module in remove_imports:
+        return output
+
+    import_start = f"from {module} {import_type} "
+    if import_key == "lazy_from":
+        import_start = f"lazy {import_start}"
+    from_imports = list(parsed.imports[section][import_key][module])
+
+    if (
+        not config.no_inline_sort
+        or (config.force_single_line and module not in config.single_line_exclusions)
+    ) and not config.only_sections:
+        from_imports = sorting.sort(
+            config,
+            from_imports,
+            key=lambda key: sorting.module_key(
+                key,
                 config,
-                from_imports,
-                key=lambda key: sorting.module_key(
-                    key,
-                    config,
-                    True,
-                    config.force_alphabetical_sort_within_sections,
-                    section_name=section,
+                True,
+                config.force_alphabetical_sort_within_sections,
+                section_name=section,
+            ),
+            reverse=config.reverse_sort,
+        )
+    if remove_imports:
+        from_imports = [line for line in from_imports if f"{module}.{line}" not in remove_imports]
+
+    sub_modules = [f"{module}.{from_import}" for from_import in from_imports]
+    as_imports = {
+        from_import: [
+            f"{from_import} as {as_module}" for as_module in parsed.as_map["from"][sub_module]
+        ]
+        for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
+        if sub_module in parsed.as_map["from"]
+    }
+    if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
+        if not config.no_inline_sort:
+            for as_import in as_imports:
+                if not config.only_sections:
+                    as_imports[as_import] = sorting.sort(config, as_imports[as_import])
+        for from_import in copy.copy(from_imports):
+            if from_import in as_imports:
+                idx = from_imports.index(from_import)
+                if parsed.imports[section][import_key][module][from_import]:
+                    from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
+                else:
+                    from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
+
+    comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
+    above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+    if above_comments:
+        output.extend(above_comments)
+
+    # Handle any * star import first if combine_star is enabled.
+    only_show_as_imports = False
+    if "*" in from_imports and config.combine_star:
+        output.append(
+            wrap.line(
+                with_comments(
+                    _with_star_comments(parsed, module, list(comments or ())),
+                    f"{import_start}*",
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
                 ),
-                reverse=config.reverse_sort,
+                parsed.line_separator,
+                config,
             )
-        if remove_imports:
-            from_imports = [
-                line for line in from_imports if f"{module}.{line}" not in remove_imports
-            ]
+        )
+        from_imports = [from_import for from_import in from_imports if from_import in as_imports]
+        only_show_as_imports = True
 
-        sub_modules = [f"{module}.{from_import}" for from_import in from_imports]
-        as_imports = {
-            from_import: [
-                f"{from_import} as {as_module}" for as_module in parsed.as_map["from"][sub_module]
-            ]
-            for from_import, sub_module in zip(from_imports, sub_modules, strict=False)
-            if sub_module in parsed.as_map["from"]
-        }
-        if config.combine_as_imports and not ("*" in from_imports and config.combine_star):
-            if not config.no_inline_sort:
-                for as_import in as_imports:
-                    if not config.only_sections:
-                        as_imports[as_import] = sorting.sort(config, as_imports[as_import])
-            for from_import in copy.copy(from_imports):
-                if from_import in as_imports:
-                    idx = from_imports.index(from_import)
-                    if parsed.imports[section][import_key][module][from_import]:
-                        from_imports[(idx + 1) : (idx + 1)] = as_imports.pop(from_import)
-                    else:
-                        from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
+    # Handle force_single_line
+    if config.force_single_line and module not in config.single_line_exclusions:
+        while from_imports:
+            from_import = from_imports.pop(0)
+            single_import_line = with_comments(
+                comments,
+                import_start + from_import,
+                removed=config.ignore_comments,
+                comment_prefix=config.comment_prefix,
+            )
+            comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+            if comment is not None:
+                comment_text = f" {comment}" if comment else ""
+                single_import_line += f"{(comments and ';') or config.comment_prefix}{comment_text}"
+            if from_import in as_imports:
+                if (
+                    parsed.imports[section][import_key][module][from_import]
+                    and not only_show_as_imports
+                ):
+                    output.append(wrap.line(single_import_line, parsed.line_separator, config))
+                from_comments = parsed.categorized_comments["straight"].get(
+                    f"{module}.{from_import}"
+                )
 
-        comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
-        above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
-        if above_comments:
-            output.extend(above_comments)
+                if not config.only_sections:
+                    output.extend(
+                        wrap.line(
+                            with_comments(
+                                from_comments,
+                                import_start + as_import,
+                                removed=config.ignore_comments,
+                                comment_prefix=config.comment_prefix,
+                            ),
+                            parsed.line_separator,
+                            config,
+                        )
+                        for as_import in sorting.sort(config, as_imports[from_import])
+                    )
 
-        # Handle any * star import first if combine_star is enabled.
-        only_show_as_imports = False
-        if "*" in from_imports and config.combine_star:
-            output.append(
-                wrap.line(
-                    with_comments(
-                        _with_star_comments(parsed, module, list(comments or ())),
-                        f"{import_start}*",
-                        removed=config.ignore_comments,
-                        comment_prefix=config.comment_prefix,
+                else:
+                    output.extend(
+                        wrap.line(
+                            with_comments(
+                                from_comments,
+                                import_start + as_import,
+                                removed=config.ignore_comments,
+                                comment_prefix=config.comment_prefix,
+                            ),
+                            parsed.line_separator,
+                            config,
+                        )
+                        for as_import in as_imports[from_import]
+                    )
+            else:
+                output.append(wrap.line(single_import_line, parsed.line_separator, config))
+            comments = []
+
+    while from_imports:
+        # Tracks whether any aliased imports were emitted before the grouped
+        # non-aliased imports in this pass of the outer loop.  When True it
+        # suppresses the split_on_trailing_comma explode behaviour for the
+        # non-aliased group, because those imports are not the sole content
+        # of the statement and forcing them onto individual lines would break
+        # the intended output structure.
+        processed_as_imports_this_iteration = False
+        while from_imports and from_imports[0] in as_imports:
+            processed_as_imports_this_iteration = True
+            from_import = from_imports.pop(0)
+
+            output.extend(
+                _build_as_imports(
+                    from_import=from_import,
+                    as_imports=as_imports[from_import],
+                    import_start=import_start,
+                    line_separator=parsed.line_separator,
+                    config=config,
+                    # `from_comments` at this point contains any comments that appeared on
+                    # the *opening* "from X import" line. These are distinct from
+                    # `nested_comments`, which is an inline comment on the attribute line
+                    # itself.
+                    straight_comments=parsed.categorized_comments["straight"].get(
+                        f"{module}.{from_import}", []
                     ),
-                    parsed.line_separator,
-                    config,
+                    nested_comments=parsed.categorized_comments["nested"].get(module, {}),
+                    include_straight_import=(
+                        parsed.imports[section][import_key][module][from_import]
+                        and not only_show_as_imports
+                    ),
                 )
             )
-            from_imports = [
-                from_import for from_import in from_imports if from_import in as_imports
-            ]
-            only_show_as_imports = True
 
-        # Handle force_single_line
-        if config.force_single_line and module not in config.single_line_exclusions:
-            while from_imports:
-                from_import = from_imports.pop(0)
+        if "*" in from_imports:
+            output.append(
+                with_comments(
+                    _with_star_comments(parsed, module, []),
+                    f"{import_start}*",
+                    removed=config.ignore_comments,
+                    comment_prefix=config.comment_prefix,
+                )
+            )
+            from_imports.remove("*")
+
+        for from_import in copy.copy(from_imports):
+            comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+            if (
+                comment is not None
+                and from_import in as_imports
+                and config.multi_line_output != wrap_modes.WrapModes.NOQA
+            ):
+                # This name also has an alias; the leading-alias loop keeps the two
+                # together on a later pass.  Popping the comment here would drop the
+                # alias, so put it back and leave the name for that loop.
+                parsed.categorized_comments["nested"].setdefault(module, {})[from_import] = comment
+                continue
+            if comment is not None:
+                # If the comment is a noqa and hanging indent wrapping is used,
+                # keep the name in the main list and hoist the comment to the statement.
+                if (
+                    comment.lower().startswith("noqa")
+                    and config.multi_line_output == wrap_modes.WrapModes.HANGING_INDENT
+                ):
+                    comments = list(comments) if comments else []
+                    comments.append(comment)
+                    continue
+
+                from_imports.remove(from_import)
+                if from_imports:
+                    use_comments: list[str] | None = []
+                else:
+                    use_comments = comments
+                    comments = []
                 single_import_line = with_comments(
-                    comments,
+                    use_comments,
                     import_start + from_import,
                     removed=config.ignore_comments,
                     comment_prefix=config.comment_prefix,
                 )
-                comment = (
-                    parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
+                comment_text = f" {comment}" if comment else ""
+                single_import_line += (
+                    f"{(use_comments and ';') or config.comment_prefix}{comment_text}"
                 )
-                if comment is not None:
-                    comment_text = f" {comment}" if comment else ""
-                    single_import_line += (
-                        f"{(comments and ';') or config.comment_prefix}{comment_text}"
-                    )
-                if from_import in as_imports:
-                    if (
-                        parsed.imports[section][import_key][module][from_import]
-                        and not only_show_as_imports
-                    ):
-                        output.append(wrap.line(single_import_line, parsed.line_separator, config))
-                    from_comments = parsed.categorized_comments["straight"].get(
-                        f"{module}.{from_import}"
-                    )
+                output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
-                    if not config.only_sections:
-                        output.extend(
-                            wrap.line(
-                                with_comments(
-                                    from_comments,
-                                    import_start + as_import,
-                                    removed=config.ignore_comments,
-                                    comment_prefix=config.comment_prefix,
-                                ),
-                                parsed.line_separator,
-                                config,
-                            )
-                            for as_import in sorting.sort(config, as_imports[from_import])
-                        )
-
-                    else:
-                        output.extend(
-                            wrap.line(
-                                with_comments(
-                                    from_comments,
-                                    import_start + as_import,
-                                    removed=config.ignore_comments,
-                                    comment_prefix=config.comment_prefix,
-                                ),
-                                parsed.line_separator,
-                                config,
-                            )
-                            for as_import in as_imports[from_import]
-                        )
-                else:
-                    output.append(wrap.line(single_import_line, parsed.line_separator, config))
-                comments = []
-
-        while from_imports:
-            # Tracks whether any aliased imports were emitted before the grouped
-            # non-aliased imports in this pass of the outer loop.  When True it
-            # suppresses the split_on_trailing_comma explode behaviour for the
-            # non-aliased group, because those imports are not the sole content
-            # of the statement and forcing them onto individual lines would break
-            # the intended output structure.
-            processed_as_imports_this_iteration = False
-            while from_imports and from_imports[0] in as_imports:
-                processed_as_imports_this_iteration = True
-                from_import = from_imports.pop(0)
-
-                output.extend(
-                    _build_as_imports(
-                        from_import=from_import,
-                        as_imports=as_imports[from_import],
-                        import_start=import_start,
-                        line_separator=parsed.line_separator,
-                        config=config,
-                        # `from_comments` at this point contains any comments that appeared on
-                        # the *opening* "from X import" line. These are distinct from
-                        # `nested_comments`, which is an inline comment on the attribute line
-                        # itself.
-                        straight_comments=parsed.categorized_comments["straight"].get(
-                            f"{module}.{from_import}", []
-                        ),
-                        nested_comments=parsed.categorized_comments["nested"].get(module, {}),
-                        include_straight_import=(
-                            parsed.imports[section][import_key][module][from_import]
-                            and not only_show_as_imports
-                        ),
-                    )
-                )
-
-            if "*" in from_imports:
-                output.append(
-                    with_comments(
-                        _with_star_comments(parsed, module, []),
-                        f"{import_start}*",
-                        removed=config.ignore_comments,
-                        comment_prefix=config.comment_prefix,
-                    )
-                )
-                from_imports.remove("*")
-
-            for from_import in copy.copy(from_imports):
-                comment = (
-                    parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)
-                )
-                if (
-                    comment is not None
-                    and from_import in as_imports
-                    and config.multi_line_output != wrap_modes.WrapModes.NOQA
-                ):
-                    # This name also has an alias; the leading-alias loop keeps the two
-                    # together on a later pass.  Popping the comment here would drop the
-                    # alias, so put it back and leave the name for that loop.
-                    parsed.categorized_comments["nested"].setdefault(module, {})[from_import] = (
-                        comment
-                    )
-                    continue
-                if comment is not None:
-                    # If the comment is a noqa and hanging indent wrapping is used,
-                    # keep the name in the main list and hoist the comment to the statement.
-                    if (
-                        comment.lower().startswith("noqa")
-                        and config.multi_line_output == wrap_modes.WrapModes.HANGING_INDENT
-                    ):
-                        comments = list(comments) if comments else []
-                        comments.append(comment)
-                        continue
-
-                    from_imports.remove(from_import)
-                    if from_imports:
-                        use_comments: list[str] | None = []
-                    else:
-                        use_comments = comments
-                        comments = []
-                    single_import_line = with_comments(
-                        use_comments,
-                        import_start + from_import,
-                        removed=config.ignore_comments,
-                        comment_prefix=config.comment_prefix,
-                    )
-                    comment_text = f" {comment}" if comment else ""
-                    single_import_line += (
-                        f"{(use_comments and ';') or config.comment_prefix}{comment_text}"
-                    )
-                    output.append(wrap.line(single_import_line, parsed.line_separator, config))
-
-            from_import_section = []
-            while from_imports and (
-                from_imports[0] not in as_imports
-                or (
-                    config.combine_as_imports
-                    and parsed.imports[section][import_key][module][from_import]
-                )
-            ):
-                from_import_section.append(from_imports.pop(0))
-
-            # If we are combining aliased imports we need to pop any associated comments.
-            if config.combine_as_imports:
-                comments = [
-                    *comments,
-                    *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
-                ]
-
-            grouped_from_import_statement = _build_grouped_from_imports(
-                config=config,
-                parsed=parsed,
-                module=module,
-                imports=from_import_section,
-                import_start=import_start,
-                comments=comments,
-                processed_as_imports_this_iteration=processed_as_imports_this_iteration,
+        from_import_section = []
+        while from_imports and (
+            from_imports[0] not in as_imports
+            or (
+                config.combine_as_imports
+                and parsed.imports[section][import_key][module][from_import]
             )
-            if grouped_from_import_statement:
-                output.append(grouped_from_import_statement)
+        ):
+            from_import_section.append(from_imports.pop(0))
 
-            # Reset comments as we have just parsed them.
-            comments = []
+        # If we are combining aliased imports we need to pop any associated comments.
+        if config.combine_as_imports:
+            comments = [
+                *comments,
+                *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
+            ]
+
+        grouped_from_import_statement = _build_grouped_from_imports(
+            config=config,
+            parsed=parsed,
+            module=module,
+            imports=from_import_section,
+            import_start=import_start,
+            comments=comments,
+            processed_as_imports_this_iteration=processed_as_imports_this_iteration,
+        )
+        if grouped_from_import_statement:
+            output.append(grouped_from_import_statement)
+
+        # Reset comments as we have just parsed them.
+        comments = []
 
     return output
 
