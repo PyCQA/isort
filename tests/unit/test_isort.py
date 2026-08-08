@@ -1828,14 +1828,12 @@ def test_keep_comments() -> None:
 
     # More complicated case
     test_input = "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
-    assert isort.code(test_input) == (
-        "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
-    )
+    assert isort.code(test_input) == "from a import b, c  # My Comment1; My Comment2\n"
 
     # Test case where imports comments make imports extend pass the line length
     test_input = "from a import b # My Comment1\nfrom a import c # My Comment2\nfrom a import d\n"
     assert isort.code(test_input, line_length=45) == (
-        "from a import b  # My Comment1\nfrom a import c  # My Comment2\nfrom a import d\n"
+        "from a import \\\n    b, c, d  # My Comment1; My Comment2\n"
     )
 
     # Test case where imports with comments will be beyond line length limit
@@ -1998,9 +1996,7 @@ def test_correctly_placed_imports() -> None:
     assert isort.code(test_input, force_single_line=True) == (
         "from a import b  # comment for b\nfrom a import c  # comment for c\n"
     )
-    assert isort.code(test_input) == (
-        "from a import b  # comment for b\nfrom a import c  # comment for c\n"
-    )
+    assert isort.code(test_input) == "from a import b, c  # comment for b; comment for c\n"
 
     # Full example test from issue #143
     test_input = (
@@ -3558,19 +3554,19 @@ def test_escaped_parens_sort() -> None:
 
 def test_escaped_parens_sort_with_comment() -> None:
     test_input = "from foo import \\ \n(a,\nb,# comment\nc)\n"
-    expected = "from foo import b  # comment\nfrom foo import a, c\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
 def test_escaped_parens_sort_with_first_comment() -> None:
     test_input = "from foo import \\ \n(a,# comment\nb,\nc)\n"
-    expected = "from foo import a  # comment\nfrom foo import b, c\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
 def test_escaped_no_parens_sort_with_first_comment() -> None:
     test_input = "from foo import a, \\\nb, \\\nc # comment\n"
-    expected = "from foo import c  # comment\nfrom foo import a, b\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
@@ -3954,13 +3950,12 @@ def test_all_imports_from_single_module() -> None:
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, w, x, y, z\n"
         "from a import b as c\n"
         "from a import b as d\n"
         "from a import e as f\n"
         "from a import g as h\n"
         "from a import i as j\n"
-        "from a import w, x, y, z\n"
     )
     test_input = (
         "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
@@ -4034,10 +4029,9 @@ from a import i as j
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, z, x, y, w\n"
         "from a import b as c\n"
         "from a import b as d\n"
-        "from a import z, x, y, w\n"
         "from a import i as j\n"
         "from a import g as h\n"
         "from a import e as f\n"
@@ -5064,8 +5058,7 @@ from flask_principal import identity_changed as user_identity_changed  # noqa
 from flask_login import user_logged_in, user_logged_out  # noqa
 from flask_principal import identity_changed as user_identity_changed  # noqa
 from flask_security.signals import password_changed as user_reset_password  # noqa
-from flask_security.signals import user_confirmed  # noqa
-from flask_security.signals import user_registered  # noqa
+from flask_security.signals import user_confirmed, user_registered  # noqa
 """
     assert isort.code(test_input, line_length=100) == expected_output
 
@@ -5504,13 +5497,27 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> No
 from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
 from django.db.models.sql.compiler import SQLUpdateCompiler
 """
+    expected_output = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+    SQLUpdateCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+"""
     output = isort.code(
         test_input,
         include_trailing_comma=True,
         split_on_trailing_comma=True,
         line_length=88,
     )
-    assert output == test_input
+    assert output == expected_output
+    assert output == isort.code(
+        output,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+    )
 
     expected_output_with_combine = """from django.db.models.sql.compiler import (
     SQLAggregateCompiler,
