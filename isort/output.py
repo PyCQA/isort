@@ -632,39 +632,21 @@ def _with_from_imports_for_module(
                     and not only_show_as_imports
                 ):
                     output.append(wrap.line(single_import_line, parsed.line_separator, config))
-                from_comments = parsed.categorized_comments["straight"].get(
-                    f"{module}.{from_import}"
+
+                output.extend(
+                    _build_as_imports(
+                        from_import=from_import,
+                        as_imports=as_imports[from_import],
+                        import_start=import_start,
+                        line_separator=parsed.line_separator,
+                        config=config,
+                        straight_comments=parsed.categorized_comments["straight"].get(
+                            f"{module}.{from_import}", []
+                        ),
+                        nested_comments=parsed.categorized_comments["nested"].get(module, {}),
+                        include_straight_import=False,
+                    )
                 )
-
-                if not config.only_sections:
-                    output.extend(
-                        wrap.line(
-                            with_comments(
-                                from_comments,
-                                import_start + as_import,
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
-                            ),
-                            parsed.line_separator,
-                            config,
-                        )
-                        for as_import in sorting.sort(config, as_imports[from_import])
-                    )
-
-                else:
-                    output.extend(
-                        wrap.line(
-                            with_comments(
-                                from_comments,
-                                import_start + as_import,
-                                removed=config.ignore_comments,
-                                comment_prefix=config.comment_prefix,
-                            ),
-                            parsed.line_separator,
-                            config,
-                        )
-                        for as_import in as_imports[from_import]
-                    )
             else:
                 output.append(wrap.line(single_import_line, parsed.line_separator, config))
             comments = []
