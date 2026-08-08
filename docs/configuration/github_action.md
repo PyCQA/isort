@@ -61,3 +61,8 @@ jobs:
 [python-isort]: https://github.com/marketplace/actions/python-isort
 [checkout-action]: https://github.com/actions/checkout
 [setup-python]: https://github.com/actions/setup-python
+
+## Other CI tools
+
+isort is also available out of the box in [MegaLinter](https://megalinter.io/), an open-source aggregator that runs it together with other Python linters in most CI systems.
+See its [isort documentation page](https://megalinter.io/latest/descriptors/python_isort/) for setup details.
