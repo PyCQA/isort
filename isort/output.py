@@ -595,13 +595,20 @@ def _with_from_imports_for_module(
     if above_comments:
         output.extend(above_comments)
 
-    # Handle any * star import first if combine_star is enabled.
     only_show_as_imports = False
-    if "*" in from_imports and config.combine_star:
+    if "*" in from_imports:
+        from_imports.remove("*")
+
         output.append(
             wrap.line(
                 with_comments(
-                    _with_star_comments(parsed, module, list(comments or ())),
+                    _with_star_comments(
+                        parsed,
+                        module,
+                        # If we are combining the star imports we want to include all from-import
+                        # comments we found above.
+                        comments if config.combine_star else [],
+                    ),
                     f"{import_start}*",
                     removed=config.ignore_comments,
                     comment_prefix=config.comment_prefix,
@@ -610,8 +617,12 @@ def _with_from_imports_for_module(
                 config,
             )
         )
-        from_imports = [from_import for from_import in from_imports if from_import in as_imports]
-        only_show_as_imports = True
+
+        if config.combine_star:
+            from_imports = [
+                from_import for from_import in from_imports if from_import in as_imports
+            ]
+            only_show_as_imports = True
 
     # Handle force_single_line
     if config.force_single_line and module not in config.single_line_exclusions:
@@ -691,17 +702,6 @@ def _with_from_imports_for_module(
                     ),
                 )
             )
-
-        if "*" in from_imports:
-            output.append(
-                with_comments(
-                    _with_star_comments(parsed, module, []),
-                    f"{import_start}*",
-                    removed=config.ignore_comments,
-                    comment_prefix=config.comment_prefix,
-                )
-            )
-            from_imports.remove("*")
 
         for from_import in copy.copy(from_imports):
             comment = parsed.categorized_comments["nested"].get(module, {}).pop(from_import, None)

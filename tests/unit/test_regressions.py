@@ -650,16 +650,42 @@ import os
     )
 
 
-def test_comments_should_never_be_moved_between_imports_issue_1427():
+def test_force_single_line_should_not_influence_order_of_star_import():
     """isort should never move comments to different import statement.
-    See: https://github.com/PyCQA/isort/issues/1427
+
+    Originally reported as an issue with moving comments across import statements,
+    see: https://github.com/PyCQA/isort/issues/1427
     """
+    expected = """from package import *  # noqa
+from package import CONSTANT
+"""
     assert isort.check_code(
-        """from package import CONSTANT
-from package import *  # noqa
-        """,
+        expected,
+        force_single_line=False,
+        show_diff=True,
+    )
+    assert isort.check_code(
+        expected,
         force_single_line=True,
         show_diff=True,
+    )
+    assert (
+        isort.code(
+            """from package import CONSTANT
+from package import *  # noqa
+""",
+            force_single_line=False,
+        )
+        == expected
+    )
+    assert (
+        isort.code(
+            """from package import CONSTANT
+from package import *  # noqa
+""",
+            force_single_line=True,
+        )
+        == expected
     )
 
 
