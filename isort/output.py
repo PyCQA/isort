@@ -615,8 +615,7 @@ def _with_from_imports_for_module(
 
     # Handle force_single_line
     if config.force_single_line and module not in config.single_line_exclusions:
-        while from_imports:
-            from_import = from_imports.pop(0)
+        for from_import in from_imports:
             single_import_line = with_comments(
                 comments,
                 import_start + from_import,
@@ -669,6 +668,7 @@ def _with_from_imports_for_module(
             else:
                 output.append(wrap.line(single_import_line, parsed.line_separator, config))
             comments = []
+        return output
 
     while from_imports:
         # Tracks whether any aliased imports were emitted before the grouped
