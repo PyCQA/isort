@@ -301,7 +301,7 @@ class Config(_Config):
         # Therefore we extract quiet early here in a variable and use that in warning conditions.
         quiet = config_overrides.get("quiet", False)
 
-        sources: list[dict[str, Any]] = [_DEFAULT_SETTINGS]
+        sources: list[dict[str, object]] = [_DEFAULT_SETTINGS]
 
         config_settings: dict[str, Any]
         project_root: str
@@ -427,7 +427,7 @@ class Config(_Config):
 
         if "directory" not in combined_config:
             combined_config["directory"] = (
-                os.path.dirname(config_settings["source"])
+                os.path.dirname(str(config_settings["source"]))
                 if config_settings.get("source", None)
                 else os.getcwd()
             )
@@ -711,17 +711,17 @@ class Config(_Config):
         return patterns
 
 
-def _get_str_to_type_converter(setting_name: str) -> Callable[[str], Any] | type[Any]:
-    type_converter: Callable[[str], Any] | type[Any] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
+def _get_str_to_type_converter(setting_name: str) -> Callable[[object], object]:
+    type_converter: Callable[[object], object] = type(_DEFAULT_SETTINGS.get(setting_name, ""))
     if type_converter == WrapModes:
         type_converter = wrap_mode_from_string
     return type_converter
 
 
-def _as_list(value: str | list[str]) -> list[str]:
+def _as_list(value: object) -> list[str]:
     if isinstance(value, list):
         return [item.strip() for item in value]
-    filtered = [item.strip() for item in value.replace("\n", ",").split(",") if item.strip()]
+    filtered = [item.strip() for item in str(value).replace("\n", ",").split(",") if item.strip()]
     return filtered
 
 
@@ -803,8 +803,8 @@ def find_all_configs(path: str) -> Trie:
     return trie_root
 
 
-def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any]:
-    settings: dict[str, Any] = {}
+def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, object]:
+    settings: dict[str, object] = {}
 
     if file_path.endswith(".toml"):
         with open(file_path, "rb") as bin_config_file:
@@ -847,10 +847,10 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
         settings["source"] = file_path
 
         if file_path.endswith(".editorconfig"):
-            indent_style = settings.pop("indent_style", "").strip()
-            indent_size = settings.pop("indent_size", "").strip()
+            indent_style = str(settings.pop("indent_style", "")).strip()
+            indent_size = str(settings.pop("indent_size", "")).strip()
             if indent_size == "tab":
-                indent_size = settings.pop("tab_width", "").strip()
+                indent_size = str(settings.pop("tab_width", "")).strip()
 
             if indent_style == "space":
                 settings["indent"] = " " * ((indent_size and int(indent_size)) or 4)
@@ -858,7 +858,7 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
             elif indent_style == "tab":
                 settings["indent"] = "\t" * ((indent_size and int(indent_size)) or 1)
 
-            max_line_length = settings.pop("max_line_length", "").strip()
+            max_line_length = str(settings.pop("max_line_length", "")).strip()
             if max_line_length and (max_line_length == "off" or max_line_length.isdigit()):
                 settings["line_length"] = (
                     float("inf") if max_line_length == "off" else int(max_line_length)
@@ -874,7 +874,7 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
             if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))
             elif existing_value_type is frozenset:
-                settings[key] = frozenset(_as_list(settings.get(key)))  # type: ignore[arg-type]
+                settings[key] = frozenset(_as_list(settings.get(key)))
             elif existing_value_type is bool:
                 # Only some configuration formats support native boolean values.
                 if not isinstance(value, bool):
@@ -886,7 +886,7 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
                 try:
                     result = existing_value_type(value)
                 except ValueError:  # backwards compatibility for true / false force grid wrap
-                    result = 0 if value.lower().strip() == "false" else 2
+                    result = 0 if str(value).lower().strip() == "false" else 2
                 settings[key] = result
             elif key == "comment_prefix":
                 settings[key] = str(value).strip("'").strip('"')
@@ -896,12 +896,12 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, Any
     return settings
 
 
-def _as_bool(value: str) -> bool:
+def _as_bool(value: object) -> bool:
     """Given a string value that represents True or False, returns the Boolean equivalent.
     Heavily inspired from distutils strtobool.
     """
     try:
-        return _STR_BOOLEAN_MAPPING[value.lower()]
+        return _STR_BOOLEAN_MAPPING[str(value).lower()]
     except KeyError:
         raise ValueError(f"invalid truth value {value}")
 

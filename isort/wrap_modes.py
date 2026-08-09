@@ -9,8 +9,9 @@ import isort.comments
 _wrap_modes: dict[str, Callable[..., str]] = {}
 
 
-def from_string(value: str) -> "WrapModes":
-    return getattr(WrapModes, str(value), None) or WrapModes(int(value))
+def from_string(value: object) -> "WrapModes":
+    value = str(value)
+    return getattr(WrapModes, value, None) or WrapModes(int(value))
 
 
 def formatter_from_string(name: str) -> Callable[..., str]:
