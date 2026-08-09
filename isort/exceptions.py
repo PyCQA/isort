@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from functools import partial
 from pathlib import Path
-from typing import Any
 
 from .profiles import profiles
 
@@ -162,10 +161,10 @@ class UnsupportedSettings(ISortError):
     """
 
     @staticmethod
-    def _format_option(name: str, value: Any, source: str) -> str:
+    def _format_option(name: str, value: object, source: object) -> str:
         return f"\t- {name} = {value}  (source: '{source}')"
 
-    def __init__(self, unsupported_settings: dict[str, dict[str, str]]):
+    def __init__(self, unsupported_settings: dict[str, dict[str, object]]):
         errors = "\n".join(
             self._format_option(name, **option) for name, option in unsupported_settings.items()
         )

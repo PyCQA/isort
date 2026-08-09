@@ -181,6 +181,7 @@ indent_style = space
     assert loaded_settings["comment_prefix"] == "text"
     assert loaded_settings["force_grid_wrap"] == 0
     assert loaded_settings["indent"] == "\t"
+    assert isinstance(loaded_settings["source"], str)
     assert str(tmpdir) in loaded_settings["source"]
 
 
@@ -211,6 +212,7 @@ multi_line_output = 3
         str(test_config), sections=settings.CONFIG_SECTIONS["pyproject.toml"]
     )
     assert loaded_settings
+    assert isinstance(loaded_settings["source"], str)
     assert str(tmpdir) in loaded_settings["source"]
 
 
