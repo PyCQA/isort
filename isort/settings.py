@@ -12,7 +12,7 @@ import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
 from pathlib import Path
 from re import Pattern
@@ -270,7 +270,7 @@ class _Config:
         return id(self)
 
 
-_DEFAULT_SETTINGS = {**vars(_Config()), "source": "defaults"}
+_DEFAULT_SETTINGS = {**asdict(_Config()), "source": "defaults"}
 
 
 class Config(_Config):
@@ -290,16 +290,9 @@ class Config(_Config):
         self._sorting_function: Callable[..., list[str]] | None = None
 
         if config:
-            config_vars = vars(config).copy()
+            config_vars = asdict(config).copy()
             config_vars.update(config_overrides)
             config_vars["py_version"] = config_vars["py_version"].replace("py", "")
-            config_vars.pop("_known_patterns")
-            config_vars.pop("_section_comments")
-            config_vars.pop("_section_comments_end")
-            config_vars.pop("_skips")
-            config_vars.pop("_posix_skips")
-            config_vars.pop("_skip_globs")
-            config_vars.pop("_sorting_function")
             super().__init__(**config_vars)
             return
 

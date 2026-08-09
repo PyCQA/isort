@@ -7,6 +7,7 @@ import os
 import sys
 from collections.abc import Iterator, Sequence
 from contextlib import AbstractContextManager, nullcontext
+from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
@@ -1055,7 +1056,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
     config = Config(**config_dict)
     if show_config:
-        print(json.dumps(config.__dict__, indent=4, separators=(",", ": "), default=_preconvert))
+        print(json.dumps(asdict(config), indent=4, separators=(",", ": "), default=_preconvert))
         return
     if file_names == ["-"]:
         file_path = Path(stream_filename) if stream_filename else None
