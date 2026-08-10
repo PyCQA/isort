@@ -8,6 +8,8 @@ Find out more about isort's release policy [here](docs/major_releases/release_po
 
 ### Unreleased
 
+  - Fix `from ... import *` statements being word-wrapped into invalid Python when exceeding `line_length` (#2267)
+
 ### 8.0.0 February 19 2026 
 
   - Removed `--old-finders` and `--magic-placement` flags and `old_finders` configuration option. The legacy finder logic that relied on environment introspection has been removed (#2445) @joao-faria-dev
