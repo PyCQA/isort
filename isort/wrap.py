@@ -70,6 +70,14 @@ def import_statement(
 
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
+    # A ``from ... import *`` statement cannot be split across multiple lines
+    # because the wildcard ``*`` has no valid continuation.  Word-wrapping it
+    # would move ``import *`` onto a continuation line and produce invalid
+    # Python.  Leave such lines untouched even if they exceed ``line_length``.
+    # See https://github.com/PyCQA/isort/issues/2267
+    bare = content.split("#", 1)[0].rstrip()
+    if bare.startswith("from ") and bare.endswith(" import *"):
+        return content
     wrap_mode = config.multi_line_output
     if len(content) > config.line_length and wrap_mode != Modes.NOQA:
         line_without_comment = content
