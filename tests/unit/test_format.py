@@ -11,11 +11,11 @@ import isort.format
 
 
 def test_ask_whether_to_apply_changes_to_file():
-    with patch("isort.format.input", MagicMock(return_value="y")):
+    with patch("builtins.input", MagicMock(return_value="y")):
         assert isort.format.ask_whether_to_apply_changes_to_file("")
-    with patch("isort.format.input", MagicMock(return_value="n")):
+    with patch("builtins.input", MagicMock(return_value="n")):
         assert not isort.format.ask_whether_to_apply_changes_to_file("")
-    with patch("isort.format.input", MagicMock(return_value="q")):
+    with patch("builtins.input", MagicMock(return_value="q")):
         with pytest.raises(SystemExit):
             assert isort.format.ask_whether_to_apply_changes_to_file("")
 

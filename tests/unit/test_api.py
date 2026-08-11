@@ -49,12 +49,12 @@ def test_sort_file_to_stdout(capsys, imperfect) -> None:
 def test_other_ask_to_apply(imperfect) -> None:
     # First show diff, but ensure change won't get written by asking to apply
     # and ensuring answer is no.
-    with patch("isort.format.input", MagicMock(return_value="n")):
+    with patch("builtins.input", MagicMock(return_value="n")):
         assert not api.sort_file(imperfect, ask_to_apply=True)
         assert imperfect.read() == imperfect_content
 
     # Then run again, but apply the change (answer is yes)
-    with patch("isort.format.input", MagicMock(return_value="y")):
+    with patch("builtins.input", MagicMock(return_value="y")):
         assert api.sort_file(imperfect, ask_to_apply=True)
         assert imperfect.read() == fixed_content
 
