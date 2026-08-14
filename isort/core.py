@@ -37,7 +37,8 @@ SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 
 def _strip_string_prefix(line: str) -> str:
     """Return `line` without a leading Python string prefix (`r`, `b`, `f`, `u`
-    or a legal combination of them), so quote-based heuristics see the quote itself."""
+    or a legal combination of them), so quote-based heuristics see the quote itself.
+    """
     for prefix_length in (2, 1):
         if line[:prefix_length].lower() in STRING_PREFIXES and line[
             prefix_length : prefix_length + 1
