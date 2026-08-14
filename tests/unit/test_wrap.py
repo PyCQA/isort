@@ -54,9 +54,7 @@ def test_line__star_import_not_wrapped():
     # A ``from ... import *`` statement cannot be split across lines, so even
     # when it exceeds ``line_length`` it must be returned unchanged instead of
     # being word-wrapped into invalid Python. See issue #2267.
-    content = (
-        "from very.very.very.very.very.very.very.very.very.very.very.long.line import *"
-    )
+    content = "from very.very.very.very.very.very.very.very.very.very.very.long.line import *"
     config = Config(line_length=20)
     assert wrap.line(content=content, line_separator="\n", config=config) == content
 
@@ -71,9 +69,7 @@ def test_line__star_import_with_comment_not_wrapped():
 
 
 def test_star_import_not_wrapped_end_to_end():
-    source = (
-        "from very.very.very.very.very.very.very.very.very.very.very.very.long.line import *\n"
-    )
+    source = "from very.very.very.very.very.very.very.very.very.very.very.very.long.line import *\n"
     result = code(source, line_length=20, force_single_line=True)
     # The wildcard import must stay on a single line and remain valid Python.
     assert "import *" in result.splitlines()[0]
