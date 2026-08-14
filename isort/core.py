@@ -20,6 +20,8 @@ IMPORT_START_IDENTIFIERS = (
 )
 DOCSTRING_INDICATORS = ('"""', "'''")
 COMMENT_INDICATORS = (*DOCSTRING_INDICATORS, "'", '"', "#")
+# Every legal Python string prefix, lower-cased; `u` cannot be combined with another.
+STRING_PREFIXES = frozenset(("r", "u", "f", "b", "fr", "rf", "br", "rb"))
 CODE_SORT_COMMENTS = (
     "# isort: list",
     "# isort: dict",
@@ -31,6 +33,17 @@ CODE_SORT_COMMENTS = (
 )
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
+
+
+def _strip_string_prefix(line: str) -> str:
+    """Return `line` without a leading Python string prefix (`r`, `b`, `f`, `u`
+    or a legal combination of them), so quote-based heuristics see the quote itself."""
+    for prefix_length in (2, 1):
+        if line[:prefix_length].lower() in STRING_PREFIXES and line[
+            prefix_length : prefix_length + 1
+        ] in ("'", '"'):
+            return line[prefix_length:]
+    return line
 
 
 def _has_skip_comment(import_statement: str) -> bool:
@@ -425,7 +438,7 @@ def process(
                 and not in_top_comment
                 and not was_in_quote
                 and not import_section
-                and not line.lstrip().startswith(COMMENT_INDICATORS)
+                and not _strip_string_prefix(line.lstrip()).startswith(COMMENT_INDICATORS)
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
                 add_line_separator = line_separator or "\n"

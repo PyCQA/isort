@@ -2443,3 +2443,29 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
     assert relative_sorted == expected
     assert isort.code(relative_sorted) == relative_sorted
+
+
+def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
+    """``add_imports`` must not move an import above a module docstring that carries a
+    string prefix (``r``, ``b``, ``f``, ``u`` or a legal combination of them), as reported
+    in issue #1893: https://github.com/pycqa/isort/issues/1893
+    """
+    # The exact input from the report: the added import was emitted a second time, above
+    # the docstring.
+    reported = 'r"""module docstring\n"""\nfrom __future__ import annotations\n'
+    assert isort.code(reported, add_imports=["from __future__ import annotations"]) == reported
+
+    # The import still has to be added, below the docstring -- where an unprefixed
+    # docstring already puts it.
+    with_code = 'r"""module docstring\n"""\n\nx = 1\n'
+    assert (
+        isort.code(with_code, add_imports=["import a"])
+        == 'r"""module docstring\n"""\n\nimport a\n\nx = 1\n'
+    )
+
+    # Every legal prefix, in both quote flavours and both cases.
+    for prefix in ("r", "R", "b", "B", "f", "F", "u", "U", "rb", "bR", "Fr", "rf"):
+        for quote in ('"""', "'''"):
+            docstring = f"{prefix}{quote}module docstring\n{quote}\n"
+            source = docstring + "import a\n"
+            assert isort.code(source, add_imports=["import a"]) == source, prefix + quote
