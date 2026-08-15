@@ -62,6 +62,48 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]:
+    """Split an accumulated code-sorting section into the literal assignment and any
+    trailing statement swallowed because it immediately followed with no blank line.
+    Quote-aware bracket matching finds where the literal's brackets balance (a bare,
+    bracket-free literal ends at its first line). ``# isort: assignments`` sections
+    intentionally span multiple bracket-free statements until a blank line, so they're
+    returned whole. See #2286.
+    """
+    if sort_type == "assignments":
+        return section, ""
+
+    quote = ""
+    depth = 0
+    index = 0
+    while index < len(section):
+        char = section[index]
+        step = 1
+        if quote:
+            if char == "\\":
+                step = 2
+            elif section[index : index + len(quote)] == quote:
+                step = len(quote)
+                quote = ""
+        elif char in "\"'":
+            triple = section[index : index + 3]
+            quote = triple if triple in ('"""', "'''") else char
+            step = len(quote)
+        elif char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+            if depth == 0:
+                end = section.find("\n", index + 1)
+                end = end + 1 if end != -1 else len(section)
+                return section[:end], section[end:]
+        index += step
+
+    end = section.find("\n")
+    end = end + 1 if end != -1 else len(section)
+    return section[:end], section[end:]
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def process(
@@ -174,6 +216,9 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
+                literal_section, trailing_section = _split_code_sorting_section(
+                    code_sorting_section, str(code_sorting)
+                )
                 if is_reexport:
                     # Clamp to 0: in check mode the output is a no-op stream whose tell()
                     # stays 0, so an unclamped rollback would seek to a negative position
@@ -182,7 +227,7 @@ def process(
                     reexport_rollback = 0
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
-                        code_sorting_section,
+                        literal_section,
                         str(code_sorting),
                         extension,
                         config=_indented_config(config, indent),
@@ -190,12 +235,14 @@ def process(
                     code_sorting_indent,
                 )
                 made_changes = made_changes or _has_changed(
-                    before=code_sorting_section,
+                    before=literal_section,
                     after=sorted_code,
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
                 output_stream.write(sorted_code)
+                if trailing_section:
+                    output_stream.write(trailing_section)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -297,9 +344,12 @@ def process(
                     is_reexport = True
                 elif code_sorting:
                     if not stripped_line:
+                        literal_section, trailing_section = _split_code_sorting_section(
+                            code_sorting_section, str(code_sorting)
+                        )
                         sorted_code = textwrap.indent(
                             isort.literal.assignment(
-                                code_sorting_section,
+                                literal_section,
                                 str(code_sorting),
                                 extension,
                                 config=_indented_config(config, indent),
@@ -307,7 +357,7 @@ def process(
                             code_sorting_indent,
                         )
                         made_changes = made_changes or _has_changed(
-                            before=code_sorting_section,
+                            before=literal_section,
                             after=sorted_code,
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
@@ -318,6 +368,8 @@ def process(
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
                         output_stream.write(sorted_code)
+                        if trailing_section:
+                            output_stream.write(trailing_section)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we
