@@ -24,7 +24,6 @@ jobs:
         name: Download release assets
         uses: actions/download-artifact@v8.0.1
         with:
-          name: release-assets
           pattern: cibw-*
           path: dist/
 
