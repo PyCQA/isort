@@ -19,6 +19,8 @@ from re import Pattern
 from typing import Any
 from warnings import warn
 
+from mypy_extensions import mypyc_attr
+
 from . import stdlibs
 from .exceptions import (
     FormattingPluginDoesNotExist,
@@ -121,6 +123,8 @@ _STR_BOOLEAN_MAPPING = {
 }
 
 
+# TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
+@mypyc_attr(native_class=False)
 @dataclass(frozen=True)
 class _Config:
     """Defines the data schema and defaults used for isort configuration.
@@ -273,6 +277,8 @@ class _Config:
 _DEFAULT_SETTINGS = {**asdict(_Config()), "source": "defaults"}
 
 
+# TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
+@mypyc_attr(native_class=False)
 class Config(_Config):
     def __init__(
         self,

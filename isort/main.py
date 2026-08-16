@@ -1,5 +1,7 @@
 """Tool for sorting imports alphabetically, and automatically separated into sections."""
 
+from __future__ import annotations
+
 import argparse
 import functools
 import json
@@ -14,7 +16,8 @@ from pathlib import Path
 from typing import Any
 from warnings import warn
 
-from . import __version__, api, files, sections
+from . import api, files, sections
+from ._version import _VERSION_STRING
 from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
 from .logo import ASCII_ART
@@ -44,6 +47,11 @@ class SortAttempt:
         self.incorrectly_sorted = incorrectly_sorted
         self.skipped = skipped
         self.supported_encoding = supported_encoding
+
+    def __reduce__(self) -> tuple[type[SortAttempt], tuple[bool, bool, bool]]:
+        # Defined explicitly as mypyc's removal of `__dict__` breaks pickling this class, which is
+        # necessary when using multiple jobs.
+        return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
 
 
 def sort_imports(
@@ -142,7 +150,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--vn",
         "--version-number",
         action="version",
-        version=__version__,
+        version=_VERSION_STRING,
         help="Returns just the current version number without the logo",
     )
     general_group.add_argument(
