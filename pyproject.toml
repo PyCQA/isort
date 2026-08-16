@@ -36,7 +36,9 @@ include = [
 ]
 requires-python = ">=3.10.0"
 
-dependencies = []
+dependencies = [
+    "mypy-extensions>=1.1.0",
+]
 
 [project.urls]
 Homepage = "https://isort.readthedocs.io/"
@@ -86,8 +88,22 @@ exclude_lines = [
 ]
 
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling", "hatch-vcs", "hatch-mypyc"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+# To allow local development without compilation after each change. Force compilation with:
+# `HATCH_BUILD_HOOK_ENABLE_MYPYC=true uv sync --reinstall`
+enable-by-default = false
+dependencies = [
+    "hatch-mypyc",
+    "mypy",
+    "types-colorama>=0.4.2",
+]
+exclude = [
+    # We rely on `__dict__` to make Exceptions pickable, mypyc removes this attribute.
+    "isort/exceptions.py"
+]
 
 [dependency-groups]
 dev = [
@@ -104,7 +120,7 @@ dev = [
     "hypothesis>=6.140.3",
     "hypothesmith>=0.3.3",
     "libcst>=1.9.0",
-    "mypy>=1.18.2",
+    "mypy>=2.3.1",
     "pep8-naming>=0.15.1",
     "pytest>=8.4.2",
     "pytest-benchmark>=5.1.0",

@@ -1,4 +1,4 @@
-from ._version import __version__
+from ._version import _VERSION_STRING
 
 ASCII_ART = rf"""
                  _                 _
@@ -9,7 +9,7 @@ ASCII_ART = rf"""
 
       isort your imports, so you don't have to.
 
-                    VERSION {__version__}
+                    VERSION {_VERSION_STRING}
 """
 
 __doc__ = f"""

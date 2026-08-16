@@ -11,7 +11,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from isort import main
-from isort._version import __version__
+from isort._version import _VERSION_STRING, _IS_COMPILED
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from .utils import as_stream
@@ -55,6 +55,7 @@ def test_sort_imports(tmpdir):
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore # noqa
 
 
+@pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_sort_imports_error_handling(tmpdir, capsys):
     tmp_file = tmpdir.join("file.py")
     tmp_file.write("import os, sys\n")
@@ -102,7 +103,7 @@ def test_ascii_art(capsys):
 
       isort your imports, so you don't have to.
 
-                    VERSION {__version__}
+                    VERSION {_VERSION_STRING}
 
 """
     )
@@ -945,7 +946,7 @@ import pandas as pd
 
       isort your imports, so you don't have to.
 
-                    VERSION {__version__}
+                    VERSION {_VERSION_STRING}
 
 """
     )
@@ -988,7 +989,7 @@ import os
 
       isort your imports, so you don't have to.
 
-                    VERSION {__version__}
+                    VERSION {_VERSION_STRING}
 
 """
     )

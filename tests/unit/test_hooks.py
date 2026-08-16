@@ -3,7 +3,10 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from isort import exceptions, hooks
+from isort._version import _IS_COMPILED
 
 
 def test_git_hook(src_dir):
@@ -61,6 +64,7 @@ def test_git_hook(src_dir):
         assert errors == 1
 
 
+@pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_git_hook_with_mocks(src_dir: str) -> None:
     """
     Additional tests for the git hook, split off to allow running some when compiled.
@@ -110,6 +114,7 @@ def test_git_hook_lazy(tmpdir):
     assert found_errors == 1
 
 
+@pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_git_hook_uses_the_configuration_file_specified_in_settings_path(tmp_path: Path) -> None:
     subdirectory_path = tmp_path / "subdirectory"
     configuration_file_path = subdirectory_path / ".isort.cfg"
