@@ -77,6 +77,7 @@ jobs:
 
       - name: Build wheels
         env:
+          CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ENVIRONMENT: "HATCH_BUILD_HOOK_ENABLE_MYPYC=true"
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_SKIP: "*-win32"
