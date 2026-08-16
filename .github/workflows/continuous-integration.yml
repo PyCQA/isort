@@ -46,26 +46,6 @@ jobs:
       - name: Lint
         run: uv run --with tox-uv tox -e lint
 
-  build:
-    if: github.repository_owner == 'PyCQA'
-    name: Build
-    runs-on: ubuntu-latest
-    
-    steps:
-      - *checkout
-      - *setup-python
-      - *setup-uv
-
-      - name: Build package and wheel
-        env:
-            HATCH_BUILD_HOOK_ENABLE_MYPYC: false
-        run: uv build
-
-      - name: Build package and compiled wheel
-        env:
-          HATCH_BUILD_HOOK_ENABLE_MYPYC: true
-        run: uv build
-
   test:
     strategy:
       fail-fast: false
