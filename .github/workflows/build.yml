@@ -1,0 +1,88 @@
+---
+name: Build
+
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.repository_owner == 'PyCQA'
+    name: Build sdist and non-compiled wheel
+    runs-on: ubuntu-latest
+    
+    steps:
+      - &checkout
+        name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          # To ensure hatch-vcs can get the correct version from the git history.
+          fetch-depth: 0
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.14
+          check-latest: true
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          version-file: "pyproject.toml"
+
+      - name: Build sdist and wheel
+        env:
+            HATCH_BUILD_HOOK_ENABLE_MYPYC: false
+        run: uv build
+
+      - name: Upload sdist
+        uses: actions/upload-artifact@v7.0.1
+        with:
+            name: cibw-sdist
+            path: dist/*.tar.gz
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v7.0.1
+        with:
+            name: cibw-wheel-pure
+            path: dist/*.whl
+
+  build_wheels:
+    name: Build wheels for ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            runs-on: ubuntu-latest
+          - os: windows-latest
+            runs-on: windows-latest
+          - os: macos-latest
+            runs-on: macos-latest
+          - os: pyodide
+            runs-on: ubuntu-latest
+            platform: pyodide
+
+    steps:
+      - *checkout
+
+      - name: Build wheels
+        env:
+          CIBW_ENVIRONMENT: "HATCH_BUILD_HOOK_ENABLE_MYPYC=true"
+          CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+          CIBW_SKIP: "*-win32"
+        uses: pypa/cibuildwheel@v4.2.0
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cibw-wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl

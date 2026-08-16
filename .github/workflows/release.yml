@@ -8,38 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.repository_owner == 'PyCQA'
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 2
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.14"
-
-      - name: Install UV
-        uses: astral-sh/setup-uv@v7
-        with:
-          version-file: "pyproject.toml"
-
-      - name: Install dependencies
-        run: |
-          uv sync --all-extras --frozen
-
-      - name: Build package
-        run: |
-          uv build
-
-      - name: Upload release assets
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: release-assets
-          path: dist/
+    uses: ./.github/workflows/build.yml
 
   release-pypi:
     name: Upload release to PyPI
@@ -51,10 +20,12 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Download release assets
+      - &download-release-assets
+        name: Download release assets
         uses: actions/download-artifact@v8.0.1
         with:
           name: release-assets
+          pattern: cibw-*
           path: dist/
 
       - name: Publish package on PyPI
@@ -69,11 +40,7 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Download release assets
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: release-assets
-          path: dist/
+      - *download-release-assets
       - name: Sign the dists with Sigstore and upload assets to Github release
         if: github.event_name == 'release'
         uses: sigstore/gh-action-sigstore-python@v3.5.0
