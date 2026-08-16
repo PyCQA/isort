@@ -45,6 +45,23 @@ def test_moving_comments_issue_726():
     assert isort.code(test_input, force_sort_within_sections=True) == test_input
 
 
+def test_pylint_disable_next_stays_with_first_import_issue_2054():
+    test_input = (
+        "# pylint: disable-next=no-name-in-module\n"
+        "from C import D\n"
+        "# pylint: disable-next=no-name-in-module\n"
+        "from A import B\n"
+    )
+    expected_output = (
+        "# pylint: disable-next=no-name-in-module\n"
+        "from A import B\n"
+        "# pylint: disable-next=no-name-in-module\n"
+        "from C import D\n"
+    )
+
+    assert isort.code(test_input) == expected_output
+
+
 def test_blank_lined_removed_issue_1275():
     """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
     See: https://github.com/pycqa/isort/issues/1275
