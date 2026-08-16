@@ -24,8 +24,9 @@ jobs:
         name: Download release assets
         uses: actions/download-artifact@v8.0.1
         with:
-          pattern: cibw-*
+          merge-multiple: true
           path: dist/
+          pattern: cibw-*
 
       - name: Publish package on PyPI
         if: github.event_name == 'release'
