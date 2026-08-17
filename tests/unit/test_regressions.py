@@ -7,6 +7,7 @@ import pytest
 import isort
 import isort.sections
 from isort import parse
+from isort._version import _IS_COMPILED
 from isort.comments import add_to_line as with_comments
 from isort.main import main
 from isort.output import _inject_from_body_comments, _with_from_imports
@@ -2617,6 +2618,7 @@ def test_mixed_as_and_live_body_comment_preserved_issue_1852():
     assert isort.code(first, profile="black") == first
 
 
+@pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_combine_star_folds_body_comments_when_comments_are_enabled_issue_1852(monkeypatch):
     """combine_star folds body comments only when comments are retained."""
     parsed = parse.file_contents(
