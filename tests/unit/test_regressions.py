@@ -2282,6 +2282,13 @@ def test_sort_reexports_multiline_all_statement_immediately_after_issue_2286():
     assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
 
 
+def test_isort_assignments_section_not_split_issue_2286():
+    """``# isort: assignments`` deliberately spans several statements until a blank line,
+    so the #2286 split must leave such a section whole."""
+    test_input = "# isort: assignments\nb = 1\na = 2\n"
+    assert isort.code(test_input) == "# isort: assignments\na = 2\nb = 1\n"
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
