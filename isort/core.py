@@ -1,3 +1,4 @@
+import ast
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -64,44 +65,23 @@ def _has_skip_comment(import_statement: str) -> bool:
 
 def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]:
     """Split an accumulated code-sorting section into the literal assignment and any
-    trailing statement swallowed because it immediately followed with no blank line.
-    Quote-aware bracket matching finds where the literal's brackets balance (a bare,
-    bracket-free literal ends at its first line). ``# isort: assignments`` sections
-    intentionally span multiple bracket-free statements until a blank line, so they're
-    returned whole. See #2286.
+    trailing statements swallowed because they immediately followed with no blank line.
+    ``# isort: assignments`` sections intentionally span several statements until a blank
+    line, so they are returned whole. See #2286.
     """
     if sort_type == "assignments":
         return section, ""
 
-    quote = ""
-    depth = 0
-    index = 0
-    while index < len(section):
-        char = section[index]
-        step = 1
-        if quote:
-            if char == "\\":
-                step = 2
-            elif section[index : index + len(quote)] == quote:
-                step = len(quote)
-                quote = ""
-        elif char in "\"'":
-            triple = section[index : index + 3]
-            quote = triple if triple in ('"""', "'''") else char
-            step = len(quote)
-        elif char in "([{":
-            depth += 1
-        elif char in ")]}":
-            depth -= 1
-            if depth == 0:
-                end = section.find("\n", index + 1)
-                end = end + 1 if end != -1 else len(section)
-                return section[:end], section[end:]
-        index += step
+    try:
+        body = ast.parse(textwrap.dedent(section)).body
+    except SyntaxError:  # pragma: no cover - left to the sorter to report
+        return section, ""
+    if len(body) < 2:
+        return section, ""
 
-    end = section.find("\n")
-    end = end + 1 if end != -1 else len(section)
-    return section[:end], section[end:]
+    lines = section.splitlines(keepends=True)
+    literal_end = body[1].lineno - 1
+    return "".join(lines[:literal_end]), "".join(lines[literal_end:])
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -240,9 +220,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code)
-                if trailing_section:
-                    output_stream.write(trailing_section)
+                output_stream.write(sorted_code + trailing_section)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -367,9 +345,7 @@ def process(
                             # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
-                        output_stream.write(sorted_code)
-                        if trailing_section:
-                            output_stream.write(trailing_section)
+                        output_stream.write(sorted_code + trailing_section)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we
