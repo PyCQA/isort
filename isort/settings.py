@@ -11,7 +11,7 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
 from pathlib import Path
@@ -786,27 +786,71 @@ def find_all_configs(path: str) -> Trie:
     """
     trie_root = Trie("default", {})
 
-    for dirpath, _, _ in os.walk(path):
-        for config_file_name in CONFIG_SOURCES:
-            potential_config_file = os.path.join(dirpath, config_file_name)
-            if os.path.isfile(potential_config_file):
-                config_data: dict[str, Any]
-                try:
-                    config_data = _get_config_data(
-                        potential_config_file, CONFIG_SECTIONS[config_file_name]
-                    )
-                except Exception:
-                    warn(
-                        f"Failed to pull configuration information from {potential_config_file}",
-                        stacklevel=2,
-                    )
-                    config_data = {}
+    # Precedence of config file names within a single directory. When a directory
+    # contains more than one config file, the one earliest in CONFIG_SOURCES wins,
+    # matching the behavior of scanning CONFIG_SOURCES in order. os.scandir yields
+    # entries in an arbitrary order, so we can't rely on encounter order.
+    config_source_priority = {name: index for index, name in enumerate(CONFIG_SOURCES)}
+    # Highest-priority config file already stored for each directory (lower is better).
+    chosen_priority_by_dir: dict[str, int] = {}
+    for potential_config_file in _scanwalk_files(
+        path, exclude_fn=lambda entry: entry.name in DEFAULT_SKIP
+    ):
+        priority = config_source_priority.get(potential_config_file.name)
+        if priority is None:
+            continue
+        dir_path = os.path.dirname(potential_config_file.path)
+        # A config file already chosen for this directory takes precedence.
+        if chosen_priority_by_dir.get(dir_path, len(CONFIG_SOURCES)) <= priority:
+            continue
+        config_data: dict[str, Any]
+        try:
+            config_data = _get_config_data(
+                potential_config_file.path, CONFIG_SECTIONS[potential_config_file.name]
+            )
+        except Exception:
+            warn(
+                f"Failed to pull configuration information from {potential_config_file.path}",
+                stacklevel=2,
+            )
+            config_data = {}
 
-                if config_data:
-                    trie_root.insert(potential_config_file, config_data)
-                    break
+        if config_data:
+            if "directory" not in config_data:
+                config_data["directory"] = dir_path
+            trie_root.insert(potential_config_file.path, config_data)
+            chosen_priority_by_dir[dir_path] = priority
 
     return trie_root
+
+
+def _scanwalk_files(
+    root_path: str, exclude_fn: Callable[[os.DirEntry[str]], bool] | None = None
+) -> Iterator[os.DirEntry[str]]:
+    # depth-first walk of file system starting with root_path
+    stack: list[str] = [root_path]
+    while stack:
+        dir_path = stack.pop()
+        try:
+            with os.scandir(dir_path) as it:
+                entries = list(it)
+        except OSError:
+            # Skip directories we can't read (permissions, broken links, etc.)
+            continue
+        for entry in entries:
+            # Avoid processing excluded files/dirs and their descendants
+            if exclude_fn and exclude_fn(entry):
+                continue
+            try:
+                # Don't recurse into symlinked directories, matching os.walk's
+                # default (followlinks=False), to avoid symlink loops.
+                if entry.is_dir(follow_symlinks=False):
+                    stack.append(entry.path)
+                elif entry.is_file():
+                    yield entry
+            except OSError:
+                # is_dir()/is_file() can raise for broken links; skip the entry.
+                continue
 
 
 def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, object]:

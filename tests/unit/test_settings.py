@@ -240,6 +240,7 @@ profile=django
     pyproject_toml = """
 [tool.isort]
 profile = "hug"
+src_paths = ["src"]
 """
 
     isort_cfg = """
@@ -256,11 +257,13 @@ something = nothing
     dir2 = tmpdir / "subdir2"
     dir3 = tmpdir / "subdir3"
     dir4 = tmpdir / "subdir4"
+    dir_skip = tmpdir / ".venv"
 
     dir1.mkdir()
     dir2.mkdir()
     dir3.mkdir()
     dir4.mkdir()
+    dir_skip.mkdir()
 
     setup_cfg_file = dir1 / "setup.cfg"
     setup_cfg_file.write_text(setup_cfg, "utf-8")
@@ -274,22 +277,79 @@ something = nothing
     pyproject_toml_file_broken = dir4 / "pyproject.toml"
     pyproject_toml_file_broken.write_text(pyproject_toml_broken, "utf-8")
 
+    pyproject_toml_file_skip = dir_skip / "pyproject.toml"
+    pyproject_toml_file_skip.write_text(pyproject_toml, "utf-8")
+
     config_trie = settings.find_all_configs(str(tmpdir))
 
     config_info_1 = config_trie.search(str(dir1 / "test1.py"))
     assert config_info_1[0] == str(setup_cfg_file)
     assert config_info_1[0] == str(setup_cfg_file)
     assert config_info_1[1]["profile"] == "django"
+    assert set(Config(**config_info_1[1]).src_paths) == {Path(dir1), Path(dir1, "src")}
 
     config_info_2 = config_trie.search(str(dir2 / "test2.py"))
     assert config_info_2[0] == str(pyproject_toml_file)
     assert config_info_2[0] == str(pyproject_toml_file)
     assert config_info_2[1]["profile"] == "hug"
+    assert set(Config(**config_info_2[1]).src_paths) == {Path(dir2, "src")}
 
     config_info_3 = config_trie.search(str(dir3 / "test3.py"))
     assert config_info_3[0] == str(isort_cfg_file)
     assert config_info_3[0] == str(isort_cfg_file)
     assert config_info_3[1]["profile"] == "black"
+    assert set(Config(**config_info_3[1]).src_paths) == {Path(dir3), Path(dir3, "src")}
 
     config_info_4 = config_trie.search(str(tmpdir / "file4.py"))
     assert config_info_4[0] == "default"
+    assert set(Config(**config_info_4[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
+
+    # A config file that exists but has no valid isort section (dir4) is not
+    # inserted, so files under it fall back to the default config.
+    config_info_broken = config_trie.search(str(dir4 / "test4.py"))
+    assert config_info_broken[0] == "default"
+    assert set(Config(**config_info_broken[1]).src_paths) == {
+        Path.cwd(),
+        Path.cwd().joinpath("src"),
+    }
+
+    config_info_skip = config_trie.search(str(dir_skip / "skip.py"))
+    assert config_info_skip[0] == "default"
+    assert set(Config(**config_info_skip[1]).src_paths) == {Path.cwd(), Path.cwd().joinpath("src")}
+
+
+def test_find_all_configs_does_not_follow_symlink_loops(tmpdir):
+    # Regression: _scanwalk_files must not recurse into symlinked directories,
+    # which would otherwise loop forever on a cyclic symlink.
+    real_dir = tmpdir / "real"
+    real_dir.mkdir()
+    isort_cfg_file = real_dir / ".isort.cfg"
+    isort_cfg_file.write_text("[settings]\nprofile=black\n", "utf-8")
+
+    try:
+        os.symlink(str(tmpdir), str(tmpdir / "loop"))
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks are not supported on this platform")
+
+    # Should terminate rather than looping through the symlink.
+    config_trie = settings.find_all_configs(str(tmpdir))
+
+    config_info = config_trie.search(str(real_dir / "test.py"))
+    assert config_info[0] == str(isort_cfg_file)
+    assert config_info[1]["profile"] == "black"
+
+
+def test_find_all_configs_respects_config_source_priority(tmpdir):
+    # A directory containing multiple config files resolves to the one with the
+    # highest precedence in CONFIG_SOURCES (.isort.cfg over setup.cfg), regardless
+    # of the order os.scandir happens to return them in.
+    isort_cfg_file = tmpdir / ".isort.cfg"
+    isort_cfg_file.write_text("[settings]\nprofile=black\n", "utf-8")
+    setup_cfg_file = tmpdir / "setup.cfg"
+    setup_cfg_file.write_text("[isort]\nprofile=django\n", "utf-8")
+
+    config_trie = settings.find_all_configs(str(tmpdir))
+
+    config_info = config_trie.search(str(tmpdir / "test.py"))
+    assert config_info[0] == str(isort_cfg_file)
+    assert config_info[1]["profile"] == "black"
