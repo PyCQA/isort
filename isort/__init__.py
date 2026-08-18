@@ -21,9 +21,8 @@ __all__ = (
 
 from . import settings
 from ._version import __version__
-from .api import ImportKey
-from .api import check_code_string as check_code
 from .api import (
+    ImportKey,
     check_file,
     check_stream,
     find_imports_in_code,
@@ -33,6 +32,7 @@ from .api import (
     place_module,
     place_module_with_reason,
 )
+from .api import check_code_string as check_code
 from .api import sort_code_string as code
 from .api import sort_file as file
 from .api import sort_stream as stream

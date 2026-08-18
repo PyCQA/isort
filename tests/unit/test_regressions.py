@@ -1661,8 +1661,8 @@ from .test import TestTestTestTestTestTest2, TestTestTestTestTestTest3, """
             profile="black",
         )
         == """
-from .test import TestTestTestTestTestTest1  # noqa: F401
 from .test import (  # noqa: F401
+    TestTestTestTestTestTest1,
     TestTestTestTestTestTest2,
     TestTestTestTestTestTest3,
     TestTestTestTestTestTest4,
@@ -2214,7 +2214,7 @@ def test_sort_reexports_output_is_black_stable_issue_2280():
     """isort's sorted __all__ under the black profile must be a fixpoint for both isort
     and black (running either again changes nothing). See issue #2280."""
     import black  # noqa: PLC0415
-    from black.report import NothingChanged  # noqa: PLC0415
+    from black.report import NothingChanged
 
     source = (
         "__all__ = [\n"
@@ -2435,11 +2435,79 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-    assert isort.code(to_sort) == to_sort
+    assert isort.code(to_sort) == "from x import aaa, m  # c\nfrom x import m as z\n"
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
-    relative_sorted = isort.code(relative)
-    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
-    assert relative_sorted == expected
-    assert isort.code(relative_sorted) == relative_sorted
+    assert relative == isort.code(relative)
+
+
+def test_same_style_imports_should_be_grouped_with_and_without_section_sort() -> None:
+    """Ensure that plain imports are grouped together and sorted consistently.
+
+    See issue #2455.
+    """
+    code = """
+from module import BBB
+from module import CCC, ZZZ  # Comment
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+"""
+    )
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+import other_module
+"""
+    )
+
+    code_2 = """
+from module import GGG, ZZZ  # Comment
+from module import EEE
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+"""
+    )
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+import other_module
+"""
+    )
+
+
+def test_from_import_alias_only_sections_issue_2455() -> None:
+    """only_sections still emits preferred plain-before-alias grouping."""
+    src = "from module import A, B as b, C\n"
+    expected = "from module import A, C\nfrom module import B as b\n"
+    assert isort.code(src, only_sections=True) == expected
