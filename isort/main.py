@@ -8,11 +8,12 @@ import json
 import os
 import sys
 from collections.abc import Iterator, Sequence
-from contextlib import AbstractContextManager, contextmanager, nullcontext
+from contextlib import AbstractContextManager, nullcontext
 from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
+from types import TracebackType
 from typing import Any, TextIO, cast
 from warnings import warn
 
@@ -54,29 +55,45 @@ class SortAttempt:
         return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
 
 
-@contextmanager
-def _stream_with_preserved_newlines(stream: TextIO, mode: str) -> Iterator[TextIO]:
-    if not isinstance(stream, TextIOWrapper):
-        yield stream
-        return
+class _StreamWithPreservedNewlines(AbstractContextManager[TextIO]):
+    def __init__(self, stream: TextIO, mode: str) -> None:
+        self.stream = stream
+        self.mode = mode
+        self.wrapped_stream: TextIO | None = None
 
-    try:
-        wrapped_stream = open(
-            stream.fileno(),
-            mode,
-            encoding=stream.encoding,
-            errors=stream.errors,
-            newline="",
-            closefd=False,
-        )
-    except OSError:
-        yield stream
-        return
+    def __enter__(self) -> TextIO:
+        if not isinstance(self.stream, TextIOWrapper):
+            return self.stream
 
-    try:
-        yield cast(TextIO, wrapped_stream)
-    finally:
-        wrapped_stream.close()
+        try:
+            self.wrapped_stream = cast(
+                TextIO,
+                open(
+                    self.stream.fileno(),
+                    self.mode,
+                    encoding=self.stream.encoding,
+                    errors=self.stream.errors,
+                    newline="",
+                    closefd=False,
+                ),
+            )
+        except OSError:
+            return self.stream
+
+        return self.wrapped_stream
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if self.wrapped_stream is not None:
+            self.wrapped_stream.close()
+
+
+def _stream_with_preserved_newlines(stream: TextIO, mode: str) -> AbstractContextManager[TextIO]:
+    return _StreamWithPreservedNewlines(stream, mode)
 
 
 def sort_imports(
