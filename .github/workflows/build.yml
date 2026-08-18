@@ -2,11 +2,12 @@
 name: Build
 
 "on":
+  pull_request:
+    types:
+      - labeled
   push:
     branches:
       - main
-  pull_request:
-  merge_group:
   workflow_dispatch:
   workflow_call:
 
@@ -15,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository_owner == 'PyCQA'
+    if: github.event_name != 'pull_request' || github.event.label.name == 'build-wheels'
     name: Build sdist and non-compiled wheel
     runs-on: ubuntu-latest
     
