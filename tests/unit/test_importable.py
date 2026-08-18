@@ -2,7 +2,7 @@
 
 # ruff: noqa: PLC0415
 
-import pytest
+from contextlib import suppress
 
 
 def test_importable():
@@ -43,5 +43,7 @@ def test_importable():
     import isort.wrap
     import isort.wrap_modes
 
-    with pytest.raises(SystemExit):
+    # Ensure predictable test failure regardless of the ambient pytest argv causing a `SystemExit`
+    # in isort.__main__ when it tries to parse the pytest argv.
+    with suppress(SystemExit):
         import isort.__main__  # noqa: F401
