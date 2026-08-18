@@ -81,7 +81,7 @@ jobs:
         run: uv run --with tox-uv tox -e py,coverage_report-ci
 
       - name: Report Coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == ${{ env.DEFAULT_PYTHON }} && !matrix.compiled
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == env.DEFAULT_PYTHON && !matrix.compiled
         uses: codecov/codecov-action@v7
 
 
