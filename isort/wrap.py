@@ -70,101 +70,101 @@ def import_statement(
 
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
-    # A ``from ... import *`` statement cannot use parenthesis-based wrapping
-    # because the wildcard ``*`` has no valid continuation in that mode.
-    # Use a backslash continuation instead so the statement is split across
-    # lines while remaining valid Python.
-    # See https://github.com/PyCQA/isort/issues/2267
-    bare = content.split("#", 1)[0].rstrip()
-    if bare.startswith("from ") and bare.endswith(" import *"):
-        if len(content) <= config.line_length:
-            return content
-        line_without_comment, _, comment = content.partition("#")
-        prefix = line_without_comment.rstrip()
-        comment_suffix = f"  #{comment}" if comment else ""
-        module_path = prefix[: -len(" import *")]
-        return f"{module_path} import \\{line_separator}{config.indent}*{comment_suffix}"
+    if len(content) <= config.line_length:
+        return content
+
     wrap_mode = config.multi_line_output
-    if len(content) > config.line_length and wrap_mode != Modes.NOQA:
-        line_without_comment = content
-        comment = None
-        if "#" in content:
-            line_without_comment, comment = content.split("#", 1)
-        for splitter in ("import ", "cimport ", ".", "as "):
-            exp = r"\b" + re.escape(splitter) + r"\b"
-            if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
-                splitter
-            ):
-                line_parts = re.split(exp, line_without_comment)
-                _is_vertical_mode = wrap_mode in (
-                    Modes.VERTICAL_HANGING_INDENT,
-                    Modes.VERTICAL_GRID_GROUPED,
-                )
-                # Determine whether the comment should be hoisted to the opening
-                # parenthesis line rather than embedded in the import line.
-                # This happens for noqa comments (when use_parentheses is True)
-                # and for all comments in vertical hanging modes (when
-                # use_parentheses is False), so that multi_line_output=3/5 is
-                # respected even without an explicit use_parentheses=True setting.
-                _hoist_comment_to_paren = comment and (
-                    (config.use_parentheses and "noqa" in comment)
-                    or (_is_vertical_mode and not config.use_parentheses)
-                )
-                if comment and not _hoist_comment_to_paren:
-                    _comma_maybe = (
-                        ","
-                        if (
-                            config.include_trailing_comma
-                            and config.use_parentheses
-                            and not line_without_comment.rstrip().endswith(",")
-                        )
-                        else ""
-                    )
-                    line_parts[-1] = (
-                        f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
-                    )
-                next_line = []
-                while (len(content) + 2) > (
-                    config.wrap_length or config.line_length
-                ) and line_parts:
-                    next_line.append(line_parts.pop())
-                    content = splitter.join(line_parts)
-                if not content:
-                    content = next_line.pop()
+    if wrap_mode is Modes.NOQA:
+        if "# NOQA" not in content:
+            return f"{content}{config.comment_prefix} NOQA"
+        return content
 
-                cont_line = _wrap_line(
-                    config.indent + splitter.join(next_line).lstrip(),
-                    line_separator,
-                    config,
+    line_without_comment = content
+    comment = None
+    if "#" in content:
+        line_without_comment, comment = content.split("#", 1)
+
+    # A ``from ... import *`` / ``from ... cimport *`` statement cannot use
+    # parenthesis-based wrapping because the wildcard ``*`` has no valid
+    # continuation in that mode. Use a backslash continuation instead so the
+    # statement is split across lines while remaining valid Python.
+    # See https://github.com/PyCQA/isort/issues/2267
+    if line_without_comment.rstrip().endswith("*"):
+        prefix, keyword, _ = line_without_comment.rstrip().rsplit(" ", 2)
+        comment_suffix = f"  #{comment}" if comment else ""
+        return f"{prefix} {keyword} \\{line_separator}{config.indent}*{comment_suffix}"
+
+    for splitter in ("import ", "cimport ", ".", "as "):
+        exp = r"\b" + re.escape(splitter) + r"\b"
+        if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
+            splitter
+        ):
+            line_parts = re.split(exp, line_without_comment)
+            _is_vertical_mode = wrap_mode in (
+                Modes.VERTICAL_HANGING_INDENT,
+                Modes.VERTICAL_GRID_GROUPED,
+            )
+            # Determine whether the comment should be hoisted to the opening
+            # parenthesis line rather than embedded in the import line.
+            # This happens for noqa comments (when use_parentheses is True)
+            # and for all comments in vertical hanging modes (when
+            # use_parentheses is False), so that multi_line_output=3/5 is
+            # respected even without an explicit use_parentheses=True setting.
+            _hoist_comment_to_paren = comment and (
+                (config.use_parentheses and "noqa" in comment)
+                or (_is_vertical_mode and not config.use_parentheses)
+            )
+            if comment and not _hoist_comment_to_paren:
+                _comma_maybe = (
+                    ","
+                    if (
+                        config.include_trailing_comma
+                        and config.use_parentheses
+                        and not line_without_comment.rstrip().endswith(",")
+                    )
+                    else ""
                 )
-                if config.use_parentheses or _is_vertical_mode:
-                    if splitter == "as ":
-                        output = f"{content}{splitter}{cont_line.lstrip()}"
+                line_parts[-1] = (
+                    f"{line_parts[-1].strip()}{_comma_maybe}{config.comment_prefix}{comment}"
+                )
+            next_line = []
+            while (len(content) + 2) > (config.wrap_length or config.line_length) and line_parts:
+                next_line.append(line_parts.pop())
+                content = splitter.join(line_parts)
+            if not content:
+                content = next_line.pop()
+
+            cont_line = _wrap_line(
+                config.indent + splitter.join(next_line).lstrip(),
+                line_separator,
+                config,
+            )
+            if config.use_parentheses or _is_vertical_mode:
+                if splitter == "as ":
+                    output = f"{content}{splitter}{cont_line.lstrip()}"
+                else:
+                    _comma = "," if config.include_trailing_comma and not comment else ""
+
+                    if _is_vertical_mode:
+                        _separator = line_separator
                     else:
-                        _comma = "," if config.include_trailing_comma and not comment else ""
-
-                        if _is_vertical_mode:
-                            _separator = line_separator
-                        else:
-                            _separator = ""
-                        noqa_comment = ""
-                        if _hoist_comment_to_paren:
-                            noqa_comment = f"{config.comment_prefix}{comment}"
-                            cont_line = cont_line.rstrip()
-                            _comma = "," if config.include_trailing_comma else ""
-                        output = (
-                            f"{content}{splitter}({noqa_comment}"
-                            f"{line_separator}{cont_line}{_comma}{_separator})"
-                        )
-                        lines = output.split(line_separator)
-                        if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
-                            content, comment = lines[-1].split(config.comment_prefix, 1)
-                            lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
-                        output = line_separator.join(lines)
-                    return output
-                return f"{content}{splitter}\\{line_separator}{cont_line}"
-    elif len(content) > config.line_length and wrap_mode == Modes.NOQA and "# NOQA" not in content:
-        return f"{content}{config.comment_prefix} NOQA"
+                        _separator = ""
+                    noqa_comment = ""
+                    if _hoist_comment_to_paren:
+                        noqa_comment = f"{config.comment_prefix}{comment}"
+                        cont_line = cont_line.rstrip()
+                        _comma = "," if config.include_trailing_comma else ""
+                    output = (
+                        f"{content}{splitter}({noqa_comment}"
+                        f"{line_separator}{cont_line}{_comma}{_separator})"
+                    )
+                    lines = output.split(line_separator)
+                    if config.comment_prefix in lines[-1] and lines[-1].endswith(")"):
+                        content, comment = lines[-1].split(config.comment_prefix, 1)
+                        lines[-1] = content + ")" + config.comment_prefix + comment[:-1]
+                    output = line_separator.join(lines)
+                return output
+            return f"{content}{splitter}\\{line_separator}{cont_line}"
 
     return content
 
