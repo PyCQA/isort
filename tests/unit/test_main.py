@@ -15,7 +15,7 @@ from isort._version import _VERSION_STRING, _IS_COMPILED
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from .utils import as_stream
-from io import BytesIO, TextIOWrapper
+from io import BytesIO, StringIO, TextIOWrapper
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -866,6 +866,13 @@ def test_isort_with_stdin_preserves_crlf_stdout(tmp_path):
                 main.main(["-"], stdin=input_content)
 
     assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
+
+
+def test_preserve_newline_stream_keeps_non_textiowrapper():
+    input_content = StringIO("import re\nimport os\n")
+
+    with main._stream_with_preserved_newlines(input_content, "r") as preserved_stream:
+        assert preserved_stream is input_content
 
 
 def test_unsupported_encodings(tmpdir, capsys):

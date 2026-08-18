@@ -13,7 +13,7 @@ from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any, TextIO, cast
 from warnings import warn
 
 from . import api, files, sections
@@ -74,7 +74,7 @@ def _stream_with_preserved_newlines(stream: TextIO, mode: str) -> Iterator[TextI
         return
 
     try:
-        yield wrapped_stream
+        yield cast(TextIO, wrapped_stream)
     finally:
         wrapped_stream.close()
 
