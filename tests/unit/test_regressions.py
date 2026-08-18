@@ -2253,6 +2253,42 @@ def test_sort_reexports_check_mode_multiline_all_issue_2280():
     assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
+def test_sort_reexports_statement_immediately_after_all_issue_2286():
+    """A statement immediately after ``__all__``, with no blank line, was folded into
+    the literal and crashed on ``code.split("=")``. See issue #2286."""
+    test_input = '__all__ = ["b", "a"]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
+def test_isort_list_statement_immediately_after_literal_issue_2286():
+    """Same crash as #2286, reachable through ``# isort: list`` with no
+    ``sort_reexports``."""
+    test_input = '# isort: list\n__all__ = ["b", "a"]\nx = 1\n'
+    expected_output = '# isort: list\n__all__ = ["a", "b"]\nx = 1\n'
+    assert isort.code(test_input) == expected_output
+
+
+def test_sort_reexports_statement_after_all_not_first_line_issue_2286():
+    """Content above ``__all__`` must be left alone, since the rollback accounting
+    assumes the initiating line was already written. See issue #2286."""
+    test_input = 'import os\n__all__ = ["bbbbbbbbbb", "a"]\nx = 1\n'
+    expected_output = 'import os\n\n__all__ = ["a", "bbbbbbbbbb"]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_multiline_all_statement_immediately_after_issue_2286():
+    """A multi-line ``__all__`` followed immediately by a statement. See issue #2286."""
+    test_input = '__all__ = [\n    "b",\n    "a",\n]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
+def test_isort_assignments_section_not_split_issue_2286():
+    """``# isort: assignments`` deliberately spans several statements until a blank line,
+    so the #2286 split must leave such a section whole."""
+    test_input = "# isort: assignments\nb = 1\na = 2\n"
+    assert isort.code(test_input) == "# isort: assignments\na = 2\nb = 1\n"
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 

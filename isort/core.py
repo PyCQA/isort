@@ -1,3 +1,4 @@
+import ast
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -36,6 +37,27 @@ SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
+
+
+def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]:
+    """Split an accumulated code-sorting section into the literal assignment and any
+    trailing statements swallowed because they immediately followed with no blank line.
+    ``# isort: assignments`` sections intentionally span several statements until a blank
+    line, so they are returned whole. See #2286.
+    """
+    if sort_type == "assignments":
+        return section, ""
+
+    try:
+        body = ast.parse(textwrap.dedent(section)).body
+    except SyntaxError:  # pragma: no cover - left to the sorter to report
+        return section, ""
+    if len(body) < 2:
+        return section, ""
+
+    lines = section.splitlines(keepends=True)
+    literal_end = body[1].lineno - 1
+    return "".join(lines[:literal_end]), "".join(lines[literal_end:])
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -150,6 +172,9 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
+                literal_section, trailing_section = _split_code_sorting_section(
+                    code_sorting_section, str(code_sorting)
+                )
                 if is_reexport:
                     # Clamp to 0: in check mode the output is a no-op stream whose tell()
                     # stays 0, so an unclamped rollback would seek to a negative position
@@ -158,7 +183,7 @@ def process(
                     reexport_rollback = 0
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
-                        code_sorting_section,
+                        literal_section,
                         str(code_sorting),
                         extension,
                         config=_indented_config(config, indent),
@@ -166,12 +191,12 @@ def process(
                     code_sorting_indent,
                 )
                 made_changes = made_changes or _has_changed(
-                    before=code_sorting_section,
+                    before=literal_section,
                     after=sorted_code,
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code)
+                output_stream.write(sorted_code + trailing_section)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -272,9 +297,12 @@ def process(
                     is_reexport = True
                 elif code_sorting:
                     if not stripped_line:
+                        literal_section, trailing_section = _split_code_sorting_section(
+                            code_sorting_section, str(code_sorting)
+                        )
                         sorted_code = textwrap.indent(
                             isort.literal.assignment(
-                                code_sorting_section,
+                                literal_section,
                                 str(code_sorting),
                                 extension,
                                 config=_indented_config(config, indent),
@@ -282,7 +310,7 @@ def process(
                             code_sorting_indent,
                         )
                         made_changes = made_changes or _has_changed(
-                            before=code_sorting_section,
+                            before=literal_section,
                             after=sorted_code,
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
@@ -292,7 +320,7 @@ def process(
                             # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
-                        output_stream.write(sorted_code)
+                        output_stream.write(sorted_code + trailing_section)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we
