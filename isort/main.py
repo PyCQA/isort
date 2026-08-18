@@ -793,9 +793,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--src-path",
         dest="src_paths",
         action="append",
-        help="Add an explicitly defined source path "
-        "(modules within src paths have their imports automatically categorized as first_party)."
-        " Glob expansion (`*` and `**`) is supported for this option.",
+        help="Add an explicitly defined source path. "
+        "Modules found within source paths are automatically categorized as first_party. "
+        "Glob expansion (`*` and `**`) is supported for this option.",
     )
     section_group.add_argument(
         "-b",
