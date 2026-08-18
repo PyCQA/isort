@@ -15,7 +15,7 @@ from isort._version import _VERSION_STRING, _IS_COMPILED
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from .utils import as_stream
-from io import BytesIO, TextIOWrapper
+from io import BytesIO, StringIO, TextIOWrapper
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -842,6 +842,37 @@ import b
 import a, b
 """
     )
+
+
+def test_isort_with_stdin_preserves_lf_stdout(tmp_path):
+    input_content = TextIOWrapper(BytesIO(b"import re\nimport os\n"), newline=None)
+    output_file = tmp_path / "out.py"
+
+    with output_file.open("w", newline=None) as stdout:
+        with unittest.mock.patch("sys.stdout", stdout):
+            main.main(["-"], stdin=input_content)
+
+    assert output_file.read_bytes() == b"import os\nimport re\n"
+
+
+def test_isort_with_stdin_preserves_crlf_stdout(tmp_path):
+    input_file = tmp_path / "in.py"
+    input_file.write_bytes(b"import re\r\nimport os\r\n")
+    output_file = tmp_path / "out.py"
+
+    with input_file.open("r", newline=None) as input_content:
+        with output_file.open("w", newline=None) as stdout:
+            with unittest.mock.patch("sys.stdout", stdout):
+                main.main(["-"], stdin=input_content)
+
+    assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
+
+
+def test_preserve_newline_stream_keeps_non_textiowrapper():
+    input_content = StringIO("import re\nimport os\n")
+
+    with main._stream_with_preserved_newlines(input_content, "r") as preserved_stream:
+        assert preserved_stream is input_content
 
 
 def test_unsupported_encodings(tmpdir, capsys):
