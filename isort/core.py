@@ -30,6 +30,7 @@ CODE_SORT_COMMENTS = (
     "# isort: assignments",
 )
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
+PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 
 
@@ -211,6 +212,7 @@ def process(
             if (
                 (index == 0 or (index in {1, 2} and not contains_imports))
                 and stripped_line.startswith("#")
+                and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
             ):
