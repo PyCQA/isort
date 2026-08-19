@@ -47,7 +47,7 @@ def test_moving_comments_issue_726():
 
 def test_pylint_disable_next_stays_with_first_import_issue_2054():
     test_input = (
-        "# pylint: disable-next=no-name-in-module\n"
+        "# pylint: disable-next=import-error\n"
         "from C import D\n"
         "# pylint: disable-next=no-name-in-module\n"
         "from A import B\n"
@@ -55,7 +55,7 @@ def test_pylint_disable_next_stays_with_first_import_issue_2054():
     expected_output = (
         "# pylint: disable-next=no-name-in-module\n"
         "from A import B\n"
-        "# pylint: disable-next=no-name-in-module\n"
+        "# pylint: disable-next=import-error\n"
         "from C import D\n"
     )
 
