@@ -47,6 +47,15 @@ def _strip_string_prefix(line: str) -> str:
     return line
 
 
+def _is_comment_or_string_start(line: str) -> bool:
+    """Return whether `line` opens a comment, a docstring or any other string literal.
+
+    A string prefix (`r`, `b`, `f`, `u` or a legal combination of them) is skipped
+    first, so a prefixed docstring is recognised exactly as an unprefixed one is.
+    """
+    return _strip_string_prefix(line.lstrip()).startswith(COMMENT_INDICATORS)
+
+
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
@@ -439,7 +448,7 @@ def process(
                 and not in_top_comment
                 and not was_in_quote
                 and not import_section
-                and not _strip_string_prefix(line.lstrip()).startswith(COMMENT_INDICATORS)
+                and not _is_comment_or_string_start(line)
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
                 add_line_separator = line_separator or "\n"

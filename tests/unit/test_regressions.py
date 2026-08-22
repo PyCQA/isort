@@ -6,6 +6,7 @@ import pytest
 
 import isort
 import isort.sections
+from isort.core import STRING_PREFIXES
 from isort.main import main
 
 
@@ -2463,9 +2464,11 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
         == 'r"""module docstring\n"""\n\nimport a\n\nx = 1\n'
     )
 
-    # Every legal prefix, in both quote flavours and both cases.
-    for prefix in ("r", "R", "b", "B", "f", "F", "u", "U", "rb", "bR", "Fr", "rf"):
-        for quote in ('"""', "'''"):
-            docstring = f"{prefix}{quote}module docstring\n{quote}\n"
-            source = docstring + "import a\n"
-            assert isort.code(source, add_imports=["import a"]) == source, prefix + quote
+    # Every prefix isort itself recognises, in both quote flavours and in lower,
+    # upper and mixed case.
+    for prefix in sorted(STRING_PREFIXES):
+        for cased in sorted({prefix, prefix.upper(), prefix.capitalize()}):
+            for quote in ('"""', "'''"):
+                docstring = f"{cased}{quote}module docstring\n{quote}\n"
+                source = docstring + "import a\n"
+                assert isort.code(source, add_imports=["import a"]) == source, cased + quote
