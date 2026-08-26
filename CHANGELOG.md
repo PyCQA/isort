@@ -4,9 +4,69 @@ Changelog
 NOTE: isort follows the [semver](https://semver.org/) versioning standard.
 Find out more about isort's release policy [here](docs/major_releases/release_policy.md).
 
+Please find a complete overview of all releases
+on [Github](https://github.com/PyCQA/isort/releases).
+
 ## Releases
 
 ### Unreleased
+
+### 9.0.0 August 26 2026
+
+   - Remove logic for deprecated options (#2498) @DanielNoord
+   - Sort lazy import statements (#2503) @DanielNoord
+   - Add initial support for Python 3.15 (#2466) @DanielNoord
+   - Compile with `mypyc` by @DanielNoord in https://github.com/PyCQA/isort/pull/2586
+   - Cache calls to `posixpath.abspath` by @DanielNoord in https://github.com/PyCQA/isort/pull/2606
+   - Consider private `stdlib` modules to be `stdlib` (#2295) @devdanzin
+   - Add CLI Flag for --forced-separate (https://github.com/PyCQA/isort/pull/2367) @hirak99
+   - Add separate_packages option (#2313) @alex-liang3
+   - Fix inline comment duplication across merged `from X import` lines (#2499) @copilot-swe-agent
+   - Fix src glob patterns passed via CLI (#2497) @ReinerBRO
+   - Fix opening-line comment moving to alias attribute line on wrapped imports (#2491) @copilot-swe-agent
+   - Fix multi_line_output=3/5 ignored when wrapping single imports with inline comments (#2474) @copilot-swe-agent
+   - Fix false positive in `check_code` when using `float_to_top` + `add_imports` (#2492) @copilot-swe-agent
+   - Fix: preserve bare `#` inline comments on imports (#2488) @copilot-swe-agent
+   - Fix grouping of non-aliased imports when mixed with aliased imports from the same module (#2470) @copilot-swe-agent
+   - Fix https://github.com/PyCQA/isort/issues/2500: trusted publishing by @staticdev in https://github.com/PyCQA/isort/pull/2521
+   - Fix git_hook lazy=True option by @sparrowt in https://github.com/PyCQA/isort/pull/2542
+   - Honor `# isort: off/on/split` during `float_to_top` preprocessing with CRLF input by @DanielNoord with @Copilot in https://github.com/PyCQA/isort/pull/2553
+   - Fix --sort-reexports crash with non-seekable streams (e.g. stdin) by @Abdu-Ahmed in https://github.com/PyCQA/isort/pull/2547
+   - Fix non-idempotent output with split_on_trailing_comma and a non-default wrap mode by @sarathfrancis90 in https://github.com/PyCQA/isort/pull/2554
+   - Fix non-idempotent NOQA wrap mode with imports that carry their own comment by @sarathfrancis90 in https://github.com/PyCQA/isort/pull/2556
+   - Fix NOQA wrap mode accumulating spaces before the comment on each run by @sarathfrancis90 in https://github.com/PyCQA/isort/pull/2558
+   - Fix NOQA not added to long imports in several output paths by @urayoru113 in https://github.com/PyCQA/isort/pull/2568
+   - Honor `# isort: skip` when a `__future__` import is present (#2092) by @apoorvdarshan in https://github.com/PyCQA/isort/pull/2574
+   - fix: make sorted `__all__` and literals black-compatible (#2280) by @lord-haffi in https://github.com/PyCQA/isort/pull/2576
+   - Honor skip comments when sorting reexports by @sakshichitnis27 in https://github.com/PyCQA/isort/pull/2581
+   - Keep aliased import when the plain name carries a comment by @sarathfrancis90 in https://github.com/PyCQA/isort/pull/2567
+   - fix: don't crash on --config-root without --resolve-all-configs by @Gooh456 in https://github.com/PyCQA/isort/pull/2597
+   - fix: check_code misses lines_before_imports-only changes (#2242) by @gaoflow in https://github.com/PyCQA/isort/pull/2563
+   - Fix preservation of form-feed blank lines by @utkarshalpha in https://github.com/PyCQA/isort/pull/2599
+   - Small clean up and fix inconsistency in handling of `*` imports by @DanielNoord in https://github.com/PyCQA/isort/pull/2619
+   - Fix word-wrapping of 'from ... import *' into invalid Python (#2267) by @sudorm-rf0 in https://github.com/PyCQA/isort/pull/2624
+   - Fix pylint disable-next comments at the start of imports by @Neallin-917 in https://github.com/PyCQA/isort/pull/2628
+   - Keep add_imports below a prefixed module docstring by @Eljees in https://github.com/PyCQA/isort/pull/2626
+   - Add read the docs configuration (#2504) @DanielNoord
+   - Remove unused and broken dependencies (#2517) @DanielNoord
+   - Remove `Any` from `parse.py` (#2516) @DanielNoord
+   - Bring documentation in line with old documentation (#2507) @DanielNoord
+   - Sync profile docs with implementation (#2495) @copilot-swe-agent
+   - Fix the playground (#2494) @DanielNoord7) @hirak99
+   - Remove unused _ENCODING_PATTERN regex and re import by @duriantaco in https://github.com/PyCQA/isort/pull/2525
+   - Remove references to defunct `git_ignore` config by @sparrowt in https://github.com/PyCQA/isort/pull/2531
+   - Fix broken relative links in README and CHANGELOG for both GitHub and Sphinx by @rohitshinde08 in https://github.com/PyCQA/isort/pull/2530
+   - Bump vendored `tomli` by @DanielNoord in https://github.com/PyCQA/isort/pull/2579
+   - Document temporary .isorted files by @sapunyangkut in https://github.com/PyCQA/isort/pull/2580
+   - Remove `cruft` by @DanielNoord in https://github.com/PyCQA/isort/pull/2610
+   - Small fixes in preparation for `mypyc` compiled wheels by @DanielNoord in https://github.com/PyCQA/isort/pull/2623
+   - Small fixes in preparation for compiling with `mypyc` by @DanielNoord in https://github.com/PyCQA/isort/pull/2625
+   - Fix `test_importable` for local dev by @DanielNoord in https://github.com/PyCQA/isort/pull/2635
+
+### 8.0.1 February 28 2026
+
+   - Fix #2461: Added compression to stdlibs for Python 3.14 in isort/stdlibs/py314.py (#2463) @FinlayTheBerry
+   - Fix unindented comments being corrupted in indented blocks (#2459) @worksbyfriday
 
 ### 8.0.0 February 19 2026
 
