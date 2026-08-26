@@ -13,7 +13,7 @@ from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, TextIO, cast
+from typing import Any, Literal, TextIO
 from warnings import warn
 
 from . import api, files, sections
@@ -54,24 +54,22 @@ class SortAttempt:
         return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
 
 
-def _stream_with_preserved_newlines(stream: TextIO, mode: str) -> AbstractContextManager[TextIO]:
-    if not isinstance(stream, TextIOWrapper):
-        return nullcontext(stream)
-
+def _stream_with_preserved_newlines(
+    stream: TextIO, *, mode: Literal["r", "w"]
+) -> AbstractContextManager[TextIO]:
     try:
-        return cast(
-            AbstractContextManager[TextIO],
-            open(
-                stream.fileno(),
-                mode,
-                encoding=stream.encoding,
-                errors=stream.errors,
-                newline="",
-                closefd=False,
-            ),
-        )
+        stream_fileno = stream.fileno()
     except OSError:
         return nullcontext(stream)
+
+    return open(
+        stream_fileno,
+        mode,
+        encoding=stream.encoding,
+        errors=stream.errors,
+        newline="",
+        closefd=False,
+    )
 
 
 def sort_imports(
@@ -1093,8 +1091,10 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         if config.sort_reexports:
             sys.exit("Error: --sort-reexports is not supported with streaming input (stdin).")
 
-        raw_input_stream = sys.stdin if stdin is None else stdin
-        with _stream_with_preserved_newlines(raw_input_stream, "r") as input_stream:
+        with _stream_with_preserved_newlines(
+            sys.stdin if stdin is None else stdin,
+            mode="r",
+        ) as input_stream:
             if check:
                 incorrectly_sorted = not api.check_stream(
                     input_stream=input_stream,
@@ -1106,8 +1106,8 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
                 wrong_sorted_files = incorrectly_sorted
             else:
-                try:
-                    with _stream_with_preserved_newlines(sys.stdout, "w") as output_stream:
+                with _stream_with_preserved_newlines(sys.stdout, mode="w") as output_stream:
+                    try:
                         api.sort_stream(
                             input_stream=input_stream,
                             output_stream=output_stream,
@@ -1117,8 +1117,7 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
                             extension=ext_format,
                             raise_on_skip=False,
                         )
-                except FileSkipped:
-                    with _stream_with_preserved_newlines(sys.stdout, "w") as output_stream:
+                    except FileSkipped:
                         output_stream.write(input_stream.read())
     elif "/" in file_names and not allow_root:
         printer = create_terminal_printer(

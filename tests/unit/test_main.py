@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 import os
 import pathlib
@@ -844,7 +845,7 @@ import a, b
     )
 
 
-def test_isort_with_stdin_preserves_lf_stdout(tmp_path):
+def test_isort_with_stdin_preserves_lf_stdout(tmp_path: Path) -> None:
     input_content = TextIOWrapper(BytesIO(b"import re\nimport os\n"), newline=None)
     output_file = tmp_path / "out.py"
 
@@ -855,7 +856,7 @@ def test_isort_with_stdin_preserves_lf_stdout(tmp_path):
     assert output_file.read_bytes() == b"import os\nimport re\n"
 
 
-def test_isort_with_stdin_preserves_crlf_stdout(tmp_path):
+def test_isort_with_stdin_preserves_crlf_stdout(tmp_path: Path) -> None:
     input_file = tmp_path / "in.py"
     input_file.write_bytes(b"import re\r\nimport os\r\n")
     output_file = tmp_path / "out.py"
@@ -868,10 +869,10 @@ def test_isort_with_stdin_preserves_crlf_stdout(tmp_path):
     assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
 
 
-def test_preserve_newline_stream_keeps_non_textiowrapper():
+def test_preserve_newline_stream_keeps_non_textiowrapper() -> None:
     input_content = StringIO("import re\nimport os\n")
 
-    with main._stream_with_preserved_newlines(input_content, "r") as preserved_stream:
+    with main._stream_with_preserved_newlines(input_content, mode="r") as preserved_stream:
         assert preserved_stream is input_content
 
 
