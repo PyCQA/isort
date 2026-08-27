@@ -2,7 +2,9 @@
 
 # ruff: noqa: PLC0415
 
+import tomllib
 from contextlib import suppress
+from pathlib import Path
 
 
 def test_importable():
@@ -47,3 +49,12 @@ def test_importable():
     # in isort.__main__ when it tries to parse the pytest argv.
     with suppress(SystemExit):
         import isort.__main__  # noqa: F401
+
+
+def test_mypyc_excludes_main_module() -> None:
+    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    with pyproject_path.open("rb") as pyproject_file:
+        pyproject = tomllib.load(pyproject_file)
+
+    exclude = pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["hooks"]["mypyc"]["exclude"]
+    assert "isort/__main__.py" in exclude

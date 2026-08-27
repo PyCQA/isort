@@ -101,6 +101,8 @@ dependencies = [
     "types-colorama>=0.4.2",
 ]
 exclude = [
+    # Keep `python -m isort` working in mypyc wheels.
+    "isort/__main__.py",
     # We rely on `__dict__` to make Exceptions pickable, mypyc removes this attribute.
     "isort/exceptions.py"
 ]
