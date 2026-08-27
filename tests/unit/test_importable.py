@@ -5,6 +5,7 @@
 import subprocess
 import sys
 from contextlib import suppress
+from pathlib import Path
 
 
 def test_importable():
@@ -51,7 +52,7 @@ def test_importable():
         import isort.__main__  # noqa: F401
 
 
-def test_module_cli_invocation_works(tmp_path) -> None:
+def test_module_cli_invocation_works(tmp_path: Path) -> None:
     file_path = tmp_path / "sample.py"
     file_path.write_text("import os\nimport sys\n", encoding="utf-8")
 
