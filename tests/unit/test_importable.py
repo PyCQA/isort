@@ -2,9 +2,9 @@
 
 # ruff: noqa: PLC0415
 
-import tomllib
+import subprocess
+import sys
 from contextlib import suppress
-from pathlib import Path
 
 
 def test_importable():
@@ -51,10 +51,14 @@ def test_importable():
         import isort.__main__  # noqa: F401
 
 
-def test_mypyc_excludes_main_module() -> None:
-    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
-    with pyproject_path.open("rb") as pyproject_file:
-        pyproject = tomllib.load(pyproject_file)
+def test_module_cli_invocation_works(tmp_path) -> None:
+    file_path = tmp_path / "sample.py"
+    file_path.write_text("import os\nimport sys\n", encoding="utf-8")
 
-    exclude = pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["hooks"]["mypyc"]["exclude"]
-    assert "isort/__main__.py" in exclude
+    result = subprocess.run(
+        [sys.executable, "-m", "isort", str(file_path), "--check-only"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
