@@ -52,7 +52,10 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
     prefix_length = len(f"{variable_name} = ")
-    sorted_value_code = f"{variable_name} = {sort_function(value, config, prefix_length)}"
+    preserve_multiline = "\n" in literal.strip() and config.include_trailing_comma
+    sorted_value_code = (
+        f"{variable_name} = {sort_function(value, config, prefix_length, preserve_multiline)}"
+    )
     if config.formatting_function:
         sorted_value_code = config.formatting_function(
             sorted_value_code, extension, config
@@ -107,19 +110,22 @@ def _format_collection(
     config: Config,
     prefix_length: int,
     single_element_comma: bool = False,
+    preserve_multiline: bool = False,
 ) -> str:
     """Render already-rendered, sorted ``elements`` as ``open ... close`` honoring the
     config: a single line when it fits within ``line_length`` (accounting for the
     ``prefix_length`` of the ``<name> = `` prefix), otherwise a vertical-hanging-indent
     block. ``single_element_comma`` forces the mandatory trailing comma that a
-    one-element tuple needs to stay a tuple.
+    one-element tuple needs to stay a tuple. ``preserve_multiline`` keeps the
+    vertical block form even when the collection would fit on one line, matching
+    the one-per-line style of the original source.
     """
     only_element_needs_comma = single_element_comma and len(elements) == 1
     inner = ", ".join(elements)
     if only_element_needs_comma:
         inner += ","
     single_line = f"{open_bracket}{inner}{close_bracket}"
-    if prefix_length + len(single_line) <= config.line_length:
+    if not preserve_multiline and prefix_length + len(single_line) <= config.line_length:
         return single_line
 
     indent = config.indent
@@ -129,39 +135,43 @@ def _format_collection(
 
 
 @register_type("dict", dict)
-def _dict(value: dict[Any, Any], config: Config, prefix_length: int) -> str:
+def _dict(value: dict[Any, Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     items = [
         f"{_repr_element(key)}: {_repr_element(item)}"
         for key, item in sorted(value.items(), key=lambda item: item[1])
     ]
-    return _format_collection(items, "{", "}", config, prefix_length)
+    return _format_collection(items, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline)
 
 
 @register_type("list", list)
-def _list(value: list[Any], config: Config, prefix_length: int) -> str:
+def _list(value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "[", "]", config, prefix_length)
+    return _format_collection(elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline)
 
 
 @register_type("unique-list", list)
-def _unique_list(value: list[Any], config: Config, prefix_length: int) -> str:
+def _unique_list(value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "[", "]", config, prefix_length)
+    return _format_collection(elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline)
 
 
 @register_type("set", set)
-def _set(value: set[Any], config: Config, prefix_length: int) -> str:
+def _set(value: set[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "{", "}", config, prefix_length)
+    return _format_collection(elements, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline)
 
 
 @register_type("tuple", tuple)
-def _tuple(value: tuple[Any, ...], config: Config, prefix_length: int) -> str:
+def _tuple(value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True)
+    return _format_collection(
+        elements, "(", ")", config, prefix_length,
+        single_element_comma=True, preserve_multiline=preserve_multiline)
 
 
 @register_type("unique-tuple", tuple)
-def _unique_tuple(value: tuple[Any, ...], config: Config, prefix_length: int) -> str:
+def _unique_tuple(value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "(", ")", config, prefix_length, single_element_comma=True)
+    return _format_collection(
+        elements, "(", ")", config, prefix_length,
+        single_element_comma=True, preserve_multiline=preserve_multiline)

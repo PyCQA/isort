@@ -2209,6 +2209,42 @@ def test_sort_reexports_respects_black_profile_issue_2280():
     assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
 
 
+def test_sort_reexports_preserves_short_multiline_all_issue_2578():
+    """A short multi-line ``__all__`` keeps its one-per-line layout and trailing comma.
+
+    ``--sort-reexports`` rewrote multi-line ``__all__`` collections into a single
+    line when the sorted result happened to fit within ``line_length``, dropping
+    the trailing comma and the one-per-line style that black preserves. See
+    issue #2578: https://github.com/pycqa/isort/issues/2578
+    """
+    test_input = """from .first import FirstClass
+from .second import SecondClass
+
+__all__ = (
+    "SecondClass",
+    "FirstClass",
+)
+"""
+    expected_output = """from .first import FirstClass
+from .second import SecondClass
+
+__all__ = (
+    "FirstClass",
+    "SecondClass",
+)
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_keeps_short_single_line_all_issue_2578():
+    """A single-line ``__all__`` is sorted in place and stays on one line."""
+    test_input = """__all__ = ("SecondClass", "FirstClass")
+"""
+    expected_output = """__all__ = ("FirstClass", "SecondClass")
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
+
+
 def test_literal_dict_sort_respects_black_profile_issue_2280():
     """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
