@@ -135,43 +135,75 @@ def _format_collection(
 
 
 @register_type("dict", dict)
-def _dict(value: dict[Any, Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _dict(
+    value: dict[Any, Any], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     items = [
         f"{_repr_element(key)}: {_repr_element(item)}"
         for key, item in sorted(value.items(), key=lambda item: item[1])
     ]
-    return _format_collection(items, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline)
+    return _format_collection(
+        items, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline
+    )
 
 
 @register_type("list", list)
-def _list(value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _list(
+    value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline)
+    return _format_collection(
+        elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline
+    )
 
 
 @register_type("unique-list", list)
-def _unique_list(value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _unique_list(
+    value: list[Any], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
-    return _format_collection(elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline)
+    return _format_collection(
+        elements, "[", "]", config, prefix_length, preserve_multiline=preserve_multiline
+    )
 
 
 @register_type("set", set)
-def _set(value: set[Any], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _set(
+    value: set[Any], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
-    return _format_collection(elements, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline)
+    return _format_collection(
+        elements, "{", "}", config, prefix_length, preserve_multiline=preserve_multiline
+    )
 
 
 @register_type("tuple", tuple)
-def _tuple(value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _tuple(
+    value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     elements = [_repr_element(item) for item in sorted(value)]
     return _format_collection(
-        elements, "(", ")", config, prefix_length,
-        single_element_comma=True, preserve_multiline=preserve_multiline)
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        single_element_comma=True,
+        preserve_multiline=preserve_multiline,
+    )
 
 
 @register_type("unique-tuple", tuple)
-def _unique_tuple(value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False) -> str:
+def _unique_tuple(
+    value: tuple[Any, ...], config: Config, prefix_length: int, preserve_multiline: bool = False
+) -> str:
     elements = [_repr_element(item) for item in sorted(set(value))]
     return _format_collection(
-        elements, "(", ")", config, prefix_length,
-        single_element_comma=True, preserve_multiline=preserve_multiline)
+        elements,
+        "(",
+        ")",
+        config,
+        prefix_length,
+        single_element_comma=True,
+        preserve_multiline=preserve_multiline,
+    )
