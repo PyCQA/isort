@@ -288,7 +288,7 @@ def process(
                     and stripped_line.startswith("__all__")
                     and not _has_skip_comment(stripped_line)
                 ):
-                    _, rhs = stripped_line.split("=")
+                    _, rhs = stripped_line.split("=", 1)
                     code_sorting = LITERAL_TYPE_MAPPING.get(rhs.lstrip()[0], "tuple")
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
