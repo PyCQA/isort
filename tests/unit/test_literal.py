@@ -130,3 +130,28 @@ def test_value_assignment_unique_tuple():
         isort.literal.assignment("x = ('a', 'b', '1', '1')", "unique-tuple", "py")
         == 'x = ("1", "a", "b")'
     )
+
+
+def test_trailing_comment_is_preserved():
+    assert (
+        isort.literal.assignment("x = ['b', 'a']  # exports", "list", "py")
+        == 'x = ["a", "b"]  # exports'
+    )
+
+
+def test_trailing_comment_with_equals_is_preserved():
+    assert (
+        isort.literal.assignment("x = ['b', 'a']  # note = value", "list", "py")
+        == 'x = ["a", "b"]  # note = value'
+    )
+
+
+def test_literal_with_equals_in_string_sorts():
+    assert isort.literal.assignment("x = ['c', 'a=b']", "list", "py") == 'x = ["a=b", "c"]'
+
+
+def test_trailing_comment_on_multiline_literal_is_preserved():
+    assert (
+        isort.literal.assignment("x = (\n    'b',\n    'a',\n)  # exports", "tuple", "py")
+        == 'x = ("a", "b")  # exports'
+    )
