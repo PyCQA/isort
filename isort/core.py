@@ -64,23 +64,30 @@ def _has_skip_comment(import_statement: str) -> bool:
 
 
 def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]:
-    """Split an accumulated code-sorting section into the literal assignment and any
-    trailing statements swallowed because they immediately followed with no blank line.
-    ``# isort: assignments`` sections intentionally span several statements until a blank
-    line, so they are returned whole. See #2286.
+    """Split an accumulated code-sorting section into the literal to sort and the lines
+    that follow it, which were swallowed because nothing separated them from the literal.
+
+    The literal ends at the next statement or at a standalone comment; both are returned
+    untouched. ``# isort: assignments`` sections intentionally span several statements, so
+    they are kept whole. See #2286.
     """
     if sort_type == "assignments":
         return section, ""
 
+    lines = section.splitlines(keepends=True)
     try:
         body = ast.parse(textwrap.dedent(section)).body
     except SyntaxError:  # pragma: no cover - left to the sorter to report
         return section, ""
-    if len(body) < 2:
-        return section, ""
 
-    lines = section.splitlines(keepends=True)
-    literal_end = body[1].lineno - 1
+    literal_end = body[1].lineno - 1 if len(body) > 1 else len(lines)
+    for index, line in enumerate(lines[:literal_end]):
+        if index and line.lstrip().startswith("#"):
+            literal_end = index
+            break
+
+    if literal_end >= len(lines):
+        return section, ""
     return "".join(lines[:literal_end]), "".join(lines[literal_end:])
 
 
@@ -263,6 +270,7 @@ def process(
                 and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
+                and not code_sorting
             ):
                 in_top_comment = True
             elif in_top_comment and (

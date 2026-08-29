@@ -2341,6 +2341,42 @@ def test_isort_assignments_section_not_split_issue_2286():
     assert isort.code(test_input) == "# isort: assignments\na = 2\nb = 1\n"
 
 
+def test_sort_reexports_standalone_comment_after_all_issue_2286():
+    """A standalone comment under ``__all__`` was written to the output before the sorted
+    literal, so the rollback landed mid-line and produced ``__all____all__``, deleting the
+    real ``__all__`` and dropping the comment. It must survive in place."""
+    test_input = '__all__ = ["b", "a"]\n# note\nx = 1\n'
+    expected_output = '__all__ = ["a", "b"]\n# note\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_standalone_comment_at_eof_issue_2286():
+    """Same corruption as above with the comment as the last line and no statement
+    after it."""
+    test_input = '__all__ = ["b", "a"]\n# note\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\n# note\n'
+
+
+def test_isort_list_standalone_comment_after_literal_issue_2286():
+    """The same comment handling through ``# isort: list``: the comment stays under the
+    literal rather than being relocated above it."""
+    test_input = '# isort: list\n__all__ = ["b", "a"]\n# note\nx = 1\n'
+    expected_output = '# isort: list\n__all__ = ["a", "b"]\n# note\nx = 1\n'
+    assert isort.code(test_input) == expected_output
+
+
+def test_sort_reexports_comment_cases_check_mode_agrees_issue_2286():
+    """``check_code`` must agree with ``code`` on the comment cases, so ``--check`` never
+    reports a file clean that ``isort`` would then rewrite, or vice versa."""
+    for source in (
+        '__all__ = ["b", "a"]\n# note\nx = 1\n',
+        '__all__ = ["b", "a"]\n# note\n',
+        '__all__ = ["a", "b"]\n# note\nx = 1\n',
+    ):
+        already_sorted = isort.code(source, sort_reexports=True) == source
+        assert isort.check_code(source, show_diff=False, sort_reexports=True) is already_sorted
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
