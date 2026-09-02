@@ -67,9 +67,10 @@ def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]
     """Split an accumulated code-sorting section into the literal to sort and the lines
     that follow it, which were swallowed because nothing separated them from the literal.
 
-    The literal ends at the next statement or at a standalone comment; both are returned
-    untouched. ``# isort: assignments`` sections intentionally span several statements, so
-    they are kept whole. See #2286.
+    The literal ends at the next statement, or at the first standalone comment that follows
+    the literal; both are returned untouched. Comments nested inside the literal's brackets
+    belong to the literal. ``# isort: assignments`` sections intentionally span several
+    statements, so they are kept whole. See #2286.
     """
     if sort_type == "assignments":
         return section, ""
@@ -80,9 +81,13 @@ def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]
     except SyntaxError:  # pragma: no cover - left to the sorter to report
         return section, ""
 
+    if not body:  # pragma: no cover - a section always holds at least one statement
+        return section, ""
+
     literal_end = body[1].lineno - 1 if len(body) > 1 else len(lines)
-    for index, line in enumerate(lines[:literal_end]):
-        if index and line.lstrip().startswith("#"):
+    statement_end = (body[0].end_lineno or len(lines)) - 1
+    for index, line in enumerate(lines[statement_end:literal_end], start=statement_end):
+        if line.lstrip().startswith("#"):
             literal_end = index
             break
 

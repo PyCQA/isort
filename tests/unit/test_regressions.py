@@ -2365,6 +2365,20 @@ def test_isort_list_standalone_comment_after_literal_issue_2286():
     assert isort.code(test_input) == expected_output
 
 
+def test_isort_list_comment_inside_multiline_literal_issue_2286():
+    """A comment between the brackets belongs to the literal, not to the lines that follow
+    it. Ending the section there left an unclosed bracket and raised
+    ``LiteralParsingFailure`` on input that sorted before. See issue #2286."""
+    test_input = '# isort: list\nNAMES = [\n    "b",\n    "a",\n    # note\n]\n'
+    assert isort.code(test_input) == '# isort: list\nNAMES = ["a", "b"]\n'
+
+
+def test_sort_reexports_comment_inside_multiline_all_issue_2286():
+    """Same unclosed-bracket failure through ``sort_reexports``."""
+    test_input = '__all__ = [\n    "b",\n    # note\n    "a",\n]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
 def test_sort_reexports_comment_cases_check_mode_agrees_issue_2286():
     """``check_code`` must agree with ``code`` on the comment cases, so ``--check`` never
     reports a file clean that ``isort`` would then rewrite, or vice versa."""
