@@ -79,10 +79,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             return f"{content}{config.comment_prefix} NOQA"
         return content
 
-    line_without_comment = content
-    comment = None
-    if "#" in content:
-        line_without_comment, comment = content.split("#", 1)
+    line_without_comment, _, comment = content.partition("#")
 
     # Star imports cannot use parenthesized wrapping, while backslash wrapping
     # conflicts with Black. Leave them intact even when they exceed line length.
