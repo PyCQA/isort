@@ -110,6 +110,16 @@ def _hanging_indent_end_line(line: str) -> str:
     return line + "\\"
 
 
+def _add_syntax(statement: str, suffix: str, line_separator: str) -> str:
+    # Appended after a trailing comment, punctuation is commented out instead of emitted.
+    head, separator, last_line = statement.rpartition(line_separator)
+    code, comment_start, comment = last_line.partition("#")
+    if not comment_start:
+        return statement + suffix
+    spacing = code[len(code.rstrip()) :] or "  "
+    return f"{head}{separator}{code.rstrip()}{suffix}{spacing}{comment_start}{comment}"
+
+
 @_wrap_mode
 def hanging_indent(**interface: Any) -> str:
     if not interface["imports"]:
@@ -347,17 +357,25 @@ def hanging_indent_with_parentheses(**interface: Any) -> str:
         current_line = next_statement.split(interface["line_separator"])[-1]
         if len(current_line) > line_length_limit:
             next_statement = (
-                isort.comments.add_to_line(
-                    interface["comments"],
-                    interface["statement"] + ",",
-                    removed=interface["remove_comments"],
-                    comment_prefix=interface["comment_prefix"],
+                _add_syntax(
+                    isort.comments.add_to_line(
+                        interface["comments"],
+                        interface["statement"],
+                        removed=interface["remove_comments"],
+                        comment_prefix=interface["comment_prefix"],
+                    ),
+                    ",",
+                    interface["line_separator"],
                 )
                 + f"{interface['line_separator']}{interface['indent']}{next_import}"
             )
             interface["comments"] = []
         interface["statement"] = next_statement
-    return f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''})"
+    if interface["include_trailing_comma"]:
+        interface["statement"] = _add_syntax(
+            interface["statement"], ",", interface["line_separator"]
+        )
+    return _add_syntax(interface["statement"], ")", interface["line_separator"])
 
 
 @_wrap_mode
