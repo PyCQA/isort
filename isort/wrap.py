@@ -68,6 +68,12 @@ def import_statement(
     return statement
 
 
+def _wrap_noqa(content: str, config: Config) -> str:
+    if "# NOQA" not in content:
+        return f"{content}{config.comment_prefix} NOQA"
+    return content
+
+
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     if len(content) <= config.line_length:
@@ -75,9 +81,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
 
     wrap_mode = config.multi_line_output
     if wrap_mode is Modes.NOQA:
-        if "# NOQA" not in content:
-            return f"{content}{config.comment_prefix} NOQA"
-        return content
+        return _wrap_noqa(content, config)
 
     line_without_comment, _, comment = content.partition("#")
 
