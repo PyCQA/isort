@@ -68,18 +68,8 @@ def import_statement(
     return statement
 
 
-def _wrap_noqa(content: str, config: Config) -> str:
-    if "# NOQA" not in content:
-        return f"{content}{config.comment_prefix} NOQA"
-    return content
-
-
-def _content_or_last(content: str, next_line: list[str]) -> str:
-    if not content:
-        return next_line.pop()
-    return content
-
-
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     if len(content) <= config.line_length:
@@ -87,9 +77,14 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
 
     wrap_mode = config.multi_line_output
     if wrap_mode is Modes.NOQA:
-        return _wrap_noqa(content, config)
+        if "# NOQA" not in content:
+            return f"{content}{config.comment_prefix} NOQA"
+        return content
 
-    line_without_comment, _, comment = content.partition("#")
+    line_without_comment = content
+    comment = None
+    if "#" in content:
+        line_without_comment, comment = content.split("#", 1)
 
     # Star imports cannot use parenthesized wrapping, while backslash wrapping
     # conflicts with Black. Leave them intact even when they exceed line length.
@@ -134,7 +129,8 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             while (len(content) + 2) > (config.wrap_length or config.line_length) and line_parts:
                 next_line.append(line_parts.pop())
                 content = splitter.join(line_parts)
-            content = _content_or_last(content, next_line)
+            if not content:
+                content = next_line.pop()
 
             cont_line = _wrap_line(
                 config.indent + splitter.join(next_line).lstrip(),
