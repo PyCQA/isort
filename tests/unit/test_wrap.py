@@ -50,33 +50,25 @@ def test_line__comment_with_brackets__expects_unchanged_comment(multi_line_outpu
     assert wrap.line(content=content, line_separator="\n", config=config) == expected
 
 
-def test_line_star_import_wrapped_with_backslash() -> None:
-    """Star imports cannot use parenthesis-based wrapping, so should use backslashes.
-
-    See issue #2267.
-    """
+def test_line_star_import_is_not_wrapped() -> None:
+    """Star imports cannot be split in a way that Black accepts (issue #2649)."""
     content = "from very.very.very.very.very.very.very.very.very.long.line import *"
-    expected = "from very.very.very.very.very.very.very.very.very.long.line import \\\n    *"
     config = Config(line_length=20)
-    assert wrap.line(content=content, line_separator="\n", config=config) == expected
+    assert wrap.line(content=content, line_separator="\n", config=config) == content
 
 
-def test_line_star_cimport_wrapped_with_backslash() -> None:
-    """Star cimports should also use backslashes."""
+def test_line_star_cimport_is_not_wrapped() -> None:
+    """Star cimports have the same syntactic wrapping restriction."""
     content = "from very.very.very.very.very.very.very.very.very.long.line cimport *"
-    expected = "from very.very.very.very.very.very.very.very.very.long.line cimport \\\n    *"
     config = Config(line_length=20)
-    assert wrap.line(content=content, line_separator="\n", config=config) == expected
+    assert wrap.line(content=content, line_separator="\n", config=config) == content
 
 
-def test_line_star_import_with_comment_wrapped_with_backslash() -> None:
-    """When falling back to backslashes for start imports, comments should be preserved."""
+def test_line_star_import_with_comment_is_not_wrapped() -> None:
+    """Comments remain on an over-long star import that cannot be wrapped."""
     content = "from very.very.very.very.very.very.very.very.very.long.line import *  # noqa: F401"
     config = Config(line_length=20)
-    expected = (
-        "from very.very.very.very.very.very.very.very.very.long.line import \\\n    *  # noqa: F401"
-    )
-    assert wrap.line(content=content, line_separator="\n", config=config) == expected
+    assert wrap.line(content=content, line_separator="\n", config=config) == content
 
 
 def test_line_star_import_in_noqa_mode_is_not_backslash_wrapped() -> None:
@@ -88,8 +80,7 @@ def test_line_star_import_in_noqa_mode_is_not_backslash_wrapped() -> None:
     )
 
 
-def test_star_import_wrapped_end_to_end() -> None:
-    """New lines should be preserved at the end of too long start imports."""
+def test_star_import_is_not_wrapped_end_to_end() -> None:
+    """Long star imports remain stable across isort and Black (issue #2649)."""
     source = "from very.very.very.very.very.very.very.very.very.long.line import *\n"
-    expected = "from very.very.very.very.very.very.very.very.very.long.line import \\\n    *\n"
-    assert code(source, line_length=20, force_single_line=True) == expected
+    assert code(source, profile="black") == source

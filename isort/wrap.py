@@ -84,15 +84,11 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
     if "#" in content:
         line_without_comment, comment = content.split("#", 1)
 
-    # A ``from ... import *`` / ``from ... cimport *`` statement cannot use
-    # parenthesis-based wrapping because the wildcard ``*`` has no valid
-    # continuation in that mode. Use a backslash continuation instead so the
-    # statement is split across lines while remaining valid Python.
-    # See https://github.com/PyCQA/isort/issues/2267
-    if line_without_comment.rstrip().endswith("*"):
-        prefix, keyword, _ = line_without_comment.rstrip().rsplit(" ", 2)
-        comment_suffix = f"  #{comment}" if comment else ""
-        return f"{prefix} {keyword} \\{line_separator}{config.indent}*{comment_suffix}"
+    # Star imports cannot use parenthesized wrapping, while backslash wrapping
+    # conflicts with Black. Leave them intact even when they exceed line length.
+    # See https://github.com/PyCQA/isort/issues/2267 and issue #2649.
+    if line_without_comment.rstrip().endswith("import *"):
+        return content
 
     for splitter in ("import ", "cimport ", ".", "as "):
         exp = r"\b" + re.escape(splitter) + r"\b"
