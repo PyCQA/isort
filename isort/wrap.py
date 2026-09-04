@@ -74,6 +74,12 @@ def _wrap_noqa(content: str, config: Config) -> str:
     return content
 
 
+def _content_or_last(content: str, next_line: list[str]) -> str:
+    if not content:
+        return next_line.pop()
+    return content
+
+
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
     """Returns a line wrapped to the specified line-length, if possible."""
     if len(content) <= config.line_length:
@@ -128,8 +134,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             while (len(content) + 2) > (config.wrap_length or config.line_length) and line_parts:
                 next_line.append(line_parts.pop())
                 content = splitter.join(line_parts)
-            if not content:
-                content = next_line.pop()
+            content = _content_or_last(content, next_line)
 
             cont_line = _wrap_line(
                 config.indent + splitter.join(next_line).lstrip(),
