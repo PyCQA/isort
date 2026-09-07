@@ -20,6 +20,15 @@ def test_ask_whether_to_apply_changes_to_file():
             assert isort.format.ask_whether_to_apply_changes_to_file("")
 
 
+def test_ask_whether_to_apply_changes_to_file_eof_is_treated_as_quit():
+    # Regression test for #1897: a closed/exhausted stdin (input() raising EOFError)
+    # must exit cleanly like an explicit "quit" answer, not propagate as an
+    # unhandled exception that main.py reports as an "unrecoverable exception".
+    with patch("builtins.input", MagicMock(side_effect=EOFError)):
+        with pytest.raises(SystemExit):
+            isort.format.ask_whether_to_apply_changes_to_file("")
+
+
 def test_basic_printer(capsys):
     printer = isort.format.create_terminal_printer(
         color=False, success="{success}: {message}", error="{error}: {message}"
