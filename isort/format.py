@@ -76,7 +76,15 @@ def show_unified_diff(
 def ask_whether_to_apply_changes_to_file(file_path: str) -> bool:
     answer = None
     while answer not in ("yes", "y", "no", "n", "quit", "q"):
-        answer = input(f"Apply suggested changes to '{file_path}' [y/n/q]? ")  # nosec
+        try:
+            answer = input(f"Apply suggested changes to '{file_path}' [y/n/q]? ")  # nosec
+        except EOFError:
+            # Standard input was closed or has no more data (e.g. `isort --interactive`
+            # run with stdin redirected from /dev/null, or under a terminal that
+            # doesn't provide a readable stdin). We can't get an answer, so treat
+            # this the same as an explicit "quit" instead of letting the EOFError
+            # propagate as an "unrecoverable exception" (see issue #1897).
+            sys.exit("\nNo answer available (standard input closed); treating as 'quit'.")
         answer = answer.lower()
         if answer in ("no", "n"):
             return False
