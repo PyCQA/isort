@@ -765,7 +765,8 @@ def _find_config(path: str) -> tuple[str, dict[str, Any]]:
                     return (current_directory, config_data)
 
         for stop_dir in STOP_CONFIG_SEARCH_ON_DIRS:
-            if os.path.isdir(os.path.join(current_directory, stop_dir)):
+            stop_path = os.path.join(current_directory, stop_dir)
+            if os.path.isdir(stop_path) or (stop_dir == ".git" and os.path.isfile(stop_path)):
                 return (current_directory, {})
 
         new_directory = os.path.split(current_directory)[0]
