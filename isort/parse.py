@@ -404,7 +404,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
-                assert type_of_import == "straight"  # noqa: S101 # Only needed for type checker
+                # Only needed for the type checker.
+                assert type_of_import == "straight"  # noqa: S101 # nosec B101
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
