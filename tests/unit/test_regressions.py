@@ -63,6 +63,69 @@ def test_pylint_disable_next_stays_with_first_import_issue_2054():
     assert isort.code(test_input) == expected_output
 
 
+@pytest.mark.parametrize("lines_before_imports", [-1, 0, 1, 2])
+@pytest.mark.parametrize("line_separator", ["\n", "\r\n"])
+@pytest.mark.parametrize("with_import", [False, True])
+@pytest.mark.parametrize("comment_at_eof", [False, True])
+def test_preserve_spacing_before_comment_only_section_issue_2156(
+    lines_before_imports: int,
+    line_separator: str,
+    with_import: bool,
+    comment_at_eof: bool,
+) -> None:
+    """Comment-only sections must not consume spacing intended for import sections."""
+    test_input = (
+        "def my_function():\n    def inner_function():\n        return 1\n\n    # A comment\n"
+    )
+    if not comment_at_eof:
+        test_input += "    return inner_function()\n"
+    if with_import:
+        test_input = "\n" * max(lines_before_imports, 0) + "import os\n\n\n" + test_input
+    test_input = test_input.replace("\n", line_separator)
+
+    assert isort.code(test_input, lines_before_imports=lines_before_imports) == test_input
+    output_stream = StringIO()
+    assert not isort.stream(
+        StringIO(test_input), output_stream, lines_before_imports=lines_before_imports
+    )
+    assert output_stream.getvalue() == test_input
+    assert isort.check_code(test_input, lines_before_imports=lines_before_imports)
+
+
+@pytest.mark.parametrize("mode", ["stdin", "stdout", "diff", "check", "in-place"])
+def test_cli_preserves_comment_only_spacing_issue_2156(tmp_path, capsys, mode: str) -> None:
+    test_input = (
+        "def my_function():\n"
+        "    def inner_function():\n"
+        "        return 1\n"
+        "\n"
+        "    # A comment\n"
+        "    return inner_function()\n"
+    )
+    source_file = tmp_path / "example.py"
+    source_file.write_text(test_input, encoding="utf-8", newline="")
+    settings_file = tmp_path / ".isort.cfg"
+    settings_file.write_text("[settings]\nlines_before_imports=1\n")
+    arguments = ["--settings-path", str(settings_file)]
+    if mode in {"stdin", "diff", "check"}:
+        arguments += ["-", "--filename", str(source_file)]
+    else:
+        arguments += [str(source_file)]
+    if mode == "stdout":
+        arguments += ["--stdout"]
+    elif mode == "diff":
+        arguments += ["--diff"]
+    elif mode == "check":
+        arguments += ["--check-only"]
+
+    with TextIOWrapper(BytesIO(test_input.encode("utf-8")), encoding="utf-8") as input_stream:
+        main(arguments, stdin=input_stream)
+    captured = capsys.readouterr()
+    assert not captured.err
+    assert captured.out == (test_input if mode in {"stdin", "stdout"} else "")
+    assert source_file.read_text() == test_input
+
+
 def test_blank_lined_removed_issue_1275():
     """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
     See: https://github.com/pycqa/isort/issues/1275
