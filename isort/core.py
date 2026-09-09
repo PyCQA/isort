@@ -476,7 +476,7 @@ def process(
                     import_section += line
                     raw_import_section += line
                 if not contains_imports:
-                    output_stream.write(import_section)
+                    output_stream.write(above_import_section + import_section)
 
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]
