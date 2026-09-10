@@ -1,7 +1,7 @@
 import copy
 import itertools
+import re
 from collections.abc import Iterable
-from functools import partial
 from typing import Literal
 
 from isort.format import format_simplified
@@ -205,6 +205,20 @@ def sorted_imports(
     return _output_as_string(formatted_output, parsed.line_separator)
 
 
+def _unwrap_for_sort(line: str) -> str:
+    """Strip wrap-mode chars so force_sort keys on logical text, not physical.
+
+    Without this, ``from pkg import (\\n    b,\\n)`` sorts before
+    ``from pkg import a`` because ``(`` < ``a``.
+    """
+    line = line.split("#", 1)[0]
+    line = re.sub(r"[(),]", "", line)
+    line = line.replace("\\", "")
+    line = line.replace("\n", " ")
+    line = re.sub(r"\s+", " ", line).strip()
+    return line
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def _build_import_group(
@@ -283,7 +297,7 @@ def _build_import_group(
         new_group_output = sorting.sort(
             config,
             new_group_output,
-            key=partial(sorting.section_key, config=config),
+            key=lambda line: sorting.section_key(_unwrap_for_sort(line), config=config),
             reverse=config.reverse_sort,
         )
         # uncollapse comments

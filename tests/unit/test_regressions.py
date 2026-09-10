@@ -2489,3 +2489,92 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
                 docstring = f"{cased}{quote}module docstring\n{quote}\n"
                 source = docstring + "import a\n"
                 assert isort.code(source, add_imports=["import a"]) == source, cased + quote
+
+
+def test_force_sort_within_sections_consistent_with_wrapped_imports_issue_1985():
+    """Test that force_sort_within_sections sorts wrapped imports consistently.
+
+    Wrapped imports like ``from pkg import (\\n    long_name,\\n)`` previously
+    sorted before unwrapped ones because ``(`` < ``a`` in the wrapped string.
+    See: https://github.com/PyCQA/isort/issues/1985
+    """
+    code = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89
+from package import cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88
+"""
+    expected = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import (
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89,
+)
+from package import cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88
+"""
+    assert (
+        isort.code(code, profile="black", force_single_line=True, force_sort_within_sections=True)
+        == expected
+    )
+    # without force_sort should be identical (proves force_sort no longer changes order)
+    assert (
+        isort.code(code, profile="black", force_single_line=True, force_sort_within_sections=False)
+        == expected
+    )
+
+
+def test_force_sort_within_sections_ignores_inline_comments_issue_1985():
+    """Inline comments do not vote in force_sort_within_sections order.
+
+    The sort key is built from the unwrapped code only, so comment text
+    never flips import order. See: https://github.com/PyCQA/isort/issues/1985
+    """
+    code = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88  # zzz
+from package import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89  # aaa
+from package import cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88  # mmm
+"""
+    expected = """from package import (
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88,  # zzz
+)
+from package import (
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89,  # aaa
+)
+from package import (
+    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88,  # mmm
+)
+"""
+    output = isort.code(
+        code, profile="black", force_single_line=True, force_sort_within_sections=True
+    )
+    assert output == expected
+    assert (
+        isort.code(output, profile="black", force_single_line=True, force_sort_within_sections=True)
+        == output
+    )
+
+
+def test_force_sort_within_sections_with_length_sort_issue_1985():
+    """length_sort measures the unwrapped logical line under force_sort.
+
+    Wrapping chars (parens, newlines, indents) do not inflate the measured
+    length. See: https://github.com/PyCQA/isort/issues/1985
+    """
+    code = """from m import short
+from m import a_very_very_very_very_very_very_very_very_very_very_long_name_indeed_aaa
+from m import midlengthname
+"""
+    expected = """from m import short
+from m import midlengthname
+from m import \\
+    a_very_very_very_very_very_very_very_very_very_very_long_name_indeed_aaa
+"""
+    output = isort.code(
+        code, force_single_line=True, length_sort=True, force_sort_within_sections=True
+    )
+    assert output == expected
+    assert (
+        isort.code(code, force_single_line=True, length_sort=True, force_sort_within_sections=False)
+        == expected
+    )
+    assert (
+        isort.code(
+            output, force_single_line=True, length_sort=True, force_sort_within_sections=True
+        )
+        == output
+    )
