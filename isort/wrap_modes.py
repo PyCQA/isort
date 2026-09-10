@@ -174,15 +174,23 @@ def vertical_hanging_indent(**interface: Any) -> str:
     _imports = ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"])
     _comma_maybe = "," if interface["include_trailing_comma"] else ""
     opening = f"{interface['statement']}({_line_with_comments}"
-    _is_functional_comment = any(
-        comment.strip().lower().startswith(("noqa", "type: ignore"))
+    functional_comments = [
+        comment
         for comment in (interface["comments"] or [])
-    )
-    if (
-        _line_with_comments
-        and len(opening) > interface["line_length"]
-        and not _is_functional_comment
-    ):
+        if comment.strip().lower().startswith(("noqa", "type: ignore"))
+    ]
+    movable_comments = [
+        comment
+        for comment in (interface["comments"] or [])
+        if not comment.strip().lower().startswith(("noqa", "type: ignore"))
+    ]
+    if _line_with_comments and movable_comments and len(opening) > interface["line_length"]:
+        _functional_on_opening = isort.comments.add_to_line(
+            functional_comments,
+            "",
+            removed=interface["remove_comments"],
+            comment_prefix=interface["comment_prefix"],
+        )
         _comment_on_own_line = interface["line_separator"].join(
             isort.comments.add_to_line(
                 [single_comment],
@@ -190,10 +198,10 @@ def vertical_hanging_indent(**interface: Any) -> str:
                 removed=interface["remove_comments"],
                 comment_prefix=interface["comment_prefix"].lstrip(),
             )
-            for single_comment in (interface["comments"] or [])
+            for single_comment in movable_comments
         )
         return (
-            f"{interface['statement']}({interface['line_separator']}"
+            f"{interface['statement']}({_functional_on_opening}{interface['line_separator']}"
             f"{_comment_on_own_line}{interface['line_separator']}"
             f"{interface['indent']}{_imports}{_comma_maybe}"
             f"{interface['line_separator']})"

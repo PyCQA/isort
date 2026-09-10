@@ -2496,13 +2496,50 @@ def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124():
     multiline from import when using the black profile.
     See: https://github.com/PyCQA/isort/issues/2124
     """
-    assert isort.code(
-        """from os.path import (
+    test_input = """from os.path import (
     join,
     # this is a really really really really really really really really
     # really really really really really really long comment
     getsize,
 )
-""",
-        profile="black",
-    ).startswith("from os.path import (\n    # this is a really really")
+"""
+    expected = """from os.path import (
+    # this is a really really really really really really really really
+    # really really really really really really long comment
+    getsize,
+    join,
+)
+"""
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    for line in output.splitlines():
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    assert isort.code(output, profile="black") == output
+
+
+def test_mixed_functional_and_plain_comments_black_mode_issue_2124():
+    """A functional comment stays on the opening line while plain fragments move off.
+
+    Guards the whole-list ``any()`` gate that kept an over-long plain comment
+    merged once a single ``noqa`` fragment was present.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = """from os.path import (
+    join,
+    # noqa: F401
+    # this is a really really really really really really really really
+    # really really really really really really long comment
+    getsize,
+)
+"""
+    expected = """from os.path import (  # noqa: F401
+    # this is a really really really really really really really really
+    # really really really really really really long comment
+    getsize,
+    join,
+)
+"""
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    assert len(output.splitlines()[0]) <= 88
+    assert isort.code(output, profile="black") == output
