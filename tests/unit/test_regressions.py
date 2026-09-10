@@ -2492,7 +2492,7 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
 
 
 def test_force_sort_within_sections_consistent_with_wrapped_imports_issue_1985():
-    """Test that force_sort_within_sections sorts wrapped imports consistently.
+    r"""Test that force_sort_within_sections sorts wrapped imports consistently.
 
     Wrapped imports like ``from pkg import (\\n    long_name,\\n)`` previously
     sorted before unwrapped ones because ``(`` < ``a`` in the wrapped string.
