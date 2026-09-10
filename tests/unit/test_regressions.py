@@ -602,6 +602,33 @@ from some_other_module import another_function as yet_another_function  # type: 
     assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
 
 
+def test_combine_as_with_force_single_line_keeps_per_alias_comments_issue_2094():
+    """Each alias from the same module keeps its own trailing comment.
+
+    Pins the per-base keying at the core of this fix: comments must not swap
+    or duplicate across aliases of one module.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    import re  # noqa: PLC0415  # local import, consistent with sibling test above
+
+    test_input = """from some_module import the_function as some_function  # type: ignore
+from some_module import other_function as other_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    joined = output.replace("\\\n", " ")
+    assert re.search(
+        r"^from some_module import the_function as some_function\s+# type: ignore$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_module import other_function as other_alias\s+# noqa: F401$",
+        joined,
+        re.MULTILINE,
+    )
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
 def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396
