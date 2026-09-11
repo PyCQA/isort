@@ -208,7 +208,7 @@ def sorted_imports(
 def _unwrap_for_sort(line: str) -> str:
     r"""Strip wrap-mode chars so force_sort keys on logical text, not physical.
 
-    Without this, ``from pkg import (\\n    b,\\n)`` sorts before
+    Without this, ``from pkg import (\n    b,\n)`` sorts before
     ``from pkg import a`` because ``(`` < ``a``.
     """
     line = line.split("#", 1)[0]

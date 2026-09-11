@@ -2494,7 +2494,7 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
 def test_force_sort_within_sections_consistent_with_wrapped_imports_issue_1985():
     r"""Test that force_sort_within_sections sorts wrapped imports consistently.
 
-    Wrapped imports like ``from pkg import (\\n    long_name,\\n)`` previously
+    Wrapped imports like ``from pkg import (\n    long_name,\n)`` previously
     sorted before unwrapped ones because ``(`` < ``a`` in the wrapped string.
     See: https://github.com/PyCQA/isort/issues/1985
     """
@@ -2563,6 +2563,37 @@ from m import midlengthname
 from m import midlengthname
 from m import \\
     a_very_very_very_very_very_very_very_very_very_very_long_name_indeed_aaa
+"""
+    output = isort.code(
+        code, force_single_line=True, length_sort=True, force_sort_within_sections=True
+    )
+    assert output == expected
+    assert (
+        isort.code(code, force_single_line=True, length_sort=True, force_sort_within_sections=False)
+        == expected
+    )
+    assert (
+        isort.code(
+            output, force_single_line=True, length_sort=True, force_sort_within_sections=True
+        )
+        == output
+    )
+
+
+def test_force_sort_within_sections_length_ignores_inline_comments_issue_1985():
+    """Comment length does not vote in length_sort order under force_sort.
+
+    A long inline comment must not flip length ordering; the measured
+    length comes from unwrapped code only. Removing the ``#``-strip from
+    ``_unwrap_for_sort`` flips this test. See:
+    https://github.com/PyCQA/isort/issues/1985
+    """
+    code = """from m import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  # zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+from m import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+"""
+    expected = """from m import \\
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  # zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+from m import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 """
     output = isort.code(
         code, force_single_line=True, length_sort=True, force_sort_within_sections=True
