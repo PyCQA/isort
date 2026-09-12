@@ -651,7 +651,7 @@ def _with_from_imports_for_module(
             else:
                 # `combine_as_imports` with `force_single_line` stores the alias comment
                 # in `straight["module.base"]` (see parse.py). The combined
-                # `from_import` here is the alias string. For example, "the_function as some_function"
+                # `from_import` here is the alias string e.g. "the_function as some_function"
                 # so we need to look up via the base name.
                 base = from_import.split(" as ")[0] if " as " in from_import else from_import
                 per_alias_straight = parsed.categorized_comments["straight"].pop(
