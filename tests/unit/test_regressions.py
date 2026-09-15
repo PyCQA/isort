@@ -2391,6 +2391,25 @@ def test_sort_reexports_comment_cases_check_mode_agrees_issue_2286():
         assert isort.check_code(source, show_diff=False, sort_reexports=True) is already_sorted
 
 
+def test_sort_reexports_equals_sign_inside_the_literal_issue_2286():
+    """An ``=`` anywhere past the assignment must not be read as a second assignment.
+
+    Both the line scanner in ``core`` and ``literal.assignment`` split ``__all__ = ...``
+    on ``=`` to find the literal, so a string element or a trailing comment containing
+    one raised ``ValueError: too many values to unpack``.
+    """
+    assert (
+        isort.code('__all__ = ["b", "a=c"]\nx = 1\n', sort_reexports=True)
+        == '__all__ = ["a=c", "b"]\nx = 1\n'
+    )
+    assert (
+        isort.code('__all__ = ["b", "a"]  # x=1\ny = 2\n', sort_reexports=True)
+        == '__all__ = ["a", "b"]\ny = 2\n'
+    )
+    # literal.assignment is reachable on its own, so it needs the same split.
+    assert isort.literal.assignment('x = ["b", "a=c"]', "list", "py") == 'x = ["a=c", "b"]'
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
