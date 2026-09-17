@@ -91,6 +91,17 @@ def _src_path(
             or _is_package(module_path)
             or _src_path_is_module(src_path, root_module_name)
         ):
+            # If the matched path is a directory without __init__.py, verify it's
+            # actually a package and not just a directory that happens to share
+            # the name of a third-party module (e.g., `app/fastapi/` containing
+            # `main.py` when importing the third-party `fastapi` package).
+            if (
+                module_path.is_dir()
+                and not (module_path / "__init__.py").exists()
+            ):
+                # Only treat as FIRSTPARTY if it's recognized as a namespace package
+                if not _is_namespace_package(module_path, config.supported_extensions):
+                    continue
             return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
 
     return None
