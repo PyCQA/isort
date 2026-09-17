@@ -41,7 +41,7 @@ if sys.version_info >= (3, 11):
 else:
     from ._vendored import tomli as tomllib
 
-_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
+_SHEBANG_RE = None  # removed in 9.0.0 - see https://github.com/PyCQA/isort/issues/2607
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
@@ -512,12 +512,11 @@ class Config(_Config):
         except OSError:
             pass
 
-        try:
-            with open(file_name, "rb") as fp:
-                line = fp.readline(100)
-        except OSError:
-            return False
-        return bool(_SHEBANG_RE.match(line))
+        # NOTE: Removed shebang line detection for performance. Opening every file
+        # to read the first line consumed ~50% of runtime. Users should rely on
+        # supported_extensions or wrap_file setting instead.
+        # See https://github.com/PyCQA/isort/issues/2607
+        return False
 
     def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}

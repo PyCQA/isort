@@ -61,7 +61,10 @@ class TestConfig:
     def test_is_supported_filetype_shebang(self, tmpdir):
         path = tmpdir.join("myscript")
         path.write("#!/usr/bin/env python\n")
-        assert self.instance.is_supported_filetype(str(path))
+        # Shebang detection was removed for performance; files without
+        # a supported extension are no longer recognized.
+        # Use supported_extensions or wrap_file to include such files.
+        assert not self.instance.is_supported_filetype(str(path))
 
     def test_is_supported_filetype_editor_backup(self, tmpdir):
         path = tmpdir.join("myscript~")
