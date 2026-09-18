@@ -39,7 +39,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             f"Defined sort types are {', '.join(type_mapping.keys())}."
         )
 
-    variable_name, literal = code.split("=")
+    variable_name, literal = code.split("=", 1)
     variable_name = variable_name.strip()
     literal = literal.lstrip()
     try:
@@ -58,7 +58,14 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             sorted_value_code, extension, config
         ).rstrip()
 
-    sorted_value_code += code[len(code.rstrip()) :]
+    # Preserve trailing content (comments, whitespace) after the literal value
+    # e.g. `# isort: list __all__ = ["b", "a"]  # noqa: F401`
+    trailing = code[len(code.rstrip()):]
+    if trailing and not trailing.startswith('\n'):
+        # Extract comment from trailing content
+        comment_start = trailing.find('#')
+        if comment_start >= 0:
+            sorted_value_code += trailing[comment_start:]
     return sorted_value_code
 
 
