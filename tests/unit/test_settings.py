@@ -37,6 +37,20 @@ class TestConfig:
         with pytest.raises(ValueError, match=r"The python version 10 is not supported."):
             Config(py_version=10)
 
+    def test_rejects_bool_for_int_settings(self):
+        """bool subclasses int; line_length=True must not silently become 1."""
+        for key in (
+            "line_length",
+            "wrap_length",
+            "lines_after_imports",
+            "lines_between_sections",
+            "lines_between_types",
+        ):
+            for value in (True, False):
+                with pytest.raises(TypeError, match="bool"):
+                    Config(**{key: value})
+        assert Config(line_length=88).line_length == 88
+
     def test_invalid_profile(self):
         with pytest.raises(exceptions.ProfileDoesNotExist):
             Config(profile="blackandwhitestylemixedwithpep8")

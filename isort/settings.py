@@ -416,7 +416,14 @@ class Config(_Config):
             if default_value is None:
                 continue
 
-            combined_config[key] = type(default_value)(value)
+            # bool subclasses int; line_length=True would silently become 1
+            target_type = type(default_value)
+            if isinstance(value, bool) and target_type is int:
+                raise TypeError(
+                    f"{key} must be an int, not bool (got {value!r})"
+                )
+
+            combined_config[key] = target_type(value)
 
         for section in combined_config.get("sections", ()):
             if section in SECTION_DEFAULTS:
