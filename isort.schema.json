@@ -1,0 +1,489 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/PyCQA/isort/main/isort.schema.json",
+  "title": "isort configuration",
+  "description": "JSON schema for isort's [tool.isort] section in pyproject.toml",
+  "type": "object",
+  "properties": {
+    "py_version": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "2",
+            "3",
+            "27",
+            "310",
+            "311",
+            "312",
+            "313",
+            "auto"
+          ]
+        }
+      ],
+      "default": "3"
+    },
+    "force_to_top": {
+      "type": "array",
+      "default": []
+    },
+    "skip": {
+      "type": "array"
+    },
+    "extend_skip": {
+      "type": "array",
+      "default": []
+    },
+    "skip_glob": {
+      "type": "array",
+      "default": []
+    },
+    "extend_skip_glob": {
+      "type": "array",
+      "default": []
+    },
+    "skip_gitignore": {
+      "type": "boolean",
+      "default": false
+    },
+    "line_length": {
+      "type": "integer",
+      "default": 79
+    },
+    "wrap_length": {
+      "type": "integer",
+      "default": 0
+    },
+    "line_ending": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "",
+            "LF",
+            "CRLF",
+            "CR"
+          ]
+        }
+      ],
+      "default": ""
+    },
+    "no_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "known_future_library": {
+      "type": "array"
+    },
+    "known_third_party": {
+      "type": "array",
+      "default": []
+    },
+    "known_first_party": {
+      "type": "array",
+      "default": []
+    },
+    "known_local_folder": {
+      "type": "array",
+      "default": []
+    },
+    "known_standard_library": {
+      "type": "array",
+      "default": []
+    },
+    "extra_standard_library": {
+      "type": "array",
+      "default": []
+    },
+    "multi_line_output": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "GRID",
+            "VERTICAL",
+            "HANGING_INDENT",
+            "VERTICAL_GRID",
+            "VERTICAL_HANGING_INDENT",
+            "VERTICAL_GRID_GROUPED",
+            "VERTICAL_GRID_GROUPED_NO_COMMA",
+            "NOALIAS",
+            "PREFIX_PARENTHESES",
+            "SUFFIX_PARENTHESES",
+            "PYTHON_BLOCK",
+            "BACKSLASH_GRID"
+          ]
+        }
+      ]
+    },
+    "indent": {
+      "type": "string"
+    },
+    "comment_prefix": {
+      "type": "string",
+      "default": "  #"
+    },
+    "length_sort": {
+      "type": "boolean",
+      "default": false
+    },
+    "length_sort_straight": {
+      "type": "boolean",
+      "default": false
+    },
+    "length_sort_sections": {
+      "type": "array",
+      "default": []
+    },
+    "add_imports": {
+      "type": "array",
+      "default": []
+    },
+    "remove_imports": {
+      "type": "array",
+      "default": []
+    },
+    "append_only": {
+      "type": "boolean",
+      "default": false
+    },
+    "reverse_relative": {
+      "type": "boolean",
+      "default": false
+    },
+    "force_single_line": {
+      "type": "boolean",
+      "default": false
+    },
+    "default_section": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "FUTURE",
+            "STDLIB",
+            "THIRDPARTY",
+            "FIRSTPARTY",
+            "LOCALFOLDER"
+          ]
+        }
+      ]
+    },
+    "balanced_wrapping": {
+      "type": "boolean",
+      "default": false
+    },
+    "use_parentheses": {
+      "type": "boolean",
+      "default": false
+    },
+    "order_by_type": {
+      "type": "boolean",
+      "default": true
+    },
+    "atomic": {
+      "type": "boolean",
+      "default": false
+    },
+    "lines_before_imports": {
+      "type": "integer"
+    },
+    "lines_after_imports": {
+      "type": "integer"
+    },
+    "lines_between_sections": {
+      "type": "integer",
+      "default": 1
+    },
+    "lines_between_types": {
+      "type": "integer",
+      "default": 0
+    },
+    "combine_as_imports": {
+      "type": "boolean",
+      "default": false
+    },
+    "combine_star": {
+      "type": "boolean",
+      "default": false
+    },
+    "include_trailing_comma": {
+      "type": "boolean",
+      "default": false
+    },
+    "from_first": {
+      "type": "boolean",
+      "default": false
+    },
+    "verbose": {
+      "type": "boolean",
+      "default": false
+    },
+    "quiet": {
+      "type": "boolean",
+      "default": false
+    },
+    "force_adds": {
+      "type": "boolean",
+      "default": false
+    },
+    "force_alphabetical_sort_within_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "force_alphabetical_sort": {
+      "type": "boolean",
+      "default": false
+    },
+    "force_grid_wrap": {
+      "type": "integer",
+      "default": 0
+    },
+    "force_sort_within_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "lexicographical": {
+      "type": "boolean",
+      "default": false
+    },
+    "group_by_package": {
+      "type": "boolean",
+      "default": false
+    },
+    "separate_packages": {
+      "type": "array",
+      "default": []
+    },
+    "ignore_whitespace": {
+      "type": "boolean",
+      "default": false
+    },
+    "no_lines_before": {
+      "type": "array",
+      "default": []
+    },
+    "no_inline_sort": {
+      "type": "boolean",
+      "default": false
+    },
+    "ignore_comments": {
+      "type": "boolean",
+      "default": false
+    },
+    "case_sensitive": {
+      "type": "boolean",
+      "default": false
+    },
+    "virtual_env": {
+      "type": "string",
+      "default": ""
+    },
+    "conda_env": {
+      "type": "string",
+      "default": ""
+    },
+    "ensure_newline_before_comments": {
+      "type": "boolean",
+      "default": false
+    },
+    "directory": {
+      "type": "string",
+      "default": ""
+    },
+    "profile": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "",
+            "black",
+            "django",
+            "pycharm",
+            "google",
+            "open_source",
+            "plone",
+            "attrs",
+            "hug",
+            "wemake",
+            "appnexus"
+          ]
+        }
+      ],
+      "default": ""
+    },
+    "honor_noqa": {
+      "type": "boolean",
+      "default": false
+    },
+    "remove_redundant_aliases": {
+      "type": "boolean",
+      "default": false
+    },
+    "float_to_top": {
+      "type": "boolean",
+      "default": false
+    },
+    "filter_files": {
+      "type": "boolean",
+      "default": false
+    },
+    "formatter": {
+      "type": "string",
+      "default": ""
+    },
+    "color_output": {
+      "type": "boolean",
+      "default": false
+    },
+    "treat_comments_as_code": {
+      "type": "array",
+      "default": []
+    },
+    "treat_all_comments_as_code": {
+      "type": "boolean",
+      "default": false
+    },
+    "supported_extensions": {
+      "type": "array"
+    },
+    "blocked_extensions": {
+      "type": "array"
+    },
+    "constants": {
+      "type": "array",
+      "default": []
+    },
+    "classes": {
+      "type": "array",
+      "default": []
+    },
+    "variables": {
+      "type": "array",
+      "default": []
+    },
+    "dedup_headings": {
+      "type": "boolean",
+      "default": false
+    },
+    "only_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "only_modified": {
+      "type": "boolean",
+      "default": false
+    },
+    "combine_straight_imports": {
+      "type": "boolean",
+      "default": false
+    },
+    "auto_identify_namespace_packages": {
+      "type": "boolean",
+      "default": true
+    },
+    "namespace_packages": {
+      "type": "array",
+      "default": []
+    },
+    "follow_links": {
+      "type": "boolean",
+      "default": true
+    },
+    "indented_import_headings": {
+      "type": "boolean",
+      "default": true
+    },
+    "honor_case_in_force_sorted_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "sort_relative_in_force_sorted_sections": {
+      "type": "boolean",
+      "default": false
+    },
+    "overwrite_in_place": {
+      "type": "boolean",
+      "default": false
+    },
+    "reverse_sort": {
+      "type": "boolean",
+      "default": false
+    },
+    "star_first": {
+      "type": "boolean",
+      "default": false
+    },
+    "format_error": {
+      "type": "string",
+      "default": "{error}: {message}"
+    },
+    "format_success": {
+      "type": "string",
+      "default": "{success}: {message}"
+    },
+    "sort_order": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "enum": [
+            "natural",
+            "force_sort_within_sections",
+            "native"
+          ]
+        }
+      ],
+      "default": "natural"
+    },
+    "sort_reexports": {
+      "type": "boolean",
+      "default": false
+    },
+    "split_on_trailing_comma": {
+      "type": "boolean",
+      "default": false
+    },
+    "src_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Paths to source code, used to determine first-party vs third-party imports",
+      "default": [
+        "src",
+        "."
+      ]
+    },
+    "git_ls_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}
