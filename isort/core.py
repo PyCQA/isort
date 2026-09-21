@@ -106,7 +106,7 @@ def _float_to_top(
                     before = before[: -len(parsed.line_separator)]
                 extra_space = extra_space.replace(parsed.line_separator, "", 1)
                 sorted_output = output.sorted_imports(
-                    parsed, config, extension, import_type="import"
+                    parsed, config, extension, import_type="import", whole_file=True
                 )
                 made_changes = made_changes or _has_changed(
                     before=before,
