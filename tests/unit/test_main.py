@@ -846,12 +846,13 @@ import a, b
 
 
 def test_isort_with_stdin_preserves_lf_stdout(tmp_path: Path) -> None:
-    input_content = TextIOWrapper(BytesIO(b"import re\nimport os\n"), newline=None)
+    input_file = tmp_path / "in.py"
+    input_file.write_bytes(b"import re\nimport os\n")
     output_file = tmp_path / "out.py"
 
-    with output_file.open("w", newline=None) as stdout:
-        with unittest.mock.patch("sys.stdout", stdout):
-            main.main(["-"], stdin=input_content)
+    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
+        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
+            main.main(["-"])
 
     assert output_file.read_bytes() == b"import os\nimport re\n"
 
@@ -861,10 +862,9 @@ def test_isort_with_stdin_preserves_crlf_stdout(tmp_path: Path) -> None:
     input_file.write_bytes(b"import re\r\nimport os\r\n")
     output_file = tmp_path / "out.py"
 
-    with input_file.open("r", newline=None) as input_content:
-        with output_file.open("w", newline=None) as stdout:
-            with unittest.mock.patch("sys.stdout", stdout):
-                main.main(["-"], stdin=input_content)
+    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
+        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
+            main.main(["-"])
 
     assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
 
