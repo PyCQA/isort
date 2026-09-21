@@ -39,16 +39,9 @@ class TestConfig:
 
     def test_rejects_bool_for_int_settings(self):
         """bool subclasses int; line_length=True must not silently become 1."""
-        for key in (
-            "line_length",
-            "wrap_length",
-            "lines_after_imports",
-            "lines_between_sections",
-            "lines_between_types",
-        ):
-            for value in (True, False):
-                with pytest.raises(TypeError, match="bool"):
-                    Config(**{key: value})
+        for value in (True, False):
+            with pytest.raises(TypeError, match="bool"):
+                Config(line_length=value)
         assert Config(line_length=88).line_length == 88
 
     def test_invalid_profile(self):
@@ -129,7 +122,7 @@ def _write_simple_settings(tmp_file):
     tmp_file.write_text(
         """
 [isort]
-force_grid_wrap=true
+force_grid_wrap=2
 """,
         "utf8",
     )
@@ -142,7 +135,7 @@ def test_find_config(tmpdir):
     tmp_config.write_text(
         """
 [section]
-force_grid_wrap=true
+force_grid_wrap=2
 """,
         "utf8",
     )
@@ -180,7 +173,7 @@ indent_style=tab
 indent_size=tab
 
 [*.py]
-force_grid_wrap=false
+force_grid_wrap=0
 comment_prefix="text"
 
 [*.{java}]

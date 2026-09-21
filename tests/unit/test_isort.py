@@ -5304,7 +5304,7 @@ from .query_elastic import QueryElastic
     assert (
         isort.code(
             code=test_input,
-            force_grid_wrap=False,
+            force_grid_wrap=0,
             include_trailing_comma=True,
             indent=4,
             line_length=90,
