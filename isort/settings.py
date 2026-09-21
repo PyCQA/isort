@@ -893,12 +893,6 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings[key] = value
             elif key.startswith(KNOWN_PREFIX):
                 settings[key] = _abspaths(os.path.dirname(file_path), _as_list(value))
-            elif key == "force_grid_wrap":
-                try:
-                    result = existing_value_type(value)
-                except ValueError:  # backwards compatibility for true / false force grid wrap
-                    result = 0 if str(value).lower().strip() == "false" else 2
-                settings[key] = result
             elif key == "comment_prefix":
                 settings[key] = str(value).strip("'").strip('"')
             else:
