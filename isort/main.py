@@ -57,6 +57,8 @@ class SortAttempt:
 def _stream_with_preserved_newlines(
     stream: TextIO, *, mode: Literal["r", "w"]
 ) -> AbstractContextManager[TextIO]:
+    if stream is not sys.stdin and stream is not sys.stdout:
+        return nullcontext(stream)
     try:
         stream_fileno = stream.fileno()
     except OSError:
