@@ -619,7 +619,7 @@ from some_other_module import another_function as yet_another_function  # type: 
 def test_combine_as_with_force_single_line_keeps_per_alias_comments_issue_2094():
     """Each alias from the same module keeps its own trailing comment.
 
-    Pins the per-base keying at the core of this fix: comments must not swap
+    Pins the per-alias keying at the core of this fix: comments must not swap
     or duplicate across aliases of one module.
     See: https://github.com/PyCQA/isort/issues/2094
     """
@@ -641,6 +641,73 @@ from some_module import other_function as other_alias  # noqa: F401
         re.MULTILINE,
     )
     assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_with_force_single_line_keeps_same_base_alias_comments_issue_2094():
+    """Each alias of one base keeps its own trailing comment.
+
+    Base-name keying merges both comments onto the first alias; full alias
+    identity is required so the second alias keeps its comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    import re  # noqa: PLC0415
+
+    test_input = """from some_module import the_function as first_alias  # type: ignore
+from some_module import the_function as second_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    joined = output.replace("\\\n", " ")
+    assert re.search(
+        r"^from some_module import the_function as first_alias\s+# type: ignore$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_module import the_function as second_alias\s+# noqa: F401$",
+        joined,
+        re.MULTILINE,
+    )
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_grouped_keeps_same_base_alias_comments_issue_2094():
+    """Grouped aliases preserve every trailing comment.
+
+    Without `force_single_line` the aliases share one statement, so the
+    invariant is content preservation, not per-line separation.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """from some_module import the_function as first_alias  # type: ignore
+from some_module import the_function as second_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True)
+    assert "# type: ignore" in output
+    assert "noqa: F401" in output
+    assert isort.code(output, combine_as_imports=True) == output
+
+
+def test_combine_as_with_single_line_exclusions_keeps_comments_issue_2094():
+    """Excluded modules keep comments through the grouped path.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """from some_module import the_function as some_function  # type: ignore
+"""
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        single_line_exclusions=("some_module",),
+    )
+    assert output == test_input
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            single_line_exclusions=("some_module",),
+        )
+        == output
+    )
 
 
 def test_incorrect_grouping_when_comments_issue_1396():

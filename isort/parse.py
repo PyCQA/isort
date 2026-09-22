@@ -296,9 +296,19 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             as_map["straight"][module].append(as_name)
 
                     if comments and attach_comments_to is None:
-                        if type_of_import == "from" or (
-                            config.remove_redundant_aliases and as_name == module.split(".")[-1]
-                        ):
+                        if type_of_import == "from":
+                            if config.remove_redundant_aliases and as_name == nested_module:
+                                # Dropped alias: the comment belongs to the plain import.
+                                attach_comments_to = categorized_comments["straight"].setdefault(
+                                    module, []
+                                )
+                            else:
+                                # Full alias identity: the base name alone cannot tell
+                                # two aliases of one base apart (issue 2094).
+                                attach_comments_to = categorized_comments["straight"].setdefault(
+                                    f"{module} as {as_name}", []
+                                )
+                        elif config.remove_redundant_aliases and as_name == module.split(".")[-1]:
                             attach_comments_to = categorized_comments["straight"].setdefault(
                                 module, []
                             )
