@@ -184,14 +184,10 @@ def vertical_hanging_indent(**interface: Any) -> str:
     _imports = ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"])
     _comma_maybe = "," if interface["include_trailing_comma"] else ""
     opening = f"{interface['statement']}({_line_with_comments}"
-    # Partition comments by provenance and kind (see #2124):
-    # - directives (`noqa` / `type: ignore`) stay on the opening line wherever
-    #   they came from;
-    # - opening-line comments keep their existing placement and never move;
-    # - only body comments may move to their own lines to satisfy line_length.
-    # Matching consumes each provenance entry once, so duplicate comment texts
-    # stay correctly associated.
-    pending_opening = list(interface.get("opening_comments", []))
+    # Partition by provenance and kind: directives and opening-line comments
+    # stay on the opening line; only body comments may move for line_length.
+    # Provenance entries are consumed once, so duplicate texts stay associated.
+    pending_opening = list(interface.get("opening_comments") or [])
     functional_comments: list[str] = []
     opening_line_comments: list[str] = []
     movable_comments: list[str] = []

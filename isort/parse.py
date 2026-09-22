@@ -221,9 +221,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment is not None else []
-            # The comment on the statement's own opening line, if any. Recorded
-            # separately from body (continuation-line) comments so the output
-            # stage can tell them apart (see #2124).
+            # Recorded separately so the output stage can tell opening apart from body comments.
             opening_comment = comment
             line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
             if type_of_import == "from" and len(line_parts) == 2 and comments:
@@ -407,8 +405,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and attach_comments_to is categorized_comments["from"].get(import_from)
                         and opening_comment in comments
                     ):
-                        # Only from-bucket targets are recorded: straight-bucket
-                        # (aliased) comments keep their existing handling.
+                        # Only from-bucket targets; aliased comments keep existing handling.
                         categorized_comments["opening"].setdefault(import_from, []).append(
                             opening_comment
                         )

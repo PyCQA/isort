@@ -594,8 +594,7 @@ def _with_from_imports_for_module(
                     from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
     comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
-    # Opening-line comments for this module, if any. Passed separately so the
-    # wrap stage can keep them on the opening line (see #2124).
+    # Passed separately so the wrap stage can keep them on the opening line.
     opening_comments: list[str] = parsed.categorized_comments["opening"].pop(module, [])
     above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
     if above_comments:
