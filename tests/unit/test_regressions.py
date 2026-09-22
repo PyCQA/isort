@@ -710,6 +710,21 @@ def test_combine_as_with_single_line_exclusions_keeps_comments_issue_2094():
     )
 
 
+def test_straight_and_from_alias_comments_do_not_share_keys_issue_2094():
+    """Straight-alias and from-alias comments never share a storage key.
+
+    ``import a.b as c`` and ``from a import b as c`` share the ``a.b as c``
+    identity; each statement keeps its own comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """import a.b as c  # first
+from a import b as c  # second
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    assert output == test_input
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
 def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

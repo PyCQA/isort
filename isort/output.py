@@ -297,6 +297,21 @@ def _build_import_group(
     return group_output
 
 
+def _pop_from_alias_comment(
+    straight_comments: dict[str, list[str]], module: str, imp: str
+) -> list[str]:
+    """Pop one from-import's trailing comment.
+
+    Aliases use the namespaced identity; plain bases keep the bare key
+    (dropped redundant aliases).
+    """
+    if " as " in imp:
+        key = parse.alias_comment_key(module, imp)
+    else:
+        key = f"{module}.{imp}"
+    return straight_comments.pop(key, [])
+
+
 def _build_as_imports(
     *,
     from_import: str,  # Y in `from X import Y as Z`
@@ -323,7 +338,9 @@ def _build_as_imports(
         # plain-line placement is unchanged; per-alias pop covers the rest.
         straight_comments = [
             *straight_comments,
-            *parsed.categorized_comments["straight"].pop(f"{module}.{as_imports[0]}", []),
+            *_pop_from_alias_comment(
+                parsed.categorized_comments["straight"], module, as_imports[0]
+            ),
         ]
 
     output: list[str] = []
@@ -358,7 +375,9 @@ def _build_as_imports(
         if specific_comment is not None:
             straight_comments.append(specific_comment)
         # Trailing comment stored under the full alias identity (see parse.py).
-        alias_comments = parsed.categorized_comments["straight"].pop(f"{module}.{as_import}", [])
+        alias_comments = _pop_from_alias_comment(
+            parsed.categorized_comments["straight"], module, as_import
+        )
         straight_comments.extend(alias_comments)
 
         import_line = import_start + as_import
@@ -664,12 +683,10 @@ def _with_from_imports_for_module(
                     )
                 )
             else:
-                # `combine_as_imports` with `force_single_line` stores the alias comment
-                # in `straight["module.base as alias"]` (see parse.py). The combined
-                # `from_import` here already is that alias string
-                # e.g. "the_function as some_function", so look it up directly.
-                per_alias_straight = parsed.categorized_comments["straight"].pop(
-                    f"{module}.{from_import}", []
+                # Alias comments live under the namespaced identity; plain bases
+                # keep the bare key for dropped redundant aliases.
+                per_alias_straight = _pop_from_alias_comment(
+                    parsed.categorized_comments["straight"], module, from_import
                 )
                 single_import_line = with_comments(
                     [
@@ -783,7 +800,7 @@ def _with_from_imports_for_module(
             combined_as_comments: list[str] = []
             for imp in from_import_section:
                 combined_as_comments.extend(
-                    parsed.categorized_comments["straight"].pop(f"{module}.{imp}", [])
+                    _pop_from_alias_comment(parsed.categorized_comments["straight"], module, imp)
                 )
             comments = [*comments, *combined_as_comments]
 

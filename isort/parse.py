@@ -43,6 +43,15 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
+def alias_comment_key(module: str, alias: str) -> str:
+    """Namespaced key so from-alias comments never collide with straight-import keys.
+
+    ``import a.b as c`` and ``from a import b as c`` share the ``a.b as c``
+    identity but own separate entries.
+    """
+    return f"from-alias:{module}.{alias}"
+
+
 ParsedImports = TypedDict(
     "ParsedImports",
     {
@@ -306,7 +315,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 # Full alias identity: the base name alone cannot tell
                                 # two aliases of one base apart (issue 2094).
                                 attach_comments_to = categorized_comments["straight"].setdefault(
-                                    f"{module} as {as_name}", []
+                                    alias_comment_key(
+                                        top_level_module, f"{nested_module} as {as_name}"
+                                    ),
+                                    [],
                                 )
                         elif config.remove_redundant_aliases and as_name == module.split(".")[-1]:
                             attach_comments_to = categorized_comments["straight"].setdefault(
