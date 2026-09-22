@@ -725,6 +725,29 @@ from a import b as c  # second
     assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
 
 
+def test_combine_as_with_redundant_alias_keeps_comment_issue_2094():
+    """A dropped redundant alias keeps its trailing comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "from urllib import parse as parse  # type: ignore\n"
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        remove_redundant_aliases=True,
+    )
+    assert output == "from urllib import parse  # type: ignore\n"
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            remove_redundant_aliases=True,
+        )
+        == output
+    )
+
+
 def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396
