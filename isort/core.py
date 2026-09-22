@@ -1,5 +1,5 @@
-import ast
 import textwrap
+import tokenize
 from io import StringIO
 from itertools import chain
 from typing import TextIO
@@ -76,20 +76,22 @@ def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]
         return section, ""
 
     lines = section.splitlines(keepends=True)
+    # Tokenize rather than parse: the swallowed statement may dedent out of the literal's
+    # suite, so the section is not always a valid module. Only tokens up to the end of
+    # the literal's statement are read, so whatever follows it never has to be valid.
     try:
-        body = ast.parse(textwrap.dedent(section)).body
-    except SyntaxError:  # pragma: no cover - left to the sorter to report
+        statement_end = next(
+            token.end[0]
+            for token in tokenize.generate_tokens(StringIO(textwrap.dedent(section)).readline)
+            if token.type == tokenize.NEWLINE
+        )
+    except (StopIteration, SyntaxError, tokenize.TokenError):  # pragma: no cover
         return section, ""
 
-    if not body:  # pragma: no cover - a section always holds at least one statement
-        return section, ""
-
-    literal_end = body[1].lineno - 1 if len(body) > 1 else len(lines)
-    statement_end = (body[0].end_lineno or len(lines)) - 1
-    for index, line in enumerate(lines[statement_end:literal_end], start=statement_end):
-        if line.lstrip().startswith("#"):
-            literal_end = index
-            break
+    literal_end = next(
+        (index for index in range(statement_end, len(lines)) if lines[index].strip()),
+        len(lines),
+    )
 
     if literal_end >= len(lines):
         return section, ""

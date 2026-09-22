@@ -2404,7 +2404,7 @@ def test_sort_reexports_equals_sign_inside_the_literal_issue_2286():
     )
     assert (
         isort.code('__all__ = ["b", "a"]  # x=1\ny = 2\n', sort_reexports=True)
-        == '__all__ = ["a", "b"]\ny = 2\n'
+        == '__all__ = ["a", "b"]  # x=1\ny = 2\n'
     )
     # literal.assignment is reachable on its own, so it needs the same split.
     assert isort.literal.assignment('x = ["b", "a=c"]', "list", "py") == 'x = ["a=c", "b"]'
@@ -2674,3 +2674,16 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                         include_trailing_comma=trailing_comma,
                     )
                     ast.parse(output)  # must never raise
+
+
+def test_isort_list_statement_dedented_out_of_the_literal_suite_issue_2286():
+    """The swallowed statement can close the suite holding the literal, so the section is
+    not a valid module on its own. See issue #2286."""
+    test_input = 'class C:\n    # isort: list\n    names = ["b", "a"]\nx = 1\n'
+    assert isort.code(test_input) == 'class C:\n    # isort: list\n    names = ["a", "b"]\nx = 1\n'
+    test_input = (
+        'class A:\n    class B:\n        # isort: list\n        x = ["b", "a"]\n    y = 1\n'
+    )
+    assert isort.code(test_input) == (
+        'class A:\n    class B:\n        # isort: list\n        x = ["a", "b"]\n    y = 1\n'
+    )
