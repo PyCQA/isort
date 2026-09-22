@@ -2645,6 +2645,29 @@ from m import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     )
 
 
+def test_force_sort_within_sections_keeps_opening_comment_wrapped_import_in_order_issue_1985():
+    """A comment before the imported name must not drop it from the sort key.
+
+    Stripping ``#`` once for the whole multiline string truncates everything
+    after it, so ``from package import (  # noqa`` followed by ``z`` sorts on
+    ``from package import`` alone and floats above ``from package import a``.
+    See: https://github.com/PyCQA/isort/issues/1985
+    """
+    code = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import (  # noqa
+    zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz89,
+)
+"""
+    output = isort.code(
+        code, profile="black", force_single_line=True, force_sort_within_sections=True
+    )
+    assert output == code
+    assert (
+        isort.code(output, profile="black", force_single_line=True, force_sort_within_sections=True)
+        == output
+    )
+
+
 def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments():
     """``multi_line_output=10`` must not append a comma or the closing parenthesis after a
     trailing comment, which silently rewrote valid code into code that no longer parses.

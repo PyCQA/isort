@@ -210,8 +210,9 @@ def _unwrap_for_sort(line: str) -> str:
 
     Without this, ``from pkg import (\n    b,\n)`` sorts before
     ``from pkg import a`` because ``(`` < ``a``.
+    Comments strip per physical line, so leading comments cannot drop names from the key.
     """
-    line = line.split("#", 1)[0]
+    line = "\n".join(part.split("#", 1)[0] for part in line.splitlines())
     line = re.sub(r"[(),]", "", line)
     line = line.replace("\\", "")
     line = line.replace("\n", " ")
