@@ -54,6 +54,29 @@ class SortAttempt:
         return (self.__class__, (self.incorrectly_sorted, self.skipped, self.supported_encoding))
 
 
+_LINE_ENDING_VALUES = {
+    "CR": "\r",
+    "CRLF": "\r\n",
+    "LF": "\n",
+    r"\r": "\r",
+    r"\r\n": "\r\n",
+    r"\n": "\n",
+}
+
+
+def _parse_line_ending(value: str) -> str:
+    line_ending = _LINE_ENDING_VALUES.get(value)
+    if line_ending is not None:
+        return line_ending
+
+    try:
+        return _LINE_ENDING_VALUES[value.upper()]
+    except KeyError:
+        raise argparse.ArgumentTypeError(
+            "line ending must be one of LF (\\n), CRLF (\\r\\n), or CR (\\r)"
+        ) from None
+
+
 def _stream_with_preserved_newlines(
     stream: TextIO, *, mode: Literal["r", "w"]
 ) -> AbstractContextManager[TextIO]:
@@ -524,7 +547,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--le",
         "--line-ending",
         dest="line_ending",
-        help="Forces line endings to the specified value. "
+        type=_parse_line_ending,
+        help="Forces line endings to one of LF (\\n), CRLF (\\r\\n), or CR (\\r). "
         "If not set, values will be guessed per-file.",
     )
     output_group.add_argument(

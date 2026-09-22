@@ -90,6 +90,29 @@ def test_parse_args():
     assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
 
 
+@pytest.mark.parametrize(
+    ("line_ending", "expected"),
+    [
+        ("LF", "\n"),
+        ("CRLF", "\r\n"),
+        ("CR", "\r"),
+        (r"\n", "\n"),
+        (r"\r\n", "\r\n"),
+        (r"\r", "\r"),
+    ],
+)
+def test_parse_line_ending(line_ending: str, expected: str) -> None:
+    assert main.parse_args(["--line-ending", line_ending]) == {"line_ending": expected}
+
+
+def test_line_ending_help() -> None:
+    help_text = main._build_arg_parser().format_help()
+
+    assert "LF (\\n)" in help_text
+    assert "CRLF (\\r\\n)" in help_text
+    assert "CR (\\r)" in help_text
+
+
 def test_ascii_art(capsys):
     main.main(["--version"])
     out, error = capsys.readouterr()

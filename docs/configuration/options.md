@@ -221,7 +221,7 @@ NOTE: wrap_length must be LOWER than or equal to line_length.
 
 ## Line Ending
 
-Forces line endings to the specified value. If not set, values will be guessed per-file.
+Forces line endings to one of LF (\n), CRLF (\r\n), or CR (\r). If not set, values will be guessed per-file.
 
 **Type:** String  
 **Default:** ` `  
