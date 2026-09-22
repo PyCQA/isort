@@ -8,3 +8,9 @@ comment:
   layout: "header, diff"
   behavior: default
   require_changes: no
+
+codecov:
+  notify:
+    # Wait on all test jobs so Github merge queue doesn't remove PRs from the queue due to codecov
+    # eagerly reporting the status
+    after_n_builds: 36
