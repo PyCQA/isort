@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from isort import exceptions, settings
+from isort import code, exceptions, place_module, settings
 from isort.settings import Config
 from isort.wrap_modes import WrapModes
 
@@ -153,6 +153,60 @@ def test_find_config_deep(tmpdir):
     # but can find config if it is MAX_CONFIG_SEARCH_DEPTH up
     one_parent_up = os.path.split(str(tmp_dirs))[0]
     assert settings._find_config(one_parent_up)[1]
+
+
+@pytest.mark.parametrize(
+    ("marker", "is_directory", "is_repository"),
+    [
+        (".git", True, True),
+        (".git", False, True),
+        (".hg", True, True),
+        (".hg", False, False),
+        (None, False, False),
+    ],
+)
+def test_find_config_stops_at_repository_boundary(tmp_path, marker, is_directory, is_repository):
+    outer_config = tmp_path / ".isort.cfg"
+    _write_simple_settings(outer_config)
+    project = tmp_path / "project"
+    nested = project / "nested"
+    nested.mkdir(parents=True)
+    if is_directory:
+        (project / marker).mkdir()
+    elif marker:
+        (project / marker).write_text("gitdir: ../main/.git/worktrees/project\n", encoding="utf8")
+
+    root, config = settings._find_config(str(nested))
+    if is_repository:
+        assert root == str(project)
+        assert config == {}
+    else:
+        assert root == str(tmp_path)
+        assert config["source"] == str(outer_config)
+
+
+@pytest.mark.parametrize("config_location", ["outer", "project", "nested"])
+def test_find_config_in_git_worktree(tmp_path, monkeypatch, config_location):
+    outer_config = tmp_path / ".isort.cfg"
+    outer_config.write_text("[settings]\nline_length = 42\n", encoding="utf8")
+    project = tmp_path / "project"
+    nested = project / "nested"
+    nested.mkdir(parents=True)
+    (project / ".git").write_text("gitdir: ../main/.git/worktrees/project\n", encoding="utf8")
+    (project / "local_module.py").touch()
+    monkeypatch.chdir(project)
+
+    if config_location != "outer":
+        config_directory = project if config_location == "project" else nested
+        config_file = config_directory / ".isort.cfg"
+        config_file.write_text("[settings]\nline_length = 88\n", encoding="utf8")
+        assert settings._find_config(str(nested))[1]["source"] == str(config_file)
+    else:
+        config = Config(settings_path=str(nested))
+        assert config.line_length == settings.DEFAULT_CONFIG.line_length
+        assert place_module("local_module", config=config) == "FIRSTPARTY"
+        source = "import third_party\n\nimport local_module\n"
+        assert code(source, config=config) == source
 
 
 def test_get_config_data(tmpdir):
