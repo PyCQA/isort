@@ -214,8 +214,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 line = line[len("lazy ") :]
                 type_of_import = "straight" if type_of_import == "lazy_straight" else "from"
 
-            if import_index == -1:
-                import_index = index - 1
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment is not None else []
@@ -246,6 +244,22 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and " " not in stripped_line.replace(" as ", "")
                     ):
                         nested_comments[stripped_line] = extra_line.comment
+
+            if ";" in import_string.split("#")[0] and ";" not in statement.split("#")[0]:
+                # A continuation line introduced a semicolon, so this is not a
+                # plain import construct: emit it unchanged instead of
+                # parsing post-semicolon code as import names (issue 1918).
+                if len(statements) == 1:
+                    out_lines.extend(in_lines[statement_index - 1 : index])
+                else:
+                    # Later piece of a semicolon-split first line: only its own
+                    # text plus the verbatim continuation lines belong to it.
+                    out_lines.append(raw_lines[0])
+                    out_lines.extend(in_lines[statement_index:index])
+                continue
+
+            if import_index == -1:
+                import_index = statement_index - 1
 
             if type_of_import == "from":
                 import_string = normalize_from_import_string(import_string)
