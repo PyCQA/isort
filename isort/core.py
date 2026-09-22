@@ -288,7 +288,7 @@ def process(
                     and stripped_line.startswith("__all__")
                     and not _has_skip_comment(stripped_line)
                 ):
-                    _, rhs = stripped_line.split("=")
+                    _, rhs = stripped_line.split("=", 1)
                     code_sorting = LITERAL_TYPE_MAPPING.get(rhs.lstrip()[0], "tuple")
                     code_sorting_indent = line[: -len(line.lstrip())]
                     not_imports = True
@@ -476,7 +476,7 @@ def process(
                     import_section += line
                     raw_import_section += line
                 if not contains_imports:
-                    output_stream.write(import_section)
+                    output_stream.write(above_import_section + import_section)
 
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]

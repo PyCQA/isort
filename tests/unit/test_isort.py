@@ -5652,6 +5652,32 @@ def test_reexport_no_spaces() -> None:
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
 
+def test_reexport_keeps_trailing_comment() -> None:
+    test_input = """__all__ = ['foo', 'bar']  # public names
+"""
+    expd_output = """__all__ = ["bar", "foo"]  # public names
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_keeps_trailing_comment_with_equals() -> None:
+    test_input = """__all__ = ['foo', 'bar']  # note: key = value
+"""
+    expd_output = """__all__ = ["bar", "foo"]  # note: key = value
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_isort_list_keeps_trailing_comment_with_equals() -> None:
+    test_input = """# isort: list
+__all__ = ['foo', 'bar']  # note: key = value
+"""
+    expd_output = """# isort: list
+__all__ = ["bar", "foo"]  # note: key = value
+"""
+    assert isort.code(test_input) == expd_output
+
+
 def test_reexport_not_first_line() -> None:
     test_input = """import random
 

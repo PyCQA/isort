@@ -1,5 +1,6 @@
 """A growing set of tests designed to ensure isort doesn't have regressions in new versions"""
 
+import ast
 from io import BytesIO, StringIO, TextIOWrapper
 
 import pytest
@@ -8,6 +9,7 @@ import isort
 import isort.sections
 from isort.core import STRING_PREFIXES
 from isort.main import main
+from isort.wrap_modes import WrapModes
 
 
 def test_isort_duplicating_comments_issue_1264():
@@ -61,6 +63,18 @@ def test_pylint_disable_next_stays_with_first_import_issue_2054():
     )
 
     assert isort.code(test_input) == expected_output
+
+
+def test_blank_lines_before_comments_issue_2156():
+    test_input = """
+def my_function():
+    def inner_function():
+        return 1
+
+    # A comment
+    return inner_function()
+"""
+    assert isort.code(test_input, lines_before_imports=1) == test_input
 
 
 def test_blank_lined_removed_issue_1275():
@@ -2271,6 +2285,26 @@ def test_sort_reexports_check_mode_multiline_all_issue_2280():
     assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
+def test_sort_reexports_preserves_short_multiline_trailing_comma_issue_2578():
+    """A short __all__ with a trailing comma should keep its explicit multiline style."""
+    test_input = """__all__ = (
+    "FirstClass",
+    "SecondClass",
+)
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
+def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578():
+    """The same trailing-comma preservation applies to list-style __all__ exports."""
+    test_input = """__all__ = [
+    "FirstClass",
+    "SecondClass",
+]
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
@@ -2561,3 +2595,49 @@ def test_opening_line_comment_keeps_existing_placement_issue_2124():
     output = isort.code(test_input, multi_line_output=3, include_trailing_comma=True)
     assert output == test_input
     assert isort.code(output, multi_line_output=3, include_trailing_comma=True) == test_input
+
+
+def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments():
+    """``multi_line_output=10`` must not append a comma or the closing parenthesis after a
+    trailing comment, which silently rewrote valid code into code that no longer parses.
+
+    The mode keeps the comment on the import line (its siblings hoist it to the ``(`` line),
+    then appended punctuation to that line unconditionally.  The closing ``)`` landed inside
+    the comment, and a wrapping comma was consumed by the comment re-splice in
+    ``comments.add_to_line`` -- so the output lost a separator it never got back.
+    """
+    # Closing parenthesis captured by the comment: "'(' was never closed".
+    captured_paren = isort.code(
+        "from a import b, c  # trailing\nfrom a import d\n",
+        multi_line_output=10,
+        line_length=40,
+        force_grid_wrap=2,
+    )
+    assert ast.parse(captured_paren)
+    assert captured_paren == "from a import (b, c, d)  # trailing\n"
+
+    # Comma eaten at a wrap point: the names either side of it merged into "eta gamma".
+    lost_comma = isort.code(
+        "from mypkg.submodule import alpha, beta, gamma, delta, epsilon, zeta, eta  # noqa: F401\n",
+        multi_line_output=10,
+        line_length=79,
+    )
+    assert ast.parse(lost_comma)
+    assert "eta," in lost_comma
+
+    # No wrap mode may turn parsing code into non-parsing code.
+    for mode in WrapModes:
+        for line_length in (40, 79, 88):
+            for source in (
+                "from a import b, c  # trailing\nfrom a import d\n",
+                "from mypkg.submodule import alpha, beta, gamma, delta, epsilon, zeta  # noqa: F401\n",
+                "from mypkg.sub import alpha, beta, gamma, delta, epsilon  # type: ignore\n",
+            ):
+                for trailing_comma in (False, True):
+                    output = isort.code(
+                        source,
+                        multi_line_output=mode.value,
+                        line_length=line_length,
+                        include_trailing_comma=trailing_comma,
+                    )
+                    ast.parse(output)  # must never raise

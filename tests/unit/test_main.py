@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 import os
 import pathlib
@@ -15,7 +16,7 @@ from isort._version import _VERSION_STRING, _IS_COMPILED
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
 from .utils import as_stream
-from io import BytesIO, TextIOWrapper
+from io import BytesIO, StringIO, TextIOWrapper
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -842,6 +843,37 @@ import b
 import a, b
 """
     )
+
+
+def test_isort_with_stdin_preserves_lf_stdout(tmp_path: Path) -> None:
+    input_file = tmp_path / "in.py"
+    input_file.write_bytes(b"import re\nimport os\n")
+    output_file = tmp_path / "out.py"
+
+    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
+        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
+            main.main(["-"])
+
+    assert output_file.read_bytes() == b"import os\nimport re\n"
+
+
+def test_isort_with_stdin_preserves_crlf_stdout(tmp_path: Path) -> None:
+    input_file = tmp_path / "in.py"
+    input_file.write_bytes(b"import re\r\nimport os\r\n")
+    output_file = tmp_path / "out.py"
+
+    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
+        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
+            main.main(["-"])
+
+    assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
+
+
+def test_preserve_newline_stream_keeps_non_textiowrapper() -> None:
+    input_content = StringIO("import re\nimport os\n")
+
+    with main._stream_with_preserved_newlines(input_content, mode="r") as preserved_stream:
+        assert preserved_stream is input_content
 
 
 def test_unsupported_encodings(tmpdir, capsys):
