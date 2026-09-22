@@ -2543,3 +2543,21 @@ def test_mixed_functional_and_plain_comments_black_mode_issue_2124():
     assert output == expected
     assert len(output.splitlines()[0]) <= 88
     assert isort.code(output, profile="black") == output
+
+
+def test_opening_line_comment_keeps_existing_placement_issue_2124():
+    """An opening-line comment never moves, even when the opening line is long.
+
+    Only body (continuation-line) comments may move to satisfy line_length.
+    Guards the habitat-lab primer regression where an opening-line comment was
+    moved under the paren.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = """from habitat_baselines.common.obs_transformers import (  # get_active_obs_transforms,
+    apply_obs_transforms_batch,
+    apply_obs_transforms_obs_space,
+)
+"""
+    output = isort.code(test_input, multi_line_output=3, include_trailing_comma=True)
+    assert output == test_input
+    assert isort.code(output, multi_line_output=3, include_trailing_comma=True) == test_input

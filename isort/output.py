@@ -406,6 +406,7 @@ def _build_grouped_from_imports(
     processed_as_imports_this_iteration: bool,
     parsed: parse.ParsedContent,
     config: Config,
+    opening_comments: list[str] | None = None,
 ) -> str:
     """
     Build a string of imports, wrapping them across multiple lines if necessary.
@@ -461,6 +462,7 @@ def _build_grouped_from_imports(
             line_separator=parsed.line_separator,
             config=config,
             explode=True,
+            opening_comments=opening_comments,
         )
 
     if do_multiline_reformat:
@@ -470,6 +472,7 @@ def _build_grouped_from_imports(
             comments=comments,
             line_separator=parsed.line_separator,
             config=config,
+            opening_comments=opening_comments,
         )
         if config.multi_line_output == wrap_modes.WrapModes.GRID:
             other_import_statement = wrap.import_statement(
@@ -591,6 +594,9 @@ def _with_from_imports_for_module(
                     from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
     comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
+    # Opening-line comments for this module, if any. Passed separately so the
+    # wrap stage can keep them on the opening line (see #2124).
+    opening_comments: list[str] = parsed.categorized_comments["opening"].pop(module, [])
     above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
     if above_comments:
         output.extend(above_comments)
@@ -769,12 +775,14 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
+            opening_comments=opening_comments,
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)
 
         # Reset comments as we have just parsed them.
         comments = []
+        opening_comments = []
 
     return output
 

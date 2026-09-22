@@ -263,6 +263,61 @@ def test_vertical_hanging_indent_mixed_functional_and_plain_comments():
         assert len(line) <= 88, f"line exceeds 88: {line!r}"
 
 
+def test_vertical_hanging_indent_opening_comment_never_moves():
+    """An opening-line comment keeps its placement even over line_length.
+
+    Only body comments may move; the opening line is reproduced byte-identical.
+    """
+    result = wrap_modes.vertical_hanging_indent(
+        statement="from habitat_baselines.common.obs_transformers import ",
+        imports=["apply_obs_transforms_batch", "apply_obs_transforms_obs_space"],
+        white_space="    ",
+        indent="    ",
+        line_length=79,
+        comments=["get_active_obs_transforms,"],
+        opening_comments=["get_active_obs_transforms,"],
+        line_separator="\n",
+        comment_prefix="  #",
+        include_trailing_comma=True,
+        remove_comments=False,
+    )
+    assert result == (
+        "from habitat_baselines.common.obs_transformers import (  # get_active_obs_transforms,\n"
+        "    apply_obs_transforms_batch,\n"
+        "    apply_obs_transforms_obs_space,\n"
+        ")"
+    )
+
+
+def test_vertical_hanging_indent_opening_plus_body_comments():
+    """Opening comment stays while an over-long body comment moves off."""
+    result = wrap_modes.vertical_hanging_indent(
+        statement="from os.path import ",
+        imports=["getsize", "join"],
+        white_space="    ",
+        indent="    ",
+        line_length=88,
+        comments=[
+            "opening note",
+            " this is a really really really really really really really really",
+            " really really really really really really long comment",
+        ],
+        opening_comments=["opening note"],
+        line_separator="\n",
+        comment_prefix="  #",
+        include_trailing_comma=True,
+        remove_comments=False,
+    )
+    assert result == (
+        "from os.path import (  # opening note\n"
+        "    #  this is a really really really really really really really really\n"
+        "    #  really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")"
+    )
+
+
 def test_vertical_hanging_indent_bracket_long_comment_respects_line_length():
     """The bracket consumer stays valid when comments move off the opening line."""
     result = wrap_modes.vertical_hanging_indent_bracket(

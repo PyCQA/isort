@@ -174,19 +174,28 @@ def vertical_hanging_indent(**interface: Any) -> str:
     _imports = ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"])
     _comma_maybe = "," if interface["include_trailing_comma"] else ""
     opening = f"{interface['statement']}({_line_with_comments}"
-    functional_comments = [
-        comment
-        for comment in (interface["comments"] or [])
-        if comment.strip().lower().startswith(("noqa", "type: ignore"))
-    ]
-    movable_comments = [
-        comment
-        for comment in (interface["comments"] or [])
-        if not comment.strip().lower().startswith(("noqa", "type: ignore"))
-    ]
+    # Partition comments by provenance and kind (see #2124):
+    # - directives (`noqa` / `type: ignore`) stay on the opening line wherever
+    #   they came from;
+    # - opening-line comments keep their existing placement and never move;
+    # - only body comments may move to their own lines to satisfy line_length.
+    # Matching consumes each provenance entry once, so duplicate comment texts
+    # stay correctly associated.
+    pending_opening = list(interface.get("opening_comments", []))
+    functional_comments: list[str] = []
+    opening_line_comments: list[str] = []
+    movable_comments: list[str] = []
+    for comment in interface["comments"] or []:
+        if comment.strip().lower().startswith(("noqa", "type: ignore")):
+            functional_comments.append(comment)
+        elif comment in pending_opening:
+            opening_line_comments.append(comment)
+            pending_opening.remove(comment)
+        else:
+            movable_comments.append(comment)
     if _line_with_comments and movable_comments and len(opening) > interface["line_length"]:
-        _functional_on_opening = isort.comments.add_to_line(
-            functional_comments,
+        _opening_line_with_comments = isort.comments.add_to_line(
+            [*functional_comments, *opening_line_comments],
             "",
             removed=interface["remove_comments"],
             comment_prefix=interface["comment_prefix"],
@@ -201,7 +210,7 @@ def vertical_hanging_indent(**interface: Any) -> str:
             for single_comment in movable_comments
         )
         return (
-            f"{interface['statement']}({_functional_on_opening}{interface['line_separator']}"
+            f"{interface['statement']}({_opening_line_with_comments}{interface['line_separator']}"
             f"{_comment_on_own_line}{interface['line_separator']}"
             f"{interface['indent']}{_imports}{_comma_maybe}"
             f"{interface['line_separator']})"
