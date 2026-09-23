@@ -1,7 +1,7 @@
 import textwrap
 import tokenize
 from io import StringIO
-from itertools import chain
+from itertools import accumulate, chain
 from typing import TextIO
 
 import isort.literal
@@ -63,39 +63,64 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
-def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str]:
-    """Split an accumulated code-sorting section into the literal to sort and the lines
-    that follow it, which were swallowed because nothing separated them from the literal.
+def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str, str]:
+    """Split an accumulated code-sorting section into the comments that precede the
+    literal, the literal to sort, and whatever follows it, which was swallowed because
+    nothing separated it from the literal.
 
-    The literal ends at the next statement, or at the first standalone comment that follows
-    the literal; both are returned untouched. Comments nested inside the literal's brackets
-    belong to the literal. ``# isort: assignments`` sections intentionally span several
-    statements, so they are kept whole. See #2286.
+    The literal ends at a top-level ``;``, or at the next line holding a statement or a
+    standalone comment; both are returned untouched. Comments nested inside the literal's
+    brackets belong to the literal. ``# isort: assignments`` sections intentionally span
+    several statements, so they are kept whole. See #2286.
     """
     if sort_type == "assignments":
-        return section, ""
+        return "", section, ""
 
     lines = section.splitlines(keepends=True)
-    # Tokenize rather than parse: the swallowed statement may dedent out of the literal's
-    # suite, so the section is not always a valid module. Only tokens up to the end of
-    # the literal's statement are read, so whatever follows it never has to be valid.
+    dedented = textwrap.dedent(section).splitlines(keepends=True)
+    line_starts = list(accumulate((len(line) for line in lines), initial=0))
+
+    def offset(row: int, column: int) -> int:
+        return line_starts[row - 1] + column + len(lines[row - 1]) - len(dedented[row - 1])
+
+    # Tokenize rather than parse: the swallowed code may dedent out of the literal's suite,
+    # so the section is not always a valid module. Tokens are only read up to the end of
+    # the literal's statement, so whatever follows it never has to be valid.
+    first_row = 0
+    depth = 0
     try:
-        statement_end = next(
-            token.end[0]
-            for token in tokenize.generate_tokens(StringIO(textwrap.dedent(section)).readline)
-            if token.type == tokenize.NEWLINE
-        )
-    except (StopIteration, SyntaxError, tokenize.TokenError):  # pragma: no cover
-        return section, ""
+        for token in tokenize.generate_tokens(StringIO("".join(dedented)).readline):
+            if token.type in {tokenize.COMMENT, tokenize.NL, tokenize.INDENT, tokenize.DEDENT}:
+                continue
+            first_row = first_row or token.start[0]
+            if token.string in {"(", "[", "{"}:
+                depth += 1
+            elif token.string in {")", "]", "}"}:
+                depth -= 1
+            elif token.string == ";" and depth == 0:
+                literal_end = offset(*token.start)
+                break
+            elif token.type == tokenize.NEWLINE:
+                literal_end = next(
+                    (
+                        line_starts[row]
+                        for row in range(token.end[0], len(lines))
+                        if lines[row].strip()
+                    ),
+                    len(section),
+                )
+                break
+        else:  # pragma: no cover - tokenize always ends a statement with NEWLINE
+            return "", section, ""
+    except (SyntaxError, tokenize.TokenError):  # pragma: no cover
+        return "", section, ""
 
-    literal_end = next(
-        (index for index in range(statement_end, len(lines)) if lines[index].strip()),
-        len(lines),
+    literal_start = line_starts[first_row - 1]
+    return (
+        section[:literal_start],
+        section[literal_start:literal_end],
+        section[literal_end:],
     )
-
-    if literal_end >= len(lines):
-        return section, ""
-    return "".join(lines[:literal_end]), "".join(lines[literal_end:])
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -210,7 +235,7 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
-                literal_section, trailing_section = _split_code_sorting_section(
+                leading_section, literal_section, trailing_section = _split_code_sorting_section(
                     code_sorting_section, str(code_sorting)
                 )
                 if is_reexport:
@@ -234,7 +259,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code + trailing_section)
+                output_stream.write(leading_section + sorted_code + trailing_section)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -337,8 +362,8 @@ def process(
                     is_reexport = True
                 elif code_sorting:
                     if not stripped_line:
-                        literal_section, trailing_section = _split_code_sorting_section(
-                            code_sorting_section, str(code_sorting)
+                        leading_section, literal_section, trailing_section = (
+                            _split_code_sorting_section(code_sorting_section, str(code_sorting))
                         )
                         sorted_code = textwrap.indent(
                             isort.literal.assignment(
@@ -360,7 +385,7 @@ def process(
                             # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
-                        output_stream.write(sorted_code + trailing_section)
+                        output_stream.write(leading_section + sorted_code + trailing_section)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we

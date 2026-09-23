@@ -2687,3 +2687,23 @@ def test_isort_list_statement_dedented_out_of_the_literal_suite_issue_2286():
     assert isort.code(test_input) == (
         'class A:\n    class B:\n        # isort: list\n        x = ["a", "b"]\n    y = 1\n'
     )
+
+
+def test_code_sorting_comment_before_the_literal_issue_2286():
+    """A comment between the action comment and the literal is passed through, so an
+    ``=`` inside it no longer splits the assignment. See issue #2286."""
+    for prefix in ("", "import os\n\n"):
+        test_input = f'{prefix}# isort: list\n# key = value\nx = ["b", "a"]\n'
+        assert isort.code(test_input) == f'{prefix}# isort: list\n# key = value\nx = ["a", "b"]\n'
+
+
+def test_code_sorting_semicolon_after_the_literal_issue_2286():
+    """A statement after a top-level ``;`` is kept out of the literal. See issue #2286."""
+    assert (
+        isort.code('__all__ = ["b", "a"]; x = 1\n', sort_reexports=True)
+        == '__all__ = ["a", "b"]; x = 1\n'
+    )
+    assert (
+        isort.code('def f():\n    # isort: list\n    x = ["b", "a"]; y = {1: 2}\n')
+        == 'def f():\n    # isort: list\n    x = ["a", "b"]; y = {1: 2}\n'
+    )
