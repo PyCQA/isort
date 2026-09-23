@@ -2332,6 +2332,55 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
+def test_sort_reexports_preserves_crlf_line_endings_issue_2668():
+    """``--sort-reexports`` must keep CRLF endings instead of injecting bare LFs."""
+    test_input = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = (\r\n"
+        '    "SecondClass",\r\n'
+        '    "FirstClass",\r\n'
+        ")\r\n"
+    )
+    expected = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = (\r\n"
+        '    "FirstClass",\r\n'
+        '    "SecondClass",\r\n'
+        ")\r\n"
+    )
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected
+
+
+def test_sort_reexports_preserves_crlf_list_style_issue_2668():
+    """List-style ``__all__`` reexports should preserve CRLF the same way."""
+    test_input = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = [\r\n"
+        '    "SecondClass",\r\n'
+        '    "FirstClass",\r\n'
+        "]\r\n"
+    )
+    expected = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = [\r\n"
+        '    "FirstClass",\r\n'
+        '    "SecondClass",\r\n'
+        "]\r\n"
+    )
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected
+
+
+def test_literal_sort_action_comment_preserves_crlf_issue_2668():
+    """``# isort: list`` shares the literal formatter and must keep CRLF too."""
+    test_input = '# isort: list\r\n__all__ = [\r\n    "SecondClass",\r\n    "FirstClass",\r\n]\r\n'
+    expected = '# isort: list\r\n__all__ = [\r\n    "FirstClass",\r\n    "SecondClass",\r\n]\r\n'
+    assert isort.code(test_input, profile="black") == expected
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 

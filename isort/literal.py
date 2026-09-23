@@ -12,6 +12,17 @@ from isort.settings import DEFAULT_CONFIG, Config
 type_mapping: dict[str, tuple[type, Callable[[Any, Config, int, bool], str]]] = {}
 
 
+def _line_separator_for(code: str, config: Config) -> str:
+    """Prefer an explicit config line ending; otherwise match the source text."""
+    if config.line_ending:
+        return config.line_ending
+    if "\r\n" in code:
+        return "\r\n"
+    if "\r" in code:
+        return "\r"
+    return "\n"
+
+
 def assignments(code: str) -> str:
     values = {}
     for line in code.splitlines(keepends=True):
@@ -52,6 +63,10 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     expected_type, sort_function = type_mapping[sort_type]
     if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
+
+    line_separator = _line_separator_for(code, config)
+    if config.line_ending != line_separator:
+        config = Config(config=config, line_ending=line_separator)
 
     prefix_length = len(f"{variable_name} = ")
     sorted_value_code = (
@@ -148,13 +163,14 @@ def _format_collection(
         return single_line
 
     indent = config.indent
+    line_separator = config.line_ending or "\n"
     trailing = (
         ","
         if (preserve_trailing_comma or config.include_trailing_comma or only_element_needs_comma)
         else ""
     )
-    body = (",\n" + indent).join(elements)
-    return f"{open_bracket}\n{indent}{body}{trailing}\n{close_bracket}"
+    body = ("," + line_separator + indent).join(elements)
+    return f"{open_bracket}{line_separator}{indent}{body}{trailing}{line_separator}{close_bracket}"
 
 
 @register_type("dict", dict)

@@ -171,3 +171,19 @@ def test_trailing_comment_on_multiline_literal_is_preserved():
         isort.literal.assignment("x = (\n    'b',\n    'a',\n)  # exports", "tuple", "py")
         == 'x = ("a", "b")  # exports'
     )
+
+
+def test_wrapped_literal_honors_config_line_ending():
+    code = "__all__ = ['" + "', '".join(f"name_{i:02d}" for i in range(12)) + "']"
+    result = isort.literal.assignment(
+        code, "list", "py", config=Config(profile="black", line_ending="\r\n")
+    )
+    expected = "__all__ = [\r\n" + "".join(f'    "name_{i:02d}",\r\n' for i in range(12)) + "]"
+    assert result == expected
+
+
+def test_wrapped_literal_infers_crlf_from_source():
+    code = '__all__ = (\r\n    "name_01",\r\n    "name_00",\r\n)'
+    result = isort.literal.assignment(code, "tuple", "py", config=Config(profile="black"))
+    expected = '__all__ = (\r\n    "name_00",\r\n    "name_01",\r\n)'
+    assert result == expected
