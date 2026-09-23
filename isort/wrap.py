@@ -87,12 +87,15 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
     if "#" in content:
         line_without_comment, comment = content.split("#", 1)
 
-    # A ``from ... import *`` / ``from ... cimport *`` statement cannot use
-    # parenthesis-based wrapping because the wildcard ``*`` has no valid
-    # continuation in that mode. Use a backslash continuation instead so the
-    # statement is split across lines while remaining valid Python.
-    # See https://github.com/PyCQA/isort/issues/2267
+    is_vertical_mode = wrap_mode in (Modes.VERTICAL_HANGING_INDENT, Modes.VERTICAL_GRID_GROUPED)
+
+    # Star imports cannot use parenthesized wrapping. If parentheses were
+    # requested, leave them intact rather than falling back to backslashes.
+    # See https://github.com/PyCQA/isort/issues/2267 and issue #2649.
     if line_without_comment.rstrip().endswith("*"):
+        if config.use_parentheses or is_vertical_mode:
+            return content
+
         prefix, keyword, _ = line_without_comment.rstrip().rsplit(" ", 2)
         comment_suffix = f"  #{comment}" if comment else ""
         return f"{prefix} {keyword} \\{line_separator}{config.indent}*{comment_suffix}"
@@ -103,10 +106,6 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             splitter
         ):
             line_parts = re.split(exp, line_without_comment)
-            _is_vertical_mode = wrap_mode in (
-                Modes.VERTICAL_HANGING_INDENT,
-                Modes.VERTICAL_GRID_GROUPED,
-            )
             # Determine whether the comment should be hoisted to the opening
             # parenthesis line rather than embedded in the import line.
             # This happens for noqa comments (when use_parentheses is True)
@@ -115,7 +114,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             # respected even without an explicit use_parentheses=True setting.
             _hoist_comment_to_paren = comment and (
                 (config.use_parentheses and "noqa" in comment)
-                or (_is_vertical_mode and not config.use_parentheses)
+                or (is_vertical_mode and not config.use_parentheses)
             )
             if comment and not _hoist_comment_to_paren:
                 _comma_maybe = (
@@ -142,13 +141,13 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 line_separator,
                 config,
             )
-            if config.use_parentheses or _is_vertical_mode:
+            if config.use_parentheses or is_vertical_mode:
                 if splitter == "as ":
                     output = f"{content}{splitter}{cont_line.lstrip()}"
                 else:
                     _comma = "," if config.include_trailing_comma and not comment else ""
 
-                    if _is_vertical_mode:
+                    if is_vertical_mode:
                         _separator = line_separator
                     else:
                         _separator = ""
