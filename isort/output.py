@@ -298,18 +298,13 @@ def _build_import_group(
 
 
 def _pop_from_alias_comment(
-    straight_comments: dict[str, list[str]], module: str, imp: str
+    straight_comments: dict[str, list[str]], module: str, alias: str
 ) -> list[str]:
-    """Pop one from-import's trailing comment.
+    """Pop one from-alias trailing comment by its namespaced identity.
 
-    Aliases use the namespaced identity; plain bases keep the bare key
-    (dropped redundant aliases).
+    Plain imports never call this; their comments travel the from-bucket.
     """
-    if " as " in imp:
-        key = parse.alias_comment_key(module, imp)
-    else:
-        key = f"{module}.{imp}"
-    return straight_comments.pop(key, [])
+    return straight_comments.pop(parse.from_alias_comment_key(module, alias), [])
 
 
 def _build_as_imports(
@@ -683,10 +678,14 @@ def _with_from_imports_for_module(
                     )
                 )
             else:
-                # Alias comments live under the namespaced identity; plain bases
-                # keep the bare key for dropped redundant aliases.
-                per_alias_straight = _pop_from_alias_comment(
-                    parsed.categorized_comments["straight"], module, from_import
+                # Alias comments live under the namespaced identity; plain
+                # imports never resolve through a straight-import key.
+                per_alias_straight = (
+                    _pop_from_alias_comment(
+                        parsed.categorized_comments["straight"], module, from_import
+                    )
+                    if " as " in from_import
+                    else []
                 )
                 single_import_line = with_comments(
                     [
@@ -799,9 +798,12 @@ def _with_from_imports_for_module(
         if config.combine_as_imports:
             combined_as_comments: list[str] = []
             for imp in from_import_section:
-                combined_as_comments.extend(
-                    _pop_from_alias_comment(parsed.categorized_comments["straight"], module, imp)
-                )
+                if " as " in imp:
+                    combined_as_comments.extend(
+                        _pop_from_alias_comment(
+                            parsed.categorized_comments["straight"], module, imp
+                        )
+                    )
             comments = [*comments, *combined_as_comments]
 
         grouped_from_import_statement = _build_grouped_from_imports(

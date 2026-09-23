@@ -748,6 +748,42 @@ def test_combine_as_with_redundant_alias_keeps_comment_issue_2094():
     )
 
 
+def test_from_import_comment_does_not_consume_straight_comment_issue_2094():
+    """A plain from-import never resolves through a straight-import identity.
+
+    ``import a.b`` owns ``straight["a.b"]``; ``from a import b`` must not pop it.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "import a.b  # straight\nfrom a import b  # from\n"
+    output = isort.code(test_input, force_single_line=True)
+    assert output == test_input
+    assert isort.code(output, force_single_line=True) == output
+
+
+def test_redundant_from_alias_does_not_consume_straight_comment_issue_2094():
+    """A redundant from-alias keeps the straight import's comment untouched.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "import urllib.parse  # straight\nfrom urllib import parse as parse  # redundant\n"
+    expected = "import urllib.parse  # straight\nfrom urllib import parse  # redundant\n"
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        remove_redundant_aliases=True,
+    )
+    assert output == expected
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            remove_redundant_aliases=True,
+        )
+        == output
+    )
+
+
 def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

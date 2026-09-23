@@ -43,11 +43,12 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
-def alias_comment_key(module: str, alias: str) -> str:
+def from_alias_comment_key(module: str, alias: str) -> str:
     """Namespaced key so from-alias comments never collide with straight-import keys.
 
     ``import a.b as c`` and ``from a import b as c`` share the ``a.b as c``
-    identity but own separate entries.
+    identity but own separate entries. Only non-redundant from aliases use
+    this; dropped redundant aliases fall through to the plain-from routing.
     """
     return f"from-alias:{module}.{alias}"
 
@@ -307,15 +308,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if comments and attach_comments_to is None:
                         if type_of_import == "from":
                             if config.remove_redundant_aliases and as_name == nested_module:
-                                # Dropped alias: the comment belongs to the plain import.
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    module, []
-                                )
+                                # Dropped alias: leave attach unset so the comment
+                                # follows the plain-from routing, never a
+                                # straight-import identity.
+                                pass
                             else:
                                 # Full alias identity: the base name alone cannot tell
                                 # two aliases of one base apart (issue 2094).
                                 attach_comments_to = categorized_comments["straight"].setdefault(
-                                    alias_comment_key(
+                                    from_alias_comment_key(
                                         top_level_module, f"{nested_module} as {as_name}"
                                     ),
                                     [],
