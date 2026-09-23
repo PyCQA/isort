@@ -1,6 +1,7 @@
 import textwrap
+import tokenize
 from io import StringIO
-from itertools import chain
+from itertools import accumulate, chain
 from typing import TextIO
 
 import isort.literal
@@ -60,6 +61,66 @@ def _is_comment_or_string_start(line: str) -> bool:
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
+
+
+def _split_code_sorting_section(section: str, sort_type: str) -> tuple[str, str, str]:
+    """Split an accumulated code-sorting section into the comments that precede the
+    literal, the literal to sort, and whatever follows it, which was swallowed because
+    nothing separated it from the literal.
+
+    The literal ends at a top-level ``;``, or at the next line holding a statement or a
+    standalone comment; both are returned untouched. Comments nested inside the literal's
+    brackets belong to the literal. ``# isort: assignments`` sections intentionally span
+    several statements, so they are kept whole. See #2286.
+    """
+    if sort_type == "assignments":
+        return "", section, ""
+
+    lines = section.splitlines(keepends=True)
+    dedented = textwrap.dedent(section).splitlines(keepends=True)
+    line_starts = list(accumulate((len(line) for line in lines), initial=0))
+
+    def offset(row: int, column: int) -> int:
+        return line_starts[row - 1] + column + len(lines[row - 1]) - len(dedented[row - 1])
+
+    # Tokenize rather than parse: the swallowed code may dedent out of the literal's suite,
+    # so the section is not always a valid module. Tokens are only read up to the end of
+    # the literal's statement, so whatever follows it never has to be valid.
+    first_row = 0
+    depth = 0
+    try:
+        for token in tokenize.generate_tokens(StringIO("".join(dedented)).readline):
+            if token.type in {tokenize.COMMENT, tokenize.NL, tokenize.INDENT, tokenize.DEDENT}:
+                continue
+            first_row = first_row or token.start[0]
+            if token.string in {"(", "[", "{"}:
+                depth += 1
+            elif token.string in {")", "]", "}"}:
+                depth -= 1
+            elif token.string == ";" and depth == 0:
+                literal_end = offset(*token.start)
+                break
+            elif token.type == tokenize.NEWLINE:
+                literal_end = next(
+                    (
+                        line_starts[row]
+                        for row in range(token.end[0], len(lines))
+                        if lines[row].strip()
+                    ),
+                    len(section),
+                )
+                break
+        else:  # pragma: no cover - tokenize always ends a statement with NEWLINE
+            return "", section, ""
+    except (SyntaxError, tokenize.TokenError):  # pragma: no cover
+        return "", section, ""
+
+    literal_start = line_starts[first_row - 1]
+    return (
+        section[:literal_start],
+        section[literal_start:literal_end],
+        section[literal_end:],
+    )
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -174,6 +235,9 @@ def process(
                 line_separator = "\n"
 
             if code_sorting and code_sorting_section:
+                leading_section, literal_section, trailing_section = _split_code_sorting_section(
+                    code_sorting_section, str(code_sorting)
+                )
                 if is_reexport:
                     # Clamp to 0: in check mode the output is a no-op stream whose tell()
                     # stays 0, so an unclamped rollback would seek to a negative position
@@ -182,7 +246,7 @@ def process(
                     reexport_rollback = 0
                 sorted_code = textwrap.indent(
                     isort.literal.assignment(
-                        code_sorting_section,
+                        literal_section,
                         str(code_sorting),
                         extension,
                         config=_indented_config(config, indent),
@@ -190,12 +254,12 @@ def process(
                     code_sorting_indent,
                 )
                 made_changes = made_changes or _has_changed(
-                    before=code_sorting_section,
+                    before=literal_section,
                     after=sorted_code,
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code)
+                output_stream.write(leading_section + sorted_code + trailing_section)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -238,6 +302,7 @@ def process(
                 and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
+                and not code_sorting
             ):
                 in_top_comment = True
             elif in_top_comment and (
@@ -297,9 +362,12 @@ def process(
                     is_reexport = True
                 elif code_sorting:
                     if not stripped_line:
+                        leading_section, literal_section, trailing_section = (
+                            _split_code_sorting_section(code_sorting_section, str(code_sorting))
+                        )
                         sorted_code = textwrap.indent(
                             isort.literal.assignment(
-                                code_sorting_section,
+                                literal_section,
                                 str(code_sorting),
                                 extension,
                                 config=_indented_config(config, indent),
@@ -307,7 +375,7 @@ def process(
                             code_sorting_indent,
                         )
                         made_changes = made_changes or _has_changed(
-                            before=code_sorting_section,
+                            before=literal_section,
                             after=sorted_code,
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
@@ -317,7 +385,7 @@ def process(
                             # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
-                        output_stream.write(sorted_code)
+                        output_stream.write(leading_section + sorted_code + trailing_section)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we

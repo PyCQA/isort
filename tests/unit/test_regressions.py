@@ -2332,6 +2332,111 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
+def test_sort_reexports_statement_immediately_after_all_issue_2286():
+    """A statement immediately after ``__all__``, with no blank line, was folded into
+    the literal and crashed on ``code.split("=")``. See issue #2286."""
+    test_input = '__all__ = ["b", "a"]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
+def test_isort_list_statement_immediately_after_literal_issue_2286():
+    """Same crash as #2286, reachable through ``# isort: list`` with no
+    ``sort_reexports``."""
+    test_input = '# isort: list\n__all__ = ["b", "a"]\nx = 1\n'
+    expected_output = '# isort: list\n__all__ = ["a", "b"]\nx = 1\n'
+    assert isort.code(test_input) == expected_output
+
+
+def test_sort_reexports_statement_after_all_not_first_line_issue_2286():
+    """Content above ``__all__`` must be left alone, since the rollback accounting
+    assumes the initiating line was already written. See issue #2286."""
+    test_input = 'import os\n__all__ = ["bbbbbbbbbb", "a"]\nx = 1\n'
+    expected_output = 'import os\n\n__all__ = ["a", "bbbbbbbbbb"]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_multiline_all_statement_immediately_after_issue_2286():
+    """A multi-line ``__all__`` followed immediately by a statement. See issue #2286."""
+    test_input = '__all__ = [\n    "b",\n    "a",\n]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
+def test_isort_assignments_section_not_split_issue_2286():
+    """``# isort: assignments`` deliberately spans several statements until a blank line,
+    so the #2286 split must leave such a section whole."""
+    test_input = "# isort: assignments\nb = 1\na = 2\n"
+    assert isort.code(test_input) == "# isort: assignments\na = 2\nb = 1\n"
+
+
+def test_sort_reexports_standalone_comment_after_all_issue_2286():
+    """A standalone comment under ``__all__`` was written to the output before the sorted
+    literal, so the rollback landed mid-line and produced ``__all____all__``, deleting the
+    real ``__all__`` and dropping the comment. It must survive in place."""
+    test_input = '__all__ = ["b", "a"]\n# note\nx = 1\n'
+    expected_output = '__all__ = ["a", "b"]\n# note\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+
+
+def test_sort_reexports_standalone_comment_at_eof_issue_2286():
+    """Same corruption as above with the comment as the last line and no statement
+    after it."""
+    test_input = '__all__ = ["b", "a"]\n# note\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\n# note\n'
+
+
+def test_isort_list_standalone_comment_after_literal_issue_2286():
+    """The same comment handling through ``# isort: list``: the comment stays under the
+    literal rather than being relocated above it."""
+    test_input = '# isort: list\n__all__ = ["b", "a"]\n# note\nx = 1\n'
+    expected_output = '# isort: list\n__all__ = ["a", "b"]\n# note\nx = 1\n'
+    assert isort.code(test_input) == expected_output
+
+
+def test_isort_list_comment_inside_multiline_literal_issue_2286():
+    """A comment between the brackets belongs to the literal, not to the lines that follow
+    it. Ending the section there left an unclosed bracket and raised
+    ``LiteralParsingFailure`` on input that sorted before. See issue #2286."""
+    test_input = '# isort: list\nNAMES = [\n    "b",\n    "a",\n    # note\n]\n'
+    assert isort.code(test_input) == '# isort: list\nNAMES = ["a", "b"]\n'
+
+
+def test_sort_reexports_comment_inside_multiline_all_issue_2286():
+    """Same unclosed-bracket failure through ``sort_reexports``."""
+    test_input = '__all__ = [\n    "b",\n    # note\n    "a",\n]\nx = 1\n'
+    assert isort.code(test_input, sort_reexports=True) == '__all__ = ["a", "b"]\nx = 1\n'
+
+
+def test_sort_reexports_comment_cases_check_mode_agrees_issue_2286():
+    """``check_code`` must agree with ``code`` on the comment cases, so ``--check`` never
+    reports a file clean that ``isort`` would then rewrite, or vice versa."""
+    for source in (
+        '__all__ = ["b", "a"]\n# note\nx = 1\n',
+        '__all__ = ["b", "a"]\n# note\n',
+        '__all__ = ["a", "b"]\n# note\nx = 1\n',
+    ):
+        already_sorted = isort.code(source, sort_reexports=True) == source
+        assert isort.check_code(source, show_diff=False, sort_reexports=True) is already_sorted
+
+
+def test_sort_reexports_equals_sign_inside_the_literal_issue_2286():
+    """An ``=`` anywhere past the assignment must not be read as a second assignment.
+
+    Both the line scanner in ``core`` and ``literal.assignment`` split ``__all__ = ...``
+    on ``=`` to find the literal, so a string element or a trailing comment containing
+    one raised ``ValueError: too many values to unpack``.
+    """
+    assert (
+        isort.code('__all__ = ["b", "a=c"]\nx = 1\n', sort_reexports=True)
+        == '__all__ = ["a=c", "b"]\nx = 1\n'
+    )
+    assert (
+        isort.code('__all__ = ["b", "a"]  # x=1\ny = 2\n', sort_reexports=True)
+        == '__all__ = ["a", "b"]  # x=1\ny = 2\n'
+    )
+    # literal.assignment is reachable on its own, so it needs the same split.
+    assert isort.literal.assignment('x = ["b", "a=c"]', "list", "py") == 'x = ["a=c", "b"]'
+
+
 def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
@@ -2596,3 +2701,36 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                         include_trailing_comma=trailing_comma,
                     )
                     ast.parse(output)  # must never raise
+
+
+def test_isort_list_statement_dedented_out_of_the_literal_suite_issue_2286():
+    """The swallowed statement can close the suite holding the literal, so the section is
+    not a valid module on its own. See issue #2286."""
+    test_input = 'class C:\n    # isort: list\n    names = ["b", "a"]\nx = 1\n'
+    assert isort.code(test_input) == 'class C:\n    # isort: list\n    names = ["a", "b"]\nx = 1\n'
+    test_input = (
+        'class A:\n    class B:\n        # isort: list\n        x = ["b", "a"]\n    y = 1\n'
+    )
+    assert isort.code(test_input) == (
+        'class A:\n    class B:\n        # isort: list\n        x = ["a", "b"]\n    y = 1\n'
+    )
+
+
+def test_code_sorting_comment_before_the_literal_issue_2286():
+    """A comment between the action comment and the literal is passed through, so an
+    ``=`` inside it no longer splits the assignment. See issue #2286."""
+    for prefix in ("", "import os\n\n"):
+        test_input = f'{prefix}# isort: list\n# key = value\nx = ["b", "a"]\n'
+        assert isort.code(test_input) == f'{prefix}# isort: list\n# key = value\nx = ["a", "b"]\n'
+
+
+def test_code_sorting_semicolon_after_the_literal_issue_2286():
+    """A statement after a top-level ``;`` is kept out of the literal. See issue #2286."""
+    assert (
+        isort.code('__all__ = ["b", "a"]; x = 1\n', sort_reexports=True)
+        == '__all__ = ["a", "b"]; x = 1\n'
+    )
+    assert (
+        isort.code('def f():\n    # isort: list\n    x = ["b", "a"]; y = {1: 2}\n')
+        == 'def f():\n    # isort: list\n    x = ["a", "b"]; y = {1: 2}\n'
+    )
