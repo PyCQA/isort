@@ -77,6 +77,33 @@ def my_function():
     assert isort.code(test_input, lines_before_imports=1) == test_input
 
 
+def test_force_sort_within_sections_uses_logical_import_lines_issue_1985() -> None:
+    source = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89
+from package import cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88
+"""
+    expected = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import (
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb89,
+)
+from package import cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc88
+"""
+    assert (
+        isort.code(source, profile="black", force_single_line=True, force_sort_within_sections=True)
+        == expected
+    )
+
+    source = """from package import aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88
+from package import (  # noqa
+    zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz89,
+)
+"""
+    assert (
+        isort.code(source, profile="black", force_single_line=True, force_sort_within_sections=True)
+        == source
+    )
+
+
 def test_blank_lined_removed_issue_1275():
     """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
     See: https://github.com/pycqa/isort/issues/1275
