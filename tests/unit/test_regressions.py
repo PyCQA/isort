@@ -2645,3 +2645,15 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                         include_trailing_comma=trailing_comma,
                     )
                     ast.parse(output)  # must never raise
+
+
+def test_float_to_top_keeps_indented_semicolon_imports_in_place():
+    """float_to_top must not hoist semicolon separated imports out of an indented block."""
+    assert (
+        isort.code("import os\n\nif True:\n    import b; import a\n", float_to_top=True)
+        == "import os\n\nif True:\n    import a\n    import b\n"
+    )
+    assert (
+        isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
+        == "def f():\n    import a  # comment\n    import b\n"
+    )
