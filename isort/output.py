@@ -1,7 +1,6 @@
 import copy
 import itertools
 from collections.abc import Iterable
-from functools import partial
 from typing import Literal
 
 from isort.format import format_simplified
@@ -11,6 +10,14 @@ from .comments import add_to_line as with_comments
 from .identify import STATEMENT_DECLARATIONS
 from .place import module_with_reason
 from .settings import DEFAULT_CONFIG, Config
+
+_WRAP_CHARS_TRANSLATION = str.maketrans("", "", "(),\\")
+
+
+def _unwrap_for_sort(line: str) -> str:
+    """Strip wrapping syntax so sorting keys use the logical import text."""
+    code = " ".join(part.split("#", 1)[0] for part in line.splitlines())
+    return " ".join(code.translate(_WRAP_CHARS_TRANSLATION).split())
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
@@ -283,7 +290,7 @@ def _build_import_group(
         new_group_output = sorting.sort(
             config,
             new_group_output,
-            key=partial(sorting.section_key, config=config),
+            key=lambda line: sorting.section_key(_unwrap_for_sort(line), config=config),
             reverse=config.reverse_sort,
         )
         # uncollapse comments
