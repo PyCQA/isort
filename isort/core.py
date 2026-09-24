@@ -433,7 +433,11 @@ def process(
         if not_imports:
             above_import_section: str = ""
             if not was_in_quote and config.lines_before_imports > -1:
-                if line.strip() == "" and not end_of_file:
+                # A pending ``next_import_section`` means ``line`` was emptied because an
+                # import at another indentation level starts a new section; it is not a
+                # blank line and must not be deferred, or the current section is only
+                # flushed at the end of the file and the next one is never written.
+                if line.strip() == "" and not end_of_file and not next_import_section:
                     lines_before += line
                     continue
                 if not import_section:
