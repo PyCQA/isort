@@ -2720,3 +2720,33 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_lines_before_imports_keeps_import_after_indented_block() -> None:
+    """A top-level import that follows an indented import block must not be dropped
+    when ``lines_before_imports`` is set.
+
+    The indentation change empties ``line`` to start the next section, and the
+    ``lines_before_imports`` handling took that for a blank line and deferred it. The
+    indented section was then only flushed at the end of the file, and the top-level
+    one queued behind it was never written.
+    """
+    code = "if sys:\n    import a\n\nimport b\n"
+    output = isort.code(code, lines_before_imports=1)
+    assert "    import a\n" in output
+    assert output.endswith("\nimport b\n")
+    assert isort.code(output, lines_before_imports=1) == output
+
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    output = isort.code(code, lines_before_imports=1)
+    assert output.endswith("\nimport third_party_library\n")
+    assert isort.code(output, lines_before_imports=1) == output
