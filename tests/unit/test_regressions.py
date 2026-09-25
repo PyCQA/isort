@@ -2647,6 +2647,46 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                     ast.parse(output)  # must never raise
 
 
+def test_lines_before_imports_keeps_import_after_indented_block():
+    """A top-level import that follows an indented import block must not be dropped
+    when ``lines_before_imports`` is set.
+
+    The indentation change empties ``line`` to start the next section, and the
+    ``lines_before_imports`` handling took that for a blank line and deferred it. The
+    indented section was then only flushed at the end of the file, and the top-level
+    one queued behind it was never written. Once written, it is preceded by exactly
+    ``lines_before_imports`` blank lines, like any other import section.
+    """
+    code = "if sys:\n    import a\n\nimport b\n"
+    for lines_before_imports in (0, 1, 2):
+        expected = "if sys:\n    import a\n" + "\n" * lines_before_imports + "import b\n"
+        output = isort.code(code, lines_before_imports=lines_before_imports)
+        assert output == expected
+        assert isort.code(output, lines_before_imports=lines_before_imports) == output
+
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    assert isort.code(code, lines_before_imports=1) == (
+        "\n"
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+
+
 def test_float_to_top_keeps_indented_semicolon_imports_in_place():
     """float_to_top must not hoist semicolon separated imports out of an indented block."""
     assert (
