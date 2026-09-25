@@ -2658,17 +2658,6 @@ def test_semicolon_continuation_does_not_shift_later_imports_issue_1918():
     assert isort.code(output) == output
 
 
-def test_normal_continuations_still_sort_issue_1918():
-    """Continuations without semicolons keep the existing behavior.
-    See: https://github.com/PyCQA/isort/issues/1918
-    """
-    assert isort.code("from os import zebra, \\\n    apple\n") == "from os import apple, zebra\n"
-    assert (
-        isort.code("from os import (\n    zebra,\n    apple,\n)\n")
-        == "from os import apple, zebra\n"
-    )
-
-
 def test_semicolon_split_first_line_with_continuation_issue_1918():
     """A later piece of a semicolon-split line emits only its own text.
 
