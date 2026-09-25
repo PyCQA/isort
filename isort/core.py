@@ -522,7 +522,14 @@ def process(
                             ignore_whitespace=config.ignore_whitespace,
                         )
                         output_stream.write(sorted_import_section)
-                        if not line and not indent and next_import_section:
+                        if (
+                            not line
+                            and not indent
+                            and next_import_section
+                            and config.lines_before_imports == -1
+                        ):
+                            # With ``lines_before_imports`` set, the next section is
+                            # already preceded by exactly that many blank lines.
                             output_stream.write(line_separator)
 
                 if indent:

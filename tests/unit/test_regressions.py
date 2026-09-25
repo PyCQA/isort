@@ -2605,13 +2605,15 @@ def test_lines_before_imports_keeps_import_after_indented_block():
     The indentation change empties ``line`` to start the next section, and the
     ``lines_before_imports`` handling took that for a blank line and deferred it. The
     indented section was then only flushed at the end of the file, and the top-level
-    one queued behind it was never written.
+    one queued behind it was never written. Once written, it is preceded by exactly
+    ``lines_before_imports`` blank lines, like any other import section.
     """
     code = "if sys:\n    import a\n\nimport b\n"
-    output = isort.code(code, lines_before_imports=1)
-    assert "    import a\n" in output
-    assert output.endswith("\nimport b\n")
-    assert isort.code(output, lines_before_imports=1) == output
+    for lines_before_imports in (0, 1, 2):
+        expected = "if sys:\n    import a\n" + "\n" * lines_before_imports + "import b\n"
+        output = isort.code(code, lines_before_imports=lines_before_imports)
+        assert output == expected
+        assert isort.code(output, lines_before_imports=lines_before_imports) == output
 
     code = (
         "import sys\n"
@@ -2623,6 +2625,14 @@ def test_lines_before_imports_keeps_import_after_indented_block():
         "\n"
         "import third_party_library\n"
     )
-    output = isort.code(code, lines_before_imports=1)
-    assert output.endswith("\nimport third_party_library\n")
-    assert isort.code(output, lines_before_imports=1) == output
+    assert isort.code(code, lines_before_imports=1) == (
+        "\n"
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
