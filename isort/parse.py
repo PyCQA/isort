@@ -43,6 +43,16 @@ def _infer_line_separator(contents: str) -> str:
     return "\n"
 
 
+def from_alias_comment_key(module: str, alias: str) -> str:
+    """Namespaced key so from-alias comments never collide with straight-import keys.
+
+    ``import a.b as c`` and ``from a import b as c`` share the ``a.b as c``
+    identity but own separate entries. Only non-redundant from aliases use
+    this; dropped redundant aliases fall through to the plain-from routing.
+    """
+    return f"from-alias:{module}.{alias}"
+
+
 ParsedImports = TypedDict(
     "ParsedImports",
     {
@@ -265,7 +275,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
-                    nested_module = None
                     as_index = just_imports.index("as")
                     if type_of_import == "from":
                         nested_module = just_imports[as_index - 1]
@@ -297,21 +306,29 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             as_map["straight"][module].append(as_name)
 
                     if comments and attach_comments_to is None:
-                        if nested_module and config.combine_as_imports:
-                            attach_comments_to = categorized_comments["from"].setdefault(
-                                f"{top_level_module}.__combined_as__", []
+                        if type_of_import == "from":
+                            if config.remove_redundant_aliases and as_name == nested_module:
+                                # Dropped alias: leave attach unset so the comment
+                                # follows the plain-from routing, never a
+                                # straight-import identity.
+                                pass
+                            else:
+                                # Full alias identity: the base name alone cannot tell
+                                # two aliases of one base apart (issue 2094).
+                                attach_comments_to = categorized_comments["straight"].setdefault(
+                                    from_alias_comment_key(
+                                        top_level_module, f"{nested_module} as {as_name}"
+                                    ),
+                                    [],
+                                )
+                        elif config.remove_redundant_aliases and as_name == module.split(".")[-1]:
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                module, []
                             )
                         else:
-                            if type_of_import == "from" or (
-                                config.remove_redundant_aliases and as_name == module.split(".")[-1]
-                            ):
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    module, []
-                                )
-                            else:
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    f"{module} as {as_name}", []
-                                )
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                f"{module} as {as_name}", []
+                            )
                     del just_imports[as_index : as_index + 2]
 
             if type_of_import == "from":

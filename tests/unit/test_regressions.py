@@ -612,6 +612,205 @@ from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignor
     assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)
 
 
+def test_combine_as_with_force_single_line_does_not_lose_comments_issue_2094():
+    """Test to ensure isort doesn't lose trailing comments for aliased imports
+    when both combine_as_imports and force_single_line are enabled.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    import re  # noqa: PLC0415  # local import, consistent with test_sort_reexports_output_is_black_stable_issue_2280
+
+    test_input = """from other_module import other_function  # type: ignore [import]  # pylint: disable=no-name-in-module
+from some_module import the_function as some_function  # type: ignore
+from some_other_module import another_function as yet_another_function  # type: ignore [import]  # pylint: disable=no-name-in-module
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    joined = output.replace("\\\n", " ")
+    assert re.search(
+        r"^from other_module import\s+other_function\s+# type: ignore \[import\]\s+# pylint: disable=no-name-in-module$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_module import the_function as some_function\s+# type: ignore$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_other_module import\s+another_function as\s+yet_another_function\s+# type: ignore \[import\]\s+# pylint: disable=no-name-in-module$",
+        joined,
+        re.MULTILINE,
+    )
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_with_force_single_line_keeps_per_alias_comments_issue_2094():
+    """Each alias from the same module keeps its own trailing comment.
+
+    Pins the per-alias keying at the core of this fix: comments must not swap
+    or duplicate across aliases of one module.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    import re  # noqa: PLC0415  # local import, consistent with sibling test above
+
+    test_input = """from some_module import the_function as some_function  # type: ignore
+from some_module import other_function as other_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    joined = output.replace("\\\n", " ")
+    assert re.search(
+        r"^from some_module import the_function as some_function\s+# type: ignore$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_module import other_function as other_alias\s+# noqa: F401$",
+        joined,
+        re.MULTILINE,
+    )
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_with_force_single_line_keeps_same_base_alias_comments_issue_2094():
+    """Each alias of one base keeps its own trailing comment.
+
+    Base-name keying merges both comments onto the first alias; full alias
+    identity is required so the second alias keeps its comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    import re  # noqa: PLC0415
+
+    test_input = """from some_module import the_function as first_alias  # type: ignore
+from some_module import the_function as second_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    joined = output.replace("\\\n", " ")
+    assert re.search(
+        r"^from some_module import the_function as first_alias\s+# type: ignore$",
+        joined,
+        re.MULTILINE,
+    )
+    assert re.search(
+        r"^from some_module import the_function as second_alias\s+# noqa: F401$",
+        joined,
+        re.MULTILINE,
+    )
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_grouped_keeps_same_base_alias_comments_issue_2094():
+    """Grouped aliases preserve every trailing comment.
+
+    Without `force_single_line` the aliases share one statement, so the
+    invariant is content preservation, not per-line separation.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """from some_module import the_function as first_alias  # type: ignore
+from some_module import the_function as second_alias  # noqa: F401
+"""
+    output = isort.code(test_input, combine_as_imports=True)
+    assert "# type: ignore" in output
+    assert "noqa: F401" in output
+    assert isort.code(output, combine_as_imports=True) == output
+
+
+def test_combine_as_with_single_line_exclusions_keeps_comments_issue_2094():
+    """Excluded modules keep comments through the grouped path.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """from some_module import the_function as some_function  # type: ignore
+"""
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        single_line_exclusions=("some_module",),
+    )
+    assert output == test_input
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            single_line_exclusions=("some_module",),
+        )
+        == output
+    )
+
+
+def test_straight_and_from_alias_comments_do_not_share_keys_issue_2094():
+    """Straight-alias and from-alias comments never share a storage key.
+
+    ``import a.b as c`` and ``from a import b as c`` share the ``a.b as c``
+    identity; each statement keeps its own comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = """import a.b as c  # first
+from a import b as c  # second
+"""
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    assert output == test_input
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_with_redundant_alias_keeps_comment_issue_2094():
+    """A dropped redundant alias keeps its trailing comment.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "from urllib import parse as parse  # type: ignore\n"
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        remove_redundant_aliases=True,
+    )
+    assert output == "from urllib import parse  # type: ignore\n"
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            remove_redundant_aliases=True,
+        )
+        == output
+    )
+
+
+def test_from_import_comment_does_not_consume_straight_comment_issue_2094():
+    """A plain from-import never resolves through a straight-import identity.
+
+    ``import a.b`` owns ``straight["a.b"]``; ``from a import b`` must not pop it.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "import a.b  # straight\nfrom a import b  # from\n"
+    output = isort.code(test_input, force_single_line=True)
+    assert output == test_input
+    assert isort.code(output, force_single_line=True) == output
+
+
+def test_redundant_from_alias_does_not_consume_straight_comment_issue_2094():
+    """A redundant from-alias keeps the straight import's comment untouched.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = "import urllib.parse  # straight\nfrom urllib import parse as parse  # redundant\n"
+    expected = "import urllib.parse  # straight\nfrom urllib import parse  # redundant\n"
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        remove_redundant_aliases=True,
+    )
+    assert output == expected
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            remove_redundant_aliases=True,
+        )
+        == output
+    )
+
+
 def test_incorrect_grouping_when_comments_issue_1396():
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396
