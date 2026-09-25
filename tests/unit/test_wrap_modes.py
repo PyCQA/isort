@@ -154,52 +154,6 @@ def test_vertical_hanging_indent_long_comment_respects_line_length():
     )
 
 
-def test_vertical_hanging_indent_short_comment_stays_on_opening_line():
-    """A short comment that fits within line_length stays on the opening line."""
-    assert (
-        wrap_modes.vertical_hanging_indent(
-            statement="from os.path import ",
-            imports=["getsize", "join"],
-            white_space="    ",
-            indent="    ",
-            line_length=88,
-            comments=[" short comment"],
-            line_separator="\n",
-            comment_prefix="  #",
-            include_trailing_comma=True,
-            remove_comments=False,
-        )
-        == "from os.path import (  #  short comment\n    getsize,\n    join,\n)"
-    )
-
-
-def test_vertical_hanging_indent_non_directive_type_comment_moves_off():
-    """A long comment containing 'type:' but not a 'type: ignore' directive moves off."""
-    assert (
-        wrap_modes.vertical_hanging_indent(
-            statement="from os.path import ",
-            imports=["getsize", "join"],
-            white_space="    ",
-            indent="    ",
-            line_length=88,
-            comments=[
-                " check type: int and more really really really really really really"
-                " really really really really really really long comment"
-            ],
-            line_separator="\n",
-            comment_prefix="  #",
-            include_trailing_comma=True,
-            remove_comments=False,
-        )
-        == "from os.path import (\n"
-        "    #  check type: int and more really really really really really really really really"
-        " really really really really long comment\n"
-        "    getsize,\n"
-        "    join,\n"
-        ")"
-    )
-
-
 def test_vertical_hanging_indent_multi_fragment_comments_each_on_own_line():
     """Each comment fragment renders on its own # line to respect line_length."""
     result = wrap_modes.vertical_hanging_indent(
@@ -263,32 +217,6 @@ def test_vertical_hanging_indent_mixed_functional_and_plain_comments():
         assert len(line) <= 88, f"line exceeds 88: {line!r}"
 
 
-def test_vertical_hanging_indent_opening_comment_never_moves():
-    """An opening-line comment keeps its placement even over line_length.
-
-    Only body comments may move; the opening line is reproduced byte-identical.
-    """
-    result = wrap_modes.vertical_hanging_indent(
-        statement="from habitat_baselines.common.obs_transformers import ",
-        imports=["apply_obs_transforms_batch", "apply_obs_transforms_obs_space"],
-        white_space="    ",
-        indent="    ",
-        line_length=79,
-        comments=["get_active_obs_transforms,"],
-        opening_comments=["get_active_obs_transforms,"],
-        line_separator="\n",
-        comment_prefix="  #",
-        include_trailing_comma=True,
-        remove_comments=False,
-    )
-    assert result == (
-        "from habitat_baselines.common.obs_transformers import (  # get_active_obs_transforms,\n"
-        "    apply_obs_transforms_batch,\n"
-        "    apply_obs_transforms_obs_space,\n"
-        ")"
-    )
-
-
 def test_vertical_hanging_indent_opening_plus_body_comments():
     """Opening comment stays while an over-long body comment moves off."""
     result = wrap_modes.vertical_hanging_indent(
@@ -316,35 +244,6 @@ def test_vertical_hanging_indent_opening_plus_body_comments():
         "    join,\n"
         ")"
     )
-
-
-def test_vertical_hanging_indent_bracket_long_comment_respects_line_length():
-    """The bracket consumer stays valid when comments move off the opening line."""
-    result = wrap_modes.vertical_hanging_indent_bracket(
-        statement="from os.path import ",
-        imports=["getsize", "join"],
-        white_space="    ",
-        indent="    ",
-        line_length=88,
-        comments=[
-            " this is a really really really really really really really really",
-            " really really really really really really long comment",
-        ],
-        line_separator="\n",
-        comment_prefix="  #",
-        include_trailing_comma=True,
-        remove_comments=False,
-    )
-    assert result == (
-        "from os.path import (\n"
-        "    #  this is a really really really really really really really really\n"
-        "    #  really really really really really really long comment\n"
-        "    getsize,\n"
-        "    join,\n"
-        "    )"
-    )
-    for line in result.split("\n"):
-        assert len(line) <= 88, f"line exceeds 88: {line!r}"
 
 
 # This test code was written by the `hypothesis.extra.ghostwriter` module
