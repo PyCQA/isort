@@ -127,6 +127,125 @@ def test_vertical_grid_size_near_line_length(
     )
 
 
+def test_vertical_hanging_indent_long_comment_respects_line_length():
+    """A long comment that exceeds line_length is placed on its own line."""
+    assert (
+        wrap_modes.vertical_hanging_indent(
+            statement="from os.path import ",
+            imports=["getsize", "join"],
+            white_space="    ",
+            indent="    ",
+            line_length=88,
+            comments=[
+                " this is a really really really really really really"
+                " really really really really really really long comment"
+            ],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=True,
+            remove_comments=False,
+        )
+        == "from os.path import (\n"
+        "    #  this is a really really really really really really really really"
+        " really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")"
+    )
+
+
+def test_vertical_hanging_indent_multi_fragment_comments_each_on_own_line():
+    """Each comment fragment renders on its own # line to respect line_length."""
+    result = wrap_modes.vertical_hanging_indent(
+        statement="from os.path import ",
+        imports=["getsize", "join"],
+        white_space="    ",
+        indent="    ",
+        line_length=88,
+        comments=[
+            " this is a really really really really really really really really",
+            " really really really really really really long comment",
+        ],
+        line_separator="\n",
+        comment_prefix="  #",
+        include_trailing_comma=True,
+        remove_comments=False,
+    )
+    assert result == (
+        "from os.path import (\n"
+        "    #  this is a really really really really really really really really\n"
+        "    #  really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")"
+    )
+    for line in result.split("\n"):
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+
+
+def test_vertical_hanging_indent_mixed_functional_and_plain_comments():
+    """A functional comment stays on the opening line while plain fragments move off.
+
+    Guards against the whole-list ``any()`` gate that kept an over-long plain
+    comment merged once a single ``noqa`` fragment was present (see #2124).
+    """
+    result = wrap_modes.vertical_hanging_indent(
+        statement="from os.path import ",
+        imports=["getsize", "join"],
+        white_space="    ",
+        indent="    ",
+        line_length=88,
+        comments=[
+            "noqa: F401",
+            " this is a really really really really really really really really",
+            " really really really really really really long comment",
+        ],
+        line_separator="\n",
+        comment_prefix="  #",
+        include_trailing_comma=True,
+        remove_comments=False,
+    )
+    assert result == (
+        "from os.path import (  # noqa: F401\n"
+        "    #  this is a really really really really really really really really\n"
+        "    #  really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")"
+    )
+    for line in result.split("\n"):
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+
+
+def test_vertical_hanging_indent_opening_plus_body_comments():
+    """Opening comment stays while an over-long body comment moves off."""
+    result = wrap_modes.vertical_hanging_indent(
+        statement="from os.path import ",
+        imports=["getsize", "join"],
+        white_space="    ",
+        indent="    ",
+        line_length=88,
+        comments=[
+            "opening note",
+            " this is a really really really really really really really really",
+            " really really really really really really long comment",
+        ],
+        opening_comments=["opening note"],
+        line_separator="\n",
+        comment_prefix="  #",
+        include_trailing_comma=True,
+        remove_comments=False,
+    )
+    assert result == (
+        "from os.path import (  # opening note\n"
+        "    #  this is a really really really really really really really really\n"
+        "    #  really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")"
+    )
+
+
 # This test code was written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 

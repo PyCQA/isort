@@ -2552,6 +2552,50 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
                 assert isort.code(source, add_imports=["import a"]) == source, cased + quote
 
 
+def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124():
+    """Ensure isort doesn't merge a long comment onto the opening line of a
+    multiline from import when using the black profile.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = """from os.path import (
+    join,
+    # this is a really really really really really really really really
+    # really really really really really really long comment
+    getsize,
+)
+"""
+    expected = """from os.path import (
+    # this is a really really really really really really really really
+    # really really really really really really long comment
+    getsize,
+    join,
+)
+"""
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    for line in output.splitlines():
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    assert isort.code(output, profile="black") == output
+
+
+def test_opening_line_comment_keeps_existing_placement_issue_2124():
+    """An opening-line comment never moves, even when the opening line is long.
+
+    Only body (continuation-line) comments may move to satisfy line_length.
+    Guards the habitat-lab primer regression where an opening-line comment was
+    moved under the paren.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = """from habitat_baselines.common.obs_transformers import (  # get_active_obs_transforms,
+    apply_obs_transforms_batch,
+    apply_obs_transforms_obs_space,
+)
+"""
+    output = isort.code(test_input, multi_line_output=3, include_trailing_comma=True)
+    assert output == test_input
+    assert isort.code(output, multi_line_output=3, include_trailing_comma=True) == test_input
+
+
 def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments():
     """``multi_line_output=10`` must not append a comma or the closing parenthesis after a
     trailing comment, which silently rewrote valid code into code that no longer parses.

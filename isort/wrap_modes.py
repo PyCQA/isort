@@ -183,8 +183,46 @@ def vertical_hanging_indent(**interface: Any) -> str:
     )
     _imports = ("," + interface["line_separator"] + interface["indent"]).join(interface["imports"])
     _comma_maybe = "," if interface["include_trailing_comma"] else ""
+    opening = f"{interface['statement']}({_line_with_comments}"
+    # Partition by provenance and kind: directives and opening-line comments
+    # stay on the opening line; only body comments may move for line_length.
+    # Provenance entries are consumed once, so duplicate texts stay associated.
+    pending_opening = list(interface.get("opening_comments") or [])
+    functional_comments: list[str] = []
+    opening_line_comments: list[str] = []
+    movable_comments: list[str] = []
+    for comment in interface["comments"] or []:
+        if comment.strip().lower().startswith(("noqa", "type: ignore")):
+            functional_comments.append(comment)
+        elif comment in pending_opening:
+            opening_line_comments.append(comment)
+            pending_opening.remove(comment)
+        else:
+            movable_comments.append(comment)
+    if _line_with_comments and movable_comments and len(opening) > interface["line_length"]:
+        _opening_line_with_comments = isort.comments.add_to_line(
+            [*functional_comments, *opening_line_comments],
+            "",
+            removed=interface["remove_comments"],
+            comment_prefix=interface["comment_prefix"],
+        )
+        _comment_on_own_line = interface["line_separator"].join(
+            isort.comments.add_to_line(
+                [single_comment],
+                interface["indent"],
+                removed=interface["remove_comments"],
+                comment_prefix=interface["comment_prefix"].lstrip(),
+            )
+            for single_comment in movable_comments
+        )
+        return (
+            f"{interface['statement']}({_opening_line_with_comments}{interface['line_separator']}"
+            f"{_comment_on_own_line}{interface['line_separator']}"
+            f"{interface['indent']}{_imports}{_comma_maybe}"
+            f"{interface['line_separator']})"
+        )
     return (
-        f"{interface['statement']}({_line_with_comments}{interface['line_separator']}"
+        f"{opening}{interface['line_separator']}"
         f"{interface['indent']}{_imports}{_comma_maybe}{interface['line_separator']})"
     )
 

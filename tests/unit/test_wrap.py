@@ -104,3 +104,20 @@ def test_star_import_wrapped_end_to_end() -> None:
     source = "from very.very.very.very.very.very.very.very.very.long.line import *\n"
     expected = "from very.very.very.very.very.very.very.very.very.long.line import \\\n    *\n"
     assert code(source, line_length=20, force_single_line=True) == expected
+
+
+def test_import_statement_explode_long_comment_respects_line_length() -> None:
+    """A long comment in explode mode is placed on its own line."""
+    result = wrap.import_statement(
+        import_start="from os.path import ",
+        from_imports=["getsize", "join"],
+        comments=[
+            " this is a really really really really really really really really"
+            " really really really really really really long comment"
+        ],
+        config=Config(profile="black"),
+        explode=True,
+    )
+    lines = result.split("\n")
+    assert lines[0] == "from os.path import ("
+    assert "long comment" in lines[1]
