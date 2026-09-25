@@ -7,20 +7,10 @@ from isort.exceptions import (
     LiteralParsingFailure,
     LiteralSortTypeMismatch,
 )
+from isort.parse import _infer_line_separator
 from isort.settings import DEFAULT_CONFIG, Config
 
 type_mapping: dict[str, tuple[type, Callable[[Any, Config, int, bool], str]]] = {}
-
-
-def _line_separator_for(code: str, config: Config) -> str:
-    """Prefer an explicit config line ending; otherwise match the source text."""
-    if config.line_ending:
-        return config.line_ending
-    if "\r\n" in code:
-        return "\r\n"
-    if "\r" in code:
-        return "\r"
-    return "\n"
 
 
 def assignments(code: str) -> str:
@@ -64,7 +54,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
-    line_separator = _line_separator_for(code, config)
+    line_separator = config.line_ending or _infer_line_separator(code)
     if config.line_ending != line_separator:
         config = Config(config=config, line_ending=line_separator)
 
