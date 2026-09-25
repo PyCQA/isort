@@ -67,8 +67,9 @@ def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineRe
                 break
             char_index += 1
 
-    if ";" in line.split("#")[0] and needs_import:
-        for part in (part.strip() for part in line.split(";")):
+    code = line.split("#")[0]
+    if ";" in code and needs_import:
+        for part in (part.strip() for part in code.split(";")):
             if (
                 part
                 and not part.startswith("from ")

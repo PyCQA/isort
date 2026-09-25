@@ -2105,6 +2105,37 @@ def test_same_line_statements() -> None:
     assert isort.code(test_input) == test_input
 
 
+def test_same_line_statements_trailing_comment_is_not_a_statement() -> None:
+    """Ensure a comment after a semicolon does not make isort skip the import.
+
+    ``skip_line`` must only consider the statements that precede the comment.
+    Otherwise ``import sys; # comment`` is skipped as if it held a non-import
+    statement, which hides the import from the sorter and makes ``--check``
+    pass on a file that is not sorted.
+    """
+    test_input = "import sys; # comment\nimport os\n"
+
+    assert [str(imp) for imp in isort.find_imports_in_code(test_input)] == [
+        ":1 import sys",
+        ":2 import os",
+    ]
+    assert isort.check_code(test_input) is False
+    assert isort.check_code("import os\nimport sys\n") is True
+
+    # The line is now sorted, and the comment stays attached to the import it
+    # was written on.
+    assert isort.code(test_input) == ("import os\nimport sys  # comment\n")
+
+
+def test_same_line_statements_keeps_skipping_real_non_import_statements() -> None:
+    """Ensure a real non-import statement after the semicolon still skips the
+    line, so the fix above does not over-correct.
+    """
+    test_input = "import pdb; pdb.set_trace()\nimport nose; nose.run()\n"
+    assert isort.code(test_input) == test_input
+    assert isort.code("import pdb; import nose\n") == ("import pdb\n\nimport nose\n")
+
+
 def test_long_line_comments() -> None:
     """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = (
