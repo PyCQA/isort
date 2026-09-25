@@ -2624,3 +2624,21 @@ def test_float_to_top_places_lines_before_imports_above_the_imports_issue_1935()
         assert isort.code(
             commented, lines_before_imports=lines_before_imports, float_to_top=True
         ) == isort.code(commented, lines_before_imports=lines_before_imports)
+
+    # Blank lines above such a comment are replaced by lines_before_imports, with or without
+    # float_to_top. Only the pass over the whole file may move them below the docstring, so
+    # the normal pass that follows it has to keep the old placement.
+    spaced = '"""Doc."""\n\n\n# About os.\nimport os\nimport sys\n\nprint(1)\n'
+    for lines_before_imports in (1, 2):
+        expected = (
+            '"""Doc."""\n'
+            + "\n" * lines_before_imports
+            + "# About os.\nimport os\nimport sys\n\nprint(1)\n"
+        )
+        for float_to_top in (False, True):
+            assert (
+                isort.code(
+                    spaced, lines_before_imports=lines_before_imports, float_to_top=float_to_top
+                )
+                == expected
+            )
