@@ -2596,3 +2596,76 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                         include_trailing_comma=trailing_comma,
                     )
                     ast.parse(output)  # must never raise
+
+
+def test_float_to_top_places_lines_before_imports_above_the_imports_issue_1935():
+    """With ``float_to_top``, the blank lines ``lines_before_imports`` asks for must go directly
+    above the imports, not above a module docstring or shebang at the start of the file, as
+    reported in issue #1935: https://github.com/pycqa/isort/issues/1935
+    """
+    # The exact input from the report.
+    assert (
+        isort.code(
+            '"""\nTmp module.\n"""\nimport os\nos.getcwd()\n',
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == '"""\nTmp module.\n"""\n\nimport os\n\nos.getcwd()\n'
+    )
+
+    # A shebang only works on the first line of the file.
+    assert (
+        isort.code(
+            '#!/usr/bin/env python\n"""Doc."""\n\nimport sys\nimport os\n\nprint(1)\n',
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == '#!/usr/bin/env python\n"""Doc."""\n\nimport os\nimport sys\n\nprint(1)\n'
+    )
+    assert (
+        isort.code(
+            "#!/usr/bin/env python\nimport os\n\nprint(1)\n",
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == "#!/usr/bin/env python\n\nimport os\n\nprint(1)\n"
+    )
+
+    # The count is exact, sorting the result again changes nothing, and check mode agrees.
+    for lines_before_imports in (0, 1, 2):
+        expected = '"""Doc."""\n' + "\n" * lines_before_imports + "import os\n\nprint(1)\n"
+        for source in ('"""Doc."""\nprint(1)\nimport os\n', expected):
+            assert (
+                isort.code(source, lines_before_imports=lines_before_imports, float_to_top=True)
+                == expected
+            )
+        assert isort.check_code(
+            expected, lines_before_imports=lines_before_imports, float_to_top=True
+        )
+        # The pass without float_to_top already got this right and still agrees.
+        assert isort.code(expected, lines_before_imports=lines_before_imports) == expected
+
+        # A comment directly on top of the first import gets the same spacing as without
+        # float_to_top.
+        commented = '"""Doc."""\n\n# About os.\nimport os\n\nprint(1)\n'
+        assert isort.code(
+            commented, lines_before_imports=lines_before_imports, float_to_top=True
+        ) == isort.code(commented, lines_before_imports=lines_before_imports)
+
+    # Blank lines above such a comment are replaced by lines_before_imports, with or without
+    # float_to_top. Only the pass over the whole file may move them below the docstring, so
+    # the normal pass that follows it has to keep the old placement.
+    spaced = '"""Doc."""\n\n\n# About os.\nimport os\nimport sys\n\nprint(1)\n'
+    for lines_before_imports in (1, 2):
+        expected = (
+            '"""Doc."""\n'
+            + "\n" * lines_before_imports
+            + "# About os.\nimport os\nimport sys\n\nprint(1)\n"
+        )
+        for float_to_top in (False, True):
+            assert (
+                isort.code(
+                    spaced, lines_before_imports=lines_before_imports, float_to_top=float_to_top
+                )
+                == expected
+            )

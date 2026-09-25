@@ -27,6 +27,7 @@ def sorted_imports(
     config: Config = DEFAULT_CONFIG,
     extension: str = "py",
     import_type: str = "import",
+    whole_file: bool = False,
 ) -> str:
     """Adds the imports back to the file.
 
@@ -149,8 +150,24 @@ def sorted_imports(
             lines_before_imports = config.lines_before_imports
             if config.profile == "black" and extension == "pyi":  # special case for black
                 lines_before_imports = 1
-            formatted_output[:0] = ["" for line in range(lines_before_imports)]
-            imports_tail += lines_before_imports
+            if whole_file:
+                # float_to_top parses the whole file here, so a shebang, a docstring or comments
+                # can come before the imports. Put the blank lines directly above the imports,
+                # replacing any blank lines already there, instead of at the top of the file.
+                # When none are asked for, or a comment sits directly on top of the first
+                # import, leave them to the normal pass that follows, which puts them below
+                # that comment.
+                headings = {f"# {title}" for title in config.import_headings.values()}
+                attached_comment = output[0].startswith("#") and output[0] not in headings
+                if lines_before_imports and not attached_comment:
+                    content_end = output_at
+                    while content_end and not formatted_output[content_end - 1].strip():
+                        content_end -= 1
+                    formatted_output[content_end:output_at] = [""] * lines_before_imports
+                    imports_tail = content_end + lines_before_imports + len(output)
+            else:
+                formatted_output[:0] = ["" for line in range(lines_before_imports)]
+                imports_tail += lines_before_imports
 
         if len(formatted_output) > imports_tail:
             next_construct = ""
