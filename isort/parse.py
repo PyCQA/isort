@@ -194,15 +194,35 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         starting_line = in_lines[import_index]
 
         line, *end_of_line_comment = line.split("#", 1)
+        comment_attached = False
         if ";" in line and not line[0].isspace():
             statements = [line.strip() for line in line.split(";")]
             # A trailing ";" leaves a spurious empty statement, which would
             # otherwise take the comment instead of the real last statement.
             if not statements[-1] and len(statements) > 1:
                 statements.pop()
+            if (
+                end_of_line_comment
+                and len(statements) == 1
+                and import_type(f"{line}#{end_of_line_comment[0]}", config) is None
+            ):
+                # isort is not going to sort this line -- a skip directive, or a
+                # noqa comment under honor_noqa -- so keep the text as written
+                # rather than rebuilding it from the statement, which would drop
+                # the ";" the author put there.
+                statements[0] = f"{line}#{end_of_line_comment[0]}"
+                comment_attached = True
+            else:
+                # The statements are stripped, but the comment is re-attached to
+                # the last one below, so carry over the whitespace that
+                # separated it from the "#". Without this, `import x; # note` is
+                # rewritten as `import x# note`.
+                separator = line[len(line.rstrip()) :]
+                if separator:
+                    statements[-1] = f"{statements[-1]}{separator}"
         else:
             statements = [line]
-        if end_of_line_comment:
+        if end_of_line_comment and not comment_attached:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
 
         for statement in statements:
