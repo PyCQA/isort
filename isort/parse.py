@@ -196,6 +196,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line and not line[0].isspace():
             statements = [line.strip() for line in line.split(";")]
+            # A trailing ";" leaves a spurious empty statement, which would
+            # otherwise take the comment instead of the real last statement.
+            if not statements[-1] and len(statements) > 1:
+                statements.pop()
         else:
             statements = [line]
         if end_of_line_comment:
