@@ -213,6 +213,121 @@ def test_fuzz_grid(
         reject()
 
 
+def test_grid_preserves_trailing_comment_when_no_wrap_needed():
+    """A trailing comment on a from-import must survive grid wrapping even when
+    the statement fits on one line. Previously the comment was silently dropped
+    (e.g. ``from x import (a, b)  # noqa: F401`` became ``from x import (a, b)``),
+    re-activating the lint the comment was suppressing.
+    """
+    # No wrap needed: comment must be appended after the closing paren.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # noqa: F401"
+    )
+    # No comment: output unchanged.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=[],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)"
+    )
+    # Trailing comma: comment goes after the paren, not before it.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=True,
+            remove_comments=False,
+        )
+        == "from x import(a, b,)  # noqa: F401"
+    )
+    # Multiple comments are joined, as elsewhere in the wrap modes.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["first", "second"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # first; second"
+    )
+
+
+def test_grid_comment_position_unchanged_when_wrap_needed():
+    """When grid wrapping does split the statement, the comment is attached to
+    the line where the wrap happens (pre-existing behavior). Pin it so the
+    no-wrap fix does not regress the wrap path.
+    """
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=[
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+            ],
+            white_space=" ",
+            indent=" ",
+            line_length=60,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b, c, d, e, f, g, h, i, j, k,  # noqa: F401\n"
+        " l, m, n, o, p, q, r, s)"
+    )
+
+
 @given(
     statement=st.text(),
     imports=st.lists(st.text()),
