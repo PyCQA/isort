@@ -156,6 +156,21 @@ def process(
     """
     line_separator: str = config.line_ending
     add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
+    made_changes: bool = False
+    verbose_output: list[str] = []
+
+    # Float to top processes the whole input stream first, moving any specified imports to the top
+    # and returns a new input stream to do actual processing on.
+    if config.float_to_top:
+        input_stream, verbose_output, made_changes = _float_to_top(
+            input_stream=input_stream,
+            add_imports=add_imports,
+            line_separator=line_separator,
+            config=config,
+            extension=extension,
+        )
+        add_imports = []
+
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
@@ -173,23 +188,11 @@ def process(
     code_sorting_section: str = ""
     code_sorting_indent: str = ""
     cimports: bool = False
-    made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
-    verbose_output: list[str] = []
     lines_before: list[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
-
-    if config.float_to_top:
-        input_stream, verbose_output, made_changes = _float_to_top(
-            input_stream=input_stream,
-            add_imports=add_imports,
-            line_separator=line_separator,
-            config=config,
-            extension=extension,
-        )
-        add_imports = []
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
