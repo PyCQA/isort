@@ -129,6 +129,35 @@ def _float_to_top(
     )
 
 
+def _scan_quotes(
+    line: str,
+    stripped_line: str,
+    in_quote: str,
+) -> str:
+    """Return the active quote state after scanning a source line."""
+    if ((not stripped_line.startswith("#") or in_quote) and '"' in line) or "'" in line:
+        char_index = 0
+
+        while char_index < len(line):
+            if line[char_index] == "\\":
+                char_index += 1
+            elif in_quote:
+                if line[char_index : char_index + len(in_quote)] == in_quote:
+                    in_quote = ""
+            elif line[char_index] in ("'", '"'):
+                long_quote = line[char_index : char_index + 3]
+                if long_quote in ('"""', "'''"):
+                    in_quote = long_quote
+                    char_index += 2
+                else:
+                    in_quote = line[char_index]
+            elif line[char_index] == "#":
+                break
+            char_index += 1
+
+    return in_quote
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def process(
@@ -176,8 +205,6 @@ def process(
     next_cimports: bool = False
     in_quote: str = ""
     was_in_quote: bool = False
-    first_comment_index_start: int = -1
-    first_comment_index_end: int = -1
     contains_imports: bool = False
     in_top_comment: bool = False
     first_import_section: bool = True
@@ -278,31 +305,9 @@ def process(
                 or stripped_line in CODE_SORT_COMMENTS
             ):
                 in_top_comment = False
-                first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
-            if ((not stripped_line.startswith("#") or in_quote) and '"' in line) or "'" in line:
-                char_index = 0
-                if first_comment_index_start == -1 and line.startswith(('"', "'")):
-                    first_comment_index_start = index
-                while char_index < len(line):
-                    if line[char_index] == "\\":
-                        char_index += 1
-                    elif in_quote:
-                        if line[char_index : char_index + len(in_quote)] == in_quote:
-                            in_quote = ""
-                            if first_comment_index_end < first_comment_index_start:
-                                first_comment_index_end = index
-                    elif line[char_index] in ("'", '"'):
-                        long_quote = line[char_index : char_index + 3]
-                        if long_quote in ('"""', "'''"):
-                            in_quote = long_quote
-                            char_index += 2
-                        else:
-                            in_quote = line[char_index]
-                    elif line[char_index] == "#":
-                        break
-                    char_index += 1
+            in_quote = _scan_quotes(line, stripped_line, in_quote)
 
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
             if not (in_quote or was_in_quote or in_top_comment):
