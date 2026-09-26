@@ -62,12 +62,6 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
-def _line_separator(line: str | None, configured: str) -> str:
-    if configured:
-        return configured
-    return parse._infer_line_separator(line or "")
-
-
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -101,7 +95,7 @@ def _float_to_top(
             if current:
                 before = current
                 if add_imports:
-                    line_separator = _line_separator(line, config.line_ending)
+                    line_separator = parse._infer_line_separator(line, config.line_ending)
                     current += line_separator + line_separator.join(add_imports)
                     add_imports = []
                 parsed = parse.file_contents(current, config=config)
@@ -233,7 +227,7 @@ def process(
             not_imports = True
             end_of_file = True
             line = ""
-            line_separator = _line_separator(line, line_separator)
+            line_separator = parse._infer_line_separator(line, line_separator)
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
@@ -267,7 +261,7 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            line_separator = _line_separator(line, line_separator)
+            line_separator = parse._infer_line_separator(line, line_separator)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:

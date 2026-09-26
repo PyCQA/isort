@@ -54,7 +54,7 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     if type(value) is not expected_type:
         raise LiteralSortTypeMismatch(type(value), expected_type)
 
-    line_separator = config.line_ending or _infer_line_separator(code)
+    line_separator = _infer_line_separator(code, config.line_ending)
 
     prefix_length = len(f"{variable_name} = ")
     variable_value = sort_function(
