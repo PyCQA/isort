@@ -182,17 +182,14 @@ def process(
     reexport_rollback: int = 0
 
     if config.float_to_top:
-        float_to_top_result = _float_to_top(
+        input_stream, verbose_output, made_changes = _float_to_top(
             input_stream=input_stream,
             add_imports=add_imports,
             line_separator=line_separator,
             config=config,
             extension=extension,
         )
-        input_stream = float_to_top_result.input_stream
         add_imports = []
-        verbose_output += float_to_top_result.verbose_output
-        made_changes = made_changes or float_to_top_result.made_changes
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
