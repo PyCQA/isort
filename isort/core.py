@@ -1,7 +1,7 @@
 import textwrap
 from io import StringIO
 from itertools import chain
-from typing import TextIO
+from typing import NamedTuple, TextIO
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
@@ -62,6 +62,75 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+class _FloatToTopResult(NamedTuple):
+    input_stream: TextIO
+    add_imports: list[str]
+    verbose_output: list[str]
+    made_changes: bool
+
+
+def _float_to_top(
+    input_stream: TextIO,
+    add_imports: list[str],
+    line_separator: str,
+    config: Config,
+    extension: str,
+) -> _FloatToTopResult:
+    new_input = ""
+    current = ""
+    isort_off = False
+    verbose_output: list[str] = []
+    made_changes = False
+    for line in chain(input_stream, (None,)):
+        stripped_line = line.strip() if line is not None else ""
+        if isort_off and line is not None:
+            if stripped_line == "# isort: on":
+                isort_off = False
+            new_input += line
+        elif (
+            line is None
+            or stripped_line in ("# isort: split", "# isort: off")
+            or str(line).rstrip().endswith("# isort: split")
+        ):
+            if stripped_line == "# isort: off":
+                isort_off = True
+            if current:
+                before = current
+                if add_imports:
+                    add_line_separator = line_separator or "\n"
+                    current += add_line_separator + add_line_separator.join(add_imports)
+                    add_imports = []
+                parsed = parse.file_contents(current, config=config)
+                verbose_output += parsed.verbose_output
+                extra_space = ""
+                while before and before[-1] == "\n":
+                    extra_space += "\n"
+                    before = before[:-1]
+                extra_space = extra_space.replace("\n", "", 1)
+                sorted_output = output.sorted_imports(
+                    parsed, config, extension, import_type="import"
+                )
+                made_changes = made_changes or _has_changed(
+                    before=before,
+                    after=sorted_output,
+                    line_separator=parsed.line_separator,
+                    ignore_whitespace=config.ignore_whitespace,
+                )
+                new_input += sorted_output
+                new_input += extra_space
+                current = ""
+            new_input += line or ""
+        else:
+            current += line or ""
+
+    return _FloatToTopResult(
+        input_stream=StringIO(new_input),
+        add_imports=add_imports,
+        verbose_output=verbose_output,
+        made_changes=made_changes,
+    )
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def process(
@@ -115,52 +184,17 @@ def process(
     reexport_rollback: int = 0
 
     if config.float_to_top:
-        new_input = ""
-        current = ""
-        isort_off = False
-        for line in chain(input_stream, (None,)):
-            stripped_line = line.strip() if line is not None else ""
-            if isort_off and line is not None:
-                if stripped_line == "# isort: on":
-                    isort_off = False
-                new_input += line
-            elif (
-                line is None
-                or stripped_line in ("# isort: split", "# isort: off")
-                or str(line).rstrip().endswith("# isort: split")
-            ):
-                if stripped_line == "# isort: off":
-                    isort_off = True
-                if current:
-                    before = current
-                    if add_imports:
-                        add_line_separator = line_separator or "\n"
-                        current += add_line_separator + add_line_separator.join(add_imports)
-                        add_imports = []
-                    parsed = parse.file_contents(current, config=config)
-                    verbose_output += parsed.verbose_output
-                    extra_space = ""
-                    while before and before[-1] == "\n":
-                        extra_space += "\n"
-                        before = before[:-1]
-                    extra_space = extra_space.replace("\n", "", 1)
-                    sorted_output = output.sorted_imports(
-                        parsed, config, extension, import_type="import"
-                    )
-                    made_changes = made_changes or _has_changed(
-                        before=before,
-                        after=sorted_output,
-                        line_separator=parsed.line_separator,
-                        ignore_whitespace=config.ignore_whitespace,
-                    )
-                    new_input += sorted_output
-                    new_input += extra_space
-                    current = ""
-                new_input += line or ""
-            else:
-                current += line or ""
-
-        input_stream = StringIO(new_input)
+        float_to_top_result = _float_to_top(
+            input_stream=input_stream,
+            add_imports=add_imports,
+            line_separator=line_separator,
+            config=config,
+            extension=extension,
+        )
+        input_stream = float_to_top_result.input_stream
+        add_imports = float_to_top_result.add_imports
+        verbose_output += float_to_top_result.verbose_output
+        made_changes = made_changes or float_to_top_result.made_changes
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
