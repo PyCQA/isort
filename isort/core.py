@@ -64,7 +64,6 @@ def _has_skip_comment(import_statement: str) -> bool:
 
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
-    add_imports: list[str]
     verbose_output: list[str]
     made_changes: bool
 
@@ -125,7 +124,6 @@ def _float_to_top(
 
     return _FloatToTopResult(
         input_stream=StringIO(new_input),
-        add_imports=add_imports,
         verbose_output=verbose_output,
         made_changes=made_changes,
     )
@@ -192,7 +190,7 @@ def process(
             extension=extension,
         )
         input_stream = float_to_top_result.input_stream
-        add_imports = float_to_top_result.add_imports
+        add_imports = []
         verbose_output += float_to_top_result.verbose_output
         made_changes = made_changes or float_to_top_result.made_changes
 
