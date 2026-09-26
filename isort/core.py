@@ -89,7 +89,7 @@ def _float_to_top(
         elif (
             line is None
             or stripped_line in ("# isort: split", "# isort: off")
-            or str(line).rstrip().endswith("# isort: split")
+            or line.rstrip().endswith("# isort: split")
         ):
             if stripped_line == "# isort: off":
                 isort_off = True
