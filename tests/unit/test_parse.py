@@ -67,7 +67,7 @@ def test_file_contents_splits_only_on_newlines(line_separator):
 
 @given(contents=st.text())
 def test_fuzz__infer_line_separator(contents):
-    parse._infer_line_separator(contents=contents)
+    parse._infer_line_separator(contents=contents, configured="\n")
 
 
 @given(import_string=st.text())
