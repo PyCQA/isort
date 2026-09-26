@@ -62,6 +62,12 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _line_separator(line: str | None, configured: str) -> str:
+    if configured:
+        return configured
+    return parse._infer_line_separator(line or "")
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -71,7 +77,6 @@ class _FloatToTopResult(NamedTuple):
 def _float_to_top(
     input_stream: TextIO,
     add_imports: list[str],
-    line_separator: str,
     config: Config,
     extension: str,
 ) -> _FloatToTopResult:
@@ -96,8 +101,8 @@ def _float_to_top(
             if current:
                 before = current
                 if add_imports:
-                    add_line_separator = line_separator or "\n"
-                    current += add_line_separator + add_line_separator.join(add_imports)
+                    line_separator = _line_separator(line, config.line_ending)
+                    current += line_separator + line_separator.join(add_imports)
                     add_imports = []
                 parsed = parse.file_contents(current, config=config)
                 verbose_output += parsed.verbose_output
@@ -183,7 +188,6 @@ def process(
     Returns `True` if there were changes that needed to be made (errors present) from what
     was provided in the input_stream, otherwise `False`.
     """
-    line_separator: str = config.line_ending
     add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
     made_changes: bool = False
     verbose_output: list[str] = []
@@ -194,12 +198,12 @@ def process(
         input_stream, verbose_output, made_changes = _float_to_top(
             input_stream=input_stream,
             add_imports=add_imports,
-            line_separator=line_separator,
             config=config,
             extension=extension,
         )
         add_imports = []
 
+    line_separator: str = config.line_ending
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
@@ -229,8 +233,7 @@ def process(
             not_imports = True
             end_of_file = True
             line = ""
-            if not line_separator:
-                line_separator = "\n"
+            line_separator = _line_separator(line, line_separator)
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
@@ -264,10 +267,7 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            if stripped_line and not line_separator:
-                line_separator = (
-                    line[len(line.rstrip()) :].replace(" ", "").replace("\t", "").replace("\f", "")
-                )
+            line_separator = _line_separator(line, line_separator)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
@@ -490,10 +490,9 @@ def process(
                 and not _is_comment_or_string_start(line)
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
-                add_line_separator = line_separator or "\n"
-                import_section = add_line_separator.join(add_imports) + add_line_separator
+                import_section = line_separator.join(add_imports) + line_separator
                 if end_of_file and index != 0:
-                    output_stream.write(add_line_separator)
+                    output_stream.write(line_separator)
                 contains_imports = True
                 add_imports = []
 
