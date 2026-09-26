@@ -78,7 +78,12 @@ def grid(**interface: Any) -> str:
             interface["comments"] = []
         else:
             interface["statement"] += ", " + next_import
-    return f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''})"
+    return isort.comments.add_to_line(
+        interface["comments"],
+        f"{interface['statement']}{',' if interface['include_trailing_comma'] else ''})",
+        removed=interface["remove_comments"],
+        comment_prefix=interface["comment_prefix"],
+    )
 
 
 @_wrap_mode
