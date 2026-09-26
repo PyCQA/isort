@@ -2657,3 +2657,77 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place():
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_append_only_adds_future_import_before_code_issue_1970():
+    """append_only must place an added future import before all code, not in a later section.
+
+    A future import past the first code line is a SyntaxError (ast.parse does not
+    catch this; compile does).
+    See: https://github.com/PyCQA/isort/issues/1970
+    """
+    source = (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "if __name__ == '__main__':\n"
+        "    import gevent.monkey\n"
+        "    gevent.monkey.patch_all()\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "print('silly example', file=sys.stderr)\n"
+    )
+    expected = (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "from __future__ import annotations\n"
+        "\n"
+        "if __name__ == '__main__':\n"
+        "    import gevent.monkey\n"
+        "    gevent.monkey.patch_all()\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "print('silly example', file=sys.stderr)\n"
+    )
+    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
+    output = isort.code(source, **config)
+    assert output == expected
+    compile(output, "t.py", "exec")  # must never raise
+    assert isort.code(output, **config) == output
+
+
+def test_append_only_future_add_untouched_without_imports_issue_1970():
+    """append_only still adds nothing to files without imports, future adds included.
+
+    See: https://github.com/PyCQA/isort/issues/1970
+    """
+    source = "x = 1\nprint(x)\n"
+    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
+    assert isort.code(source, **config) == source
+
+
+def test_append_only_future_add_keeps_isort_off_region_intact_issue_1970():
+    """append_only must not insert a future add inside an `# isort: off` region.
+
+    The region's imports do not count as existing imports, so the file is
+    left byte-identical.
+    See: https://github.com/PyCQA/isort/issues/1970
+    """
+    source = "# isort: off\nimport os\n# isort: on\nprint(os.getcwd())\n"
+    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
+    assert isort.code(source, **config) == source
+
+
+def test_append_only_future_add_dropped_after_off_code_issue_1970():
+    """append_only drops a future add when frozen executable content precedes placement.
+
+    Inserting after the off region would be illegal; skipping keeps the file intact.
+    See: https://github.com/PyCQA/isort/issues/1970
+    """
+    source = "# c1\n# c2\n# c3\n# isort: off\nx = 1\n# isort: on\nimport sys\n\nprint(sys.argv)\n"
+    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
+    output = isort.code(source, **config)
+    assert output == source
+    compile(output, "t.py", "exec")  # must never raise
+    assert isort.code(output, **config) == output
