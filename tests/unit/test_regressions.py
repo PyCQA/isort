@@ -2,6 +2,7 @@
 
 import ast
 from io import BytesIO, StringIO, TextIOWrapper
+from pathlib import Path
 
 import pytest
 
@@ -2036,7 +2037,9 @@ def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports(
         "# isort: off\nimport z\nimport a\n# isort: on\n",
     ],
 )
-def test_float_to_top_check_accepts_unchanged_sections_issue_2681(line_ending, boundary):
+def test_float_to_top_check_accepts_unchanged_sections_issue_2681(
+    line_ending: str, boundary: str
+) -> None:
     source = ("import os\n\n" + boundary + "\nimport sys\n").replace("\n", line_ending)
 
     assert isort.code(source, float_to_top=True) == source
@@ -2045,7 +2048,9 @@ def test_float_to_top_check_accepts_unchanged_sections_issue_2681(line_ending, b
 
 @pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
 @pytest.mark.parametrize("blank_lines", [0, 1, 3])
-def test_float_to_top_preserves_boundary_spacing_issue_2681(line_ending, blank_lines):
+def test_float_to_top_preserves_boundary_spacing_issue_2681(
+    line_ending: str, blank_lines: int
+) -> None:
     source = ("import os\n" + "\n" * blank_lines + "# isort: split\n").replace("\n", line_ending)
     result = _float_to_top(StringIO(source), [], isort.Config(float_to_top=True), "py")
 
@@ -2054,7 +2059,7 @@ def test_float_to_top_preserves_boundary_spacing_issue_2681(line_ending, blank_l
 
 
 @pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
-def test_float_to_top_check_detects_unsorted_sections_issue_2681(line_ending):
+def test_float_to_top_check_detects_unsorted_sections_issue_2681(line_ending: str) -> None:
     source = "import sys\nimport os\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
     expected = "import os\nimport sys\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
 
@@ -2064,7 +2069,7 @@ def test_float_to_top_check_detects_unsorted_sections_issue_2681(line_ending):
 
 
 @pytest.mark.parametrize("configured_ending", ["\n", "\r\n"])
-def test_float_to_top_configured_line_ending_issue_2681(configured_ending):
+def test_float_to_top_configured_line_ending_issue_2681(configured_ending: str) -> None:
     source = "import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
     expected = source.replace("\r\n", configured_ending)
     result = isort.code(source, float_to_top=True, line_ending=configured_ending)
@@ -2073,7 +2078,7 @@ def test_float_to_top_configured_line_ending_issue_2681(configured_ending):
     assert isort.check_code(result, float_to_top=True, line_ending=configured_ending)
 
 
-def test_float_to_top_cli_check_accepts_crlf_issue_2681(tmp_path):
+def test_float_to_top_cli_check_accepts_crlf_issue_2681(tmp_path: Path) -> None:
     path = tmp_path / "example.py"
     source = b"import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
     path.write_bytes(source)
