@@ -1,12 +1,13 @@
 """Tests for the isort import placement module"""
 
 from functools import partial
+from pathlib import Path
 
 from isort import place, sections
 from isort.settings import Config
 
 
-def test_module(src_path):
+def test_module(src_path: Path) -> None:
     place_tester = partial(place.module, config=Config(src_paths=[src_path]))
     assert place_tester("isort") == sections.FIRSTPARTY
     assert place_tester("os") == sections.STDLIB
@@ -15,7 +16,7 @@ def test_module(src_path):
     assert place_tester("hug") == sections.THIRDPARTY
 
 
-def test_extra_standard_library(src_path):
+def test_extra_standard_library(src_path: Path) -> None:
     place_tester = partial(
         place.module, config=Config(src_paths=[src_path], extra_standard_library=["hug"])
     )
@@ -23,14 +24,14 @@ def test_extra_standard_library(src_path):
     assert place_tester("hug") == sections.STDLIB
 
 
-def test_no_standard_library_placement():
+def test_no_standard_library_placement() -> None:
     assert place.module_with_reason(
         "pathlib", config=Config(sections=["THIRDPARTY"], default_section="THIRDPARTY")
     ) == ("THIRDPARTY", "Default option in Config or universal default.")
     assert place.module("pathlib") == "STDLIB"
 
 
-def test_namespace_package_placement(examples_path):
+def test_namespace_package_placement(examples_path: Path) -> None:
     namespace_examples = examples_path / "namespaces"
 
     implicit = namespace_examples / "implicit"

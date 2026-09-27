@@ -18,51 +18,52 @@ import pytest
 from isort.main import main
 
 
-def git_clone(repository_url: str, directory: Path):
+def git_clone(repository_url: str, directory: Path) -> None:
     """Clones the given repository into the given directory path"""
     check_call(["git", "clone", "--depth", "1", repository_url, str(directory)])
 
 
-def run_isort(arguments: Generator[str, None, None] | Sequence[str]):
+def run_isort(arguments: Generator[str, None, None] | Sequence[str]) -> None:
     """Runs isort in diff and check mode with the given arguments"""
     main(["--check-only", "--diff", *arguments])
 
 
-def test_django(tmpdir):
-    git_clone("https://github.com/django/django.git", tmpdir)
+def test_django(tmp_path: Path) -> None:
+    git_clone("https://github.com/django/django.git", tmp_path)
     run_isort(
-        str(target_dir) for target_dir in (tmpdir / "django", tmpdir / "tests", tmpdir / "scripts")
+        str(target_dir)
+        for target_dir in (tmp_path / "django", tmp_path / "tests", tmp_path / "scripts")
     )
 
 
-def test_plone(tmpdir):
-    git_clone("https://github.com/plone/plone.app.multilingualindexes.git", tmpdir)
-    run_isort([str(tmpdir / "src"), "--skip", "languagefallback.py"])
+def test_plone(tmp_path: Path) -> None:
+    git_clone("https://github.com/plone/plone.app.multilingualindexes.git", tmp_path)
+    run_isort([str(tmp_path / "src"), "--skip", "languagefallback.py"])
 
 
 @pytest.mark.skip(
     "Skip for now as #2295 introduce a breaking change. Can be re-enabled after pandas has updated."
 )
-def test_pandas(tmpdir):
-    git_clone("https://github.com/pandas-dev/pandas.git", tmpdir)
-    run_isort((str(tmpdir / "pandas"), "--skip", "__init__.py"))
+def test_pandas(tmp_path: Path) -> None:
+    git_clone("https://github.com/pandas-dev/pandas.git", tmp_path)
+    run_isort((str(tmp_path / "pandas"), "--skip", "__init__.py"))
 
 
-def test_habitat_lab(tmpdir):
-    git_clone("https://github.com/facebookresearch/habitat-lab.git", tmpdir)
-    run_isort([str(tmpdir)])
+def test_habitat_lab(tmp_path: Path) -> None:
+    git_clone("https://github.com/facebookresearch/habitat-lab.git", tmp_path)
+    run_isort([str(tmp_path)])
 
 
-def test_pylint(tmpdir):
-    git_clone("https://github.com/PyCQA/pylint.git", tmpdir)
-    run_isort([str(tmpdir), "--skip", "bad.py"])
+def test_pylint(tmp_path: Path) -> None:
+    git_clone("https://github.com/PyCQA/pylint.git", tmp_path)
+    run_isort([str(tmp_path), "--skip", "bad.py"])
 
 
-def test_hypothesis(tmpdir):
-    git_clone("https://github.com/HypothesisWorks/hypothesis.git", tmpdir)
+def test_hypothesis(tmp_path: Path) -> None:
+    git_clone("https://github.com/HypothesisWorks/hypothesis.git", tmp_path)
     run_isort(
         (
-            str(tmpdir),
+            str(tmp_path),
             "--skip",
             "tests",
             "--profile",
@@ -76,24 +77,24 @@ def test_hypothesis(tmpdir):
     )
 
 
-def test_pyramid(tmpdir):
-    git_clone("https://github.com/Pylons/pyramid.git", tmpdir)
+def test_pyramid(tmp_path: Path) -> None:
+    git_clone("https://github.com/Pylons/pyramid.git", tmp_path)
     run_isort(
         str(target_dir)
-        for target_dir in (tmpdir / "src" / "pyramid", tmpdir / "tests", tmpdir / "setup.py")
+        for target_dir in (tmp_path / "src" / "pyramid", tmp_path / "tests", tmp_path / "setup.py")
     )
 
 
-def test_products_zopetree(tmpdir):
-    git_clone("https://github.com/jugmac00/Products.ZopeTree.git", tmpdir)
-    run_isort([str(tmpdir)])
+def test_products_zopetree(tmp_path: Path) -> None:
+    git_clone("https://github.com/jugmac00/Products.ZopeTree.git", tmp_path)
+    run_isort([str(tmp_path)])
 
 
-def test_dobby(tmpdir):
-    git_clone("https://github.com/rocketDuck/dobby.git", tmpdir)
-    run_isort([str(tmpdir / "tests"), str(tmpdir / "src")])
+def test_dobby(tmp_path: Path) -> None:
+    git_clone("https://github.com/rocketDuck/dobby.git", tmp_path)
+    run_isort([str(tmp_path / "tests"), str(tmp_path / "src")])
 
 
-def test_zope(tmpdir):
-    git_clone("https://github.com/zopefoundation/Zope.git", tmpdir)
-    run_isort([str(tmpdir), "--skip", "util.py"])
+def test_zope(tmp_path: Path) -> None:
+    git_clone("https://github.com/zopefoundation/Zope.git", tmp_path)
+    run_isort([str(tmp_path), "--skip", "util.py"])

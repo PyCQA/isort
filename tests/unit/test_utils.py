@@ -1,7 +1,7 @@
 from isort.utils import Trie
 
 
-def test_trie():
+def test_trie() -> None:
     trie_root = Trie("default", {"line_length": 70})
 
     trie_root.insert("/temp/config1/.isort.cfg", {"line_length": 71})

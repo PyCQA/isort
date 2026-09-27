@@ -1,4 +1,4 @@
-from typing import get_type_hints
+from typing import Any, get_type_hints
 
 import hypothesis
 from hypothesis import strategies as st
@@ -6,7 +6,7 @@ from hypothesis import strategies as st
 import isort
 
 
-def _as_config(kw) -> isort.Config:
+def _as_config(kw: dict[str, Any]) -> isort.Config:
     kw["atomic"] = False
     if "wrap_length" in kw and "line_length" in kw:
         kw["wrap_length"], kw["line_length"] = sorted([kw["wrap_length"], kw["line_length"]])
