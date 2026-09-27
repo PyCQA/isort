@@ -61,10 +61,10 @@ def imports(
     indexed_input = enumerate(input_stream)
     pushed_back: list[tuple[int, str]] = []
 
-    def _get_next() -> tuple[int, str]:
+    def _get_next() -> tuple[int, str] | None:
         if pushed_back:
             return pushed_back.pop()
-        return next(indexed_input)
+        return next(indexed_input, None)
 
     def _push_back(idx: int, raw_text: str) -> None:
         pushed_back.append((idx, raw_text))
@@ -73,17 +73,20 @@ def imports(
 
     def _get_next_continuation_line() -> tuple[str, str | None]:
         nonlocal continuation_idx
-        continuation_idx, nxt_line = _get_next()
+        item = _get_next()
+        if item is None:
+            raise StopIteration
+        continuation_idx, nxt_line = item
         return parse_comments(nxt_line)
 
     def _push_back_continuation_line(rem: str) -> None:
         _push_back(continuation_idx, rem)
 
     while True:
-        try:
-            index, raw_line = _get_next()
-        except StopIteration:
+        item = _get_next()
+        if item is None:
             break
+        index, raw_line = item
         (skipping_line, in_quote) = skip_line(raw_line, in_quote=in_quote)
 
         if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
@@ -95,18 +98,18 @@ def imports(
         if stripped_line.startswith(("raise", "yield")):
             if stripped_line == "yield":
                 while not stripped_line or stripped_line == "yield":
-                    try:
-                        index, next_line = _get_next()
-                    except StopIteration:
+                    next_item = _get_next()
+                    if next_item is None:
                         break
 
+                    index, next_line = next_item
                     stripped_line = next_line.strip().split("#")[0]
             while stripped_line.endswith("\\"):
-                try:
-                    index, next_line = _get_next()
-                except StopIteration:
+                next_item = _get_next()
+                if next_item is None:
                     break
 
+                index, next_line = next_item
                 stripped_line = next_line.strip().split("#")[0]
             continue  # pragma: no cover
 
