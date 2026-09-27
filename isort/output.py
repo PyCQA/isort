@@ -918,7 +918,7 @@ def _separate_packages(section_output: list[str], config: Config) -> list[str]:
             package_depth = len(reason.split(".")) - 1  # minus 1 for re.compile
             key = ".".join(package_name.split(".")[: package_depth + 1])
         else:
-            key = package_name.split(".")[0]
+            key = package_name.split(".", maxsplit=1)[0]
 
         if key not in group_keys:
             if group_keys:
