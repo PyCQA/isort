@@ -90,11 +90,54 @@ class ImportContinuationResult(NamedTuple):
     extra_lines: list[ExtraLine]
 
 
+def _collect_parenthesized_lines(
+    line: str,
+    import_string: str,
+    get_next_line: Callable[[], tuple[str, str | None]],
+    extra_lines: list[ExtraLine],
+    line_separator: str = "\n",
+    push_back_line: Callable[[str], None] | None = None,
+) -> tuple[str, str]:
+    while ")" not in line.split("#", maxsplit=1)[0]:
+        try:
+            line, comment = get_next_line()
+        except StopIteration:
+            break
+        code_line = line.split("#", maxsplit=1)[0]
+        if ")" in code_line:
+            before_paren, _, after_paren = line.partition(")")
+            closing_part = before_paren + ")"
+            import_string += line_separator + closing_part
+            if "#" in after_paren:
+                after_code_part, inline_comment = after_paren.split("#", maxsplit=1)
+                after_code = after_code_part.lstrip(";").strip()
+                if comment is None:
+                    comment = inline_comment.strip()
+            else:
+                after_code = after_paren.lstrip(";").strip()
+
+            if after_code:
+                extra_lines.append(ExtraLine(line=closing_part, comment=None))
+                remaining = f"{after_code}  # {comment}" if comment is not None else after_code
+                if push_back_line is not None:
+                    push_back_line(remaining)
+            else:
+                extra_lines.append(ExtraLine(line=closing_part, comment=comment))
+            line = closing_part
+            break
+        else:
+            extra_lines.append(ExtraLine(line=line, comment=comment))
+            import_string += line_separator + line
+
+    return line, import_string
+
+
 def collect_import_continuation(
     line: str,
     import_string: str,
     get_next_line: Callable[[], tuple[str, str | None]],
     line_separator: str = "\n",
+    push_back_line: Callable[[str], None] | None = None,
 ) -> ImportContinuationResult:
     r"""Collect continuation lines for a multi-line import statement.
 
@@ -104,13 +147,14 @@ def collect_import_continuation(
     extra_lines: list[ExtraLine] = []
 
     if "(" in line.split("#", 1)[0]:
-        while not line.split("#", maxsplit=1)[0].strip().endswith(")"):
-            try:
-                line, comment = get_next_line()
-            except StopIteration:
-                break
-            extra_lines.append(ExtraLine(line=line, comment=comment))
-            import_string += line_separator + line
+        line, import_string = _collect_parenthesized_lines(
+            line,
+            import_string,
+            get_next_line,
+            extra_lines,
+            line_separator,
+            push_back_line,
+        )
     else:
         while line.strip().endswith("\\"):
             try:
@@ -123,14 +167,14 @@ def collect_import_continuation(
             if "(" in line.split("#")[0] and ")" not in line.split("#")[0]:
                 extra_lines.append(ExtraLine(line=line, comment=comment))
                 import_string += line_separator + line
-
-                while not line.split("#")[0].strip().endswith(")"):
-                    try:
-                        line, comment = get_next_line()
-                    except StopIteration:
-                        break
-                    extra_lines.append(ExtraLine(line=line, comment=comment))
-                    import_string += line_separator + line
+                line, import_string = _collect_parenthesized_lines(
+                    line,
+                    import_string,
+                    get_next_line,
+                    extra_lines,
+                    line_separator,
+                    push_back_line,
+                )
             else:
                 if import_string.strip().endswith(
                     (" import", " cimport")
