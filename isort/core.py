@@ -106,14 +106,15 @@ def _float_to_top(
     made_changes = False
     for line in chain(input_stream, (None,)):
         stripped_line = line.strip() if line is not None else ""
-        is_code = True
-        if line is not None and not isort_off:
-            line, in_quote, is_code = _scan_import_statement(line, input_stream, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
-        elif line is None or (
+            continue
+        is_code = True
+        if line is not None:
+            line, in_quote, is_code = _scan_import_statement(line, input_stream, in_quote)
+        if line is None or (
             is_code and (stripped_line == "# isort: off" or _has_split_comment(line))
         ):
             if stripped_line == "# isort: off":
