@@ -158,16 +158,6 @@ follow_imports = "silent"
 packages = ["isort", "tests"]
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"
 
-[[tool.mypy.overrides]]
-module = "tests.*"
-allow_untyped_defs = true
-allow_incomplete_defs = true
-allow_untyped_calls = true
-
-[[tool.mypy.overrides]]
-module = "importlib_metadata.*"
-ignore_missing_imports = true
-
 [tool.ruff]
 target-version = "py310"
 line-length = 100

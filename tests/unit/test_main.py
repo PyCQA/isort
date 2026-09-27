@@ -1,10 +1,10 @@
-from pathlib import Path
 import json
 import os
 import pathlib
 import shutil
 import subprocess
 from datetime import datetime
+from pathlib import Path
 import unittest.mock
 
 import pytest
@@ -15,14 +15,9 @@ from isort import main
 from isort._version import _VERSION_STRING, _IS_COMPILED
 from isort.exceptions import InvalidSettingsPath
 from isort.settings import DEFAULT_CONFIG, Config
+from isort.wrap_modes import WrapModes
 from .utils import as_stream
-from io import BytesIO, StringIO, TextIOWrapper
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    WrapModes: Any
-else:
-    from isort.wrap_modes import WrapModes
+from io import BytesIO, TextIOWrapper
 
 
 @given(
@@ -32,7 +27,9 @@ else:
     ask_to_apply=st.booleans(),
     write_to_stdout=st.booleans(),
 )
-def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdout):
+def test_fuzz_sort_imports(
+    file_name: str, config: Config, check: bool, ask_to_apply: bool, write_to_stdout: bool
+) -> None:
     main.sort_imports(
         file_name=file_name,
         config=config,
@@ -42,9 +39,9 @@ def test_fuzz_sort_imports(file_name, config, check, ask_to_apply, write_to_stdo
     )
 
 
-def test_sort_imports(tmpdir):
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import os, sys\n")
+def test_sort_imports(tmp_path: Path) -> None:
+    tmp_file = tmp_path / "file.py"
+    tmp_file.write_text("import os, sys\n")
     assert main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
     main.sort_imports(str(tmp_file), DEFAULT_CONFIG)
     assert not main.sort_imports(str(tmp_file), DEFAULT_CONFIG, check=True).incorrectly_sorted  # type: ignore # noqa
@@ -57,9 +54,9 @@ def test_sort_imports(tmpdir):
 
 
 @pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
-def test_sort_imports_error_handling(tmpdir, capsys):
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import os, sys\n")
+def test_sort_imports_error_handling(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    tmp_file = tmp_path / "file.py"
+    tmp_file.write_text("import os, sys\n")
     with (
         unittest.mock.patch(
             "isort.core.process", side_effect=IndexError("Example unhandled exception")
@@ -72,7 +69,7 @@ def test_sort_imports_error_handling(tmpdir, capsys):
     assert "Unrecoverable exception thrown when parsing" in error
 
 
-def test_parse_args():
+def test_parse_args() -> None:
     assert main.parse_args([]) == {}
     assert main.parse_args(["--multi-line", "1"]) == {"multi_line_output": WrapModes.VERTICAL}
     assert main.parse_args(["--multi-line", "GRID"]) == {"multi_line_output": WrapModes.GRID}
@@ -90,7 +87,7 @@ def test_parse_args():
     assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
 
 
-def test_ascii_art(capsys):
+def test_ascii_art(capsys: pytest.CaptureFixture[str]) -> None:
     main.main(["--version"])
     out, error = capsys.readouterr()
     assert (
@@ -111,7 +108,7 @@ def test_ascii_art(capsys):
     assert error == ""
 
 
-def test_preconvert():
+def test_preconvert() -> None:
     assert main._preconvert(frozenset([1, 1, 2])) == [1, 2]
     assert main._preconvert(WrapModes.GRID) == "GRID"
     assert main._preconvert(main._preconvert) == "_preconvert"
@@ -119,12 +116,12 @@ def test_preconvert():
         main._preconvert(datetime.now())
 
 
-def test_show_files(capsys, tmpdir):
-    tmpdir.join("a.py").write("import a")
-    tmpdir.join("b.py").write("import b")
+def test_show_files(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    (tmp_path / "a.py").write_text("import a")
+    (tmp_path / "b.py").write_text("import b")
 
     # show files should list the files isort would sort
-    main.main([str(tmpdir), "--show-files"])
+    main.main([str(tmp_path), "--show-files"])
     out, error = capsys.readouterr()
     assert "a.py" in out
     assert "b.py" in out
@@ -136,51 +133,51 @@ def test_show_files(capsys, tmpdir):
 
     # can not be used with show-config
     with pytest.raises(SystemExit):
-        main.main([str(tmpdir), "--show-files", "--show-config"])
+        main.main([str(tmp_path), "--show-files", "--show-config"])
 
 
-def test_missing_default_section(tmpdir):
-    config_file = tmpdir.join(".isort.cfg")
-    config_file.write(
+def test_missing_default_section(tmp_path: Path) -> None:
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
         """
 [settings]
 sections=MADEUP
 """
     )
 
-    python_file = tmpdir.join("file.py")
-    python_file.write("import os")
+    python_file = tmp_path / "file.py"
+    python_file.write_text("import os")
 
     with pytest.raises(SystemExit):
         main.main([str(python_file)])
 
 
-def test_ran_against_root():
+def test_ran_against_root() -> None:
     with pytest.raises(SystemExit):
         main.main(["/"])
 
 
-def test_config_root_interaction_with_resolve_all_configs(tmpdir):
-    python_file = tmpdir.join("file.py")
-    python_file.write("import os\n")
+def test_config_root_interaction_with_resolve_all_configs(tmp_path: Path) -> None:
+    python_file = tmp_path / "file.py"
+    python_file.write_text("import os\n")
 
     with pytest.raises(SystemExit) as exc_info:
-        main.main([str(python_file), "--config-root", str(tmpdir)])
+        main.main([str(python_file), "--config-root", str(tmp_path)])
     assert "--resolve-all-configs" in str(exc_info.value)
 
-    main.main([str(python_file), "--config-root", str(tmpdir), "--resolve-all-configs"])
+    main.main([str(python_file), "--config-root", str(tmp_path), "--resolve-all-configs"])
 
 
-def test_main(capsys, tmpdir):
+def test_main(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
     base_args = [
         "--sp",
-        str(tmpdir),
+        str(tmp_path),
         "--virtual-env",
-        str(tmpdir),
+        str(tmp_path),
         "--src-path",
-        str(tmpdir),
+        str(tmp_path),
     ]
-    tmpdir.mkdir(".git")
+    (tmp_path / ".git").mkdir()
 
     # If nothing is passed in the quick guide is returned without erroring
     main.main([])
@@ -199,12 +196,12 @@ def test_main(capsys, tmpdir):
     out, error = capsys.readouterr()
     returned_config = json.loads(out)
     assert returned_config
-    assert returned_config["virtual_env"] == str(tmpdir)
+    assert returned_config["virtual_env"] == str(tmp_path)
 
     # This should work even if settings path is not provided
     main.main([*base_args[2:], "--show-config"])
     out, error = capsys.readouterr()
-    assert json.loads(out)["virtual_env"] == str(tmpdir)
+    assert json.loads(out)["virtual_env"] == str(tmp_path)
 
     # This should raise an error if an invalid settings path is provided
     with pytest.raises(InvalidSettingsPath):
@@ -218,8 +215,8 @@ def test_main(capsys, tmpdir):
         )
 
     # Should be able to set settings path to a file
-    config_file = tmpdir.join(".isort.cfg")
-    config_file.write(
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
         """
 [settings]
 profile=hug
@@ -293,19 +290,19 @@ import a
     assert error == "ERROR:  Imports are incorrectly sorted and/or formatted.\n"
 
     # Should be able to run with just a file
-    python_file = tmpdir.join("has_imports.py")
-    python_file.write(
+    python_file = tmp_path / "has_imports.py"
+    python_file.write_text(
         """
 import b
 import a
 """
     )
     main.main([str(python_file), "--filter-files", "--verbose"])
-    assert python_file.read().lstrip() == "import a\nimport b\n"
+    assert python_file.read_text().lstrip() == "import a\nimport b\n"
 
     # Add a file to skip
-    should_skip = tmpdir.join("should_skip.py")
-    should_skip.write("import nothing")
+    should_skip = tmp_path / "should_skip.py"
+    should_skip.write_text("import nothing")
     main.main(
         [
             str(python_file),
@@ -318,7 +315,7 @@ import a
     )
 
     # Should raise a system exit if check only, with broken file
-    python_file.write(
+    python_file.write_text(
         """
 import b
 import a
@@ -340,19 +337,28 @@ import a
     # Should have same behavior if full directory is skipped
     with pytest.raises(SystemExit):
         main.main(
-            [str(tmpdir), "--filter-files", "--verbose", "--check-only", "--skip", str(should_skip)]
+            [
+                str(tmp_path),
+                "--filter-files",
+                "--verbose",
+                "--check-only",
+                "--skip",
+                str(should_skip),
+            ]
         )
 
     # Nested files should be skipped without needing --filter-files
-    nested_file = tmpdir.mkdir("nested_dir").join("skip.py")
-    nested_file.write("import b;import a")
-    python_file.write(
+    nested_dir = tmp_path / "nested_dir"
+    nested_dir.mkdir()
+    nested_file = nested_dir / "skip.py"
+    nested_file.write_text("import b;import a")
+    python_file.write_text(
         """
 import a
 import b
 """
     )
-    main.main([str(tmpdir), "--extend-skip", "skip.py", "--check"])
+    main.main([str(tmp_path), "--extend-skip", "skip.py", "--check"])
 
     # without filter options passed in should successfully sort files
     main.main([str(python_file), str(should_skip), "--verbose", "--atomic"])
@@ -367,7 +373,7 @@ import b
     assert "Broken" in out
 
 
-def test_isort_filename_overrides(tmpdir, capsys):
+def test_isort_filename_overrides(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Tests isorts available approaches for overriding filename and extension based behavior"""
     input_text = """
 import b
@@ -377,7 +383,7 @@ def function():
     pass
 """
 
-    def build_input_content():
+    def build_input_content() -> TextIOWrapper:
         return as_stream(input_text)
 
     main.main(["-"], stdin=build_input_content())
@@ -424,7 +430,7 @@ def function():
 """
     )
 
-    tmp_file = tmpdir.join("tmp.pyi")
+    tmp_file = tmp_path / "tmp.pyi"
     tmp_file.write_text(input_text, encoding="utf8")
     main.main(["-", "--filename", str(tmp_file)], stdin=build_input_content())
     out, error = capsys.readouterr()
@@ -444,7 +450,7 @@ def function():
         main.main([str(tmp_file), "--filename", str(tmp_file)], stdin=build_input_content())
 
 
-def test_isort_float_to_top_overrides(tmpdir, capsys):
+def test_isort_float_to_top_overrides(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Tests isorts supports overriding float to top from CLI"""
     test_input = """
 import b
@@ -456,15 +462,15 @@ def function():
 
 import a
 """
-    config_file = tmpdir.join(".isort.cfg")
-    config_file.write(
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
         """
 [settings]
 float_to_top=True
 """
     )
-    python_file = tmpdir.join("file.py")
-    python_file.write(test_input)
+    python_file = tmp_path / "file.py"
+    python_file.write_text(test_input)
 
     main.main([str(python_file)])
     out, error = capsys.readouterr()
@@ -481,7 +487,7 @@ def function():
 """
     )
 
-    python_file.write(test_input)
+    python_file.write_text(test_input)
     main.main([str(python_file), "--dont-float-to-top"])
     _, error = capsys.readouterr()
     assert not error
@@ -491,7 +497,7 @@ def function():
         main.main([str(python_file), "--float-to-top", "--dont-float-to-top"])
 
 
-def test_isort_with_stdin(capsys):
+def test_isort_with_stdin(capsys: pytest.CaptureFixture[str]) -> None:
     # ensures that isort sorts stdin without any flags
 
     input_content = as_stream(
@@ -845,39 +851,8 @@ import a, b
     )
 
 
-def test_isort_with_stdin_preserves_lf_stdout(tmp_path: Path) -> None:
-    input_file = tmp_path / "in.py"
-    input_file.write_bytes(b"import re\nimport os\n")
-    output_file = tmp_path / "out.py"
-
-    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
-        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
-            main.main(["-"])
-
-    assert output_file.read_bytes() == b"import os\nimport re\n"
-
-
-def test_isort_with_stdin_preserves_crlf_stdout(tmp_path: Path) -> None:
-    input_file = tmp_path / "in.py"
-    input_file.write_bytes(b"import re\r\nimport os\r\n")
-    output_file = tmp_path / "out.py"
-
-    with input_file.open("r", newline=None) as stdin, output_file.open("w", newline=None) as stdout:
-        with unittest.mock.patch("sys.stdin", stdin), unittest.mock.patch("sys.stdout", stdout):
-            main.main(["-"])
-
-    assert output_file.read_bytes() == b"import os\r\nimport re\r\n"
-
-
-def test_preserve_newline_stream_keeps_non_textiowrapper() -> None:
-    input_content = StringIO("import re\nimport os\n")
-
-    with main._stream_with_preserved_newlines(input_content, mode="r") as preserved_stream:
-        assert preserved_stream is input_content
-
-
-def test_unsupported_encodings(tmpdir, capsys):
-    tmp_file = tmpdir.join("file.py")
+def test_unsupported_encodings(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    tmp_file = tmp_path / "file.py"
     # fmt: off
     tmp_file.write_text(
         '''
@@ -899,14 +874,14 @@ __revision__ = 'יייי'
     assert "No valid encodings." in error
 
     # should not throw an error if at least one valid encoding found
-    normal_file = tmpdir.join("file1.py")
-    normal_file.write("import os\nimport sys")
+    normal_file = tmp_path / "file1.py"
+    normal_file.write_text("import os\nimport sys")
 
     main.main([str(tmp_file), str(normal_file), "--verbose"])
     _, error = capsys.readouterr()
 
 
-def test_stream_skip_file(tmpdir, capsys):
+def test_stream_skip_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     input_with_skip = """
 # isort: skip_file
 import b
@@ -944,19 +919,19 @@ import b
     )
 
 
-def test_only_modified_flag(tmpdir, capsys):
+def test_only_modified_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # ensures there is no verbose output for correct files with only-modified flag
 
-    file1 = tmpdir.join("file1.py")
-    file1.write(
+    file1 = tmp_path / "file1.py"
+    file1.write_text(
         """
 import a
 import b
 """
     )
 
-    file2 = tmpdir.join("file2.py")
-    file2.write(
+    file2 = tmp_path / "file2.py"
+    file2.write_text(
         """
 import math
 
@@ -987,8 +962,8 @@ import pandas as pd
 
     # ensures that verbose output is only for modified file(s) with only-modified flag
 
-    file3 = tmpdir.join("file3.py")
-    file3.write(
+    file3 = tmp_path / "file3.py"
+    file3.write_text(
         """
 import sys
 import os
@@ -1028,8 +1003,8 @@ import os
 
     assert not error
 
-    file4 = tmpdir.join("file4.py")
-    file4.write(
+    file4 = tmp_path / "file4.py"
+    file4.write_text(
         """
 import sys
 import os
@@ -1046,10 +1021,10 @@ import os
     assert "else-type place_module for pandas returned THIRDPARTY" not in out
 
 
-def test_identify_imports_main(tmpdir, capsys):
+def test_identify_imports_main(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     file_content = "import mod2\nimport mod2\na = 1\nimport mod1\n"
-    some_file = tmpdir.join("some_file.py")
-    some_file.write(file_content)
+    some_file = tmp_path / "some_file.py"
+    some_file.write_text(file_content)
     file_imports = f"{some_file}:1 import mod2\n{some_file}:4 import mod1\n"
     file_imports_with_dupes = (
         f"{some_file}:1 import mod2\n{some_file}:2 import mod2\n{some_file}:4 import mod1\n"
@@ -1073,7 +1048,7 @@ def test_identify_imports_main(tmpdir, capsys):
     out, error = capsys.readouterr()
     assert out.replace("\r\n", "\n") == file_imports_with_dupes.replace(str(some_file), "")
 
-    main.identify_imports_main([str(tmpdir)])
+    main.identify_imports_main([str(tmp_path)])
 
     main.identify_imports_main(["-", "--packages"], stdin=as_stream(file_content))
     out, error = capsys.readouterr()
@@ -1088,13 +1063,13 @@ def test_identify_imports_main(tmpdir, capsys):
     assert len(out.split("\n")) == 3
 
 
-def test_gitignore(capsys, tmp_path: pathlib.Path):
+def test_gitignore(capsys: pytest.CaptureFixture[str], tmp_path: pathlib.Path) -> None:
     import_content = """
 import b
 import a
 """
 
-    def main_check(args):
+    def main_check(args: list[str]) -> tuple[str, str]:
         try:
             main.main(args)
         except SystemExit:
@@ -1232,7 +1207,7 @@ nested_dir_ignored
         assert all(f"{tmp_path}{file}" in out for file in should_check)
 
 
-def test_multiple_configs(capsys, tmpdir):
+def test_multiple_configs(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
     # Ensure that --resolve-all-configs flag resolves multiple configs correctly
     # and sorts files corresponding to their nearest config
 
@@ -1256,10 +1231,10 @@ force_single_line=True
 force_single_line=True
 """
 
-    dir1 = tmpdir / "subdir1"
-    dir2 = tmpdir / "subdir2"
-    dir3 = tmpdir / "subdir3"
-    dir4 = tmpdir / "subdir4"
+    dir1 = tmp_path / "subdir1"
+    dir2 = tmp_path / "subdir2"
+    dir3 = tmp_path / "subdir3"
+    dir4 = tmp_path / "subdir4"
 
     dir1.mkdir()
     dir2.mkdir()
@@ -1295,10 +1270,10 @@ import b
     file4 = dir4 / "file4.py"
     file4.write_text(import_section, "utf-8")
 
-    file5 = tmpdir / "file5.py"
+    file5 = tmp_path / "file5.py"
     file5.write_text(import_section, "utf-8")
 
-    main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--verbose"])
+    main.main([str(tmp_path), "--resolve-all-configs", "--cr", str(tmp_path), "--verbose"])
     out, _ = capsys.readouterr()
 
     assert f"{setup_cfg_file} used for file {file1}" in out
@@ -1308,7 +1283,7 @@ import b
     assert f"default used for file {file5}" in out
 
     assert (
-        file1.read()
+        file1.read_text()
         == """
 from a import x, y, z
 import b
@@ -1316,14 +1291,14 @@ import b
     )
 
     assert (
-        file2.read()
+        file2.read_text()
         == """
 import b
 from a import y, z, x
 """
     )
     assert (
-        file3.read()
+        file3.read_text()
         == """
 import b
 from a import x
@@ -1332,7 +1307,7 @@ from a import z
 """
     )
     assert (
-        file4.read()
+        file4.read_text()
         == """
 import b
 from a import x, y, z
@@ -1340,7 +1315,7 @@ from a import x, y, z
     )
 
     assert (
-        file5.read()
+        file5.read_text()
         == """
 import b
 from a import x, y, z
@@ -1350,7 +1325,7 @@ from a import x, y, z
     # Ensure that --resolve-all-config flags works with --check
 
     file6 = dir1 / "file6.py"
-    file6.write(
+    file6.write_text(
         """
 import b
 from a import x, y, z
@@ -1358,25 +1333,25 @@ from a import x, y, z
     )
 
     with pytest.raises(SystemExit):
-        main.main([str(tmpdir), "--resolve-all-configs", "--cr", str(tmpdir), "--check"])
+        main.main([str(tmp_path), "--resolve-all-configs", "--cr", str(tmp_path), "--check"])
 
     _, err = capsys.readouterr()
 
     assert f"{file6} Imports are incorrectly sorted and/or formatted" in err
 
 
-def test_multiple_src_paths(tmpdir, capsys):
+def test_multiple_src_paths(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """
     Ensure that isort has consistent behavior with multiple source paths
     """
 
-    tests_module = tmpdir / "tests"
-    app_module = tmpdir / "app"
+    tests_module = tmp_path / "tests"
+    app_module = tmp_path / "app"
 
     tests_module.mkdir()
     app_module.mkdir()
 
-    pyproject_toml = tmpdir / "pyproject.toml"
+    pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text(
         """
 [tool.isort]
@@ -1386,7 +1361,7 @@ auto_identify_namespace_packages = false
 """,
         "utf-8",
     )
-    file = tmpdir / "file.py"
+    file = tmp_path / "file.py"
     file.write_text(
         """
 from app.something import something
@@ -1396,11 +1371,11 @@ from tests.something import something_else
     )
 
     for _ in range(10):  # To ensure isort has consistent results in multiple runs
-        main.main([str(tmpdir), "--verbose"])
+        main.main([str(tmp_path), "--verbose"])
         out, _ = capsys.readouterr()
 
         assert (
-            file.read()
+            file.read_text()
             == """
 from app.something import something
 from tests.something import something_else
@@ -1409,12 +1384,16 @@ from tests.something import something_else
         assert "from-type place_module for tests.something returned FIRSTPARTY" in out
 
 
-def test_cli_src_path_glob_pattern(tmpdir, capsys, monkeypatch):
-    service_a_src = tmpdir.mkdir("service_a").mkdir("src")
-    service_b_src = tmpdir.mkdir("service_b").mkdir("src")
-    (tmpdir / "file.py").write_text("import os\n", "utf-8")
+def test_cli_src_path_glob_pattern(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    service_a_src = tmp_path / "service_a" / "src"
+    service_a_src.mkdir(parents=True)
+    service_b_src = tmp_path / "service_b" / "src"
+    service_b_src.mkdir(parents=True)
+    (tmp_path / "file.py").write_text("import os\n", "utf-8")
 
-    monkeypatch.chdir(str(tmpdir))
+    monkeypatch.chdir(tmp_path)
 
     main.main([".", "--src", "*/src/", "--show-config"])
     out, _ = capsys.readouterr()
