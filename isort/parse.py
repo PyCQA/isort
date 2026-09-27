@@ -239,6 +239,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 line, import_string, _get_next_line, line_separator
             )
             for extra_line in extra_lines:
+                if extra_line.reprocess:
+                    # A statement split off by `;` inside a consumed continuation
+                    # line gets its own pass through the main loop (issue #2679).
+                    in_lines.insert(index, extra_line.line)
+                    line_count += 1
+                    continue
                 raw_lines.append(extra_line.line)
                 # If during parsing of the continuation lines we encounter a comment, we record it.
                 if extra_line.comment is not None:

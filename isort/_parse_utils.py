@@ -82,6 +82,7 @@ def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineRe
 class ExtraLine(NamedTuple):
     line: str
     comment: str | None
+    reprocess: bool = False
 
 
 class ImportContinuationResult(NamedTuple):
@@ -104,10 +105,41 @@ def collect_import_continuation(
     extra_lines: list[ExtraLine] = []
 
     if "(" in line.split("#", 1)[0]:
-        while not line.split("#")[0].strip().endswith(")"):
+        depth = line.split("#", 1)[0].count("(") - line.split("#", 1)[0].count(")")
+        while depth > 0:
             try:
                 line, comment = get_next_line()
             except StopIteration:
+                break
+            close_index = -1
+            for char_index, char in enumerate(line.split("#", 1)[0]):
+                if char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        close_index = char_index
+                        break
+            if close_index >= 0:
+                # The parenthesised import ended mid-line; anything after an
+                # unquoted `;` is a separate statement (issue #2679) and must
+                # be handed back to the caller for its own processing —
+                # swallowing it produces unparseable output or silently drops it.
+                import_string += line_separator + line[: close_index + 1]
+                extra_lines.append(
+                    ExtraLine(line=line[: close_index + 1], comment=comment)
+                )
+                remainder = line[close_index + 1 :].split("#", 1)[0]
+                if ";" in remainder:
+                    extra_statement = remainder.split(";", 1)[1].strip()
+                    if extra_statement:
+                        extra_lines.append(
+                            ExtraLine(
+                                line=extra_statement,
+                                comment=comment,
+                                reprocess=True,
+                            )
+                        )
                 break
             extra_lines.append(ExtraLine(line=line, comment=comment))
             import_string += line_separator + line

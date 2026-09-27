@@ -11,6 +11,8 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Fix `;`-separated statements after a parenthesized `from` import being absorbed into the import's name list, producing unparseable output that `--check` reported as sorted (#2679) @devbuilds
+
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord

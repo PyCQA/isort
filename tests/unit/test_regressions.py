@@ -2657,3 +2657,17 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place():
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_semicolon_after_parenthesized_import_issue_2679():
+    """A `;` after the closing `)` of a parenthesized import must start a new
+    statement, not be absorbed into the import's name list.
+    https://github.com/PyCQA/isort/issues/2679
+    """
+    source = "from pkg.mod import (\n    y,\n); import os\n"
+    output = isort.code(source)
+    ast.parse(output)  # output must remain parseable
+    assert "import os" in output
+    assert "from pkg.mod import y" in output
+    # --check must not lie: the emitted file reports itself sorted.
+    assert isort.check_code(output, show_diff=True)

@@ -106,12 +106,17 @@ def imports(
                 file_path=file_path,
             )
 
-            _, import_string, _ = collect_import_continuation(
+            _, import_string, extra_lines = collect_import_continuation(
                 line,
                 import_string,
                 # We can disregard `index` here because it is no longer accessed after this line.
                 lambda: parse_comments(next(indexed_input)[1]),
             )
+            # Statements split off by `;` inside a consumed continuation line get
+            # their own turn through this loop (issue #2679).
+            for extra_line in extra_lines:
+                if extra_line.reprocess:
+                    statements.append(extra_line.line)
 
             if type_of_import == "from":
                 import_string = normalize_from_import_string(import_string)
