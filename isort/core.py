@@ -106,20 +106,15 @@ def _float_to_top(
     made_changes = False
     for line in chain(input_stream, (None,)):
         stripped_line = line.strip() if line is not None else ""
-        was_in_quote = bool(in_quote)
+        is_code = True
         if line is not None and not isort_off:
-            in_quote = _scan_quotes(line, stripped_line, in_quote)
-            if not (in_quote or was_in_quote) and stripped_line.startswith(
-                IMPORT_START_IDENTIFIERS
-            ):
-                line, _ = _read_import_statement(line, input_stream)
+            line, in_quote, is_code = _scan_import_statement(line, input_stream, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
         elif line is None or (
-            not (in_quote or was_in_quote)
-            and (stripped_line == "# isort: off" or _has_split_comment(line))
+            is_code and (stripped_line == "# isort: off" or _has_split_comment(line))
         ):
             if stripped_line == "# isort: off":
                 isort_off = True
@@ -186,6 +181,17 @@ def _scan_quotes(
             char_index += 1
 
     return in_quote
+
+
+def _scan_import_statement(line: str, input_stream: TextIO, in_quote: str) -> tuple[str, str, bool]:
+    """Collect continued imports without consuming import-like text inside strings."""
+    was_in_quote = bool(in_quote)
+    stripped_line = line.strip()
+    in_quote = _scan_quotes(line, stripped_line, in_quote)
+    is_code = not (in_quote or was_in_quote)
+    if is_code and stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+        line, _ = _read_import_statement(line, input_stream)
+    return line, in_quote, is_code
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
