@@ -1,4 +1,5 @@
 import textwrap
+from collections.abc import Iterator
 from io import StringIO
 from itertools import chain
 from typing import NamedTuple, TextIO
@@ -100,25 +101,10 @@ def _float_to_top(
 ) -> _FloatToTopResult:
     new_input = ""
     current = ""
-    isort_off = False
-    in_quote = ""
     verbose_output: list[str] = []
     made_changes = False
-    for line in chain(input_stream, (None,)):
-        stripped_line = line.strip() if line is not None else ""
-        if isort_off and line is not None:
-            if stripped_line == "# isort: on":
-                isort_off = False
-            new_input += line
-            continue
-        is_code = True
-        if line is not None:
-            line, in_quote, is_code = _scan_import_statement(line, input_stream, in_quote)
-        if line is None or (
-            is_code and (stripped_line == "# isort: off" or _has_split_comment(line))
-        ):
-            if stripped_line == "# isort: off":
-                isort_off = True
+    for line, is_boundary in _iter_float_to_top_statements(input_stream):
+        if is_boundary:
             if current:
                 before = current
                 if add_imports:
@@ -184,15 +170,24 @@ def _scan_quotes(
     return in_quote
 
 
-def _scan_import_statement(line: str, input_stream: TextIO, in_quote: str) -> tuple[str, str, bool]:
-    """Collect continued imports without consuming import-like text inside strings."""
-    was_in_quote = bool(in_quote)
-    stripped_line = line.strip()
-    in_quote = _scan_quotes(line, stripped_line, in_quote)
-    is_code = not (in_quote or was_in_quote)
-    if is_code and stripped_line.startswith(IMPORT_START_IDENTIFIERS):
-        line, _ = _read_import_statement(line, input_stream)
-    return line, in_quote, is_code
+def _iter_float_to_top_statements(input_stream: TextIO) -> Iterator[tuple[str | None, bool]]:
+    """Yield complete statements and whether to preserve them as section boundaries."""
+    isort_off = False
+    in_quote = ""
+    for line in input_stream:
+        stripped_line = line.strip()
+        if isort_off:
+            isort_off = stripped_line != "# isort: on"
+            yield line, True
+            continue
+        was_in_quote = bool(in_quote)
+        in_quote = _scan_quotes(line, stripped_line, in_quote)
+        is_code = not (in_quote or was_in_quote)
+        if is_code and stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+            line, _ = _read_import_statement(line, input_stream)
+        isort_off = is_code and stripped_line == "# isort: off"
+        yield line, isort_off or (is_code and _has_split_comment(line))
+    yield None, True
 
 
 # Ignore DeepSource cyclomatic complexity check for this function.
