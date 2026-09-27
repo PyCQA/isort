@@ -7,7 +7,7 @@ import pytest
 
 import isort
 import isort.sections
-from isort.core import STRING_PREFIXES
+from isort.core import STRING_PREFIXES, _float_to_top
 from isort.main import main
 from isort.wrap_modes import WrapModes
 
@@ -917,6 +917,61 @@ import z
 import y
     """
     )
+
+
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "# isort: split\n",
+        "import z  # isort: split\n",
+        "# isort: off\nimport z\nimport a\n# isort: on\n",
+    ],
+)
+def test_float_to_top_check_accepts_unchanged_sections_issue_2681(line_ending, boundary):
+    source = ("import os\n\n" + boundary + "\nimport sys\n").replace("\n", line_ending)
+
+    assert isort.code(source, float_to_top=True) == source
+    assert isort.check_code(source, float_to_top=True, show_diff=True)
+
+
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+@pytest.mark.parametrize("blank_lines", [0, 1, 3])
+def test_float_to_top_preserves_boundary_spacing_issue_2681(line_ending, blank_lines):
+    source = ("import os\n" + "\n" * blank_lines + "# isort: split\n").replace("\n", line_ending)
+    result = _float_to_top(StringIO(source), [], isort.Config(float_to_top=True), "py")
+
+    assert result.input_stream.read() == source
+    assert not result.made_changes
+
+
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+def test_float_to_top_check_detects_unsorted_sections_issue_2681(line_ending):
+    source = "import sys\nimport os\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
+    expected = "import os\nimport sys\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
+
+    assert not isort.check_code(source, float_to_top=True)
+    assert isort.code(source, float_to_top=True) == expected
+    assert isort.check_code(expected, float_to_top=True)
+
+
+@pytest.mark.parametrize("configured_ending", ["\n", "\r\n"])
+def test_float_to_top_configured_line_ending_issue_2681(configured_ending):
+    source = "import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
+    expected = source.replace("\r\n", configured_ending)
+    result = isort.code(source, float_to_top=True, line_ending=configured_ending)
+
+    assert result == expected
+    assert isort.check_code(result, float_to_top=True, line_ending=configured_ending)
+
+
+def test_float_to_top_cli_check_accepts_crlf_issue_2681(tmp_path):
+    path = tmp_path / "example.py"
+    source = b"import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
+    path.write_bytes(source)
+
+    main(["--float-to-top", "--check-only", str(path)])
+    assert path.read_bytes() == source
 
 
 def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
