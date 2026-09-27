@@ -62,6 +62,30 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _has_split_comment(import_statement: str) -> bool:
+    return any(line.rstrip().endswith("# isort: split") for line in import_statement.splitlines())
+
+
+def _read_import_statement(line: str, input_stream: TextIO) -> tuple[str, str]:
+    """Read a complete import and retain its last physical line for parser state."""
+    import_statement = line
+    stripped_line = line.strip().split("#")[0]
+    while stripped_line.endswith("\\") or ("(" in stripped_line and ")" not in stripped_line):
+        if stripped_line.endswith("\\"):
+            while stripped_line and stripped_line.endswith("\\"):
+                line = input_stream.readline()
+                stripped_line = line.strip().split("#")[0]
+                import_statement += line
+        else:
+            while ")" not in stripped_line:
+                line = input_stream.readline()
+                if not line:
+                    raise ExistingSyntaxErrors("Parenthesis is not closed")
+                stripped_line = line.strip().split("#")[0]
+                import_statement += line
+    return import_statement, line
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -77,18 +101,25 @@ def _float_to_top(
     new_input = ""
     current = ""
     isort_off = False
+    in_quote = ""
     verbose_output: list[str] = []
     made_changes = False
     for line in chain(input_stream, (None,)):
         stripped_line = line.strip() if line is not None else ""
+        was_in_quote = bool(in_quote)
+        if line is not None and not isort_off:
+            in_quote = _scan_quotes(line, stripped_line, in_quote)
+            if not (in_quote or was_in_quote) and stripped_line.startswith(
+                IMPORT_START_IDENTIFIERS
+            ):
+                line, _ = _read_import_statement(line, input_stream)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
-        elif (
-            line is None
-            or stripped_line in ("# isort: split", "# isort: off")
-            or line.rstrip().endswith("# isort: split")
+        elif line is None or (
+            not (in_quote or was_in_quote)
+            and (stripped_line == "# isort: off" or _has_split_comment(line))
         ):
             if stripped_line == "# isort: off":
                 isort_off = True
@@ -308,7 +339,9 @@ def process(
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
-                elif stripped_line.endswith("# isort: split"):
+                elif stripped_line.endswith("# isort: split") and not stripped_line.startswith(
+                    IMPORT_START_IDENTIFIERS
+                ):
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
                     code_sorting = stripped_line.split("isort: ")[1].strip()
@@ -387,27 +420,10 @@ def process(
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
-                    import_statement = line
+                    import_statement, line = _read_import_statement(line, input_stream)
                     stripped_line = line.strip().split("#")[0]
-                    while stripped_line.endswith("\\") or (
-                        "(" in stripped_line and ")" not in stripped_line
-                    ):
-                        if stripped_line.endswith("\\"):
-                            while stripped_line and stripped_line.endswith("\\"):
-                                line = input_stream.readline()
-                                stripped_line = line.strip().split("#")[0]
-                                import_statement += line
-                        else:
-                            while ")" not in stripped_line:
-                                line = input_stream.readline()
 
-                                if not line:  # end of file without closing parenthesis
-                                    raise ExistingSyntaxErrors("Parenthesis is not closed")
-
-                                stripped_line = line.strip().split("#")[0]
-                                import_statement += line
-
-                    # The second clause keeps a per-line ``isort: skip`` import exactly
+                    # The skip-comment clause keeps a per-line ``isort: skip`` import exactly
                     # where it is: when earlier imports have already been collected into
                     # the current section, the skipped statement is treated as a section
                     # boundary so those imports can't be sorted above it.  Without it, a
@@ -415,9 +431,13 @@ def process(
                     # always floated to the top) makes isort splice the sorted block
                     # ahead of the skipped line and relocate it below the block. See #2092.
                     if (
-                        import_statement.lstrip().startswith("from")
-                        and "import" not in import_statement
-                    ) or (contains_imports and _has_skip_comment(import_statement)):
+                        (
+                            import_statement.lstrip().startswith("from")
+                            and "import" not in import_statement
+                        )
+                        or _has_split_comment(import_statement)
+                        or (contains_imports and _has_skip_comment(import_statement))
+                    ):
                         line = import_statement
                         not_imports = True
                     else:
