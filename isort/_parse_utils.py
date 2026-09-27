@@ -125,9 +125,9 @@ def _collect_parenthesized_lines(
                 extra_lines.append(ExtraLine(line=closing_part, comment=comment))
             line = closing_part
             break
-        else:
-            extra_lines.append(ExtraLine(line=line, comment=comment))
-            import_string += line_separator + line
+
+        extra_lines.append(ExtraLine(line=line, comment=comment))
+        import_string += line_separator + line
 
     return line, import_string
 
