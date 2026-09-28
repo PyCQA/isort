@@ -54,6 +54,7 @@ It also allows you to place code in-between imports without any hacks required.
 ```python
 import a
 import b
+
 ...
 # more code!
 ```

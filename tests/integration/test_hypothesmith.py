@@ -1,5 +1,5 @@
 import ast
-from typing import get_type_hints
+from typing import Any, get_type_hints
 
 import hypothesis
 import libcst
@@ -9,7 +9,7 @@ from hypothesmith import from_grammar, from_node
 import isort
 
 
-def _as_config(kw) -> isort.Config:
+def _as_config(kw: dict[str, Any]) -> isort.Config:
     if "wrap_length" in kw and "line_length" in kw:
         kw["wrap_length"], kw["line_length"] = sorted([kw["wrap_length"], kw["line_length"]])
     try:

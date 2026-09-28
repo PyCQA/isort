@@ -1,3 +1,5 @@
+from typing import Any
+
 import black
 from black.report import NothingChanged
 
@@ -19,7 +21,9 @@ def black_format(code: str, is_pyi: bool = False, line_length: int = 88) -> str:
         return code
 
 
-def black_test(code: str, expected_output: str = "", *, is_pyi: bool = False, **config_kwargs):
+def black_test(
+    code: str, expected_output: str = "", *, is_pyi: bool = False, **config_kwargs: Any
+) -> None:
     """Tests that the given code:
     - Behaves the same when formatted multiple times with isort.
     - Agrees with black formatting.
@@ -44,7 +48,7 @@ def black_test(code: str, expected_output: str = "", *, is_pyi: bool = False, **
     assert output == expected_output
 
 
-def test_black_snippet_one():
+def test_black_snippet_one() -> None:
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/tests/test_black.py
     """
@@ -158,7 +162,7 @@ DEFAULT_MODE = black.FileMode(experimental_string_processing=True)
     )
 
 
-def test_black_snippet_two():
+def test_black_snippet_two() -> None:
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/tests/test_primer.py
     """
@@ -233,7 +237,7 @@ Black didn't work
     )
 
 
-def test_black_snippet_three():
+def test_black_snippet_three() -> None:
     """Test consistent code formatting between isort and black for code snippet from black repository.
     See: https://github.com/psf/black/blob/master/src/black/__init__.py
     """
@@ -376,7 +380,7 @@ DEFAULT_LINE_LENGTH = 88
     )
 
 
-def test_black_pyi_file():
+def test_black_pyi_file() -> None:
     """Test consistent code formatting between isort and black for `.pyi` files.
 
     black only allows no more than two consecutive blank lines in a `.pyi` file.
@@ -445,7 +449,7 @@ def sub(a: np.ndarray, b: np.ndarray) -> np.ndarray: ...
     )
 
 
-def test_black_trailing_comma():
+def test_black_trailing_comma() -> None:
     black_test(
         "from x import (a, b, c,)\n",
         """\

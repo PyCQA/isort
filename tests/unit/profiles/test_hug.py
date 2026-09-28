@@ -5,7 +5,7 @@ from ..utils import isort_test
 hug_isort_test = partial(isort_test, profile="hug", known_first_party=["hug"])
 
 
-def test_hug_code_snippet_one():
+def test_hug_code_snippet_one() -> None:
     hug_isort_test(
         '''
 from __future__ import absolute_import
@@ -53,7 +53,7 @@ INTRO = """
     )
 
 
-def test_hug_code_snippet_two():
+def test_hug_code_snippet_two() -> None:
     hug_isort_test(
         """from __future__ import absolute_import
 
@@ -76,7 +76,7 @@ def default_output_format(
     )
 
 
-def test_hug_code_snippet_three():
+def test_hug_code_snippet_three() -> None:
     hug_isort_test(
         """from __future__ import absolute_import
 

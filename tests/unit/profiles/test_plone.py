@@ -5,7 +5,7 @@ from ..utils import isort_test
 plone_isort_test = partial(isort_test, profile="plone")
 
 
-def test_plone_code_snippet_one():
+def test_plone_code_snippet_one() -> None:
     plone_isort_test(
         """# -*- coding: utf-8 -*-
 from plone.app.multilingual.testing import PLONE_APP_MULTILINGUAL_PRESET_FIXTURE  # noqa
@@ -29,7 +29,7 @@ PAMI_FIXTURE = PloneWithPackageLayer(
     )
 
 
-def test_plone_code_snippet_two():
+def test_plone_code_snippet_two() -> None:
     plone_isort_test(
         """# -*- coding: utf-8 -*-
 from Acquisition import aq_base
@@ -58,7 +58,7 @@ logger = getLogger(__name__)
     )
 
 
-def test_plone_code_snippet_three():
+def test_plone_code_snippet_three() -> None:
     plone_isort_test(
         """# -*- coding: utf-8 -*-
 from plone.app.querystring.interfaces import IQueryModifier
@@ -72,7 +72,7 @@ logger = logging.getLogger(__name__)
     )
 
 
-def test_plone_code_snippet_four():
+def test_plone_code_snippet_four() -> None:
     plone_isort_test(
         """# -*- coding: utf-8 -*-
 from plone.app.querystring.interfaces import IQueryModifier
@@ -88,7 +88,7 @@ def my_function():
     )
 
 
-def test_plone_code_snippet_five():
+def test_plone_code_snippet_five() -> None:
     plone_isort_test(
         """# -*- coding: utf-8 -*-
 from plone.app.querystring.interfaces import IQueryModifier
