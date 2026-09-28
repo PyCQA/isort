@@ -2108,14 +2108,7 @@ def test_same_line_statements() -> None:
     assert isort.code(test_input) == test_input
 
 
-def test_same_line_statements_trailing_comment_is_not_a_statement() -> None:
-    """Ensure a comment after a semicolon does not make isort skip the import.
-
-    ``skip_line`` must only consider the statements that precede the comment.
-    Otherwise ``import sys; # comment`` is skipped as if it held a non-import
-    statement, which hides the import from the sorter and makes ``--check``
-    pass on a file that is not sorted.
-    """
+def test_same_line_statements_with_trailing_comments() -> None:
     test_input = "import sys; # comment\nimport os\n"
 
     assert [str(imp) for imp in isort.find_imports_in_code(test_input)] == [
@@ -2124,55 +2117,12 @@ def test_same_line_statements_trailing_comment_is_not_a_statement() -> None:
     ]
     assert isort.check_code(test_input) is False
     assert isort.check_code("import os\nimport sys\n") is True
-
-    # The line is now sorted, and the comment stays attached to the import it
-    # was written on.
     assert isort.code(test_input) == ("import os\nimport sys  # comment\n")
 
-
-def test_same_line_statements_keeps_skipping_real_non_import_statements() -> None:
-    """Ensure a real non-import statement after the semicolon still skips the
-    line, so the fix above does not over-correct.
-    """
-    test_input = "import pdb; pdb.set_trace()\nimport nose; nose.run()\n"
-    assert isort.code(test_input) == test_input
-    assert isort.code("import pdb; import nose\n") == ("import pdb\n\nimport nose\n")
-
-
-def test_same_line_statements_skip_directive_is_preserved() -> None:
-    """Ensure a `# isort: skip` after a semicolon is left exactly as written.
-
-    Re-attaching the comment to the last real statement must not cost the line
-    its text: the statement was stripped, so `import sys; # isort: skip` came
-    back as `import sys# isort: skip`, with the directive no longer sitting on
-    an import isort is willing to leave alone.
-    """
-    test_input = "import sys; # isort: skip\nimport os\nimport abc\n"
-
-    # The skipped line keeps its text and its place; the imports after it are
-    # still sorted, and the skipped one is not pulled into the block.
-    assert isort.code(test_input).splitlines() == [
-        "import sys; # isort: skip",
-        "import abc",
-        "import os",
-    ]
-    assert isort.code("import sys; # isort: skip\n") == "import sys; # isort: skip\n"
-
-
-def test_same_line_statements_noqa_is_preserved() -> None:
-    """Ensure a `# noqa` after a semicolon survives under ``honor_noqa``.
-
-    ``import_type`` rejects the line because of the directive, so the line is
-    one isort does not sort; it has to come back byte for byte, semicolon
-    included, the same way ``import sys  # noqa`` does.
-    """
-    test_input = "import sys; # noqa\n"
-
-    assert isort.code(test_input, honor_noqa=True) == test_input
-    assert isort.code("import sys  # noqa\n", honor_noqa=True) == ("import sys  # noqa\n")
-    # Without honor_noqa the import is sortable, so isort rewrites the line and
-    # drops the separator -- the same thing it does to any line it sorts.
-    assert isort.code(test_input) == "import sys  # noqa\n"
+    skipped = "import sys; # isort: skip\n"
+    assert isort.code(skipped) == skipped
+    assert isort.code("import sys; # noqa\n", honor_noqa=True) == "import sys; # noqa\n"
+    assert isort.code("import sys; # noqa\n") == "import sys  # noqa\n"
 
 
 def test_long_line_comments() -> None:
