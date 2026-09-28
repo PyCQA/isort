@@ -557,6 +557,17 @@ class Config(_Config):
 
     def is_skipped(self, file_path: Path) -> bool:
         """Returns True if the file and/or folder should be skipped based on current settings."""
+        if self._matches_skip(file_path):
+            return True
+
+        os_path = str(file_path)
+        if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
+            return True
+
+        return self.skip_gitignore and self._is_gitignored(file_path)
+
+    def _matches_skip(self, file_path: Path) -> bool:
+        """Match configured paths, path components, and glob patterns."""
         if self.directory and Path(self.directory) in file_path.resolve().parents:
             file_name = os.path.relpath(file_path.resolve(), self.directory)
         else:
@@ -567,9 +578,8 @@ class Config(_Config):
         # Resolve native absolute paths before normalizing separators, preserving Windows drives.
         normalized_path = os.path.abspath(os_path.replace("\\", "/")).replace("\\", "/")
 
-        for skip_path in self.posix_skips:
-            if normalized_path == skip_path:
-                return True
+        if normalized_path in self.posix_skips:
+            return True
 
         position = os.path.split(file_name)
         while position[1]:
@@ -581,31 +591,30 @@ class Config(_Config):
             if fnmatch.fnmatch(file_name, sglob) or fnmatch.fnmatch("/" + file_name, sglob):
                 return True
 
-        if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
+        return False
+
+    def _is_gitignored(self, file_path: Path) -> bool:
+        """Check a path against the cached tracked and non-ignored Git files."""
+        if file_path.name == ".git":  # pragma: no cover
             return True
 
-        if self.skip_gitignore:
-            if file_path.name == ".git":  # pragma: no cover
-                return True
+        git_folder: Path | None
+        file_paths = [file_path, file_path.resolve()]
+        for folder in self.git_ls_files:
+            if any(folder in path.parents for path in file_paths):
+                git_folder = folder
+                break
+        else:
+            git_folder = self._check_folder_git_ls_files(str(file_path.parent))
 
-            git_folder = None
+        # git_ls_files are good files you should parse. If you're not in the allow list, skip.
 
-            file_paths = [file_path, file_path.resolve()]
-            for folder in self.git_ls_files:
-                if any(folder in path.parents for path in file_paths):
-                    git_folder = folder
-                    break
-            else:
-                git_folder = self._check_folder_git_ls_files(str(file_path.parent))
-
-            # git_ls_files are good files you should parse. If you're not in the allow list, skip.
-
-            if (
-                git_folder
-                and not file_path.is_dir()
-                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
-            ):
-                return True
+        if (
+            git_folder
+            and not file_path.is_dir()
+            and str(file_path.resolve()) not in self.git_ls_files[git_folder]
+        ):
+            return True
 
         return False
 
