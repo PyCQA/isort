@@ -6,7 +6,6 @@ Defines how the default settings for isort should be loaded
 import configparser
 import fnmatch
 import os
-import posixpath
 import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
@@ -565,11 +564,8 @@ class Config(_Config):
 
         os_path = str(file_path)
 
-        # Normalize the path to POSIX-style for consistent comparison with skip paths and globs
-        normalized_path = os_path.replace("\\", "/")
-        if normalized_path[1:2] == ":":
-            normalized_path = normalized_path[2:]
-        normalized_path = posixpath.abspath(normalized_path)
+        # Resolve native absolute paths before normalizing separators, preserving Windows drives.
+        normalized_path = os.path.abspath(os_path.replace("\\", "/")).replace("\\", "/")
 
         for skip_path in self.posix_skips:
             if normalized_path == skip_path:
@@ -668,7 +664,8 @@ class Config(_Config):
             return self._posix_skips
 
         self._posix_skips = frozenset(
-            posixpath.abspath(skip_path.replace("\\", "/")) for skip_path in self.skips
+            os.path.abspath(skip_path.replace("\\", "/")).replace("\\", "/")
+            for skip_path in self.skips
         )
         return self._posix_skips
 
