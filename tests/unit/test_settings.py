@@ -74,11 +74,12 @@ class TestConfig:
 
         skip_path = target if absolute_skip else target.relative_to(tmp_path)
         config = _skip_config(setting_name, skip_path.as_posix().replace("/", separator))
+        cached_skips = config.posix_skips
         file_path = target if absolute_file else target.relative_to(tmp_path)
 
         assert config.is_skipped(file_path)
         assert not config.is_skipped(other)
-        assert config.posix_skips is config.posix_skips
+        assert config.posix_skips is cached_skips
 
     @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
     @pytest.mark.parametrize("absolute_skip", [False, True])
