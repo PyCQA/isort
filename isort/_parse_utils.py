@@ -67,7 +67,7 @@ def skip_line(line: str, in_quote: str, needs_import: bool = True) -> SkipLineRe
                 break
             char_index += 1
 
-    if ";" in line.split("#")[0] and needs_import:
+    if ";" in line.split("#", maxsplit=1)[0] and needs_import:
         for part in (part.strip() for part in line.split(";")):
             if (
                 part
@@ -104,7 +104,7 @@ def collect_import_continuation(
     extra_lines: list[ExtraLine] = []
 
     if "(" in line.split("#", 1)[0]:
-        while not line.split("#")[0].strip().endswith(")"):
+        while not line.split("#", maxsplit=1)[0].strip().endswith(")"):
             try:
                 line, comment = get_next_line()
             except StopIteration:

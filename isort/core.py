@@ -114,10 +114,10 @@ def _float_to_top(
                 parsed = parse.file_contents(current, config=config)
                 verbose_output += parsed.verbose_output
                 extra_space = ""
-                while before and before[-1] == "\n":
-                    extra_space += "\n"
-                    before = before[:-1]
-                extra_space = extra_space.replace("\n", "", 1)
+                while before.endswith(parsed.line_separator):
+                    extra_space += parsed.line_separator
+                    before = before[: -len(parsed.line_separator)]
+                extra_space = extra_space.replace(parsed.line_separator, "", 1)
                 sorted_output = output.sorted_imports(
                     parsed, config, extension, import_type="import"
                 )

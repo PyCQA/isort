@@ -8,7 +8,7 @@ from contextlib import suppress
 from pathlib import Path
 
 
-def test_importable():
+def test_importable() -> None:
     """Simple smoketest to ensure all isort modules are importable"""
 
     import isort

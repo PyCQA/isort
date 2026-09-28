@@ -58,17 +58,19 @@ REALLY_LONG_IMPORT_WITH_COMMENT = (
 
 
 @pytest.fixture(scope="session", autouse=True)
-def default_settings_path(tmpdir_factory) -> Iterator[str]:
-    config_dir = tmpdir_factory.mktemp("config")
-    config_file = config_dir.join(".editorconfig").strpath
+def default_settings_path(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
+    config_dir = tmp_path_factory.mktemp("config")
+    config_file = config_dir / ".editorconfig"
+    config_file.write_text(TEST_DEFAULT_CONFIG)
 
-    with open(config_file, "w") as editorconfig:
-        editorconfig.write(TEST_DEFAULT_CONFIG)
+    assert Config(str(config_file)).known_other
 
-    assert Config(config_file).known_other
-
-    with config_dir.as_cwd():
-        yield config_dir.strpath
+    original_cwd = os.getcwd()
+    os.chdir(config_dir)
+    try:
+        yield str(config_dir)
+    finally:
+        os.chdir(original_cwd)
 
 
 def test_happy_path() -> None:
@@ -953,7 +955,7 @@ def test_remove_imports() -> None:
     assert test_output == ""
 
 
-def test_comments_above():
+def test_comments_above() -> None:
     """Test to ensure comments above an import will stay in place"""
     test_input = "import os\n\nfrom x import y\n\n# comment\nfrom z import __version__, api\n"
     assert isort.code(test_input, ensure_newline_before_comments=True) == test_input
@@ -988,7 +990,7 @@ def test_quotes_in_file() -> None:
     assert isort.code(test_input) == test_input
 
 
-def test_check_newline_in_imports(capsys) -> None:
+def test_check_newline_in_imports(capsys: pytest.CaptureFixture[str]) -> None:
     """Ensure tests works correctly when new lines are in imports."""
     test_input = "from lib1 import (\n    sub1,\n    sub2,\n    sub3\n)\n"
 
@@ -1120,13 +1122,14 @@ def test_thirdy_party_overrides_standard_section() -> None:
     assert test_output == "import os\nimport sys\n\nimport profile.test\n"
 
 
-def test_known_pattern_path_expansion(tmpdir) -> None:
+def test_known_pattern_path_expansion(tmp_path: Path) -> None:
     """Test to ensure patterns ending with path sep gets expanded
     and nested packages treated as known patterns.
     """
-    src_dir = tmpdir.mkdir("src")
-    src_dir.mkdir("foo")
-    src_dir.mkdir("bar")
+    src_dir = tmp_path / "src"
+    src_dir.mkdir()
+    (src_dir / "foo").mkdir()
+    (src_dir / "bar").mkdir()
     test_input = (
         "from kate_plugin import isort_plugin\n"
         "import sys\n"
@@ -1139,7 +1142,7 @@ def test_known_pattern_path_expansion(tmpdir) -> None:
         code=test_input,
         default_section="THIRDPARTY",
         known_first_party=["src/", "this", "kate_plugin"],
-        directory=str(tmpdir),
+        directory=str(tmp_path),
     )
     assert test_output == (
         "import os\n"
@@ -2496,53 +2499,49 @@ def test_import_split_is_word_boundary_aware() -> None:
     )
 
 
-def test_other_file_encodings(tmpdir) -> None:
+def test_other_file_encodings(tmp_path: Path) -> None:
     """Test to ensure file encoding is respected"""
     for encoding in ("latin1", "utf8"):
-        tmp_fname = tmpdir.join(f"test_{encoding}.py")
+        tmp_fname = tmp_path / f"test_{encoding}.py"
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
-        tmp_fname.write_binary(file_contents.encode(encoding))
-        api.sort_file(Path(tmp_fname), file_path=Path(tmp_fname), settings_path=os.getcwd())
+        tmp_fname.write_bytes(file_contents.encode(encoding))
+        api.sort_file(tmp_fname, file_path=tmp_fname, settings_path=os.getcwd())
         assert tmp_fname.read_text(encoding) == file_contents
 
 
-def test_other_file_encodings_in_place(tmpdir) -> None:
+def test_other_file_encodings_in_place(tmp_path: Path) -> None:
     """Test to ensure file encoding is respected when overwritten in place."""
     for encoding in ("latin1", "utf8"):
-        tmp_fname = tmpdir.join(f"test_{encoding}.py")
+        tmp_fname = tmp_path / f"test_{encoding}.py"
         file_contents = f"# coding: {encoding}\n\ns = u'ã'\n"
-        tmp_fname.write_binary(file_contents.encode(encoding))
+        tmp_fname.write_bytes(file_contents.encode(encoding))
         api.sort_file(
-            Path(tmp_fname),
-            file_path=Path(tmp_fname),
+            tmp_fname,
+            file_path=tmp_fname,
             settings_path=os.getcwd(),
             overwrite_in_place=True,
         )
         assert tmp_fname.read_text(encoding) == file_contents
 
 
-def test_encoding_not_in_comment(tmpdir) -> None:
+def test_encoding_not_in_comment(tmp_path: Path) -> None:
     """Test that 'encoding' not in a comment is ignored"""
-    tmp_fname = tmpdir.join("test_encoding.py")
+    tmp_fname = tmp_path / "test_encoding.py"
     file_contents = "class Foo\n    coding: latin1\n\ns = u'ã'\n"
-    tmp_fname.write_binary(file_contents.encode("utf8"))
+    tmp_fname.write_bytes(file_contents.encode("utf8"))
     assert (
-        isort.code(
-            Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
-        )
+        isort.code(tmp_fname.read_text("utf8"), file_path=tmp_fname, settings_path=os.getcwd())
         == file_contents
     )
 
 
-def test_encoding_not_in_first_two_lines(tmpdir) -> None:
+def test_encoding_not_in_first_two_lines(tmp_path: Path) -> None:
     """Test that 'encoding' not in the first two lines is ignored"""
-    tmp_fname = tmpdir.join("test_encoding.py")
+    tmp_fname = tmp_path / "test_encoding.py"
     file_contents = "\n\n# -*- coding: latin1\n\ns = u'ã'\n"
-    tmp_fname.write_binary(file_contents.encode("utf8"))
+    tmp_fname.write_bytes(file_contents.encode("utf8"))
     assert (
-        isort.code(
-            Path(tmp_fname).read_text("utf8"), file_path=Path(tmp_fname), settings_path=os.getcwd()
-        )
+        isort.code(tmp_fname.read_text("utf8"), file_path=tmp_fname, settings_path=os.getcwd())
         == file_contents
     )
 
@@ -2640,7 +2639,7 @@ def test_shouldnt_add_lines() -> None:
     assert isort.code(test_input) == test_input
 
 
-def test_sections_parsed_correct(tmpdir) -> None:
+def test_sections_parsed_correct(tmp_path: Path) -> None:
     """Ensure that modules for custom sections parsed as list from config file and
     isort result is correct
     """
@@ -2661,11 +2660,11 @@ def test_sections_parsed_correct(tmpdir) -> None:
         "import nose\n"
         "from nose import *\n"
     )
-    tmpdir.join(".isort.cfg").write(conf_file_data)
-    assert isort.code(test_input, settings_path=str(tmpdir)) == correct_output
+    (tmp_path / ".isort.cfg").write_text(conf_file_data)
+    assert isort.code(test_input, settings_path=str(tmp_path)) == correct_output
 
 
-def test_pyproject_conf_file(tmpdir) -> None:
+def test_pyproject_conf_file(tmp_path: Path) -> None:
     """Ensure that modules for custom sections parsed as list from config file and
     isort result is correct
     """
@@ -2699,8 +2698,8 @@ def test_pyproject_conf_file(tmpdir) -> None:
         "\n"
         "from nose import *\n"
     )
-    tmpdir.join("pyproject.toml").write(conf_file_data)
-    assert isort.code(test_input, settings_path=str(tmpdir)) == correct_output
+    (tmp_path / "pyproject.toml").write_text(conf_file_data)
+    assert isort.code(test_input, settings_path=str(tmp_path)) == correct_output
 
 
 def test_alphabetic_sorting_no_newlines() -> None:
@@ -3005,29 +3004,28 @@ def test_third_party_case_sensitive() -> None:
     assert isort.code(test_input) == expected_output
 
 
-def test_exists_case_sensitive_file(tmpdir) -> None:
+def test_exists_case_sensitive_file(tmp_path: Path) -> None:
     """Test exists_case_sensitive function for a file."""
     exists_case_sensitive.cache_clear()
-    tmpdir.join("module.py").ensure(file=1)
-    assert exists_case_sensitive(str(tmpdir.join("module.py")))
-    assert not exists_case_sensitive(str(tmpdir.join("MODULE.py")))
+    (tmp_path / "module.py").touch()
+    assert exists_case_sensitive(str(tmp_path / "module.py"))
+    assert not exists_case_sensitive(str(tmp_path / "MODULE.py"))
 
 
-def test_exists_case_sensitive_directory(tmpdir) -> None:
+def test_exists_case_sensitive_directory(tmp_path: Path) -> None:
     """Test exists_case_sensitive function for a directory."""
     exists_case_sensitive.cache_clear()
-    tmpdir.join("pkg").ensure(dir=1)
-    assert exists_case_sensitive(str(tmpdir.join("pkg")))
-    assert not exists_case_sensitive(str(tmpdir.join("PKG")))
+    (tmp_path / "pkg").mkdir()
+    assert exists_case_sensitive(str(tmp_path / "pkg"))
+    assert not exists_case_sensitive(str(tmp_path / "PKG"))
 
 
-def test_sys_path_mutation(tmpdir) -> None:
+def test_sys_path_mutation(tmp_path: Path) -> None:
     """Test to ensure sys.path is not modified"""
-    tmpdir.mkdir("src").mkdir("a")
+    (tmp_path / "src" / "a").mkdir(parents=True)
     test_input = "from myproject import test"
-    options = {"virtual_env": str(tmpdir)}  # type: dict[str, Any]
     expected_length = len(sys.path)
-    isort.code(test_input, **options)
+    isort.code(test_input, virtual_env=str(tmp_path))
     assert len(sys.path) == expected_length
 
 
@@ -3174,7 +3172,7 @@ def test_long_alias_using_paren_issue_957() -> None:
     assert out == expected_output
 
 
-def test_strict_whitespace_by_default(capsys) -> None:
+def test_strict_whitespace_by_default(capsys: pytest.CaptureFixture[str]) -> None:
     test_input = "import os\nfrom django.conf import settings\n"
     assert not api.check_code_string(test_input)
     _, err = capsys.readouterr()
@@ -3182,14 +3180,16 @@ def test_strict_whitespace_by_default(capsys) -> None:
     assert err.endswith("Imports are incorrectly sorted and/or formatted.\n")
 
 
-def test_strict_whitespace_no_closing_newline_issue_676(capsys) -> None:
+def test_strict_whitespace_no_closing_newline_issue_676(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     test_input = "import os\n\nfrom django.conf import settings\n\nprint(1)"
     assert api.check_code_string(test_input)
     out, _ = capsys.readouterr()
     assert out == ""
 
 
-def test_ignore_whitespace(capsys) -> None:
+def test_ignore_whitespace(capsys: pytest.CaptureFixture[str]) -> None:
     test_input = "import os\nfrom django.conf import settings\n"
     assert api.check_code_string(test_input, ignore_whitespace=True)
     out, _ = capsys.readouterr()
@@ -3678,9 +3678,9 @@ def test_new_lines_are_preserved() -> None:
         os.remove(n_newline.name)
 
 
-def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
-    config_file = tmpdir.join("setup.cfg")
-    config_file.write(
+def test_forced_separate_is_deterministic_issue_774(tmp_path: Path) -> None:
+    config_file = tmp_path / "setup.cfg"
+    config_file.write_text(
         "[isort]\nforced_separate:\n   separate1\n   separate2\n   separate3\n   separate4\n"
     )
 
@@ -3696,7 +3696,7 @@ def test_forced_separate_is_deterministic_issue_774(tmpdir) -> None:
         "from separate4 import quux\n"
     )
 
-    assert isort.code(test_input, settings_file=config_file.strpath) == test_input
+    assert isort.code(test_input, settings_file=str(config_file)) == test_input
 
 
 def test_monkey_patched_urllib() -> None:
@@ -3716,37 +3716,41 @@ def test_argument_parsing() -> None:
 
 
 @pytest.mark.parametrize("multiprocess", [False, True])
-def test_command_line(tmpdir, capfd, multiprocess: bool) -> None:
-    tmpdir.join("file1.py").write("import re\nimport os\n\nimport contextlib\n\n\nimport isort")
-    tmpdir.join("file2.py").write("import collections\nimport time\n\nimport abc\n\n\nimport isort")
-    arguments = [str(tmpdir), "--settings-path", os.getcwd()]
+def test_command_line(
+    tmp_path: Path, capfd: pytest.CaptureFixture[str], multiprocess: bool
+) -> None:
+    (tmp_path / "file1.py").write_text(
+        "import re\nimport os\n\nimport contextlib\n\n\nimport isort"
+    )
+    (tmp_path / "file2.py").write_text(
+        "import collections\nimport time\n\nimport abc\n\n\nimport isort"
+    )
+    arguments = [str(tmp_path), "--settings-path", os.getcwd()]
     if multiprocess:
         arguments.extend(["--jobs", "2"])
     main(arguments)
     assert (
-        tmpdir.join("file1.py").read()
-        == "import contextlib\nimport os\nimport re\n\nimport isort\n"
-    )
+        tmp_path / "file1.py"
+    ).read_text() == "import contextlib\nimport os\nimport re\n\nimport isort\n"
     assert (
-        tmpdir.join("file2.py").read()
-        == "import abc\nimport collections\nimport time\n\nimport isort\n"
-    )
+        tmp_path / "file2.py"
+    ).read_text() == "import abc\nimport collections\nimport time\n\nimport isort\n"
     if not (sys.platform.startswith("win") or sys.platform.startswith("darwin")):
         out, err = capfd.readouterr()
         assert not [error for error in err.split("\n") if error and "warning:" not in error]
         # it informs us about fixing the files:
-        assert str(tmpdir.join("file1.py")) in out
-        assert str(tmpdir.join("file2.py")) in out
+        assert str(tmp_path / "file1.py") in out
+        assert str(tmp_path / "file2.py") in out
 
 
 @pytest.mark.parametrize("quiet", [False, True])
-def test_quiet(tmpdir, capfd, quiet: bool) -> None:
+def test_quiet(tmp_path: Path, capfd: pytest.CaptureFixture[str], quiet: bool) -> None:
     if sys.platform.startswith("win"):
         return
 
-    tmpdir.join("file1.py").write("import re\nimport os")
-    tmpdir.join("file2.py").write("")
-    arguments = [str(tmpdir)]
+    (tmp_path / "file1.py").write_text("import re\nimport os")
+    (tmp_path / "file2.py").write_text("")
+    arguments = [str(tmp_path)]
     if quiet:
         arguments.append("-q")
     main(arguments)
@@ -3756,24 +3760,30 @@ def test_quiet(tmpdir, capfd, quiet: bool) -> None:
 
 
 @pytest.mark.parametrize("enabled", [False, True])
-def test_safety_skips(tmpdir, enabled: bool) -> None:
-    tmpdir.join("victim.py").write("# ...")
-    toxdir = tmpdir.mkdir(".tox")
-    toxdir.join("verysafe.py").write("# ...")
-    tmpdir.mkdir("_build").mkdir("python3.7").join("importantsystemlibrary.py").write("# ...")
-    tmpdir.mkdir(".pants.d").join("pants.py").write("import os")
+def test_safety_skips(tmp_path: Path, enabled: bool) -> None:
+    (tmp_path / "victim.py").write_text("# ...")
+    toxdir = tmp_path / ".tox"
+    toxdir.mkdir()
+    (toxdir / "verysafe.py").write_text("# ...")
+    build_dir = tmp_path / "_build" / "python3.7"
+    build_dir.mkdir(parents=True)
+    (build_dir / "importantsystemlibrary.py").write_text("# ...")
+    pants_dir = tmp_path / ".pants.d"
+    pants_dir.mkdir()
+    (pants_dir / "pants.py").write_text("import os")
     if enabled:
-        config = Config(directory=str(tmpdir))
+        config = Config(directory=str(tmp_path))
     else:
-        config = Config(skip=[], directory=str(tmpdir))
+        config = Config(skip=[], directory=str(tmp_path))
     skipped: list[str] = []
     broken: list[str] = []
-    codes = [str(tmpdir)]
+    codes = [str(tmp_path)]
     files.find(codes, config, skipped, broken)
 
     # if enabled files within nested unsafe directories should be skipped
     file_names = {
-        os.path.relpath(f, str(tmpdir)) for f in files.find([str(tmpdir)], config, skipped, broken)
+        os.path.relpath(f, str(tmp_path))
+        for f in files.find([str(tmp_path)], config, skipped, broken)
     }
     if enabled:
         assert file_names == {"victim.py"}
@@ -3803,11 +3813,12 @@ def test_safety_skips(tmpdir, enabled: bool) -> None:
         (["*/code/*.py"], 1, set()),
     ],
 )
-def test_skip_glob(tmpdir, skip_glob_assert: tuple[list[str], int, set[str]]) -> None:
+def test_skip_glob(tmp_path: Path, skip_glob_assert: tuple[list[str], int, set[str]]) -> None:
     skip_glob, skipped_count, file_names_expected = skip_glob_assert
-    base_dir = tmpdir.mkdir("build")
-    code_dir = base_dir.mkdir("code")
-    code_dir.join("file.py").write("import os")
+    base_dir = tmp_path / "build"
+    code_dir = base_dir / "code"
+    code_dir.mkdir(parents=True)
+    (code_dir / "file.py").write_text("import os")
 
     config = Config(skip_glob=skip_glob, directory=str(base_dir))
     skipped: list[str] = []
@@ -3820,8 +3831,9 @@ def test_skip_glob(tmpdir, skip_glob_assert: tuple[list[str], int, set[str]]) ->
     assert file_names == file_names_expected
 
 
-def test_broken(tmpdir) -> None:
-    base_dir = tmpdir.mkdir("broken")
+def test_broken(tmp_path: Path) -> None:
+    base_dir = tmp_path / "broken"
+    base_dir.mkdir()
 
     config = Config(directory=str(base_dir))
     skipped: list[str] = []
@@ -4238,17 +4250,19 @@ def test_standard_library_deprecates_user_issue_778() -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
-def test_settings_path_skip_issue_909(tmpdir) -> None:
-    base_dir = tmpdir.mkdir("project")
-    config_dir = base_dir.mkdir("conf")
-    config_dir.join(".isort.cfg").write(
+def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
+    base_dir = tmp_path / "project"
+    base_dir.mkdir()
+    config_dir = base_dir / "conf"
+    config_dir.mkdir()
+    (config_dir / ".isort.cfg").write_text(
         "[isort]\nskip =\n    file_to_be_skipped.py\nskip_glob =\n    *glob_skip*\n"
     )
 
-    base_dir.join("file_glob_skip.py").write(
+    (base_dir / "file_glob_skip.py").write_text(
         'import os\n\nprint("Hello World")\n\nimport sys\nimport os\n'
     )
-    base_dir.join("file_to_be_skipped.py").write(
+    (base_dir / "file_to_be_skipped.py").write_text(
         'import os\n\nprint("Hello World")\nimport sys\nimport os\n'
     )
 
@@ -4268,10 +4282,12 @@ def test_settings_path_skip_issue_909(tmpdir) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
-def test_skip_paths_issue_938(tmpdir) -> None:
-    base_dir = tmpdir.mkdir("project")
-    config_dir = base_dir.mkdir("conf")
-    config_dir.join(".isort.cfg").write(
+def test_skip_paths_issue_938(tmp_path: Path) -> None:
+    base_dir = tmp_path / "project"
+    base_dir.mkdir()
+    config_dir = base_dir / "conf"
+    config_dir.mkdir()
+    (config_dir / ".isort.cfg").write_text(
         "[isort]\n"
         "line_length = 88\n"
         "multi_line_output = 4\n"
@@ -4279,10 +4295,11 @@ def test_skip_paths_issue_938(tmpdir) -> None:
         "skip_glob =\n"
         "    migrations/**.py\n"
     )
-    base_dir.join("dont_skip.py").write('import os\n\nprint("Hello World")\nimport sys\n')
+    (base_dir / "dont_skip.py").write_text('import os\n\nprint("Hello World")\nimport sys\n')
 
-    migrations_dir = base_dir.mkdir("migrations")
-    migrations_dir.join("file_glob_skip.py").write(
+    migrations_dir = base_dir / "migrations"
+    migrations_dir.mkdir()
+    (migrations_dir / "file_glob_skip.py").write_text(
         'import os\n\nprint("Hello World")\n\nimport sys\n'
     )
 
@@ -4461,22 +4478,22 @@ def test_isort_ensures_blank_line_between_import_and_comment() -> None:
     assert isort.code(test_input, **config) == expected_output
 
 
-def test_pyi_formatting_issue_942(tmpdir) -> None:
+def test_pyi_formatting_issue_942(tmp_path: Path) -> None:
     test_input = "import os\n\n\ndef my_method():\n"
     expected_py_output = test_input.splitlines()
     expected_pyi_output = "import os\n\ndef my_method():\n".splitlines()
     assert isort.code(test_input).splitlines() == expected_py_output
     assert isort.code(test_input, extension="pyi").splitlines() == expected_pyi_output
 
-    source_py = tmpdir.join("source.py")
-    source_py.write(test_input)
+    source_py = tmp_path / "source.py"
+    source_py.write_text(test_input)
     assert (
         isort.code(code=Path(source_py).read_text(), file_path=Path(source_py)).splitlines()
         == expected_py_output
     )
 
-    source_pyi = tmpdir.join("source.pyi")
-    source_pyi.write(test_input)
+    source_pyi = tmp_path / "source.pyi"
+    source_pyi.write_text(test_input)
     assert (
         isort.code(
             code=Path(source_pyi).read_text(), extension="pyi", file_path=Path(source_pyi)
@@ -4485,11 +4502,11 @@ def test_pyi_formatting_issue_942(tmpdir) -> None:
     )
 
     # Ensure it works for direct file API as well (see: issue #1284)
-    source_pyi = tmpdir.join("source.pyi")
-    source_pyi.write(test_input)
+    source_pyi = tmp_path / "source.pyi"
+    source_pyi.write_text(test_input)
     api.sort_file(Path(source_pyi))
 
-    assert source_pyi.read().splitlines() == expected_pyi_output
+    assert source_pyi.read_text().splitlines() == expected_pyi_output
 
 
 def test_move_class_issue_751() -> None:
@@ -4611,7 +4628,7 @@ import c
     assert isort.code(test_input) == test_input
 
 
-def test_comment_look_alike():
+def test_comment_look_alike() -> None:
     """Test to ensure isort will handle what looks like a single line comment
     at the end of a multi-line comment.
     """
@@ -4636,7 +4653,7 @@ import sys
     )
 
 
-def test_cimport_support():
+def test_cimport_support() -> None:
     """Test to ensure cimports (Cython style imports) work"""
     test_input = """
 import os
@@ -4994,7 +5011,7 @@ IF CEF_VERSION == 3:
     assert isort.code(test_input).strip() == expected_output.strip()
 
 
-def test_cdef_support():
+def test_cdef_support() -> None:
     assert (
         isort.code(
             code="""
@@ -5087,7 +5104,7 @@ from flask_principal import identity_changed as user_identity_changed  # noqa
     assert isort.code(test_input_2, line_length=100) == expected_output
 
 
-def test_single_line_exclusions():
+def test_single_line_exclusions() -> None:
     test_input = """
 # start comment
 from os import path, system
@@ -5105,7 +5122,7 @@ from typing import List, TypeVar
     )
 
 
-def test_nested_comment_handling():
+def test_nested_comment_handling() -> None:
     test_input = """
 if True:
     import foo
@@ -5154,7 +5171,7 @@ try:
     assert isort.code(test_input) == test_input
 
 
-def test_comments_top_of_file():
+def test_comments_top_of_file() -> None:
     """Test to ensure comments at top of file are correctly handled. See issue #1091."""
     test_input = """# comment 1
 
@@ -5189,7 +5206,7 @@ class WeiboMblogPipeline(object):
     assert isort.code(test_input) == test_input
 
 
-def test_multiple_aliases():
+def test_multiple_aliases() -> None:
     """Test to ensure isort will retain multiple aliases. See issue #1037"""
     test_input = """import datetime
 import datetime as datetime
@@ -5199,7 +5216,7 @@ import datetime as dt2
     assert isort.code(code=test_input) == test_input
 
 
-def test_parens_in_comment():
+def test_parens_in_comment() -> None:
     """Test to ensure isort can handle parens placed in comments. See issue #1103"""
     test_input = """from foo import ( # (some text in brackets)
     bar,
@@ -5209,7 +5226,7 @@ def test_parens_in_comment():
     assert isort.code(test_input) == expected_output
 
 
-def test_as_imports_mixed():
+def test_as_imports_mixed() -> None:
     """Test to ensure as imports can be mixed with non as. See issue #908"""
     test_input = """from datetime import datetime
 import datetime.datetime as dt
@@ -5220,7 +5237,7 @@ from datetime import datetime
     assert isort.code(test_input) == expected_output
 
 
-def test_no_sections_with_future():
+def test_no_sections_with_future() -> None:
     """Test to ensure no_sections works with future. See issue #807"""
     test_input = """from __future__ import print_function
 import os
@@ -5232,7 +5249,7 @@ import os
     assert isort.code(test_input, no_sections=True) == expected_output
 
 
-def test_no_sections_with_as_import():
+def test_no_sections_with_as_import() -> None:
     """Test to ensure no_sections work with as import."""
     test_input = """import oumpy as np
 import sympy
@@ -5240,7 +5257,7 @@ import sympy
     assert isort.code(test_input, no_sections=True) == test_input
 
 
-def test_no_lines_too_long():
+def test_no_lines_too_long() -> None:
     """Test to ensure no lines end up too long. See issue: #1015"""
     test_input = """from package1 import first_package, \
 second_package
@@ -5256,7 +5273,7 @@ from package2 import \\
     assert isort.code(test_input, line_length=25, multi_line_output=2) == expected_output
 
 
-def test_python_future_category():
+def test_python_future_category() -> None:
     """Test to ensure a manual python future category will work as needed to install aliases
 
     see: Issue #1005
@@ -5329,7 +5346,7 @@ from .query_elastic import QueryElastic
     )
 
 
-def test_combine_star_comments_above():
+def test_combine_star_comments_above() -> None:
     input_text = """from __future__ import absolute_import
 
 # my future comment
@@ -5451,7 +5468,7 @@ def test_find_imports_in_stream() -> None:
         def seek(self, offset: int, whence: int = os.SEEK_SET, /) -> int:
             raise OSError("Stream is not seekable")
 
-        def seekable(self):
+        def seekable(self) -> bool:
             return False
 
     test_input = NonSeekableTestStream("import m2\nimport m1\nnot_import = 7")
