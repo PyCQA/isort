@@ -10,25 +10,25 @@ SRC_DIR = os.path.abspath(os.path.join(TEST_DIR, "../../isort/"))
 
 
 @pytest.fixture
-def test_dir():
+def test_dir() -> str:
     return TEST_DIR
 
 
 @pytest.fixture
-def src_dir():
+def src_dir() -> str:
     return SRC_DIR
 
 
 @pytest.fixture
-def test_path():
+def test_path() -> Path:
     return Path(TEST_DIR).resolve()
 
 
 @pytest.fixture
-def src_path():
+def src_path() -> Path:
     return Path(SRC_DIR).resolve()
 
 
 @pytest.fixture
-def examples_path():
+def examples_path() -> Path:
     return Path(TEST_DIR).resolve() / "example_projects"

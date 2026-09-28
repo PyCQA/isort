@@ -5,7 +5,7 @@ from ..utils import isort_test
 pycharm_isort_test = partial(isort_test, profile="pycharm")
 
 
-def test_pycharm_snippet_one():
+def test_pycharm_snippet_one() -> None:
     pycharm_isort_test(
         """import shutil
 import sys

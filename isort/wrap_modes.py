@@ -245,7 +245,9 @@ def _vertical_grid_common(need_trailing_char: bool, **interface: Any) -> str:
     while interface["imports"]:
         next_import = interface["imports"].pop(0)
         next_statement = f"{interface['statement']}, {next_import}"
-        current_line_length = len(next_statement.split(interface["line_separator"])[-1])
+        current_line_length = len(
+            next_statement.rsplit(interface["line_separator"], maxsplit=1)[-1]
+        )
         if interface["imports"] or interface["include_trailing_comma"]:
             # We need to account for a comma after this import.
             current_line_length += 1

@@ -6,22 +6,22 @@ from .utils import isort_test
 class TestParsing:
     """Verify that ``parse.file_contents`` correctly identifies lazy imports."""
 
-    def test_lazy_straight_import_is_stored_in_lazy_straight_bucket(self):
+    def test_lazy_straight_import_is_stored_in_lazy_straight_bucket(self) -> None:
         result = parse.file_contents("lazy import ast\n", Config())
         assert "ast" in result.imports["STDLIB"]["lazy_straight"]
         assert "ast" not in result.imports["STDLIB"]["straight"]
 
-    def test_lazy_from_import_is_stored_in_lazy_from_bucket(self):
+    def test_lazy_from_import_is_stored_in_lazy_from_bucket(self) -> None:
         result = parse.file_contents("lazy from dataclasses import dataclass\n", Config())
         assert "dataclasses" in result.imports["STDLIB"]["lazy_from"]
         assert "dataclasses" not in result.imports["STDLIB"]["from"]
 
-    def test_eager_imports_are_stored_in_regular_buckets(self):
+    def test_eager_imports_are_stored_in_regular_buckets(self) -> None:
         result = parse.file_contents("import os\nfrom pathlib import Path\n", Config())
         assert "os" in result.imports["STDLIB"]["straight"]
         assert "pathlib" in result.imports["STDLIB"]["from"]
 
-    def test_lazy_imports_are_placed_in_correct_section(self):
+    def test_lazy_imports_are_placed_in_correct_section(self) -> None:
         """Lazy imports must be placed in the same section as their eager counterparts."""
         result = parse.file_contents(
             "lazy import ast\nlazy import requests\n",
@@ -31,12 +31,12 @@ class TestParsing:
         assert "requests" in result.imports["THIRDPARTY"]["lazy_straight"]
 
 
-def test_lazy_straight_imports_come_after_eager():
+def test_lazy_straight_imports_come_after_eager() -> None:
     """lazy import lines follow all eager import lines within the section."""
     isort_test("lazy import ast\nimport os\n", "import os\nlazy import ast\n")
 
 
-def test_lazy_from_imports_come_after_eager():
+def test_lazy_from_imports_come_after_eager() -> None:
     """lazy from ... import lines follow all eager import lines within the section."""
     isort_test(
         "lazy from pathlib import Path\nfrom collections import defaultdict\n",
@@ -44,12 +44,12 @@ def test_lazy_from_imports_come_after_eager():
     )
 
 
-def test_lazy_straight_sorted_alphabetically():
+def test_lazy_straight_sorted_alphabetically() -> None:
     """Multiple lazy straight imports are sorted alphabetically."""
     isort_test("lazy import shutil\nlazy import ast\n", "lazy import ast\nlazy import shutil\n")
 
 
-def test_lazy_from_sorted_alphabetically():
+def test_lazy_from_sorted_alphabetically() -> None:
     """Multiple lazy from imports are sorted alphabetically by module name."""
     isort_test(
         "lazy from pathlib import Path\nlazy from dataclasses import dataclass\n",
@@ -57,7 +57,7 @@ def test_lazy_from_sorted_alphabetically():
     )
 
 
-def test_ruff_reference_example():
+def test_ruff_reference_example() -> None:
     """Reproduce the canonical example from the ruff issue tracker.
 
     See https://github.com/astral-sh/ruff/issues/21305.
@@ -87,14 +87,14 @@ def test_ruff_reference_example():
     isort_test(unsorted, expected)
 
 
-def test_lazy_imports_appear_after_eager_in_each_section_independently():
+def test_lazy_imports_appear_after_eager_in_each_section_independently() -> None:
     """Each section gets its own eager-first / lazy-last grouping."""
     unsorted = "lazy import requests\nlazy import ast\nimport os\nimport requests\n"
     expected = "import os\nlazy import ast\n\nimport requests\nlazy import requests\n"
     isort_test(unsorted, expected, known_third_party=["requests"])
 
 
-def test_lazy_import_with_alias():
+def test_lazy_import_with_alias() -> None:
     """``lazy import X as Y`` is supported and sorted correctly."""
     isort_test(
         "import os\nlazy import numpy as np\n",
@@ -103,12 +103,12 @@ def test_lazy_import_with_alias():
     )
 
 
-def test_lazy_from_import_multiple_names():
+def test_lazy_from_import_multiple_names() -> None:
     """``lazy from X import a, b`` is supported and names are sorted alphabetically."""
     isort_test("lazy from typing import List, Dict\n", "lazy from typing import Dict, List\n")
 
 
-def test_no_sections_mode_with_lazy_imports():
+def test_no_sections_mode_with_lazy_imports() -> None:
     """lazy imports are supported in no_sections mode."""
     isort_test(
         "lazy import ast\nimport os\n",
@@ -117,7 +117,7 @@ def test_no_sections_mode_with_lazy_imports():
     )
 
 
-def test_from_first_option_respected_for_lazy():
+def test_from_first_option_respected_for_lazy() -> None:
     """When from_first=True, lazy from imports precede lazy straight but appear after eager."""
     isort_test(
         "import pathlib\nlazy import ast\nlazy from dataclasses import dataclass\n",
@@ -126,7 +126,7 @@ def test_from_first_option_respected_for_lazy():
     )
 
 
-def test_force_sort_within_sections_applies_to_lazy():
+def test_force_sort_within_sections_applies_to_lazy() -> None:
     """force_sort_within_sections toggles lazy import ordering behavior."""
     isort_test(
         "lazy import zlib\nlazy from ast import parse\n",
