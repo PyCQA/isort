@@ -2,7 +2,7 @@
 name = "isort"
 dynamic = ["version"]
 description = "A Python utility / library to sort Python imports."
-authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
+authors = [{name = "Daniël van Noord", email = "13665637+DanielNoord@users.noreply.github.com"}, {name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pycqa/isort"
