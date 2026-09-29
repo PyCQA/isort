@@ -13,7 +13,7 @@ wemake_isort_test = partial(
 )
 
 
-def test_wemake_snippet_one():
+def test_wemake_snippet_one() -> None:
     wemake_isort_test(
         """
 import ast
@@ -40,7 +40,7 @@ VisitorClass = Type[base.BaseVisitor]
     )
 
 
-def test_wemake_snippet_two():
+def test_wemake_snippet_two() -> None:
     wemake_isort_test(
         """
 from collections import defaultdict
@@ -64,7 +64,7 @@ DOCS_URL_TEMPLATE: Final = (
     )
 
 
-def test_wemake_snippet_three():
+def test_wemake_snippet_three() -> None:
     wemake_isort_test(
         """
 import ast
@@ -88,7 +88,7 @@ class _ClassVisitor(ast.NodeVisitor): ...
     )
 
 
-def test_wemake_snippet_four():
+def test_wemake_snippet_four() -> None:
     """80 line length should not be fixed"""
     wemake_isort_test(
         """
@@ -100,7 +100,7 @@ from typing import Iterable, Iterator, Optional, Sequence, Tuple, TypeVar, Union
     )
 
 
-def test_wemake_snippet_five():
+def test_wemake_snippet_five() -> None:
     """81 line length should be fixed"""
     wemake_isort_test(
         """

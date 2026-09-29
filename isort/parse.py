@@ -35,7 +35,11 @@ if TYPE_CHECKING:
     )
 
 
-def _infer_line_separator(contents: str) -> str:
+def _infer_line_separator(contents: str | None, configured: str) -> str:
+    if configured:
+        return configured
+    if contents is None:
+        return "\n"
     if "\r\n" in contents:
         return "\r\n"
     if "\r" in contents:
@@ -76,7 +80,7 @@ class ParsedContent(NamedTuple):
 # skipcq: PY-R1000
 def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedContent:
     """Parses a python file taking out and categorizing imports."""
-    line_separator: str = config.line_ending or _infer_line_separator(contents)
+    line_separator: str = _infer_line_separator(contents, config.line_ending)
     # ``str.splitlines`` also treats characters such as form feed as line
     # boundaries, even though Python's universal-newline handling does not.
     # Normalize actual newline sequences explicitly so those characters stay
@@ -190,7 +194,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         starting_line = in_lines[import_index]
 
         line, *end_of_line_comment = line.split("#", 1)
-        if ";" in line:
+        if ";" in line and not line[0].isspace():
             statements = [line.strip() for line in line.split(";")]
         else:
             statements = [line]
@@ -404,7 +408,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
-                assert type_of_import == "straight"  # noqa: S101 # Only needed for type checker
+                assert type_of_import == "straight"  # noqa: S101 # nosec # Only for type checker
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []

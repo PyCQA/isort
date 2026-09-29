@@ -2,7 +2,7 @@
 name = "isort"
 dynamic = ["version"]
 description = "A Python utility / library to sort Python imports."
-authors = [{name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
+authors = [{name = "Daniël van Noord", email = "13665637+DanielNoord@users.noreply.github.com"}, {name = "Timothy Crosley", email = "timothy.crosley@gmail.com"}, {name = "staticdev", email = "staticdev-support@proton.me"}]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pycqa/isort"
@@ -143,7 +143,8 @@ docs = [
 max-line-length = 100
 # Ignore non PEP 8 compliant rules as suggested by black
 # E203: https://github.com/psf/black/blob/3fab5ade71bccf80ae0a5af76729099869adea56/docs/the_black_code_style/current_style.md#slices
-extend-ignore = [ "E203" ]
+# B042: Weird rule that requires random arguments to be passed, without clear benefit
+extend-ignore = [ "E203", "B042" ]
 exclude = "_vendored"
 per-file-ignores = [
     "tests/unit/example_crlf_file.py:F401",
@@ -157,16 +158,6 @@ strict = true
 follow_imports = "silent"
 packages = ["isort", "tests"]
 exclude = "isort/_vendored|tests/unit/example_projects|tests/unit/example_crlf_file.py"
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-allow_untyped_defs = true
-allow_incomplete_defs = true
-allow_untyped_calls = true
-
-[[tool.mypy.overrides]]
-module = "importlib_metadata.*"
-ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py310"
@@ -198,6 +189,7 @@ lint.ignore = [
 ]
 lint.exclude = [ "isort/_vendored/*" ]
 lint.mccabe.max-complexity = 91  # Default is 10
+format.exclude = [ "README.md", "docs/configuration/multi_line_output_modes.md"]
 
 [tool.ruff.lint.per-file-ignores]
 "isort/hooks.py" = [ "S603" ]

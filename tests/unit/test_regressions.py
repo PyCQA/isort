@@ -2,17 +2,18 @@
 
 import ast
 from io import BytesIO, StringIO, TextIOWrapper
+from pathlib import Path
 
 import pytest
 
 import isort
 import isort.sections
-from isort.core import STRING_PREFIXES
+from isort.core import STRING_PREFIXES, _float_to_top
 from isort.main import main
 from isort.wrap_modes import WrapModes
 
 
-def test_isort_duplicating_comments_issue_1264():
+def test_isort_duplicating_comments_issue_1264() -> None:
     """Ensure isort doesn't duplicate comments when force_sort_within_sections is set to `True`
     as was the case in issue #1264: https://github.com/pycqa/isort/issues/1264
     """
@@ -30,7 +31,7 @@ from . import config_flow
     )
 
 
-def test_moving_comments_issue_726():
+def test_moving_comments_issue_726() -> None:
     test_input = (
         "from Blue import models as BlueModels\n"
         "# comment for PlaidModel\n"
@@ -48,7 +49,7 @@ def test_moving_comments_issue_726():
     assert isort.code(test_input, force_sort_within_sections=True) == test_input
 
 
-def test_pylint_disable_next_stays_with_first_import_issue_2054():
+def test_pylint_disable_next_stays_with_first_import_issue_2054() -> None:
     test_input = (
         "# pylint: disable-next=import-error\n"
         "from C import D\n"
@@ -65,7 +66,7 @@ def test_pylint_disable_next_stays_with_first_import_issue_2054():
     assert isort.code(test_input) == expected_output
 
 
-def test_blank_lines_before_comments_issue_2156():
+def test_blank_lines_before_comments_issue_2156() -> None:
     test_input = """
 def my_function():
     def inner_function():
@@ -104,7 +105,7 @@ from package import (  # noqa
     )
 
 
-def test_blank_lined_removed_issue_1275():
+def test_blank_lined_removed_issue_1275() -> None:
     """Ensure isort doesn't accidentally remove blank lines after doc strings and before imports.
     See: https://github.com/pycqa/isort/issues/1275
     """
@@ -148,7 +149,7 @@ from b import thing
     )
 
 
-def test_blank_lined_removed_issue_1283():
+def test_blank_lined_removed_issue_1283() -> None:
     """Ensure isort doesn't accidentally remove blank lines after __version__ identifiers.
     See: https://github.com/pycqa/isort/issues/1283
     """
@@ -159,7 +160,7 @@ from starlette import status
     assert isort.code(test_input) == test_input
 
 
-def test_extra_blank_line_added_nested_imports_issue_1290():
+def test_extra_blank_line_added_nested_imports_issue_1290() -> None:
     """Ensure isort doesn't add unnecessary blank lines above nested imports.
     See: https://github.com/pycqa/isort/issues/1290
     """
@@ -191,7 +192,7 @@ def func():
     )
 
 
-def test_add_imports_shouldnt_make_isort_unusable_issue_1297():
+def test_add_imports_shouldnt_make_isort_unusable_issue_1297() -> None:
     """Test to ensure add imports doesn't cause any unexpected behaviour when combined with check
     See: https://github.com/pycqa/isort/issues/1297
     """
@@ -204,7 +205,7 @@ from os import path
     )
 
 
-def test_no_extra_lines_for_imports_in_functions_issue_1277():
+def test_no_extra_lines_for_imports_in_functions_issue_1277() -> None:
     """Test to ensure isort doesn't introduce extra blank lines for imports within function.
     See: https://github.com/pycqa/isort/issues/1277
     """
@@ -222,7 +223,7 @@ def main():
     assert isort.code(isort.code(isort.code(test_input))) == expected_output
 
 
-def test_no_extra_blank_lines_in_methods_issue_1293():
+def test_no_extra_blank_lines_in_methods_issue_1293() -> None:
     """Test to ensure isort isn't introducing extra lines in methods that contain imports
     See: https://github.com/pycqa/isort/issues/1293
     """
@@ -240,7 +241,7 @@ class Something(object):
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
-def test_form_feed_blank_line_not_removed_issue_2562():
+def test_form_feed_blank_line_not_removed_issue_2562() -> None:
     """Ensure isort preserves form feed as a valid blank line."""
     test_input = 'import sys\n\n\f\nprint("!")\n'
     assert isort.code(test_input) == 'import sys\n\n\fprint("!")\n'
@@ -251,7 +252,7 @@ def test_form_feed_blank_line_not_removed_issue_2562():
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
-def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296():
+def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296() -> None:
     """Tests to ensure force_single_line setting doesn't result in lost comments.
     See: https://github.com/pycqa/isort/issues/1296
     """
@@ -266,7 +267,7 @@ from moo import foo
     assert isort.code(test_input, force_single_line=True) == test_input
 
 
-def test_ensure_new_line_before_comments_mixed_with_ensure_newline_before_comments_1295():
+def test_ensure_new_line_before_comments_mixed_with_ensure_newline_before_comments_1295() -> None:
     """Tests to ensure that the black profile can be used in conjunction with
     force_sort_within_sections.
 
@@ -283,7 +284,7 @@ from openzwave.option import ZWaveOption
     assert isort.code(test_input, profile="black", force_sort_within_sections=True) == test_input
 
 
-def test_trailing_comma_doesnt_introduce_broken_code_with_comment_and_wrap_issue_1302():
+def test_trailing_comma_doesnt_introduce_broken_code_with_comment_and_wrap_issue_1302() -> None:
     """Tests to assert the combination of include_trailing_comma and a wrapped line doesn't break.
     See: https://github.com/pycqa/isort/issues/1302.
     """
@@ -302,14 +303,14 @@ from somewhere import \\
     )
 
 
-def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304():
+def test_ensure_sre_parse_is_identified_as_stdlib_issue_1304() -> None:
     """Ensure sre_parse is identified as STDLIB.
     See: https://github.com/pycqa/isort/issues/1304.
     """
     assert isort.place_module("sre_parse") == isort.place_module("sre") == isort.sections.STDLIB
 
 
-def test_add_imports_shouldnt_move_lower_comments_issue_1300():
+def test_add_imports_shouldnt_move_lower_comments_issue_1300() -> None:
     """Ensure add_imports doesn't move comments immediately below imports.
     See:: https://github.com/pycqa/isort/issues/1300.
     """
@@ -323,7 +324,7 @@ ANSWER = 42
     assert isort.code(test_input, add_imports=["from os import path"]) == test_input
 
 
-def test_windows_newline_issue_1277():
+def test_windows_newline_issue_1277() -> None:
     """Test to ensure windows new lines are correctly handled within indented scopes.
     See: https://github.com/pycqa/isort/issues/1277
     """
@@ -333,7 +334,7 @@ def test_windows_newline_issue_1277():
     )
 
 
-def test_windows_newline_issue_1278():
+def test_windows_newline_issue_1278() -> None:
     """Test to ensure windows new lines are correctly handled within indented scopes.
     See: https://github.com/pycqa/isort/issues/1278
     """
@@ -344,7 +345,7 @@ def test_windows_newline_issue_1278():
     )
 
 
-def test_check_never_passes_with_indented_headings_issue_1301():
+def test_check_never_passes_with_indented_headings_issue_1301() -> None:
     """Test to ensure that test can pass even when there are indented headings.
     See: https://github.com/pycqa/isort/issues/1301
     """
@@ -361,7 +362,7 @@ except ImportError:
     )
 
 
-def test_isort_shouldnt_fail_on_long_from_with_dot_issue_1190():
+def test_isort_shouldnt_fail_on_long_from_with_dot_issue_1190() -> None:
     """Test to ensure that isort will correctly handle formatting a long from import that contains
     a dot.
     See: https://github.com/pycqa/isort/issues/1190
@@ -388,7 +389,7 @@ from this_is_a_very_long_import_statement.that_will_occur_across_two_lines"""
     )
 
 
-def test_isort_shouldnt_add_extra_new_line_when_fass_and_n_issue_1315():
+def test_isort_shouldnt_add_extra_new_line_when_fass_and_n_issue_1315() -> None:
     """Test to ensure isort doesn't add a second extra new line when combining --fss and -n options.
     See: https://github.com/pycqa/isort/issues/1315
     """
@@ -422,7 +423,7 @@ from .. import foo
     )
 
 
-def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280():
+def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280() -> None:
     """Test to ensure isort doesn't rewrite imports in the from of import y.x into from y import x.
     This is because they are not technically fully equivalent to each other and can introduce broken
     behaviour.
@@ -439,7 +440,7 @@ def test_isort_doesnt_rewrite_import_with_dot_to_from_import_issue_1280():
     )
 
 
-def test_isort_shouldnt_introduce_extra_lines_with_fass_issue_1322():
+def test_isort_shouldnt_introduce_extra_lines_with_fass_issue_1322() -> None:
     """Tests to ensure isort doesn't introduce extra lines when used with fass option.
     See: https://github.com/pycqa/isort/issues/1322
     """
@@ -465,7 +466,7 @@ import quux
     )
 
 
-def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_1219():
+def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_1219() -> None:
     """Tests to ensure if isort encounters a single import line which is made too long with a comment
     it is wrapped when using black profile.
     See: https://github.com/pycqa/isort/issues/1219
@@ -481,7 +482,7 @@ from many_stop_words import (
     )
 
 
-def test_comment_blocks_should_stay_associated_without_extra_lines_issue_1156():
+def test_comment_blocks_should_stay_associated_without_extra_lines_issue_1156() -> None:
     """Tests to ensure isort doesn't add an extra line when there are large import blocks
     or otherwise warp the intent.
     See: https://github.com/pycqa/isort/issues/1156
@@ -506,7 +507,7 @@ from ast import excepthandler
     )
 
 
-def test_comment_shouldnt_be_duplicated_with_fass_enabled_issue_1329():
+def test_comment_shouldnt_be_duplicated_with_fass_enabled_issue_1329() -> None:
     """Tests to ensure isort doesn't duplicate comments when imports occur with comment on top,
     immediately after large comment blocks.
     See: https://github.com/pycqa/isort/pull/1329/files.
@@ -525,7 +526,7 @@ import b
     )
 
 
-def test_wrap_mode_equal_to_line_length_with_indendet_imports_issue_1333():
+def test_wrap_mode_equal_to_line_length_with_indendet_imports_issue_1333() -> None:
     assert isort.check_code(
         """
 import a
@@ -542,7 +543,7 @@ def function():
     )
 
 
-def test_isort_skipped_nested_imports_issue_1339():
+def test_isort_skipped_nested_imports_issue_1339() -> None:
     """Ensure `isort:skip are honored in nested imports.
     See: https://github.com/pycqa/isort/issues/1339.
     """
@@ -557,7 +558,7 @@ def test_isort_skipped_nested_imports_issue_1339():
     )
 
 
-def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
+def test_windows_diff_too_large_misrepresentative_issue_1348(test_path: Path) -> None:
     """Ensure isort handles windows files correctly when it come to producing a diff with --diff.
     See: https://github.com/pycqa/isort/issues/1348
     """
@@ -569,7 +570,7 @@ def test_windows_diff_too_large_misrepresentative_issue_1348(test_path):
     )
 
 
-def test_combine_as_does_not_lose_comments_issue_1321():
+def test_combine_as_does_not_lose_comments_issue_1321() -> None:
     """Test to ensure isort doesn't lose comments when --combine-as is used.
     See: https://github.com/pycqa/isort/issues/1321
     """
@@ -597,7 +598,7 @@ from foo import bar as quux, x as a  # other; noqa
     assert isort.code(test_input, combine_as_imports=True) == expected_output
 
 
-def test_combine_as_does_not_lose_comments_issue_1381():
+def test_combine_as_does_not_lose_comments_issue_1381() -> None:
     """Test to ensure isort doesn't lose comments when --combine-as is used.
     See: https://github.com/pycqa/isort/issues/1381
     """
@@ -612,7 +613,7 @@ from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignor
     assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)
 
 
-def test_incorrect_grouping_when_comments_issue_1396():
+def test_incorrect_grouping_when_comments_issue_1396() -> None:
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396
     """
@@ -674,7 +675,7 @@ from apps.profiler.models import Project
     )
 
 
-def test_reverse_relative_combined_with_force_sort_within_sections_issue_1395():
+def test_reverse_relative_combined_with_force_sort_within_sections_issue_1395() -> None:
     """Test to ensure reverse relative combines well with other common isort settings.
     See: https://github.com/pycqa/isort/issues/1395.
     """
@@ -694,7 +695,7 @@ from ..fileB import b_var
     )
 
 
-def test_isort_should_be_able_to_add_independent_of_doc_string_placement_issue_1420():
+def test_isort_should_be_able_to_add_independent_of_doc_string_placement_issue_1420() -> None:
     """isort should be able to know when an import requested to be added is successfully added,
     independent of where the top doc string is located.
     See: https://github.com/PyCQA/isort/issues/1420
@@ -709,7 +710,7 @@ import os
     )
 
 
-def test_force_single_line_should_not_influence_order_of_star_import():
+def test_force_single_line_should_not_influence_order_of_star_import() -> None:
     """isort should never move comments to different import statement.
 
     Originally reported as an issue with moving comments across import statements,
@@ -748,7 +749,7 @@ from package import *  # noqa
     )
 
 
-def test_isort_doesnt_misplace_comments_issue_1431():
+def test_isort_doesnt_misplace_comments_issue_1431() -> None:
     """Test to ensure isort won't misplace comments.
     See: https://github.com/PyCQA/isort/issues/1431
     """
@@ -762,7 +763,7 @@ from com.my_lovely_company.my_lovely_team.my_lovely_project.my_lovely_component 
     assert isort.code(input_text, profile="black") == input_text
 
 
-def test_isort_doesnt_misplace_add_import_issue_1445():
+def test_isort_doesnt_misplace_add_import_issue_1445() -> None:
     """Test to ensure isort won't misplace an added import depending on docstring position
     See: https://github.com/PyCQA/isort/issues/1445
     """
@@ -794,7 +795,7 @@ import os
     )
 
 
-def test_isort_doesnt_mangle_code_when_adding_imports_issue_1444():
+def test_isort_doesnt_mangle_code_when_adding_imports_issue_1444() -> None:
     """isort should NEVER mangle code. This particularly nasty and easy to reproduce bug,
     caused isort to produce invalid code just by adding a single import statement depending
     on comment placement.
@@ -817,7 +818,7 @@ import os
     )
 
 
-def test_isort_float_to_top_with_sort_on_off_tests():
+def test_isort_float_to_top_with_sort_on_off_tests() -> None:
     """Characterization test for current behaviour of float-to-top on isort: on/off sections.
     - imports in isort:off sections stay where they are
     - imports in isort:on sections float up, but to the top of the isort:on section (not the
@@ -892,7 +893,7 @@ def bar():
     assert isort.code(to_sort, float_to_top=True) == to_sort
 
 
-def test_isort_float_to_top_respects_isort_off_with_crlf_issue_2528():
+def test_isort_float_to_top_respects_isort_off_with_crlf_issue_2528() -> None:
     to_sort = """
 import b
 import a
@@ -919,7 +920,7 @@ import y
     )
 
 
-def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382():
+def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382() -> None:
     """isort should float existing imports to the top, if they are currently below the top.
     See: https://github.com/PyCQA/isort/issues/1382
     """
@@ -1116,7 +1117,7 @@ def bar():
     )
 
 
-def test_empty_float_to_top_shouldnt_error_issue_1453():
+def test_empty_float_to_top_shouldnt_error_issue_1453() -> None:
     """isort shouldn't error when float to top is set with a mostly empty file"""
     assert isort.check_code(
         """
@@ -1131,7 +1132,7 @@ def test_empty_float_to_top_shouldnt_error_issue_1453():
     )
 
 
-def test_import_sorting_shouldnt_be_endless_with_headers_issue_1454():
+def test_import_sorting_shouldnt_be_endless_with_headers_issue_1454() -> None:
     """isort should never enter an endless sorting loop.
     See: https://github.com/PyCQA/isort/issues/1454
     """
@@ -1154,7 +1155,7 @@ except ImportError as e:
     )
 
 
-def test_isort_should_leave_non_import_from_lines_alone_issue_1488():
+def test_isort_should_leave_non_import_from_lines_alone_issue_1488() -> None:
     """isort should never mangle non-import from statements.
     See: https://github.com/PyCQA/isort/issues/1488
     """
@@ -1286,7 +1287,7 @@ def generator_function():
     assert isort.check_code(raise_from_at_file_end_ignored, show_diff=True)
 
 
-def test_isort_float_to_top_correctly_identifies_single_line_comments_1499():
+def test_isort_float_to_top_correctly_identifies_single_line_comments_1499() -> None:
     """Test to ensure isort correctly handles the case where float to top is used
     to push imports to the top and the top comment is a multiline type but only
     one line.
@@ -1357,7 +1358,7 @@ x = 1
     )
 
 
-def test_isort_shouldnt_mangle_from_multi_line_string_issue_1507():
+def test_isort_shouldnt_mangle_from_multi_line_string_issue_1507() -> None:
     """isort was seen mangling lines that happened to contain the word from after
     a yield happened to be in a file. Clearly this shouldn't happen.
     See: https://github.com/PyCQA/isort/issues/1507.
@@ -1397,7 +1398,7 @@ def d():
     )
 
 
-def test_isort_should_keep_all_as_and_non_as_imports_issue_1523():
+def test_isort_should_keep_all_as_and_non_as_imports_issue_1523() -> None:
     """isort should keep as and non-as imports of the same path that happen to exist within the
     same statement.
     See: https://github.com/PyCQA/isort/issues/1523.
@@ -1411,7 +1412,7 @@ from selenium.webdriver import Remote, Remote as Driver
     )
 
 
-def test_isort_shouldnt_introduce_syntax_error_issue_1539():
+def test_isort_shouldnt_introduce_syntax_error_issue_1539() -> None:
     """isort should NEVER introduce syntax errors.
     In 5.5.4 some strings that contained a line starting with from could lead to no empty paren.
     See: https://github.com/PyCQA/isort/issues/1539.
@@ -1460,7 +1461,7 @@ def test_isort_shouldnt_introduce_syntax_error_issue_1539():
     )
 
 
-def test_isort_shouldnt_split_skip_issue_1548():
+def test_isort_shouldnt_split_skip_issue_1548() -> None:
     """Ensure isort doesn't add a spurious new line if isort: skip is combined with float to top.
     See: https://github.com/PyCQA/isort/issues/1548.
     """
@@ -1546,7 +1547,7 @@ import os
     )
 
 
-def test_isort_shouldnt_split_skip_issue_1556():
+def test_isort_shouldnt_split_skip_issue_1556() -> None:
     assert isort.check_code(
         """
 from tools.dependency_pruning.prune_dependencies import (  # isort:skip
@@ -1573,7 +1574,7 @@ from tools.developer_pruning.prune_developers import x  # isort:skip
     )
 
 
-def test_isort_losing_imports_vertical_prefix_from_module_import_wrap_mode_issue_1542():
+def test_isort_losing_imports_vertical_prefix_from_module_import_wrap_mode_issue_1542() -> None:
     """Ensure isort doesn't lose imports when a comment is combined with an import and
     wrap mode VERTICAL_PREFIX_FROM_MODULE_IMPORT is used.
     See: https://github.com/PyCQA/isort/issues/1542.
@@ -1609,7 +1610,7 @@ print(CCCCCCCCC)
     )
 
 
-def test_isort_adding_second_comma_issue_1621():
+def test_isort_adding_second_comma_issue_1621() -> None:
     """Ensure isort doesn't add a second comma when very long comment is present
     See: https://github.com/PyCQA/isort/issues/1621.
     """
@@ -1639,7 +1640,7 @@ def test_isort_adding_second_comma_issue_1621():
     )
 
 
-def test_isort_shouldnt_duplicate_comments_issue_1631():
+def test_isort_shouldnt_duplicate_comments_issue_1631() -> None:
     assert isort.check_code(
         """
 import a  # a comment
@@ -1661,7 +1662,7 @@ import a  # a comment; b comment
     )
 
 
-def test_isort_shouldnt_add_extra_new_lines_with_import_heading_issue_1670():
+def test_isort_shouldnt_add_extra_new_lines_with_import_heading_issue_1670() -> None:
     snippet = """#!/usr/bin/python3 -ttu
 # Standard Library
 import argparse
@@ -1692,7 +1693,7 @@ def spam():
     )
 
 
-def test_isort_shouldnt_add_extra_line_float_to_top_issue_1667():
+def test_isort_shouldnt_add_extra_line_float_to_top_issue_1667() -> None:
     assert isort.check_code(
         """
 import sys
@@ -1709,7 +1710,7 @@ SOME_CONSTANT = 4
     )
 
 
-def test_isort_shouldnt_move_noqa_comment_issue_1594():
+def test_isort_shouldnt_move_noqa_comment_issue_1594() -> None:
     assert (
         isort.code(
             """
@@ -1731,7 +1732,7 @@ from .test import (  # noqa: F401
     )
 
 
-def test_isort_correctly_handles_unix_vs_linux_newlines_issue_1566():
+def test_isort_correctly_handles_unix_vs_linux_newlines_issue_1566() -> None:
     import_statement = (
         "from impacket.smb3structs import (\n"
         "SMB2_CREATE, SMB2_FLAGS_DFS_OPERATIONS, SMB2_IL_IMPERSONATION, "
@@ -1743,7 +1744,7 @@ def test_isort_correctly_handles_unix_vs_linux_newlines_issue_1566():
     ).replace("\r\n", "\n")
 
 
-def test_isort_treats_src_paths_same_as_from_config_as_cli_issue_1711(tmpdir):
+def test_isort_treats_src_paths_same_as_from_config_as_cli_issue_1711(tmp_path: Path) -> None:
     assert isort.check_code(
         """
 import mymodule
@@ -1752,16 +1753,17 @@ import sqlalchemy
         show_diff=True,
     )
 
-    config_file = tmpdir.join(".isort.cfg")
-    config_file.write(
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
         """
 [settings]
 src_paths=
     api
 """
     )
-    api_dir = tmpdir.mkdir("api")
-    api_dir.join("mymodule.py").write("# comment")
+    api_dir = tmp_path / "api"
+    api_dir.mkdir()
+    (api_dir / "mymodule.py").write_text("# comment")
 
     config = isort.settings.Config(str(config_file))
     assert isort.check_code(
@@ -1775,7 +1777,7 @@ import mymodule
     )
 
 
-def test_isort_should_never_quietly_remove_imports_in_hanging_line_mode_issue_1741():
+def test_isort_should_never_quietly_remove_imports_in_hanging_line_mode_issue_1741() -> None:
     assert (
         isort.code(
             """
@@ -1833,7 +1835,7 @@ from src import abcd, efg, \\
 @pytest.mark.parametrize("multi_line_output", range(12))
 def test_isort_should_never_quietly_remove_imports_in_any_hangin_mode_issue_1741(
     multi_line_output: int,
-):
+) -> None:
     sorted_code = isort.code(
         """
 from src import abcd, qwerty, efg, xyz  # some comment
@@ -1847,7 +1849,7 @@ from src import abcd, qwerty, efg, xyz  # some comment
     assert "xyz" in sorted_code
 
 
-def test_isort_should_keep_multi_noqa_with_star_issue_1744():
+def test_isort_should_keep_multi_noqa_with_star_issue_1744() -> None:
     assert isort.check_code(
         """
 from typing import *  # noqa
@@ -1902,7 +1904,7 @@ from typing import *  # noqa
     )
 
 
-def test_isort_should_keep_multiple_noqa_comments_force_single_line_mode_issue_1721():
+def test_isort_should_keep_multiple_noqa_comments_force_single_line_mode_issue_1721() -> None:
     assert isort.check_code(
         """
 from some_very_long_filename_to_import_from_that_causes_a_too_long_import_row import (  # noqa: E501
@@ -1918,7 +1920,7 @@ from some_very_long_filename_to_import_from_that_causes_a_too_long_import_row im
     )
 
 
-def test_isort_should_only_add_imports_to_valid_location_issue_1769():
+def test_isort_should_only_add_imports_to_valid_location_issue_1769() -> None:
     assert (
         isort.code(
             '''v = """
@@ -1948,7 +1950,7 @@ v=""""""
     )
 
 
-def test_literal_sort_at_top_of_file_issue_1792():
+def test_literal_sort_at_top_of_file_issue_1792() -> None:
     assert (
         isort.code(
             '''"""I'm a docstring! Look at me!"""
@@ -1989,13 +1991,15 @@ class Bar:
     )
 
 
-def test_isort_should_produce_the_same_code_on_subsequent_runs_issue_1799(tmpdir):
+def test_isort_should_produce_the_same_code_on_subsequent_runs_issue_1799(
+    tmp_path: Path,
+) -> None:
     code = """import sys
 
 from importlib.metadata import PackageNotFoundError, version
 """
-    config_file = tmpdir.join(".isort.cfg")
-    config_file.write(
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
         """[isort]
 profile=black
 src_paths=isort,test
@@ -2015,7 +2019,7 @@ import_heading_thirdparty=external
     )
 
 
-def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports():
+def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports() -> None:
     """isort check_code should not report incorrectly sorted imports when
     float_to_top and add_imports are used together and the import is already present.
     See: https://github.com/PyCQA/isort/issues/1971
@@ -2027,7 +2031,66 @@ def test_check_code_should_not_false_positive_with_float_to_top_and_add_imports(
     )
 
 
-def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893():
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        "# isort: split\n",
+        "import z  # isort: split\n",
+        "# isort: off\nimport z\nimport a\n# isort: on\n",
+    ],
+)
+def test_float_to_top_check_accepts_unchanged_sections_issue_2681(
+    line_ending: str, boundary: str
+) -> None:
+    source = ("import os\n\n" + boundary + "\nimport sys\n").replace("\n", line_ending)
+
+    assert isort.code(source, float_to_top=True) == source
+    assert isort.check_code(source, float_to_top=True, show_diff=True)
+
+
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+@pytest.mark.parametrize("blank_lines", [0, 1, 3])
+def test_float_to_top_preserves_boundary_spacing_issue_2681(
+    line_ending: str, blank_lines: int
+) -> None:
+    source = ("import os\n" + "\n" * blank_lines + "# isort: split\n").replace("\n", line_ending)
+    result = _float_to_top(StringIO(source), [], isort.Config(float_to_top=True), "py")
+
+    assert result.input_stream.read() == source
+    assert not result.made_changes
+
+
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+def test_float_to_top_check_detects_unsorted_sections_issue_2681(line_ending: str) -> None:
+    source = "import sys\nimport os\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
+    expected = "import os\nimport sys\n\n# isort: split\n\nimport a\n".replace("\n", line_ending)
+
+    assert not isort.check_code(source, float_to_top=True)
+    assert isort.code(source, float_to_top=True) == expected
+    assert isort.check_code(expected, float_to_top=True)
+
+
+@pytest.mark.parametrize("configured_ending", ["\n", "\r\n"])
+def test_float_to_top_configured_line_ending_issue_2681(configured_ending: str) -> None:
+    source = "import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
+    expected = source.replace("\r\n", configured_ending)
+    result = isort.code(source, float_to_top=True, line_ending=configured_ending)
+
+    assert result == expected
+    assert isort.check_code(result, float_to_top=True, line_ending=configured_ending)
+
+
+def test_float_to_top_cli_check_accepts_crlf_issue_2681(tmp_path: Path) -> None:
+    path = tmp_path / "example.py"
+    source = b"import os\r\n\r\n# isort: split\r\n\r\nimport sys\r\n"
+    path.write_bytes(source)
+
+    main(["--float-to-top", "--check-only", str(path)])
+    assert path.read_bytes() == source
+
+
+def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893() -> None:
     """Ensure isort doesn't raise an IndexError on valid input ending with a backslash
     without a trailing newline, as was the case in issue #1893:
     https://github.com/PyCQA/isort/issues/1893
@@ -2035,7 +2098,7 @@ def test_unrecoverable_exception_on_valid_input_ending_with_backslash_issue_1893
     assert isort.code("import os #\\") == "import os  # \\\n"
 
 
-def test_comment_on_opening_line_of_aliased_import_does_not_move():
+def test_comment_on_opening_line_of_aliased_import_does_not_move() -> None:
     """Ensure isort doesn't move comments from the opening "from ... import (" line
     to the alias attribute line when using import aliases that wrap across multiple lines.
     See: https://github.com/PyCQA/isort/issues/2392
@@ -2110,7 +2173,7 @@ attr as alias  # type: ignore[attr-defined]
     )
 
 
-def test_sort_reexports_with_stdin_raises_error_issue_2393():
+def test_sort_reexports_with_stdin_raises_error_issue_2393() -> None:
     """Ensure --sort-reexports raises a clear error when used with stdin."""
     fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
     with pytest.raises(SystemExit) as exc_info:
@@ -2118,7 +2181,7 @@ def test_sort_reexports_with_stdin_raises_error_issue_2393():
     assert exc_info.value.code != 0
 
 
-def test_split_on_trailing_comma_idempotent_with_non_default_wrap_mode():
+def test_split_on_trailing_comma_idempotent_with_non_default_wrap_mode() -> None:
     """Ensure isort output is idempotent when ``split_on_trailing_comma`` and
     ``include_trailing_comma`` are combined with a non-default ``multi_line_output`` mode.
 
@@ -2160,7 +2223,7 @@ def test_split_on_trailing_comma_idempotent_with_non_default_wrap_mode():
     )
 
 
-def test_noqa_wrap_mode_idempotent_with_existing_comment():
+def test_noqa_wrap_mode_idempotent_with_existing_comment() -> None:
     """Ensure ``multi_line_output=NOQA`` does not keep prepending ``NOQA`` to an import
     that already carries its own comment.
 
@@ -2191,7 +2254,7 @@ def test_noqa_wrap_mode_idempotent_with_existing_comment():
     assert second_pass.count("NOQA") == 1
 
 
-def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
+def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import() -> None:
     """A long ``as`` import in NOQA mode must not grow extra spaces before ``# NOQA``.
 
     With ``force_single_line`` an aliased import that overflows the line length is emitted
@@ -2214,7 +2277,7 @@ def test_noqa_wrap_mode_does_not_accumulate_spaces_with_as_import():
     assert second_pass == first_pass
 
 
-def test_sort_reexports_respects_black_profile_issue_2280():
+def test_sort_reexports_respects_black_profile_issue_2280() -> None:
     """``--sort-reexports`` must honor the active formatting config, not stdlib ``pprint``.
 
     ``isort.literal`` used to format the sorted ``__all__`` with stdlib ``pprint``, which
@@ -2250,7 +2313,7 @@ def test_sort_reexports_respects_black_profile_issue_2280():
     assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
 
 
-def test_literal_dict_sort_respects_black_profile_issue_2280():
+def test_literal_dict_sort_respects_black_profile_issue_2280() -> None:
     """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
     single quotes, pprint-style wrapping and no trailing comma). Same root cause as #2280.
@@ -2269,7 +2332,7 @@ def test_literal_dict_sort_respects_black_profile_issue_2280():
     assert isort.code(test_input, profile="black") == expected_output
 
 
-def test_sort_reexports_output_is_black_stable_issue_2280():
+def test_sort_reexports_output_is_black_stable_issue_2280() -> None:
     """isort's sorted __all__ under the black profile must be a fixpoint for both isort
     and black (running either again changes nothing). See issue #2280."""
     import black  # noqa: PLC0415
@@ -2292,7 +2355,7 @@ def test_sort_reexports_output_is_black_stable_issue_2280():
     assert black_out == first
 
 
-def test_sort_reexports_check_mode_multiline_all_issue_2280():
+def test_sort_reexports_check_mode_multiline_all_issue_2280() -> None:
     """``--check`` on a multi-line ``__all__`` with ``--sort-reexports`` must not crash.
 
     Check mode routes output to a null stream whose ``tell()`` is always 0. The reexport
@@ -2312,7 +2375,7 @@ def test_sort_reexports_check_mode_multiline_all_issue_2280():
     assert isort.check_code(checked, show_diff=False, profile="black", sort_reexports=True)
 
 
-def test_sort_reexports_preserves_short_multiline_trailing_comma_issue_2578():
+def test_sort_reexports_preserves_short_multiline_trailing_comma_issue_2578() -> None:
     """A short __all__ with a trailing comma should keep its explicit multiline style."""
     test_input = """__all__ = (
     "FirstClass",
@@ -2322,7 +2385,7 @@ def test_sort_reexports_preserves_short_multiline_trailing_comma_issue_2578():
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
-def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578():
+def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578() -> None:
     """The same trailing-comma preservation applies to list-style __all__ exports."""
     test_input = """__all__ = [
     "FirstClass",
@@ -2332,7 +2395,56 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
-def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093():
+def test_sort_reexports_preserves_crlf_line_endings_issue_2668() -> None:
+    """``--sort-reexports`` must keep CRLF endings instead of injecting bare LFs."""
+    test_input = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = (\r\n"
+        '    "SecondClass",\r\n'
+        '    "FirstClass",\r\n'
+        ")\r\n"
+    )
+    expected = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = (\r\n"
+        '    "FirstClass",\r\n'
+        '    "SecondClass",\r\n'
+        ")\r\n"
+    )
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected
+
+
+def test_sort_reexports_preserves_crlf_list_style_issue_2668() -> None:
+    """List-style ``__all__`` reexports should preserve CRLF the same way."""
+    test_input = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = [\r\n"
+        '    "SecondClass",\r\n'
+        '    "FirstClass",\r\n'
+        "]\r\n"
+    )
+    expected = (
+        "from .somewhere import FirstClass, SecondClass\r\n"
+        "\r\n"
+        "__all__ = [\r\n"
+        '    "FirstClass",\r\n'
+        '    "SecondClass",\r\n'
+        "]\r\n"
+    )
+    assert isort.code(test_input, profile="black", sort_reexports=True) == expected
+
+
+def test_literal_sort_action_comment_preserves_crlf_issue_2668() -> None:
+    """``# isort: list`` shares the literal formatter and must keep CRLF too."""
+    test_input = '# isort: list\r\n__all__ = [\r\n    "SecondClass",\r\n    "FirstClass",\r\n]\r\n'
+    expected = '# isort: list\r\n__all__ = [\r\n    "FirstClass",\r\n    "SecondClass",\r\n]\r\n'
+    assert isort.code(test_input, profile="black") == expected
+
+
+def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093() -> None:
     """A long ``as`` import with inline comment must get ``# NOQA`` in NOQA mode.
 
     With ``force_single_line`` an aliased import that carries an inline comment
@@ -2357,7 +2469,7 @@ def test_noqa_added_to_long_force_single_line_as_import_with_comment_issue_2093(
     assert second_pass == first_pass
 
 
-def test_noqa_added_to_long_as_import_with_opening_comment_issue_2093():
+def test_noqa_added_to_long_as_import_with_opening_comment_issue_2093() -> None:
     """A long ``as`` import with opening-line comment must get ``# NOQA`` in NOQA mode.
 
     When ``use_parentheses`` is enabled, opening-line comments are kept on the
@@ -2381,7 +2493,7 @@ def test_noqa_added_to_long_as_import_with_opening_comment_issue_2093():
     assert second_pass == first_pass
 
 
-def test_noqa_added_to_long_combined_straight_imports_issue_2093():
+def test_noqa_added_to_long_combined_straight_imports_issue_2093() -> None:
     """Long combined straight imports must get ``# NOQA`` in NOQA mode.
 
     With ``combine_straight_imports`` enabled, multiple ``import`` statements
@@ -2402,7 +2514,7 @@ def test_noqa_added_to_long_combined_straight_imports_issue_2093():
     assert second_pass == first_pass
 
 
-def test_noqa_added_to_long_straight_import_issue_2093():
+def test_noqa_added_to_long_straight_import_issue_2093() -> None:
     """Long straight imports must get ``# NOQA`` in NOQA mode.
 
     Straight imports (``import x`` or ``import x as y``) that exceed the line
@@ -2418,7 +2530,7 @@ def test_noqa_added_to_long_straight_import_issue_2093():
     assert second_pass == first_pass
 
 
-def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093():
+def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> None:
     """A long ``as`` import with an opening-line comment and ``use_parentheses``.
 
     When ``use_parentheses`` is enabled and the import carries an opening-line
@@ -2459,7 +2571,7 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093():
     )
 
 
-def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_2093():
+def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_2093() -> None:
     """A bare ``#`` comment with ``combine_straight_imports`` gets ``# NOQA``.
 
     A bare ``#`` with no text parses to an empty comment string. When such a
@@ -2475,7 +2587,7 @@ def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_20
     assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
 
 
-def test_isort_skip_is_honored_with_future_import_issue_2092():
+def test_isort_skip_is_honored_with_future_import_issue_2092() -> None:
     """A per-line ``isort: skip`` must be honored even when a ``__future__`` import is present.
 
     ``__future__`` imports are always floated to the very top, which used to make isort splice
@@ -2504,7 +2616,7 @@ def test_isort_skip_is_honored_with_future_import_issue_2092():
     assert isort.code(sorted_interleaved) == sorted_interleaved
 
 
-def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
+def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment() -> None:
     """A name imported both plainly (with a trailing comment) and aliased must keep its
     alias when a sibling sorts ahead of it.
 
@@ -2524,7 +2636,7 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment():
     assert isort.code(relative_sorted) == relative_sorted
 
 
-def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
+def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893() -> None:
     """``add_imports`` must not move an import above a module docstring that carries a
     string prefix (``r``, ``b``, ``f``, ``u`` or a legal combination of them), as reported
     in issue #1893: https://github.com/pycqa/isort/issues/1893
@@ -2552,7 +2664,7 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893():
                 assert isort.code(source, add_imports=["import a"]) == source, cased + quote
 
 
-def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments():
+def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments() -> None:
     """``multi_line_output=10`` must not append a comma or the closing parenthesis after a
     trailing comment, which silently rewrote valid code into code that no longer parses.
 
@@ -2596,3 +2708,15 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                         include_trailing_comma=trailing_comma,
                     )
                     ast.parse(output)  # must never raise
+
+
+def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
+    """float_to_top must not hoist semicolon separated imports out of an indented block."""
+    assert (
+        isort.code("import os\n\nif True:\n    import b; import a\n", float_to_top=True)
+        == "import os\n\nif True:\n    import a\n    import b\n"
+    )
+    assert (
+        isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
+        == "def f():\n    import a  # comment\n    import b\n"
+    )

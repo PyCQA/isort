@@ -1,7 +1,7 @@
 import textwrap
 from io import StringIO
 from itertools import chain
-from typing import TextIO
+from typing import NamedTuple, TextIO
 
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
@@ -62,6 +62,101 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+class _FloatToTopResult(NamedTuple):
+    input_stream: TextIO
+    verbose_output: list[str]
+    made_changes: bool
+
+
+def _float_to_top(
+    input_stream: TextIO,
+    add_imports: list[str],
+    config: Config,
+    extension: str,
+) -> _FloatToTopResult:
+    new_input = ""
+    current = ""
+    isort_off = False
+    verbose_output: list[str] = []
+    made_changes = False
+    for line in chain(input_stream, (None,)):
+        stripped_line = line.strip() if line is not None else ""
+        if isort_off and line is not None:
+            if stripped_line == "# isort: on":
+                isort_off = False
+            new_input += line
+        elif (
+            line is None
+            or stripped_line in ("# isort: split", "# isort: off")
+            or line.rstrip().endswith("# isort: split")
+        ):
+            if stripped_line == "# isort: off":
+                isort_off = True
+            if current:
+                before = current
+                if add_imports:
+                    line_separator = parse._infer_line_separator(line, config.line_ending)
+                    current += line_separator + line_separator.join(add_imports)
+                    add_imports = []
+                parsed = parse.file_contents(current, config=config)
+                verbose_output += parsed.verbose_output
+                extra_space = ""
+                while before.endswith(parsed.line_separator):
+                    extra_space += parsed.line_separator
+                    before = before[: -len(parsed.line_separator)]
+                extra_space = extra_space.replace(parsed.line_separator, "", 1)
+                sorted_output = output.sorted_imports(
+                    parsed, config, extension, import_type="import"
+                )
+                made_changes = made_changes or _has_changed(
+                    before=before,
+                    after=sorted_output,
+                    line_separator=parsed.line_separator,
+                    ignore_whitespace=config.ignore_whitespace,
+                )
+                new_input += sorted_output
+                new_input += extra_space
+                current = ""
+            new_input += line or ""
+        else:
+            current += line or ""
+
+    return _FloatToTopResult(
+        input_stream=StringIO(new_input),
+        verbose_output=verbose_output,
+        made_changes=made_changes,
+    )
+
+
+def _scan_quotes(
+    line: str,
+    stripped_line: str,
+    in_quote: str,
+) -> str:
+    """Return the active quote state after scanning a source line."""
+    if ((not stripped_line.startswith("#") or in_quote) and '"' in line) or "'" in line:
+        char_index = 0
+
+        while char_index < len(line):
+            if line[char_index] == "\\":
+                char_index += 1
+            elif in_quote:
+                if line[char_index : char_index + len(in_quote)] == in_quote:
+                    in_quote = ""
+            elif line[char_index] in ("'", '"'):
+                long_quote = line[char_index : char_index + 3]
+                if long_quote in ('"""', "'''"):
+                    in_quote = long_quote
+                    char_index += 2
+                else:
+                    in_quote = line[char_index]
+            elif line[char_index] == "#":
+                break
+            char_index += 1
+
+    return in_quote
+
+
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
 def process(
@@ -87,15 +182,27 @@ def process(
     Returns `True` if there were changes that needed to be made (errors present) from what
     was provided in the input_stream, otherwise `False`.
     """
-    line_separator: str = config.line_ending
     add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
+    made_changes: bool = False
+    verbose_output: list[str] = []
+
+    # Float to top processes the whole input stream first, moving any specified imports to the top
+    # and returns a new input stream to do actual processing on.
+    if config.float_to_top:
+        input_stream, verbose_output, made_changes = _float_to_top(
+            input_stream=input_stream,
+            add_imports=add_imports,
+            config=config,
+            extension=extension,
+        )
+        add_imports = []
+
+    line_separator: str = config.line_ending
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
     in_quote: str = ""
     was_in_quote: bool = False
-    first_comment_index_start: int = -1
-    first_comment_index_end: int = -1
     contains_imports: bool = False
     in_top_comment: bool = False
     first_import_section: bool = True
@@ -106,61 +213,11 @@ def process(
     code_sorting_section: str = ""
     code_sorting_indent: str = ""
     cimports: bool = False
-    made_changes: bool = False
     stripped_line: str = ""
     end_of_file: bool = False
-    verbose_output: list[str] = []
     lines_before: list[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
-
-    if config.float_to_top:
-        new_input = ""
-        current = ""
-        isort_off = False
-        for line in chain(input_stream, (None,)):
-            stripped_line = line.strip() if line is not None else ""
-            if isort_off and line is not None:
-                if stripped_line == "# isort: on":
-                    isort_off = False
-                new_input += line
-            elif (
-                line is None
-                or stripped_line in ("# isort: split", "# isort: off")
-                or str(line).rstrip().endswith("# isort: split")
-            ):
-                if stripped_line == "# isort: off":
-                    isort_off = True
-                if current:
-                    before = current
-                    if add_imports:
-                        add_line_separator = line_separator or "\n"
-                        current += add_line_separator + add_line_separator.join(add_imports)
-                        add_imports = []
-                    parsed = parse.file_contents(current, config=config)
-                    verbose_output += parsed.verbose_output
-                    extra_space = ""
-                    while before and before[-1] == "\n":
-                        extra_space += "\n"
-                        before = before[:-1]
-                    extra_space = extra_space.replace("\n", "", 1)
-                    sorted_output = output.sorted_imports(
-                        parsed, config, extension, import_type="import"
-                    )
-                    made_changes = made_changes or _has_changed(
-                        before=before,
-                        after=sorted_output,
-                        line_separator=parsed.line_separator,
-                        ignore_whitespace=config.ignore_whitespace,
-                    )
-                    new_input += sorted_output
-                    new_input += extra_space
-                    current = ""
-                new_input += line or ""
-            else:
-                current += line or ""
-
-        input_stream = StringIO(new_input)
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
@@ -170,8 +227,7 @@ def process(
             not_imports = True
             end_of_file = True
             line = ""
-            if not line_separator:
-                line_separator = "\n"
+            line_separator = parse._infer_line_separator(line, line_separator)
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
@@ -205,10 +261,7 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            if stripped_line and not line_separator:
-                line_separator = (
-                    line[len(line.rstrip()) :].replace(" ", "").replace("\t", "").replace("\f", "")
-                )
+            line_separator = parse._infer_line_separator(line, line_separator)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
@@ -246,31 +299,9 @@ def process(
                 or stripped_line in CODE_SORT_COMMENTS
             ):
                 in_top_comment = False
-                first_comment_index_end = index - 1
 
             was_in_quote = bool(in_quote)
-            if ((not stripped_line.startswith("#") or in_quote) and '"' in line) or "'" in line:
-                char_index = 0
-                if first_comment_index_start == -1 and line.startswith(('"', "'")):
-                    first_comment_index_start = index
-                while char_index < len(line):
-                    if line[char_index] == "\\":
-                        char_index += 1
-                    elif in_quote:
-                        if line[char_index : char_index + len(in_quote)] == in_quote:
-                            in_quote = ""
-                            if first_comment_index_end < first_comment_index_start:
-                                first_comment_index_end = index
-                    elif line[char_index] in ("'", '"'):
-                        long_quote = line[char_index : char_index + 3]
-                        if long_quote in ('"""', "'''"):
-                            in_quote = long_quote
-                            char_index += 2
-                        else:
-                            in_quote = line[char_index]
-                    elif line[char_index] == "#":
-                        break
-                    char_index += 1
+            in_quote = _scan_quotes(line, stripped_line, in_quote)
 
             not_imports = bool(in_quote) or was_in_quote or in_top_comment or isort_off
             if not (in_quote or was_in_quote or in_top_comment):
@@ -453,10 +484,9 @@ def process(
                 and not _is_comment_or_string_start(line)
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
-                add_line_separator = line_separator or "\n"
-                import_section = add_line_separator.join(add_imports) + add_line_separator
+                import_section = line_separator.join(add_imports) + line_separator
                 if end_of_file and index != 0:
-                    output_stream.write(add_line_separator)
+                    output_stream.write(line_separator)
                 contains_imports = True
                 add_imports = []
 

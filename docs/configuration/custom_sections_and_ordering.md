@@ -126,6 +126,6 @@ import b
 You can even tell isort to always place from imports on top, instead of the default of placing them on bottom, using [from first](./options.md#from-first).
 
 ```python
-from b import b # If from first is set to True, all from imports will be placed before non-from imports.
+from b import b  # If from first turnrf on, all from imports are placed before non-from imports.
 import a
 ```

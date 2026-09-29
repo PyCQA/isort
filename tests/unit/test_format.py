@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 import isort.format
 
 
-def test_ask_whether_to_apply_changes_to_file():
+def test_ask_whether_to_apply_changes_to_file() -> None:
     with patch("builtins.input", MagicMock(return_value="y")):
         assert isort.format.ask_whether_to_apply_changes_to_file("")
     with patch("builtins.input", MagicMock(return_value="n")):
@@ -20,7 +20,7 @@ def test_ask_whether_to_apply_changes_to_file():
             assert isort.format.ask_whether_to_apply_changes_to_file("")
 
 
-def test_ask_whether_to_apply_changes_to_file_eof_is_treated_as_quit():
+def test_ask_whether_to_apply_changes_to_file_eof_is_treated_as_quit() -> None:
     # Regression test for #1897: a closed/exhausted stdin (input() raising EOFError)
     # must exit cleanly like an explicit "quit" answer, not propagate as an
     # unhandled exception that main.py reports as an "unrecoverable exception".
@@ -29,7 +29,7 @@ def test_ask_whether_to_apply_changes_to_file_eof_is_treated_as_quit():
             isort.format.ask_whether_to_apply_changes_to_file("")
 
 
-def test_basic_printer(capsys):
+def test_basic_printer(capsys: pytest.CaptureFixture[str]) -> None:
     printer = isort.format.create_terminal_printer(
         color=False, success="{success}: {message}", error="{error}: {message}"
     )
@@ -51,7 +51,7 @@ def test_basic_printer(capsys):
     assert err == "error: Some error: ERROR\n"
 
 
-def test_basic_printer_diff(capsys):
+def test_basic_printer_diff(capsys: pytest.CaptureFixture[str]) -> None:
     printer = isort.format.create_terminal_printer(color=False)
     printer.diff_line("+ added line\n")
     printer.diff_line("- removed line\n")
@@ -60,7 +60,7 @@ def test_basic_printer_diff(capsys):
     assert out == "+ added line\n- removed line\n"
 
 
-def test_colored_printer_success(capsys):
+def test_colored_printer_success(capsys: pytest.CaptureFixture[str]) -> None:
     printer = isort.format.create_terminal_printer(color=True, success="{success}: {message}")
     printer.success("All good!")
     out, _ = capsys.readouterr()
@@ -69,7 +69,7 @@ def test_colored_printer_success(capsys):
     assert colorama.Fore.GREEN in out
 
 
-def test_colored_printer_error(capsys):
+def test_colored_printer_error(capsys: pytest.CaptureFixture[str]) -> None:
     printer = isort.format.create_terminal_printer(color=True, error="{error}: {message}")
     printer.error("Some error")
     _, err = capsys.readouterr()
@@ -78,7 +78,7 @@ def test_colored_printer_error(capsys):
     assert colorama.Fore.RED in err
 
 
-def test_colored_printer_diff(capsys):
+def test_colored_printer_diff(capsys: pytest.CaptureFixture[str]) -> None:
     printer = isort.format.create_terminal_printer(color=True)
     printer.diff_line("+++ file1\n")
     printer.diff_line("--- file2\n")
@@ -98,7 +98,7 @@ def test_colored_printer_diff(capsys):
     assert colorama.Style.RESET_ALL + "normal line" in out
 
 
-def test_colored_printer_diff_output(capsys):
+def test_colored_printer_diff_output(capsys: pytest.CaptureFixture[str]) -> None:
     output = StringIO()
     printer = isort.format.create_terminal_printer(color=True, output=output)
     printer.diff_line("a line\n")
@@ -111,7 +111,7 @@ def test_colored_printer_diff_output(capsys):
 
 
 @patch("isort.format.colorama_unavailable", True)
-def test_colorama_not_available_handled_gracefully(capsys):
+def test_colorama_not_available_handled_gracefully(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as system_exit:
         _ = isort.format.create_terminal_printer(color=True)
     assert system_exit.value.code
@@ -131,7 +131,9 @@ def test_colorama_not_available_handled_gracefully(capsys):
     file_path=st.one_of(st.none(), st.builds(Path)),
     output=st.one_of(st.none(), st.builds(StringIO, st.text())),
 )
-def test_fuzz_show_unified_diff(file_input, file_output, file_path, output):
+def test_fuzz_show_unified_diff(
+    file_input: str, file_output: str, file_path: Path | None, output: StringIO | None
+) -> None:
     try:
         isort.format.show_unified_diff(
             file_input=file_input,
