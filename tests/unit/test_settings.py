@@ -58,10 +58,10 @@ class TestConfig:
         does_not_exist = tmp_path / "fake.txt"
         assert not self.instance.is_supported_filetype(str(does_not_exist))
 
-    def test_is_supported_filetype_shebang(self, tmp_path: Path) -> None:
+    def test_is_supported_filetype_unsupported_shebang(self, tmp_path: Path) -> None:
         path = tmp_path / "myscript"
         path.write_text("#!/usr/bin/env python\n")
-        assert self.instance.is_supported_filetype(str(path))
+        assert not self.instance.is_supported_filetype(str(path))
 
     def test_is_supported_filetype_editor_backup(self, tmp_path: Path) -> None:
         path = tmp_path / "myscript~"
