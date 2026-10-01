@@ -624,6 +624,18 @@ def test_length_sort() -> None:
     )
 
 
+def test_length_sort_native_order() -> None:
+    """A 10 character name must not sort ahead of a shorter one under native order."""
+    straight = "import bbbbbbbbbb\nimport a\nimport bb\n"
+    assert isort.code(straight, length_sort=True, sort_order="native") == (
+        "import a\nimport bb\nimport bbbbbbbbbb\n"
+    )
+    from_import = "from z import bbbbbbbbbb, a, bb\n"
+    assert isort.code(from_import, length_sort=True, sort_order="native") == (
+        "from z import a, bb, bbbbbbbbbb\n"
+    )
+
+
 def test_length_sort_straight() -> None:
     """Test setting isort to sort straight imports on length instead of alphabetically."""
     test_input = (

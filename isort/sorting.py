@@ -48,7 +48,8 @@ def module_key(
         or (config.length_sort_straight and straight_import)
         or str(section_name).lower() in config.length_sort_sections
     )
-    _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
+    # Pad so a native sort still orders by length. "10" would otherwise sort before "2".
+    _length_sort_maybe = f"{len(module_name):08d}:{module_name}" if length_sort else module_name
     return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
@@ -94,7 +95,8 @@ def section_key(line: str, config: Config) -> str:
     elif not config.order_by_type:
         line = line.lower()
 
-    return f"{section}{len(line) if config.length_sort else ''}{line}"
+    length = f"{len(line):08d}" if config.length_sort else ""
+    return f"{section}{length}{line}"
 
 
 def sort(
