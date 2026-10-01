@@ -2,8 +2,7 @@
 
 import re
 from collections.abc import Callable
-from enum import StrEnum
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 from .settings import Config
 
@@ -166,25 +165,20 @@ def normalize_from_import_string(import_string: str) -> str:
     )
 
 
-class _ImportType(StrEnum):
-    FROM = "from"
-    STRAIGHT = "straight"
-    LAZY_FROM = "lazy_from"
-    LAZY_STRAIGHT = "lazy_straight"
-
-
-def import_type(line: str, config: Config) -> _ImportType | None:
+def import_type(
+    line: str, config: Config
+) -> Literal["from", "straight", "lazy_from", "lazy_straight"] | None:
     """If the current line is an import line it will return its type."""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
     if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
         return None
     if line.startswith(("import ", "cimport ")):
-        return _ImportType.STRAIGHT
+        return "straight"
     if line.startswith("from "):
-        return _ImportType.FROM
+        return "from"
     if line.startswith("lazy import "):
-        return _ImportType.LAZY_STRAIGHT
+        return "lazy_straight"
     if line.startswith("lazy from "):
-        return _ImportType.LAZY_FROM
+        return "lazy_from"
     return None
