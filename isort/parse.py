@@ -413,7 +413,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
-                assert type_of_import is _ImportType.STRAIGHT  # noqa: S101 # nosec
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
