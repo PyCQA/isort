@@ -10,7 +10,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from collections.abc import Iterator
 
 import pytest
@@ -19,16 +19,13 @@ import isort
 from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
 from isort.settings import Config
+from isort.wrap_modes import WrapModes
 from isort.utils import exists_case_sensitive
 from isort.main import parse_args
 from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
-if TYPE_CHECKING:
-    WrapModes: Any
-else:
-    from isort.wrap_modes import WrapModes
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]
