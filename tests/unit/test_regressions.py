@@ -2720,3 +2720,55 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_nested_attribute_comment_hoisted_for_vertical_wrap_modes() -> None:
+    """A comment attached to one imported name must not make isort's own output unstable.
+
+    ``_with_from_imports_for_module`` splits a name carrying its own inline comment onto a
+    statement of its own.  When that one-name statement is then too long to fit, the vertical
+    wrap modes re-emit the comment on the ``from X import (`` opening line, which is a
+    *statement-level* position: on the next run isort reads it back as a comment for the whole
+    import, regroups the names, and rewrites the file again.  The wrap modes that hoist a
+    comment onto the opening parenthesis therefore have to keep the name in the main list and
+    hoist the comment to the statement, the way ``multi_line_output=2`` already does.
+    """
+    source = (
+        "from pkg.submodule.submodule.submodule.submodule import (\n"
+        "    alpha,  # type: ignore[import-untyped]\n"
+        "    beta, gamma\n"
+        ")\n"
+    )
+
+    # Reachable with the shipped ``black`` profile and no other configuration.
+    first_pass = isort.code(source, profile="black")
+    assert first_pass == isort.code(first_pass, profile="black")
+    # Stability alone is not enough: a fix that dropped the comment or an imported
+    # name would also be stable, and would be a silent data loss rather than a fix.
+    assert "# type: ignore[import-untyped]" in first_pass
+    for name in ("alpha", "beta", "gamma"):
+        assert name in first_pass
+    # Exactly one import statement: the names must not be split across two of them.
+    # (Counting occurrences of the word "import" would also match the comment text.)
+    statements = [line for line in first_pass.splitlines() if line.startswith(("import ", "from "))]
+    assert len(statements) == 1, first_pass
+
+    # The same construct under each mode that puts the comment on the ``(`` line.
+    for mode in (3, 5):
+        kwargs = {"multi_line_output": mode, "line_length": 60}
+        once = isort.code(source, **kwargs)
+        assert once == isort.code(once, **kwargs), mode
+        assert "# type: ignore[import-untyped]" in once
+        for name in ("alpha", "beta", "gamma"):
+            assert name in once
+
+    # Neighbours stay unchanged: a comment short enough that the split name still fits on one
+    # line, and a comment-free import, must both already be idempotent.
+    short = "from mypkg.submodule import (\n    alpha,  # noqa\n    beta, gamma\n)\n"
+    assert isort.code(short, multi_line_output=3, line_length=40) == isort.code(
+        isort.code(short, multi_line_output=3, line_length=40), multi_line_output=3, line_length=40
+    )
+    plain = "from mypkg.submodule import (\n    alpha,\n    beta, gamma\n)\n"
+    assert isort.code(plain, multi_line_output=3, line_length=40) == isort.code(
+        isort.code(plain, multi_line_output=3, line_length=40), multi_line_output=3, line_length=40
+    )

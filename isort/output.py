@@ -733,12 +733,9 @@ def _with_from_imports_for_module(
                     comments.append(comment)
                     continue
 
-                from_imports.remove(from_import)
-                if from_imports:
-                    use_comments: list[str] | None = []
-                else:
-                    use_comments = comments
-                    comments = []
+                index = from_imports.index(from_import)
+                names_left = index < len(from_imports) - 1
+                use_comments: list[str] | None = [] if names_left else comments
                 single_import_line = with_comments(
                     use_comments,
                     import_start + from_import,
@@ -749,6 +746,25 @@ def _with_from_imports_for_module(
                 single_import_line += (
                     f"{(use_comments and ';') or config.comment_prefix}{comment_text}"
                 )
+                if (
+                    names_left
+                    and len(single_import_line) > config.line_length
+                    and config.multi_line_output
+                    in (
+                        wrap_modes.WrapModes.VERTICAL_HANGING_INDENT,
+                        wrap_modes.WrapModes.VERTICAL_GRID_GROUPED,
+                    )
+                ):
+                    # Giving the name a statement of its own would let wrap.line() hoist
+                    # the comment onto the `from X import (` line, which the next run reads
+                    # back as a comment for the whole import and so rewrites the file again.
+                    comments = list(comments) if comments else []
+                    comments.append(comment)
+                    continue
+
+                from_imports.remove(from_import)
+                if not names_left:
+                    comments = []
                 output.append(wrap.line(single_import_line, parsed.line_separator, config))
 
         from_import_section = []
