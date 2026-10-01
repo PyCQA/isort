@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
+import tomllib
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
@@ -35,11 +36,6 @@ from .sections import FIRSTPARTY, FUTURE, LOCALFOLDER, STDLIB, THIRDPARTY
 from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    from ._vendored import tomli as tomllib
 
 _SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
