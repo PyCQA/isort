@@ -3,7 +3,7 @@
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, NamedTuple, TypedDict
+from typing import TYPE_CHECKING, Literal, NamedTuple, TypedDict, cast
 from warnings import warn
 
 from . import place
@@ -203,7 +203,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
         for statement in statements:
             line, raw_line = normalize_line(statement)
-            type_of_import = import_type(line, config) or ""
+            type_of_import = cast(
+                Literal["from", "straight", "lazy_from", "lazy_straight"],
+                import_type(line, config) or "",
+            )
             raw_lines = [raw_line]
             if not type_of_import:
                 out_lines.append(raw_line)

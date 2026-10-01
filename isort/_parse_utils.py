@@ -173,9 +173,7 @@ class _ImportType(StrEnum):
     LAZY_STRAIGHT = "lazy_straight"
 
 
-def import_type(
-    line: str, config: Config
-) -> _ImportType | None:
+def import_type(line: str, config: Config) -> _ImportType | None:
     """If the current line is an import line it will return its type."""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
