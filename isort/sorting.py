@@ -1,4 +1,5 @@
 import re
+import sys
 from collections.abc import Callable, Iterable
 from typing import Any
 
@@ -6,6 +7,8 @@ from .settings import Config
 
 _import_line_intro_re = re.compile("^(?:from|import) ")
 _import_line_midline_import_re = re.compile(" import ")
+# Pad every possible len() value so string keys also sort lengths numerically.
+_LENGTH_SORT_WIDTH = len(str(sys.maxsize))
 
 
 def module_key(
@@ -48,7 +51,9 @@ def module_key(
         or (config.length_sort_straight and straight_import)
         or str(section_name).lower() in config.length_sort_sections
     )
-    _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
+    _length_sort_maybe = (
+        f"{len(module_name):0{_LENGTH_SORT_WIDTH}}:{module_name}" if length_sort else module_name
+    )
     return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
@@ -94,7 +99,8 @@ def section_key(line: str, config: Config) -> str:
     elif not config.order_by_type:
         line = line.lower()
 
-    return f"{section}{len(line) if config.length_sort else ''}{line}"
+    length_key = f"{len(line):0{_LENGTH_SORT_WIDTH}}" if config.length_sort else ""
+    return f"{section}{length_key}{line}"
 
 
 def sort(
