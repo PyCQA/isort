@@ -9,6 +9,12 @@ from isort.settings import Config
 from isort.wrap_modes import WrapModes
 
 
+def _skip_config(setting_name: str, skip_path: str) -> Config:
+    if setting_name == "skip":
+        return Config(skip=[skip_path])
+    return Config(extend_skip=[skip_path])
+
+
 class TestConfig:
     instance = Config()
 
@@ -44,6 +50,82 @@ class TestConfig:
     def test_is_skipped(self) -> None:
         assert Config().is_skipped(Path("C:\\path\\isort.py"))
         assert Config(skip=["/path/isort.py"]).is_skipped(Path("C:\\path\\isort.py"))
+
+    @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
+    @pytest.mark.parametrize("absolute_skip", [False, True])
+    @pytest.mark.parametrize("separator", ["/", "\\"])
+    @pytest.mark.parametrize("absolute_file", [False, True])
+    def test_skip_existing_file_path(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        setting_name: str,
+        absolute_skip: bool,
+        separator: str,
+        absolute_file: bool,
+    ) -> None:
+        target = tmp_path / "src" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+        other = tmp_path / "other" / "resources.py"
+        other.parent.mkdir()
+        other.touch()
+        monkeypatch.chdir(tmp_path)
+
+        skip_path = target if absolute_skip else target.relative_to(tmp_path)
+        config = _skip_config(setting_name, skip_path.as_posix().replace("/", separator))
+        cached_skips = config.posix_skips
+        file_path = target if absolute_file else target.relative_to(tmp_path)
+
+        assert config.is_skipped(file_path)
+        assert not config.is_skipped(other)
+        assert config.posix_skips is cached_skips
+
+    @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
+    @pytest.mark.parametrize("absolute_skip", [False, True])
+    @pytest.mark.parametrize("separator", ["/", "\\"])
+    def test_skip_existing_directory_path(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        setting_name: str,
+        absolute_skip: bool,
+        separator: str,
+    ) -> None:
+        target = tmp_path / "src" / "generated"
+        target.mkdir(parents=True)
+        other = tmp_path / "other" / "generated"
+        other.mkdir(parents=True)
+        monkeypatch.chdir(tmp_path)
+        skip_path = target if absolute_skip else target.relative_to(tmp_path)
+        config = _skip_config(setting_name, skip_path.as_posix().replace("/", separator))
+
+        assert config.is_skipped(target)
+        assert not config.is_skipped(other)
+
+    @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
+    @pytest.mark.parametrize("skip_name", ["src", "resources.py"])
+    def test_skip_path_components(self, tmp_path: Path, setting_name: str, skip_name: str) -> None:
+        target = tmp_path / "src" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+        other = tmp_path / "other.py"
+        other.touch()
+        config = _skip_config(setting_name, skip_name)
+
+        assert config.is_skipped(target)
+        assert not config.is_skipped(other)
+
+    @pytest.mark.skipif(sys.platform != "win32", reason="Windows drive-qualified paths")
+    @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
+    def test_skip_path_preserves_drive(self, tmp_path: Path, setting_name: str) -> None:
+        target = tmp_path / "resources.py"
+        target.touch()
+        other_drive = "D:" if target.drive.upper() == "C:" else "C:"
+        other_path = other_drive + target.as_posix()[2:]
+
+        assert _skip_config(setting_name, target.as_posix()).is_skipped(target)
+        assert not _skip_config(setting_name, other_path).is_skipped(target)
 
     def test_is_supported_filetype(self) -> None:
         assert self.instance.is_supported_filetype("file.py")

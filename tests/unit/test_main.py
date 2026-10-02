@@ -53,6 +53,35 @@ def test_sort_imports(tmp_path: Path) -> None:
     assert main.sort_imports(str(tmp_file), config=skip_config, disregard_skip=False).skipped  # type: ignore # noqa
 
 
+@pytest.mark.parametrize("skip_option", ["--skip", "--extend-skip"])
+@pytest.mark.parametrize("separator", ["/", "\\"])
+@pytest.mark.parametrize("invocation", ["directory", "filtered-file", "unfiltered-file"])
+def test_cli_skip_existing_file_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    skip_option: str,
+    separator: str,
+    invocation: str,
+) -> None:
+    target = tmp_path / "src" / "resources.py"
+    target.parent.mkdir()
+    original = "import sys\nimport os\n"
+    target.write_text(original, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    arguments = [
+        "src" if invocation == "directory" else str(target),
+        skip_option,
+        f"src{separator}resources.py",
+    ]
+    if invocation == "filtered-file":
+        arguments.append("--filter-files")
+
+    main.main(arguments)
+
+    expected = "import os\nimport sys\n" if invocation == "unfiltered-file" else original
+    assert target.read_text(encoding="utf-8") == expected
+
+
 @pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_sort_imports_error_handling(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     tmp_file = tmp_path / "file.py"
