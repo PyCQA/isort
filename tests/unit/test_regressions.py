@@ -920,6 +920,87 @@ import y
     )
 
 
+@pytest.mark.parametrize("float_to_top", [False, True])
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "from collections import (\n    zeta,\n    Alpha,\n)  # isort: split\n",
+        "from collections import (  # isort: split\n    zeta,\n    Alpha,\n)\n",
+        "from collections import (\n    zeta,  # isort: split\n    Alpha,\n)\n",
+        "from collections import (\n    # isort: split\n    zeta,\n    Alpha,\n)\n",
+        "from collections import \\\n    zeta, Alpha  # isort: split\n",
+        "import zeta, \\\n    alpha  # isort: split\n",
+    ],
+)
+def test_split_directive_preserves_complete_import_issue_2680(
+    float_to_top: bool, statement: str
+) -> None:
+    source = "import z\n\n" + statement + "\nimport a\n"
+    result = isort.code(source, float_to_top=float_to_top)
+
+    ast.parse(result)
+    assert result == source
+    assert isort.code(result, float_to_top=float_to_top) == result
+    assert isort.check_code(result, float_to_top=float_to_top)
+
+
+def test_float_to_top_preserves_crlf_split_import_issue_2680() -> None:
+    source = "from collections import (\r\n    zeta,\r\n    Alpha,\r\n)  # isort: split\r\n"
+    result = isort.code(source, float_to_top=True)
+
+    ast.parse(result)
+    assert result == source
+    assert isort.code(result, float_to_top=True) == result
+    assert isort.check_code(result, float_to_top=True)
+
+
+@pytest.mark.parametrize("float_to_top", [False, True])
+def test_split_directive_preserves_nested_import_issue_2680(float_to_top: bool) -> None:
+    source = (
+        "def example():\n"
+        "    import z\n\n"
+        "    from collections import (\n        zeta,\n        Alpha,\n    )  # isort: split\n\n"
+        "    import a\n"
+    )
+    result = isort.code(source, float_to_top=float_to_top)
+
+    ast.parse(result)
+    assert result == source
+    assert isort.code(result, float_to_top=float_to_top) == result
+    assert isort.check_code(result, float_to_top=float_to_top)
+
+
+def test_float_to_top_does_not_collect_imports_in_strings_issue_2680() -> None:
+    source = '"""Example:\nfrom collections import (\n"""\n\nimport sys\nimport os\n'
+    expected = '"""Example:\nfrom collections import (\n"""\n\nimport os\nimport sys\n'
+    result = isort.code(source, float_to_top=True)
+
+    ast.parse(result)
+    assert result == expected
+    assert isort.code(result, float_to_top=True) == result
+
+
+def test_float_to_top_keeps_split_import_between_code_issue_2680() -> None:
+    source = (
+        "before = True\n"
+        "import sys\n\n"
+        "from collections import (\n    zeta,\n    Alpha,\n)  # isort: split\n\n"
+        "after = True\n"
+        "import os\n"
+    )
+    expected = (
+        "import sys\n\nbefore = True\n\n"
+        "from collections import (\n    zeta,\n    Alpha,\n)  # isort: split\n"
+        "import os\n\nafter = True\n"
+    )
+    result = isort.code(source, float_to_top=True)
+
+    ast.parse(result)
+    assert result == expected
+    assert isort.code(result, float_to_top=True) == result
+    assert isort.check_code(result, float_to_top=True)
+
+
 def test_isort_doesnt_float_to_top_correctly_when_imports_not_at_top_issue_1382() -> None:
     """isort should float existing imports to the top, if they are currently below the top.
     See: https://github.com/PyCQA/isort/issues/1382
