@@ -507,7 +507,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     output_group.add_argument(
         "-i",
         "--indent",
-        help='String to place for indents defaults to "    " (4 spaces).',
+        help='String to place for indents defaults to "    " (4 spaces). '
+        "Accepts a number of spaces, `tab` (or `\\t`) for a tab, or a literal string. "
+        "Only used by the hanging indent multi_line_output modes; the grid and vertical "
+        "modes align wrapped imports with the opening parenthesis instead.",
         dest="indent",
         type=str,
     )
