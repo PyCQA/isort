@@ -897,6 +897,13 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings[key] = result
             elif key == "comment_prefix":
                 settings[key] = str(value).strip("'").strip('"')
+            elif key == "indent":
+                indent_value = str(value).strip("'").strip('"')
+                if indent_value.isdigit():
+                    indent_value = " " * int(indent_value)
+                elif indent_value.lower() == "tab":
+                    indent_value = "\t"
+                settings[key] = indent_value
             else:
                 settings[key] = existing_value_type(value)
 
