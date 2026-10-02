@@ -347,3 +347,12 @@ something = nothing
 
     config_info_4 = config_trie.search(str(tmp_path / "file4.py"))
     assert config_info_4[0] == "default"
+
+def test_indent_tab_config_normalization():
+    data = {"indent": '"tab"'}
+    settings = Config(**data)
+    assert settings.indent == "\t"
+
+    data = {"indent": "Tab"}
+    settings = Config(**data)
+    assert settings.indent == "\t"

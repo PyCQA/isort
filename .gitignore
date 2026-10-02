@@ -79,3 +79,7 @@ pyvenv.cfg
 # Sphinx documentation build
 docs/_build/
 docs/generated/
+
+
+# my tepm ignores
+myUse/
