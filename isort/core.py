@@ -9,6 +9,7 @@ from isort.settings import DEFAULT_CONFIG, Config
 from . import output, parse
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
+from .parse import _infer_line_separator
 from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
@@ -144,7 +145,7 @@ def _float_to_top(
             if stripped_line == "# isort: off":
                 isort_off = True
             if current:
-                line_separator = parse._infer_line_separator(line, config.line_ending)
+                line_separator = _infer_line_separator(line, config.line_ending)
                 sorted_output, section_verbose, changed = _sort_float_section(
                     current, add_imports, config, extension, line_separator
                 )
@@ -267,7 +268,7 @@ def process(
             not_imports = True
             end_of_file = True
             line = ""
-            line_separator = parse._infer_line_separator(line, line_separator)
+            line_separator = _infer_line_separator(line, line_separator)
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
@@ -301,7 +302,7 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            line_separator = parse._infer_line_separator(line, line_separator)
+            line_separator = _infer_line_separator(line, line_separator)
 
             alias_directive = not isort_off and _is_alias_removal_directive(stripped_line, in_quote)
 
