@@ -95,12 +95,11 @@ def _is_float_boundary(line: str | None, stripped_line: str, alias_directive: bo
 
 
 def _sort_float_section(
-    current: str, add_imports: list[str], config: Config, extension: str, line: str | None
+    current: str, add_imports: list[str], config: Config, extension: str, line_separator: str
 ) -> tuple[str, list[str], bool]:
     """Sort one float-to-top section, preserving its trailing blank lines."""
     before = current
     if add_imports:
-        line_separator = parse._infer_line_separator(line, config.line_ending)
         current += line_separator + line_separator.join(add_imports)
     parsed = parse.file_contents(current, config=config)
     extra_space = ""
@@ -145,8 +144,9 @@ def _float_to_top(
             if stripped_line == "# isort: off":
                 isort_off = True
             if current:
+                line_separator = parse._infer_line_separator(line, config.line_ending)
                 sorted_output, section_verbose, changed = _sort_float_section(
-                    current, add_imports, config, extension, line
+                    current, add_imports, config, extension, line_separator
                 )
                 add_imports = []
                 verbose_output += section_verbose
