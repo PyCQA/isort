@@ -111,3 +111,28 @@ Tells isort to not automatically add imports to this file, even if --add-imports
 ## isort: dont-add-import: [IMPORT_LINE]
 
 Tells isort to not automatically add a particular import, even if --add-imports says to add it.
+
+
+## isort: remove-redundant-aliases-off / isort: remove-redundant-aliases-on
+
+Disables `remove_redundant_aliases` for the following imports while continuing to
+sort them. This is useful for preserving explicit re-exports in `__init__.py`
+files when redundant aliases are otherwise removed globally.
+
+```python
+import os as os  # Redundant alias removed when remove_redundant_aliases is enabled.
+
+# isort: remove-redundant-aliases-off
+from . import PublicThingB as PublicThingB
+from . import PublicThingA as PublicThingA
+
+# isort: remove-redundant-aliases-on
+import sys as sys  # Redundant alias removed again.
+```
+
+Each directive starts a new sorting section, like `# isort: split`, so imports
+cannot move across it, including with `float_to_top` enabled. The `off` directive
+keeps aliases until the `on` directive or the end of the file. The `on` directive
+restores the global setting; it does not enable removal if the setting was
+already disabled. These directives must appear on their own lines and are
+ignored inside strings and `# isort: off` sections.

@@ -34,6 +34,10 @@ CODE_SORT_COMMENTS = (
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
+ALIAS_REMOVAL_COMMENTS = (
+    "# isort: remove-redundant-aliases-off",
+    "# isort: remove-redundant-aliases-on",
+)
 
 
 def _strip_string_prefix(line: str) -> str:
@@ -76,17 +80,22 @@ def _float_to_top(
 ) -> _FloatToTopResult:
     new_input = ""
     current = ""
+    original_config = config
+    in_quote = ""
     isort_off = False
     verbose_output: list[str] = []
     made_changes = False
     for line in chain(input_stream, (None,)):
         stripped_line = line.strip() if line is not None else ""
+        alias_directive = not in_quote and stripped_line in ALIAS_REMOVAL_COMMENTS
+        in_quote = _scan_quotes(line or "", stripped_line, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
         elif (
             line is None
+            or alias_directive
             or stripped_line in ("# isort: split", "# isort: off")
             or line.rstrip().endswith("# isort: split")
         ):
@@ -118,6 +127,15 @@ def _float_to_top(
                 new_input += extra_space
                 current = ""
             new_input += line or ""
+            if alias_directive:
+                config = Config(
+                    config=original_config,
+                    remove_redundant_aliases=(
+                        False
+                        if stripped_line == ALIAS_REMOVAL_COMMENTS[0]
+                        else original_config.remove_redundant_aliases
+                    ),
+                )
         else:
             current += line or ""
 
@@ -182,6 +200,7 @@ def process(
     Returns `True` if there were changes that needed to be made (errors present) from what
     was provided in the input_stream, otherwise `False`.
     """
+    original_config = config
     add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
     made_changes: bool = False
     verbose_output: list[str] = []
@@ -220,6 +239,7 @@ def process(
     reexport_rollback: int = 0
 
     for index, line in enumerate(chain(input_stream, (None,))):
+        alias_directive = False
         if line is None:
             if index == 0 and not config.force_adds:
                 return False
@@ -263,6 +283,10 @@ def process(
             stripped_line = line.strip()
             line_separator = parse._infer_line_separator(line, line_separator)
 
+            alias_directive = (
+                not in_quote and not isort_off and stripped_line in ALIAS_REMOVAL_COMMENTS
+            )
+
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
                     if raise_on_skip:
@@ -291,12 +315,14 @@ def process(
                 and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
+                and not alias_directive
             ):
                 in_top_comment = True
             elif in_top_comment and (
                 not line.startswith("#")
                 or stripped_line in config.section_comments
                 or stripped_line in CODE_SORT_COMMENTS
+                or alias_directive
             ):
                 in_top_comment = False
 
@@ -308,6 +334,8 @@ def process(
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
+                elif alias_directive:
+                    not_imports = True
                 elif stripped_line.endswith("# isort: split"):
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
@@ -566,6 +594,16 @@ def process(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+            if alias_directive:
+                config = Config(
+                    config=original_config,
+                    remove_redundant_aliases=(
+                        False
+                        if stripped_line == ALIAS_REMOVAL_COMMENTS[0]
+                        else original_config.remove_redundant_aliases
+                    ),
+                )
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
                 if stripped_line == "yield":
