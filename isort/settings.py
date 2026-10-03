@@ -632,7 +632,9 @@ class Config(_Config):
         if self._section_comments is not None:
             return self._section_comments
 
-        self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
+        self._section_comments = tuple(
+            f"{self.comment_prefix} {heading}".lstrip() for heading in self.import_headings.values()
+        )
         return self._section_comments
 
     @property
@@ -640,7 +642,9 @@ class Config(_Config):
         if self._section_comments_end is not None:
             return self._section_comments_end
 
-        self._section_comments_end = tuple(f"# {footer}" for footer in self.import_footers.values())
+        self._section_comments_end = tuple(
+            f"{self.comment_prefix} {footer}".lstrip() for footer in self.import_footers.values()
+        )
         return self._section_comments_end
 
     @property

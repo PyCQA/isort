@@ -1322,6 +1322,31 @@ def test_titled_imports() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("comment_prefix", "heading", "footer"),
+    [
+        ("", "#region Standard Library", "#endregion Standard Library"),
+        ("  ###", "### #region Standard Library", "### #endregion Standard Library"),
+    ],
+)
+def test_section_comments_use_comment_prefix(
+    comment_prefix: str, heading: str, footer: str
+) -> None:
+    config = Config(
+        comment_prefix=comment_prefix,
+        import_heading_stdlib="#region Standard Library",
+        import_footer_stdlib="#endregion Standard Library",
+    )
+    expected = f"{heading}\nimport os\nimport sys\n\n{footer}\n"
+
+    output = isort.code("import sys\nimport os\n", config=config)
+
+    assert output == expected
+    assert config.section_comments == (heading,)
+    assert config.section_comments_end == (footer,)
+    assert isort.code(output, config=config) == output
+
+
 def test_footered_imports() -> None:
     """Tests setting both custom titles and footers to import sections."""
     test_input = (
