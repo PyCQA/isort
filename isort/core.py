@@ -66,6 +66,13 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _alias_removal_config(config: Config, directive: str) -> Config:
+    """Disable alias removal locally or restore the original configuration."""
+    if directive == ALIAS_REMOVAL_COMMENTS[0]:
+        return Config(config=config, remove_redundant_aliases=False)
+    return config
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -78,6 +85,7 @@ def _float_to_top(
     config: Config,
     extension: str,
 ) -> _FloatToTopResult:
+    """Float imports within sections while respecting local action comments."""
     new_input = ""
     current = ""
     original_config = config
@@ -128,14 +136,7 @@ def _float_to_top(
                 current = ""
             new_input += line or ""
             if alias_directive:
-                config = Config(
-                    config=original_config,
-                    remove_redundant_aliases=(
-                        False
-                        if stripped_line == ALIAS_REMOVAL_COMMENTS[0]
-                        else original_config.remove_redundant_aliases
-                    ),
-                )
+                config = _alias_removal_config(original_config, stripped_line)
         else:
             current += line or ""
 
@@ -596,14 +597,7 @@ def process(
                 not_imports = False
 
             if alias_directive:
-                config = Config(
-                    config=original_config,
-                    remove_redundant_aliases=(
-                        False
-                        if stripped_line == ALIAS_REMOVAL_COMMENTS[0]
-                        else original_config.remove_redundant_aliases
-                    ),
-                )
+                config = _alias_removal_config(original_config, stripped_line)
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
                 if stripped_line == "yield":
