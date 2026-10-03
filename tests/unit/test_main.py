@@ -136,6 +136,43 @@ def test_show_files(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
         main.main([str(tmp_path), "--show-files", "--show-config"])
 
 
+@pytest.mark.parametrize("directory", [False, True])
+def test_filter_files_respects_extensions(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], directory: bool
+) -> None:
+    python_file = tmp_path / "example.py"
+    text_file = tmp_path / "example.txt"
+    python_file.write_text("import sys\nimport os\n")
+    text_file.write_text("import sys\nimport os\n")
+    paths = [str(tmp_path)] if directory else [str(python_file), str(text_file)]
+
+    main.main([*paths, "--filter-files", "--ext", "txt", "--show-files"])
+
+    output, error = capsys.readouterr()
+    assert str(text_file) in output
+    assert str(python_file) not in output
+    assert not error
+
+
+def test_filter_files_skips_unsupported_extension_in_check_mode(tmp_path: Path) -> None:
+    python_file = tmp_path / "example.py"
+    source = "import sys\nimport os\n"
+    python_file.write_text(source)
+
+    main.main([str(python_file), "--filter-files", "--ext", "txt", "--check"])
+
+    assert python_file.read_text() == source
+
+
+def test_explicit_file_without_filter_files_ignores_extension(tmp_path: Path) -> None:
+    python_file = tmp_path / "example.py"
+    python_file.write_text("import sys\nimport os\n")
+
+    main.main([str(python_file), "--ext", "txt"])
+
+    assert python_file.read_text() == "import os\nimport sys\n"
+
+
 def test_missing_default_section(tmp_path: Path) -> None:
     config_file = tmp_path / ".isort.cfg"
     config_file.write_text(
