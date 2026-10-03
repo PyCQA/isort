@@ -1141,8 +1141,11 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         if config.filter_files:
             filtered_files = []
             for file_name in file_names:
-                if config.is_skipped(Path(file_name)):
-                    skipped.append(str(Path(file_name).resolve()))
+                file_path = Path(file_name)
+                if config.is_skipped(file_path) or (
+                    file_path.is_file() and not config.is_supported_filetype(file_name)
+                ):
+                    skipped.append(str(file_path.resolve()))
                 else:
                     filtered_files.append(file_name)
             file_names = filtered_files
