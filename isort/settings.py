@@ -360,6 +360,8 @@ class Config(_Config):
                 indent = indent.strip("'").strip('"')
                 if indent.lower() == "tab":
                     indent = "\t"
+                else:
+                    indent = indent.replace("\\t", "\t")
             combined_config["indent"] = indent
 
         known_other = {}
