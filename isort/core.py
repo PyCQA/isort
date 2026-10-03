@@ -66,6 +66,11 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _is_alias_removal_directive(line: str, in_quote: str) -> bool:
+    """Recognize standalone alias directives outside string literals."""
+    return not in_quote and line in ALIAS_REMOVAL_COMMENTS
+
+
 def _alias_removal_config(config: Config, directive: str) -> Config:
     """Disable alias removal locally or restore the original configuration."""
     if directive == ALIAS_REMOVAL_COMMENTS[0]:
@@ -95,7 +100,7 @@ def _float_to_top(
     made_changes = False
     for line in chain(input_stream, (None,)):
         stripped_line = line.strip() if line is not None else ""
-        alias_directive = not in_quote and stripped_line in ALIAS_REMOVAL_COMMENTS
+        alias_directive = _is_alias_removal_directive(stripped_line, in_quote)
         in_quote = _scan_quotes(line or "", stripped_line, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
@@ -284,9 +289,7 @@ def process(
             stripped_line = line.strip()
             line_separator = parse._infer_line_separator(line, line_separator)
 
-            alias_directive = (
-                not in_quote and not isort_off and stripped_line in ALIAS_REMOVAL_COMMENTS
-            )
+            alias_directive = not isort_off and _is_alias_removal_directive(stripped_line, in_quote)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
