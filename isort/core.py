@@ -84,6 +84,40 @@ class _FloatToTopResult(NamedTuple):
     made_changes: bool
 
 
+def _is_float_boundary(line: str | None, stripped_line: str, alias_directive: bool) -> bool:
+    """Identify the end of a section whose imports may float together."""
+    return (
+        line is None
+        or alias_directive
+        or stripped_line in ("# isort: split", "# isort: off")
+        or line.rstrip().endswith("# isort: split")
+    )
+
+
+def _sort_float_section(
+    current: str, add_imports: list[str], config: Config, extension: str, line: str | None
+) -> tuple[str, list[str], bool]:
+    """Sort one float-to-top section, preserving its trailing blank lines."""
+    before = current
+    if add_imports:
+        line_separator = parse._infer_line_separator(line, config.line_ending)
+        current += line_separator + line_separator.join(add_imports)
+    parsed = parse.file_contents(current, config=config)
+    extra_space = ""
+    while before.endswith(parsed.line_separator):
+        extra_space += parsed.line_separator
+        before = before[: -len(parsed.line_separator)]
+    extra_space = extra_space.replace(parsed.line_separator, "", 1)
+    sorted_output = output.sorted_imports(parsed, config, extension, import_type="import")
+    changed = _has_changed(
+        before=before,
+        after=sorted_output,
+        line_separator=parsed.line_separator,
+        ignore_whitespace=config.ignore_whitespace,
+    )
+    return sorted_output + extra_space, parsed.verbose_output, changed
+
+
 def _float_to_top(
     input_stream: TextIO,
     add_imports: list[str],
@@ -99,51 +133,31 @@ def _float_to_top(
     verbose_output: list[str] = []
     made_changes = False
     for line in chain(input_stream, (None,)):
-        stripped_line = line.strip() if line is not None else ""
+        line_text = line or ""
+        stripped_line = line_text.strip()
         alias_directive = _is_alias_removal_directive(stripped_line, in_quote)
-        in_quote = _scan_quotes(line or "", stripped_line, in_quote)
+        in_quote = _scan_quotes(line_text, stripped_line, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
-        elif (
-            line is None
-            or alias_directive
-            or stripped_line in ("# isort: split", "# isort: off")
-            or line.rstrip().endswith("# isort: split")
-        ):
+        elif _is_float_boundary(line, stripped_line, alias_directive):
             if stripped_line == "# isort: off":
                 isort_off = True
             if current:
-                before = current
-                if add_imports:
-                    line_separator = parse._infer_line_separator(line, config.line_ending)
-                    current += line_separator + line_separator.join(add_imports)
-                    add_imports = []
-                parsed = parse.file_contents(current, config=config)
-                verbose_output += parsed.verbose_output
-                extra_space = ""
-                while before.endswith(parsed.line_separator):
-                    extra_space += parsed.line_separator
-                    before = before[: -len(parsed.line_separator)]
-                extra_space = extra_space.replace(parsed.line_separator, "", 1)
-                sorted_output = output.sorted_imports(
-                    parsed, config, extension, import_type="import"
+                sorted_output, section_verbose, changed = _sort_float_section(
+                    current, add_imports, config, extension, line
                 )
-                made_changes = made_changes or _has_changed(
-                    before=before,
-                    after=sorted_output,
-                    line_separator=parsed.line_separator,
-                    ignore_whitespace=config.ignore_whitespace,
-                )
+                add_imports = []
+                verbose_output += section_verbose
+                made_changes |= changed
                 new_input += sorted_output
-                new_input += extra_space
                 current = ""
-            new_input += line or ""
+            new_input += line_text
             if alias_directive:
                 config = _alias_removal_config(original_config, stripped_line)
         else:
-            current += line or ""
+            current += line_text
 
     return _FloatToTopResult(
         input_stream=StringIO(new_input),
