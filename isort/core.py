@@ -9,6 +9,7 @@ from isort.settings import DEFAULT_CONFIG, Config
 from . import output, parse
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
+from .parse import _infer_line_separator
 from .settings import FILE_SKIP_COMMENTS
 
 CIMPORT_IDENTIFIERS = ("cimport ", "cimport*", "from.cimport")
@@ -34,6 +35,10 @@ CODE_SORT_COMMENTS = (
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
+ALIAS_REMOVAL_COMMENTS = (
+    "# isort: remove-redundant-aliases-off",
+    "# isort: remove-redundant-aliases-on",
+)
 
 
 def _strip_string_prefix(line: str) -> str:
@@ -62,10 +67,55 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _is_alias_removal_directive(line: str, in_quote: str) -> bool:
+    """Recognize standalone alias directives outside string literals."""
+    return not in_quote and line in ALIAS_REMOVAL_COMMENTS
+
+
+def _alias_removal_config(config: Config, directive: str) -> Config:
+    """Disable alias removal locally or restore the original configuration."""
+    if directive == ALIAS_REMOVAL_COMMENTS[0]:
+        return Config(config=config, remove_redundant_aliases=False)
+    return config
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
     made_changes: bool
+
+
+def _is_float_boundary(line: str | None, stripped_line: str, alias_directive: bool) -> bool:
+    """Identify the end of a section whose imports may float together."""
+    return (
+        line is None
+        or alias_directive
+        or stripped_line in ("# isort: split", "# isort: off")
+        or line.rstrip().endswith("# isort: split")
+    )
+
+
+def _sort_float_section(
+    current: str, add_imports: list[str], config: Config, extension: str, line_separator: str
+) -> tuple[str, list[str], bool]:
+    """Sort one float-to-top section, preserving its trailing blank lines."""
+    before = current
+    if add_imports:
+        current += line_separator + line_separator.join(add_imports)
+    parsed = parse.file_contents(current, config=config)
+    extra_space = ""
+    while before.endswith(parsed.line_separator):
+        extra_space += parsed.line_separator
+        before = before[: -len(parsed.line_separator)]
+    extra_space = extra_space.replace(parsed.line_separator, "", 1)
+    sorted_output = output.sorted_imports(parsed, config, extension, import_type="import")
+    changed = _has_changed(
+        before=before,
+        after=sorted_output,
+        line_separator=parsed.line_separator,
+        ignore_whitespace=config.ignore_whitespace,
+    )
+    return sorted_output + extra_space, parsed.verbose_output, changed
 
 
 def _float_to_top(
@@ -74,52 +124,41 @@ def _float_to_top(
     config: Config,
     extension: str,
 ) -> _FloatToTopResult:
+    """Float imports within sections while respecting local action comments."""
     new_input = ""
     current = ""
+    original_config = config
+    in_quote = ""
     isort_off = False
     verbose_output: list[str] = []
     made_changes = False
     for line in chain(input_stream, (None,)):
-        stripped_line = line.strip() if line is not None else ""
+        line_text = line or ""
+        stripped_line = line_text.strip()
+        alias_directive = _is_alias_removal_directive(stripped_line, in_quote)
+        in_quote = _scan_quotes(line_text, stripped_line, in_quote)
         if isort_off and line is not None:
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
-        elif (
-            line is None
-            or stripped_line in ("# isort: split", "# isort: off")
-            or line.rstrip().endswith("# isort: split")
-        ):
+        elif _is_float_boundary(line, stripped_line, alias_directive):
             if stripped_line == "# isort: off":
                 isort_off = True
             if current:
-                before = current
-                if add_imports:
-                    line_separator = parse._infer_line_separator(line, config.line_ending)
-                    current += line_separator + line_separator.join(add_imports)
-                    add_imports = []
-                parsed = parse.file_contents(current, config=config)
-                verbose_output += parsed.verbose_output
-                extra_space = ""
-                while before.endswith(parsed.line_separator):
-                    extra_space += parsed.line_separator
-                    before = before[: -len(parsed.line_separator)]
-                extra_space = extra_space.replace(parsed.line_separator, "", 1)
-                sorted_output = output.sorted_imports(
-                    parsed, config, extension, import_type="import"
+                line_separator = _infer_line_separator(line, config.line_ending)
+                sorted_output, section_verbose, changed = _sort_float_section(
+                    current, add_imports, config, extension, line_separator
                 )
-                made_changes = made_changes or _has_changed(
-                    before=before,
-                    after=sorted_output,
-                    line_separator=parsed.line_separator,
-                    ignore_whitespace=config.ignore_whitespace,
-                )
+                add_imports = []
+                verbose_output += section_verbose
+                made_changes |= changed
                 new_input += sorted_output
-                new_input += extra_space
                 current = ""
-            new_input += line or ""
+            new_input += line_text
+            if alias_directive:
+                config = _alias_removal_config(original_config, stripped_line)
         else:
-            current += line or ""
+            current += line_text
 
     return _FloatToTopResult(
         input_stream=StringIO(new_input),
@@ -182,6 +221,7 @@ def process(
     Returns `True` if there were changes that needed to be made (errors present) from what
     was provided in the input_stream, otherwise `False`.
     """
+    original_config = config
     add_imports: list[str] = [format_natural(addition) for addition in config.add_imports]
     made_changes: bool = False
     verbose_output: list[str] = []
@@ -220,6 +260,7 @@ def process(
     reexport_rollback: int = 0
 
     for index, line in enumerate(chain(input_stream, (None,))):
+        alias_directive = False
         if line is None:
             if index == 0 and not config.force_adds:
                 return False
@@ -227,7 +268,7 @@ def process(
             not_imports = True
             end_of_file = True
             line = ""
-            line_separator = parse._infer_line_separator(line, line_separator)
+            line_separator = _infer_line_separator(line, line_separator)
 
             if code_sorting and code_sorting_section:
                 if is_reexport:
@@ -261,7 +302,9 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            line_separator = parse._infer_line_separator(line, line_separator)
+            line_separator = _infer_line_separator(line, line_separator)
+
+            alias_directive = not isort_off and _is_alias_removal_directive(stripped_line, in_quote)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
                 if file_skip_comment in line:
@@ -291,12 +334,14 @@ def process(
                 and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
+                and not alias_directive
             ):
                 in_top_comment = True
             elif in_top_comment and (
                 not line.startswith("#")
                 or stripped_line in config.section_comments
                 or stripped_line in CODE_SORT_COMMENTS
+                or alias_directive
             ):
                 in_top_comment = False
 
@@ -308,6 +353,8 @@ def process(
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
+                elif alias_directive:
+                    not_imports = True
                 elif stripped_line.endswith("# isort: split"):
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
@@ -566,6 +613,9 @@ def process(
             else:
                 output_stream.write(line)
                 not_imports = False
+
+            if alias_directive:
+                config = _alias_removal_config(original_config, stripped_line)
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
                 if stripped_line == "yield":
