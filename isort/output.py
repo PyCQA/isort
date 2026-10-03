@@ -92,7 +92,7 @@ def sorted_imports(
             if section_title and section_title not in seen_headings:
                 if config.dedup_headings:
                     seen_headings.add(section_title)
-                section_comment = f"# {section_title}"
+                section_comment = f"{config.comment_prefix} {section_title}".lstrip()
                 if section_comment not in parsed.lines_without_imports[0:1]:  # pragma: no branch
                     section_output.insert(0, section_comment)
 
@@ -100,7 +100,7 @@ def sorted_imports(
             if section_footer and section_footer not in seen_headings:
                 if config.dedup_headings:
                     seen_headings.add(section_footer)
-                section_comment_end = f"# {section_footer}"
+                section_comment_end = f"{config.comment_prefix} {section_footer}".lstrip()
                 if (
                     section_comment_end not in parsed.lines_without_imports[-1:]
                 ):  # pragma: no branch
