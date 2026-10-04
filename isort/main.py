@@ -324,6 +324,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Automatically sort all re-exports (module level __all__ collections)",
     )
+    general_group.add_argument(
+        "--sort-lazy-modules",
+        dest="sort_lazy_modules",
+        action="store_true",
+        help="Sort module-level __lazy_modules__ string lists using configured module ordering.",
+    )
 
     target_group.add_argument(
         "files", nargs="*", help="One or more Python source files that need their imports sorted."

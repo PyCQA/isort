@@ -245,6 +245,31 @@ Specifies whether to sort re-exports (`__all__` collections) automatically.
 - --srx
 - --sort-reexports
 
+## Sort Lazy Modules
+
+Sorts static `__lazy_modules__` string lists using the configured import sections and module ordering.
+This is disabled by default because list iteration and index order can be observed in user code.
+
+Only assignments to the variable at module level are considered, including annotated assignments.
+Duplicates and declaration trailing comments are retained. Dynamic expressions, other objects, and
+lists with internal comments are left unchanged. Explicit literal sorting directives retain their
+existing behavior.
+
+For example, with `known_first_party = ["mylocal"]`, the list
+`["requests", "os", "mylocal"]` becomes `["os", "requests", "mylocal"]`.
+
+**Type:** Bool
+
+**Default:** `False`
+
+**Config default:** `false`
+
+**Python & Config File Name:** sort_lazy_modules
+
+**CLI Flags:**
+
+- --sort-lazy-modules
+
 ## Sections
 
 What sections isort should display imports for and in what order

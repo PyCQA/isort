@@ -6,7 +6,7 @@ from typing import NamedTuple, TextIO
 import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
 
-from . import output, parse
+from . import _lazy_modules, output, parse
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
@@ -197,6 +197,13 @@ def process(
         )
         add_imports = []
 
+    lazy_declarations: dict[int, _lazy_modules.Declaration] = {}
+    lazy_lines_consumed = 0
+    if config.sort_lazy_modules:
+        source = input_stream.read()
+        lazy_declarations = _lazy_modules.find_declarations(source, config)
+        input_stream = StringIO(source)
+
     line_separator: str = config.line_ending
     import_section: str = ""
     next_import_section: str = ""
@@ -220,6 +227,7 @@ def process(
     reexport_rollback: int = 0
 
     for index, line in enumerate(chain(input_stream, (None,))):
+        index += lazy_lines_consumed
         if line is None:
             if index == 0 and not config.force_adds:
                 return False
@@ -299,6 +307,25 @@ def process(
                 or stripped_line in CODE_SORT_COMMENTS
             ):
                 in_top_comment = False
+
+            if lazy_declarations and not (isort_off or code_sorting or in_quote):
+                declaration = lazy_declarations.get(input_stream.tell() - len(line))
+                if declaration and not (
+                    _has_skip_comment(declaration.before)
+                    or any(comment in declaration.before for comment in FILE_SKIP_COMMENTS)
+                    or any(
+                        physical_line.lstrip().startswith("# isort:")
+                        or physical_line.rstrip().endswith("# isort: split")
+                        for physical_line in declaration.before.splitlines()
+                    )
+                ):
+                    input_stream.seek(declaration.end)
+                    lazy_lines_consumed += len(StringIO(declaration.before).readlines()) - 1
+                    line = declaration.after
+                    stripped_line = line.strip()
+                    made_changes = made_changes or _has_changed(
+                        declaration.before, line, line_separator, config.ignore_whitespace
+                    )
 
             was_in_quote = bool(in_quote)
             in_quote = _scan_quotes(line, stripped_line, in_quote)

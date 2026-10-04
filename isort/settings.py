@@ -229,6 +229,7 @@ class _Config:
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
     sort_reexports: bool = False
+    sort_lazy_modules: bool = False
     split_on_trailing_comma: bool = False
 
     def __post_init__(self) -> None:
