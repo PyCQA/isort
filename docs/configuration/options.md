@@ -1242,6 +1242,14 @@ Tells isort to honor noqa comments to enforce skipping those comments.
 
 Add an explicitly defined source path (modules within src paths have their imports automatically categorized as first_party). Glob expansion (`*` and `**`) is supported for this option.
 
+Each entry is a **root** directory rather than a prefix to match: with `src_paths = src`, an import is only first party when the module or package behind it lives directly inside `src/` (`src/py_compile` is first party, `src` itself is not).
+
+Relative entries are resolved against the directory of the config file that declares them, or against the working directory when passed on the command line, and glob patterns are expanded from there.
+
+Because the option replaces the built-in defaults instead of extending them, `src_paths = src` alone stops a flat `./package` layout from being recognised as first party. List both roots (`src` and `.`) to keep both the `src/` and flat layouts working. The one exception to the "root, not prefix" rule is a root that shares its name with the imported module: with `src_paths = src`, `import src` is still treated as first party rather than as a package nested inside `src`.
+
+When the option is not set at all, isort falls back to both `<project root>/src` and the project root itself, so both common layouts work without any configuration.
+
 **Type:** List of Strings  
 **Default:** `()`  
 **Config default:** `[]`  
