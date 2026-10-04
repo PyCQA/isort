@@ -258,14 +258,10 @@ existing behavior.
 For example, with `known_first_party = ["mylocal"]`, the list
 `["requests", "os", "mylocal"]` becomes `["os", "requests", "mylocal"]`.
 
-**Type:** Bool
-
-**Default:** `False`
-
-**Config default:** `false`
-
-**Python & Config File Name:** sort_lazy_modules
-
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** sort_lazy_modules  
 **CLI Flags:**
 
 - --sort-lazy-modules
