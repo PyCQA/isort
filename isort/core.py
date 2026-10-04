@@ -321,7 +321,7 @@ def process(
                 ):
                     input_stream.seek(declaration.end)
                     lazy_lines_consumed += len(StringIO(declaration.before).readlines()) - 1
-                    line = declaration.after
+                    line = _lazy_modules.render(declaration, extension, config)
                     stripped_line = line.strip()
                     made_changes = made_changes or _has_changed(
                         declaration.before, line, line_separator, config.ignore_whitespace

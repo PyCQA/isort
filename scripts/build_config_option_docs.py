@@ -107,6 +107,16 @@ class Example:
 
 description_mapping: dict[str, str]
 description_mapping = {
+    "sort_lazy_modules": (
+        "Sorts static `__lazy_modules__` string lists using the configured import sections and module ordering.\n"
+        "This is disabled by default because list iteration and index order can be observed in user code.\n\n"
+        "Only assignments to the variable at module level are considered, including annotated assignments.\n"
+        "Duplicates and declaration trailing comments are retained. Dynamic expressions, other objects, and\n"
+        "lists with internal comments are left unchanged. Explicit literal sorting directives retain their\n"
+        "existing behavior.\n\n"
+        'For example, with `known_first_party = ["mylocal"]`, the list\n'
+        '`["requests", "os", "mylocal"]` becomes `["os", "requests", "mylocal"]`.'
+    ),
     "length_sort_sections": "Sort the given sections by length",
     "forced_separate": "Force certain sub modules to show separately",
     "sections": "What sections isort should display imports for and in what order",

@@ -14,7 +14,20 @@ from .settings import Config
 class Declaration(NamedTuple):
     end: int
     before: str
-    after: str
+    replacements: list[tuple[int, int, str]]
+
+
+def render(declaration: Declaration, extension: str, config: Config) -> str:
+    """Format eligible assignments while retaining the original surrounding source."""
+    replacements = []
+    for start, end, assignment in declaration.replacements:
+        if config.formatting_function:
+            assignment = config.formatting_function(assignment, extension, config).rstrip()
+        replacements.append((start, end, assignment))
+    after = declaration.before
+    for start, end, assignment in reversed(replacements):
+        after = after[:start] + assignment + after[end:]
+    return after
 
 
 def _statements(source: str) -> Iterator[list[tokenize.TokenInfo]]:
@@ -191,26 +204,35 @@ def find_declarations(source: str, config: Config) -> dict[int, Declaration]:
                 if len(names) != len(value.elts):
                     continue
                 ordered = _sort_names(names, config)
-                if names == ordered:
+                if names == ordered and not config.formatting_function:
                     continue
-                replacement = literal._format_collection(
-                    [
-                        literal._repr_element(name) if name.isprintable() else repr(name)
-                        for name in ordered
-                    ],
-                    "[",
-                    "]",
-                    config,
-                    rhs[0].start[1],
-                    config.include_trailing_comma and literal._has_trailing_comma(value_source),
-                    _infer_line_separator(before, config.line_ending),
+                replacement = (
+                    value_source
+                    if names == ordered
+                    else literal._format_collection(
+                        [
+                            literal._repr_element(name) if name.isprintable() else repr(name)
+                            for name in ordered
+                        ],
+                        "[",
+                        "]",
+                        config,
+                        rhs[0].start[1],
+                        config.include_trailing_comma and literal._has_trailing_comma(value_source),
+                        _infer_line_separator(before, config.line_ending),
+                    )
                 )
-                replacements.append((rhs_start - start, rhs_end - start, replacement))
-            after = before
-            for value_start, value_end, replacement in reversed(replacements):
-                after = after[:value_start] + replacement + after[value_end:]
-            if after != before:
-                declarations[start] = Declaration(end, before, after)
+                assignment_start = offset(
+                    next(
+                        token
+                        for token in tokens
+                        if token.type not in {tokenize.COMMENT, tokenize.NL}
+                    ).start
+                )
+                assignment = source[assignment_start:rhs_start] + replacement
+                replacements.append((assignment_start - start, rhs_end - start, assignment))
+            if replacements:
+                declarations[start] = Declaration(end, before, replacements)
     except (tokenize.TokenError, IndentationError):
         return {}
     return declarations

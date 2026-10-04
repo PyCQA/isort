@@ -6,6 +6,8 @@ from io import StringIO, UnsupportedOperation
 from typing import Any
 from unittest.mock import patch
 
+import pytest
+
 import isort
 from isort import api
 from isort.exceptions import LiteralParsingFailure
@@ -138,6 +140,96 @@ def test_collection_formatting_and_declaration_tail_comment() -> None:
     source = '__lazy_modules__ = [\n    "requests",\n    "os",\n]  # modules\n'
     expected = '__lazy_modules__ = [\n    "os",\n    "requests",\n]  # modules\n'
     assert isort.code(source, config=_config(include_trailing_comma=True)) == expected
+
+
+def test_lazy_module_assignment_uses_configured_formatter() -> None:
+    calls: list[tuple[str, str, object]] = []
+
+    def formatter(code: str, extension: str, config: object) -> str:
+        calls.append((code, extension, config))
+        return code.replace('"', "'") + "\n"
+
+    config = _config(formatting_function=formatter)
+    source = (
+        'untouched = 1; __lazy_modules__: list[str] = ["requests", "os"]'
+        '; sentinel = ["z", "a"]  # keep this comment\n'
+    )
+    expected = source.replace('["requests", "os"]', "['os', 'requests']")
+    assert isort.code(source, extension="pyi", config=config) == expected
+    assert calls == [('__lazy_modules__: list[str] = ["os", "requests"]', "pyi", config)]
+
+
+def test_configured_formatter_is_not_called_for_ineligible_declarations() -> None:
+    def formatter(code: str, extension: str, config: object) -> str:
+        raise AssertionError("Ineligible declarations must not be formatted")
+
+    sources = [
+        '# isort: off\n__lazy_modules__ = ["requests", "os"]\n',
+        '__lazy_modules__ = ["requests", "os"]  # isort: skip\n',
+        '__lazy_modules__ = ["requests",  # element comment\n    "os"]\n',
+        "__lazy_modules__ = choose_modules()\n",
+        'def f():\n    __lazy_modules__ = ["requests", "os"]\n',
+    ]
+    for source in sources:
+        assert isort.code(source, config=_config(formatting_function=formatter)) == source
+
+
+def test_explicit_literal_directive_formats_once_with_existing_order() -> None:
+    calls: list[str] = []
+
+    def formatter(code: str, extension: str, config: object) -> str:
+        calls.append(code)
+        return code.replace('"', "'")
+
+    source = '# isort: list\n__lazy_modules__ = ["requests", "os", "mylocal"]\n\n'
+    expected = "# isort: list\n__lazy_modules__ = ['mylocal', 'os', 'requests']\n\n"
+    assert isort.code(source, config=_config(formatting_function=formatter)) == expected
+    assert calls == ['__lazy_modules__ = ["mylocal", "os", "requests"]']
+
+
+def test_already_ordered_lists_still_apply_configured_formatter() -> None:
+    def formatter(code: str, extension: str, config: object) -> str:
+        return code.replace("'", '"')
+
+    config = _config(formatting_function=formatter)
+    source = "__lazy_modules__ = ['os', 'requests']\n"
+    expected = '__lazy_modules__ = ["os", "requests"]\n'
+    assert isort.code(source, config=config) == expected
+    assert not isort.check_code(source, config=config)
+    assert isort.check_code(expected, config=config)
+    assert isort.code(expected, config=config) == expected
+
+
+def test_formatters_visit_multiple_declarations_in_source_order() -> None:
+    calls: list[str] = []
+
+    def formatter(code: str, extension: str, config: object) -> str:
+        calls.append(code)
+        return code + "\n\n"
+
+    source = (
+        '__lazy_modules__ = ["requests", "os"]; '
+        '__lazy_modules__ = ["mylocal", "os"]  # selected modules\r\n'
+    )
+    expected = source.replace('["requests", "os"]', '["os", "requests"]').replace(
+        '["mylocal", "os"]', '["os", "mylocal"]'
+    )
+    assert isort.code(source, config=_config(formatting_function=formatter)) == expected
+    assert calls == [
+        '__lazy_modules__ = ["os", "requests"]',
+        '__lazy_modules__ = ["os", "mylocal"]',
+    ]
+
+
+def test_configured_formatter_failures_propagate() -> None:
+    def formatter(code: str, extension: str, config: object) -> str:
+        raise ValueError("formatter failure")
+
+    with pytest.raises(ValueError, match=r"^formatter failure$"):
+        isort.code(
+            '__lazy_modules__ = ["requests", "os"]\n',
+            config=_config(formatting_function=formatter),
+        )
 
 
 def test_internal_comments_and_dynamic_values_preserve_existing_processing() -> None:
