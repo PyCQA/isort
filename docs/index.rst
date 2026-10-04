@@ -29,6 +29,7 @@ Home
     configuration/action_comments
     configuration/add_or_remove_imports
     configuration/black_compatibility
+    configuration/comments
     Config files <configuration/config_files>
     configuration/custom_sections_and_ordering
     configuration/git_hook
