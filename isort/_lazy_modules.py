@@ -192,7 +192,7 @@ def find_declarations(source: str, config: Config) -> dict[int, Declaration]:
                 value_source = source[rhs_start:rhs_end]
                 try:
                     value = ast.parse(value_source, mode="eval").body
-                except (SyntaxError, ValueError, UnicodeError):
+                except (SyntaxError, ValueError):
                     continue
                 if not isinstance(value, ast.List):
                     continue
