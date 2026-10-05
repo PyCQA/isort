@@ -124,7 +124,7 @@ def _black_quote(value: str) -> str:
     return '"' + value.replace('"', '\\"') + '"'
 
 
-def _repr_element(value: Any) -> str:
+def _repr_element(value: object) -> str:
     """Render a single sorted element: strings via black's quote rule, everything else
     via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
     """
