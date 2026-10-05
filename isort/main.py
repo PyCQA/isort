@@ -923,7 +923,7 @@ def _preconvert(item: set[_T] | object) -> str | list[_T]:
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
-        return str(item.name)
+        return item.name
     if isinstance(item, Path):
         return str(item)
     if callable(item) and hasattr(item, "__name__"):

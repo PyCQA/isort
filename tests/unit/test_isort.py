@@ -4264,7 +4264,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     with pytest.raises(subprocess.CalledProcessError):
         # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
@@ -4273,7 +4273,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 2" in result.stdout.lower()
 
@@ -4301,17 +4301,17 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         ["isort", "dont_skip.py", "migrations/file_glob_skip.py"],
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped" not in result.stdout.lower()
 
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         [
             "isort",
@@ -4323,7 +4323,7 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 1" in result.stdout.lower()
 

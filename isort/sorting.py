@@ -22,9 +22,9 @@ def module_key(
 
     prefix = ""
     if ignore_case:
-        module_name = str(module_name).lower()
+        module_name = module_name.lower()
     else:
-        module_name = str(module_name)
+        module_name = module_name
 
     if sub_imports and config.order_by_type:
         if module_name in config.constants:
