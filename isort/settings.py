@@ -190,7 +190,7 @@ class _Config:
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: tuple[dict[str, Any], ...] = ()
+    sources: tuple[dict[str, object], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
