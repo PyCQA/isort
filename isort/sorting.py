@@ -1,6 +1,5 @@
 import re
 from collections.abc import Callable, Iterable
-from typing import Any
 
 from .settings import Config
 
@@ -13,7 +12,7 @@ def module_key(
     config: Config,
     sub_imports: bool = False,
     ignore_case: bool = False,
-    section_name: Any | None = None,
+    section_name: str | None = None,
     straight_import: bool | None = False,
 ) -> str:
     match = re.match(r"^(\.+)\s*(.*)", module_name)
@@ -100,29 +99,29 @@ def section_key(line: str, config: Config) -> str:
 def sort(
     config: Config,
     to_sort: Iterable[str],
-    key: Callable[[str], Any] | None = None,
+    key: Callable[[str], str] | None = None,
     reverse: bool = False,
 ) -> list[str]:
     return config.sorting_function(to_sort, key=key, reverse=reverse)
 
 
 def naturally(
-    to_sort: Iterable[str], key: Callable[[str], Any] | None = None, reverse: bool = False
+    to_sort: Iterable[str], key: Callable[[str], str] | None = None, reverse: bool = False
 ) -> list[str]:
     """Returns a naturally sorted list"""
     if key is None:
         key_callback = _natural_keys
     else:
 
-        def key_callback(text: str) -> list[Any]:
+        def key_callback(text: str) -> list[int | str]:
             return _natural_keys(key(text))
 
     return sorted(to_sort, key=key_callback, reverse=reverse)
 
 
-def _atoi(text: str) -> Any:
+def _atoi(text: str) -> int | str:
     return int(text) if text.isdigit() else text
 
 
-def _natural_keys(text: str) -> list[Any]:
+def _natural_keys(text: str) -> list[int | str]:
     return [_atoi(c) for c in re.split(r"(\d+)", text)]
