@@ -5695,6 +5695,26 @@ __all__ = ["bar", "foo"]  # note: key = value
     assert isort.code(test_input) == expd_output
 
 
+def test_isort_list_sorts_fstrings() -> None:
+    test_input = """# isort: list
+__lazy_modules__ = [
+    "os",
+    f"{__spec__.parent}._util",
+    "contextlib",
+    f"{__spec__.parent}._compat",
+]
+"""
+    expd_output = """# isort: list
+__lazy_modules__ = [
+    "contextlib",
+    "os",
+    f"{__spec__.parent}._compat",
+    f"{__spec__.parent}._util"
+]
+"""
+    assert isort.code(test_input) == expd_output
+
+
 def test_reexport_not_first_line() -> None:
     test_input = """import random
 

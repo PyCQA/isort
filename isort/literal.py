@@ -1,5 +1,6 @@
 import ast
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 from isort.exceptions import (
@@ -11,6 +12,12 @@ from isort.parse import _infer_line_separator
 from isort.settings import DEFAULT_CONFIG, Config
 
 type_mapping: dict[str, tuple[type, Callable[[Any, Config, int, bool, str], str]]] = {}
+
+
+@dataclass(frozen=True, slots=True)
+class _FString:
+    source: str
+    sort_key: str
 
 
 def assignments(code: str) -> str:
@@ -45,7 +52,10 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     literal = literal.lstrip()
     try:
         parsed = ast.parse(literal, mode="eval")
-        value = ast.literal_eval(parsed.body)
+        try:
+            value = ast.literal_eval(parsed.body)
+        except ValueError:
+            value = _evaluate_collection_with_fstrings(parsed.body, literal)
     except Exception as error:
         raise LiteralParsingFailure(code, error)
 
@@ -128,9 +138,65 @@ def _repr_element(value: Any) -> str:
     """Render a single sorted element: strings via black's quote rule, everything else
     via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
     """
+    if isinstance(value, _FString):
+        return value.source
     if isinstance(value, str):
         return _black_quote(value)
     return repr(value)
+
+
+def _sort_key(value: Any) -> Any:
+    if isinstance(value, _FString):
+        return value.sort_key
+    return value
+
+
+def _fstring_sort_key(node: ast.JoinedStr, source: str) -> str:
+    parts: list[str] = []
+    for value in node.values:
+        if isinstance(value, ast.Constant):
+            if not isinstance(value.value, str):
+                raise ValueError("unexpected non-string value in f-string")
+            parts.append(value.value)
+            continue
+        if not isinstance(value, ast.FormattedValue):
+            raise ValueError("unexpected value in f-string")
+
+        expression = ast.get_source_segment(source, value.value) or ast.unparse(value.value)
+        conversion = f"!{chr(value.conversion)}" if value.conversion >= 0 else ""
+        if value.format_spec is not None and not isinstance(value.format_spec, ast.JoinedStr):
+            raise ValueError("unexpected format specifier in f-string")
+        format_spec = (
+            f":{_fstring_sort_key(value.format_spec, source)}" if value.format_spec else ""
+        )
+        parts.append(f"{{{expression}{conversion}{format_spec}}}")
+    return "".join(parts)
+
+
+def _evaluate_collection_with_fstrings(node: ast.expr, source: str) -> Any:
+    if isinstance(node, ast.List):
+        collection_kind = "list"
+    elif isinstance(node, ast.Set):
+        collection_kind = "set"
+    elif isinstance(node, ast.Tuple):
+        collection_kind = "tuple"
+    else:
+        raise ValueError("f-strings are only supported in list, set, and tuple literals")
+
+    values = []
+    for element in node.elts:
+        if isinstance(element, ast.JoinedStr):
+            element_source = ast.get_source_segment(source, element)
+            if element_source is None:
+                raise ValueError("could not recover f-string source")
+            values.append(_FString(element_source, _fstring_sort_key(element, source)))
+        else:
+            values.append(ast.literal_eval(element))
+    if collection_kind == "list":
+        return values
+    if collection_kind == "set":
+        return set(values)
+    return tuple(values)
 
 
 def _format_collection(
@@ -192,7 +258,7 @@ def _list(
     preserve_trailing_comma: bool,
     line_separator: str,
 ) -> str:
-    elements = [_repr_element(item) for item in sorted(value)]
+    elements = [_repr_element(item) for item in sorted(value, key=_sort_key)]
     return _format_collection(
         elements, "[", "]", config, prefix_length, preserve_trailing_comma, line_separator
     )
@@ -206,7 +272,7 @@ def _unique_list(
     preserve_trailing_comma: bool,
     line_separator: str,
 ) -> str:
-    elements = [_repr_element(item) for item in sorted(set(value))]
+    elements = [_repr_element(item) for item in sorted(set(value), key=_sort_key)]
     return _format_collection(
         elements, "[", "]", config, prefix_length, preserve_trailing_comma, line_separator
     )
@@ -220,7 +286,7 @@ def _set(
     preserve_trailing_comma: bool,
     line_separator: str,
 ) -> str:
-    elements = [_repr_element(item) for item in sorted(value)]
+    elements = [_repr_element(item) for item in sorted(value, key=_sort_key)]
     return _format_collection(
         elements, "{", "}", config, prefix_length, preserve_trailing_comma, line_separator
     )
@@ -234,7 +300,7 @@ def _tuple(
     preserve_trailing_comma: bool,
     line_separator: str,
 ) -> str:
-    elements = [_repr_element(item) for item in sorted(value)]
+    elements = [_repr_element(item) for item in sorted(value, key=_sort_key)]
     return _format_collection(
         elements,
         "(",
