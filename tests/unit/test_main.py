@@ -1207,6 +1207,23 @@ nested_dir_ignored
         assert all(f"{tmp_path}{file}" in out for file in should_check)
 
 
+def test_gitignore_skips_ignored_folder(tmp_path: Path) -> None:
+    """Ignored folders are skipped as a whole instead of being walked file by file.
+    See: https://github.com/PyCQA/isort/issues/1912
+    """
+    subprocess.run(["git", "init", str(tmp_path)])
+    (tmp_path / ".gitignore").write_text("ignored_dir/\n")
+    for folder in ("ignored_dir", "ignored_dir/nested", "kept_dir/nested"):
+        (tmp_path / folder).mkdir(parents=True)
+        (tmp_path / folder / "has_imports.py").write_text("import b\nimport a\n")
+
+    config = Config(skip_gitignore=True)
+    assert config.is_skipped(tmp_path / "ignored_dir")
+    assert config.is_skipped(tmp_path / "ignored_dir" / "nested")
+    assert not config.is_skipped(tmp_path / "kept_dir")
+    assert not config.is_skipped(tmp_path / "kept_dir" / "nested")
+
+
 def test_multiple_configs(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
     # Ensure that --resolve-all-configs flag resolves multiple configs correctly
     # and sorts files corresponding to their nearest config
