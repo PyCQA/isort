@@ -3,11 +3,12 @@
 from collections import OrderedDict, defaultdict
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, NamedTuple, TypedDict
+from typing import TYPE_CHECKING, Literal, NamedTuple, TypedDict
 from warnings import warn
 
 from . import place
 from ._parse_utils import (
+    _ImportType,
     collect_import_continuation,
     import_type,
     normalize_from_import_string,
@@ -203,7 +204,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
         for statement in statements:
             line, raw_line = normalize_line(statement)
-            type_of_import = import_type(line, config) or ""
+            type_of_import = import_type(line, config)
             raw_lines = [raw_line]
             if not type_of_import:
                 out_lines.append(raw_line)
@@ -213,10 +214,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             # We strip the ``lazy `` prefix so the rest of the parsing logic works normally
             # on the resulting ``import X`` / ``from X import Y`` string.  The original
             # lazy type is remembered in ``is_lazy`` and used later when storing the result.
-            is_lazy = type_of_import in ("lazy_straight", "lazy_from")
+            is_lazy = type_of_import in (_ImportType.LAZY_STRAIGHT, _ImportType.LAZY_FROM)
             if is_lazy:
                 line = line[len("lazy ") :]
-                type_of_import = "straight" if type_of_import == "lazy_straight" else "from"
+                type_of_import = (
+                    _ImportType.STRAIGHT
+                    if type_of_import is _ImportType.LAZY_STRAIGHT
+                    else _ImportType.FROM
+                )
 
             if import_index == -1:
                 import_index = index - 1
@@ -224,7 +229,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             import_string, comment = parse_comments(line)
             comments = [comment] if comment is not None else []
             line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
-            if type_of_import == "from" and len(line_parts) == 2 and comments:
+            if type_of_import is _ImportType.FROM and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
 
             def _get_next_line() -> tuple[str, str | None]:
@@ -245,13 +250,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     comments.append(extra_line.comment)
                     stripped_line = strip_syntax(extra_line.line).strip()
                     if (
-                        type_of_import == "from"
+                        type_of_import is _ImportType.FROM
                         and stripped_line
                         and " " not in stripped_line.replace(" as ", "")
                     ):
                         nested_comments[stripped_line] = extra_line.comment
 
-            if type_of_import == "from":
+            if type_of_import is _ImportType.FROM:
                 import_string = normalize_from_import_string(import_string)
                 if "import " not in import_string:
                     out_lines.extend(raw_lines)
@@ -271,7 +276,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 while "as" in just_imports:
                     nested_module = None
                     as_index = just_imports.index("as")
-                    if type_of_import == "from":
+                    if type_of_import is _ImportType.FROM:
                         nested_module = just_imports[as_index - 1]
                         top_level_module = just_imports[0]
                         module = top_level_module + "." + nested_module
@@ -306,7 +311,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 f"{top_level_module}.__combined_as__", []
                             )
                         else:
-                            if type_of_import == "from" or (
+                            if type_of_import is _ImportType.FROM or (
                                 config.remove_redundant_aliases and as_name == module.split(".")[-1]
                             ):
                                 attach_comments_to = categorized_comments["straight"].setdefault(
@@ -318,7 +323,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                                 )
                     del just_imports[as_index : as_index + 2]
 
-            if type_of_import == "from":
+            if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
                 if config.verbose and not config.only_modified:
@@ -338,7 +343,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 if placed_module and placed_module not in imports:
                     raise MissingSection(import_module=import_from, section=placed_module)
 
-                root = imports[placed_module]["lazy_from" if is_lazy else type_of_import]
+                root = imports[placed_module]["lazy_from" if is_lazy else "from"]
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment is not None:
@@ -408,7 +413,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 ):
                     trailing_commas.add(import_from)
             else:
-                assert type_of_import == "straight"  # noqa: S101 # nosec # Only for type checker
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
                     comments = []
@@ -467,14 +471,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if placed_module and placed_module not in imports:
                         raise MissingSection(import_module=module, section=placed_module)
 
-                    straight_import |= bool(
-                        imports[placed_module]["lazy_straight" if is_lazy else type_of_import].get(
-                            module, False
-                        )
+                    import_bucket: Literal["lazy_straight", "straight"] = (
+                        "lazy_straight" if is_lazy else "straight"
                     )
-                    imports[placed_module]["lazy_straight" if is_lazy else type_of_import][
-                        module
-                    ] = straight_import
+                    straight_import |= imports[placed_module][import_bucket].get(module, False)
+                    imports[placed_module][import_bucket][module] = straight_import
 
     change_count = len(out_lines) - original_line_count
 

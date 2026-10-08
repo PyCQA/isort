@@ -13,7 +13,7 @@ from dataclasses import asdict
 from gettext import gettext as _
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Literal, TextIO
+from typing import Any, Literal, TextIO, TypeVar
 from warnings import warn
 
 from . import api, files, sections
@@ -25,6 +25,8 @@ from .profiles import profiles
 from .settings import VALID_PY_TARGETS, Config, find_all_configs
 from .utils import Trie
 from .wrap_modes import WrapModes
+
+_T = TypeVar("_T")
 
 QUICK_GUIDE = f"""
 {ASCII_ART}
@@ -916,12 +918,12 @@ def parse_args(argv: Sequence[str] | None = None) -> dict[str, Any]:
     return arguments
 
 
-def _preconvert(item: Any) -> str | list[Any]:
+def _preconvert(item: set[_T] | object) -> str | list[_T]:
     """Preconverts objects from native types into JSONifiable types"""
     if isinstance(item, (set, frozenset)):
         return list(item)
     if isinstance(item, WrapModes):
-        return str(item.name)
+        return item.name
     if isinstance(item, Path):
         return str(item)
     if callable(item) and hasattr(item, "__name__"):

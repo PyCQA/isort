@@ -43,12 +43,22 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     variable_name, literal = code.split("=", 1)
     variable_name = variable_name.strip()
     literal = literal.lstrip()
-    preserve_trailing_comma = config.include_trailing_comma and _has_trailing_comma(literal)
     try:
         parsed = ast.parse(literal, mode="eval")
         value = ast.literal_eval(parsed.body)
     except Exception as error:
         raise LiteralParsingFailure(code, error)
+
+    # Preserve anything that followed the literal (e.g. a trailing comment like
+    # ``__all__ = ["b", "a"]  # exports``). The value node's end position marks
+    # where the parsed literal stops, so everything after it is kept verbatim.
+    end_lineno = parsed.body.end_lineno or 1
+    end_col_offset = parsed.body.end_col_offset or 0
+    lines = literal.splitlines(keepends=True)
+    value_end = sum(len(line) for line in lines[: end_lineno - 1]) + end_col_offset
+    preserve_trailing_comma = config.include_trailing_comma and _has_trailing_comma(
+        literal[:value_end]
+    )
 
     expected_type, sort_function = type_mapping[sort_type]
     if type(value) is not expected_type:
@@ -66,13 +76,6 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             sorted_value_code, extension, config
         ).rstrip()
 
-    # Preserve anything that followed the literal (e.g. a trailing comment like
-    # ``__all__ = ["b", "a"]  # exports``). The value node's end position marks
-    # where the parsed literal stops, so everything after it is kept verbatim.
-    end_lineno = parsed.body.end_lineno or 1
-    end_col_offset = parsed.body.end_col_offset or 0
-    lines = literal.splitlines(keepends=True)
-    value_end = sum(len(line) for line in lines[: end_lineno - 1]) + end_col_offset
     sorted_value_code += literal[value_end:]
     return sorted_value_code
 
@@ -121,7 +124,7 @@ def _black_quote(value: str) -> str:
     return '"' + value.replace('"', '\\"') + '"'
 
 
-def _repr_element(value: Any) -> str:
+def _repr_element(value: object) -> str:
     """Render a single sorted element: strings via black's quote rule, everything else
     via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
     """

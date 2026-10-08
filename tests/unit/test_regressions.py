@@ -2395,6 +2395,16 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
+def test_sort_reexports_preserves_multiline_trailing_comma_before_comment() -> None:
+    """A comment after the closing bracket must not hide the trailing comma."""
+    test_input = """__all__ = [
+    "FirstClass",
+    "SecondClass",
+]  # noqa: F405
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
 def test_sort_reexports_preserves_crlf_line_endings_issue_2668() -> None:
     """``--sort-reexports`` must keep CRLF endings instead of injecting bare LFs."""
     test_input = (
