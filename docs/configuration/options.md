@@ -1202,6 +1202,23 @@ Conda environment to use for determining whether a package is third-party
 
 Inserts a blank line before a comment following an import.
 
+When a comment follows the final import, the default [`lines_after_imports`](#lines-after-imports) setting can insert a blank line even when this option is `False`. For example, isort changes:
+
+```python
+import os
+# import sys
+```
+
+to:
+
+```python
+import os
+
+# import sys
+```
+
+Set `lines_after_imports = 0` to keep the comment adjacent when running isort alone. The `black` profile does not run Black; running Black separately adds the blank line again in this example.
+
 **Type:** Bool  
 **Default:** `False`  
 **Config default:** `false`  
