@@ -116,6 +116,18 @@ description_mapping = {
     "Generally `  #` (two spaces before a pound symbol) is use, though one space is also common.",
     "lines_before_imports": "The number of blank lines to place before imports. -1 for automatic determination",
     "lines_after_imports": "The number of blank lines to place after imports. -1 for automatic determination",
+    "ensure_newline_before_comments": (
+        "Inserts a blank line before a comment following an import.\n\n"
+        "When a comment follows the final import, the default "
+        "[`lines_after_imports`](#lines-after-imports) setting can insert a blank line even "
+        "when this option is `False`. For example, isort changes:\n\n"
+        "```python\nimport os\n# import sys\n```\n\n"
+        "to:\n\n"
+        "```python\nimport os\n\n# import sys\n```\n\n"
+        "Set `lines_after_imports = 0` to keep the comment adjacent when running isort "
+        "alone. The `black` profile does not run Black; running Black separately adds "
+        "the blank line again in this example."
+    ),
     "lines_between_sections": "The number of lines to place between sections",
     "lines_between_types": "The number of lines to place between direct and from imports",
     "lexicographical": "Lexicographical order is strictly alphabetical order. "
