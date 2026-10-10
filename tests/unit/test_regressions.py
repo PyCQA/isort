@@ -2730,3 +2730,64 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_add_imports_keeps_leading_skipped_import_in_place_issue_1962() -> None:
+    """``add_imports`` must not move a leading ``isort: skip`` import below the new import.
+
+    The skipped import opens the section before any sortable import exists. Prepending
+    the added import used to make that added line the first real import, so the skip was
+    emitted underneath the sorted block (and a file that was only the skipped line grew a
+    blank line above it). See issue #1962.
+    """
+    source = "import stay_on_top  # isort: skip\nimport b\n"
+    expected = "import stay_on_top  # isort: skip\nimport a\nimport b\n"
+    assert isort.code(source, add_imports=["import a"]) == expected
+    assert isort.code(expected, add_imports=["import a"]) == expected
+    # Without add_imports the skip already stays put, ahead of an import that would
+    # otherwise sort before it.
+    assert isort.code(source) == source
+
+    only_skip = "import stay_on_top  # isort: skip\n"
+    only_expected = "import stay_on_top  # isort: skip\nimport a\n"
+    assert isort.code(only_skip, add_imports=["import a"]) == only_expected
+    assert isort.code(only_expected, add_imports=["import a"]) == only_expected
+
+    # The same directive is recognized without the space.
+    no_space = "import stay_on_top  # isort:skip\nimport b\n"
+    assert isort.code(no_space, add_imports=["import a"]) == (
+        "import stay_on_top  # isort:skip\nimport a\nimport b\n"
+    )
+
+    # Adjacent leading skips stay together, above the added import and the real one.
+    two_skips = "import s1  # isort: skip\nimport s2  # isort: skip\nimport b\n"
+    two_expected = "import s1  # isort: skip\nimport s2  # isort: skip\nimport a\nimport b\n"
+    assert isort.code(two_skips, add_imports=["import a"]) == two_expected
+    assert isort.code(two_expected, add_imports=["import a"]) == two_expected
+
+    # A parenthesized skip whose comment is on the opening line stays above the addition.
+    parenthesized = "from pkg import (  # isort: skip\n    name,\n)\nimport b\n"
+    parenthesized_expected = "from pkg import (  # isort: skip\n    name,\n)\nimport a\nimport b\n"
+    assert isort.code(parenthesized, add_imports=["import a"]) == parenthesized_expected
+    assert isort.code(parenthesized_expected, add_imports=["import a"]) == parenthesized_expected
+
+    # A from-import skip is the same kind of barrier.
+    from_skip = "from pkg import name  # isort: skip\nimport b\n"
+    assert isort.code(from_skip, add_imports=["import a"]) == (
+        "from pkg import name  # isort: skip\nimport a\nimport b\n"
+    )
+
+    # A skip that follows a real import is still a boundary: the addition joins the
+    # imports above it, and the import below it is not pulled up. See #2092.
+    between = "import zzz\nimport mid  # isort: skip\nimport aaa\n"
+    between_sorted = isort.code(between, add_imports=["import mmm"])
+    assert between_sorted == ("import mmm\nimport zzz\n\nimport mid  # isort: skip\nimport aaa\n")
+    assert isort.code(between_sorted, add_imports=["import mmm"]) == between_sorted
+
+    # A continued import whose skip comment sits on the following line has to stay one
+    # statement. Splitting it would put the added import between the backslash and the
+    # rest of the line.
+    continued = "import very.long.module \\\n    as stay  # isort: skip\nimport b\n"
+    assert isort.core._place_added_imports(continued, ["import a"], "\n") == (
+        "import very.long.module \\\n    as stay  # isort: skip\nimport a\nimport b\n"
+    )
