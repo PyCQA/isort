@@ -2730,3 +2730,55 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_multiline_import_closing_paren_with_semicolon_issue_2679() -> None:
+    """Ensure multiline parenthesized imports followed by semicolons and statements
+    do not absorb subsequent statements into imported names.
+    See: https://github.com/PyCQA/isort/issues/2679
+    """
+    src1 = "from pkg.mod import (\n    y,\n); import os\n"
+    expected1 = "import os\n\nfrom pkg.mod import y\n"
+    assert isort.code(src1) == expected1
+    assert ast.parse(isort.code(src1))
+    assert isort.check_code(src1) is False
+    assert isort.check_code(expected1) is True
+    assert [str(i) for i in isort.find_imports_in_code(src1)] == [
+        ":1 from pkg.mod import y",
+        ":3 import os",
+    ]
+
+    src2 = "from pkg.mod import (\n    y,\n); from os import beta\n"
+    expected2 = "from os import beta\n\nfrom pkg.mod import y\n"
+    assert isort.code(src2) == expected2
+    assert ast.parse(isort.code(src2))
+
+    src3 = "from pkg.mod import (\n    y,\n); print(1)\n"
+    expected3 = "from pkg.mod import y\n\nprint(1)\n"
+    assert isort.code(src3) == expected3
+    assert ast.parse(isort.code(src3))
+
+    src4 = "from pkg.mod import (\n    y,\n);\n"
+    expected4 = "from pkg.mod import y\n"
+    assert isort.code(src4) == expected4
+    assert ast.parse(isort.code(src4))
+
+    src5 = "from pkg.mod import (\n    y,\n);  # note\n"
+    expected5 = "from pkg.mod import y  # note\n"
+    assert isort.code(src5) == expected5
+    assert ast.parse(isort.code(src5))
+
+    src6 = "from pkg.mod import (\n    y,\n); import os  # note\n"
+    expected6 = "import os  # note\n\nfrom pkg.mod import y\n"
+    assert isort.code(src6) == expected6
+    assert ast.parse(isort.code(src6))
+
+    src7 = "from pkg.mod import (\n    y); import os\n"
+    expected7 = "import os\n\nfrom pkg.mod import y\n"
+    assert isort.code(src7) == expected7
+    assert ast.parse(isort.code(src7))
+
+    src8 = "import zlib\nfrom pkg.mod import (\n    y,\n); import os\n"
+    expected8 = "import os\nimport zlib\n\nfrom pkg.mod import y\n"
+    assert isort.code(src8) == expected8
+    assert ast.parse(isort.code(src8))
