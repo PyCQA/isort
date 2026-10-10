@@ -62,6 +62,56 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+_IMPORT_STATEMENT_STARTS = ("import ", "from ", "cimport ", "lazy import ", "lazy from ")
+
+
+def _code_without_comment(line: str) -> str:
+    return line.split("#", 1)[0]
+
+
+def _statement_end(lines: list[str], start: int) -> int:
+    """Return the exclusive end of the statement that begins at `start`."""
+    index = start
+    parenthesis_depth = 0
+    while index < len(lines):
+        code = _code_without_comment(lines[index])
+        parenthesis_depth += code.count("(") - code.count(")")
+        index += 1
+        if parenthesis_depth > 0 or code.rstrip().endswith("\\"):
+            continue
+        break
+    return index
+
+
+def _is_skipped_import_statement(statement: str) -> bool:
+    if not _has_skip_comment(statement):
+        return False
+    code = " ".join(_code_without_comment(line).strip() for line in statement.splitlines())
+    return code.startswith(_IMPORT_STATEMENT_STARTS)
+
+
+def _place_added_imports(import_section: str, add_imports: list[str], line_separator: str) -> str:
+    """Insert added imports without moving a leading ``isort: skip`` import.
+
+    Added imports normally go at the start of the collected section. A per-line
+    skip that opened the section is not a sortable import. Placing the added
+    line before it makes that line the first real import, and the skipped import
+    is then emitted below the sorted block. See #1962.
+    """
+    addition = line_separator.join(add_imports) + line_separator
+    lines = import_section.splitlines(keepends=True)
+    index = 0
+    while index < len(lines):
+        end = _statement_end(lines, index)
+        statement = "".join(lines[index:end])
+        if not _is_skipped_import_statement(statement):
+            break
+        index = end
+    if index == 0:
+        return addition + import_section
+    return "".join(lines[:index]) + addition + "".join(lines[index:])
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -204,6 +254,10 @@ def process(
     in_quote: str = ""
     was_in_quote: bool = False
     contains_imports: bool = False
+    # True only after a sortable import was collected. A run of leading
+    # ``isort: skip`` lines must not count: the next skipped import is not a
+    # section boundary until a real import has been seen. See #1962.
+    contains_sortable_imports: bool = False
     in_top_comment: bool = False
     first_import_section: bool = True
     indent: str = ""
@@ -408,21 +462,23 @@ def process(
                                 import_statement += line
 
                     # The second clause keeps a per-line ``isort: skip`` import exactly
-                    # where it is: when earlier imports have already been collected into
-                    # the current section, the skipped statement is treated as a section
-                    # boundary so those imports can't be sorted above it.  Without it, a
-                    # preceding import (most commonly a ``__future__`` import, which is
-                    # always floated to the top) makes isort splice the sorted block
-                    # ahead of the skipped line and relocate it below the block. See #2092.
+                    # where it is: when earlier sortable imports have already been
+                    # collected, the skipped statement is a section boundary so those
+                    # imports can't be sorted above it. A leading run of skipped
+                    # imports does not count: nothing sortable is above them yet, and
+                    # treating the next skip as a boundary would let ``add_imports``
+                    # land between the skipped lines. See #2092 and #1962.
                     if (
                         import_statement.lstrip().startswith("from")
                         and "import" not in import_statement
-                    ) or (contains_imports and _has_skip_comment(import_statement)):
+                    ) or (contains_sortable_imports and _has_skip_comment(import_statement)):
                         line = import_statement
                         not_imports = True
                     else:
                         did_contain_imports = contains_imports
                         contains_imports = True
+                        if not _has_skip_comment(import_statement):
+                            contains_sortable_imports = True
 
                         cimport_statement: bool = False
                         if (
@@ -496,10 +552,11 @@ def process(
 
             if import_section:
                 if add_imports and (contains_imports or not config.append_only) and not indent:
-                    import_section = (
-                        line_separator.join(add_imports) + line_separator + import_section
+                    import_section = _place_added_imports(
+                        import_section, add_imports, line_separator
                     )
                     contains_imports = True
+                    contains_sortable_imports = True
                     add_imports = []
 
                 if not indent:
@@ -559,8 +616,10 @@ def process(
                 if next_import_section:
                     cimports = next_cimports
                     contains_imports = True
+                    contains_sortable_imports = not _has_skip_comment(next_import_section)
                 else:
                     contains_imports = False
+                    contains_sortable_imports = False
                 import_section = next_import_section
                 next_import_section = ""
             else:
