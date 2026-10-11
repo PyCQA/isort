@@ -541,9 +541,18 @@ class Config(_Config):
             .split("\0")
         )
 
-        self.git_ls_files[git_folder] = {
-            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
-        }
+        # the folders holding those files are allowed too, so that folders without
+        # any of them (e.g. ignored ones) are skipped instead of walked file by file
+        allowed = {str(git_folder)}
+        for f in tracked_files + tracked_files_others:
+            path = git_folder / Path(f)
+            allowed.add(str(path))
+            for parent in path.parents:
+                if str(parent) in allowed:
+                    break
+                allowed.add(str(parent))
+
+        self.git_ls_files[git_folder] = allowed
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -594,11 +603,7 @@ class Config(_Config):
 
             # git_ls_files are good files you should parse. If you're not in the allow list, skip.
 
-            if (
-                git_folder
-                and not file_path.is_dir()
-                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
-            ):
+            if git_folder and str(file_path.resolve()) not in self.git_ls_files[git_folder]:
                 return True
 
         return False
