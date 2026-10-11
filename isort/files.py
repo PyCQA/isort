@@ -6,6 +6,7 @@ from isort.settings import Config
 
 
 def _find_git_root(path: Path) -> Path | None:
+    """Find the source Git repository, allowing a symlinked repository alias."""
     absolute_path = path.absolute()
     start = absolute_path.parent if path.is_symlink() or not path.is_dir() else absolute_path
     directories = (start, *start.parents)
@@ -27,6 +28,7 @@ def _find_git_root(path: Path) -> Path | None:
 
 
 def _is_external_git_symlink(path: Path) -> bool:
+    """Detect links that resolve outside the containing source Git repository."""
     # Broken links are reported through ``broken`` by ``find``. Resolving a
     # symlink cycle can also raise, so leave both cases to the caller.
     if not path.exists():
@@ -62,6 +64,36 @@ def _is_external_git_symlink(path: Path) -> bool:
     return False
 
 
+def _prune_directories(
+    base_path: Path,
+    dirnames: list[str],
+    config: Config,
+    skipped: list[str],
+    broken: list[str],
+    visited_dirs: set[Path],
+) -> None:
+    """Prune an os.walk step and record skipped, broken and visited directories."""
+    for dirname in list(dirnames):
+        full_path = base_path / dirname
+        if (full_path.is_symlink() and _is_external_git_symlink(full_path)) or config.is_skipped(
+            full_path
+        ):
+            skipped.append(str(full_path))
+            dirnames.remove(dirname)
+            continue
+
+        try:
+            resolved_path = full_path.resolve()
+        except (OSError, RuntimeError):
+            broken.append(str(full_path))
+            dirnames.remove(dirname)
+            continue
+
+        if resolved_path in visited_dirs:  # pragma: no cover
+            dirnames.remove(dirname)
+        visited_dirs.add(resolved_path)
+
+
 def find(
     paths: Iterable[str | Path], config: Config, skipped: list[str], broken: list[str]
 ) -> Iterator[str | Path]:
@@ -78,26 +110,7 @@ def find(
             for dirpath, dirnames, filenames in os.walk(
                 path, topdown=True, followlinks=config.follow_links
             ):
-                base_path = Path(dirpath)
-                for dirname in list(dirnames):
-                    full_path = base_path / dirname
-                    if (
-                        full_path.is_symlink() and _is_external_git_symlink(full_path)
-                    ) or config.is_skipped(full_path):
-                        skipped.append(str(full_path))
-                        dirnames.remove(dirname)
-                        continue
-
-                    try:
-                        resolved_path = full_path.resolve()
-                    except (OSError, RuntimeError):
-                        broken.append(str(full_path))
-                        dirnames.remove(dirname)
-                        continue
-
-                    if resolved_path in visited_dirs:  # pragma: no cover
-                        dirnames.remove(dirname)
-                    visited_dirs.add(resolved_path)
+                _prune_directories(Path(dirpath), dirnames, config, skipped, broken, visited_dirs)
 
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
