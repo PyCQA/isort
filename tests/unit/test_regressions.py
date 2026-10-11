@@ -2395,6 +2395,16 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
+def test_sort_reexports_preserves_multiline_trailing_comma_before_comment() -> None:
+    """A comment after the closing bracket must not hide the trailing comma."""
+    test_input = """__all__ = [
+    "FirstClass",
+    "SecondClass",
+]  # noqa: F405
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
 def test_sort_reexports_preserves_crlf_line_endings_issue_2668() -> None:
     """``--sort-reexports`` must keep CRLF endings instead of injecting bare LFs."""
     test_input = (
@@ -2664,7 +2674,7 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893() -> None
                 assert isort.code(source, add_imports=["import a"]) == source, cased + quote
 
 
-def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124():
+def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124() -> None:
     """Ensure isort doesn't merge a long comment onto the opening line of a
     multiline from import when using the black profile.
     See: https://github.com/PyCQA/isort/issues/2124
@@ -2690,7 +2700,7 @@ def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124():
     assert isort.code(output, profile="black") == output
 
 
-def test_opening_line_comment_keeps_existing_placement_issue_2124():
+def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
     """An opening-line comment never moves, even when the opening line is long.
 
     Only body (continuation-line) comments may move to satisfy line_length.

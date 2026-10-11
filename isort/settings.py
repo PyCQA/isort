@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
+import tomllib
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
@@ -36,12 +37,6 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    from ._vendored import tomli as tomllib
-
-_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
@@ -195,7 +190,7 @@ class _Config:
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: tuple[dict[str, Any], ...] = ()
+    sources: tuple[dict[str, object], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
@@ -512,12 +507,7 @@ class Config(_Config):
         except OSError:
             pass
 
-        try:
-            with open(file_name, "rb") as fp:
-                line = fp.readline(100)
-        except OSError:
-            return False
-        return bool(_SHEBANG_RE.match(line))
+        return False
 
     def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}
