@@ -2715,7 +2715,67 @@ def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
 """
     output = isort.code(test_input, multi_line_output=3, include_trailing_comma=True)
     assert output == test_input
-    assert isort.code(output, multi_line_output=3, include_trailing_comma=True) == test_input
+
+
+def test_opening_and_body_comments_combined_end_to_end_issue_2124() -> None:
+    """An opening-line comment stays while long body comments move off.
+
+    This is the provenance pin: it fails if parser metadata breaks.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = (
+        "from os.path import (  # opening note,\n"
+        "    join,\n"
+        "    # this is a really really really really really really really really\n"
+        "    # really really really really really really long comment\n"
+        "    getsize,\n"
+        ")\n"
+    )
+    expected = (
+        "from os.path import (  # opening note,\n"
+        "    # this is a really really really really really really really really\n"
+        "    # really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")\n"
+    )
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    for line in output.splitlines():
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    ast.parse(output)
+    assert isort.code(output, profile="black") == output
+
+
+def test_noqa_and_body_comments_combined_end_to_end_issue_2124() -> None:
+    """A functional opening comment stays while long body comments move off.
+
+    This pins directive handling. Provenance is pinned by the opening-note
+    case above.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = (
+        "from os.path import (  # noqa: F401\n"
+        "    join,\n"
+        "    # this is a really really really really really really really really\n"
+        "    # really really really really really really long comment\n"
+        "    getsize,\n"
+        ")\n"
+    )
+    expected = (
+        "from os.path import (  # noqa: F401\n"
+        "    # this is a really really really really really really really really\n"
+        "    # really really really really really really long comment\n"
+        "    getsize,\n"
+        "    join,\n"
+        ")\n"
+    )
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    for line in output.splitlines():
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    ast.parse(output)
+    assert isort.code(output, profile="black") == output
 
 
 def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments() -> None:
