@@ -60,14 +60,17 @@ This will likely be changed in isort 6.0.0+ in a backwards compatible way.
 isort classifies each imported module before sorting it into a section. It uses
 these checks in order, stopping at the first match:
 
-1. A matching [forced separate](options.md#forced-separate) pattern puts the
-   import in that separate section.
+1. A [forced separate](options.md#forced-separate) pattern that matches the
+   start of the module name puts the import in that separate section. isort
+   appends `*` to a pattern that does not end with one, so `django.contrib`
+   also matches `django.contrib.auth` and `django.contribfoo`.
 2. An import starting with a dot, such as `from .utils import helper`, goes in
    `LOCALFOLDER`.
 3. A matching `known_*` setting selects its configured section. This includes
    the standard library list for the configured [Python version](options.md#python-version).
    isort checks the full module name before its parent names, so a setting for
-   `mypackage.special` can override one for `mypackage`.
+   `mypackage.special` can override one for `mypackage`. A `known_*` setting is
+   ignored when its section is not listed in [sections](options.md#sections).
 4. A module or package found under [source paths](options.md#src-paths) goes in
    `FIRSTPARTY`. This includes Python modules, extension modules, packages and
    directories. Namespace packages are checked for the imported submodule.
