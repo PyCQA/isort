@@ -2597,6 +2597,24 @@ def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_20
     assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
 
 
+def test_long_combined_straight_imports_keep_their_module_names_issue_2723() -> None:
+    """A long combined straight import stays on one line outside NOQA mode."""
+    to_sort = (
+        "import email.message\n"
+        "import email.utils\n"
+        "import http.cookies\n"
+        "import importlib.util\n"
+        "import os.path\n"
+        "import urllib.parse\n"
+        "import warnings\n"
+    )
+
+    assert isort.code(to_sort, combine_straight_imports=True) == (
+        "import email.message, email.utils, http.cookies, importlib.util, os.path, urllib.parse, "
+        "warnings\n"
+    )
+
+
 def test_isort_skip_is_honored_with_future_import_issue_2092() -> None:
     """A per-line ``isort: skip`` must be honored even when a ``__future__`` import is present.
 
