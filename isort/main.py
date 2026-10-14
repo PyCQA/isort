@@ -28,6 +28,14 @@ from .wrap_modes import WrapModes
 
 _T = TypeVar("_T")
 
+HELP_EXAMPLES = """\
+Quick start:
+  isort .                 Sort all Python files in the current directory.
+  isort . --interactive   Sort interactively.
+  isort . --check --diff  Check whether imports are sorted and show a diff.
+  isort --help            Show all command-line options.
+"""
+
 QUICK_GUIDE = f"""
 {ASCII_ART}
 
@@ -137,15 +145,18 @@ def _print_hard_fail(
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Sort Python import definitions alphabetically "
-        "within logical sections. Run with no arguments to see a quick "
-        "start guide, otherwise, one or more files/directories/stdin must be provided. "
-        "Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 "
-        "interactive behavior."
-        " "
-        "If you've used isort 4 but are new to isort 5, see the upgrading guide: "
-        "https://isort.readthedocs.io/en/latest/upgrade_guides/5.0.0.html",
+        description=HELP_EXAMPLES
+        + """
+Sort Python import definitions alphabetically within logical sections. Run with
+no arguments to see a quick start guide; otherwise, provide one or more files,
+directories, or stdin. Use `-` as the first argument to represent stdin. Use
+--interactive to use the pre-5.0.0 interactive behavior.
+
+If you've used isort 4 but are new to isort 5, see the upgrading guide:
+https://isort.readthedocs.io/en/latest/upgrade_guides/5.0.0.html
+""",
         add_help=False,  # prevent help option from appearing in "optional arguments" group
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     general_group = parser.add_argument_group("general options")

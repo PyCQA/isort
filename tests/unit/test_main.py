@@ -87,6 +87,17 @@ def test_parse_args() -> None:
     assert main.parse_args(["--resolve-all-configs"]) == {"resolve_all_configs": True}
 
 
+def test_help_includes_quick_start_examples(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main.main(["--help"])
+
+    assert exc_info.value.code == 0
+    out, error = capsys.readouterr()
+    assert main.HELP_EXAMPLES in out
+    assert out.index(main.HELP_EXAMPLES) < out.index("general options:")
+    assert not error
+
+
 def test_ascii_art(capsys: pytest.CaptureFixture[str]) -> None:
     main.main(["--version"])
     out, error = capsys.readouterr()
