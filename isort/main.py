@@ -20,7 +20,6 @@ from . import api, files, sections
 from ._version import _VERSION_STRING
 from .exceptions import FileSkipped, ISortError, UnsupportedEncoding
 from .format import create_terminal_printer
-from .logo import ASCII_ART
 from .profiles import profiles
 from .settings import VALID_PY_TARGETS, Config, find_all_configs
 from .utils import Trie
@@ -28,10 +27,16 @@ from .wrap_modes import WrapModes
 
 _T = TypeVar("_T")
 
-QUICK_GUIDE = f"""
-{ASCII_ART}
+QUICK_GUIDE = rf"""
+                 _                 _
+                (_) ___  ___  _ __| |_
+                | |/ _/ / _ \/ '__  _/
+                | |\__ \/\_\/| |  | |_
+                |_|\___/\___/\_/   \_/
 
-Nothing to do: no files or paths have been passed in!
+      isort your imports, so you don't have to.
+
+                    VERSION {_VERSION_STRING}
 
 Try one of the following:
 
@@ -137,14 +142,7 @@ def _print_hard_fail(
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Sort Python import definitions alphabetically "
-        "within logical sections. Run with no arguments to see a quick "
-        "start guide, otherwise, one or more files/directories/stdin must be provided. "
-        "Use `-` as the first argument to represent stdin. Use --interactive to use the pre 5.0.0 "
-        "interactive behavior."
-        " "
-        "If you've used isort 4 but are new to isort 5, see the upgrading guide: "
-        "https://isort.readthedocs.io/en/latest/upgrade_guides/5.0.0.html",
+        usage=QUICK_GUIDE,
         add_help=False,  # prevent help option from appearing in "optional arguments" group
     )
 
@@ -1146,8 +1144,6 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
         num_skipped = 0
         num_broken = 0
         num_invalid_encoding = 0
-        if config.verbose:
-            print(ASCII_ART)
 
         if jobs:
             import multiprocessing.pool  # noqa: PLC0415

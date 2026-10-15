@@ -929,21 +929,7 @@ import pandas as pd
     main.main([str(file1), str(file2), "--verbose", "--only-modified"])
     out, error = capsys.readouterr()
 
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == ""
 
     assert not error
 
@@ -972,21 +958,7 @@ import os
     main.main([str(file1), str(file2), "--check-only", "--verbose", "--only-modified"])
     out, error = capsys.readouterr()
 
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == ""
 
     assert not error
 

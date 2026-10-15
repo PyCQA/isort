@@ -18,7 +18,6 @@ def test_importable() -> None:
     import isort.exceptions
     import isort.format
     import isort.hooks
-    import isort.logo
     import isort.main
     import isort.output
     import isort.parse
