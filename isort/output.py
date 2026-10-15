@@ -459,7 +459,12 @@ def _build_grouped_from_imports(
         # ``multi_line_output`` mode.
         config.split_on_trailing_comma
         and (
-            module in parsed.trailing_commas
+            # Only the statement(s) that carried the trailing comma: when aliased
+            # imports split a module into several statements, the others must keep
+            # their layout or the output changes again on the next run.
+            not parsed.trailing_commas.get(module, set()).isdisjoint(
+                name.split(" as ")[0] for name in imports
+            )
             or (config.include_trailing_comma and do_multiline_reformat)
         )
         and not processed_as_imports_this_iteration

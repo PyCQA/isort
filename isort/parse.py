@@ -73,7 +73,7 @@ class ParsedContent(NamedTuple):
     line_separator: str
     sections: tuple[str, ...]
     verbose_output: list[str]
-    trailing_commas: set[str]
+    trailing_commas: dict[str, set[str]]
 
 
 # Ignore DeepSource cyclomatic complexity check for this function. It is one
@@ -119,7 +119,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "above": {"straight": {}, "from": {}},
     }
 
-    trailing_commas: set[str] = set()
+    # module -> names imported by its statements that end with a trailing comma
+    trailing_commas: dict[str, set[str]] = {}
 
     index = 0
     import_index = -1
@@ -411,7 +412,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     and just_imports[-1]
                     and "," in import_string.split(just_imports[-1])[-1]
                 ):
-                    trailing_commas.add(import_from)
+                    trailing_commas.setdefault(import_from, set()).update(just_imports)
             else:
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
