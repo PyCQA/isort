@@ -2788,3 +2788,30 @@ def test_lines_before_imports_keeps_import_after_indented_block() -> None:
         "\n"
         "import third_party_library\n"
     )
+
+
+def test_split_on_trailing_comma_idempotent_with_aliased_import_between() -> None:
+    """An aliased import can split one module's names into several statements.
+    Only the statement that gets the trailing comma should be exploded on the next
+    run; previously every statement of that module was, so a second run wrapped
+    ``from _csv import __doc__`` in parentheses as well.
+    """
+    code = (
+        "from _csv import QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_NONE, QUOTE_STRINGS,"
+        " QUOTE_NOTNULL, __doc__\n"
+        "from _csv import Dialect as _Dialect\n"
+    )
+    expected = (
+        "from _csv import __doc__\n"
+        "from _csv import Dialect as _Dialect\n"
+        "from _csv import (\n"
+        "    QUOTE_MINIMAL,\n"
+        "    QUOTE_NONE,\n"
+        "    QUOTE_NONNUMERIC,\n"
+        "    QUOTE_NOTNULL,\n"
+        "    QUOTE_STRINGS,\n"
+        ")\n"
+    )
+    output = isort.code(code, profile="appnexus")
+    assert output == expected
+    assert isort.code(output, profile="appnexus") == output
