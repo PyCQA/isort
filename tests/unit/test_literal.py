@@ -34,6 +34,24 @@ def test_list_uses_double_quotes() -> None:
     assert isort.literal.assignment("x = ['b', 'a']", "list", "py") == 'x = ["a", "b"]'
 
 
+def test_list_sorts_fstrings_by_their_rendered_value() -> None:
+    code = """__lazy_modules__ = [
+    f"{__spec__.parent}._util",
+    "os",
+    f"{__spec__.parent}._compat",
+    "contextlib",
+]"""
+    assert (
+        isort.literal.assignment(code, "list", "py", Config(profile="black"))
+        == """__lazy_modules__ = [
+    "contextlib",
+    "os",
+    f"{__spec__.parent}._compat",
+    f"{__spec__.parent}._util",
+]"""
+    )
+
+
 def test_list_preserves_bracket_type_tuple() -> None:
     assert isort.literal.assignment("x = ('b', 'a')", "tuple", "py") == 'x = ("a", "b")'
 
