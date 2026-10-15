@@ -162,15 +162,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help=_("show this help message and exit"),
     )
     general_group.add_argument(
-        "-V",
         "--version",
-        action="store_true",
-        dest="show_version",
-        help="Displays the currently installed version of isort.",
-    )
-    general_group.add_argument(
-        "--vn",
-        "--version-number",
         action="version",
         version=_VERSION_STRING,
         help="Returns just the current version number without the logo",
@@ -1022,9 +1014,6 @@ def identify_imports_main(
 # skipcq: PY-R1000
 def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) -> None:
     arguments = parse_args(argv)
-    if arguments.get("show_version"):
-        print(ASCII_ART)
-        return
 
     show_config: bool = arguments.pop("show_config", False)
     show_files: bool = arguments.pop("show_files", False)
