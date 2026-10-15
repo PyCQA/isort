@@ -88,23 +88,10 @@ def test_parse_args() -> None:
 
 
 def test_ascii_art(capsys: pytest.CaptureFixture[str]) -> None:
-    main.main(["--version"])
+    with pytest.raises(SystemExit):
+        main.main(["--version"])
     out, error = capsys.readouterr()
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == f"{_VERSION_STRING}\n"
     assert error == ""
 
 
