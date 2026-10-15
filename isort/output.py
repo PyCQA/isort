@@ -7,6 +7,7 @@ from isort.format import format_simplified
 
 from . import _parse_utils, parse, sorting, wrap, wrap_modes
 from .comments import add_to_line as with_comments
+from .comments import parse as parse_comment
 from .identify import STATEMENT_DECLARATIONS
 from .place import module_with_reason
 from .settings import DEFAULT_CONFIG, Config
@@ -304,6 +305,61 @@ def _build_import_group(
     return group_output
 
 
+def _inject_from_body_comments(
+    import_statement: str,
+    body_comments: list[str],
+    line_separator: str,
+    indent: str,
+    *,
+    comment_prefix: str = DEFAULT_CONFIG.comment_prefix,
+) -> str:
+    """Re-insert comment-only lines inside a multi-line from-import statement.
+
+    Comment-only members of a parenthesised import group must stay as their own
+    indented lines.  Collapsing them onto the opening ``import (`` line produces
+    a single long ``# a,; b,; c`` comment that breaks line-length checkers.
+    See issue #1852.
+
+    When the statement is single-line (no closing ``)``), fold the body comments
+    onto that statement with ``with_comments`` instead of emitting orphan
+    indented comment lines. Orphan lines are non-idempotent under a second sort.
+    """
+    if not body_comments:
+        return import_statement
+
+    comment_lines = [
+        f"{indent}# {comment_text}".rstrip() if comment_text else f"{indent}#"
+        for comment_text in body_comments
+    ]
+    lines = import_statement.split(line_separator)
+
+    # Preferred placement: immediately before the closing ``)`` of a multi-line
+    # parenthesised import so the comments stay inside the group.
+    for index in range(len(lines) - 1, -1, -1):
+        if lines[index].lstrip().startswith(")"):
+            lines[index:index] = comment_lines
+            return line_separator.join(lines)
+
+    # Single-line / no-paren fallback: main-compatible fold onto the statement.
+    # Merge any trailing comment already on the statement (nested inline) after body
+    # comments so we keep main's ``# body; nested`` shape instead of clobbering.
+    _base, existing_comment = parse_comment(import_statement)
+    # Drop spacing that used to precede an inline comment so re-attach is stable.
+    _base = _base.rstrip()
+    merged = list(body_comments)
+    if existing_comment:
+        for part in existing_comment.split(";"):
+            part = part.strip()
+            if part and part not in merged:
+                merged.append(part)
+    return with_comments(
+        merged,
+        _base,
+        removed=False,
+        comment_prefix=comment_prefix,
+    )
+
+
 def _build_as_imports(
     *,
     from_import: str,  # Y in `from X import Y as Z`
@@ -599,6 +655,9 @@ def _with_from_imports_for_module(
 
     comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
     above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+    body_comments: list[str] = list(
+        parsed.categorized_comments["from_body"][import_key].pop(module, [])
+    )
     if above_comments:
         output.extend(above_comments)
 
@@ -606,15 +665,18 @@ def _with_from_imports_for_module(
     if "*" in from_imports:
         from_imports.remove("*")
 
+        # Fold from_body comments onto the star statement (main-compatible).
+        star_comments = list(comments if config.combine_star else [])
+        if body_comments and not config.ignore_comments:
+            star_comments = star_comments + body_comments
+            body_comments = []
         output.append(
             wrap.line(
                 with_comments(
                     _with_star_comments(
                         parsed,
                         module,
-                        # If we are combining the star imports we want to include all from-import
-                        # comments we found above.
-                        comments if config.combine_star else [],
+                        star_comments,
                     ),
                     f"{import_start}*",
                     removed=config.ignore_comments,
@@ -633,6 +695,14 @@ def _with_from_imports_for_module(
 
     # Handle force_single_line
     if config.force_single_line and module not in config.single_line_exclusions:
+        # Pending comments (opening + body) must land on the first *emitted*
+        # single-line statement. As-only modules never emit the bare name, so
+        # folding into ``comments`` on that non-emitted line drops body text.
+        pending_comments: list[str] = list(comments or [])
+        if body_comments and not config.ignore_comments:
+            pending_comments.extend(body_comments)
+            body_comments = []
+        comments = []
         for from_import in from_imports:
             if from_import in as_imports:
                 output.extend(
@@ -643,7 +713,7 @@ def _with_from_imports_for_module(
                         line_separator=parsed.line_separator,
                         config=config,
                         straight_comments=[
-                            *comments,
+                            *pending_comments,
                             *parsed.categorized_comments["straight"].get(
                                 f"{module}.{from_import}", []
                             ),
@@ -655,12 +725,13 @@ def _with_from_imports_for_module(
                         ),
                     )
                 )
+                pending_comments = []
             else:
                 single_import_line = with_comments(
                     [
                         c
                         for c in (
-                            *comments,
+                            *pending_comments,
                             parsed.categorized_comments["nested"]
                             .get(module, {})
                             .pop(from_import, None),
@@ -673,7 +744,7 @@ def _with_from_imports_for_module(
                 )
 
                 output.append(wrap.line(single_import_line, parsed.line_separator, config))
-            comments = []
+                pending_comments = []
         return output
 
     while from_imports:
@@ -768,6 +839,14 @@ def _with_from_imports_for_module(
                 *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
             ]
 
+        # Parenthesised black-style wrapping can keep comment-only import members as
+        # their own lines (issue #1852).  Other wrap modes historically collapsed those
+        # comments onto the import statement (issue #1396); preserve that behaviour when
+        # a grouped statement will be built.
+        if from_import_section and body_comments and not config.use_parentheses:
+            comments = list(comments or []) + body_comments
+            body_comments = []
+
         grouped_from_import_statement = _build_grouped_from_imports(
             config=config,
             parsed=parsed,
@@ -778,7 +857,28 @@ def _with_from_imports_for_module(
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
         )
         if grouped_from_import_statement:
+            if body_comments and not config.ignore_comments:
+                grouped_from_import_statement = _inject_from_body_comments(
+                    grouped_from_import_statement,
+                    body_comments,
+                    parsed.line_separator,
+                    config.indent,
+                    comment_prefix=config.comment_prefix,
+                )
+                body_comments = []
             output.append(grouped_from_import_statement)
+        elif body_comments and not config.ignore_comments and output:
+            # as-import-only / nested-only paths may emit lines without a final
+            # grouped import_statement. Never drop body comments: fold them onto
+            # the last statement emitted for this module.
+            output[-1] = _inject_from_body_comments(
+                output[-1],
+                body_comments,
+                parsed.line_separator,
+                config.indent,
+                comment_prefix=config.comment_prefix,
+            )
+            body_comments = []
 
         # Reset comments as we have just parsed them.
         comments = []

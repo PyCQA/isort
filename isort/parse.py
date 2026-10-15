@@ -24,6 +24,10 @@ if TYPE_CHECKING:
     CommentsAboveDict = TypedDict(
         "CommentsAboveDict", {"straight": dict[str, list[str]], "from": dict[str, list[str]]}
     )
+    CommentsFromBodyDict = TypedDict(
+        "CommentsFromBodyDict",
+        {"from": dict[str, list[str]], "lazy_from": dict[str, list[str]]},
+    )
 
     CommentsDict = TypedDict(
         "CommentsDict",
@@ -32,6 +36,12 @@ if TYPE_CHECKING:
             "straight": dict[str, list[str]],
             "nested": dict[str, dict[str, str]],
             "above": CommentsAboveDict,
+            # Comment-only lines that appeared inside a parenthesised from-import
+            # (e.g. ``    # PasswordChangeView,``), keyed by eager/lazy import kind.
+            # Kept separate from opening-line ``from`` comments so they can be
+            # re-emitted as their own indented lines instead of being collapsed onto
+            # the ``import (`` line. See issue #1852.
+            "from_body": CommentsFromBodyDict,
         },
     )
 
@@ -117,6 +127,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "straight": {},
         "nested": {},
         "above": {"straight": {}, "from": {}},
+        "from_body": {"from": {}, "lazy_from": {}},
     }
 
     trailing_commas: set[str] = set()
@@ -247,6 +258,13 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 raw_lines.append(extra_line.line)
                 # If during parsing of the continuation lines we encounter a comment, we record it.
                 if extra_line.comment is not None:
+                    code_part = extra_line.line.split("#", 1)[0].strip().rstrip(",")
+                    # A continuation line that is only a comment (no import name before ``#``)
+                    # is not an attribute comment and must not be attached to the opening
+                    # ``from ... import (`` line. Keep it as a body comment so output can
+                    # re-emit it as its own indented line. See issue #1852.
+                    if type_of_import is _ImportType.FROM and not code_part:
+                        continue
                     comments.append(extra_line.comment)
                     stripped_line = strip_syntax(extra_line.line).strip()
                     if (
@@ -325,6 +343,21 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
+                # Preserve comment-only lines from inside the parenthesised import group.
+                # They were skipped above so they would not collapse onto the opening line.
+                body_comments = [
+                    extra_line.comment
+                    for extra_line in extra_lines
+                    if extra_line.comment is not None
+                    and not extra_line.line.split("#", 1)[0].strip().rstrip(",")
+                ]
+                if body_comments:
+                    from_body_key: Literal["lazy_from", "from"] = (
+                        "lazy_from" if is_lazy else "from"
+                    )
+                    categorized_comments["from_body"][from_body_key].setdefault(
+                        import_from, []
+                    ).extend(body_comments)
                 placed_module = finder(import_from)
                 if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
