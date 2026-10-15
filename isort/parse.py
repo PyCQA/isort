@@ -240,8 +240,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 index += 1
                 return result
 
+            def _push_back_line(remaining: str) -> None:
+                nonlocal index
+                in_lines[index - 1] = remaining
+                index -= 1
+
             line, import_string, extra_lines = collect_import_continuation(
-                line, import_string, _get_next_line, line_separator
+                line,
+                import_string,
+                _get_next_line,
+                line_separator,
+                push_back_line=_push_back_line,
             )
             for extra_line in extra_lines:
                 raw_lines.append(extra_line.line)

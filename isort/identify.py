@@ -60,7 +60,34 @@ def imports(
     in_quote = ""
 
     indexed_input = enumerate(input_stream)
-    for index, raw_line in indexed_input:
+    pushed_back: list[tuple[int, str]] = []
+
+    def _get_next() -> tuple[int, str] | None:
+        if pushed_back:
+            return pushed_back.pop()
+        return next(indexed_input, None)
+
+    def _push_back(idx: int, raw_text: str) -> None:
+        pushed_back.append((idx, raw_text))
+
+    continuation_idx = 0
+
+    def _get_next_continuation_line() -> tuple[str, str | None]:
+        nonlocal continuation_idx
+        item = _get_next()
+        if item is None:
+            raise StopIteration
+        continuation_idx, nxt_line = item
+        return parse_comments(nxt_line)
+
+    def _push_back_continuation_line(rem: str) -> None:
+        _push_back(continuation_idx, rem)
+
+    while True:
+        item = _get_next()
+        if item is None:
+            break
+        index, raw_line = item
         (skipping_line, in_quote) = skip_line(raw_line, in_quote=in_quote)
 
         if top_only and not in_quote and raw_line.startswith(STATEMENT_DECLARATIONS):
@@ -72,18 +99,18 @@ def imports(
         if stripped_line.startswith(("raise", "yield")):
             if stripped_line == "yield":
                 while not stripped_line or stripped_line == "yield":
-                    try:
-                        index, next_line = next(indexed_input)
-                    except StopIteration:
+                    next_item = _get_next()
+                    if next_item is None:
                         break
 
+                    index, next_line = next_item
                     stripped_line = next_line.strip().split("#")[0]
             while stripped_line.endswith("\\"):
-                try:
-                    index, next_line = next(indexed_input)
-                except StopIteration:
+                next_item = _get_next()
+                if next_item is None:
                     break
 
+                index, next_line = next_item
                 stripped_line = next_line.strip().split("#")[0]
             continue  # pragma: no cover
 
@@ -91,6 +118,8 @@ def imports(
         statements = [line.strip() for line in line.split(";")]
         if end_of_line_comment:
             statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+
+        continuation_idx = index
 
         for statement in statements:
             line, _raw_line = normalize_line(statement)
@@ -110,8 +139,8 @@ def imports(
             _, import_string, _ = collect_import_continuation(
                 line,
                 import_string,
-                # We can disregard `index` here because it is no longer accessed after this line.
-                lambda: parse_comments(next(indexed_input)[1]),
+                _get_next_continuation_line,
+                push_back_line=_push_back_continuation_line,
             )
 
             if type_of_import is _ImportType.FROM:
