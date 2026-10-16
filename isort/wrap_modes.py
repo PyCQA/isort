@@ -216,10 +216,24 @@ def vertical_hanging_indent(
     )
     _imports = ("," + line_separator + indent).join(imports)
     _comma_maybe = "," if include_trailing_comma else ""
-    return (
-        f"{statement}({_line_with_comments}{line_separator}"
-        f"{indent}{_imports}{_comma_maybe}{line_separator})"
-    )
+    opening = f"{statement}({_line_with_comments}"
+    if len(comments) > 1 and _line_with_comments and len(opening) > line_length:
+        _comment_on_own_line = line_separator.join(
+            isort.comments.add_to_line(
+                [single_comment],
+                indent,
+                removed=remove_comments,
+                comment_prefix=comment_prefix.lstrip(),
+            )
+            for single_comment in comments
+        )
+        return (
+            f"{statement}({line_separator}"
+            f"{_comment_on_own_line}{line_separator}"
+            f"{indent}{_imports}{_comma_maybe}"
+            f"{line_separator})"
+        )
+    return f"{opening}{line_separator}{indent}{_imports}{_comma_maybe}{line_separator})"
 
 
 def _vertical_grid_common(

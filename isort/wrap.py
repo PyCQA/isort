@@ -19,7 +19,7 @@ def import_statement(
     """Returns a multi-line wrapped form of the provided from import statement."""
     if explode:
         formatter = vertical_hanging_indent
-        line_length = 1
+        line_length = config.wrap_length or config.line_length
         include_trailing_comma = True
     else:
         formatter = formatter_from_string((multi_line_output or config.multi_line_output).name)

@@ -106,3 +106,18 @@ def test_star_import_wrapped_end_to_end() -> None:
     source = "from very.very.very.very.very.very.very.very.very.long.line import *\n"
     expected = "from very.very.very.very.very.very.very.very.very.long.line import \\\n    *\n"
     assert code(source, line_length=20, force_single_line=True) == expected
+
+
+def test_import_statement_explode_short_comment_stays_on_opening_line() -> None:
+    """A short comment in explode mode stays on the opening line.
+
+    It fits within line_length; the old ``line_length=1`` moves it off.
+    """
+    result = wrap.import_statement(
+        import_start="from os.path import ",
+        from_imports=["getsize", "join"],
+        comments=[" short note"],
+        config=Config(profile="black"),
+        explode=True,
+    )
+    assert result.split("\n")[0] == "from os.path import (  #  short note"
