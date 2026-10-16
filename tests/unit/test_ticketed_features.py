@@ -1264,3 +1264,36 @@ from foo import c as d
 from foo import e
 """
     assert isort.code(code) == code
+
+
+def test_nested_import_comment_idempotent_under_black_profile_2694() -> None:
+    """A name-level inline comment must not make black-profile output non-idempotent.
+
+    When a deeply-dotted from-import carries a per-name comment that does not fit
+    on one line, isort used to split that name onto its own statement. The next
+    run then regrouped remaining names differently (or hoisted the comment), so
+    ``isort --check`` rejected isort's own first-pass output. See #2694.
+    """
+    source = (
+        "from pkg.submodule.submodule.submodule.submodule import (\n"
+        "    alpha,  # type: ignore[import-untyped]\n"
+        "    beta, gamma\n"
+        ")\n"
+    )
+    first = isort.code(source, profile="black")
+    second = isort.code(first, profile="black")
+    assert first == second
+    assert isort.check_code(first, profile="black")
+    assert first == (
+        "from pkg.submodule.submodule.submodule.submodule import ("
+        "  # type: ignore[import-untyped]\n"
+        "    alpha,\n"
+        "    beta,\n"
+        "    gamma,\n"
+        ")\n"
+    )
+
+    # Short module paths keep the name-level comment (no hoist needed).
+    short = "from pkg import alpha  # type: ignore\n"
+    assert isort.code(short, profile="black") == short
+    assert isort.code(isort.code(short, profile="black"), profile="black") == short

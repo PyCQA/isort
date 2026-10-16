@@ -723,15 +723,35 @@ def _with_from_imports_for_module(
                 parsed.categorized_comments["nested"].setdefault(module, {})[from_import] = comment
                 continue
             if comment is not None:
-                # If the comment is a noqa and hanging indent wrapping is used,
-                # keep the name in the main list and hoist the comment to the statement.
-                if (
+                # If the comment would land on the opening-paren line after wrapping
+                # (hanging-indent noqa, or any comment in the vertical modes that
+                # hoist via wrap._hoist_comment_to_paren), keep the name in the main
+                # list and hoist the comment to the statement. Otherwise the name is
+                # split onto its own statement, wrap.line may hoist the comment to a
+                # statement-level position, and the next run regroups — non-idempotent
+                # under black profile (see #2694).
+                vertical_modes = (
+                    wrap_modes.WrapModes.VERTICAL_HANGING_INDENT,
+                    wrap_modes.WrapModes.VERTICAL_GRID_GROUPED,
+                )
+                hoist_to_statement = (
                     comment.lower().startswith("noqa")
                     and config.multi_line_output == wrap_modes.WrapModes.HANGING_INDENT
-                ):
-                    comments = list(comments) if comments else []
-                    comments.append(comment)
-                    continue
+                ) or config.multi_line_output in vertical_modes
+                if hoist_to_statement:
+                    # Only hoist when a standalone name+comment line would not fit;
+                    # short lines can keep the name-level comment without churn.
+                    standalone = (
+                        f"{import_start}{from_import}"
+                        f"{config.comment_prefix} {comment}"
+                    )
+                    if (
+                        config.multi_line_output == wrap_modes.WrapModes.HANGING_INDENT
+                        or len(standalone) > config.line_length
+                    ):
+                        comments = list(comments) if comments else []
+                        comments.append(comment)
+                        continue
 
                 from_imports.remove(from_import)
                 if from_imports:
