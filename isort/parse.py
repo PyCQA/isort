@@ -10,6 +10,7 @@ from . import place
 from ._parse_utils import (
     _ImportType,
     collect_import_continuation,
+    has_action_comment,
     import_type,
     normalize_from_import_string,
     normalize_line,
@@ -255,6 +256,19 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and " " not in stripped_line.replace(" as ", "")
                     ):
                         nested_comments[stripped_line] = extra_line.comment
+
+            if any(
+                extra_line.comment is not None and has_action_comment(extra_line.comment)
+                for extra_line in extra_lines
+            ):
+                # An action comment on a continuation line - for example on the closing
+                # parenthesis of a parenthesised import - applies to the whole statement.
+                # The statement must not be recognised as an import, otherwise it is sorted
+                # into the current section and only ends that section on the next run.
+                # See #2678.
+                out_lines.append(raw_line)
+                out_lines.extend(in_lines[statement_index:index])
+                continue
 
             if type_of_import is _ImportType.FROM:
                 import_string = normalize_from_import_string(import_string)

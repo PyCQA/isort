@@ -2788,3 +2788,55 @@ def test_lines_before_imports_keeps_import_after_indented_block() -> None:
         "\n"
         "import third_party_library\n"
     )
+
+
+def test_action_comment_on_continuation_line_is_honored_issue_2678() -> None:
+    """An action comment inside a parenthesised import must end its section on the same run.
+
+    ``isort: skip`` and ``isort: split`` are only recognised on the line they annotate, so a
+    parenthesised import carrying one on a continuation line used to be sorted as a regular
+    import: the statement was merged into the current section and only ended it on the next
+    run, which then inserted a separating blank line.  ``isort --check`` rejected the very
+    file isort had just written.  The statement must be left untouched - exactly as a single
+    line action comment is - and the first run must already be stable.  See issue #2678.
+    """
+    cases = {
+        # ``isort: split`` on the closing parenthesis, with an import after it.
+        "from zlib import (\n    x,\n) # isort: split\nimport os\n": (
+            "import os\n\nfrom zlib import (\n    x,\n) # isort: split\n"
+        ),
+        # The same directive on one of the imported names.
+        "from zlib import (\n    x,  # isort: split\n)\nimport os\n": (
+            "import os\n\nfrom zlib import (\n    x,  # isort: split\n)\n"
+        ),
+        # Imports on both sides of the directive stay in separate sections.
+        "import abc\nfrom zlib import (\n    x,\n) # isort: split\nimport os\n": (
+            "import abc\nimport os\n\nfrom zlib import (\n    x,\n) # isort: split\n"
+        ),
+        # ``isort: skip`` behaves the same way.
+        "import beta\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\n": (
+            "import beta\n\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\n"
+        ),
+        "import beta\nfrom pkg.mod import (\n    _private,  # isort: skip\n)\n": (
+            "import beta\n\nfrom pkg.mod import (\n    _private,  # isort: skip\n)\n"
+        ),
+        # A lone statement is kept as it is.
+        "from zlib import (\n    x,\n) # isort: split\n": (
+            "from zlib import (\n    x,\n) # isort: split\n"
+        ),
+        # A backslash continuation carries its directive the same way.
+        "import beta\nfrom pkg.mod import _private, \\\n    _other  # isort: skip\n": (
+            "import beta\n\nfrom pkg.mod import _private, \\\n    _other  # isort: skip\n"
+        ),
+        # A plain comment is not an action comment: the import is still sorted normally.
+        "import beta\nfrom pkg.mod import (\n    _private,\n)  # plain comment\n": (
+            "import beta\nfrom pkg.mod import _private  # plain comment\n"
+        ),
+        # Without an action comment the import is still collapsed and sorted normally.
+        "from zlib import (\n    x,\n)\nimport os\n": "import os\nfrom zlib import x\n",
+    }
+
+    for to_sort, expected in cases.items():
+        assert isort.code(to_sort) == expected
+        assert isort.code(expected) == expected
+        assert isort.check_code(expected, show_diff=True)
