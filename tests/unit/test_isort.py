@@ -10,7 +10,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from collections.abc import Iterator
 
 import pytest
@@ -19,16 +19,13 @@ import isort
 from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
 from isort.settings import Config
+from isort.wrap_modes import WrapModes
 from isort.utils import exists_case_sensitive
 from isort.main import parse_args
 from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
-if TYPE_CHECKING:
-    WrapModes: Any
-else:
-    from isort.wrap_modes import WrapModes
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]
@@ -4267,7 +4264,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     with pytest.raises(subprocess.CalledProcessError):
         # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
@@ -4276,7 +4273,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 2" in result.stdout.lower()
 
@@ -4304,17 +4301,17 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         ["isort", "dont_skip.py", "migrations/file_glob_skip.py"],
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped" not in result.stdout.lower()
 
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         [
             "isort",
@@ -4326,7 +4323,7 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 1" in result.stdout.lower()
 

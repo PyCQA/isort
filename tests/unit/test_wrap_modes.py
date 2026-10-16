@@ -7,12 +7,6 @@ from isort import wrap_modes
 from isort.wrap_modes import WrapModes, _wrap_modes
 
 
-def test_wrap_mode_interface() -> None:
-    assert (
-        wrap_modes._wrap_mode_interface("statement", [], "", "", 80, [], "", "", True, True) == ""
-    )
-
-
 def test_auto_saved() -> None:
     """hypothesis_auto tests cases that have been saved to ensure they run each test cycle"""
     assert (

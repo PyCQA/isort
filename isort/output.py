@@ -833,7 +833,9 @@ def _with_straight_imports(
         else:
             line_content = f"{import_type} {combined_straight_imports}"
 
-        output.append(wrap.line(line_content, parsed.line_separator, config))
+        if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+            line_content = wrap.line(line_content, parsed.line_separator, config)
+        output.append(line_content)
 
         return output
 

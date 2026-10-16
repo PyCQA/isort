@@ -2395,6 +2395,16 @@ def test_sort_reexports_preserves_short_multiline_list_trailing_comma_issue_2578
     assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
 
 
+def test_sort_reexports_preserves_multiline_trailing_comma_before_comment() -> None:
+    """A comment after the closing bracket must not hide the trailing comma."""
+    test_input = """__all__ = [
+    "FirstClass",
+    "SecondClass",
+]  # noqa: F405
+"""
+    assert isort.code(test_input, profile="black", sort_reexports=True) == test_input
+
+
 def test_sort_reexports_preserves_crlf_line_endings_issue_2668() -> None:
     """``--sort-reexports`` must keep CRLF endings instead of injecting bare LFs."""
     test_input = (
@@ -2585,6 +2595,24 @@ def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_20
         to_sort, multi_line_output=7, combine_straight_imports=True, line_length=40
     )
     assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
+
+
+def test_long_combined_straight_imports_keep_their_module_names_issue_2723() -> None:
+    """A long combined straight import stays on one line outside NOQA mode."""
+    to_sort = (
+        "import email.message\n"
+        "import email.utils\n"
+        "import http.cookies\n"
+        "import importlib.util\n"
+        "import os.path\n"
+        "import urllib.parse\n"
+        "import warnings\n"
+    )
+
+    assert isort.code(to_sort, combine_straight_imports=True) == (
+        "import email.message, email.utils, http.cookies, importlib.util, os.path, urllib.parse, "
+        "warnings\n"
+    )
 
 
 def test_isort_skip_is_honored_with_future_import_issue_2092() -> None:
@@ -2794,4 +2822,44 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
     assert (
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
+    )
+
+
+def test_lines_before_imports_keeps_import_after_indented_block() -> None:
+    """A top-level import that follows an indented import block must not be dropped
+    when ``lines_before_imports`` is set.
+
+    The indentation change empties ``line`` to start the next section, and the
+    ``lines_before_imports`` handling took that for a blank line and deferred it. The
+    indented section was then only flushed at the end of the file, and the top-level
+    one queued behind it was never written. Once written, it is preceded by exactly
+    ``lines_before_imports`` blank lines, like any other import section.
+    """
+    code = "if sys:\n    import a\n\nimport b\n"
+    for lines_before_imports in (0, 1, 2):
+        expected = "if sys:\n    import a\n" + "\n" * lines_before_imports + "import b\n"
+        output = isort.code(code, lines_before_imports=lines_before_imports)
+        assert output == expected
+        assert isort.code(output, lines_before_imports=lines_before_imports) == output
+
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    assert isort.code(code, lines_before_imports=1) == (
+        "\n"
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
     )

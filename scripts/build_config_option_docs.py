@@ -296,7 +296,6 @@ blocked_extensions = ["pyw", "pyc"]
             known_airflow = ['airflow']""",
     ),
     "multi_line_output": Example(cfg="multi_line_output=3", pyproject_toml="multi_line_output = 3"),
-    "show_version": Example(cli="isort --version"),
     "py_version": Example(
         cli="isort --py 39",
         pyproject_toml="""
