@@ -173,11 +173,19 @@ class _ImportType(StrEnum):
     LAZY_STRAIGHT = "lazy_straight"
 
 
+ACTION_COMMENTS = ("isort:skip", "isort: skip", "isort: split")
+
+
+def has_action_comment(line: str) -> bool:
+    """If the given line carries an isort action comment it will return True."""
+    return any(action_comment in line for action_comment in ACTION_COMMENTS)
+
+
 def import_type(line: str, config: Config) -> _ImportType | None:
     """If the current line is an import line it will return its type."""
     if config.honor_noqa and line.lower().rstrip().endswith("noqa"):
         return None
-    if "isort:skip" in line or "isort: skip" in line or "isort: split" in line:
+    if has_action_comment(line):
         return None
     if line.startswith(("import ", "cimport ")):
         return _ImportType.STRAIGHT
