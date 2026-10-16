@@ -84,7 +84,7 @@ jobs:
           CIBW_ENVIRONMENT: "HATCH_BUILD_HOOK_ENABLE_MYPYC=true"
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_SKIP: "*-win32"
-        uses: pypa/cibuildwheel@v4.2.0
+        uses: pypa/cibuildwheel@v4.2.1
 
       - uses: actions/upload-artifact@v7.0.1
         with:

@@ -5,7 +5,7 @@ from ..utils import isort_test
 open_stack_isort_test = partial(isort_test, profile="open_stack")
 
 
-def test_open_stack_code_snippet_one():
+def test_open_stack_code_snippet_one() -> None:
     open_stack_isort_test(
         """import httplib
 import logging
@@ -33,7 +33,7 @@ from nova import test
     )
 
 
-def test_open_stack_code_snippet_two():
+def test_open_stack_code_snippet_two() -> None:
     open_stack_isort_test(
         """# Copyright 2011 VMware, Inc
 # All Rights Reserved.
@@ -83,7 +83,7 @@ service.register_service_opts(service.SERVICE_OPTS)
     )
 
 
-def test_open_stack_code_snippet_three():
+def test_open_stack_code_snippet_three() -> None:
     open_stack_isort_test(
         """
 # Copyright 2013 Red Hat, Inc.

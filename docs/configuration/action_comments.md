@@ -32,7 +32,7 @@ Example:
 
 ```python
 import b
-import a # isort: skip <- this will now stay below b
+import a  # isort: skip <- this will now stay below b
 ```
 !!! note
     It is recommended to where possible use `# isort: off` and `# isort: on` or `# isort: split` instead as the behavior is more explicit and predictable.
@@ -60,7 +60,6 @@ Turns isort parsing back on. This only makes sense if an `# isort: off` comment 
 Example:
 
 ```python
-
 import e
 import f
 
@@ -73,7 +72,6 @@ import a
 
 import c
 import d
-
 ```
 
 ## isort: split
@@ -83,7 +81,6 @@ Tells isort the current sort section is finished, and all future imports belong 
 Example:
 
 ```python
-
 import e
 import f
 
@@ -93,7 +90,6 @@ import a
 import b
 import c
 import d
-
 ```
 
 You can also use it inline to keep an import from having imports above or below it swap position:

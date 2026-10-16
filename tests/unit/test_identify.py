@@ -1,14 +1,15 @@
 from io import StringIO
+from typing import Any
 
 from isort import Config, identify
 from isort.identify import Import
 
 
-def imports_in_code(code: str, **kwargs) -> list[identify.Import]:
+def imports_in_code(code: str, **kwargs: Any) -> list[identify.Import]:
     return list(identify.imports(StringIO(code), **kwargs))
 
 
-def test_top_only():
+def test_top_only() -> None:
     imports_in_function = """
 import abc
 
@@ -30,7 +31,7 @@ import defg
     assert len(imports_in_code(imports_after_class, top_only=True)) == 1
 
 
-def test_top_doc_string():
+def test_top_doc_string() -> None:
     assert (
         len(
             imports_in_code(
@@ -47,7 +48,7 @@ import abc
     )
 
 
-def test_yield_and_raise_edge_cases():
+def test_yield_and_raise_edge_cases() -> None:
     assert not imports_in_code(
         """
 raise SomeException("Blah") \\
@@ -200,7 +201,7 @@ def generator_function():
     )
 
 
-def test_complex_examples():
+def test_complex_examples() -> None:
     assert (
         len(
             imports_in_code(
@@ -265,7 +266,7 @@ from os \\
     ]
 
 
-def test_aliases():
+def test_aliases() -> None:
     assert imports_in_code("import os as os")[0].alias == "os"
     assert not imports_in_code(
         "import os as os",
@@ -280,7 +281,7 @@ def test_aliases():
     )[0].alias
 
 
-def test_indented():
+def test_indented() -> None:
     assert not imports_in_code("import os")[0].indented
     assert imports_in_code("     import os")[0].indented
     assert imports_in_code("\timport os")[0].indented

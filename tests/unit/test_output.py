@@ -10,7 +10,9 @@ import isort.comments
     removed=st.booleans(),
     comment_prefix=st.text(),
 )
-def test_fuzz_add_to_line(comments, original_string, removed, comment_prefix):
+def test_fuzz_add_to_line(
+    comments: list[str] | None, original_string: str, removed: bool, comment_prefix: str
+) -> None:
     try:
         isort.comments.add_to_line(
             comments=comments,

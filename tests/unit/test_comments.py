@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 import isort.comments
 
 
-def test_add_to_line():
+def test_add_to_line() -> None:
     assert (
         isort.comments.add_to_line([], "import os  # comment", removed=True).strip() == "import os"
     )
@@ -20,7 +20,9 @@ def test_add_to_line():
     removed=st.booleans(),
     comment_prefix=st.text(),
 )
-def test_fuzz_add_to_line(comments, original_string, removed, comment_prefix):
+def test_fuzz_add_to_line(
+    comments: list[str] | None, original_string: str, removed: bool, comment_prefix: str
+) -> None:
     isort.comments.add_to_line(
         comments=comments,
         original_string=original_string,
@@ -30,5 +32,5 @@ def test_fuzz_add_to_line(comments, original_string, removed, comment_prefix):
 
 
 @given(line=st.text())
-def test_fuzz_parse(line):
+def test_fuzz_parse(line: str) -> None:
     isort.comments.parse(line=line)

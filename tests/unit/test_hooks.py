@@ -9,7 +9,7 @@ from isort import exceptions, hooks
 from isort._version import _IS_COMPILED
 
 
-def test_git_hook(src_dir):
+def test_git_hook(src_dir: str) -> None:
     """Simple smoke level testing of git hooks"""
 
     # Ensure correct subprocess command is called
@@ -92,10 +92,10 @@ def test_git_hook_with_mocks(src_dir: str) -> None:
                 hooks.git_hook(modify=True)
 
 
-def test_git_hook_lazy(tmpdir):
+def test_git_hook_lazy(tmp_path: Path) -> None:
     # Write an actual unsorted file to disk & check that `lazy=True` spots it
 
-    has_problems = tmpdir.join("test_has_problems.py")
+    has_problems = tmp_path / "test_has_problems.py"
     has_problems.write_text("import b\nimport a\n", "utf8")
 
     with patch(

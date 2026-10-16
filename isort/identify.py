@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import NamedTuple, TextIO
 
 from ._parse_utils import (
+    _ImportType,
     collect_import_continuation,
     import_type,
     normalize_from_import_string,
@@ -113,7 +114,7 @@ def imports(
                 lambda: parse_comments(next(indexed_input)[1]),
             )
 
-            if type_of_import == "from":
+            if type_of_import is _ImportType.FROM:
                 import_string = normalize_from_import_string(import_string)
 
             cimports: bool = " cimport " in import_string or import_string.startswith("cimport")
@@ -131,7 +132,7 @@ def imports(
                 while "as" in just_imports:
                     attribute = None
                     as_index = just_imports.index("as")
-                    if type_of_import == "from":
+                    if type_of_import is _ImportType.FROM:
                         attribute = just_imports[as_index - 1]
                         top_level_module = just_imports[0]
                         module = top_level_module + "." + attribute
@@ -157,7 +158,7 @@ def imports(
                             yield identified_import(module, alias=alias)
 
             if just_imports:
-                if type_of_import == "from":
+                if type_of_import is _ImportType.FROM:
                     module = just_imports.pop(0)
                     for attribute in just_imports:
                         yield identified_import(module, attribute)

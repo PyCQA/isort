@@ -1,15 +1,16 @@
 from io import BytesIO, StringIO, TextIOWrapper
+from typing import Any
 
 import isort
 
 
 class UnseekableTextIOWrapper(TextIOWrapper):
-    def seek(self, *args, **kwargs):
+    def seek(self, offset: int, whence: int = 0, /) -> int:
         raise ValueError("underlying stream is not seekable")
 
 
 class UnreadableStream(StringIO):
-    def readable(self, *args, **kwargs) -> bool:
+    def readable(self, *args: object, **kwargs: object) -> bool:
         return False
 
 
@@ -17,7 +18,7 @@ def as_stream(text: str) -> UnseekableTextIOWrapper:
     return UnseekableTextIOWrapper(BytesIO(text.encode("utf8")))
 
 
-def isort_test(code: str, expected_output: str = "", **config):
+def isort_test(code: str, expected_output: str = "", **config: Any) -> None:
     """Runs isort against the given code snippet and ensures that it
     gives consistent output across multiple runs, and if an expected_output
     is given - that it matches that.

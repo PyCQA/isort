@@ -2,6 +2,7 @@
 
 import os
 from io import StringIO
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,14 +16,14 @@ fixed_diff = "+import a\n import b\n-import a\n"
 
 
 @pytest.fixture
-def imperfect(tmpdir):
-    imperfect_file = tmpdir.join("test_needs_changes.py")
+def imperfect(tmp_path: Path) -> Path:
+    imperfect_file = tmp_path / "test_needs_changes.py"
     imperfect_file.write_text(imperfect_content, "utf8")
     return imperfect_file
 
 
-def test_sort_file_with_bad_syntax(tmpdir) -> None:
-    tmp_file = tmpdir.join("test_bad_syntax.py")
+def test_sort_file_with_bad_syntax(tmp_path: Path) -> None:
+    tmp_file = tmp_path / "test_bad_syntax.py"
     tmp_file.write_text("""print('mismatching quotes")""", "utf8")
     with pytest.warns(UserWarning):
         api.sort_file(tmp_file, atomic=True)
@@ -30,44 +31,44 @@ def test_sort_file_with_bad_syntax(tmpdir) -> None:
         api.sort_file(tmp_file, atomic=True, write_to_stdout=True)
 
 
-def test_sort_file(imperfect) -> None:
+def test_sort_file(imperfect: Path) -> None:
     assert api.sort_file(imperfect)
-    assert imperfect.read() == fixed_content
+    assert imperfect.read_text() == fixed_content
 
 
-def test_sort_file_in_place(imperfect) -> None:
+def test_sort_file_in_place(imperfect: Path) -> None:
     assert api.sort_file(imperfect, overwrite_in_place=True)
-    assert imperfect.read() == fixed_content
+    assert imperfect.read_text() == fixed_content
 
 
-def test_sort_file_to_stdout(capsys, imperfect) -> None:
+def test_sort_file_to_stdout(capsys: pytest.CaptureFixture[str], imperfect: Path) -> None:
     assert api.sort_file(imperfect, write_to_stdout=True)
     out, _ = capsys.readouterr()
     assert out == fixed_content.replace("\n", os.linesep)
 
 
-def test_other_ask_to_apply(imperfect) -> None:
+def test_other_ask_to_apply(imperfect: Path) -> None:
     # First show diff, but ensure change won't get written by asking to apply
     # and ensuring answer is no.
     with patch("builtins.input", MagicMock(return_value="n")):
         assert not api.sort_file(imperfect, ask_to_apply=True)
-        assert imperfect.read() == imperfect_content
+        assert imperfect.read_text() == imperfect_content
 
     # Then run again, but apply the change (answer is yes)
     with patch("builtins.input", MagicMock(return_value="y")):
         assert api.sort_file(imperfect, ask_to_apply=True)
-        assert imperfect.read() == fixed_content
+        assert imperfect.read_text() == fixed_content
 
 
-def test_check_file_no_changes(capsys, tmpdir) -> None:
-    perfect = tmpdir.join("test_no_changes.py")
+def test_check_file_no_changes(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    perfect = tmp_path / "test_no_changes.py"
     perfect.write_text("import a\nimport b\n", "utf8")
     assert api.check_file(perfect, show_diff=True)
     out, _ = capsys.readouterr()
     assert not out
 
 
-def test_check_file_with_changes(capsys, imperfect) -> None:
+def test_check_file_with_changes(capsys: pytest.CaptureFixture[str], imperfect: Path) -> None:
     assert not api.check_file(imperfect, show_diff=True)
     out, _ = capsys.readouterr()
     assert fixed_diff.replace("\n", os.linesep) in out
@@ -85,23 +86,23 @@ def test_diff_stream() -> None:
     assert fixed_diff in output.read()
 
 
-def test_sort_code_string_mixed_newlines():
+def test_sort_code_string_mixed_newlines() -> None:
     assert api.sort_code_string("import A\n\r\nimportA\n\n") == "import A\r\n\r\nimportA\r\n\n"
 
 
-def test_find_imports_in_file(imperfect):
+def test_find_imports_in_file(imperfect: Path) -> None:
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]
 
 
-def test_find_imports_in_file_error(tmpdir):
-    test_path = tmpdir.join("test_path.py")
+def test_find_imports_in_file_error(tmp_path: Path) -> None:
+    test_path = tmp_path / "test_path.py"
     test_path.mkdir()
     with pytest.warns(UserWarning):
         assert not list(api.find_imports_in_file(test_path))
 
 
-def test_find_imports_in_code():
+def test_find_imports_in_code() -> None:
     code = """
 from x.y import z as a
 from x.y import z as a
