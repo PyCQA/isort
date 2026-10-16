@@ -15,7 +15,6 @@ def import_statement(
     config: Config = DEFAULT_CONFIG,
     multi_line_output: Modes | None = None,
     explode: bool = False,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     """Returns a multi-line wrapped form of the provided from import statement."""
     if explode:
@@ -35,7 +34,6 @@ def import_statement(
         indent=indent,
         line_length=line_length,
         comments=comments or [],
-        opening_comments=opening_comments,
         line_separator=line_separator,
         comment_prefix=config.comment_prefix,
         include_trailing_comma=include_trailing_comma,
@@ -59,7 +57,6 @@ def import_statement(
                 indent=indent,
                 line_length=line_length,
                 comments=comments or [],
-                opening_comments=opening_comments,
                 line_separator=line_separator,
                 comment_prefix=config.comment_prefix,
                 include_trailing_comma=include_trailing_comma,

@@ -33,7 +33,6 @@ class _Wrapper(Protocol):
         comment_prefix: str,
         include_trailing_comma: bool,
         remove_comments: bool,
-        opening_comments: Sequence[str] | None = None,
     ) -> str: ...
 
 
@@ -55,7 +54,6 @@ def grid(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -105,7 +103,6 @@ def vertical(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -154,7 +151,6 @@ def hanging_indent(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -211,7 +207,6 @@ def vertical_hanging_indent(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     _line_with_comments = isort.comments.add_to_line(
         comments,
@@ -222,28 +217,7 @@ def vertical_hanging_indent(
     _imports = ("," + line_separator + indent).join(imports)
     _comma_maybe = "," if include_trailing_comma else ""
     opening = f"{statement}({_line_with_comments}"
-    # Partition by provenance and kind: directives and opening-line comments
-    # stay on the opening line; only body comments may move for line_length.
-    # Provenance entries are consumed once, so duplicate texts stay associated.
-    pending_opening = list(opening_comments or [])
-    functional_comments: list[str] = []
-    opening_line_comments: list[str] = []
-    movable_comments: list[str] = []
-    for comment in comments or []:
-        if comment.strip().lower().startswith(("noqa", "type: ignore")):
-            functional_comments.append(comment)
-        elif comment in pending_opening:
-            opening_line_comments.append(comment)
-            pending_opening.remove(comment)
-        else:
-            movable_comments.append(comment)
-    if _line_with_comments and movable_comments and len(opening) > line_length:
-        _opening_line_with_comments = isort.comments.add_to_line(
-            [*functional_comments, *opening_line_comments],
-            "",
-            removed=remove_comments,
-            comment_prefix=comment_prefix,
-        )
+    if len(comments) > 1 and _line_with_comments and len(opening) > line_length:
         _comment_on_own_line = line_separator.join(
             isort.comments.add_to_line(
                 [single_comment],
@@ -251,18 +225,15 @@ def vertical_hanging_indent(
                 removed=remove_comments,
                 comment_prefix=comment_prefix.lstrip(),
             )
-            for single_comment in movable_comments
+            for single_comment in comments
         )
         return (
-            f"{statement}({_opening_line_with_comments}{line_separator}"
+            f"{statement}({line_separator}"
             f"{_comment_on_own_line}{line_separator}"
             f"{indent}{_imports}{_comma_maybe}"
             f"{line_separator})"
         )
-    return (
-        f"{opening}{line_separator}"
-        f"{indent}{_imports}{_comma_maybe}{line_separator})"
-    )
+    return f"{opening}{line_separator}{indent}{_imports}{_comma_maybe}{line_separator})"
 
 
 def _vertical_grid_common(
@@ -277,7 +248,6 @@ def _vertical_grid_common(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -323,7 +293,6 @@ def vertical_grid(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     return (
         _vertical_grid_common(
@@ -334,7 +303,6 @@ def vertical_grid(
             indent=indent,
             line_length=line_length,
             comments=comments,
-            opening_comments=opening_comments,
             line_separator=line_separator,
             comment_prefix=comment_prefix,
             include_trailing_comma=include_trailing_comma,
@@ -356,7 +324,6 @@ def vertical_grid_grouped(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     return (
         _vertical_grid_common(
@@ -367,7 +334,6 @@ def vertical_grid_grouped(
             indent=indent,
             line_length=line_length,
             comments=comments,
-            opening_comments=opening_comments,
             line_separator=line_separator,
             comment_prefix=comment_prefix,
             include_trailing_comma=include_trailing_comma,
@@ -390,7 +356,6 @@ def vertical_grid_grouped_no_comma(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     # This is a deprecated alias for vertical_grid_grouped above. This function
     # needs to exist for backwards compatibility but should never get called.
@@ -409,7 +374,6 @@ def noqa(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     _imports = ", ".join(imports)
     retval = f"{statement}{_imports}"
@@ -438,7 +402,6 @@ def vertical_hanging_indent_bracket(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -449,7 +412,6 @@ def vertical_hanging_indent_bracket(
         indent=indent,
         line_length=line_length,
         comments=comments,
-        opening_comments=opening_comments,
         line_separator=line_separator,
         comment_prefix=comment_prefix,
         include_trailing_comma=include_trailing_comma,
@@ -470,7 +432,6 @@ def vertical_prefix_from_module_import(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -518,7 +479,6 @@ def hanging_indent_with_parentheses(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
@@ -589,7 +549,6 @@ def backslash_grid(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
-    opening_comments: Sequence[str] | None = None,
 ) -> str:
     indent = white_space[:-1]
     return hanging_indent(

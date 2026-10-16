@@ -32,7 +32,6 @@ if TYPE_CHECKING:
             "straight": dict[str, list[str]],
             "nested": dict[str, dict[str, str]],
             "above": CommentsAboveDict,
-            "opening": dict[str, list[str]],
         },
     )
 
@@ -118,7 +117,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "straight": {},
         "nested": {},
         "above": {"straight": {}, "from": {}},
-        "opening": {},
     }
 
     trailing_commas: set[str] = set()
@@ -230,8 +228,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment is not None else []
-            # Recorded separately so the output stage can tell opening apart from body comments.
-            opening_comment = comment
             line_parts = [part for part in strip_syntax(import_string).strip().split(" ") if part]
             if type_of_import is _ImportType.FROM and len(line_parts) == 2 and comments:
                 nested_comments[line_parts[-1]] = comments[0]
@@ -409,15 +405,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
-                    if (
-                        opening_comment is not None
-                        and attach_comments_to is categorized_comments["from"].get(import_from)
-                        and opening_comment in comments
-                    ):
-                        # Only from-bucket targets; aliased comments keep existing handling.
-                        categorized_comments["opening"].setdefault(import_from, []).append(
-                            opening_comment
-                        )
 
                 if (
                     just_imports
