@@ -127,7 +127,13 @@ description_mapping = {
     "variables": "An override list of tokens to always recognize as a var for order_by_type regardless of casing.",
     "auto_identify_namespace_packages": "Automatically determine local namespace packages, generally by lack of any src files before a src containing directory.",
     "namespace_packages": "Manually specify one or more namespace packages.",
-    "follow_links": "If `True` isort will follow symbolic links when doing recursive sorting.",
+    "follow_links": (
+        "If `True` isort will follow symbolic links during path discovery. Symlinks in a Git "
+        "repository are followed only when their targets remain inside that repository, including "
+        "links passed explicitly to the CLI or `find_imports_in_paths`. Symlinks outside Git "
+        "repositories retain the existing behavior. Direct `sort_file` API calls continue to operate "
+        "on the exact file supplied."
+    ),
     "formatting_function": "The fully qualified Python path of a function to apply to format code sorted by isort.",
     "group_by_package": "If `True` isort will automatically create section groups by the top-level package they come from.",
     "indented_import_headings": "If `True` isort will apply import headings to indented imports the same way it does unindented ones.",
