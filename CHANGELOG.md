@@ -11,8 +11,6 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
-   - Preserve Cython output with atomic sorting and write-only output streams.
-
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord
