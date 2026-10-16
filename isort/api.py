@@ -219,7 +219,6 @@ def sort_stream(
         _internal_output.seek(0)
         try:
             compile(_internal_output.read(), content_source, "exec", flags=0, dont_inherit=True)
-            _internal_output.seek(0)
         except SyntaxError:  # pragma: no cover
             if extension not in CYTHON_EXTENSIONS:
                 raise IntroducedSyntaxErrors(content_source)
@@ -228,6 +227,7 @@ def sort_stream(
                     f"{content_source} Python AST errors found but ignored due to Cython extension",
                     stacklevel=2,
                 )
+        _internal_output.seek(0)
         if _internal_output != output_stream:
             output_stream.write(_internal_output.read())
 
