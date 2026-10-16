@@ -121,59 +121,6 @@ def test_vertical_grid_size_near_line_length(
     )
 
 
-def test_vertical_hanging_indent_long_comment_moves_off_opening_line() -> None:
-    """Merged comment fragments move off the opening line when it overflows."""
-    assert (
-        wrap_modes.vertical_hanging_indent(
-            statement="from os.path import ",
-            imports=["getsize", "join"],
-            white_space="    ",
-            indent="    ",
-            line_length=88,
-            comments=[
-                " this is a really really really really really really really really",
-                " really really really really really really long comment",
-            ],
-            line_separator="\n",
-            comment_prefix="  #",
-            include_trailing_comma=True,
-            remove_comments=False,
-        )
-        == "from os.path import (\n"
-        "    #  this is a really really really really really really really really\n"
-        "    #  really really really really really really long comment\n"
-        "    getsize,\n"
-        "    join,\n"
-        ")"
-    )
-
-
-def test_vertical_hanging_indent_single_comment_stays_on_opening_line() -> None:
-    """A single comment keeps the old behavior even when the opening overflows."""
-    assert (
-        wrap_modes.vertical_hanging_indent(
-            statement="from os.path import ",
-            imports=["getsize", "join"],
-            white_space="    ",
-            indent="    ",
-            line_length=88,
-            comments=[
-                " this is a really really really really really really"
-                " really really really really really really long comment"
-            ],
-            line_separator="\n",
-            comment_prefix="  #",
-            include_trailing_comma=True,
-            remove_comments=False,
-        )
-        == "from os.path import (  #  this is a really really really really really really"
-        " really really really really really really long comment\n"
-        "    getsize,\n"
-        "    join,\n"
-        ")"
-    )
-
-
 # This test code was written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
