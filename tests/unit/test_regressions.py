@@ -2788,3 +2788,60 @@ def test_lines_before_imports_keeps_import_after_indented_block() -> None:
         "\n"
         "import third_party_library\n"
     )
+
+
+def test_indented_imports_followed_by_less_indented_import_issue_2010() -> None:
+    """Imports in an indented block that is directly followed by a less indented import
+    must still be sorted as an indented section.
+    See: https://github.com/PyCQA/isort/issues/2010
+    """
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import LiteralString, Never\n"
+        "else:\n"
+        "    from typing_extensions import LiteralString\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    expected = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import LiteralString, Never\n"
+        "else:\n"
+        "    from typing_extensions import LiteralString, Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+
+    # The same block, sorted the same way as when code follows it.
+    code = "def f():\n    import os\n    import a\n    import os\nimport b\n"
+    expected = "def f():\n    import os\n\n    import a\n\nimport b\n"
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+    assert isort.code(code, lines_before_imports=1) == expected
+
+    # A dedent of one level out of two, again sorted as when code follows it.
+    code = (
+        "class C:\n"
+        "    def f(self):\n"
+        "        import b\n"
+        "        import a\n"
+        "    import d\n"
+        "    import c\n"
+    )
+    expected = (
+        "class C:\n"
+        "    def f(self):\n"
+        "        import a\n"
+        "        import b\n"
+        "    import c\n"
+        "    import d\n"
+    )
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
