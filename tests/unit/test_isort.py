@@ -1804,6 +1804,22 @@ def test_grouped_from_imports_preserve_alias_order() -> None:
     assert isort.code(test_input) == test_output
     assert isort.code(test_output) == test_output
 
+    test_input = "from x import b\nfrom x import a as aa\nfrom x import c\nfrom x import c as cc\n"
+    test_output = "from x import b, c\nfrom x import a as aa\nfrom x import c as cc\n"
+    assert isort.code(test_input, no_inline_sort=True) == test_output
+    assert isort.code(test_output, no_inline_sort=True) == test_output
+
+    test_input = (
+        "from foo import *\n"
+        "from foo import b\n"
+        "from foo import b as c\n"
+        "from foo import e\n"
+        "from foo import e as f\n"
+    )
+    test_output = "from foo import *\nfrom foo import b as c\nfrom foo import e as f\n"
+    assert isort.code(test_input, combine_star=True) == test_output
+    assert isort.code(test_output, combine_star=True) == test_output
+
 
 def test_as_imports_with_line_length() -> None:
     """Test to ensure it's possible to combine from and as imports."""
@@ -1883,6 +1899,27 @@ def test_keep_comments() -> None:
 
     test_input = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
     test_output = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a  # noqa: F401\nfrom x import b  # explanation\n"
+    assert isort.code(test_input) == test_input
+
+    test_input = "from x import a  # noqa: F401\nfrom x import b  # noqa: F402\n"
+    assert isort.code(test_input) == test_input
+
+    test_input = "from x import a  # explanation\nfrom x import b  # type: ignore[attr-defined]\n"
+    test_output = "from x import a  # explanation\nfrom x import b  # type: ignore[attr-defined]\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a\nfrom x import b  # explanation\nfrom x import c  # noqa: F401\n"
+    test_output = "from x import a, b  # explanation\nfrom x import c  # noqa: F401\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a\nfrom x import b  #\nfrom x import c\n"
+    test_output = "from x import a, b, c  #\n"
     assert isort.code(test_input) == test_output
     assert isort.code(test_output) == test_output
 
