@@ -1721,8 +1721,8 @@ from .test import TestTestTestTestTestTest2, TestTestTestTestTestTest3, """
             profile="black",
         )
         == """
-from .test import TestTestTestTestTestTest1  # noqa: F401
 from .test import (  # noqa: F401
+    TestTestTestTestTestTest1,
     TestTestTestTestTestTest2,
     TestTestTestTestTestTest3,
     TestTestTestTestTestTest4,
@@ -2313,6 +2313,109 @@ def test_sort_reexports_respects_black_profile_issue_2280() -> None:
     assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
 
 
+def test_same_style_imports_should_be_grouped_with_and_without_section_sort() -> None:
+    """Ensure that plain imports are grouped together and sorted consistently.
+
+    See issue #2455.
+    """
+    code = """
+from module import BBB
+from module import CCC, ZZZ  # Comment
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+"""
+    )
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+import other_module
+"""
+    )
+
+    code_2 = """
+from module import GGG, ZZZ  # Comment
+from module import EEE
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+"""
+    )
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+import other_module
+"""
+    )
+
+
+def test_from_import_alias_only_sections_issue_2455() -> None:
+    """only_sections still emits preferred plain-before-alias grouping."""
+    src = "from module import A, B as b, C\n"
+    expected = "from module import A, C\nfrom module import B as b\n"
+    assert isort.code(src, only_sections=True) == expected
+
+
+def test_parenthesized_from_imports_grouping_issue_2455() -> None:
+    """Ensure that parenthesized from imports are grouped and sorted consistently."""
+    code = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+"""
+
+    assert (
+        isort.code(code, force_sort_within_sections=True, profile="black")
+        == """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+"""
+    )
+
+
 def test_literal_dict_sort_respects_black_profile_issue_2280() -> None:
     """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
@@ -2654,14 +2757,11 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment() -> N
     run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-    assert isort.code(to_sort) == to_sort
+    assert isort.code(to_sort) == "from x import aaa, m  # c\nfrom x import m as z\n"
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
-    relative_sorted = isort.code(relative)
-    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
-    assert relative_sorted == expected
-    assert isort.code(relative_sorted) == relative_sorted
+    assert relative == isort.code(relative)
 
 
 def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893() -> None:
