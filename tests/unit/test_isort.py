@@ -1795,6 +1795,16 @@ def test_combined_from_and_as_imports() -> None:
     assert isort.code(test_input) == test_output
 
 
+def test_grouped_from_imports_preserve_alias_order() -> None:
+    """Test that alias-only imports retain their configured order when grouped."""
+    test_input = (
+        "from foo import a\nfrom foo import c\nfrom foo import b as bee\nfrom foo import c as cee\n"
+    )
+    test_output = "from foo import a, c\nfrom foo import b as bee\nfrom foo import c as cee\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+
 def test_as_imports_with_line_length() -> None:
     """Test to ensure it's possible to combine from and as imports."""
     test_input = (
@@ -1832,8 +1842,20 @@ def test_keep_comments() -> None:
 
     # Test case where imports comments make imports extend pass the line length
     test_input = "from a import b # My Comment1\nfrom a import c # My Comment2\nfrom a import d\n"
-    assert isort.code(test_input, line_length=45) == (
-        "from a import \\\n    b, c, d  # My Comment1; My Comment2\n"
+    test_output = isort.code(test_input, line_length=45)
+    assert test_output == "from a import (b,  # My Comment1; My Comment2\n               c, d)\n"
+    assert isort.code(test_output, line_length=45) == test_output
+
+    test_input = "from foo import a  # comment\nfrom foo import b\n"
+    test_output = isort.code(
+        test_input, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+    )
+    assert test_output == "from foo import (  # comment\n    a,\n    b\n)\n"
+    assert (
+        isort.code(
+            test_output, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+        )
+        == test_output
     )
 
     # Test case where imports with comments will be beyond line length limit
@@ -1858,6 +1880,11 @@ def test_keep_comments() -> None:
     assert isort.code(test_input, combine_as_imports=True) == (
         "from a import b as bb, c as cc, d  # b comment; c comment\n"
     )
+
+    test_input = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
+    test_output = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
 
 
 def test_multiline_split_on_dot() -> None:
