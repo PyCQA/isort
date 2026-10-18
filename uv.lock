@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11.0"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -1110,7 +1110,7 @@ dev = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-benchmark", specifier = ">=5.1.0" },
     { name = "ruff", specifier = ">=0.13.3" },
-    { name = "stdlibs", specifier = ">=2026.2.26" },
+    { name = "stdlibs", specifier = ">=2026.9.3" },
     { name = "tox", specifier = ">=4.30.3" },
     { name = "tox-uv", specifier = ">=1.28.0" },
     { name = "types-colorama", specifier = ">=0.4.2" },
