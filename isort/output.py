@@ -480,7 +480,12 @@ def _build_grouped_from_imports(
         )
 
     if do_multiline_reformat:
-        if comments and not has_noqa_comment and not preserve_comments_on_statement_line:
+        if (
+            comments
+            and len(imports) == 1
+            and not has_noqa_comment
+            and not preserve_comments_on_statement_line
+        ):
             return wrap.line(import_statement, parsed.line_separator, config)
 
         import_statement = wrap.import_statement(
@@ -733,11 +738,27 @@ def _with_from_imports_for_module(
             if comment is not None:
                 comments.append(comment)
 
+            noqa_comments = {c for c in comments if c.lower().startswith("noqa")}
+            has_explanatory_comments = any(c and not c.lower().startswith("noqa") for c in comments)
             for grouped_plain_import in from_imports[:]:
+                grouped_comment = nested_comments.get(grouped_plain_import)
+                if grouped_comment:
+                    grouped_is_noqa = grouped_comment.lower().startswith("noqa")
+                    if grouped_is_noqa and (
+                        has_explanatory_comments
+                        or (noqa_comments and grouped_comment not in noqa_comments)
+                    ):
+                        break
+                    if not grouped_is_noqa and noqa_comments:
+                        break
+
                 include_grouped_import = grouped_plain_import in as_imports and not (
                     module_imports[grouped_plain_import] and not only_show_as_imports
                 )
                 if include_grouped_import:
+                    if not module_imports[grouped_plain_import]:
+                        aliased_from_imports.append(grouped_plain_import)
+                        from_imports.remove(grouped_plain_import)
                     continue
 
                 from_import_section.append(grouped_plain_import)
@@ -747,6 +768,10 @@ def _with_from_imports_for_module(
                 grouped_comment = nested_comments.pop(grouped_plain_import, None)
                 if grouped_comment is not None:
                     comments.append(grouped_comment)
+                    if grouped_comment.lower().startswith("noqa"):
+                        noqa_comments.add(grouped_comment)
+                    elif grouped_comment:
+                        has_explanatory_comments = True
 
             break
 
