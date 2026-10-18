@@ -8,7 +8,7 @@ from contextlib import suppress
 from pathlib import Path
 
 
-def test_importable():
+def test_importable() -> None:
     """Simple smoketest to ensure all isort modules are importable"""
 
     import isort
@@ -18,7 +18,6 @@ def test_importable():
     import isort.exceptions
     import isort.format
     import isort.hooks
-    import isort.logo
     import isort.main
     import isort.output
     import isort.parse

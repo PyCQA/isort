@@ -3,7 +3,7 @@
 import isort
 
 
-def test_isort_off_and_on():
+def test_isort_off_and_on() -> None:
     """Test so ensure isort: off action comment and associated on action comment work together"""
 
     # as top of file comment
@@ -48,7 +48,7 @@ import a
     )
 
 
-def test_skip_sort_reexports():
+def test_skip_sort_reexports() -> None:
     code = """my_list = [\"bee\", \"Albatross\", \"Dinosaur\", \"cat\"]
 __all__ = my_list  # isort: skip
 """

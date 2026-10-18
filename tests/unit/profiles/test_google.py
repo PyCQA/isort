@@ -5,7 +5,7 @@ from ..utils import isort_test
 google_isort_test = partial(isort_test, profile="google")
 
 
-def test_google_code_snippet_shared_example():
+def test_google_code_snippet_shared_example() -> None:
     """Tests snippet examples directly shared with the isort project.
     See: https://github.com/PyCQA/isort/issues/1486.
     """
@@ -22,7 +22,7 @@ from a.b import import_me
     )
 
 
-def test_google_code_snippet_one():
+def test_google_code_snippet_one() -> None:
     google_isort_test(
         '''# coding=utf-8
 # Copyright 2018 Google LLC
@@ -232,7 +232,7 @@ flags.DEFINE_bool("jax_disable_jit", bool_env("JAX_DISABLE_JIT", False),
     )
 
 
-def test_google_code_snippet_two():
+def test_google_code_snippet_two() -> None:
     google_isort_test(
         """#!/usr/bin/env python
 # In[ ]:
@@ -316,7 +316,7 @@ import time  # Importing the time library to check the time of code execution
     )
 
 
-def test_code_snippet_three():
+def test_code_snippet_three() -> None:
     google_isort_test(
         '''# Copyright 2019 Google LLC
 #

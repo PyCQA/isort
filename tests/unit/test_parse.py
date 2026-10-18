@@ -24,7 +24,7 @@ def function():
 """
 
 
-def test_file_contents():
+def test_file_contents() -> None:
     (
         in_lines,
         out_lines,
@@ -48,14 +48,14 @@ def test_file_contents():
     assert original_line_count == len(in_lines)
 
 
-def test_file_contents_empty():
+def test_file_contents_empty() -> None:
     parsed = parse.file_contents("", config=Config(default_section=""))
     assert parsed.in_lines == []
     assert parsed.original_line_count == 0
 
 
 @pytest.mark.parametrize("line_separator", ["\n", "\r\n", "\r"])
-def test_file_contents_splits_only_on_newlines(line_separator):
+def test_file_contents_splits_only_on_newlines(line_separator: str) -> None:
     contents = line_separator.join(["import b", "import a", "\fpass"])
     parsed = parse.file_contents(contents, config=Config(default_section=""))
     assert parsed.in_lines == ["import b", "import a", "\fpass"]
@@ -66,22 +66,22 @@ def test_file_contents_splits_only_on_newlines(line_separator):
 
 
 @given(contents=st.text())
-def test_fuzz__infer_line_separator(contents):
-    parse._infer_line_separator(contents=contents)
+def test_fuzz__infer_line_separator(contents: str) -> None:
+    parse._infer_line_separator(contents=contents, configured="\n")
 
 
 @given(import_string=st.text())
-def test_fuzz__strip_syntax(import_string):
+def test_fuzz__strip_syntax(import_string: str) -> None:
     _parse_utils.strip_syntax(import_string=import_string)
 
 
 @given(line=st.text(), config=st.builds(Config))
-def test_fuzz_import_type(line, config):
+def test_fuzz_import_type(line: str, config: Config) -> None:
     _parse_utils.import_type(line=line, config=config)
 
 
 @given(line=st.text(), in_quote=st.text(), needs_import=st.booleans())
-def test_fuzz_skip_line(line, in_quote, needs_import):
+def test_fuzz_skip_line(line: str, in_quote: str, needs_import: bool) -> None:
     _parse_utils.skip_line(line=line, in_quote=in_quote, needs_import=needs_import)
 
 
@@ -105,7 +105,7 @@ def test_fuzz_skip_line(line, in_quote, needs_import):
         ("from\t.\timport a", "from . import a"),
     ],
 )
-def test_normalize_line(raw_line, expected):
+def test_normalize_line(raw_line: str, expected: str) -> None:
     line, returned_raw_line = _parse_utils.normalize_line(raw_line)
     assert line == expected
     assert returned_raw_line == raw_line

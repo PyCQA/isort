@@ -833,7 +833,9 @@ def _with_straight_imports(
         else:
             line_content = f"{import_type} {combined_straight_imports}"
 
-        output.append(wrap.line(line_content, parsed.line_separator, config))
+        if config.multi_line_output == wrap_modes.WrapModes.NOQA:
+            line_content = wrap.line(line_content, parsed.line_separator, config)
+        output.append(line_content)
 
         return output
 
@@ -918,7 +920,7 @@ def _separate_packages(section_output: list[str], config: Config) -> list[str]:
             package_depth = len(reason.split(".")) - 1  # minus 1 for re.compile
             key = ".".join(package_name.split(".")[: package_depth + 1])
         else:
-            key = package_name.split(".")[0]
+            key = package_name.split(".", maxsplit=1)[0]
 
         if key not in group_keys:
             if group_keys:

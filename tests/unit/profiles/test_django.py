@@ -5,7 +5,7 @@ from ..utils import isort_test
 django_isort_test = partial(isort_test, profile="django", known_first_party=["django"])
 
 
-def test_django_snippet_one():
+def test_django_snippet_one() -> None:
     django_isort_test(
         """import copy
 import inspect
@@ -57,7 +57,7 @@ class Deferred:
     )
 
 
-def test_django_snippet_two():
+def test_django_snippet_two() -> None:
     django_isort_test(
         '''from django.utils.version import get_version
 
@@ -86,7 +86,7 @@ def setup(set_prefix=True):
     )
 
 
-def test_django_snippet_three():
+def test_django_snippet_three() -> None:
     django_isort_test(
         """import cgi
 import codecs

@@ -5,7 +5,7 @@ from isort.settings import Config
 from isort.wrap_modes import WrapModes
 
 
-def test_import_statement():
+def test_import_statement() -> None:
     assert wrap.import_statement("", [], []) == ""
     assert (
         wrap.import_statement("from x import ", ["y"], [], config=Config(balanced_wrapping=True))
@@ -37,7 +37,9 @@ def test_import_statement():
         ),
     ],
 )
-def test_line__comment_with_brackets__expects_unchanged_comment(multi_line_output, expected):
+def test_line__comment_with_brackets__expects_unchanged_comment(
+    multi_line_output: WrapModes, expected: str
+) -> None:
     content = (
         "from a import b as c  "
         "# comment that is long enough that this import doesn't fit in one line (parens)"

@@ -5,7 +5,7 @@ from ..utils import isort_test
 attrs_isort_test = partial(isort_test, profile="attrs")
 
 
-def test_attrs_code_snippet_one():
+def test_attrs_code_snippet_one() -> None:
     attrs_isort_test(
         """from __future__ import absolute_import, division, print_function
 
@@ -35,7 +35,7 @@ __version__ = "20.2.0.dev0"
     )
 
 
-def test_attrs_code_snippet_two():
+def test_attrs_code_snippet_two() -> None:
     attrs_isort_test(
         """from __future__ import absolute_import, division, print_function
 
@@ -72,7 +72,7 @@ _obj_setattr = object.__setattr__
     )
 
 
-def test_attrs_code_snippet_three():
+def test_attrs_code_snippet_three() -> None:
     attrs_isort_test(
         '''
 """

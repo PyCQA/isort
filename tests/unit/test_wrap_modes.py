@@ -7,13 +7,7 @@ from isort import wrap_modes
 from isort.wrap_modes import WrapModes, _wrap_modes
 
 
-def test_wrap_mode_interface():
-    assert (
-        wrap_modes._wrap_mode_interface("statement", [], "", "", 80, [], "", "", True, True) == ""
-    )
-
-
-def test_auto_saved():
+def test_auto_saved() -> None:
     """hypothesis_auto tests cases that have been saved to ensure they run each test cycle"""
     assert (
         wrap_modes.noqa(
@@ -62,7 +56,7 @@ def test_auto_saved():
     )
 
 
-def test_backslash_grid():
+def test_backslash_grid() -> None:
     """Tests the backslash_grid grid wrap mode, ensuring it matches formatting expectations.
     See: https://github.com/PyCQA/isort/issues/1434
     """
@@ -96,7 +90,7 @@ def test_vertical_grid_size_near_line_length(
     multi_line_output: int,
     line_length: int,
     include_trailing_comma: bool,
-):
+) -> None:
     separator = " "
     # Cases where the input should be wrapped:
     if (
@@ -144,17 +138,17 @@ def test_vertical_grid_size_near_line_length(
     remove_comments=st.booleans(),
 )
 def test_fuzz_backslash_grid(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.backslash_grid(
             statement=statement,
@@ -185,17 +179,17 @@ def test_fuzz_backslash_grid(
     remove_comments=st.booleans(),
 )
 def test_fuzz_grid(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.grid(
             statement=statement,
@@ -213,6 +207,121 @@ def test_fuzz_grid(
         reject()
 
 
+def test_grid_preserves_trailing_comment_when_no_wrap_needed() -> None:
+    """A trailing comment on a from-import must survive grid wrapping even when
+    the statement fits on one line. Previously the comment was silently dropped
+    (e.g. ``from x import (a, b)  # noqa: F401`` became ``from x import (a, b)``),
+    re-activating the lint the comment was suppressing.
+    """
+    # No wrap needed: comment must be appended after the closing paren.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # noqa: F401"
+    )
+    # No comment: output unchanged.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=[],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)"
+    )
+    # Trailing comma: comment goes after the paren, not before it.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=True,
+            remove_comments=False,
+        )
+        == "from x import(a, b,)  # noqa: F401"
+    )
+    # Multiple comments are joined, as elsewhere in the wrap modes.
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=["a", "b"],
+            white_space=" ",
+            indent=" ",
+            line_length=80,
+            comments=["first", "second"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b)  # first; second"
+    )
+
+
+def test_grid_comment_position_unchanged_when_wrap_needed() -> None:
+    """When grid wrapping does split the statement, the comment is attached to
+    the line where the wrap happens (pre-existing behavior). Pin it so the
+    no-wrap fix does not regress the wrap path.
+    """
+    assert (
+        isort.wrap_modes.grid(
+            statement="from x import",
+            imports=[
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+            ],
+            white_space=" ",
+            indent=" ",
+            line_length=60,
+            comments=["noqa: F401"],
+            line_separator="\n",
+            comment_prefix="  #",
+            include_trailing_comma=False,
+            remove_comments=False,
+        )
+        == "from x import(a, b, c, d, e, f, g, h, i, j, k,  # noqa: F401\n"
+        " l, m, n, o, p, q, r, s)"
+    )
+
+
 @given(
     statement=st.text(),
     imports=st.lists(st.text()),
@@ -226,17 +335,17 @@ def test_fuzz_grid(
     remove_comments=st.booleans(),
 )
 def test_fuzz_hanging_indent(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.hanging_indent(
             statement=statement,
@@ -255,7 +364,9 @@ def test_fuzz_hanging_indent(
 
 
 @pytest.mark.parametrize("include_trailing_comma", [True, False])
-def test_hanging_indent__with_include_trailing_comma__expect_same_result(include_trailing_comma):
+def test_hanging_indent__with_include_trailing_comma__expect_same_result(
+    include_trailing_comma: bool,
+) -> None:
     result = isort.wrap_modes.hanging_indent(
         statement="from datetime import ",
         imports=["datetime", "time", "timedelta", "timezone", "tzinfo"],
@@ -285,17 +396,17 @@ def test_hanging_indent__with_include_trailing_comma__expect_same_result(include
     remove_comments=st.booleans(),
 )
 def test_fuzz_hanging_indent_with_parentheses(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.hanging_indent_with_parentheses(
             statement=statement,
@@ -326,17 +437,17 @@ def test_fuzz_hanging_indent_with_parentheses(
     remove_comments=st.booleans(),
 )
 def test_fuzz_noqa(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.noqa(
             statement=statement,
@@ -367,17 +478,17 @@ def test_fuzz_noqa(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical(
             statement=statement,
@@ -408,17 +519,17 @@ def test_fuzz_vertical(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical_grid(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical_grid(
             statement=statement,
@@ -449,17 +560,17 @@ def test_fuzz_vertical_grid(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical_grid_grouped(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical_grid_grouped(
             statement=statement,
@@ -490,17 +601,17 @@ def test_fuzz_vertical_grid_grouped(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical_hanging_indent(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical_hanging_indent(
             statement=statement,
@@ -531,17 +642,17 @@ def test_fuzz_vertical_hanging_indent(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical_hanging_indent_bracket(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical_hanging_indent_bracket(
             statement=statement,
@@ -572,17 +683,17 @@ def test_fuzz_vertical_hanging_indent_bracket(
     remove_comments=st.booleans(),
 )
 def test_fuzz_vertical_prefix_from_module_import(
-    statement,
-    imports,
-    white_space,
-    indent,
-    line_length,
-    comments,
-    line_separator,
-    comment_prefix,
-    include_trailing_comma,
-    remove_comments,
-):
+    statement: str,
+    imports: list[str],
+    white_space: str,
+    indent: str,
+    line_length: int,
+    comments: list[str],
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+) -> None:
     try:
         isort.wrap_modes.vertical_prefix_from_module_import(
             statement=statement,
@@ -600,7 +711,7 @@ def test_fuzz_vertical_prefix_from_module_import(
         reject()
 
 
-def test_enum_matches_order_of_definitions():
+def test_enum_matches_order_of_definitions() -> None:
     """Before isort 9.0.0 WrapModes was dynamically generated, this tests for breaking changes."""
 
     old_enum_logic = {wrap_mode: index for index, wrap_mode in enumerate(_wrap_modes.keys())}

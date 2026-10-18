@@ -5,6 +5,7 @@ it fully works as defined in the associated ticket.
 import warnings
 from functools import partial
 from io import StringIO
+from pathlib import Path
 
 import pytest
 
@@ -12,7 +13,7 @@ import isort
 from isort import Config, exceptions
 
 
-def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178():
+def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178() -> None:
     """Test to ensure even if a semicolon is in the decorator in the line following an import
     the correct line spacing determination will be made.
     See: https://github.com/pycqa/isort/issues/1178.
@@ -29,7 +30,7 @@ def test_thing(): pass
     )
 
 
-def test_isort_automatically_removes_duplicate_aliases_issue_1193():
+def test_isort_automatically_removes_duplicate_aliases_issue_1193() -> None:
     """Test to ensure isort can automatically remove duplicate aliases.
     See: https://github.com/pycqa/isort/issues/1281
     """
@@ -42,7 +43,7 @@ def test_isort_automatically_removes_duplicate_aliases_issue_1193():
     assert isort.code("import os as os", remove_redundant_aliases=True) == "import os\n"
 
 
-def test_isort_enables_floating_imports_to_top_of_module_issue_1228():
+def test_isort_enables_floating_imports_to_top_of_module_issue_1228() -> None:
     """Test to ensure isort will allow floating all non-indented imports to the top of a file.
     See: https://github.com/pycqa/isort/issues/1228.
     """
@@ -158,7 +159,7 @@ def my_function_2():
     )
 
 
-def test_isort_provides_official_api_for_diff_output_issue_1335():
+def test_isort_provides_official_api_for_diff_output_issue_1335() -> None:
     """Test to ensure isort API for diff capturing allows capturing diff without sys.stdout.
     See: https://github.com/pycqa/isort/issues/1335.
     """
@@ -168,7 +169,7 @@ def test_isort_provides_official_api_for_diff_output_issue_1335():
     assert "+import a" in diff_output.read()
 
 
-def test_isort_warns_when_known_sections_dont_match_issue_1331():
+def test_isort_warns_when_known_sections_dont_match_issue_1331() -> None:
     """Test to ensure that isort warns if there is a mismatch between sections and known_sections.
     See: https://github.com/pycqa/isort/issues/1331.
     """
@@ -202,7 +203,7 @@ def test_isort_warns_when_known_sections_dont_match_issue_1331():
         )
 
 
-def test_isort_supports_append_only_imports_issue_727():
+def test_isort_supports_append_only_imports_issue_727() -> None:
     """Test to ensure isort provides a way to only add imports as an append.
     See: https://github.com/pycqa/isort/issues/727.
     """
@@ -229,7 +230,7 @@ import os
     )
 
 
-def test_isort_supports_shared_profiles_issue_970():
+def test_isort_supports_shared_profiles_issue_970() -> None:
     """Test to ensure isort provides a way to use shared profiles.
     See: https://github.com/pycqa/isort/issues/970.
     """
@@ -239,7 +240,7 @@ def test_isort_supports_shared_profiles_issue_970():
         assert isort.code("import a", profile="madeupfake") == "import a\n"  # non-existent profile
 
 
-def test_treating_comments_as_code_issue_1357():
+def test_treating_comments_as_code_issue_1357() -> None:
     """Test to ensure isort provides a way to treat comments as code.
     See: https://github.com/pycqa/isort/issues/1357
     """
@@ -359,7 +360,7 @@ import c
     )
 
 
-def test_isort_allows_setting_import_types_issue_1181():
+def test_isort_allows_setting_import_types_issue_1181() -> None:
     """Test to ensure isort provides a way to set the type of imports.
     See: https://github.com/pycqa/isort/issues/1181
     """
@@ -383,7 +384,7 @@ def test_isort_allows_setting_import_types_issue_1181():
     )
 
 
-def test_isort_enables_deduping_section_headers_issue_953():
+def test_isort_enables_deduping_section_headers_issue_953() -> None:
     """isort should provide a way to only have identical import headings show up once.
     See: https://github.com/pycqa/isort/issues/953
     """
@@ -418,7 +419,7 @@ from . import something
     assert isort_code("import os") == "import os\n"
 
 
-def test_isort_doesnt_remove_as_imports_when_combine_star_issue_1380():
+def test_isort_doesnt_remove_as_imports_when_combine_star_issue_1380() -> None:
     """Test to ensure isort will not remove as imports along side other imports
     when requested to combine star imports together.
     See: https://github.com/PyCQA/isort/issues/1380
@@ -449,7 +450,7 @@ from a import b as y
     )
 
 
-def test_isort_support_custom_groups_above_stdlib_that_contain_stdlib_modules_issue_1407():
+def test_isort_support_custom_groups_above_stdlib_that_contain_stdlib_modules_issue_1407() -> None:
     """Test to ensure it is possible to declare custom groups above standard library that include
     modules from the standard library.
     See: https://github.com/PyCQA/isort/issues/1407
@@ -468,7 +469,7 @@ from pathlib import Path
     )
 
 
-def test_isort_intelligently_places_noqa_comments_issue_1456():
+def test_isort_intelligently_places_noqa_comments_issue_1456() -> None:
     assert isort.check_code(
         """
 from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going import (  # noqa
@@ -535,14 +536,16 @@ from my.horribly.long.import.line.that.just.keeps.on.going.and.going.and.going i
     )
 
 
-def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
+def test_isort_respects_quiet_from_sort_file_api_see_1461(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
     """Test to ensure isort respects the quiet API parameter when passed in via the API.
     See: https://github.com/PyCQA/isort/issues/1461.
     """
-    settings_file = tmpdir.join(".isort.cfg")
-    custom_settings_file = tmpdir.join(".custom.isort.cfg")
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import b\nimport a\n")
+    settings_file = tmp_path / ".isort.cfg"
+    custom_settings_file = tmp_path / ".custom.isort.cfg"
+    tmp_file = tmp_path / "file.py"
+    tmp_file.write_text("import b\nimport a\n")
     isort.file(tmp_file)
 
     out, error = capsys.readouterr()
@@ -550,39 +553,39 @@ def test_isort_respects_quiet_from_sort_file_api_see_1461(capsys, tmpdir):
     assert "Fixing" in out
 
     # When passed in directly as a setting override
-    tmp_file.write("import b\nimport a\n")
+    tmp_file.write_text("import b\nimport a\n")
     isort.file(tmp_file, quiet=True)
     out, error = capsys.readouterr()
     assert not error
     assert not out
 
     # Present in an automatically loaded configuration file
-    settings_file.write(
+    settings_file.write_text(
         """
 [isort]
 quiet = true
 """
     )
-    tmp_file.write("import b\nimport a\n")
+    tmp_file.write_text("import b\nimport a\n")
     isort.file(tmp_file)
     out, error = capsys.readouterr()
     assert not error
     assert not out
 
     # In a custom configuration file
-    settings_file.write(
+    settings_file.write_text(
         """
 [isort]
 quiet = false
 """
     )
-    custom_settings_file.write(
+    custom_settings_file.write_text(
         """
 [isort]
 quiet = true
 """
     )
-    tmp_file.write("import b\nimport a\n")
+    tmp_file.write_text("import b\nimport a\n")
     isort.file(tmp_file, settings_file=str(custom_settings_file))
     out, error = capsys.readouterr()
     assert not error
@@ -596,13 +599,13 @@ quiet = true
     assert not out
 
 
-def test_isort_should_warn_on_empty_custom_config_issue_1433(tmpdir):
+def test_isort_should_warn_on_empty_custom_config_issue_1433(tmp_path: Path) -> None:
     """Feedback should be provided when a user provides a custom settings file that has no
     discoverable configuration.
     See: https://github.com/PyCQA/isort/issues/1433
     """
-    settings_file = tmpdir.join(".custom.cfg")
-    settings_file.write(
+    settings_file = tmp_path / ".custom.cfg"
+    settings_file.write_text(
         """
 [settings]
 quiet = true
@@ -611,7 +614,7 @@ quiet = true
     with pytest.warns(UserWarning):
         assert not Config(settings_file=str(settings_file)).quiet
 
-    settings_file.write(
+    settings_file.write_text(
         """
 [isort]
 quiet = true
@@ -622,7 +625,7 @@ quiet = true
         assert Config(settings_file=str(settings_file)).quiet
 
 
-def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502():
+def test_float_to_top_should_respect_existing_newlines_between_imports_issue_1502() -> None:
     """When a file has an existing top of file import block before code but after comments
     isort's float to top feature should respect the existing spacing between the top file comment
     and the import statements.
@@ -722,19 +725,21 @@ def my_function():
     )
 
 
-def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
+def test_api_to_allow_custom_diff_and_output_stream_1583(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
     """isort should provide a way from the Python API to process an existing
     file and output to a stream the new version of that file, as well as a diff
     to a different stream.
     See: https://github.com/PyCQA/isort/issues/1583
     """
-    tmp_file = tmpdir.join("file.py")
-    tmp_file.write("import b\nimport a\n")
+    tmp_file = tmp_path / "file.py"
+    tmp_file.write_text("import b\nimport a\n")
 
     isort_diff = StringIO()
     isort_output = StringIO()
 
-    isort.file(tmp_file, show_diff=isort_diff, output=isort_output)
+    isort.file(str(tmp_file), show_diff=isort_diff, output=isort_output)
 
     _, error = capsys.readouterr()
     assert not error
@@ -749,13 +754,13 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
     assert isort_output.read().splitlines() == ["import a", "import b"]
 
     # should still work with no diff produced
-    tmp_file2 = tmpdir.join("file2.py")
-    tmp_file2.write("import a\nimport b\n")
+    tmp_file2 = tmp_path / "file2.py"
+    tmp_file2.write_text("import a\nimport b\n")
 
     isort_diff2 = StringIO()
     isort_output2 = StringIO()
 
-    isort.file(tmp_file2, show_diff=isort_diff2, output=isort_output2)
+    isort.file(str(tmp_file2), show_diff=isort_diff2, output=isort_output2)
 
     _, error = capsys.readouterr()
     assert not error
@@ -764,7 +769,7 @@ def test_api_to_allow_custom_diff_and_output_stream_1583(capsys, tmpdir):
     assert not isort_diff2.read()
 
 
-def test_autofix_mixed_indent_imports_1575():
+def test_autofix_mixed_indent_imports_1575() -> None:
     """isort should automatically fix import statements that are sent in
     with incorrect mixed indentation.
     See: https://github.com/PyCQA/isort/issues/1575
@@ -811,7 +816,7 @@ import os
     )
 
 
-def test_indented_import_headings_issue_1604():
+def test_indented_import_headings_issue_1604() -> None:
     """Test to ensure it is possible to toggle import headings on indented import sections
     See: https://github.com/PyCQA/isort/issues/1604
     """
@@ -859,7 +864,7 @@ def function():
     )
 
 
-def test_isort_auto_detects_and_ignores_invalid_from_imports_issue_1688():
+def test_isort_auto_detects_and_ignores_invalid_from_imports_issue_1688() -> None:
     """isort should automatically detect and ignore incorrectly written from import statements
     see: https://github.com/PyCQA/isort/issues/1688
     """
@@ -880,7 +885,7 @@ from package3 import also_ok
     )
 
 
-def test_isort_allows_reversing_sort_order_issue_1645():
+def test_isort_allows_reversing_sort_order_issue_1645() -> None:
     """isort allows reversing the sort order for those who prefer Z or longer imports first.
     see: https://github.com/PyCQA/isort/issues/1688
     """
@@ -910,7 +915,7 @@ from xxx import (
     )
 
 
-def test_isort_can_push_star_imports_above_others_issue_1504():
+def test_isort_can_push_star_imports_above_others_issue_1504() -> None:
     """isort should provide a way to push star imports above other imports to avoid explicit
     imports from being overwritten.
     see: https://github.com/PyCQA/isort/issues/1504
@@ -933,7 +938,7 @@ from ._bar import All, Any, Not
     )
 
 
-def test_isort_can_combine_reverse_sort_with_force_sort_within_sections_issue_1726():
+def test_isort_can_combine_reverse_sort_with_force_sort_within_sections_issue_1726() -> None:
     """isort should support reversing import order even with force sort within sections turned on.
     See: https://github.com/PyCQA/isort/issues/1726
     """
@@ -966,7 +971,7 @@ import bla
     )
 
 
-def test_isort_can_turn_off_import_adds_with_action_comment_issue_1737():
+def test_isort_can_turn_off_import_adds_with_action_comment_issue_1737() -> None:
     assert (
         isort.code(
             """
@@ -1058,7 +1063,7 @@ def test_sort_configurable_sort_issue_1732() -> None:
         isort.code(test_input, sort_order="round")
 
 
-def test_cython_pure_python_imports_2062():
+def test_cython_pure_python_imports_2062() -> None:
     """Test to ensure an import form a cython.cimports remains import, not cimport.
     See: https://github.com/pycqa/isort/issues/2062.
     """
@@ -1075,7 +1080,7 @@ def use_libc_math():
     )
 
 
-def test_unindented_comment_in_indented_block_issue_1899():
+def test_unindented_comment_in_indented_block_issue_1899() -> None:
     """Test that unindented comments before indented imports are not corrupted.
 
     See: https://github.com/PyCQA/isort/issues/1899
@@ -1089,7 +1094,7 @@ if True:
     assert isort.code(test_input) == test_input
 
 
-def test_sort_separate_packages_issue_2104():
+def test_sort_separate_packages_issue_2104() -> None:
     """
     Test to ensure that packages within a section can be separated by blank lines.
     See: https://github.com/PyCQA/isort/issues/2104

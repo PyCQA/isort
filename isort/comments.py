@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+
+
 def parse(line: str) -> tuple[str, str | None]:
     """Parses import lines for comments and returns back the
     import statement and the associated comment.
@@ -13,7 +16,7 @@ def parse(line: str) -> tuple[str, str | None]:
 
 
 def add_to_line(
-    comments: list[str] | None,
+    comments: Sequence[str] | None,
     original_string: str = "",
     removed: bool = False,
     comment_prefix: str = "",
