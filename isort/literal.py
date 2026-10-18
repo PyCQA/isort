@@ -52,10 +52,12 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     literal = literal.lstrip()
     try:
         parsed = ast.parse(literal, mode="eval")
-        try:
-            value = ast.literal_eval(parsed.body)
-        except ValueError:
+        if isinstance(parsed.body, (ast.List, ast.Set, ast.Tuple)) and any(
+            isinstance(element, ast.JoinedStr) for element in parsed.body.elts
+        ):
             value = _evaluate_collection_with_fstrings(parsed.body, literal)
+        else:
+            value = ast.literal_eval(parsed.body)
     except Exception as error:
         raise LiteralParsingFailure(code, error)
 
