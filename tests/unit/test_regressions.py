@@ -2416,6 +2416,13 @@ from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
     )
 
 
+def test_force_single_line_keeps_comment_on_plain_import_with_alias() -> None:
+    assert isort.code(
+        "from foo import name  # plain comment\nfrom foo import name as alias\n",
+        force_single_line=True,
+    ) == ("from foo import name  # plain comment\nfrom foo import name as alias\n")
+
+
 def test_literal_dict_sort_respects_black_profile_issue_2280() -> None:
     """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
