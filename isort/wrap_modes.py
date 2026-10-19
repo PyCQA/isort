@@ -88,7 +88,12 @@ def grid(
             comments = []
         else:
             statement += ", " + next_import
-    return f"{statement}{',' if include_trailing_comma else ''})"
+    return isort.comments.add_to_line(
+        comments,
+        f"{statement}{',' if include_trailing_comma else ''})",
+        removed=remove_comments,
+        comment_prefix=comment_prefix,
+    )
 
 
 @_wrap_mode
