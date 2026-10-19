@@ -109,10 +109,7 @@ def test_star_import_wrapped_end_to_end() -> None:
 
 
 def test_import_statement_explode_short_comment_stays_on_opening_line() -> None:
-    """A short comment in explode mode stays on the opening line.
-
-    It fits within line_length; the old ``line_length=1`` moves it off.
-    """
+    """A fitting comment stays merged; ``explode`` no longer passes ``line_length=1``."""
     result = wrap.import_statement(
         import_start="from os.path import ",
         from_imports=["getsize", "join"],

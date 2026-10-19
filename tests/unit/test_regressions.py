@@ -2800,8 +2800,7 @@ def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893() -> None
 
 
 def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124() -> None:
-    """Ensure isort doesn't merge a long comment onto the opening line of a
-    multiline from import when using the black profile.
+    """A long comment must wrap under the paren, not merge onto the opening line.
     See: https://github.com/PyCQA/isort/issues/2124
     """
     test_input = """from os.path import (
@@ -2826,11 +2825,7 @@ def test_comments_should_cause_wrapping_on_long_lines_black_mode_issue_2124() ->
 
 
 def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
-    """An opening-line comment never moves, even when the opening line is long.
-
-    Only body (continuation-line) comments may move to satisfy line_length.
-    Guards the habitat-lab primer regression where an opening-line comment was
-    moved under the paren.
+    """Only body comments may move for line_length; guards the habitat-lab regression.
     See: https://github.com/PyCQA/isort/issues/2124
     """
     test_input = """from habitat_baselines.common.obs_transformers import (  # get_active_obs_transforms,
@@ -2840,6 +2835,23 @@ def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
 """
     output = isort.code(test_input, multi_line_output=3, include_trailing_comma=True)
     assert output == test_input
+
+
+def test_opening_line_pragma_stays_when_body_comment_overflows_issue_2124() -> None:
+    """``# noqa`` and ``# type: ignore`` suppress only on the statement's first line,
+    so moving them into the parenthesized body silently drops their effect.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    test_input = """from os.path import (  # noqa: E402
+join,
+# this is a really really really really really really really really long comment
+getsize,
+)
+"""
+    output = isort.code(test_input, profile="black")
+    assert output.splitlines()[0].startswith("from os.path import (  # noqa: E402")
+    assert [line for line in output.splitlines() if "noqa" in line] == [output.splitlines()[0]]
+    assert isort.code(output, profile="black") == output
 
 
 def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments() -> None:

@@ -222,7 +222,14 @@ def vertical_hanging_indent(
     _imports = ("," + line_separator + indent).join(imports)
     _comma_maybe = "," if include_trailing_comma else ""
     opening = f"{statement}({_line_with_comments}"
-    if len(comments) > 1 and _line_with_comments and len(opening) > line_length:
+    if (
+        len(comments) > 1
+        and _line_with_comments
+        and len(opening) > line_length
+        and not any(
+            comment.strip().lower().startswith(("noqa", "type: ignore")) for comment in comments
+        )
+    ):
         _comment_on_own_line = line_separator.join(
             isort.comments.add_to_line(
                 [single_comment],
