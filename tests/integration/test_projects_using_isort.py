@@ -28,6 +28,9 @@ def run_isort(arguments: Generator[str, None, None] | Sequence[str]) -> None:
     main(["--check-only", "--diff", *arguments])
 
 
+@pytest.mark.skip(
+    "Skip for now as #2612 introduce a breaking style change. Can be re-enabled later"
+)
 def test_django(tmp_path: Path) -> None:
     git_clone("https://github.com/django/django.git", tmp_path)
     run_isort(
@@ -49,6 +52,9 @@ def test_pandas(tmp_path: Path) -> None:
     run_isort((str(tmp_path / "pandas"), "--skip", "__init__.py"))
 
 
+@pytest.mark.skip(
+    "Skip for now as #2612 introduce a breaking style change. Can be re-enabled later."
+)
 def test_habitat_lab(tmp_path: Path) -> None:
     git_clone("https://github.com/facebookresearch/habitat-lab.git", tmp_path)
     run_isort([str(tmp_path)])
@@ -77,6 +83,9 @@ def test_hypothesis(tmp_path: Path) -> None:
     )
 
 
+@pytest.mark.skip(
+    "Skip for now as #2612 introduce a breaking style change. Can be re-enabled later"
+)
 def test_pyramid(tmp_path: Path) -> None:
     git_clone("https://github.com/Pylons/pyramid.git", tmp_path)
     run_isort(
