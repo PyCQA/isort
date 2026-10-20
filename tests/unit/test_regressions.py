@@ -2845,6 +2845,41 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                     ast.parse(output)  # must never raise
 
 
+def test_wrap_modes_9_and_10_keep_a_trailing_noqa_comment_on_a_single_import() -> None:
+    """``multi_line_output`` 9 and 10 must not drop the comment of a single import.
+
+    Both modes attach the collected trailing comment while wrapping the *next* import,
+    so a statement with nothing left to wrap never emitted it: ``# noqa`` (or any other
+    comment) silently disappeared, re-activating the lint it was suppressing.  Mode 10
+    additionally emitted ``from a import (b)`` for a single import, which the next run
+    rewrote to ``from a import b``.
+    """
+    source = "from a import b  # noqa: F401\n"
+
+    assert (
+        isort.code(source, multi_line_output=10, line_length=20)
+        == "from a import (  # noqa: F401\n    b)\n"
+    )
+    assert (
+        isort.code(source, multi_line_output=9, line_length=20)
+        == "from a import \\\n    b  # noqa: F401\n"
+    )
+
+    # Whatever the mode and line length, the comment survives and the output is stable.
+    for mode in (9, 10):
+        for line_length in range(12, 41):
+            for extra in ({}, {"include_trailing_comma": True}, {"force_grid_wrap": 1}):
+                output = isort.code(
+                    source, multi_line_output=mode, line_length=line_length, **extra
+                )
+                assert "noqa" in output
+                assert (
+                    isort.code(output, multi_line_output=mode, line_length=line_length, **extra)
+                    == output
+                )
+                ast.parse(output)
+
+
 def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
     """float_to_top must not hoist semicolon separated imports out of an indented block."""
     assert (

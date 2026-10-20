@@ -453,8 +453,16 @@ def vertical_prefix_from_module_import(
             comments = []
         output_statement = statement
 
-    if comments and statement_with_comments:
-        output_statement = statement_with_comments
+    # A comment that no line break consumed must still be emitted: with a single
+    # import there is no loop iteration to attach it, and dropping it silently
+    # loses a ``noqa`` comment that suppresses a lint error.
+    if comments:
+        output_statement = isort.comments.add_to_line(
+            comments,
+            output_statement,
+            removed=remove_comments,
+            comment_prefix=comment_prefix,
+        )
     return output_statement
 
 
@@ -479,7 +487,18 @@ def hanging_indent_with_parentheses(
     statement += "("
     next_import = imports.pop(0)
     next_statement = statement + next_import
-    # Check for first import
+    # Check for first import. When this is also the last import there is nothing
+    # left to wrap, so the trailing comment has to be attached here: either it
+    # fits, and lands after the closing parenthesis, or the branch below hoists
+    # it onto the "(" line. Otherwise the comment is silently dropped by the
+    # wrap modes that keep it on the import line.
+    if not imports and comments:
+        next_statement = isort.comments.add_to_line(
+            comments,
+            next_statement,
+            removed=remove_comments,
+            comment_prefix=comment_prefix,
+        )
     if len(next_statement) > line_length_limit:
         next_statement = (
             isort.comments.add_to_line(
