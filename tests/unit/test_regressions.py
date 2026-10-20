@@ -2857,7 +2857,7 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
     )
 
 
-def test_append_only_adds_future_import_before_code_issue_1970():
+def test_append_only_adds_future_import_before_code_issue_1970() -> None:
     """append_only must place an added future import before all code, not in a later section.
 
     A future import past the first code line is a SyntaxError.
@@ -2887,18 +2887,18 @@ def test_append_only_adds_future_import_before_code_issue_1970():
         "\n"
         "print('silly example', file=sys.stderr)\n"
     )
-    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
-    output = isort.code(source, **config)
+    add_imports = {"from __future__ import annotations"}
+    output = isort.code(source, append_only=True, add_imports=add_imports)
     assert output == expected
     compile(output, "t.py", "exec")  # must never raise
-    assert isort.code(output, **config) == output
+    assert isort.code(output, append_only=True, add_imports=add_imports) == output
 
 
-def test_append_only_future_add_untouched_without_imports_issue_1970():
+def test_append_only_future_add_untouched_without_imports_issue_1970() -> None:
     """append_only still adds nothing to files without imports, future adds included."""
     source = "x = 1\nprint(x)\n"
-    config = {"append_only": True, "add_imports": {"from __future__ import annotations"}}
-    assert isort.code(source, **config) == source
+    add_imports = {"from __future__ import annotations"}
+    assert isort.code(source, append_only=True, add_imports=add_imports) == source
 
 
 def test_lines_before_imports_keeps_import_after_indented_block() -> None:
