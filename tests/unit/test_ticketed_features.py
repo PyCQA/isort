@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import isort
-from isort import Config, exceptions
+from isort import Config, exceptions, main
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178() -> None:
@@ -1263,3 +1263,143 @@ from foo import a, b, e  # comment
 from foo import c as d
 """
     assert isort.code(code) == code
+
+
+def test_force_to_top_preserves_user_specified_order_issue_2130() -> None:
+    """Ensure force_to_top preserves the user-specified ordering when multiple modules are provided.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    # 1. Original torch then tensorflow example
+    assert (
+        isort.code("import tensorflow\nimport torch\n", force_to_top=["torch", "tensorflow"])
+        == "import torch\nimport tensorflow\n"
+    )
+
+    # 2. Three modules in deliberately non-alphabetical order
+    assert (
+        isort.code(
+            "import a_mod\nimport m_mod\nimport z_mod\n",
+            force_to_top=["z_mod", "m_mod", "a_mod"],
+        )
+        == "import z_mod\nimport m_mod\nimport a_mod\n"
+    )
+
+    # 3. Forced modules remaining above unforced modules
+    assert (
+        isort.code(
+            "import b_mod\nimport z_mod\nimport a_mod\nimport m_mod\n",
+            force_to_top=["z_mod", "a_mod"],
+        )
+        == "import z_mod\nimport a_mod\nimport b_mod\nimport m_mod\n"
+    )
+
+    # 4. force_sort_within_sections=True including both import and from imports
+    test_within_sections = (
+        "import tensorflow\nfrom torch import Tensor\nfrom tensorflow import keras\nimport torch\n"
+    )
+    expected_within_sections = (
+        "import torch\nfrom torch import Tensor\nimport tensorflow\nfrom tensorflow import keras\n"
+    )
+    assert (
+        isort.code(
+            test_within_sections,
+            force_to_top=["torch", "tensorflow"],
+            force_sort_within_sections=True,
+        )
+        == expected_within_sections
+    )
+
+    # 5. length_sort=True respects user-specified ordering
+    assert (
+        isort.code(
+            "import short\nimport long_module_name\n",
+            force_to_top=["long_module_name", "short"],
+            length_sort=True,
+        )
+        == "import long_module_name\nimport short\n"
+    )
+
+    # 6. Both natural and native sorting modes
+    assert (
+        isort.code(
+            "import tensorflow\nimport torch\n",
+            force_to_top=["torch", "tensorflow"],
+            sort_order="native",
+        )
+        == "import torch\nimport tensorflow\n"
+    )
+    assert (
+        isort.code(
+            "import tensorflow\nimport torch\n",
+            force_to_top=["torch", "tensorflow"],
+            sort_order="natural",
+        )
+        == "import torch\nimport tensorflow\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_config_file_issue_2130(tmp_path: Path) -> None:
+    """Ensure force_to_top ordering survives config file parsing.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    config_file = tmp_path / "pyproject.toml"
+    config_file.write_text(
+        '[tool.isort]\nforce_to_top = ["torch", "tensorflow"]\n',
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("torch", "tensorflow")
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config)
+        == "import torch\nimport tensorflow\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_isort_cfg_issue_2130(tmp_path: Path) -> None:
+    """Ensure comma-separated force_to_top ordering survives .isort.cfg parsing.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
+        "[settings]\nforce_to_top=torch,tensorflow\n",
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("torch", "tensorflow")
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config)
+        == "import torch\nimport tensorflow\n"
+    )
+
+    # Also verify with 3 non-alphabetical modules
+    config_file.write_text(
+        "[settings]\nforce_to_top=z_mod,m_mod,a_mod\n",
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("z_mod", "m_mod", "a_mod")
+    assert (
+        isort.code("import a_mod\nimport m_mod\nimport z_mod\n", config=config)
+        == "import z_mod\nimport m_mod\nimport a_mod\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_cli_issue_2130(tmp_path: Path) -> None:
+    """Ensure repeated --top / -t CLI flags preserve user-specified order in formatted output.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    python_file = tmp_path / "test_file.py"
+    python_file.write_text("import tensorflow\nimport torch\n", encoding="utf-8")
+
+    # Short flag -t
+    main.main([str(python_file), "-t", "torch", "-t", "tensorflow"])
+    assert python_file.read_text(encoding="utf-8") == "import torch\nimport tensorflow\n"
+
+    # Long flag --top with non-alphabetical ordering
+    python_file.write_text("import a_mod\nimport m_mod\nimport z_mod\n", encoding="utf-8")
+    main.main([str(python_file), "--top", "z_mod", "--top", "m_mod", "--top", "a_mod"])
+    assert python_file.read_text(encoding="utf-8") == "import z_mod\nimport m_mod\nimport a_mod\n"
