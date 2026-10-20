@@ -964,6 +964,25 @@ import b
     )
 
 
+def test_stream_skip_file_check(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Checking a skipped stream passes quietly, just like sorting a skipped stream does."""
+    stream_with_skip_comment = as_stream("# isort: skip_file\nimport b\nimport a\n")
+    main.main(["-", "--check-only", "--diff"], stdin=stream_with_skip_comment)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    skipped_file = tmp_path / "generated.py"
+    stream_skipped_by_setting = as_stream("import b\nimport a\n")
+    main.main(
+        ["-", "--check-only", "--skip", str(skipped_file), "--filename", str(skipped_file)],
+        stdin=stream_skipped_by_setting,
+    )
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+
 def test_only_modified_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # ensures there is no verbose output for correct files with only-modified flag
 
