@@ -630,6 +630,22 @@ def test_combine_as_force_single_line_keeps_trailing_comments_issue_2094() -> No
     assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
 
 
+def test_combine_as_force_single_line_keeps_multiline_alias_comments_separate() -> None:
+    test_input = """from m import (
+    a as x,  # first
+    b as y,  # second
+)
+"""
+    expected_output = """from m import a as x  # first
+from m import b as y  # second
+"""
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
 def test_incorrect_grouping_when_comments_issue_1396() -> None:
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

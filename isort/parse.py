@@ -305,38 +305,39 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
 
-                    if comments and attach_comments_to is None:
-                        if nested_module and config.combine_as_imports:
-                            if (
-                                config.force_single_line
-                                and top_level_module not in config.single_line_exclusions
-                            ):
-                                nested_for_module = categorized_comments["nested"].setdefault(
-                                    top_level_module, {}
-                                )
-                                existing_comment = nested_for_module.get(full_name, "")
-                                nested_for_module[full_name] = (
-                                    f"{existing_comment}"
-                                    f"{'; ' if existing_comment else ''}"
-                                    f"{'; '.join(comments)}"
-                                )
-                                comments = []
-                            else:
-                                attach_comments_to = categorized_comments["from"].setdefault(
-                                    f"{top_level_module}.__combined_as__", []
-                                )
-                        else:
-                            if type_of_import is _ImportType.FROM or (
-                                config.remove_redundant_aliases and as_name == module.split(".")[-1]
-                            ):
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    module, []
-                                )
-                            else:
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    f"{module} as {as_name}", []
-                                )
                     del just_imports[as_index : as_index + 2]
+
+                if comments and attach_comments_to is None:
+                    if nested_module and config.combine_as_imports:
+                        if (
+                            config.force_single_line
+                            and top_level_module not in config.single_line_exclusions
+                        ):
+                            nested_for_module = categorized_comments["nested"].setdefault(
+                                top_level_module, {}
+                            )
+                            existing_comment = nested_for_module.get(full_name, "")
+                            nested_for_module[full_name] = (
+                                f"{existing_comment}"
+                                f"{'; ' if existing_comment else ''}"
+                                f"{'; '.join(comments)}"
+                            )
+                            comments = []
+                        else:
+                            attach_comments_to = categorized_comments["from"].setdefault(
+                                f"{top_level_module}.__combined_as__", []
+                            )
+                    else:
+                        if type_of_import is _ImportType.FROM or (
+                            config.remove_redundant_aliases and as_name == module.split(".")[-1]
+                        ):
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                module, []
+                            )
+                        else:
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                f"{module} as {as_name}", []
+                            )
 
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
