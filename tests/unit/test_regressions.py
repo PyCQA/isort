@@ -2909,15 +2909,15 @@ def test_split_on_trailing_comma_idempotent_with_aliased_import_between() -> Non
         "from _csv import Dialect as _Dialect\n"
     )
     expected = (
-        "from _csv import __doc__\n"
-        "from _csv import Dialect as _Dialect\n"
         "from _csv import (\n"
+        "    __doc__,\n"
         "    QUOTE_MINIMAL,\n"
         "    QUOTE_NONE,\n"
         "    QUOTE_NONNUMERIC,\n"
         "    QUOTE_NOTNULL,\n"
         "    QUOTE_STRINGS,\n"
         ")\n"
+        "from _csv import Dialect as _Dialect\n"
     )
     output = isort.code(code, profile="appnexus")
     assert output == expected
