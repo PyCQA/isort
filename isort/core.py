@@ -545,7 +545,7 @@ def process(
                     )
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
-                            if next_import_section and len(next_indent) < len(indent):
+                            if next_import_section and not next_indent:
                                 # The blank lines before the less indented section that
                                 # follows are written with that section.
                                 trailing_whitespace = line_separator
