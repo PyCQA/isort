@@ -3041,6 +3041,11 @@ def test_indented_imports_followed_by_less_indented_import_issue_2010() -> None:
     assert isort.code(expected) == expected
     assert isort.code(code, lines_before_imports=1) == expected
 
+    code = "class C:\n    def f(self):\n        import a\n\n    import b\n"
+    expected = "class C:\n    def f(self):\n        import a\n\n    import b\n"
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+
     # A dedent of one level out of two, again sorted as when code follows it.
     code = (
         "class C:\n"
