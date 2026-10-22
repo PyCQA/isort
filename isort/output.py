@@ -404,6 +404,8 @@ def _build_as_imports(
     return output
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def _build_grouped_from_imports(
     *,
     imports: list[str],
