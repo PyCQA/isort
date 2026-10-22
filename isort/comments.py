@@ -1,4 +1,7 @@
+import re
 from collections.abc import Sequence
+
+_PRAGMA_PATTERN = re.compile(r"(?:noqa\b|type:\s*ignore\b)", re.IGNORECASE)
 
 
 def parse(line: str) -> tuple[str, str | None]:
@@ -13,6 +16,11 @@ def parse(line: str) -> tuple[str, str | None]:
         return (line[:comment_start], line[comment_start + 1 :].strip())
 
     return (line, None)
+
+
+def is_pragma_comment(comment: str) -> bool:
+    """Return whether a comment contains a ``noqa`` or ``type: ignore`` directive."""
+    return any(_PRAGMA_PATTERN.match(fragment.strip()) for fragment in comment.split("#"))
 
 
 def add_to_line(

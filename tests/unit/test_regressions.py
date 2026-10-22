@@ -2839,25 +2839,89 @@ def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
 
 @pytest.mark.parametrize(
     "opening_comment",
-    ["# noqa: E402", "# explanation  # noqa: F401"],
-    ids=["prefix-pragma", "embedded-pragma"],
+    [
+        "# noqa: E402",
+        "# explanation  # noqa: F401",
+        "# type: ignore[attr-defined]",
+        "# type:ignore[attr-defined]",
+        "# type:   ignore[attr-defined]",
+    ],
+    ids=[
+        "prefix-noqa",
+        "embedded-noqa",
+        "type-ignore",
+        "type-ignore-tight",
+        "type-ignore-spaced",
+    ],
 )
 def test_opening_line_pragma_stays_when_body_comment_overflows_issue_2124(
     opening_comment: str,
 ) -> None:
-    """``# noqa`` and ``# type: ignore`` suppress only on the statement's first line,
-    so moving them into the parenthesized body silently drops their effect.
+    """Statement-line pragmas must stay on the opening line while body comments wrap.
     See: https://github.com/PyCQA/isort/issues/2124
     """
+    body_comment = (
+        "# this is a really really really really really really really really long comment"
+    )
     test_input = f"""from os.path import (  {opening_comment}
 join,
-# this is a really really really really really really really really long comment
+{body_comment}
 getsize,
 )
 """
     output = isort.code(test_input, profile="black")
-    assert output.splitlines()[0].startswith(f"from os.path import (  {opening_comment}")
-    assert [line for line in output.splitlines() if "noqa" in line] == [output.splitlines()[0]]
+    lines = output.splitlines()
+    assert lines[0] == f"from os.path import (  {opening_comment}"
+    assert lines[1] == f"    {body_comment}"
+    assert [line for line in lines if opening_comment in line] == [lines[0]]
+    for line in lines:
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    assert isort.code(output, profile="black") == output
+
+
+def test_opening_line_pragma_stays_with_bracket_wrap_issue_2124() -> None:
+    """The bracket variant must forward opening-line comments to vertical hanging indent.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    body_comment = (
+        "# this is a really really really really really really really really long comment"
+    )
+    test_input = f"""from os.path import (  # noqa: E402
+join,
+{body_comment}
+getsize,
+)
+"""
+    output = isort.code(test_input, multi_line_output=8, include_trailing_comma=True)
+    lines = output.splitlines()
+    assert lines[0] == "from os.path import (  # noqa: E402"
+    assert lines[1] == f"    {body_comment}"
+    for line in lines:
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
+    assert isort.code(output, multi_line_output=8, include_trailing_comma=True) == output
+
+
+def test_single_body_comment_moves_off_opening_line_issue_2124() -> None:
+    """A lone body comment must move when it no longer fits on the opening line.
+    See: https://github.com/PyCQA/isort/issues/2124
+    """
+    body_comment = (
+        "# this is a really really really really really really really really long comment"
+    )
+    test_input = f"""from os.path import (
+{body_comment}
+join,
+)
+"""
+    expected = f"""from os.path import (
+    {body_comment}
+    join,
+)
+"""
+    output = isort.code(test_input, profile="black")
+    assert output == expected
+    for line in output.splitlines():
+        assert len(line) <= 88, f"line exceeds 88: {line!r}"
     assert isort.code(output, profile="black") == output
 
 

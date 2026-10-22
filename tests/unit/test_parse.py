@@ -61,6 +61,32 @@ def test_file_contents_splits_only_on_newlines(line_separator: str) -> None:
     assert parsed.in_lines == ["import b", "import a", "\fpass"]
 
 
+def test_from_opening_comments_are_separated_from_body_comments_issue_2124() -> None:
+    parsed = parse.file_contents(
+        """from os.path import (  # noqa: E402
+join,
+# body comment
+getsize,
+)
+"""
+    )
+    assert parsed.categorized_comments["from_opening"] == {"os.path": ["noqa: E402"]}
+    assert parsed.categorized_comments["from"] == {"os.path": ["body comment"]}
+
+
+def test_from_opening_comment_survives_duplicate_nested_comment_issue_2124() -> None:
+    parsed = parse.file_contents(
+        """from os.path import (  # comment
+join,  # comment
+getsize,
+)
+"""
+    )
+    assert parsed.categorized_comments["from_opening"] == {"os.path": ["comment"]}
+    assert parsed.categorized_comments["from"] == {"os.path": []}
+    assert parsed.categorized_comments["nested"] == {"os.path": {"join": "comment"}}
+
+
 # These tests were written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 

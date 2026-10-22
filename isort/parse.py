@@ -29,6 +29,7 @@ if TYPE_CHECKING:
         "CommentsDict",
         {
             "from": dict[str, list[str]],
+            "from_opening": dict[str, list[str]],
             "straight": dict[str, list[str]],
             "nested": dict[str, dict[str, str]],
             "above": CommentsAboveDict,
@@ -114,6 +115,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         }
     categorized_comments: CommentsDict = {
         "from": {},
+        "from_opening": {},
         "straight": {},
         "nested": {},
         "above": {"straight": {}, "from": {}},
@@ -344,6 +346,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     raise MissingSection(import_module=import_from, section=placed_module)
 
                 root = imports[placed_module]["lazy_from" if is_lazy else "from"]
+                opening_line_comment = comment
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment is not None:
@@ -351,7 +354,12 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             associated_comment
                         )
                         if associated_comment in comments:  # pragma: no branch
-                            comments.pop(comments.index(associated_comment))
+                            comment_index = (
+                                len(comments) - 1 - comments[::-1].index(associated_comment)
+                            )
+                            comments.pop(comment_index)
+                            if comment_index == 0:
+                                opening_line_comment = None
                 if (
                     config.force_single_line
                     and comments
@@ -368,6 +376,10 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     comments = []
 
                 if comments and attach_comments_to is None:
+                    if opening_line_comment is not None and comments[0] == opening_line_comment:
+                        categorized_comments["from_opening"].setdefault(import_from, []).append(
+                            comments.pop(0)
+                        )
                     attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
 
                 if len(out_lines) > max(import_index, 1) - 1:

@@ -1,6 +1,6 @@
 import copy
 import itertools
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import Literal
 
 from isort.format import format_simplified
@@ -413,7 +413,8 @@ def _build_grouped_from_imports(
     processed_as_imports_this_iteration: bool,
     parsed: parse.ParsedContent,
     config: Config,
-    preserve_comments_on_statement_line: bool,
+    opening_line_comments: Sequence[str],
+    body_comments: Sequence[str],
 ) -> str:
     """
     Build a string of imports, wrapping them across multiple lines if necessary.
@@ -467,7 +468,8 @@ def _build_grouped_from_imports(
             len(imports) == 1
             and comments
             and not has_noqa_comment
-            and not preserve_comments_on_statement_line
+            and not opening_line_comments
+            and not body_comments
         )
     ):
         return wrap.import_statement(
@@ -477,6 +479,7 @@ def _build_grouped_from_imports(
             line_separator=parsed.line_separator,
             config=config,
             explode=True,
+            opening_line_comments=opening_line_comments,
         )
 
     if do_multiline_reformat:
@@ -484,7 +487,8 @@ def _build_grouped_from_imports(
             comments
             and len(imports) == 1
             and not has_noqa_comment
-            and not preserve_comments_on_statement_line
+            and not opening_line_comments
+            and not body_comments
         ):
             return wrap.line(import_statement, parsed.line_separator, config)
 
@@ -494,6 +498,7 @@ def _build_grouped_from_imports(
             comments=comments,
             line_separator=parsed.line_separator,
             config=config,
+            opening_line_comments=opening_line_comments,
         )
         if config.multi_line_output == wrap_modes.WrapModes.GRID:
             other_import_statement = wrap.import_statement(
@@ -503,6 +508,7 @@ def _build_grouped_from_imports(
                 line_separator=parsed.line_separator,
                 config=config,
                 multi_line_output=wrap_modes.WrapModes.VERTICAL_GRID,
+                opening_line_comments=opening_line_comments,
             )
             if (
                 max(
@@ -614,8 +620,9 @@ def _with_from_imports_for_module(
                 else:
                     from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
-    opening_line_comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
-    comments: list[str] = list(opening_line_comments)
+    opening_line_comments: list[str] = parsed.categorized_comments["from_opening"].pop(module, [])
+    body_comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
+    comments: list[str] = [*opening_line_comments, *body_comments]
     above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
     if above_comments:
         output.extend(above_comments)
@@ -805,7 +812,8 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments),
+            opening_line_comments=opening_line_comments,
+            body_comments=body_comments,
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)

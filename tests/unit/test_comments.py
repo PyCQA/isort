@@ -10,6 +10,22 @@ def test_add_to_line() -> None:
     )
 
 
+def test_is_pragma_comment() -> None:
+    for comment in (
+        "noqa",
+        "noqa: F401",
+        "type: ignore",
+        "type:ignore",
+        "type:   ignore[attr-defined]",
+        "explanation  # noqa: F401",
+        "TYPE: IGNORE",
+    ):
+        assert isort.comments.is_pragma_comment(comment), comment
+
+    for comment in ("", "type: int", "check type: ignore later", "noqa_false"):
+        assert not isort.comments.is_pragma_comment(comment), comment
+
+
 # These tests were written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 

@@ -200,6 +200,36 @@ def hanging_indent(
     return statement
 
 
+def _vertical_hanging_indent_lines(
+    *,
+    statement: str,
+    imports: str,
+    comments: Sequence[str],
+    indent: str,
+    line_separator: str,
+    comment_prefix: str,
+    include_trailing_comma: bool,
+    remove_comments: bool,
+    opening_comments: str = "",
+) -> str:
+    comment_on_own_line = line_separator.join(
+        isort.comments.add_to_line(
+            [single_comment],
+            indent,
+            removed=remove_comments,
+            comment_prefix=comment_prefix.lstrip(),
+        )
+        for single_comment in comments
+    )
+    comma_maybe = "," if include_trailing_comma else ""
+    return (
+        f"{statement}({opening_comments}{line_separator}"
+        f"{comment_on_own_line}{line_separator}"
+        f"{indent}{imports}{comma_maybe}"
+        f"{line_separator})"
+    )
+
+
 @_wrap_mode
 def vertical_hanging_indent(
     statement: str,
@@ -212,6 +242,7 @@ def vertical_hanging_indent(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
+    opening_line_comments: Sequence[str] | None = None,
 ) -> str:
     _line_with_comments = isort.comments.add_to_line(
         comments,
@@ -222,30 +253,50 @@ def vertical_hanging_indent(
     _imports = ("," + line_separator + indent).join(imports)
     _comma_maybe = "," if include_trailing_comma else ""
     opening = f"{statement}({_line_with_comments}"
-    if (
-        len(comments) > 1
-        and _line_with_comments
-        and len(opening) > line_length
-        and not any(
-            fragment.strip().lower().startswith(("noqa", "type: ignore"))
-            for comment in comments
-            for fragment in comment.split("#")
-        )
-    ):
-        _comment_on_own_line = line_separator.join(
-            isort.comments.add_to_line(
-                [single_comment],
-                indent,
-                removed=remove_comments,
-                comment_prefix=comment_prefix.lstrip(),
+    if opening_line_comments is None:
+        if (
+            len(comments) > 1
+            and _line_with_comments
+            and len(opening) > line_length
+            and not any(isort.comments.is_pragma_comment(comment) for comment in comments)
+        ):
+            return _vertical_hanging_indent_lines(
+                statement=statement,
+                imports=_imports,
+                comments=comments,
+                indent=indent,
+                line_separator=line_separator,
+                comment_prefix=comment_prefix,
+                include_trailing_comma=include_trailing_comma,
+                remove_comments=remove_comments,
             )
-            for single_comment in comments
+        return f"{opening}{line_separator}{indent}{_imports}{_comma_maybe}{line_separator})"
+
+    statement_comments = list(opening_line_comments)
+    body_comments = list(comments[len(statement_comments) :])
+    kept_body_comments = [
+        comment for comment in body_comments if isort.comments.is_pragma_comment(comment)
+    ]
+    movable_body_comments = [
+        comment for comment in body_comments if not isort.comments.is_pragma_comment(comment)
+    ]
+    if movable_body_comments and _line_with_comments and len(opening) > line_length:
+        opening_comments = isort.comments.add_to_line(
+            [*statement_comments, *kept_body_comments],
+            "",
+            removed=remove_comments,
+            comment_prefix=comment_prefix,
         )
-        return (
-            f"{statement}({line_separator}"
-            f"{_comment_on_own_line}{line_separator}"
-            f"{indent}{_imports}{_comma_maybe}"
-            f"{line_separator})"
+        return _vertical_hanging_indent_lines(
+            statement=statement,
+            imports=_imports,
+            comments=movable_body_comments,
+            indent=indent,
+            line_separator=line_separator,
+            comment_prefix=comment_prefix,
+            include_trailing_comma=include_trailing_comma,
+            remove_comments=remove_comments,
+            opening_comments=opening_comments,
         )
     return f"{opening}{line_separator}{indent}{_imports}{_comma_maybe}{line_separator})"
 
@@ -416,10 +467,12 @@ def vertical_hanging_indent_bracket(
     comment_prefix: str,
     include_trailing_comma: bool,
     remove_comments: bool,
+    opening_line_comments: Sequence[str] | None = None,
 ) -> str:
     if not imports:
         return ""
-    statement = vertical_hanging_indent(
+    formatter: Callable[..., str] = vertical_hanging_indent
+    statement = formatter(
         statement=statement,
         imports=imports,
         white_space=white_space,
@@ -430,6 +483,7 @@ def vertical_hanging_indent_bracket(
         comment_prefix=comment_prefix,
         include_trailing_comma=include_trailing_comma,
         remove_comments=remove_comments,
+        opening_line_comments=opening_line_comments,
     )
     return f"{statement[:-1]}{indent})"
 
