@@ -646,6 +646,35 @@ from m import b as y  # second
     assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
 
 
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        "from m import (\n    a as x,  # first\n    b,  # noqa: F401\n)\n",
+        "from m import (\n    b,  # noqa: F401\n    a as x,  # first\n)\n",
+    ],
+    ids=["alias-first", "plain-first"],
+)
+def test_combine_as_force_single_line_keeps_mixed_comments_separate(
+    test_input: str,
+) -> None:
+    expected_output = "from m import a as x  # first\nfrom m import b  # noqa: F401\n"
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_force_single_line_keeps_plain_only_comment() -> None:
+    test_input = "from m import (\n    a as x,\n    b,  # noqa: F401\n)\n"
+    expected_output = "from m import a as x\nfrom m import b  # noqa: F401\n"
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
 def test_incorrect_grouping_when_comments_issue_1396() -> None:
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

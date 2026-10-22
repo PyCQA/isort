@@ -313,15 +313,22 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             config.force_single_line
                             and top_level_module not in config.single_line_exclusions
                         ):
-                            nested_for_module = categorized_comments["nested"].setdefault(
-                                top_level_module, {}
-                            )
-                            existing_comment = nested_for_module.get(full_name, "")
-                            nested_for_module[full_name] = (
-                                f"{existing_comment}"
-                                f"{'; ' if existing_comment else ''}"
-                                f"{'; '.join(comments)}"
-                            )
+                            pending_comments = list(comments)
+                            for import_name in just_imports:
+                                plain_comment = nested_comments.get(import_name)
+                                if plain_comment is not None and plain_comment in pending_comments:
+                                    pending_comments.remove(plain_comment)
+
+                            if pending_comments:
+                                nested_for_module = categorized_comments["nested"].setdefault(
+                                    top_level_module, {}
+                                )
+                                existing_comment = nested_for_module.get(full_name, "")
+                                nested_for_module[full_name] = (
+                                    f"{existing_comment}"
+                                    f"{'; ' if existing_comment else ''}"
+                                    f"{'; '.join(pending_comments)}"
+                                )
                             comments = []
                         else:
                             attach_comments_to = categorized_comments["from"].setdefault(
