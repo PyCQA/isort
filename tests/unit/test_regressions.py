@@ -2837,19 +2837,26 @@ def test_opening_line_comment_keeps_existing_placement_issue_2124() -> None:
     assert output == test_input
 
 
-def test_opening_line_pragma_stays_when_body_comment_overflows_issue_2124() -> None:
+@pytest.mark.parametrize(
+    "opening_comment",
+    ["# noqa: E402", "# explanation  # noqa: F401"],
+    ids=["prefix-pragma", "embedded-pragma"],
+)
+def test_opening_line_pragma_stays_when_body_comment_overflows_issue_2124(
+    opening_comment: str,
+) -> None:
     """``# noqa`` and ``# type: ignore`` suppress only on the statement's first line,
     so moving them into the parenthesized body silently drops their effect.
     See: https://github.com/PyCQA/isort/issues/2124
     """
-    test_input = """from os.path import (  # noqa: E402
+    test_input = f"""from os.path import (  {opening_comment}
 join,
 # this is a really really really really really really really really long comment
 getsize,
 )
 """
     output = isort.code(test_input, profile="black")
-    assert output.splitlines()[0].startswith("from os.path import (  # noqa: E402")
+    assert output.splitlines()[0].startswith(f"from os.path import (  {opening_comment}")
     assert [line for line in output.splitlines() if "noqa" in line] == [output.splitlines()[0]]
     assert isort.code(output, profile="black") == output
 

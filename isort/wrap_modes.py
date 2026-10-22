@@ -227,7 +227,9 @@ def vertical_hanging_indent(
         and _line_with_comments
         and len(opening) > line_length
         and not any(
-            comment.strip().lower().startswith(("noqa", "type: ignore")) for comment in comments
+            fragment.strip().lower().startswith(("noqa", "type: ignore"))
+            for comment in comments
+            for fragment in comment.split("#")
         )
     ):
         _comment_on_own_line = line_separator.join(
