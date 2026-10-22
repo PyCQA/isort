@@ -52,6 +52,11 @@ def test_list_sorts_fstrings_by_their_rendered_value() -> None:
     )
 
 
+def test_augmented_assignment_keeps_its_operator() -> None:
+    assert isort.literal.assignment("x += ['b', 'a']", "list", "py") == 'x += ["a", "b"]'
+    assert isort.literal.assignment("x |= {'b', 'a'}", "set", "py") == 'x |= {"a", "b"}'
+
+
 def test_list_preserves_bracket_type_tuple() -> None:
     assert isort.literal.assignment("x = ('b', 'a')", "tuple", "py") == 'x = ("a", "b")'
 

@@ -27,7 +27,7 @@ def assignments(code: str) -> str:
             continue
         if " = " not in line:
             raise AssignmentsFormatMismatch(code)
-        variable_name, value = line.split(" = ", 1)
+        variable_name, value = line.lstrip().split(" = ", 1)
         values[variable_name] = value
 
     return "".join(
@@ -47,8 +47,11 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             f"Defined sort types are {', '.join(type_mapping.keys())}."
         )
 
-    variable_name, literal = code.split("=", 1)
-    variable_name = variable_name.strip()
+    target, literal = code.split("=", 1)
+    target = target.strip()
+    # an augmented assignment such as ``__all__ += [...]`` keeps its operator
+    variable_name = target.rstrip("+-*/%@&|^<>").rstrip()
+    operator = target[len(variable_name) :].strip() + "="
     literal = literal.lstrip()
     try:
         parsed = ast.parse(literal, mode="eval")
@@ -78,11 +81,11 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
 
     line_separator = _infer_line_separator(code, config.line_ending)
 
-    prefix_length = len(f"{variable_name} = ")
+    prefix_length = len(f"{variable_name} {operator} ")
     variable_value = sort_function(
         value, config, prefix_length, preserve_trailing_comma, line_separator
     )
-    sorted_value_code = f"{variable_name} = {variable_value}"
+    sorted_value_code = f"{variable_name} {operator} {variable_value}"
     if config.formatting_function:
         sorted_value_code = config.formatting_function(
             sorted_value_code, extension, config
@@ -136,7 +139,7 @@ def _black_quote(value: str) -> str:
     return '"' + value.replace('"', '\\"') + '"'
 
 
-def _repr_element(value: Any) -> str:
+def _repr_element(value: object) -> str:
     """Render a single sorted element: strings via black's quote rule, everything else
     via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
     """

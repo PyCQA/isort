@@ -474,9 +474,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     import_bucket: Literal["lazy_straight", "straight"] = (
                         "lazy_straight" if is_lazy else "straight"
                     )
-                    straight_import |= bool(
-                        imports[placed_module][import_bucket].get(module, False)
-                    )
+                    straight_import |= imports[placed_module][import_bucket].get(module, False)
                     imports[placed_module][import_bucket][module] = straight_import
 
     change_count = len(out_lines) - original_line_count

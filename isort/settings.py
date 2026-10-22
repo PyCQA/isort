@@ -190,7 +190,7 @@ class _Config:
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: tuple[dict[str, Any], ...] = ()
+    sources: tuple[dict[str, object], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
@@ -224,7 +224,7 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
-    git_ls_files: dict[Path, set[str]] = field(default_factory=dict)
+    git_ls_files: dict[Path, set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
@@ -360,6 +360,8 @@ class Config(_Config):
                 indent = indent.strip("'").strip('"')
                 if indent.lower() == "tab":
                     indent = "\t"
+                else:
+                    indent = indent.replace("\\t", "\t")
             combined_config["indent"] = indent
 
         known_other = {}
@@ -541,9 +543,18 @@ class Config(_Config):
             .split("\0")
         )
 
-        self.git_ls_files[git_folder] = {
-            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
-        }
+        # the folders holding those files are allowed too, so that folders without
+        # any of them (e.g. ignored ones) are skipped instead of walked file by file
+        allowed = {git_folder}
+        for f in tracked_files + tracked_files_others:
+            path = git_folder / Path(f)
+            allowed.add(path)
+            for parent in path.parents:
+                if parent in allowed:
+                    break
+                allowed.add(parent)
+
+        self.git_ls_files[git_folder] = allowed
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -594,11 +605,7 @@ class Config(_Config):
 
             # git_ls_files are good files you should parse. If you're not in the allow list, skip.
 
-            if (
-                git_folder
-                and not file_path.is_dir()
-                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
-            ):
+            if git_folder and file_path.resolve() not in self.git_ls_files[git_folder]:
                 return True
 
         return False

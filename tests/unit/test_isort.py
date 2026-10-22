@@ -10,7 +10,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from collections.abc import Iterator
 
 import pytest
@@ -19,16 +19,13 @@ import isort
 from isort import api, files, sections
 from isort.exceptions import ExistingSyntaxErrors, FileSkipped, MissingSection
 from isort.settings import Config
+from isort.wrap_modes import WrapModes
 from isort.utils import exists_case_sensitive
 from isort.main import parse_args
 from isort.main import main
 
 from .utils import UnreadableStream, as_stream
 
-if TYPE_CHECKING:
-    WrapModes: Any
-else:
-    from isort.wrap_modes import WrapModes
 
 TEST_DEFAULT_CONFIG = """
 [*.{py,pyi}]
@@ -1798,6 +1795,32 @@ def test_combined_from_and_as_imports() -> None:
     assert isort.code(test_input) == test_output
 
 
+def test_grouped_from_imports_preserve_alias_order() -> None:
+    """Test that alias-only imports retain their configured order when grouped."""
+    test_input = (
+        "from foo import a\nfrom foo import c\nfrom foo import b as bee\nfrom foo import c as cee\n"
+    )
+    test_output = "from foo import a, c\nfrom foo import b as bee\nfrom foo import c as cee\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import b\nfrom x import a as aa\nfrom x import c\nfrom x import c as cc\n"
+    test_output = "from x import b, c\nfrom x import a as aa\nfrom x import c as cc\n"
+    assert isort.code(test_input, no_inline_sort=True) == test_output
+    assert isort.code(test_output, no_inline_sort=True) == test_output
+
+    test_input = (
+        "from foo import *\n"
+        "from foo import b\n"
+        "from foo import b as c\n"
+        "from foo import e\n"
+        "from foo import e as f\n"
+    )
+    test_output = "from foo import *\nfrom foo import b as c\nfrom foo import e as f\n"
+    assert isort.code(test_input, combine_star=True) == test_output
+    assert isort.code(test_output, combine_star=True) == test_output
+
+
 def test_as_imports_with_line_length() -> None:
     """Test to ensure it's possible to combine from and as imports."""
     test_input = (
@@ -1831,14 +1854,24 @@ def test_keep_comments() -> None:
 
     # More complicated case
     test_input = "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
-    assert isort.code(test_input) == (
-        "from a import b  # My Comment1\nfrom a import c  # My Comment2\n"
-    )
+    assert isort.code(test_input) == "from a import b, c  # My Comment1; My Comment2\n"
 
     # Test case where imports comments make imports extend pass the line length
     test_input = "from a import b # My Comment1\nfrom a import c # My Comment2\nfrom a import d\n"
-    assert isort.code(test_input, line_length=45) == (
-        "from a import b  # My Comment1\nfrom a import c  # My Comment2\nfrom a import d\n"
+    test_output = isort.code(test_input, line_length=45)
+    assert test_output == "from a import (b,  # My Comment1; My Comment2\n               c, d)\n"
+    assert isort.code(test_output, line_length=45) == test_output
+
+    test_input = "from foo import a  # comment\nfrom foo import b\n"
+    test_output = isort.code(
+        test_input, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+    )
+    assert test_output == "from foo import (  # comment\n    a,\n    b\n)\n"
+    assert (
+        isort.code(
+            test_output, force_grid_wrap=2, multi_line_output=WrapModes.VERTICAL_HANGING_INDENT
+        )
+        == test_output
     )
 
     # Test case where imports with comments will be beyond line length limit
@@ -1863,6 +1896,32 @@ def test_keep_comments() -> None:
     assert isort.code(test_input, combine_as_imports=True) == (
         "from a import b as bb, c as cc, d  # b comment; c comment\n"
     )
+
+    test_input = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
+    test_output = "from x import a  # explanation\nfrom x import b  # noqa: F401\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a  # noqa: F401\nfrom x import b  # explanation\n"
+    assert isort.code(test_input) == test_input
+
+    test_input = "from x import a  # noqa: F401\nfrom x import b  # noqa: F402\n"
+    assert isort.code(test_input) == test_input
+
+    test_input = "from x import a  # explanation\nfrom x import b  # type: ignore[attr-defined]\n"
+    test_output = "from x import a  # explanation\nfrom x import b  # type: ignore[attr-defined]\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a\nfrom x import b  # explanation\nfrom x import c  # noqa: F401\n"
+    test_output = "from x import a, b  # explanation\nfrom x import c  # noqa: F401\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
+
+    test_input = "from x import a\nfrom x import b  #\nfrom x import c\n"
+    test_output = "from x import a, b, c  #\n"
+    assert isort.code(test_input) == test_output
+    assert isort.code(test_output) == test_output
 
 
 def test_multiline_split_on_dot() -> None:
@@ -2001,9 +2060,7 @@ def test_correctly_placed_imports() -> None:
     assert isort.code(test_input, force_single_line=True) == (
         "from a import b  # comment for b\nfrom a import c  # comment for c\n"
     )
-    assert isort.code(test_input) == (
-        "from a import b  # comment for b\nfrom a import c  # comment for c\n"
-    )
+    assert isort.code(test_input) == "from a import b, c  # comment for b; comment for c\n"
 
     # Full example test from issue #143
     test_input = (
@@ -3558,19 +3615,19 @@ def test_escaped_parens_sort() -> None:
 
 def test_escaped_parens_sort_with_comment() -> None:
     test_input = "from foo import \\ \n(a,\nb,# comment\nc)\n"
-    expected = "from foo import b  # comment\nfrom foo import a, c\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
 def test_escaped_parens_sort_with_first_comment() -> None:
     test_input = "from foo import \\ \n(a,# comment\nb,\nc)\n"
-    expected = "from foo import a  # comment\nfrom foo import b, c\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
 def test_escaped_no_parens_sort_with_first_comment() -> None:
     test_input = "from foo import a, \\\nb, \\\nc # comment\n"
-    expected = "from foo import c  # comment\nfrom foo import a, b\n"
+    expected = "from foo import a, b, c  # comment\n"
     assert isort.code(test_input) == expected
 
 
@@ -3966,13 +4023,12 @@ def test_all_imports_from_single_module() -> None:
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, w, x, y, z\n"
         "from a import b as c\n"
         "from a import b as d\n"
         "from a import e as f\n"
         "from a import g as h\n"
         "from a import i as j\n"
-        "from a import w, x, y, z\n"
     )
     test_input = (
         "import a\nfrom a import *\nfrom a import z, x, y\nfrom a import b\nfrom a import w\n"
@@ -4046,10 +4102,9 @@ from a import i as j
     assert test_output == (
         "import a\n"
         "from a import *\n"
-        "from a import b\n"
+        "from a import b, z, x, y, w\n"
         "from a import b as c\n"
         "from a import b as d\n"
-        "from a import z, x, y, w\n"
         "from a import i as j\n"
         "from a import g as h\n"
         "from a import e as f\n"
@@ -4267,7 +4322,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     with pytest.raises(subprocess.CalledProcessError):
         # without the settings path provided: the command should not skip & identify errors
         subprocess.run(["isort", ".", "--check-only"], check=True)
@@ -4276,7 +4331,7 @@ def test_settings_path_skip_issue_909(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 2" in result.stdout.lower()
 
@@ -4304,17 +4359,17 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
     )
 
     test_run_directory = os.getcwd()
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         ["isort", "dont_skip.py", "migrations/file_glob_skip.py"],
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped" not in result.stdout.lower()
 
-    os.chdir(str(base_dir))
+    os.chdir(base_dir)
     result = subprocess.run(
         [
             "isort",
@@ -4326,7 +4381,7 @@ def test_skip_paths_issue_938(tmp_path: Path) -> None:
         stdout=subprocess.PIPE,
         check=True,
     )
-    os.chdir(str(test_run_directory))
+    os.chdir(test_run_directory)
 
     assert b"skipped 1" in result.stdout.lower()
 
@@ -5081,8 +5136,7 @@ from flask_principal import identity_changed as user_identity_changed  # noqa
 from flask_login import user_logged_in, user_logged_out  # noqa
 from flask_principal import identity_changed as user_identity_changed  # noqa
 from flask_security.signals import password_changed as user_reset_password  # noqa
-from flask_security.signals import user_confirmed  # noqa
-from flask_security.signals import user_registered  # noqa
+from flask_security.signals import user_confirmed, user_registered  # noqa
 """
     assert isort.code(test_input, line_length=100) == expected_output
 
@@ -5521,13 +5575,27 @@ def test_split_on_trailing_comma_stable_with_mixed_as_imports_issue_2352() -> No
 from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
 from django.db.models.sql.compiler import SQLUpdateCompiler
 """
+    expected_output = """from django.db.models.sql.compiler import (
+    SQLAggregateCompiler,
+    SQLCompiler,
+    SQLDeleteCompiler,
+    SQLUpdateCompiler,
+)
+from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+"""
     output = isort.code(
         test_input,
         include_trailing_comma=True,
         split_on_trailing_comma=True,
         line_length=88,
     )
-    assert output == test_input
+    assert output == expected_output
+    assert output == isort.code(
+        output,
+        include_trailing_comma=True,
+        split_on_trailing_comma=True,
+        line_length=88,
+    )
 
     expected_output_with_combine = """from django.db.models.sql.compiler import (
     SQLAggregateCompiler,
@@ -5681,6 +5749,14 @@ def test_reexport_keeps_trailing_comment_with_equals() -> None:
     test_input = """__all__ = ['foo', 'bar']  # note: key = value
 """
     expd_output = """__all__ = ["bar", "foo"]  # note: key = value
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
+def test_reexport_augmented_assignment() -> None:
+    test_input = """__all__ += ['foo', 'bar']
+"""
+    expd_output = """__all__ += ["bar", "foo"]
 """
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 

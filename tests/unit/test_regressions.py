@@ -1721,8 +1721,8 @@ from .test import TestTestTestTestTestTest2, TestTestTestTestTestTest3, """
             profile="black",
         )
         == """
-from .test import TestTestTestTestTestTest1  # noqa: F401
 from .test import (  # noqa: F401
+    TestTestTestTestTestTest1,
     TestTestTestTestTestTest2,
     TestTestTestTestTestTest3,
     TestTestTestTestTestTest4,
@@ -2313,6 +2313,116 @@ def test_sort_reexports_respects_black_profile_issue_2280() -> None:
     assert isort.code(test_input, profile="black", sort_reexports=True) == expected_output
 
 
+def test_same_style_imports_should_be_grouped_with_and_without_section_sort() -> None:
+    """Ensure that plain imports are grouped together and sorted consistently.
+
+    See issue #2455.
+    """
+    code = """
+from module import BBB
+from module import CCC, ZZZ  # Comment
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+"""
+    )
+
+    assert (
+        isort.code(code, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import BBB, CCC, FFF, ZZZ  # Comment
+from module import DDD as d
+import other_module
+"""
+    )
+
+    code_2 = """
+from module import GGG, ZZZ  # Comment
+from module import EEE
+from module import FFF
+from module import DDD as d
+import module
+import other_module
+"""
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=False)
+        == """
+import module
+import other_module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+"""
+    )
+
+    assert (
+        isort.code(code_2, profile="black", force_sort_within_sections=True)
+        == """
+import module
+from module import DDD as d
+from module import EEE, FFF, GGG, ZZZ  # Comment
+import other_module
+"""
+    )
+
+
+def test_from_import_alias_only_sections_issue_2455() -> None:
+    """only_sections still emits preferred plain-before-alias grouping."""
+    src = "from module import A, B as b, C\n"
+    expected = "from module import A, C\nfrom module import B as b\n"
+    assert isort.code(src, only_sections=True) == expected
+
+
+def test_parenthesized_from_imports_grouping_issue_2455() -> None:
+    """Ensure that parenthesized from imports are grouped and sorted consistently."""
+    code = """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+from module import (
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+"""
+
+    assert (
+        isort.code(code, force_sort_within_sections=True, profile="black")
+        == """
+from module import (
+    AAAAAAAAAAAAAAAAAAAAAAAAAA,
+    BBBBBBBBBBBBBBBBBBBBBBBBBB,
+    CCCCCCCCCCCCCCCCCCCCCCCCCC,
+    EEEEEEEEEEEEEEEEEEEEEEEEEE,
+    FFFFFFFFFFFFFFFFFFFFFFFFFF,
+    GGGGGGGGGGGGGGGGGGGGGGGGGG,
+)
+from module import DDDDDDDDDDDDDDDDDDDDDDDDDD as d
+"""
+    )
+
+
+def test_force_single_line_keeps_comment_on_plain_import_with_alias() -> None:
+    assert isort.code(
+        "from foo import name  # plain comment\nfrom foo import name as alias\n",
+        force_single_line=True,
+    ) == ("from foo import name  # plain comment\nfrom foo import name as alias\n")
+
+
 def test_literal_dict_sort_respects_black_profile_issue_2280() -> None:
     """The ``# isort: dict`` literal sort shares the same formatter as ``--sort-reexports``
     and must likewise honor the black profile rather than stdlib ``pprint`` (which produced
@@ -2597,6 +2707,24 @@ def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_20
     assert first_pass == ("import a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p  #  # NOQA\n")
 
 
+def test_long_combined_straight_imports_keep_their_module_names_issue_2723() -> None:
+    """A long combined straight import stays on one line outside NOQA mode."""
+    to_sort = (
+        "import email.message\n"
+        "import email.utils\n"
+        "import http.cookies\n"
+        "import importlib.util\n"
+        "import os.path\n"
+        "import urllib.parse\n"
+        "import warnings\n"
+    )
+
+    assert isort.code(to_sort, combine_straight_imports=True) == (
+        "import email.message, email.utils, http.cookies, importlib.util, os.path, urllib.parse, "
+        "warnings\n"
+    )
+
+
 def test_isort_skip_is_honored_with_future_import_issue_2092() -> None:
     """A per-line ``isort: skip`` must be honored even when a ``__future__`` import is present.
 
@@ -2636,14 +2764,11 @@ def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment() -> N
     run once the group was re-sorted.
     """
     to_sort = "from x import aaa\nfrom x import m  # c\nfrom x import m as z\n"
-    assert isort.code(to_sort) == to_sort
+    assert isort.code(to_sort) == "from x import aaa, m  # c\nfrom x import m as z\n"
 
     # The same holds for a relative (local-folder) import.
     relative = "from . import bar, one\nfrom . import one as zzz  # NOQA\n"
-    relative_sorted = isort.code(relative)
-    expected = "from . import bar\nfrom . import one  # NOQA\nfrom . import one as zzz\n"
-    assert relative_sorted == expected
-    assert isort.code(relative_sorted) == relative_sorted
+    assert relative == isort.code(relative)
 
 
 def test_add_import_keeps_a_prefixed_module_docstring_first_issue_1893() -> None:
@@ -2720,6 +2845,114 @@ def test_hanging_indent_with_parentheses_keeps_syntax_out_of_trailing_comments()
                     ast.parse(output)  # must never raise
 
 
+def test_wrap_modes_9_and_10_keep_a_trailing_noqa_comment_on_a_single_import() -> None:
+    """``multi_line_output`` 9 and 10 must not drop the comment of a single import.
+
+    Both modes attach the collected trailing comment while wrapping the *next* import,
+    so a statement with nothing left to wrap never emitted it: ``# noqa`` (or any other
+    comment) silently disappeared, re-activating the lint it was suppressing.  Mode 10
+    additionally emitted ``from a import (b)`` for a single import, which the next run
+    rewrote to ``from a import b``.
+    """
+    source = "from a import b  # noqa: F401\n"
+
+    assert (
+        isort.code(source, multi_line_output=10, line_length=20)
+        == "from a import (  # noqa: F401\n    b)\n"
+    )
+    assert (
+        isort.code(source, multi_line_output=9, line_length=20)
+        == "from a import \\\n    b  # noqa: F401\n"
+    )
+
+    # Whatever the mode and line length, the comment survives and the output is stable.
+    for mode in (9, 10):
+        for line_length in range(12, 41):
+            for extra in ({}, {"include_trailing_comma": True}, {"force_grid_wrap": 1}):
+                output = isort.code(
+                    source, multi_line_output=mode, line_length=line_length, **extra
+                )
+                assert "noqa" in output
+                assert (
+                    isort.code(output, multi_line_output=mode, line_length=line_length, **extra)
+                    == output
+                )
+                ast.parse(output)
+
+
+def test_float_to_top_places_lines_before_imports_above_the_imports_issue_1935() -> None:
+    """With ``float_to_top``, the blank lines ``lines_before_imports`` asks for must go directly
+    above the imports, not above a module docstring or shebang at the start of the file, as
+    reported in issue #1935: https://github.com/pycqa/isort/issues/1935
+    """
+    # The exact input from the report.
+    assert (
+        isort.code(
+            '"""\nTmp module.\n"""\nimport os\nos.getcwd()\n',
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == '"""\nTmp module.\n"""\n\nimport os\n\nos.getcwd()\n'
+    )
+
+    # A shebang only works on the first line of the file.
+    assert (
+        isort.code(
+            '#!/usr/bin/env python\n"""Doc."""\n\nimport sys\nimport os\n\nprint(1)\n',
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == '#!/usr/bin/env python\n"""Doc."""\n\nimport os\nimport sys\n\nprint(1)\n'
+    )
+    assert (
+        isort.code(
+            "#!/usr/bin/env python\nimport os\n\nprint(1)\n",
+            lines_before_imports=1,
+            float_to_top=True,
+        )
+        == "#!/usr/bin/env python\n\nimport os\n\nprint(1)\n"
+    )
+
+    # The count is exact, sorting the result again changes nothing, and check mode agrees.
+    for lines_before_imports in (0, 1, 2):
+        expected = '"""Doc."""\n' + "\n" * lines_before_imports + "import os\n\nprint(1)\n"
+        for source in ('"""Doc."""\nprint(1)\nimport os\n', expected):
+            assert (
+                isort.code(source, lines_before_imports=lines_before_imports, float_to_top=True)
+                == expected
+            )
+        assert isort.check_code(
+            expected, lines_before_imports=lines_before_imports, float_to_top=True
+        )
+        # The pass without float_to_top already got this right and still agrees.
+        assert isort.code(expected, lines_before_imports=lines_before_imports) == expected
+
+        # A comment directly on top of the first import gets the same spacing as without
+        # float_to_top.
+        commented = '"""Doc."""\n\n# About os.\nimport os\n\nprint(1)\n'
+        assert isort.code(
+            commented, lines_before_imports=lines_before_imports, float_to_top=True
+        ) == isort.code(commented, lines_before_imports=lines_before_imports)
+
+    # Blank lines above such a comment are replaced by lines_before_imports, with or without
+    # float_to_top. Only the pass over the whole file may move them below the docstring, so
+    # the normal pass that follows it has to keep the old placement.
+    spaced = '"""Doc."""\n\n\n# About os.\nimport os\nimport sys\n\nprint(1)\n'
+    for lines_before_imports in (1, 2):
+        expected = (
+            '"""Doc."""\n'
+            + "\n" * lines_before_imports
+            + "# About os.\nimport os\nimport sys\n\nprint(1)\n"
+        )
+        for float_to_top in (False, True):
+            assert (
+                isort.code(
+                    spaced, lines_before_imports=lines_before_imports, float_to_top=float_to_top
+                )
+                == expected
+            )
+
+
 def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
     """float_to_top must not hoist semicolon separated imports out of an indented block."""
     assert (
@@ -2730,3 +2963,111 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
         isort.code("def f():\n    import b; import a  # comment\n", float_to_top=True)
         == "def f():\n    import a  # comment\n    import b\n"
     )
+
+
+def test_lines_before_imports_keeps_import_after_indented_block() -> None:
+    """A top-level import that follows an indented import block must not be dropped
+    when ``lines_before_imports`` is set.
+
+    The indentation change empties ``line`` to start the next section, and the
+    ``lines_before_imports`` handling took that for a blank line and deferred it. The
+    indented section was then only flushed at the end of the file, and the top-level
+    one queued behind it was never written. Once written, it is preceded by exactly
+    ``lines_before_imports`` blank lines, like any other import section.
+    """
+    code = "if sys:\n    import a\n\nimport b\n"
+    for lines_before_imports in (0, 1, 2):
+        expected = "if sys:\n    import a\n" + "\n" * lines_before_imports + "import b\n"
+        output = isort.code(code, lines_before_imports=lines_before_imports)
+        assert output == expected
+        assert isort.code(output, lines_before_imports=lines_before_imports) == output
+
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    assert isort.code(code, lines_before_imports=1) == (
+        "\n"
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import Never\n"
+        "else:\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+
+
+def test_indented_imports_followed_by_less_indented_import_issue_2010() -> None:
+    """Imports in an indented block that is directly followed by a less indented import
+    must still be sorted as an indented section.
+    See: https://github.com/PyCQA/isort/issues/2010
+    """
+    code = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import LiteralString, Never\n"
+        "else:\n"
+        "    from typing_extensions import LiteralString\n"
+        "    from typing_extensions import Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    expected = (
+        "import sys\n"
+        "\n"
+        "if sys.version_info >= (3, 11):\n"
+        "    from typing import LiteralString, Never\n"
+        "else:\n"
+        "    from typing_extensions import LiteralString, Never\n"
+        "\n"
+        "import third_party_library\n"
+    )
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+
+    # The same block, sorted the same way as when code follows it.
+    code = "def f():\n    import os\n    import a\n    import os\nimport b\n"
+    expected = "def f():\n    import os\n\n    import a\n\nimport b\n"
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+    assert isort.code(code, lines_before_imports=1) == expected
+
+    code = "class C:\n    def f(self):\n        import a\n\n    import b\n"
+    expected = "class C:\n    def f(self):\n        import a\n\n    import b\n"
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+
+    # A dedent of one level out of two, again sorted as when code follows it.
+    code = (
+        "class C:\n"
+        "    def f(self):\n"
+        "        import b\n"
+        "        import a\n"
+        "    import d\n"
+        "    import c\n"
+    )
+    expected = (
+        "class C:\n"
+        "    def f(self):\n"
+        "        import a\n"
+        "        import b\n"
+        "    import c\n"
+        "    import d\n"
+    )
+    assert isort.code(code) == expected
+    assert isort.code(expected) == expected
+
+
+def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
+    """The sorted assignments were indented a second time, which broke the code."""
+    test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
+    assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"

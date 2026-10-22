@@ -115,3 +115,17 @@ import x
     assert len(list(api.find_imports_in_code(code, unique=ImportKey.ATTRIBUTE))) == 3
     assert len(list(api.find_imports_in_code(code, unique=ImportKey.MODULE))) == 2
     assert len(list(api.find_imports_in_code(code, unique=ImportKey.PACKAGE))) == 1
+
+
+@pytest.mark.parametrize("extension", ["pyx", "pxd"])
+@pytest.mark.parametrize("atomic", [False, True])
+def test_atomic_cython_write_only_output(tmp_path: Path, extension: str, atomic: bool) -> None:
+    source = "cimport zlib\ncimport cython\n\ncdef int value\n"
+    target = tmp_path / f"sorted.{extension}"
+
+    with target.open("w", encoding="utf-8") as output:
+        assert api.sort_stream(StringIO(source), output, extension=extension, atomic=atomic)
+
+    assert (
+        target.read_text(encoding="utf-8") == "cimport zlib\n\ncimport cython\n\n\ncdef int value\n"
+    )

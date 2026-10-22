@@ -41,6 +41,26 @@ class TestConfig:
         with pytest.raises(exceptions.ProfileDoesNotExist):
             Config(profile="blackandwhitestylemixedwithpep8")
 
+    @pytest.mark.parametrize(
+        ("indent", "expected"),
+        [
+            ("tab", "\t"),
+            ("Tab", "\t"),
+            ('"tab"', "\t"),
+            ("\t", "\t"),
+            ("\\t", "\t"),
+            ("\\t\\t", "\t\t"),
+            ("2", "  "),
+            ("'  '", "  "),
+        ],
+    )
+    def test_indent(self, indent: str, expected: str) -> None:
+        assert Config(indent=indent).indent == expected
+
+    def test_indent_escaped_tab_in_config_file(self, tmp_path: Path) -> None:
+        (tmp_path / ".isort.cfg").write_text("[settings]\nindent=\\t\n", encoding="utf8")
+        assert Config(settings_path=str(tmp_path)).indent == "\t"
+
     def test_is_skipped(self) -> None:
         assert Config().is_skipped(Path("C:\\path\\isort.py"))
         assert Config(skip=["/path/isort.py"]).is_skipped(Path("C:\\path\\isort.py"))

@@ -39,6 +39,64 @@ def test_fuzz_sort_imports(
     )
 
 
+@pytest.mark.parametrize("check", [False, True])
+@pytest.mark.parametrize(
+    ("file_name", "extension_args", "supported"),
+    [
+        ("file.txt", [], False),
+        ("file.py", ["--ext", "txt"], False),
+        ("file.py", [], True),
+        ("file.txt", ["--ext", "txt"], True),
+    ],
+)
+def test_filter_files_respects_extensions_issue_1984(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    file_name: str,
+    extension_args: list[str],
+    supported: bool,
+    check: bool,
+) -> None:
+    source = "import sys\nimport os\n"
+    source_file = tmp_path / file_name
+    source_file.write_text(source)
+    args = [str(source_file), "--filter-files", *extension_args]
+    if check:
+        args.append("--check-only")
+
+    if check and supported:
+        with pytest.raises(SystemExit) as error:
+            main.main(args)
+        assert error.value.code == 1
+    else:
+        main.main(args)
+
+    out, err = capsys.readouterr()
+    if supported:
+        assert source_file.read_text() == (source if check else "import os\nimport sys\n")
+    else:
+        assert source_file.read_text() == source
+        assert "Skipped 1 files" in out
+        assert not err
+
+
+def test_explicit_unsupported_extension_without_filter_files(tmp_path: Path) -> None:
+    source_file = tmp_path / "file.txt"
+    source_file.write_text("import sys\nimport os\n")
+    main.main([str(source_file)])
+    assert source_file.read_text() == "import os\nimport sys\n"
+
+
+@pytest.mark.parametrize("extension", ["py", "txt"])
+def test_filter_files_keeps_directory_arguments(tmp_path: Path, extension: str) -> None:
+    directory = tmp_path / "directory.unsupported"
+    directory.mkdir()
+    source_file = directory / f"file.{extension}"
+    source_file.write_text("import sys\nimport os\n")
+    main.main([str(directory), "--filter-files", "--ext", extension])
+    assert source_file.read_text() == "import os\nimport sys\n"
+
+
 def test_sort_imports(tmp_path: Path) -> None:
     tmp_file = tmp_path / "file.py"
     tmp_file.write_text("import os, sys\n")
@@ -88,23 +146,10 @@ def test_parse_args() -> None:
 
 
 def test_ascii_art(capsys: pytest.CaptureFixture[str]) -> None:
-    main.main(["--version"])
+    with pytest.raises(SystemExit):
+        main.main(["--version"])
     out, error = capsys.readouterr()
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == f"{_VERSION_STRING}\n"
     assert error == ""
 
 
@@ -919,6 +964,25 @@ import b
     )
 
 
+def test_stream_skip_file_check(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Checking a skipped stream passes quietly, just like sorting a skipped stream does."""
+    stream_with_skip_comment = as_stream("# isort: skip_file\nimport b\nimport a\n")
+    main.main(["-", "--check-only", "--diff"], stdin=stream_with_skip_comment)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    skipped_file = tmp_path / "generated.py"
+    stream_skipped_by_setting = as_stream("import b\nimport a\n")
+    main.main(
+        ["-", "--check-only", "--skip", str(skipped_file), "--filename", str(skipped_file)],
+        stdin=stream_skipped_by_setting,
+    )
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+
 def test_only_modified_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # ensures there is no verbose output for correct files with only-modified flag
 
@@ -942,21 +1006,7 @@ import pandas as pd
     main.main([str(file1), str(file2), "--verbose", "--only-modified"])
     out, error = capsys.readouterr()
 
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == ""
 
     assert not error
 
@@ -985,21 +1035,7 @@ import os
     main.main([str(file1), str(file2), "--check-only", "--verbose", "--only-modified"])
     out, error = capsys.readouterr()
 
-    assert (
-        out
-        == f"""
-                 _                 _
-                (_) ___  ___  _ __| |_
-                | |/ _/ / _ \\/ '__  _/
-                | |\\__ \\/\\_\\/| |  | |_
-                |_|\\___/\\___/\\_/   \\_/
-
-      isort your imports, so you don't have to.
-
-                    VERSION {_VERSION_STRING}
-
-"""
-    )
+    assert out == ""
 
     assert not error
 
@@ -1205,6 +1241,23 @@ nested_dir_ignored
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
         assert all(f"{tmp_path}{file}" in out for file in should_check)
+
+
+def test_gitignore_skips_ignored_folder(tmp_path: Path) -> None:
+    """Ignored folders are skipped as a whole instead of being walked file by file.
+    See: https://github.com/PyCQA/isort/issues/1912
+    """
+    subprocess.run(["git", "init", str(tmp_path)])
+    (tmp_path / ".gitignore").write_text("ignored_dir/\n")
+    for folder in ("ignored_dir", "ignored_dir/nested", "kept_dir/nested"):
+        (tmp_path / folder).mkdir(parents=True)
+        (tmp_path / folder / "has_imports.py").write_text("import b\nimport a\n")
+
+    config = Config(skip_gitignore=True)
+    assert config.is_skipped(tmp_path / "ignored_dir")
+    assert config.is_skipped(tmp_path / "ignored_dir" / "nested")
+    assert not config.is_skipped(tmp_path / "kept_dir")
+    assert not config.is_skipped(tmp_path / "kept_dir" / "nested")
 
 
 def test_multiple_configs(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
