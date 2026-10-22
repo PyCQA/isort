@@ -20,7 +20,7 @@ def assignments(code: str) -> str:
             continue
         if " = " not in line:
             raise AssignmentsFormatMismatch(code)
-        variable_name, value = line.split(" = ", 1)
+        variable_name, value = line.lstrip().split(" = ", 1)
         values[variable_name] = value
 
     return "".join(
