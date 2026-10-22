@@ -69,16 +69,17 @@ def _literal_ends_before(line: str | None, section: str, sort_type: str, indent:
     """Return whether the literal collected in `section` ends before `line`.
 
     It ends at a blank line or the end of the file. An ``# isort: assignments`` block also
-    ends at the next action comment, and any other literal once it is a complete statement,
-    so that a statement right after it is not swallowed into it. See #2286. A statement
-    cannot start deeper than the literal, and a literal spanning several lines can only
-    end on a line that closes more brackets than it opens outside strings and comments, so
-    neither case is parsed: that keeps long literals linear.
+    ends at the next action comment or at a line indented less than the block, and any other
+    literal once it is a complete statement, so that a statement right after it is not
+    swallowed into it. See #2286. A statement cannot start deeper than the literal, and a
+    literal spanning several lines can only end on a line that closes more brackets than it
+    opens outside strings and comments, so neither case is parsed: that keeps long literals
+    linear.
     """
     if line is None or not line.strip():
         return True
     if sort_type == "assignments":
-        return line.strip() in CODE_SORT_COMMENTS
+        return line.strip() in CODE_SORT_COMMENTS or len(line) - len(line.lstrip()) < len(indent)
     last_line_start = section.rfind("\n", 0, -1) + 1
     last_line = STRING_OR_COMMENT.sub("", section[last_line_start:])
     if len(line) - len(line.lstrip()) > len(indent) or (

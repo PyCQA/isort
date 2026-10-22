@@ -3132,6 +3132,11 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
             False,
             '# isort: assignments\n\nprint("hello")\n',
         ),
+        (
+            "class C:\n    # isort: assignments\n    b = 1\n    a = 2\nz = 0\n",
+            False,
+            "class C:\n    # isort: assignments\n    a = 2\n    b = 1\nz = 0\n",
+        ),
         # `# isort: assignments` spans several statements, up to a blank line or the next
         # action comment.
         ("# isort: assignments\nb = 1\na = 2\n", False, "# isort: assignments\na = 2\nb = 1\n"),
