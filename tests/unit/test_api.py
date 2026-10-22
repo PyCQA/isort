@@ -103,6 +103,15 @@ def test_check_file_with_changes(capsys: pytest.CaptureFixture[str], imperfect: 
     assert fixed_diff.replace("\n", os.linesep) in out
 
 
+def test_check_file_with_non_ascii_characters(tmp_path: Path) -> None:
+    unsorted = tmp_path / "test_non_ascii.py"
+    unsorted.write_text("import b\nimport a\n\nprint('✓')\n", "utf8")
+    assert not api.check_file(unsorted)
+
+    unsorted.write_text("import a\nimport b\n\nprint('✓')\n", "utf8")
+    assert api.check_file(unsorted)
+
+
 def test_sorted_imports_multiple_configs() -> None:
     with pytest.raises(ValueError, match="You can either specify custom configuration options"):
         api.sort_code_string("import os", config=Config(line_length=80), line_length=80)

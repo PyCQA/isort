@@ -260,7 +260,7 @@ def check_stream(
     if show_diff:
         input_stream = StringIO(input_stream.read())
 
-    with open(os.devnull, "w") as devnull:
+    with open(os.devnull, "w", encoding="utf-8") as devnull:
         changed: bool = sort_stream(
             input_stream=input_stream,
             output_stream=devnull,
