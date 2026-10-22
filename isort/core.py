@@ -1,4 +1,5 @@
 import ast
+import re
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -33,6 +34,7 @@ CODE_SORT_COMMENTS = (
     "# isort: assignments",
 )
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
+STRING_OR_COMMENT = re.compile(r""""(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#.*""")
 PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 
@@ -70,15 +72,15 @@ def _literal_ends_before(line: str | None, section: str, sort_type: str, indent:
     ends at the next action comment, and any other literal once it is a complete statement,
     so that a statement right after it is not swallowed into it. See #2286. A statement
     cannot start deeper than the literal, and a literal spanning several lines can only
-    end on a line that closes more brackets than it opens, so neither case is parsed: that
-    keeps long literals linear.
+    end on a line that closes more brackets than it opens outside strings and comments, so
+    neither case is parsed: that keeps long literals linear.
     """
     if line is None or not line.strip():
         return True
     if sort_type == "assignments":
         return line.strip() in CODE_SORT_COMMENTS
     last_line_start = section.rfind("\n", 0, -1) + 1
-    last_line = section[last_line_start:]
+    last_line = STRING_OR_COMMENT.sub("", section[last_line_start:])
     if len(line) - len(line.lstrip()) > len(indent) or (
         last_line_start and sum(map(last_line.count, ")]}")) <= sum(map(last_line.count, "([{"))
     ):

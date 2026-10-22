@@ -3100,6 +3100,11 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
             True,
             '__all__ = ["a", "b"]  # exports,\nx = 1\n',
         ),
+        (
+            '__all__ = [\n    "b", "a"\n]  # [\nx = 1\n',
+            True,
+            '__all__ = ["a", "b"]  # [\nx = 1\n',
+        ),
         # A comment after the literal used to be written out before it, so the reexport
         # rollback landed mid-line and produced `__all____all__ = ...`.
         ('__all__ = ["b", "a"]\n# note\nx = 1\n', True, '__all__ = ["a", "b"]\n# note\nx = 1\n'),
