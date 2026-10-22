@@ -287,6 +287,10 @@ def process(
             code_sorting_section = ""
             code_sorting_indent = ""
             is_reexport = False
+        elif code_sorting and not (line or "").strip():
+            # an action comment followed by a blank line has nothing to sort
+            code_sorting = False
+            code_sorting_indent = ""
 
         if line is None:
             if index == 0 and not config.force_adds:

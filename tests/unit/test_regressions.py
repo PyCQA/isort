@@ -3121,6 +3121,12 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
             False,
             "# isort: assignments\n# note\na = 2\nb = 1\n",
         ),
+        # An action comment followed by a blank line has nothing to sort.
+        (
+            '# isort: assignments\n\nprint("hello")\n',
+            False,
+            '# isort: assignments\n\nprint("hello")\n',
+        ),
         # `# isort: assignments` spans several statements, up to a blank line or the next
         # action comment.
         ("# isort: assignments\nb = 1\na = 2\n", False, "# isort: assignments\na = 2\nb = 1\n"),
@@ -3138,4 +3144,6 @@ def test_sorted_literal_ends_where_its_statement_ends_issue_2286(
     between, was swallowed into the literal and crashed or corrupted it. See #2286."""
     assert isort.code(test_input, sort_reexports=sort_reexports) == expected_output
     assert isort.check_code(expected_output, sort_reexports=sort_reexports)
-    assert not isort.check_code(test_input, sort_reexports=sort_reexports)
+    assert isort.check_code(test_input, sort_reexports=sort_reexports) is (
+        test_input == expected_output
+    )
