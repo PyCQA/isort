@@ -964,6 +964,25 @@ import b
     )
 
 
+def test_stream_skip_file_check(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Checking a skipped stream passes quietly, just like sorting a skipped stream does."""
+    stream_with_skip_comment = as_stream("# isort: skip_file\nimport b\nimport a\n")
+    main.main(["-", "--check-only", "--diff"], stdin=stream_with_skip_comment)
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+    skipped_file = tmp_path / "generated.py"
+    stream_skipped_by_setting = as_stream("import b\nimport a\n")
+    main.main(
+        ["-", "--check-only", "--skip", str(skipped_file), "--filename", str(skipped_file)],
+        stdin=stream_skipped_by_setting,
+    )
+    out, error = capsys.readouterr()
+    assert not out
+    assert not error
+
+
 def test_only_modified_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # ensures there is no verbose output for correct files with only-modified flag
 
@@ -1222,6 +1241,23 @@ nested_dir_ignored
         out, error = main_check([str(git_project0), "--skip-gitignore", "--filter-files"])
 
         assert all(f"{tmp_path}{file}" in out for file in should_check)
+
+
+def test_gitignore_skips_ignored_folder(tmp_path: Path) -> None:
+    """Ignored folders are skipped as a whole instead of being walked file by file.
+    See: https://github.com/PyCQA/isort/issues/1912
+    """
+    subprocess.run(["git", "init", str(tmp_path)])
+    (tmp_path / ".gitignore").write_text("ignored_dir/\n")
+    for folder in ("ignored_dir", "ignored_dir/nested", "kept_dir/nested"):
+        (tmp_path / folder).mkdir(parents=True)
+        (tmp_path / folder / "has_imports.py").write_text("import b\nimport a\n")
+
+    config = Config(skip_gitignore=True)
+    assert config.is_skipped(tmp_path / "ignored_dir")
+    assert config.is_skipped(tmp_path / "ignored_dir" / "nested")
+    assert not config.is_skipped(tmp_path / "kept_dir")
+    assert not config.is_skipped(tmp_path / "kept_dir" / "nested")
 
 
 def test_multiple_configs(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:

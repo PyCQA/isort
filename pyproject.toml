@@ -129,7 +129,7 @@ dev = [
     "tox>=4.30.3",
     "tox-uv>=1.28.0",
     "types-colorama>=0.4.2",
-    "uv>=0.8.23",
+    "uv>=0.13.4",
 ]
 docs = [
     "myst-parser>=4.0.1",
