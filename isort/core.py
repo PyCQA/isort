@@ -1,3 +1,5 @@
+import ast
+import re
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -32,6 +34,7 @@ CODE_SORT_COMMENTS = (
     "# isort: assignments",
 )
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
+STRING_OR_COMMENT = re.compile(r""""(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#.*""")
 PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 
@@ -60,6 +63,33 @@ def _is_comment_or_string_start(line: str) -> bool:
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
+
+
+def _literal_ends_before(line: str | None, section: str, sort_type: str, indent: str) -> bool:
+    """Return whether the literal collected in `section` ends before `line`.
+
+    It ends at a blank line or the end of the file. An ``# isort: assignments`` block also
+    ends at the next action comment or at a line indented less than the block, and any other
+    literal once it is a complete statement, so that a statement right after it is not
+    swallowed into it. See #2286. A statement cannot start deeper than the literal, and a
+    literal spanning several lines can only end on a line that closes more brackets than it
+    opens outside strings and comments, so neither case is parsed: that keeps long literals
+    linear.
+    """
+    if line is None or not line.strip():
+        return True
+    if sort_type == "assignments":
+        return line.strip() in CODE_SORT_COMMENTS or len(line) - len(line.lstrip()) < len(indent)
+    last_line_start = section.rfind("\n", 0, -1) + 1
+    last_line = STRING_OR_COMMENT.sub("", section[last_line_start:])
+    if len(line) - len(line.lstrip()) > len(indent) or (
+        last_line_start and sum(map(last_line.count, ")]}")) <= sum(map(last_line.count, "([{"))
+    ):
+        return False
+    try:
+        return bool(ast.parse(textwrap.dedent(section)).body)
+    except SyntaxError:
+        return False
 
 
 class _FloatToTopResult(NamedTuple):
@@ -224,6 +254,47 @@ def process(
     reexport_rollback: int = 0
 
     for index, line in enumerate(chain(input_stream, (None,))):
+        if code_sorting_section and _literal_ends_before(
+            line, code_sorting_section, str(code_sorting), code_sorting_indent
+        ):
+            if is_reexport:
+                # Clamp to 0: in check mode the output is a no-op stream whose tell()
+                # stays 0, so an unclamped rollback would seek to a negative position
+                # and raise ValueError. See PR #2576.
+                output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
+                reexport_rollback = 0
+            sorted_code = textwrap.indent(
+                isort.literal.assignment(
+                    code_sorting_section,
+                    str(code_sorting),
+                    extension,
+                    config=_indented_config(config, indent),
+                ),
+                code_sorting_indent,
+            )
+            made_changes = made_changes or _has_changed(
+                before=code_sorting_section,
+                after=sorted_code,
+                line_separator=line_separator,
+                ignore_whitespace=config.ignore_whitespace,
+            )
+            output_stream.write(sorted_code)
+            if (
+                is_reexport
+                # Check if we need to truncate. If we're redirecting to `devnull` we don't need
+                # to and don't want to call `truncate()` on it, as it will raise an exception.
+                and output_stream.tell() > 0
+            ):
+                output_stream.truncate()
+            code_sorting = False
+            code_sorting_section = ""
+            code_sorting_indent = ""
+            is_reexport = False
+        elif code_sorting and not (line or "").strip():
+            # an action comment followed by a blank line has nothing to sort
+            code_sorting = False
+            code_sorting_indent = ""
+
         if line is None:
             if index == 0 and not config.force_adds:
                 return False
@@ -232,37 +303,6 @@ def process(
             end_of_file = True
             line = ""
             line_separator = parse._infer_line_separator(line, line_separator)
-
-            if code_sorting and code_sorting_section:
-                if is_reexport:
-                    # Clamp to 0: in check mode the output is a no-op stream whose tell()
-                    # stays 0, so an unclamped rollback would seek to a negative position
-                    # and raise ValueError. See PR #2576.
-                    output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
-                    reexport_rollback = 0
-                sorted_code = textwrap.indent(
-                    isort.literal.assignment(
-                        code_sorting_section,
-                        str(code_sorting),
-                        extension,
-                        config=_indented_config(config, indent),
-                    ),
-                    code_sorting_indent,
-                )
-                made_changes = made_changes or _has_changed(
-                    before=code_sorting_section,
-                    after=sorted_code,
-                    line_separator=line_separator,
-                    ignore_whitespace=config.ignore_whitespace,
-                )
-                output_stream.write(sorted_code)
-                if (
-                    is_reexport
-                    # Check if we need to truncate. If we're redirecting to `devnull` we don't need
-                    # to and don't want to call `truncate()` on it, as it will raise an exception.
-                    and output_stream.tell() > 0
-                ):
-                    output_stream.truncate()
         else:
             stripped_line = line.strip()
             line_separator = parse._infer_line_separator(line, line_separator)
@@ -295,6 +335,8 @@ def process(
                 and not stripped_line.startswith(PYLINT_DISABLE_NEXT_COMMENT)
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
+                # A comment inside a literal still being collected belongs to the literal.
+                and not (code_sorting_section and code_sorting != "assignments")
             ):
                 in_top_comment = True
             elif in_top_comment and (
@@ -331,44 +373,8 @@ def process(
                     reexport_rollback = len(line)
                     is_reexport = True
                 elif code_sorting:
-                    if not stripped_line:
-                        sorted_code = textwrap.indent(
-                            isort.literal.assignment(
-                                code_sorting_section,
-                                str(code_sorting),
-                                extension,
-                                config=_indented_config(config, indent),
-                            ),
-                            code_sorting_indent,
-                        )
-                        made_changes = made_changes or _has_changed(
-                            before=code_sorting_section,
-                            after=sorted_code,
-                            line_separator=line_separator,
-                            ignore_whitespace=config.ignore_whitespace,
-                        )
-                        if is_reexport:
-                            # Clamp to 0 so check mode's no-op output stream (tell() == 0)
-                            # cannot produce a negative seek position. See PR #2576.
-                            output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
-                            reexport_rollback = 0
-                        output_stream.write(sorted_code)
-                        if (
-                            is_reexport
-                            # Check if we need to truncate. If we're redirecting to `devnull` we
-                            # don't need to and don't want to call `truncate()` on it, as it will
-                            # raise an exception.
-                            and output_stream.tell() > 0
-                        ):
-                            output_stream.truncate()
-                        not_imports = True
-                        code_sorting = False
-                        code_sorting_section = ""
-                        code_sorting_indent = ""
-                        is_reexport = False
-                    else:
-                        code_sorting_section += line
-                        line = ""
+                    code_sorting_section += line
+                    line = ""
                 elif (
                     stripped_line in config.section_comments
                     or stripped_line in config.section_comments_end
