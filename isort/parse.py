@@ -224,8 +224,6 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     else _ImportType.FROM
                 )
 
-            if import_index == -1:
-                import_index = index - 1
             nested_comments = {}
             import_string, comment = parse_comments(line)
             comments = [comment] if comment is not None else []
@@ -269,6 +267,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 out_lines.append(raw_line)
                 out_lines.extend(in_lines[statement_index:index])
                 continue
+
+            if import_index == -1:
+                # The statement's first line, not its last continuation line: ``index``
+                # has moved past the continuation lines consumed above.
+                import_index = statement_index - 1
 
             if type_of_import is _ImportType.FROM:
                 import_string = normalize_from_import_string(import_string)
