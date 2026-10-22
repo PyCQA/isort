@@ -106,7 +106,10 @@ def _float_to_top(
                     before = before[: -len(parsed.line_separator)]
                 extra_space = extra_space.replace(parsed.line_separator, "", 1)
                 sorted_output = output.sorted_imports(
-                    parsed, config, extension, import_type="import"
+                    parsed,
+                    Config(config=config, lines_before_imports=-1),
+                    extension,
+                    import_type="import",
                 )
                 made_changes = made_changes or _has_changed(
                     before=before,
@@ -201,6 +204,7 @@ def process(
     import_section: str = ""
     next_import_section: str = ""
     next_cimports: bool = False
+    next_indent: str = ""
     in_quote: str = ""
     was_in_quote: bool = False
     contains_imports: bool = False
@@ -442,7 +446,12 @@ def process(
                             and import_section
                             and (not did_contain_imports or len(new_indent) < len(indent))
                         ):
-                            indent = new_indent
+                            # Imports already collected at the old indentation are still
+                            # sorted at that indentation; the new one applies from the
+                            # next section on. See #2010.
+                            next_indent = new_indent
+                            if not (import_section and did_contain_imports):
+                                indent = new_indent
                             if import_section:
                                 next_cimports = cimport_statement
                                 next_import_section = import_statement
@@ -539,6 +548,10 @@ def process(
                     )
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
+                            if next_import_section and not next_indent:
+                                # The blank lines before the less indented section that
+                                # follows are written with that section.
+                                trailing_whitespace = line_separator
                             sorted_import_section = (
                                 leading_whitespace
                                 + textwrap.indent(sorted_import_section, indent).strip()
@@ -554,7 +567,7 @@ def process(
                         output_stream.write(sorted_import_section)
                         if (
                             not line
-                            and not indent
+                            and not next_indent
                             and next_import_section
                             and config.lines_before_imports == -1
                         ):
@@ -568,6 +581,7 @@ def process(
                         indent = ""
 
                 if next_import_section:
+                    indent = next_indent
                     cimports = next_cimports
                     contains_imports = True
                 else:

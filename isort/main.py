@@ -1090,13 +1090,16 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
             mode="r",
         ) as input_stream:
             if check:
-                incorrectly_sorted = not api.check_stream(
-                    input_stream=input_stream,
-                    config=config,
-                    show_diff=show_diff,
-                    file_path=file_path,
-                    extension=ext_format,
-                )
+                try:
+                    incorrectly_sorted = not api.check_stream(
+                        input_stream=input_stream,
+                        config=config,
+                        show_diff=show_diff,
+                        file_path=file_path,
+                        extension=ext_format,
+                    )
+                except FileSkipped:
+                    incorrectly_sorted = False
 
                 wrong_sorted_files = incorrectly_sorted
             else:
