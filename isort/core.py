@@ -69,14 +69,19 @@ def _literal_ends_before(line: str | None, section: str, sort_type: str, indent:
     It ends at a blank line or the end of the file. An ``# isort: assignments`` block also
     ends at the next action comment, and any other literal once it is a complete statement,
     so that a statement right after it is not swallowed into it. See #2286. A statement
-    cannot start deeper than the literal, and a line ending in a comma continues it, so
-    neither is parsed: that keeps long literals linear.
+    cannot start deeper than the literal, and a literal spanning several lines can only
+    end on a line that closes more brackets than it opens, so neither case is parsed: that
+    keeps long literals linear.
     """
     if line is None or not line.strip():
         return True
     if sort_type == "assignments":
         return line.strip() in CODE_SORT_COMMENTS
-    if len(line) - len(line.lstrip()) > len(indent) or section.rstrip().endswith(","):
+    last_line_start = section.rfind("\n", 0, -1) + 1
+    last_line = section[last_line_start:]
+    if len(line) - len(line.lstrip()) > len(indent) or (
+        last_line_start and sum(map(last_line.count, ")]}")) <= sum(map(last_line.count, "([{"))
+    ):
         return False
     try:
         return bool(ast.parse(textwrap.dedent(section)).body)
@@ -324,7 +329,7 @@ def process(
                 and stripped_line not in config.section_comments
                 and stripped_line not in CODE_SORT_COMMENTS
                 # A comment inside a literal still being collected belongs to the literal.
-                and not code_sorting_section
+                and not (code_sorting_section and code_sorting != "assignments")
             ):
                 in_top_comment = True
             elif in_top_comment and (

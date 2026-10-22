@@ -3094,6 +3094,12 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
             False,
             '# isort: list\nx = ["a", "b"]\n# isort: list\ny = ["c", "d"]\n',
         ),
+        ('__all__ = "b", "a",\nx = 1\n', True, '__all__ = ("a", "b")\nx = 1\n'),
+        (
+            '__all__ = ["b", "a"]  # exports,\nx = 1\n',
+            True,
+            '__all__ = ["a", "b"]  # exports,\nx = 1\n',
+        ),
         # A comment after the literal used to be written out before it, so the reexport
         # rollback landed mid-line and produced `__all____all__ = ...`.
         ('__all__ = ["b", "a"]\n# note\nx = 1\n', True, '__all__ = ["a", "b"]\n# note\nx = 1\n'),
@@ -3108,6 +3114,12 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
             '# isort: list\n# key = value\nx = ["b", "a"]\n',
             False,
             '# isort: list\n# key = value\nx = ["a", "b"]\n',
+        ),
+        # A comment in an `# isort: assignments` block at the top of the file is left alone.
+        (
+            "# isort: assignments\nb = 1\n# note\na = 2\n",
+            False,
+            "# isort: assignments\n# note\na = 2\nb = 1\n",
         ),
         # `# isort: assignments` spans several statements, up to a blank line or the next
         # action comment.
