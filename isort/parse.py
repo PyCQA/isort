@@ -197,6 +197,18 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         line, *end_of_line_comment = line.split("#", 1)
         if ";" in line and not line[0].isspace():
             statements = [line.strip() for line in line.split(";")]
+            if not statements[-1] and len(statements) > 1:
+                statements.pop()
+            if (
+                end_of_line_comment
+                and import_type(f"{line}#{end_of_line_comment[0]}", config) is None
+            ):
+                statements = [f"{line}#{end_of_line_comment[0]}"]
+                end_of_line_comment = []
+            else:
+                separator = line[len(line.rstrip()) :]
+                if separator:
+                    statements[-1] = f"{statements[-1]}{separator}"
         else:
             statements = [line]
         if end_of_line_comment:
