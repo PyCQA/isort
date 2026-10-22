@@ -3071,39 +3071,29 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
-def test_action_comment_on_continuation_line_is_honored_issue_2678() -> None:
-    """An action comment inside a parenthesised import must end its section on the same run.
 
-    ``isort: skip`` and ``isort: split`` are only recognised on the line they annotate, so a
-    parenthesised import carrying one on a continuation line used to be sorted as a regular
-    import: the statement was merged into the current section and only ended it on the next
-    run, which then inserted a separating blank line.  ``isort --check`` rejected the very
-    file isort had just written.  The statement must be left untouched - exactly as a single
-    line action comment is - and the first run must already be stable.  See issue #2678.
+
+def test_skip_comment_on_continuation_line_is_honored_issue_2678() -> None:
+    """A skipped statement keeps its place even when its directive is on a later line.
+    ``isort: skip`` is only recognised on the line it annotates, so a parenthesised import
+    carrying one on a continuation line used to be sorted as a regular import: the statement
+    was collapsed, merged into the current sort section and could be moved below the imports
+    that follow it. For a ``__future__`` import that turns valid Python into a SyntaxError.
+    A statement with a continuation-line ``isort: skip`` must be left exactly where it is and
+    written the way it was written by hand. See issue #2678.
     """
     cases = {
-        # ``isort: split`` on the closing parenthesis, with an import after it.
-        "from zlib import (\n    x,\n) # isort: split\nimport os\n": (
-            "import os\n\nfrom zlib import (\n    x,\n) # isort: split\n"
+        # A skipped future import stays the first statement of the file.
+        "from __future__ import (\n    annotations,\n)  # isort: skip\nimport os\n": (
+            "from __future__ import (\n    annotations,\n)  # isort: skip\nimport os\n"
         ),
-        # The same directive on one of the imported names.
-        "from zlib import (\n    x,  # isort: split\n)\nimport os\n": (
-            "import os\n\nfrom zlib import (\n    x,  # isort: split\n)\n"
+        # The imports before the skipped statement stay above it, the ones after stay below.
+        "import abc\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\nimport os\n": (
+            "import abc\n\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\nimport os\n"
         ),
-        # Imports on both sides of the directive stay in separate sections.
-        "import abc\nfrom zlib import (\n    x,\n) # isort: split\nimport os\n": (
-            "import abc\nimport os\n\nfrom zlib import (\n    x,\n) # isort: split\n"
-        ),
-        # ``isort: skip`` behaves the same way.
-        "import beta\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\n": (
-            "import beta\n\nfrom pkg.mod import (\n    _private,\n)  # isort: skip\n"
-        ),
+        # The directive on one of the imported names is honoured the same way.
         "import beta\nfrom pkg.mod import (\n    _private,  # isort: skip\n)\n": (
             "import beta\n\nfrom pkg.mod import (\n    _private,  # isort: skip\n)\n"
-        ),
-        # A lone statement is kept as it is.
-        "from zlib import (\n    x,\n) # isort: split\n": (
-            "from zlib import (\n    x,\n) # isort: split\n"
         ),
         # A backslash continuation carries its directive the same way.
         "import beta\nfrom pkg.mod import _private, \\\n    _other  # isort: skip\n": (
@@ -3112,6 +3102,40 @@ def test_action_comment_on_continuation_line_is_honored_issue_2678() -> None:
         # A plain comment is not an action comment: the import is still sorted normally.
         "import beta\nfrom pkg.mod import (\n    _private,\n)  # plain comment\n": (
             "import beta\nfrom pkg.mod import _private  # plain comment\n"
+        ),
+    }
+
+    for to_sort, expected in cases.items():
+        assert isort.code(to_sort) == expected
+        assert isort.code(expected) == expected
+        assert isort.check_code(expected, show_diff=True)
+
+
+def test_split_comment_on_continuation_line_ends_the_section_issue_2678() -> None:
+    """A continuation-line ``isort: split`` ends the sort section on the same run.
+
+    The directive is only recognised on the line it annotates, so a parenthesised import
+    carrying one on a continuation line used to be sorted as a regular import: it was merged
+    into the current section instead of ending it, and the imports that follow it were moved
+    above it. The directive applies to the whole statement, so the imports after it must stay
+    in a separate section below it and the first run must already be stable. See issue #2678.
+    """
+    cases = {
+        # The directive on the closing parenthesis: following imports stay below it.
+        "import abc\nfrom zlib import (\n    x,\n)  # isort: split\nimport sys\nimport os\n": (
+            "import abc\n\nfrom zlib import (\n    x,\n)  # isort: split\nimport os\nimport sys\n"
+        ),
+        # The directive on one of the imported names.
+        "import abc\nfrom zlib import (\n    x,  # isort: split\n)\nimport os\n": (
+            "import abc\n\nfrom zlib import (\n    x,  # isort: split\n)\nimport os\n"
+        ),
+        # A leading split statement still separates the imports that follow it.
+        "from zlib import (\n    x,\n)  # isort: split\nimport os\n": (
+            "from zlib import (\n    x,\n)  # isort: split\nimport os\n"
+        ),
+        # A directive on the opening line already ended the section and keeps doing so.
+        "from zlib import (  # isort: split\n    x,\n)\nimport os\n": (
+            "from zlib import (  # isort: split\n    x,\n)\nimport os\n"
         ),
         # Without an action comment the import is still collapsed and sorted normally.
         "from zlib import (\n    x,\n)\nimport os\n": "import os\nfrom zlib import x\n",

@@ -34,6 +34,7 @@ CODE_SORT_COMMENTS = (
 LITERAL_TYPE_MAPPING = {"(": "tuple", "[": "list", "{": "set"}
 PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
+SPLIT_IMPORT_COMMENT = "# isort: split"
 
 
 def _strip_string_prefix(line: str) -> str:
@@ -62,6 +63,17 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _has_split_comment(import_statement: str) -> bool:
+    """Return whether a complete import statement carries an ``isort: split`` directive.
+
+    A multi-line statement carries the directive on one of its continuation lines, so
+    every line of the statement is inspected, not only the one that started it.
+    """
+    return any(
+        line.rstrip().endswith(SPLIT_IMPORT_COMMENT) for line in import_statement.splitlines()
+    )
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -87,8 +99,8 @@ def _float_to_top(
             new_input += line
         elif (
             line is None
-            or stripped_line in ("# isort: split", "# isort: off")
-            or line.rstrip().endswith("# isort: split")
+            or stripped_line in (SPLIT_IMPORT_COMMENT, "# isort: off")
+            or line.rstrip().endswith(SPLIT_IMPORT_COMMENT)
         ):
             if stripped_line == "# isort: off":
                 isort_off = True
@@ -312,7 +324,7 @@ def process(
                 if isort_off:
                     if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
-                elif stripped_line.endswith("# isort: split"):
+                elif stripped_line.endswith(SPLIT_IMPORT_COMMENT):
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
                     code_sorting = stripped_line.split("isort: ")[1].strip()
@@ -422,6 +434,11 @@ def process(
                         import_statement.lstrip().startswith("from")
                         and "import" not in import_statement
                     ) or (contains_imports and _has_skip_comment(import_statement)):
+                        line = import_statement
+                        not_imports = True
+                    elif _has_split_comment(import_statement):
+                        # The directive was on a continuation line, so the per-line check
+                        # above could not see it. See #2678.
                         line = import_statement
                         not_imports = True
                     else:
