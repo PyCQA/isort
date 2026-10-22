@@ -5753,6 +5753,14 @@ def test_reexport_keeps_trailing_comment_with_equals() -> None:
     assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
 
 
+def test_reexport_augmented_assignment() -> None:
+    test_input = """__all__ += ['foo', 'bar']
+"""
+    expd_output = """__all__ += ["bar", "foo"]
+"""
+    assert isort.code(test_input, config=Config(sort_reexports=True)) == expd_output
+
+
 def test_isort_list_keeps_trailing_comment_with_equals() -> None:
     test_input = """# isort: list
 __all__ = ['foo', 'bar']  # note: key = value

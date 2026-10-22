@@ -3065,3 +3065,9 @@ def test_indented_imports_followed_by_less_indented_import_issue_2010() -> None:
     )
     assert isort.code(code) == expected
     assert isort.code(expected) == expected
+
+
+def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
+    """The sorted assignments were indented a second time, which broke the code."""
+    test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
+    assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
