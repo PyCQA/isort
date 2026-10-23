@@ -413,6 +413,9 @@ class Config(_Config):
             if default_value is None:
                 continue
 
+            if key == "force_to_top" and isinstance(value, (set, frozenset)):
+                value = sorted(value)
+
             combined_config[key] = type(default_value)(value)
 
         for section in combined_config.get("sections", ()):
