@@ -173,11 +173,17 @@ def sorted_imports(
                     next_construct = line
                     break
 
+            # A form feed may have been hoisted in front of this line from the blank
+            # lines above it (see ``overflow_form_feeds`` below). Form feeds are
+            # whitespace that resets the indentation column, so they do not stop the
+            # line from being a statement declaration.
             if config.lines_after_imports != -1:
                 lines_after_imports = config.lines_after_imports
                 if config.profile == "black" and extension == "pyi":  # special case for black
                     lines_after_imports = 1
-            elif extension != "pyi" and next_construct.startswith(STATEMENT_DECLARATIONS):
+            elif extension != "pyi" and next_construct.lstrip("\f").startswith(
+                STATEMENT_DECLARATIONS
+            ):
                 lines_after_imports = 2
             else:
                 lines_after_imports = 1
