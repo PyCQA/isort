@@ -702,7 +702,7 @@ class Config(_Config):
 
     def _parse_known_pattern(self, pattern: str) -> list[str]:
         """Expand pattern if identified as a directory and return found sub packages"""
-        if pattern.endswith(os.path.sep):
+        if pattern.endswith(("/", os.path.sep)):
             patterns = [
                 filename
                 for filename in os.listdir(os.path.join(self.directory, pattern))
@@ -732,7 +732,7 @@ def _abspaths(cwd: str, values: Iterable[str]) -> set[str]:
     paths = {
         (
             os.path.join(cwd, value)
-            if not value.startswith(os.path.sep) and value.endswith(os.path.sep)
+            if not value.startswith(os.path.sep) and value.endswith(("/", os.path.sep))
             else value
         )
         for value in values
