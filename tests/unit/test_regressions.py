@@ -2965,6 +2965,50 @@ def test_float_to_top_keeps_indented_semicolon_imports_in_place() -> None:
     )
 
 
+def test_append_only_adds_future_import_before_code_issue_1970() -> None:
+    """append_only must place an added future import before all code, not in a later section.
+
+    A future import past the first code line is a SyntaxError.
+    See: https://github.com/PyCQA/isort/issues/1970
+    """
+    source = (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "if __name__ == '__main__':\n"
+        "    import gevent.monkey\n"
+        "    gevent.monkey.patch_all()\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "print('silly example', file=sys.stderr)\n"
+    )
+    expected = (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "from __future__ import annotations\n"
+        "\n"
+        "if __name__ == '__main__':\n"
+        "    import gevent.monkey\n"
+        "    gevent.monkey.patch_all()\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "print('silly example', file=sys.stderr)\n"
+    )
+    add_imports = {"from __future__ import annotations"}
+    output = isort.code(source, append_only=True, add_imports=add_imports)
+    assert output == expected
+    compile(output, "t.py", "exec")  # must never raise
+    assert isort.code(output, append_only=True, add_imports=add_imports) == output
+
+
+def test_append_only_future_add_untouched_without_imports_issue_1970() -> None:
+    """append_only still adds nothing to files without imports, future adds included."""
+    source = "x = 1\nprint(x)\n"
+    add_imports = {"from __future__ import annotations"}
+    assert isort.code(source, append_only=True, add_imports=add_imports) == source
+
+
 def test_lines_before_imports_keeps_import_after_indented_block() -> None:
     """A top-level import that follows an indented import block must not be dropped
     when ``lines_before_imports`` is set.
