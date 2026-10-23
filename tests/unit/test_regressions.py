@@ -613,6 +613,94 @@ from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignor
     assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)
 
 
+@pytest.mark.parametrize(
+    ("test_input", "expected_output"),
+    [
+        (
+            "from m import a as x, b as y  # trailing\n",
+            "from m import a as x  # trailing\nfrom m import b as y\n",
+        ),
+        (
+            "import a as x, b as y  # trailing\n",
+            "import a as x  # trailing\nimport b as y\n",
+        ),
+    ],
+)
+def test_multiple_aliases_keep_trailing_comment_on_first_alias(
+    test_input: str, expected_output: str
+) -> None:
+    assert isort.code(test_input) == expected_output
+
+
+def test_combine_as_force_single_line_keeps_trailing_comments_issue_2094() -> None:
+    """Trailing comments on aliased imports survive combine_as_imports + force_single_line.
+    See: https://github.com/PyCQA/isort/issues/2094
+    """
+    test_input = (
+        "from other_module import other_function"
+        "  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+        "from some_module import the_function as some_function  # type: ignore\n"
+        "from some_other_module import another_function as yet_another_function"
+        "  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+    )
+    expected_output = (
+        "from other_module import \\\n"
+        "    other_function  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+        "from some_module import the_function as some_function  # type: ignore\n"
+        "from some_other_module import \\\n"
+        "    another_function as \\\n"
+        "    yet_another_function  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+    )
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_force_single_line_keeps_multiline_alias_comments_separate() -> None:
+    test_input = """from m import (
+    a as x,  # first
+    b as y,  # second
+)
+"""
+    expected_output = """from m import a as x  # first
+from m import b as y  # second
+"""
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        "from m import (\n    a as x,  # first\n    b,  # noqa: F401\n)\n",
+        "from m import (\n    b,  # noqa: F401\n    a as x,  # first\n)\n",
+    ],
+    ids=["alias-first", "plain-first"],
+)
+def test_combine_as_force_single_line_keeps_mixed_comments_separate(
+    test_input: str,
+) -> None:
+    expected_output = "from m import a as x  # first\nfrom m import b  # noqa: F401\n"
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+def test_combine_as_force_single_line_keeps_plain_only_comment() -> None:
+    test_input = "from m import (\n    a as x,\n    b,  # noqa: F401\n)\n"
+    expected_output = "from m import a as x\nfrom m import b  # noqa: F401\n"
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
 def test_incorrect_grouping_when_comments_issue_1396() -> None:
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

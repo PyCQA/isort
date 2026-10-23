@@ -271,6 +271,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             direct_imports = just_imports[1:]
             straight_import = True
             top_level_module = ""
+            first_module = ""
+            first_as_name = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -305,23 +307,50 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
 
-                    if comments and attach_comments_to is None:
-                        if nested_module and config.combine_as_imports:
+                    if not first_module:
+                        first_module = module
+                        first_as_name = as_name
+                    del just_imports[as_index : as_index + 2]
+
+                if comments and attach_comments_to is None:
+                    if nested_module and config.combine_as_imports:
+                        if (
+                            config.force_single_line
+                            and top_level_module not in config.single_line_exclusions
+                        ):
+                            pending_comments = list(comments)
+                            for import_name in just_imports:
+                                plain_comment = nested_comments.get(import_name)
+                                if plain_comment is not None and plain_comment in pending_comments:
+                                    pending_comments.remove(plain_comment)
+
+                            if pending_comments:
+                                nested_for_module = categorized_comments["nested"].setdefault(
+                                    top_level_module, {}
+                                )
+                                existing_comment = nested_for_module.get(full_name, "")
+                                nested_for_module[full_name] = (
+                                    f"{existing_comment}"
+                                    f"{'; ' if existing_comment else ''}"
+                                    f"{'; '.join(pending_comments)}"
+                                )
+                            comments = []
+                        else:
                             attach_comments_to = categorized_comments["from"].setdefault(
                                 f"{top_level_module}.__combined_as__", []
                             )
+                    else:
+                        if type_of_import is _ImportType.FROM or (
+                            config.remove_redundant_aliases
+                            and first_as_name == first_module.split(".")[-1]
+                        ):
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                first_module, []
+                            )
                         else:
-                            if type_of_import is _ImportType.FROM or (
-                                config.remove_redundant_aliases and as_name == module.split(".")[-1]
-                            ):
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    module, []
-                                )
-                            else:
-                                attach_comments_to = categorized_comments["straight"].setdefault(
-                                    f"{module} as {as_name}", []
-                                )
-                    del just_imports[as_index : as_index + 2]
+                            attach_comments_to = categorized_comments["straight"].setdefault(
+                                f"{first_module} as {first_as_name}", []
+                            )
 
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
