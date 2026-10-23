@@ -129,7 +129,7 @@ class _Config:
     """
 
     py_version: str = "3"
-    force_to_top: frozenset[str] = frozenset()
+    force_to_top: tuple[str, ...] = ()
     skip: frozenset[str] = DEFAULT_SKIP
     extend_skip: frozenset[str] = frozenset()
     skip_glob: frozenset[str] = frozenset()
@@ -412,6 +412,9 @@ class Config(_Config):
             default_value = _DEFAULT_SETTINGS.get(key, None)
             if default_value is None:
                 continue
+
+            if key == "force_to_top" and isinstance(value, (set, frozenset)):
+                value = sorted(value)
 
             combined_config[key] = type(default_value)(value)
 

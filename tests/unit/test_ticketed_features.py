@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import isort
-from isort import Config, exceptions
+from isort import Config, exceptions, main
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178() -> None:
@@ -1263,3 +1263,292 @@ from foo import a, b, e  # comment
 from foo import c as d
 """
     assert isort.code(code) == code
+
+
+def test_force_to_top_preserves_user_specified_order_issue_2130() -> None:
+    """Ensure force_to_top preserves the user-specified ordering when multiple modules are provided.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    # 1. Original torch then tensorflow example
+    assert (
+        isort.code("import tensorflow\nimport torch\n", force_to_top=["torch", "tensorflow"])
+        == "import torch\nimport tensorflow\n"
+    )
+
+    # 2. Three modules in deliberately non-alphabetical order
+    assert (
+        isort.code(
+            "import a_mod\nimport m_mod\nimport z_mod\n",
+            force_to_top=["z_mod", "m_mod", "a_mod"],
+        )
+        == "import z_mod\nimport m_mod\nimport a_mod\n"
+    )
+
+    # 3. Forced modules remaining above unforced modules
+    assert (
+        isort.code(
+            "import b_mod\nimport z_mod\nimport a_mod\nimport m_mod\n",
+            force_to_top=["z_mod", "a_mod"],
+        )
+        == "import z_mod\nimport a_mod\nimport b_mod\nimport m_mod\n"
+    )
+
+    # 4. force_sort_within_sections=True including both import and from imports
+    test_within_sections = (
+        "import tensorflow\nfrom torch import Tensor\nfrom tensorflow import keras\nimport torch\n"
+    )
+    expected_within_sections = (
+        "import torch\nfrom torch import Tensor\nimport tensorflow\nfrom tensorflow import keras\n"
+    )
+    assert (
+        isort.code(
+            test_within_sections,
+            force_to_top=["torch", "tensorflow"],
+            force_sort_within_sections=True,
+        )
+        == expected_within_sections
+    )
+
+    # 5. length_sort=True respects user-specified ordering
+    assert (
+        isort.code(
+            "import short\nimport long_module_name\n",
+            force_to_top=["long_module_name", "short"],
+            length_sort=True,
+        )
+        == "import long_module_name\nimport short\n"
+    )
+
+    # 6. Both natural and native sorting modes
+    assert (
+        isort.code(
+            "import tensorflow\nimport torch\n",
+            force_to_top=["torch", "tensorflow"],
+            sort_order="native",
+        )
+        == "import torch\nimport tensorflow\n"
+    )
+    assert (
+        isort.code(
+            "import tensorflow\nimport torch\n",
+            force_to_top=["torch", "tensorflow"],
+            sort_order="natural",
+        )
+        == "import torch\nimport tensorflow\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_config_file_issue_2130(tmp_path: Path) -> None:
+    """Ensure force_to_top ordering survives config file parsing.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    config_file = tmp_path / "pyproject.toml"
+    config_file.write_text(
+        '[tool.isort]\nforce_to_top = ["torch", "tensorflow"]\n',
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("torch", "tensorflow")
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config)
+        == "import torch\nimport tensorflow\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_isort_cfg_issue_2130(tmp_path: Path) -> None:
+    """Ensure comma-separated force_to_top ordering survives .isort.cfg parsing.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    config_file = tmp_path / ".isort.cfg"
+    config_file.write_text(
+        "[settings]\nforce_to_top=torch,tensorflow\n",
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("torch", "tensorflow")
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config)
+        == "import torch\nimport tensorflow\n"
+    )
+
+    # Also verify with 3 non-alphabetical modules
+    config_file.write_text(
+        "[settings]\nforce_to_top=z_mod,m_mod,a_mod\n",
+        encoding="utf-8",
+    )
+    config = Config(settings_path=str(tmp_path))
+    assert config.force_to_top == ("z_mod", "m_mod", "a_mod")
+    assert (
+        isort.code("import a_mod\nimport m_mod\nimport z_mod\n", config=config)
+        == "import z_mod\nimport m_mod\nimport a_mod\n"
+    )
+
+
+def test_force_to_top_preserves_order_from_cli_issue_2130(tmp_path: Path) -> None:
+    """Ensure repeated --top / -t CLI flags preserve user-specified order in formatted output.
+
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    python_file = tmp_path / "test_file.py"
+    python_file.write_text("import tensorflow\nimport torch\n", encoding="utf-8")
+
+    # Short flag -t
+    main.main([str(python_file), "-t", "torch", "-t", "tensorflow"])
+    assert python_file.read_text(encoding="utf-8") == "import torch\nimport tensorflow\n"
+
+    # Long flag --top with non-alphabetical ordering
+    python_file.write_text("import a_mod\nimport m_mod\nimport z_mod\n", encoding="utf-8")
+    main.main([str(python_file), "--top", "z_mod", "--top", "m_mod", "--top", "a_mod"])
+    assert python_file.read_text(encoding="utf-8") == "import z_mod\nimport m_mod\nimport a_mod\n"
+
+
+def test_force_to_top_normalizes_set_and_frozenset_deterministically_issue_2130() -> None:
+    """Ensure set and frozenset inputs to force_to_top are deterministically sorted.
+
+    Existing configurations might pass sets or frozensets. Because sets have
+    no guaranteed iteration order across Python processes / hash seeds, they
+    must be sorted before tuple coercion to guarantee deterministic import ordering.
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    # Find a candidate set whose native iteration order is not already sorted,
+    # ensuring the test genuinely verifies normalization rather than accidental sorting.
+    candidates = (
+        ("torch", "tensorflow", "jax"),
+        ("date", "apple", "cherry", "banana"),
+        ("alpha", "beta", "gamma", "delta"),
+        ("z_mod", "y_mod", "x_mod", "w_mod"),
+    )
+    raw_set: set[str] = set()
+    for candidate in candidates:
+        s = set(candidate)
+        if list(s) != sorted(s):
+            raw_set = s
+            break
+    assert list(raw_set) != sorted(raw_set), (
+        "Test precondition: native iteration must not be sorted"
+    )
+
+    expected_sorted = tuple(sorted(raw_set))
+
+    # 1. Config with a set
+    config_set = Config(force_to_top=raw_set)
+    assert config_set.force_to_top == expected_sorted
+    assert config_set.force_to_top != tuple(raw_set)
+
+    # 2. Config with a frozenset
+    raw_frozenset = frozenset(raw_set)
+    config_frozenset = Config(force_to_top=raw_frozenset)
+    assert config_frozenset.force_to_top == expected_sorted
+    assert config_frozenset.force_to_top != tuple(raw_frozenset)
+
+    # 3. Formatted imports follow normalized deterministic order
+    input_code = "".join(f"import {mod}\n" for mod in reversed(expected_sorted))
+    expected_code = "".join(f"import {mod}\n" for mod in expected_sorted)
+
+    assert isort.code(input_code, config=config_set) == expected_code
+    assert isort.code(input_code, config=config_frozenset) == expected_code
+    assert isort.code(input_code, force_to_top=raw_set) == expected_code
+    assert isort.code(input_code, force_to_top=raw_frozenset) == expected_code
+
+    # 4. Empty set and frozenset
+    assert Config(force_to_top=set()).force_to_top == ()
+    assert Config(force_to_top=frozenset()).force_to_top == ()
+
+
+def test_force_to_top_preserves_explicit_list_and_tuple_order_issue_2130() -> None:
+    """Ensure explicit list and tuple inputs preserve their exact specified order.
+
+    Explicitly ordered collections must NOT be reordered alphabetically.
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    explicit_order = ["z_mod", "m_mod", "a_mod"]
+    expected_tuple = ("z_mod", "m_mod", "a_mod")
+
+    # 1. Config with a list
+    config_list = Config(force_to_top=explicit_order)
+    assert config_list.force_to_top == expected_tuple
+
+    # 2. Config with a tuple
+    config_tuple = Config(force_to_top=tuple(explicit_order))
+    assert config_tuple.force_to_top == expected_tuple
+
+    # 3. Formatted imports preserve non-alphabetical explicit order
+    input_code = "import a_mod\nimport m_mod\nimport z_mod\n"
+    expected_code = "import z_mod\nimport m_mod\nimport a_mod\n"
+
+    assert isort.code(input_code, config=config_list) == expected_code
+    assert isort.code(input_code, config=config_tuple) == expected_code
+    assert isort.code(input_code, force_to_top=explicit_order) == expected_code
+    assert isort.code(input_code, force_to_top=tuple(explicit_order)) == expected_code
+
+    # 4. Empty list and tuple
+    assert Config(force_to_top=[]).force_to_top == ()
+    assert Config(force_to_top=()).force_to_top == ()
+
+
+def test_force_to_top_unordered_sorting_modes_contract_issue_2130() -> None:
+    """Document and verify contract for unordered inputs across sorting modes.
+
+    Unordered sets/frozensets are canonicalized alphabetically into a tuple at
+    configuration time. That deterministic sequence establishes the priority for
+    force_to_top, independent of section sorting modes like natural or length sort.
+    In contrast, explicit lists/tuples preserve the user's specified sequence.
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    # 1. Natural sorting: mod10 < mod2 alphabetically, but mod2 < mod10 naturally.
+    unordered_modules = {"mod10", "mod2"}
+    assert Config(force_to_top=unordered_modules).force_to_top == ("mod10", "mod2")
+    assert (
+        isort.code(
+            "import mod2\nimport mod10\n",
+            force_to_top=unordered_modules,
+            sort_order="natural",
+        )
+        == "import mod10\nimport mod2\n"
+    )
+    # Explicit list preserves user order even with natural sorting
+    assert (
+        isort.code(
+            "import mod10\nimport mod2\n",
+            force_to_top=["mod2", "mod10"],
+            sort_order="natural",
+        )
+        == "import mod2\nimport mod10\n"
+    )
+
+    # 2. Length sorting: a_short < z_long_module alphabetically.
+    unordered_len = {"z_long_module", "a_short"}
+    assert Config(force_to_top=unordered_len).force_to_top == ("a_short", "z_long_module")
+    assert (
+        isort.code(
+            "import z_long_module\nimport a_short\n",
+            force_to_top=unordered_len,
+            length_sort=True,
+        )
+        == "import a_short\nimport z_long_module\n"
+    )
+    # Explicit list preserves user order even with length_sort
+    assert (
+        isort.code(
+            "import a_short\nimport z_long_module\n",
+            force_to_top=["z_long_module", "a_short"],
+            length_sort=True,
+        )
+        == "import z_long_module\nimport a_short\n"
+    )
+
+    # 3. force_sort_within_sections:
+    unordered_sections = {"z_mod", "a_mod"}
+    code_within = "import z_mod\nfrom a_mod import fn\nimport a_mod\nfrom z_mod import fn\n"
+    expected_within = "import a_mod\nfrom a_mod import fn\nimport z_mod\nfrom z_mod import fn\n"
+    assert (
+        isort.code(
+            code_within,
+            force_to_top=unordered_sections,
+            force_sort_within_sections=True,
+        )
+        == expected_within
+    )
