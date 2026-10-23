@@ -271,6 +271,8 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             direct_imports = just_imports[1:]
             straight_import = True
             top_level_module = ""
+            first_module = ""
+            first_as_name = ""
             if "as" in just_imports and (just_imports.index("as") + 1) < len(just_imports):
                 straight_import = False
                 while "as" in just_imports:
@@ -305,6 +307,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         elif as_name not in as_map["straight"][module]:
                             as_map["straight"][module].append(as_name)
 
+                    if not first_module:
+                        first_module = module
+                        first_as_name = as_name
                     del just_imports[as_index : as_index + 2]
 
                 if comments and attach_comments_to is None:
@@ -336,14 +341,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             )
                     else:
                         if type_of_import is _ImportType.FROM or (
-                            config.remove_redundant_aliases and as_name == module.split(".")[-1]
+                            config.remove_redundant_aliases
+                            and first_as_name == first_module.split(".")[-1]
                         ):
                             attach_comments_to = categorized_comments["straight"].setdefault(
-                                module, []
+                                first_module, []
                             )
                         else:
                             attach_comments_to = categorized_comments["straight"].setdefault(
-                                f"{module} as {as_name}", []
+                                f"{first_module} as {first_as_name}", []
                             )
 
             if type_of_import is _ImportType.FROM:
