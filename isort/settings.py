@@ -418,6 +418,9 @@ class Config(_Config):
                 # would be iterated over character by character instead.
                 value = _as_list(value)
 
+            if key == "force_to_top" and isinstance(value, (set, frozenset)):
+                value = sorted(value)
+
             combined_config[key] = type(default_value)(value)
 
         for section in combined_config.get("sections", ()):
