@@ -7,6 +7,11 @@ from .wrap_modes import WrapModes as Modes
 from .wrap_modes import formatter_from_string, vertical_hanging_indent
 
 
+def _is_wrapped(statement: str) -> bool:
+    """Whether ``statement`` already wraps its import list in parentheses."""
+    return "(" in statement.split("#", 1)[0]
+
+
 def import_statement(
     import_start: str,
     from_imports: list[str],
@@ -63,7 +68,7 @@ def import_statement(
                 remove_comments=config.ignore_comments,
             )
             lines = new_import_statement.split(line_separator)
-    if statement.count(line_separator) == 0:
+    if statement.count(line_separator) == 0 and not _is_wrapped(statement):
         return _wrap_line(statement, line_separator, config)
     return statement
 

@@ -3191,3 +3191,40 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+@pytest.mark.parametrize("use_parentheses", [False, True])
+def test_grid_wrap_with_trailing_comma_keeps_a_dotted_from_import_valid(
+    use_parentheses: bool,
+) -> None:
+    """``force_grid_wrap`` and ``include_trailing_comma`` must not produce invalid Python.
+
+    The grid formatter does not account for the trailing comma it appends, so a statement
+    whose grid form is one character over the line length was handed back to the generic
+    wrapper, which parenthesised the rest of the statement behind the dot of the module
+    path: ``from mymodule.sub import (long_name, y2,)`` became
+    ``from mymodule.(\\n    sub import (long_name, y2,),)``, a syntax error.
+    """
+    to_sort = "from mymodule.sub import y2, long_name\n"
+    expected = "from mymodule.sub import (\n    long_name, y2,)\n"
+
+    result = isort.code(
+        to_sort,
+        force_grid_wrap=2,
+        include_trailing_comma=True,
+        use_parentheses=use_parentheses,
+        line_length=40,
+    )
+
+    assert ast.parse(result)
+    assert result == expected
+    assert (
+        isort.code(
+            result,
+            force_grid_wrap=2,
+            include_trailing_comma=True,
+            use_parentheses=use_parentheses,
+            line_length=40,
+        )
+        == result
+    )
