@@ -63,9 +63,20 @@ def import_statement(
                 remove_comments=config.ignore_comments,
             )
             lines = new_import_statement.split(line_separator)
-    if statement.count(line_separator) == 0:
+    if statement.count(line_separator) == 0 and not _is_wrapped(statement):
+        # ``_wrap_line`` re-wraps a statement that the selected wrap mode did not split
+        # across lines, for example to append a noqa marker. A mode that already decided
+        # to wrap the statement in parentheses needs nothing more: running the generic
+        # wrapper over it would put a second pair of parentheses into the middle of the
+        # statement, e.g. ``from a.b import (c, d,)`` used to become
+        # ``from a.b.(\n    c import (c, d,),)``, which is not valid Python.
         return _wrap_line(statement, line_separator, config)
     return statement
+
+
+def _is_wrapped(statement: str) -> bool:
+    """Whether ``statement`` already wraps its import list in parentheses."""
+    return "(" in statement.split("#", 1)[0]
 
 
 def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> str:
