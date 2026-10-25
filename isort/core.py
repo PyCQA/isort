@@ -106,6 +106,14 @@ def _is_comment_or_string_start(line: str) -> bool:
     return _strip_string_prefix(line.lstrip()).startswith(COMMENT_INDICATORS)
 
 
+def _is_fstring_expression(line: str) -> bool:
+    """Whether `line` starts with an f-string literal, which can never be a docstring."""
+    stripped = line.lstrip().lower()
+    return stripped[:2] in ("f'", 'f"') or (
+        stripped[:2] in ("fr", "rf") and stripped[2:3] in ("'", '"')
+    )
+
+
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
@@ -545,7 +553,10 @@ def process(
                 and not in_top_comment
                 and not was_in_quote
                 and not import_section
-                and not _is_comment_or_string_start(line)
+                and (
+                    not _is_comment_or_string_start(line)
+                    or (config.append_only and _is_fstring_expression(line))
+                )
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
                 early_adds, add_imports = _split_early_additions(config, add_imports)

@@ -3009,6 +3009,17 @@ def test_append_only_future_add_untouched_without_imports_issue_1970() -> None:
     assert isort.code(source, append_only=True, add_imports=add_imports) == source
 
 
+def test_append_only_future_add_before_fstring_expression_issue_1970() -> None:
+    """An f-string is code, so the future import must precede it."""
+    source = "f'initialization'\nimport os\n\nmain()\n"
+    add_imports = {"from __future__ import annotations"}
+    expected = "from __future__ import annotations\n\nf'initialization'\nimport os\n\nmain()\n"
+    output = isort.code(source, append_only=True, add_imports=add_imports)
+    assert output == expected
+    compile(output, "t.py", "exec")
+    assert isort.code(output, append_only=True, add_imports=add_imports) == output
+
+
 def test_lines_before_imports_keeps_import_after_indented_block() -> None:
     """A top-level import that follows an indented import block must not be dropped
     when ``lines_before_imports`` is set.
