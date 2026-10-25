@@ -57,3 +57,53 @@ def test_namespace_package_placement(examples_path: Path) -> None:
         assert place.module("root.nested", config=config) == "FIRSTPARTY"
         assert place.module("root.name", config=manual_namespace) == "THIRDPARTY"
         assert place.module("root.nested", config=config) == "FIRSTPARTY"
+
+
+def test_root_directory_name_is_not_first_party(tmp_path: Path) -> None:
+    """A module that only shares its name with the project root directory
+    must not be classified as first-party (issue #2240).
+
+    The default src_paths include the project root; the root is a
+    container for the project's packages, not a package itself.
+    """
+    root = tmp_path / "some_name"
+    package = root / "package_name"
+    package.mkdir(parents=True)
+    (package / "__init__.py").touch()
+    (root / "pyproject.toml").touch()
+    config = Config(directory=str(root))
+    assert place.module("package_name", config=config) == sections.FIRSTPARTY
+    assert place.module("some_name", config=config) == sections.THIRDPARTY
+    assert place.module("third_party", config=config) == sections.THIRDPARTY
+
+
+def test_src_path_pointing_at_package_directory(tmp_path: Path) -> None:
+    """A src_path that points directly at a package directory still
+    identifies that package as first-party."""
+    package = tmp_path / "mypackage"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").touch()
+    config = Config(src_paths=[package])
+    assert place.module("mypackage", config=config) == sections.FIRSTPARTY
+
+
+def test_src_path_pointing_at_namespace_package_directory(tmp_path: Path) -> None:
+    """Same as above for a namespace package directory (no __init__.py,
+    but with module files in it)."""
+    package = tmp_path / "mynamespace"
+    package.mkdir()
+    (package / "module.py").touch()
+    config = Config(src_paths=[package])
+    assert place.module("mynamespace", config=config) == sections.FIRSTPARTY
+
+
+def test_directory_named_like_module_without_python_source(tmp_path: Path) -> None:
+    """The project root does not make a like-named module first-party
+    when it contains no Python source at its top level, even if the
+    root is also listed in src_paths explicitly."""
+    container = tmp_path / "some_name"
+    (container / "docs").mkdir(parents=True)
+    (container / "pyproject.toml").touch()
+    config = Config(directory=str(container), src_paths=[container])
+    assert place.module("some_name", config=config) == sections.THIRDPARTY

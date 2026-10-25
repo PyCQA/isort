@@ -76,7 +76,9 @@ def _src_path(
 
     for src_path in src_paths:
         module_path = (src_path / root_module_name).resolve()
-        if not prefix and not module_path.is_dir() and src_path.name == root_module_name:
+        if not prefix and not module_path.is_dir() and _src_path_is_module(
+            src_path, root_module_name, config
+        ):
             module_path = src_path.resolve()
         if nested_module and (
             namespace in config.namespace_packages
@@ -89,7 +91,7 @@ def _src_path(
         if (
             _is_module(module_path)
             or _is_package(module_path)
-            or _src_path_is_module(src_path, root_module_name)
+            or _src_path_is_module(src_path, root_module_name, config)
         ):
             return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
 
@@ -140,7 +142,45 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
     return True
 
 
-def _src_path_is_module(src_path: Path, module_name: str) -> bool:
+def _src_path_is_module(src_path: Path, module_name: str, config: Config) -> bool:
     return (
-        module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
+        module_name == src_path.name
+        and src_path.is_dir()
+        and exists_case_sensitive(str(src_path))
+        and _is_package_directory(src_path, config)
     )
+
+
+def _is_package_directory(path: Path, config: Config) -> bool:
+    """Whether a directory itself looks like a Python package directory.
+
+    A ``src_paths`` entry may point directly at a package directory (for
+    example a ``src/*`` glob expanded by settings, or the root of a
+    namespace package), in which case the directory is the module. Such
+    entries are configured in their own right and are trusted as before.
+
+    The project root is different: the default ``src_paths`` always
+    include it, but it is a container for the project's packages (and
+    files such as ``pyproject.toml``), not a package itself. It only
+    counts as a package directory when it directly contains Python
+    source: an ``__init__.py``, a namespace portion made only of
+    subpackages, or module files. Otherwise a third-party module that
+    merely shares the root directory's name would be misclassified as
+    first-party.
+    """
+    if path.resolve() != Path(config.directory).resolve():
+        return True
+    if exists_case_sensitive(str(path / "__init__.py")):
+        return True
+    try:
+        children = list(path.iterdir())
+    except OSError:
+        return False
+    if not children:
+        return False
+    # A namespace package portion consisting only of subpackages.
+    if all(child.is_dir() for child in children):
+        return any(
+            exists_case_sensitive(str(child / "__init__.py")) for child in children
+        )
+    return any(child.is_file() and child.suffix == ".py" for child in children)
