@@ -286,16 +286,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         direct_imports.remove(nested_module)
                         direct_imports.remove(as_name)
                         direct_imports.remove("as")
+                        full_name = f"{nested_module} as {as_name}"
+                        comment_key = full_name
                         if nested_module == as_name and config.remove_redundant_aliases:
-                            pass
+                            comment_key = nested_module
                         elif as_name not in as_map["from"][module]:  # pragma: no branch
                             as_map["from"][module].append(as_name)
 
-                        full_name = f"{nested_module} as {as_name}"
                         associated_comment = nested_comments.get(full_name)
                         if associated_comment is not None:
                             categorized_comments["nested"].setdefault(top_level_module, {})[
-                                full_name
+                                comment_key
                             ] = associated_comment
                             if associated_comment in comments:  # pragma: no branch
                                 comments.pop(comments.index(associated_comment))
@@ -318,21 +319,20 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                             config.force_single_line
                             and top_level_module not in config.single_line_exclusions
                         ):
-                            pending_comments = list(comments)
-                            for import_name in just_imports:
+                            for import_name in direct_imports:
                                 plain_comment = nested_comments.get(import_name)
-                                if plain_comment is not None and plain_comment in pending_comments:
-                                    pending_comments.remove(plain_comment)
+                                if plain_comment is not None and plain_comment in comments:
+                                    comments.remove(plain_comment)
 
-                            if pending_comments:
+                            if comments:
                                 nested_for_module = categorized_comments["nested"].setdefault(
                                     top_level_module, {}
                                 )
-                                existing_comment = nested_for_module.get(full_name, "")
-                                nested_for_module[full_name] = (
+                                existing_comment = nested_for_module.get(comment_key, "")
+                                nested_for_module[comment_key] = (
                                     f"{existing_comment}"
                                     f"{'; ' if existing_comment else ''}"
-                                    f"{'; '.join(pending_comments)}"
+                                    f"{'; '.join(comments)}"
                                 )
                             comments = []
                         else:
