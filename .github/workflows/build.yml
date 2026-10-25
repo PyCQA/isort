@@ -47,13 +47,13 @@ jobs:
         run: uv build
 
       - name: Upload sdist
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
             name: cibw-sdist
             path: dist/*.tar.gz
 
       - name: Upload wheel
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
             name: cibw-wheel-pure
             path: dist/*.whl
@@ -84,9 +84,9 @@ jobs:
           CIBW_ENVIRONMENT: "HATCH_BUILD_HOOK_ENABLE_MYPYC=true"
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_SKIP: "*-win32"
-        uses: pypa/cibuildwheel@v4.2.1
+        uses: pypa/cibuildwheel@v4.3.1
 
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: cibw-wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
