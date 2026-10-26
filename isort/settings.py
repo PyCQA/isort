@@ -265,6 +265,12 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
+        force_to_top = self.force_to_top
+        if isinstance(force_to_top, (set, frozenset)):
+            object.__setattr__(self, "force_to_top", tuple(sorted(force_to_top)))
+        elif not isinstance(force_to_top, tuple):
+            object.__setattr__(self, "force_to_top", tuple(force_to_top))
+
     def __hash__(self) -> int:
         return id(self)
 

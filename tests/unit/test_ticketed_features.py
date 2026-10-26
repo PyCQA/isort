@@ -1552,3 +1552,60 @@ def test_force_to_top_unordered_sorting_modes_contract_issue_2130() -> None:
         )
         == expected_within
     )
+
+
+def test_force_to_top_copied_config_normalizes_to_tuple_issue_2130() -> None:
+    """Ensure Config(config=..., force_to_top=...) normalizes force_to_top to a tuple.
+
+    When copying an existing Config with force_to_top overrides, unordered sets
+    or frozensets must be sorted deterministically to an ordered tuple so that
+    sorting keys (.index()) do not raise an AttributeError, while lists and tuples
+    must preserve user-specified order.
+    See: https://github.com/PyCQA/isort/issues/2130
+    """
+    base_config = Config()
+
+    # 1. Copied config with set override
+    config_set = Config(config=base_config, force_to_top={"torch", "tensorflow"})
+    assert config_set.force_to_top == ("tensorflow", "torch")
+    assert isinstance(config_set.force_to_top, tuple)
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config_set)
+        == "import tensorflow\nimport torch\n"
+    )
+
+    # 2. Copied config with frozenset override
+    config_frozenset = Config(config=base_config, force_to_top=frozenset({"torch", "tensorflow"}))
+    assert config_frozenset.force_to_top == ("tensorflow", "torch")
+    assert isinstance(config_frozenset.force_to_top, tuple)
+    assert (
+        isort.code("import tensorflow\nimport torch\n", config=config_frozenset)
+        == "import tensorflow\nimport torch\n"
+    )
+
+    # 3. Copied config with list override preserves explicit order
+    explicit_order = ["z_mod", "m_mod", "a_mod"]
+    config_list = Config(config=base_config, force_to_top=explicit_order)
+    assert config_list.force_to_top == ("z_mod", "m_mod", "a_mod")
+    assert isinstance(config_list.force_to_top, tuple)
+    assert (
+        isort.code("import a_mod\nimport m_mod\nimport z_mod\n", config=config_list)
+        == "import z_mod\nimport m_mod\nimport a_mod\n"
+    )
+
+    # 4. Copied config with tuple override
+    config_tuple = Config(config=base_config, force_to_top=("z_mod", "m_mod", "a_mod"))
+    assert config_tuple.force_to_top == ("z_mod", "m_mod", "a_mod")
+    assert isinstance(config_tuple.force_to_top, tuple)
+
+    # 5. Copied config without force_to_top override retains base configuration
+    base_with_top = Config(force_to_top=["z_mod", "a_mod"])
+    copied_retained = Config(config=base_with_top, line_length=100)
+    assert copied_retained.force_to_top == ("z_mod", "a_mod")
+    assert isinstance(copied_retained.force_to_top, tuple)
+
+    # 6. Copied config with empty collections
+    assert Config(config=base_config, force_to_top=set()).force_to_top == ()
+    assert Config(config=base_config, force_to_top=frozenset()).force_to_top == ()
+    assert Config(config=base_config, force_to_top=[]).force_to_top == ()
+    assert Config(config=base_config, force_to_top=()).force_to_top == ()
