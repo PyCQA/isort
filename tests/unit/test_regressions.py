@@ -252,6 +252,22 @@ def test_form_feed_blank_line_not_removed_issue_2562() -> None:
     assert isort.code(test_input, lines_after_imports=2) == test_input
 
 
+@pytest.mark.parametrize(
+    "declaration", ["def f():\n    pass", "class C:\n    pass", "async def f():\n    pass"]
+)
+def test_form_feed_hidden_declaration_keeps_two_blank_lines_issue_2562(declaration: str) -> None:
+    """A form feed hoisted in front of a top level declaration must not hide it.
+
+    ``\\f`` is whitespace and resets the indentation column, so ``\\fdef f():`` is still a
+    statement declaration: it keeps ``lines_after_imports`` at 2 and the output stays
+    stable.  See: https://github.com/pycqa/isort/issues/2562
+    """
+    test_input = f"import sys\n\n\n\f\n{declaration}\n"
+    expected = f"import sys\n\n\n\f{declaration}\n"
+    assert isort.code(test_input) == expected
+    assert isort.code(expected) == expected
+
+
 def test_force_single_line_shouldnt_remove_preceding_comment_lines_issue_1296() -> None:
     """Tests to ensure force_single_line setting doesn't result in lost comments.
     See: https://github.com/pycqa/isort/issues/1296

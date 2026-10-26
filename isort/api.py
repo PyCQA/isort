@@ -260,7 +260,7 @@ def check_stream(
     if show_diff:
         input_stream = StringIO(input_stream.read())
 
-    with open(os.devnull, "w") as devnull:
+    with open(os.devnull, "w", encoding="utf-8") as devnull:
         changed: bool = sort_stream(
             input_stream=input_stream,
             output_stream=devnull,
@@ -353,14 +353,14 @@ def _in_memory_output_stream_context(source_file: File, changed: Event) -> Itera
 
     If `changed` is set at exit it will copy the stream to the source file.
     """
-    stream = StringIO(newline=None)
+    stream = StringIO(newline="")
     yield stream
 
     if changed.is_set():
-        stream.seek(0)
+        # Encode before opening the file, so an encoding error cannot leave it truncated.
+        output = stream.getvalue().encode(source_file.encoding)
         source_file.stream.close()
-        with source_file.path.open("w") as fs:
-            shutil.copyfileobj(stream, fs)
+        source_file.path.write_bytes(output)
 
 
 @contextlib.contextmanager
