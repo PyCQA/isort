@@ -2705,21 +2705,22 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     """A long ``as`` import with an opening-line comment and ``use_parentheses``.
 
     When ``use_parentheses`` is enabled and the import carries an opening-line
-    comment, the comment is attached to the first line after wrapping. In NOQA
-    mode ``wrap.line()`` is re-run on that line so ``# NOQA`` is added when it
-    still exceeds the line length. In non-NOQA modes the comment is preserved on
-    the ``from X import (`` line without ``# NOQA``.
+    comment, the comment is attached to the first line after wrapping. NOQA mode
+    never wraps in parentheses, so the comment is merged into the statement before
+    it is wrapped and ``# NOQA`` is added after it when the line is still too long.
+    In non-NOQA modes the comment is preserved on the ``from X import (`` line
+    without ``# NOQA``.
     """
     to_sort = (
         "from my_package.my_module import super_long_file_name as super_long_alias"
         "  # type: ignore\n"
     )
 
-    # NOQA mode: # NOQA is appended after the opening-line comment.
+    # NOQA mode: the opening-line comment comes first, # NOQA is appended after it.
     first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
     assert first_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias"
-        "  # NOQA  # type: ignore\n"
+        "  # type: ignore  # NOQA\n"
     )
 
     # Non-NOQA mode (grid): the comment stays on the opening parenthesis line.
@@ -2740,6 +2741,30 @@ def test_noqa_added_to_long_as_import_with_opening_line_comment_issue_2093() -> 
     assert ignored_pass == (
         "from my_package.my_module import super_long_file_name as super_long_alias  # NOQA\n"
     )
+
+
+def test_noqa_mode_reaches_a_fixpoint_with_an_opening_line_comment() -> None:
+    """NOQA mode must not add another ``# NOQA`` marker on every pass.
+
+    The line was wrapped once by ``wrap.line()`` and once more after the
+    opening-line comment moved onto the first line, so every run added a
+    marker and the output never reached a fixpoint.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(
+        to_sort, multi_line_output=7, use_parentheses=True, line_length=40
+    )
+    assert first_pass.count("# NOQA") == 1
+
+    second_pass = isort.code(
+        first_pass, multi_line_output=7, use_parentheses=True, line_length=40
+    )
+    assert second_pass == first_pass
+    assert second_pass.count("# NOQA") == 1
 
 
 def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_2093() -> None:
