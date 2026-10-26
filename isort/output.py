@@ -362,7 +362,19 @@ def _build_as_imports(
             straight_comments.append(specific_comment)
 
         import_line = import_start + as_import
-        if opening_line_comments and config.use_parentheses:
+        # ``WrapModes.NOQA`` never puts a statement in parentheses: it only appends
+        # a ``# NOQA`` marker to the lines that are too long. There is therefore no
+        # opening parenthesis that could hold the opening-line comments, and adding
+        # them after ``wrap.line()`` placed them behind that marker. The next run
+        # then read the whole tail as one comment and appended another marker
+        # (``# NOQA  # type: ignore`` -> ``# NOQA  # NOQA  # type: ignore`` -> ...),
+        # so such an import never reached a fixpoint. Merge the comments into the
+        # statement first and wrap once, exactly like ``use_parentheses=False``.
+        if (
+            opening_line_comments
+            and config.use_parentheses
+            and config.multi_line_output != wrap_modes.WrapModes.NOQA
+        ):
             # When parentheses are used, opening-line comments (e.g. "# noqa") must
             # remain on the "from X import (" line. If we naively embedded them in
             # the attribute string and then called wrap.line(), the comment would
@@ -389,8 +401,6 @@ def _build_as_imports(
             )
             if opening_comment:
                 lines[0] += opening_comment
-                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                    lines[0] = wrap.line(lines[0], line_separator, config)
             output.append(line_separator.join(lines))
         else:
             output.append(
