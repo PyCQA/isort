@@ -1,3 +1,4 @@
+import ast
 import textwrap
 from io import StringIO
 from itertools import chain
@@ -273,6 +274,35 @@ def process(
                         raise FileSkipComment("Passed in content")
                     isort_off = True
                     skip_file = True
+
+            if (
+                is_reexport
+                and stripped_line
+                and not in_quote
+                and _is_complete_statement(code_sorting_section)
+            ):
+                # The ``__all__`` assignment already ended on a previous line, so this
+                # non-blank line is the next statement rather than part of the literal.
+                # Sort and write the literal now, before handling this line as usual,
+                # instead of waiting for a blank line. See issue #2286.
+                made_changes = (
+                    _write_sorted_code_section(
+                        output_stream=output_stream,
+                        code_sorting_section=code_sorting_section,
+                        code_sorting=code_sorting,
+                        code_sorting_indent=code_sorting_indent,
+                        extension=extension,
+                        config=_indented_config(config, indent),
+                        line_separator=line_separator,
+                        reexport_rollback=reexport_rollback,
+                    )
+                    or made_changes
+                )
+                code_sorting = False
+                code_sorting_section = ""
+                code_sorting_indent = ""
+                is_reexport = False
+                reexport_rollback = 0
 
             if not in_quote:
                 if stripped_line == "# isort: off":
@@ -639,3 +669,52 @@ def _has_changed(before: str, after: str, line_separator: str, ignore_whitespace
             != remove_whitespace(after, line_separator=line_separator).strip()
         )
     return before.rstrip() != after.rstrip()
+
+
+def _is_complete_statement(code: str) -> bool:
+    """Return True when ``code`` holds one or more complete Python statements.
+
+    Used to tell when a multi-line ``__all__`` literal has been fully read, so the
+    line that follows it is not swallowed into the literal.
+    """
+    if not code.strip():
+        return False
+    try:
+        ast.parse(textwrap.dedent(code))
+    except SyntaxError:
+        return False
+    return True
+
+
+def _write_sorted_code_section(
+    output_stream: TextIO,
+    code_sorting_section: str,
+    code_sorting: str | bool,
+    code_sorting_indent: str,
+    extension: str,
+    config: Config,
+    line_separator: str,
+    reexport_rollback: int,
+) -> bool:
+    """Sort a finished ``__all__`` section and write it in place of its raw first line.
+
+    Returns True if sorting changed the section.
+    """
+    sorted_code = textwrap.indent(
+        isort.literal.assignment(code_sorting_section, str(code_sorting), extension, config=config),
+        code_sorting_indent,
+    )
+    # Clamp to 0 so check mode's no-op output stream (tell() == 0) cannot produce a
+    # negative seek position. See PR #2576.
+    output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
+    output_stream.write(sorted_code)
+    # When redirecting to ``devnull`` there is nothing to truncate, and calling
+    # ``truncate()`` on it would raise an exception.
+    if output_stream.tell() > 0:
+        output_stream.truncate()
+    return _has_changed(
+        before=code_sorting_section,
+        after=sorted_code,
+        line_separator=line_separator,
+        ignore_whitespace=config.ignore_whitespace,
+    )
