@@ -797,11 +797,12 @@ def _with_from_imports_for_module(
             break
 
         # If we are combining aliased imports we need to pop any associated comments.
+        combined_as_comments: list[str] = []
         if config.combine_as_imports:
-            comments = [
-                *comments,
-                *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
-            ]
+            combined_as_comments = parsed.categorized_comments["from"].pop(
+                f"{module}.__combined_as__", []
+            )
+            comments = [*comments, *combined_as_comments]
 
         grouped_from_import_statement = _build_grouped_from_imports(
             config=config,
@@ -811,7 +812,7 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments),
+            preserve_comments_on_statement_line=bool(opening_line_comments or combined_as_comments),
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)

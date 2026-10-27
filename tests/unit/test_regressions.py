@@ -2189,6 +2189,41 @@ attr as alias  # type: ignore[attr-defined]
     )
 
 
+def test_comment_on_opening_line_of_aliased_import_does_not_move_with_combine_as_imports() -> None:
+    """The comment of a wrapped aliased import stays on the "from ... import (" line
+    with combine_as_imports as well.
+    """
+    test_input = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute,
+)
+"""
+    assert isort.code(test_input, profile="black", combine_as_imports=True) == test_input
+
+    single_line_input = (
+        "from a_long_name_to_enforce.splitting_across.two_lines import "
+        "a_random_attribute as renamed_random_attribute  # type: ignore[attr-defined]\n"
+    )
+    assert isort.code(single_line_input, profile="black", combine_as_imports=True) == test_input
+
+    # Without the black profile the import is not exploded.
+    test_input_no_trailing_comma = """\
+from a_long_name_to_enforce.splitting_across.two_lines import (  # type: ignore[attr-defined]
+    a_random_attribute as renamed_random_attribute
+)
+"""
+    assert (
+        isort.code(
+            test_input_no_trailing_comma,
+            use_parentheses=True,
+            multi_line_output=3,
+            line_length=88,
+            combine_as_imports=True,
+        )
+        == test_input_no_trailing_comma
+    )
+
+
 def test_sort_reexports_with_stdin_raises_error_issue_2393() -> None:
     """Ensure --sort-reexports raises a clear error when used with stdin."""
     fake_stdin = TextIOWrapper(BytesIO(b"from test import B, A\n"))
