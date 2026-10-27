@@ -10,6 +10,30 @@ def test_add_to_line() -> None:
     )
 
 
+def test_add_to_line_drops_an_empty_comment_instead_of_leaving_a_separator() -> None:
+    """A bare ``#`` carries no text, so merging it must not leave ``"; "`` behind."""
+    assert (
+        isort.comments.add_to_line(["x", ""], "from sys import a, b", comment_prefix="  #")
+        == "from sys import a, b  # x"
+    )
+    assert (
+        isort.comments.add_to_line(["", "x"], "from sys import a, b", comment_prefix="  #")
+        == "from sys import a, b  # x"
+    )
+    # A lone bare ``#`` is still a comment and has to survive.
+    assert (
+        isort.comments.add_to_line([""], "from sys import a", comment_prefix="  #")
+        == "from sys import a  #"
+    )
+
+
+def test_merging_a_bare_comment_is_idempotent() -> None:
+    """isort must not rewrite its own output when a bare ``#`` gets merged."""
+    first = isort.code("from sys import a  # x\nfrom sys import b  #\n")
+    assert first == "from sys import a, b  # x\n"
+    assert isort.code(first) == first
+
+
 # These tests were written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
