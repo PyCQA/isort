@@ -68,6 +68,8 @@ jobs:
             runs-on: ubuntu-latest
           - os: windows-latest
             runs-on: windows-latest
+          - os: windows-11-arm
+            runs-on: windows-11-arm
           - os: macos-latest
             runs-on: macos-latest
           - os: pyodide
