@@ -112,6 +112,20 @@ def vertical(
     if not imports:
         return ""
 
+    _comma_maybe = "," if include_trailing_comma else ""
+
+    if len(imports) == 1:
+        # A single import has no continuation line to wrap onto, so the trailing
+        # comma would be left dangling after the continuation indent. Keep it on
+        # the same line as the import and let the comment follow the closing
+        # parenthesis instead of being swallowed by it.
+        return isort.comments.add_to_line(
+            comments,
+            f"{statement}({imports[0]}{_comma_maybe})",
+            removed=remove_comments,
+            comment_prefix=comment_prefix,
+        )
+
     first_import = (
         isort.comments.add_to_line(
             comments,
@@ -124,7 +138,6 @@ def vertical(
     )
 
     _imports = ("," + line_separator + white_space).join(imports)
-    _comma_maybe = "," if include_trailing_comma else ""
     return f"{statement}({first_import}{_imports}{_comma_maybe})"
 
 

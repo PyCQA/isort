@@ -2046,6 +2046,37 @@ def test_include_trailing_comma() -> None:
     assert trailing_comma_with_comment == expected_trailing_comma_with_comment
 
 
+def test_vertical_single_import_keeps_trailing_comma_on_the_import_line() -> None:
+    """VERTICAL mode must not strand the trailing comma on its own line.
+
+    With a single import there is no continuation line for the trailing comma to
+    sit on, so the wrapped statement used to come out as ``(lib1,\\n ,)``, which
+    is not valid Python.
+    """
+    assert (
+        isort.code(
+            code=SINGLE_FROM_IMPORT,
+            multi_line_output=WrapModes.VERTICAL,
+            force_grid_wrap=1,
+            include_trailing_comma=True,
+            use_parentheses=True,
+            line_length=40,
+        )
+        == "from third_party import (lib1,)\n"
+    )
+    assert (
+        isort.code(
+            code=SINGLE_FROM_IMPORT,
+            multi_line_output=WrapModes.VERTICAL,
+            force_grid_wrap=1,
+            include_trailing_comma=False,
+            use_parentheses=True,
+            line_length=40,
+        )
+        == "from third_party import (lib1)\n"
+    )
+
+
 def test_similar_to_std_library() -> None:
     """Test to ensure modules that are named similarly to a standard library import
     don't end up clobbered
