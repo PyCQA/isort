@@ -204,6 +204,8 @@ def process(
     in_quote: str = ""
     was_in_quote: bool = False
     contains_imports: bool = False
+    has_top_level_imports: bool = False
+    output_ends_with_newline: bool = True
     in_top_comment: bool = False
     first_import_section: bool = True
     indent: str = ""
@@ -218,6 +220,14 @@ def process(
     lines_before: list[str] = []
     is_reexport: bool = False
     reexport_rollback: int = 0
+    last_line_ended_with_newline: bool = True
+    last_line_has_content: bool = False
+
+    def write_output(content: str) -> None:
+        nonlocal output_ends_with_newline
+        output_stream.write(content)
+        if content:
+            output_ends_with_newline = content.endswith(("\n", "\r"))
 
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
@@ -251,7 +261,7 @@ def process(
                     line_separator=line_separator,
                     ignore_whitespace=config.ignore_whitespace,
                 )
-                output_stream.write(sorted_code)
+                write_output(sorted_code)
                 if (
                     is_reexport
                     # Check if we need to truncate. If we're redirecting to `devnull` we don't need
@@ -261,6 +271,8 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
+            last_line_ended_with_newline = line.endswith(("\n", "\r"))
+            last_line_has_content = bool(stripped_line)
             line_separator = parse._infer_line_separator(line, line_separator)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
@@ -348,7 +360,7 @@ def process(
                             # cannot produce a negative seek position. See PR #2576.
                             output_stream.seek(max(0, output_stream.tell() - reexport_rollback))
                             reexport_rollback = 0
-                        output_stream.write(sorted_code)
+                        write_output(sorted_code)
                         if (
                             is_reexport
                             # Check if we need to truncate. If we're redirecting to `devnull` we
@@ -370,7 +382,7 @@ def process(
                     or stripped_line in config.section_comments_end
                 ):
                     if import_section and not contains_imports:
-                        output_stream.write(import_section)
+                        write_output(import_section)
                         import_section = line
                         not_imports = False
                     else:
@@ -423,6 +435,7 @@ def process(
                     else:
                         did_contain_imports = contains_imports
                         contains_imports = True
+                        has_top_level_imports = has_top_level_imports or not new_indent
 
                         cimport_statement: bool = False
                         if (
@@ -472,7 +485,7 @@ def process(
                     lines_before += line
                     continue
                 if not import_section:
-                    output_stream.write("".join(lines_before))
+                    write_output("".join(lines_before))
                 else:
                     above_import_section = "".join(lines_before)
                 lines_before = []
@@ -489,8 +502,9 @@ def process(
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
                 import_section = line_separator.join(add_imports) + line_separator
+                has_top_level_imports = True
                 if end_of_file and index != 0:
-                    output_stream.write(line_separator)
+                    write_output(line_separator)
                 contains_imports = True
                 add_imports = []
 
@@ -510,7 +524,7 @@ def process(
                     import_section += line
                     raw_import_section += line
                 if not contains_imports:
-                    output_stream.write(above_import_section + import_section)
+                    write_output(above_import_section + import_section)
 
                 else:
                     leading_whitespace = import_section[: -len(import_section.lstrip())]
@@ -551,7 +565,7 @@ def process(
                             line_separator=line_separator,
                             ignore_whitespace=config.ignore_whitespace,
                         )
-                        output_stream.write(sorted_import_section)
+                        write_output(sorted_import_section)
                         if (
                             not line
                             and not indent
@@ -560,10 +574,10 @@ def process(
                         ):
                             # With ``lines_before_imports`` set, the next section is
                             # already preceded by exactly that many blank lines.
-                            output_stream.write(line_separator)
+                            write_output(line_separator)
 
                 if indent:
-                    output_stream.write(line)
+                    write_output(line)
                     if not next_import_section:
                         indent = ""
 
@@ -575,7 +589,7 @@ def process(
                 import_section = next_import_section
                 next_import_section = ""
             else:
-                output_stream.write(line)
+                write_output(line)
                 not_imports = False
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
@@ -585,7 +599,7 @@ def process(
                         if not new_line:
                             break
 
-                        output_stream.write(new_line)
+                        write_output(new_line)
                         stripped_line = new_line.strip().split("#")[0]
 
                 if stripped_line.startswith(("raise", "yield")):
@@ -594,8 +608,18 @@ def process(
                         if not new_line:
                             break
 
-                        output_stream.write(new_line)
+                        write_output(new_line)
                         stripped_line = new_line.strip().split("#")[0]
+
+    if (
+        has_top_level_imports
+        and not skip_file
+        and not indent
+        and not last_line_ended_with_newline
+        and last_line_has_content
+        and not output_ends_with_newline
+    ):
+        write_output(line_separator)
 
     if made_changes and config.only_modified:
         for output_str in verbose_output:

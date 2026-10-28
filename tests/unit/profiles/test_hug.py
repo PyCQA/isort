@@ -49,7 +49,8 @@ INTRO = """
  Under the MIT License
 """.format(
     current
-)'''
+)
+'''
     )
 
 

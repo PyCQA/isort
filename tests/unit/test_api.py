@@ -90,6 +90,19 @@ def test_sort_code_string_mixed_newlines() -> None:
     assert api.sort_code_string("import A\n\r\nimportA\n\n") == "import A\r\n\r\nimportA\r\n\n"
 
 
+def test_sort_code_string_adds_final_newline_after_imports() -> None:
+    inputs = (
+        "import os\nprint(os.environ)",
+        "import os\ndef main():\n    print(os.environ)",
+    )
+    expected = (
+        "import os\n\nprint(os.environ)\n",
+        "import os\n\n\ndef main():\n    print(os.environ)\n",
+    )
+
+    assert tuple(api.sort_code_string(code) for code in inputs) == expected
+
+
 def test_find_imports_in_file(imperfect: Path) -> None:
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]

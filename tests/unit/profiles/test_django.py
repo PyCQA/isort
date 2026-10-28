@@ -53,7 +53,8 @@ class Deferred:
         return '<Deferred field>'
 
     def __str__(self):
-        return '<Deferred field>'"""
+        return '<Deferred field>'
+"""
     )
 
 
@@ -82,7 +83,8 @@ def setup(set_prefix=True):
         set_script_prefix(
             '/' if settings.FORCE_SCRIPT_NAME is None else settings.FORCE_SCRIPT_NAME
         )
-    apps.populate(settings.INSTALLED_APPS)'''
+    apps.populate(settings.INSTALLED_APPS)
+'''
     )
 
 
@@ -118,5 +120,6 @@ RAISE_ERROR = object()
 
 
 class UnreadablePostError(OSError):
-    pass"""
+    pass
+"""
     )
