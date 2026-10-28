@@ -98,6 +98,18 @@ def imports(
             if type_of_import is None:
                 continue  # pragma: no cover
 
+            # PEP 810 lazy imports are identified by their ``lazy `` prefix.
+            # Strip it so the remaining logic parses the underlying import
+            # statement, matching the handling in ``parse.file_contents``.
+            is_lazy = type_of_import in (_ImportType.LAZY_STRAIGHT, _ImportType.LAZY_FROM)
+            if is_lazy:
+                line = line[len("lazy ") :]
+                type_of_import = (
+                    _ImportType.STRAIGHT
+                    if type_of_import is _ImportType.LAZY_STRAIGHT
+                    else _ImportType.FROM
+                )
+
             import_string, _ = parse_comments(line)
 
             identified_import = partial(
