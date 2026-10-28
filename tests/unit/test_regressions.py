@@ -3087,3 +3087,44 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
+
+
+@pytest.mark.parametrize("use_parentheses", [False, True])
+def test_grid_wrap_with_trailing_comma_keeps_a_dotted_from_import_valid(
+    use_parentheses: bool,
+) -> None:
+    """``force_grid_wrap`` and ``include_trailing_comma`` must not produce invalid Python.
+
+    The grid formatter does not account for the trailing comma it appends, so a statement
+    whose grid form is one character over the line length was handed back to the generic
+    wrapper. That wrapper can no longer split such a statement after ``import`` - it is
+    already followed by a parenthesis - and fell back to splitting at the dot of the
+    module path: the rest of the statement was then parenthesised behind that dot, so
+    ``from mymodule.sub import (long_name, y2,)`` became
+    ``from mymodule.(\\n    sub import (long_name, y2,),)``, which is a syntax error.
+    The statement is now left to the wrap mode that produced it, and the caller falls
+    back to the vertical grid layout for it.
+    """
+    to_sort = "from mymodule.sub import y2, long_name\n"
+    expected = "from mymodule.sub import (\n    long_name, y2,)\n"
+
+    result = isort.code(
+        to_sort,
+        force_grid_wrap=2,
+        include_trailing_comma=True,
+        use_parentheses=use_parentheses,
+        line_length=40,
+    )
+
+    assert ast.parse(result)
+    assert result == expected
+    assert (
+        isort.code(
+            result,
+            force_grid_wrap=2,
+            include_trailing_comma=True,
+            use_parentheses=use_parentheses,
+            line_length=40,
+        )
+        == result
+    )
