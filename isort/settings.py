@@ -574,12 +574,7 @@ class Config(_Config):
         else:
             file_name = str(file_path)
 
-        os_path = str(file_path)
-
-        # Resolve native absolute paths before normalizing separators, preserving Windows drives.
-        normalized_path = os.path.abspath(os_path.replace("\\", "/")).replace("\\", "/")
-
-        if normalized_path in self.posix_skips:
+        if Path(os.path.abspath(file_path)).as_posix() in self.posix_skips:
             return True
 
         position = os.path.split(file_name)
@@ -670,7 +665,7 @@ class Config(_Config):
             return self._posix_skips
 
         self._posix_skips = frozenset(
-            os.path.abspath(skip_path.replace("\\", "/")).replace("\\", "/")
+            Path(os.path.abspath(skip_path.replace("\\", "/"))).as_posix()
             for skip_path in self.skips
         )
         return self._posix_skips
