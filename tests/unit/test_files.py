@@ -8,10 +8,88 @@ from isort.main import main
 from isort.settings import DEFAULT_CONFIG, Config
 
 
+@pytest.fixture(autouse=True)
+def isolate_git_markers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep enclosing checkout markers out of temporary repository scenarios."""
+    original_exists = Path.exists
+
+    def exists(path: Path) -> bool:
+        if path.name == ".git" and not path.is_relative_to(tmp_path):
+            return False
+        return original_exists(path)
+
+    monkeypatch.setattr(Path, "exists", exists)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+def test_find_git_root_prefers_nearest_repository_below_alias(tmp_path: Path) -> None:
+    physical = tmp_path / "physical"
+    outer = physical / "outer"
+    inner = outer / "inner"
+    inner.mkdir(parents=True)
+    (outer / ".git").mkdir()
+    (inner / ".git").mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(physical, target_is_directory=True)
+
+    assert files._find_git_root(alias / "outer" / "inner") == alias / "outer" / "inner"
+
+
+def test_external_symlink_check_ignores_unrelated_git_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "module.py"
+    source.write_text("import os\n")
+    unrelated = tmp_path / "unrelated"
+    unrelated.mkdir()
+    monkeypatch.setattr(files, "_find_git_root", lambda path: unrelated)
+
+    assert not files._is_external_git_symlink(source)
+
+
+@pytest.mark.parametrize("error", [OSError, RuntimeError])
+def test_prune_directories_records_resolution_errors_and_continues(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, error: type[Exception]
+) -> None:
+    broken_directory = tmp_path / "broken"
+    healthy_directory = tmp_path / "healthy"
+    broken_directory.mkdir()
+    healthy_directory.mkdir()
+    original_resolve = Path.resolve
+
+    def resolve(path: Path, strict: bool = False) -> Path:
+        if path == broken_directory:
+            raise error("Cannot resolve directory")
+        return original_resolve(path, strict=strict)
+
+    # Exercise pruning after the independent skip-policy check has accepted the directory.
+    monkeypatch.setattr(Config, "is_skipped", lambda self, path: False)
+    monkeypatch.setattr(Path, "resolve", resolve)
+    dirnames = ["broken", "healthy"]
+    skipped: list[str] = []
+    broken: list[str] = []
+    visited: set[Path] = set()
+
+    files._prune_directories(tmp_path, dirnames, DEFAULT_CONFIG, skipped, broken, visited)
+
+    assert dirnames == ["healthy"]
+    assert skipped == []
+    assert broken == [str(broken_directory)]
+    assert visited == {healthy_directory.resolve()}
+
+
 def test_find(tmp_path: Path) -> None:
     tmp_file = tmp_path / "file.py"
     tmp_file.write_text("import os, sys\n")
     assert tuple(files.find((tmp_file,), DEFAULT_CONFIG, [], [])) == (tmp_file,)
+
+
+def test_find_ignores_unsupported_files(tmp_path: Path) -> None:
+    source = tmp_path / "module.py"
+    source.write_text("import os\n")
+    (tmp_path / "notes.txt").write_text("Not Python source\n")
+
+    assert tuple(files.find([tmp_path], Config(directory=str(tmp_path)), [], [])) == (str(source),)
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
