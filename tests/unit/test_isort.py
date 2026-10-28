@@ -2276,9 +2276,7 @@ def test_from_import_placement_uses_full_module_path() -> None:
     )
 
     assert test_output == (
-        "# First party\n"
-        "import namespace.mymodule\n"
-        "from namespace import mymodule\n"
+        "# First party\nimport namespace.mymodule\nfrom namespace import mymodule\n"
     )
 
 

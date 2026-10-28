@@ -341,7 +341,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     ]
                     nested_placements = {nested_placement for nested_placement, _ in nested_results}
                     if len(nested_placements) == 1 and all(
-                        not reason.startswith("Matched forced_separate")
+                        reason.startswith("Matched configured known pattern")
                         for _, reason in nested_results
                     ):
                         placed_module = nested_results[0][0]
