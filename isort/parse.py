@@ -266,6 +266,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in strip_syntax(import_string).split()
             ]
+            from_import_names: list[str] = []
+            if type_of_import is _ImportType.FROM:
+                import_parts = iter(just_imports[1:])
+                for import_part in import_parts:
+                    if import_part == "as":
+                        next(import_parts, None)
+                    else:
+                        from_import_names.append(import_part)
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
@@ -326,6 +334,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
+                if from_import_names and "*" not in from_import_names:
+                    nested_results = [
+                        place.module_with_reason(f"{import_from}.{import_name}", config=config)
+                        for import_name in from_import_names
+                    ]
+                    nested_placements = {nested_placement for nested_placement, _ in nested_results}
+                    if len(nested_placements) == 1 and all(
+                        not reason.startswith("Matched forced_separate")
+                        for _, reason in nested_results
+                    ):
+                        placed_module = nested_results[0][0]
                 if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
 

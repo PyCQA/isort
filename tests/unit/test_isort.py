@@ -2265,6 +2265,23 @@ def test_placement_control() -> None:
     )
 
 
+def test_from_import_placement_uses_full_module_path() -> None:
+    test_input = "import namespace.mymodule\nfrom namespace import mymodule\n"
+    test_output = isort.code(
+        test_input,
+        known_first_party=["namespace.mymodule"],
+        default_section="THIRDPARTY",
+        import_heading_firstparty="First party",
+        import_heading_thirdparty="Third party",
+    )
+
+    assert test_output == (
+        "# First party\n"
+        "import namespace.mymodule\n"
+        "from namespace import mymodule\n"
+    )
+
+
 def test_custom_sections() -> None:
     """Ensure that most specific placement control match wins"""
     test_input = (
