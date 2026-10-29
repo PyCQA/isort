@@ -30,9 +30,7 @@ def add_to_line(
 
     unique_comments: list[str] = []
     for comment in comments:
-        # An empty comment is a bare ``#``. It carries no text, so merging it
-        # with a real comment used to leave a dangling ``"; "`` separator and a
-        # trailing space on the line, which the next run then stripped.
+        # Skip empty comments to avoid dangling `;` separators
         if comment and comment not in unique_comments:
             unique_comments.append(comment)
     comment_text = "; ".join(unique_comments)
