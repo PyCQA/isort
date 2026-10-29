@@ -764,7 +764,8 @@ def _with_from_imports_for_module(
                 if grouped_comment:
                     grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
                     if grouped_is_pragma and (
-                        has_explanatory_comments
+                        not scoped_pragma_comments
+                        or has_explanatory_comments
                         or (pragma_comments and grouped_comment not in pragma_comments)
                         or grouped_comment.lower().startswith("type: ignore")
                     ):

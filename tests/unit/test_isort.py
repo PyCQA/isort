@@ -2369,6 +2369,50 @@ def test_from_import_placement_does_not_duplicate_aliases(import_prefix: str) ->
     )
 
 
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+def test_from_import_placement_preserves_interleaved_noqa_scope(import_prefix: str) -> None:
+    config = Config(known_first_party=["namespace.alpha", "namespace.zeta"])
+    test_input = (
+        f"{import_prefix} namespace import alpha, zeta  # noqa: F401\n"
+        f"{import_prefix} namespace import beta\n"
+    )
+    expected = (
+        f"{import_prefix} namespace import alpha  # noqa: F401\n"
+        f"{import_prefix} namespace import beta\n"
+        f"{import_prefix} namespace import zeta  # noqa: F401\n"
+    )
+
+    assert isort.code(test_input, config=config) == expected
+    assert isort.code(expected, config=config) == expected
+
+
+@pytest.mark.parametrize("nested_comment", ["explanation", "type: ignore", "noqa: F811"])
+@pytest.mark.parametrize("force_single_line", [False, True])
+def test_from_import_placement_preserves_opening_noqa_with_nested_comment(
+    nested_comment: str, force_single_line: bool
+) -> None:
+    config = Config(force_single_line=force_single_line)
+    test_input = f"from namespace import (  # noqa: F401\n    alpha,  # {nested_comment}\n)\n"
+    expected = f"from namespace import alpha  # noqa: F401 # {nested_comment}\n"
+
+    assert isort.code(test_input, config=config) == expected
+    assert isort.code(expected, config=config) == expected
+
+
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+@pytest.mark.parametrize("removal", ["namespace.other", "from namespace import other"])
+def test_from_import_placement_excludes_removed_names(import_prefix: str, removal: str) -> None:
+    config = Config(
+        known_first_party=["namespace.mymodule"],
+        remove_imports=[removal],
+    )
+    test_input = f"import external\n{import_prefix} namespace import mymodule, other\n"
+    expected = f"import external\n\n{import_prefix} namespace import mymodule\n"
+
+    assert isort.code(test_input, config=config) == expected
+    assert isort.code(expected, config=config) == expected
+
+
 def test_from_import_placement_is_idempotent_when_splitting_aliases() -> None:
     config = Config(
         known_first_party=["namespace.mymodule"],
