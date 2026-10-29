@@ -188,13 +188,19 @@ def process(
 
     # Float to top processes the whole input stream first, moving any specified imports to the top
     # and returns a new input stream to do actual processing on.
+    original_input_ended_with_newline: bool | None = None
     if config.float_to_top:
-        input_stream, verbose_output, made_changes = _float_to_top(
-            input_stream=input_stream,
+        original_input = input_stream.read()
+        original_input_ended_with_newline = original_input.endswith(("\n", "\r"))
+        float_to_top_result = _float_to_top(
+            input_stream=StringIO(original_input),
             add_imports=add_imports,
             config=config,
             extension=extension,
         )
+        input_stream = float_to_top_result.input_stream
+        verbose_output = float_to_top_result.verbose_output
+        made_changes = float_to_top_result.made_changes
         add_imports = []
 
     line_separator: str = config.line_ending
@@ -445,7 +451,9 @@ def process(
                     else:
                         did_contain_imports = contains_imports
                         contains_imports = True
-                        has_top_level_imports = has_top_level_imports or not new_indent
+                        has_top_level_imports = has_top_level_imports or (
+                            not new_indent and not _has_skip_comment(import_statement)
+                        )
 
                         cimport_statement: bool = False
                         if (
@@ -604,16 +612,6 @@ def process(
                 not_imports = False
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
-                if stripped_line == "yield":
-                    while not stripped_line or stripped_line == "yield":
-                        new_line = input_stream.readline()
-                        if not new_line:
-                            break
-
-                        track_input_line(new_line)
-                        write_output(new_line)
-                        stripped_line = new_line.strip().split("#")[0]
-
                 if stripped_line.startswith(("raise", "yield")):
                     while stripped_line.endswith("\\"):
                         new_line = input_stream.readline()
@@ -634,7 +632,16 @@ def process(
         and not output_ends_with_newline
     ):
         write_output(line_separator)
-        made_changes = True
+        made_changes = made_changes or not config.ignore_whitespace
+
+    if (
+        original_input_ended_with_newline is False
+        and has_top_level_imports
+        and not skip_file
+        and not isort_off
+        and output_ends_with_newline
+    ):
+        made_changes = made_changes or not config.ignore_whitespace
 
     if made_changes and config.only_modified:
         for output_str in verbose_output:

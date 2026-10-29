@@ -353,13 +353,13 @@ def _in_memory_output_stream_context(source_file: File, changed: Event) -> Itera
 
     If `changed` is set at exit it will copy the stream to the source file.
     """
-    stream = StringIO(newline=None)
+    stream = StringIO(newline="")
     yield stream
 
     if changed.is_set():
-        stream.seek(0)
         source_file.stream.close()
-        with source_file.path.open("w") as fs:
+        with source_file.path.open("w", encoding=source_file.encoding, newline="") as fs:
+            stream.seek(0)
             shutil.copyfileobj(stream, fs)
 
 

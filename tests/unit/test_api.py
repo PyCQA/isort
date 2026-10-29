@@ -131,12 +131,46 @@ def test_sort_code_string_preserves_unterminated_isort_off_region() -> None:
     assert api.sort_code_string(source) == source
 
 
+def test_sort_code_string_handles_directives_after_bare_yield() -> None:
+    source = "import os\n\n\ndef g():\n    yield\n# isort: off\nx = 1"
+    assert api.sort_code_string(source) == source
+
+
+def test_sort_code_string_tracks_imports_after_bare_yield() -> None:
+    source = "def g():\n    yield\nimport os"
+    assert api.sort_code_string(source).endswith("import os\n")
+
+
 def test_sort_file_writes_final_newline_for_already_sorted_imports(tmp_path: Path) -> None:
     source = "import os\n\n\ndef main():\n    pass"
     path = tmp_path / "test.py"
     path.write_text(source)
 
     assert api.sort_file(path, overwrite_in_place=True)
+    assert path.read_text() == source + "\n"
+
+
+def test_sort_file_preserves_encoding_and_line_endings_when_adding_final_newline(
+    tmp_path: Path,
+) -> None:
+    source = b"# coding: latin-1\r\nimport os\r\n\r\n\r\ndef f():\r\n    value = '\xe9'"
+    path = tmp_path / "test.py"
+    path.write_bytes(source)
+
+    assert api.sort_file(path, overwrite_in_place=True)
+    assert path.read_bytes() == source + b"\r\n"
+
+
+def test_float_to_top_detects_final_newline_normalization(tmp_path: Path) -> None:
+    source = "import os\n\n\ndef f():\n    pass"
+
+    assert api.sort_code_string(source, float_to_top=True).endswith("pass\n")
+    assert not api.check_code_string(source, float_to_top=True)
+    assert api.check_code_string(source, float_to_top=True, ignore_whitespace=True)
+
+    path = tmp_path / "test.py"
+    path.write_text(source)
+    assert api.sort_file(path, float_to_top=True)
     assert path.read_text() == source + "\n"
 
 
