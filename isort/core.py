@@ -229,6 +229,12 @@ def process(
         if content:
             output_ends_with_newline = content.endswith(("\n", "\r"))
 
+    def track_input_line(line: str) -> None:
+        nonlocal last_line_ended_with_newline, last_line_has_content
+        if line:
+            last_line_ended_with_newline = line.endswith(("\n", "\r"))
+            last_line_has_content = bool(line.strip())
+
     for index, line in enumerate(chain(input_stream, (None,))):
         if line is None:
             if index == 0 and not config.force_adds:
@@ -271,8 +277,7 @@ def process(
                     output_stream.truncate()
         else:
             stripped_line = line.strip()
-            last_line_ended_with_newline = line.endswith(("\n", "\r"))
-            last_line_has_content = bool(stripped_line)
+            track_input_line(line)
             line_separator = parse._infer_line_separator(line, line_separator)
 
             for file_skip_comment in FILE_SKIP_COMMENTS:
@@ -321,6 +326,9 @@ def process(
                     if not skip_file and stripped_line == "# isort: on":
                         isort_off = False
                 elif stripped_line.endswith("# isort: split"):
+                    has_top_level_imports = has_top_level_imports or (
+                        line.lstrip().startswith(IMPORT_START_IDENTIFIERS) and line == line.lstrip()
+                    )
                     not_imports = True
                 elif stripped_line in CODE_SORT_COMMENTS:
                     code_sorting = stripped_line.split("isort: ")[1].strip()
@@ -407,11 +415,13 @@ def process(
                         if stripped_line.endswith("\\"):
                             while stripped_line and stripped_line.endswith("\\"):
                                 line = input_stream.readline()
+                                track_input_line(line)
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
                         else:
                             while ")" not in stripped_line:
                                 line = input_stream.readline()
+                                track_input_line(line)
 
                                 if not line:  # end of file without closing parenthesis
                                     raise ExistingSyntaxErrors("Parenthesis is not closed")
@@ -514,6 +524,7 @@ def process(
 
             if import_section:
                 if add_imports and (contains_imports or not config.append_only) and not indent:
+                    has_top_level_imports = True
                     import_section = (
                         line_separator.join(add_imports) + line_separator + import_section
                     )
@@ -599,6 +610,7 @@ def process(
                         if not new_line:
                             break
 
+                        track_input_line(new_line)
                         write_output(new_line)
                         stripped_line = new_line.strip().split("#")[0]
 
@@ -608,18 +620,21 @@ def process(
                         if not new_line:
                             break
 
+                        track_input_line(new_line)
                         write_output(new_line)
                         stripped_line = new_line.strip().split("#")[0]
 
     if (
         has_top_level_imports
         and not skip_file
+        and not isort_off
         and not indent
         and not last_line_ended_with_newline
         and last_line_has_content
         and not output_ends_with_newline
     ):
         write_output(line_separator)
+        made_changes = True
 
     if made_changes and config.only_modified:
         for output_str in verbose_output:

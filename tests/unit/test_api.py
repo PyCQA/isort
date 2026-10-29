@@ -103,6 +103,43 @@ def test_sort_code_string_adds_final_newline_after_imports() -> None:
     assert tuple(api.sort_code_string(code) for code in inputs) == expected
 
 
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        (
+            "import os\n\n\ndef generator():\n    yield\n    print(1)",
+            "import os\n\n\ndef generator():\n    yield\n    print(1)\n",
+        ),
+        (
+            "import os  # isort: split\n\n\ndef f():\n    pass",
+            "import os  # isort: split\n\n\ndef f():\n    pass\n",
+        ),
+    ],
+)
+def test_sort_code_string_adds_final_newline_for_import_paths(source: str, expected: str) -> None:
+    assert api.sort_code_string(source) == expected
+
+
+def test_sort_code_string_adds_final_newline_for_added_imports() -> None:
+    source = "# header\n\n\n# comment\ndef f():\n    pass"
+    expected = "# header\n\n\nimport os\n\n\n# comment\ndef f():\n    pass\n"
+    assert api.sort_code_string(source, add_imports=["os"]) == expected
+
+
+def test_sort_code_string_preserves_unterminated_isort_off_region() -> None:
+    source = "import os\n\n# isort: off\nx = 1"
+    assert api.sort_code_string(source) == source
+
+
+def test_sort_file_writes_final_newline_for_already_sorted_imports(tmp_path: Path) -> None:
+    source = "import os\n\n\ndef main():\n    pass"
+    path = tmp_path / "test.py"
+    path.write_text(source)
+
+    assert api.sort_file(path, overwrite_in_place=True)
+    assert path.read_text() == source + "\n"
+
+
 def test_find_imports_in_file(imperfect: Path) -> None:
     found_imports = list(api.find_imports_in_file(imperfect))
     assert "b" in [found_import.module for found_import in found_imports]
