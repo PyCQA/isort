@@ -31,7 +31,7 @@ if TYPE_CHECKING:
         {
             "from": dict[str, list[str]],
             "straight": dict[str, list[str]],
-            "nested": dict[str, dict[str, str]],
+            "nested": dict[tuple[bool, str], dict[str, str]],
             "above": CommentsAboveDict,
         },
     )
@@ -303,9 +303,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         full_name = f"{nested_module} as {as_name}"
                         associated_comment = nested_comments.get(full_name)
                         if associated_comment is not None:
-                            categorized_comments["nested"].setdefault(top_level_module, {})[
-                                full_name
-                            ] = associated_comment
+                            categorized_comments["nested"].setdefault(
+                                (is_lazy, top_level_module), {}
+                            )[full_name] = associated_comment
                             if associated_comment in comments:  # pragma: no branch
                                 comments.pop(comments.index(associated_comment))
                     else:
@@ -359,9 +359,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 for import_name in just_imports:
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment is not None:
-                        categorized_comments["nested"].setdefault(import_from, {})[import_name] = (
-                            associated_comment
-                        )
+                        categorized_comments["nested"].setdefault((is_lazy, import_from), {})[
+                            import_name
+                        ] = associated_comment
                         if associated_comment in comments:  # pragma: no branch
                             comments.pop(comments.index(associated_comment))
                 if (
@@ -376,7 +376,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     and not config.combine_star
                 ):
                     nested_from_comments = categorized_comments["nested"].setdefault(
-                        import_from, {}
+                        (is_lazy, import_from), {}
                     )
                     for import_name in from_import_names:
                         existing_comment = nested_from_comments.get(import_name, "")
@@ -392,7 +392,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     and len(just_imports) == 1
                 ):
                     nested_from_comments = categorized_comments["nested"].setdefault(
-                        import_from, {}
+                        (is_lazy, import_from), {}
                     )
                     existing_comment = nested_from_comments.get(just_imports[0], "")
                     nested_from_comments[just_imports[0]] = (
@@ -534,6 +534,17 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if section != base_section:
                 imports[section][from_key][import_from] = imports[base_section][from_key].pop(
                     import_from
+                )
+
+    if config.only_sections:
+        encounter_order = {key: index for index, key in enumerate(from_import_placements)}
+        for section_imports in imports.values():
+            for from_key in ("from", "lazy_from"):
+                section_imports[from_key] = dict(
+                    sorted(
+                        section_imports[from_key].items(),
+                        key=lambda item: encounter_order[(from_key == "lazy_from", item[0])],
+                    )
                 )
 
     change_count = len(out_lines) - original_line_count

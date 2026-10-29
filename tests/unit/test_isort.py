@@ -2413,6 +2413,64 @@ def test_from_import_placement_excludes_removed_names(import_prefix: str, remova
     assert isort.code(expected, config=config) == expected
 
 
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+def test_from_import_placement_ignores_discarded_comment_boundaries(import_prefix: str) -> None:
+    config = Config(ignore_comments=True)
+    test_input = f"{import_prefix} x import a, b  # noqa: F401\n{import_prefix} x import c\n"
+    expected = f"{import_prefix} x import a, b, c\n"
+
+    assert isort.code(test_input, config=config) == expected
+    assert isort.code(expected, config=config) == expected
+
+
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_from_import_placement_preserves_parent_encounter_order(
+    import_prefix: str, reverse_order: bool
+) -> None:
+    config = Config(known_first_party=["namespace.mymodule", "project"], only_sections=True)
+    statements = [
+        f"{import_prefix} namespace import mymodule\n",
+        f"{import_prefix} project import value\n",
+    ]
+    test_input = "".join(reversed(statements) if reverse_order else statements)
+
+    test_output = isort.code(test_input, config=config)
+    assert test_output == test_input
+    assert isort.code(test_output, config=config) == test_output
+
+
+@pytest.mark.parametrize("force_single_line", [False, True])
+@pytest.mark.parametrize("annotated_prefix", ["from", "lazy from"])
+def test_from_import_placement_scopes_nested_comments_by_import_kind(
+    force_single_line: bool, annotated_prefix: str
+) -> None:
+    other_prefix = "lazy from" if annotated_prefix == "from" else "from"
+    config = Config(
+        known_first_party=["namespace.alpha", "namespace.beta"],
+        force_single_line=force_single_line,
+    )
+    test_input = (
+        f"{annotated_prefix} namespace import alpha, beta  # noqa: F401\n"
+        f"{other_prefix} namespace import alpha, other\n"
+    )
+    if force_single_line:
+        expected = (
+            f"{other_prefix} namespace import alpha\n"
+            f"{other_prefix} namespace import other\n\n"
+            f"{annotated_prefix} namespace import alpha  # noqa: F401\n"
+            f"{annotated_prefix} namespace import beta  # noqa: F401\n"
+        )
+    else:
+        expected = (
+            f"{other_prefix} namespace import alpha, other\n\n"
+            f"{annotated_prefix} namespace import alpha, beta  # noqa: F401\n"
+        )
+
+    assert isort.code(test_input, config=config) == expected
+    assert isort.code(expected, config=config) == expected
+
+
 def test_from_import_placement_is_idempotent_when_splitting_aliases() -> None:
     config = Config(
         known_first_party=["namespace.mymodule"],

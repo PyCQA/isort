@@ -572,6 +572,11 @@ def _with_from_imports_for_module(
     import_start = f"from {module} {import_type} "
     if import_key == "lazy_from":
         import_start = f"lazy {import_start}"
+    nested_comments = (
+        {}
+        if config.ignore_comments
+        else parsed.categorized_comments["nested"].get((import_key == "lazy_from", module), {})
+    )
     from_imports = list(parsed.imports[section][import_key][module])
 
     if (
@@ -628,8 +633,7 @@ def _with_from_imports_for_module(
             wrap.line(
                 with_comments(
                     _with_star_comments(
-                        parsed,
-                        module,
+                        nested_comments,
                         # If we are combining the star imports we want to include all from-import
                         # comments we found above.
                         comments if config.combine_star else [],
@@ -672,7 +676,7 @@ def _with_from_imports_for_module(
                                 f"{module}.{from_import}", []
                             ),
                         ],
-                        nested_comments=parsed.categorized_comments["nested"].get(module, {}),
+                        nested_comments=nested_comments,
                         include_straight_import=(
                             parsed.imports[section][import_key][module][from_import]
                             and not only_show_as_imports
@@ -685,9 +689,7 @@ def _with_from_imports_for_module(
                         c
                         for c in (
                             *comments,
-                            parsed.categorized_comments["nested"]
-                            .get(module, {})
-                            .pop(from_import, None),
+                            nested_comments.pop(from_import, None),
                         )
                         if c is not None
                     ],
@@ -711,7 +713,6 @@ def _with_from_imports_for_module(
         aliased_from_imports = []
         from_import_section = []
         module_imports = parsed.imports[section][import_key][module]
-        nested_comments = parsed.categorized_comments["nested"].get(module, {})
         scoped_pragma_comments: set[str] = set()
 
         while from_imports:
@@ -732,9 +733,7 @@ def _with_from_imports_for_module(
                                 straight_comments=parsed.categorized_comments["straight"].get(
                                     f"{module}.{from_import}", []
                                 ),
-                                nested_comments=parsed.categorized_comments["nested"].get(
-                                    module, {}
-                                ),
+                                nested_comments=nested_comments,
                                 include_straight_import=False,
                             )
                         )
@@ -831,7 +830,7 @@ def _with_from_imports_for_module(
                     straight_comments=parsed.categorized_comments["straight"].get(
                         f"{module}.{from_import}", []
                     ),
-                    nested_comments=parsed.categorized_comments["nested"].get(module, {}),
+                    nested_comments=nested_comments,
                     include_straight_import=False,
                 )
             )
@@ -952,8 +951,8 @@ def _ensure_newline_before_comment(output: list[str]) -> list[str]:
     return new_output
 
 
-def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list[str]) -> list[str]:
-    star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
+def _with_star_comments(nested_comments: dict[str, str], comments: list[str]) -> list[str]:
+    star_comment = nested_comments.pop("*", None)
     if star_comment:
         return [*comments, star_comment]
     return comments
