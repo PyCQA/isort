@@ -3087,3 +3087,89 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
+
+
+@pytest.mark.parametrize(
+    ("test_input", "sort_reexports", "expected_output"),
+    [
+        ('__all__ = ["b", "a"]\nx = 1\n', True, '__all__ = ["a", "b"]\nx = 1\n'),
+        ('# isort: list\nx = ["b", "a"]\ny = 1\n', False, '# isort: list\nx = ["a", "b"]\ny = 1\n'),
+        (
+            'import os\n__all__ = ["bbbbbbbbbb", "a"]\nx = 1\n',
+            True,
+            'import os\n\n__all__ = ["a", "bbbbbbbbbb"]\nx = 1\n',
+        ),
+        ('__all__ = [\n    "b",\n    "a",\n]\nx = 1\n', True, '__all__ = ["a", "b"]\nx = 1\n'),
+        (
+            'class C:\n    # isort: list\n    x = ["b", "a"]\ny = 1\n',
+            False,
+            'class C:\n    # isort: list\n    x = ["a", "b"]\ny = 1\n',
+        ),
+        (
+            '# isort: list\nx = ["b", "a"]\n# isort: list\ny = ["d", "c"]\n',
+            False,
+            '# isort: list\nx = ["a", "b"]\n# isort: list\ny = ["c", "d"]\n',
+        ),
+        ('__all__ = "b", "a",\nx = 1\n', True, '__all__ = ("a", "b")\nx = 1\n'),
+        (
+            '__all__ = ["b", "a"]  # exports,\nx = 1\n',
+            True,
+            '__all__ = ["a", "b"]  # exports,\nx = 1\n',
+        ),
+        (
+            '__all__ = [\n    "b", "a"\n]  # [\nx = 1\n',
+            True,
+            '__all__ = ["a", "b"]  # [\nx = 1\n',
+        ),
+        # A comment after the literal used to be written out before it, so the reexport
+        # rollback landed mid-line and produced `__all____all__ = ...`.
+        ('__all__ = ["b", "a"]\n# note\nx = 1\n', True, '__all__ = ["a", "b"]\n# note\nx = 1\n'),
+        ('__all__ = ["b", "a"]\n# note\n', True, '__all__ = ["a", "b"]\n# note\n'),
+        (
+            '__all__ = [\n    "b",\n    # note\n    "a",\n]\nx = 1\n',
+            True,
+            '__all__ = ["a", "b"]\nx = 1\n',
+        ),
+        # A comment before the literal at the top of the file is still left alone.
+        (
+            '# isort: list\n# key = value\nx = ["b", "a"]\n',
+            False,
+            '# isort: list\n# key = value\nx = ["a", "b"]\n',
+        ),
+        # A comment in an `# isort: assignments` block at the top of the file is left alone.
+        (
+            "# isort: assignments\nb = 1\n# note\na = 2\n",
+            False,
+            "# isort: assignments\n# note\na = 2\nb = 1\n",
+        ),
+        # An action comment followed by a blank line has nothing to sort.
+        (
+            '# isort: assignments\n\nprint("hello")\n',
+            False,
+            '# isort: assignments\n\nprint("hello")\n',
+        ),
+        (
+            "class C:\n    # isort: assignments\n    b = 1\n    a = 2\nz = 0\n",
+            False,
+            "class C:\n    # isort: assignments\n    a = 2\n    b = 1\nz = 0\n",
+        ),
+        # `# isort: assignments` spans several statements, up to a blank line or the next
+        # action comment.
+        ("# isort: assignments\nb = 1\na = 2\n", False, "# isort: assignments\na = 2\nb = 1\n"),
+        (
+            '# isort: assignments\nb = 1\na = 2\n# isort: list\nx = ["b", "a"]\n',
+            False,
+            '# isort: assignments\na = 2\nb = 1\n# isort: list\nx = ["a", "b"]\n',
+        ),
+    ],
+)
+def test_sorted_literal_ends_where_its_statement_ends_issue_2286(
+    test_input: str, sort_reexports: bool, expected_output: str
+) -> None:
+    """A statement or comment right after a sorted literal, with no blank line in
+    between, was swallowed into the literal and crashed or corrupted it. See #2286."""
+    assert isort.code(test_input, sort_reexports=sort_reexports) == expected_output
+    assert isort.check_code(expected_output, sort_reexports=sort_reexports)
+    assert isort.check_code(test_input, sort_reexports=sort_reexports) is (
+        test_input == expected_output
+    )
