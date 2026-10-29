@@ -18,6 +18,7 @@ from ._parse_utils import (
 )
 from .comments import parse as parse_comments
 from .exceptions import MissingSection
+from .format import format_simplified
 from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
@@ -104,6 +105,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     }
     imports: OrderedDict[str, ParsedImports] = OrderedDict()
     verbose_output: list[str] = []
+    from_import_placements: dict[tuple[bool, str], str] = {}
 
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {
@@ -253,6 +255,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         type_of_import is _ImportType.FROM
                         and stripped_line
                         and " " not in stripped_line.replace(" as ", "")
+                        and not ("\\" in raw_line and extra_line.comment.lower().startswith("noqa"))
                     ):
                         nested_comments[stripped_line] = extra_line.comment
 
@@ -266,6 +269,14 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in strip_syntax(import_string).split()
             ]
+            from_import_names: list[str] = []
+            if type_of_import is _ImportType.FROM:
+                import_parts = iter(just_imports[1:])
+                for import_part in import_parts:
+                    if import_part == "as":
+                        next(import_parts, None)
+                    else:
+                        from_import_names.append(import_part)
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
@@ -326,6 +337,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
+                from_import_placements[(is_lazy, import_from)] = placed_module
                 if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
 
@@ -352,6 +364,27 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         )
                         if associated_comment in comments:  # pragma: no branch
                             comments.pop(comments.index(associated_comment))
+                if (
+                    from_import_names
+                    and comments
+                    and attach_comments_to is None
+                    and all(
+                        comment.lower() == "noqa" or comment.lower().startswith("noqa:")
+                        for comment in comments
+                    )
+                    and "*" not in from_import_names
+                    and not config.combine_star
+                ):
+                    nested_from_comments = categorized_comments["nested"].setdefault(
+                        import_from, {}
+                    )
+                    for import_name in from_import_names:
+                        existing_comment = nested_from_comments.get(import_name, "")
+                        nested_from_comments[import_name] = " # ".join(
+                            [*comments, *([existing_comment] if existing_comment else [])]
+                        )
+                    comments = []
+
                 if (
                     config.force_single_line
                     and comments
@@ -476,6 +509,32 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     )
                     straight_import |= imports[placed_module][import_bucket].get(module, False)
                     imports[placed_module][import_bucket][module] = straight_import
+
+    remove_imports = {format_simplified(removal) for removal in config.remove_imports}
+    # Classify surviving names together so splitting or removing names cannot change placement.
+    for (is_lazy, import_from), base_section in from_import_placements.items():
+        from_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
+        imported_names = [
+            name
+            for name in imports[base_section][from_key][import_from]
+            if f"{import_from}.{name}" not in remove_imports
+        ]
+        if not imported_names or "*" in imported_names:
+            continue
+
+        nested_results = [
+            place.module_with_reason(f"{import_from}.{import_name}", config=config)
+            for import_name in imported_names
+        ]
+        nested_placements = {section for section, _ in nested_results}
+        if len(nested_placements) == 1 and all(
+            reason.startswith("Matched configured known pattern") for _, reason in nested_results
+        ):
+            section = nested_results[0][0]
+            if section != base_section:
+                imports[section][from_key][import_from] = imports[base_section][from_key].pop(
+                    import_from
+                )
 
     change_count = len(out_lines) - original_line_count
 
