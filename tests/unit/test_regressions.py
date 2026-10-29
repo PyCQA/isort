@@ -613,6 +613,204 @@ from appsettings import AppSettings, ObjectSetting, StringSetting  # type: ignor
     assert "# type: ignore" in isort.code(test_input, combine_as_imports=True)
 
 
+@pytest.mark.parametrize(
+    ("test_input", "expected_output"),
+    [
+        (
+            "from other_module import other_function"
+            "  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+            "from some_module import the_function as some_function  # type: ignore\n"
+            "from some_other_module import another_function as yet_another_function"
+            "  # type: ignore [import]  # pylint: disable=no-name-in-module\n",
+            "from other_module import \\\n"
+            "    other_function  # type: ignore [import]  # pylint: disable=no-name-in-module\n"
+            "from some_module import the_function as some_function  # type: ignore\n"
+            "from some_other_module import \\\n"
+            "    another_function as \\\n"
+            "    yet_another_function  # type: ignore [import]  # pylint: disable=no-name-in-module\n",
+        ),
+        (
+            "from m import a as x  # type: ignore\n",
+            "from m import a as x  # type: ignore\n",
+        ),
+        (
+            "from m import a as x  # first\nfrom m import a as y  # second\n",
+            "from m import a as x  # first\nfrom m import a as y  # second\n",
+        ),
+        (
+            "from m import (\n    a as x,  # first\n    b as y,  # second\n)\n",
+            "from m import a as x  # first\nfrom m import b as y  # second\n",
+        ),
+        (
+            "from m import (\n    a as x,  # first\n    a as y,  # second\n)\n",
+            "from m import a as x  # first\nfrom m import a as y  # second\n",
+        ),
+        (
+            "from m import (\n    a as x,  # first\n    b,  # noqa: F401\n)\n",
+            "from m import a as x  # first\nfrom m import b  # noqa: F401\n",
+        ),
+        (
+            "from m import (\n    b,  # noqa: F401\n    a as x,  # first\n)\n",
+            "from m import a as x  # first\nfrom m import b  # noqa: F401\n",
+        ),
+        (
+            "from m import (\n    a as x,\n    b,  # noqa: F401\n)\n",
+            "from m import a as x\nfrom m import b  # noqa: F401\n",
+        ),
+        (
+            "import m.a  # straight\nfrom m import a as x  # alias\n",
+            "import m.a  # straight\nfrom m import a as x  # alias\n",
+        ),
+        (
+            "import m.a  # straight\nfrom m import a  # plain\nfrom m import a as x  # alias\n",
+            "import m.a  # straight\nfrom m import a  # plain\nfrom m import a as x  # alias\n",
+        ),
+        (
+            "from m import a as x, b as y  # statement\n",
+            "from m import a as x  # statement\nfrom m import b as y\n",
+        ),
+        (
+            "from m import (  # opening\n    a as x,\n    a as y,\n)\n",
+            "from m import a as x  # opening\nfrom m import a as y\n",
+        ),
+        (
+            "from m import (  # opening\n    a as x,  # first\n    b,  # second\n)\n",
+            "from m import a as x  # opening; first\nfrom m import b  # second\n",
+        ),
+        (
+            "from m import a as x  #\n",
+            "from m import a as x  #\n",
+        ),
+    ],
+    ids=[
+        "original-report",
+        "single-alias",
+        "same-symbol-aliases",
+        "multiline-aliases",
+        "multiline-same-symbol-aliases",
+        "alias-first",
+        "plain-first",
+        "plain-only-comment",
+        "straight-alias-collision",
+        "straight-plain-alias-collision",
+        "statement-comment",
+        "opening-comment",
+        "opening-and-attribute-comments",
+        "bare-comment",
+    ],
+)
+def test_combine_as_force_single_line_comments_issue_2094(
+    test_input: str, expected_output: str
+) -> None:
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True)
+
+    assert output == expected_output
+    assert isort.code(output, combine_as_imports=True, force_single_line=True) == output
+
+
+@pytest.mark.parametrize(
+    ("test_input", "expected_output"),
+    [
+        ("from m import a as a  # keep\n", "from m import a  # keep\n"),
+        ("from m import (\n    a as a,  # keep\n)\n", "from m import a  # keep\n"),
+        (
+            "import m.a  # straight\nfrom m import a as a  # keep\n",
+            "import m.a  # straight\nfrom m import a  # keep\n",
+        ),
+        (
+            "from m import (\n    a as a,  # keep\n    b,  # noqa: F401\n)\n",
+            "from m import a  # keep\nfrom m import b  # noqa: F401\n",
+        ),
+    ],
+    ids=["single-line", "multiline", "straight-import-collision", "mixed"],
+)
+def test_combine_as_force_single_line_redundant_alias_comments(
+    test_input: str, expected_output: str
+) -> None:
+    output = isort.code(
+        test_input,
+        combine_as_imports=True,
+        force_single_line=True,
+        remove_redundant_aliases=True,
+    )
+
+    assert output == expected_output
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=True,
+            force_single_line=True,
+            remove_redundant_aliases=True,
+        )
+        == output
+    )
+
+
+def test_combine_as_force_single_line_wrapped_alias_comment() -> None:
+    test_input = "from m import very_long_attribute_name as m  # important trailing comment\n"
+    expected_output = (
+        "from m import \\\n"
+        "    very_long_attribute_name as \\\n"
+        "    m  # important trailing comment\n"
+    )
+
+    output = isort.code(test_input, combine_as_imports=True, force_single_line=True, line_length=40)
+
+    assert output == expected_output
+    assert (
+        isort.code(output, combine_as_imports=True, force_single_line=True, line_length=40)
+        == output
+    )
+
+
+@pytest.mark.parametrize("force_single_line", [False, True])
+@pytest.mark.parametrize("combine_as_imports", [False, True])
+def test_alias_opening_comment_with_single_line_exclusion(
+    force_single_line: bool, combine_as_imports: bool
+) -> None:
+    test_input = (
+        "from m import (  # opening\n"
+        "    a_very_long_attribute as x,\n"
+        "    a_very_long_attribute as y,\n"
+        ")\n"
+    )
+    expected_output = (
+        test_input
+        if combine_as_imports
+        else "from m import (  # opening\n"
+        "    a_very_long_attribute as x,\n"
+        ")\n"
+        "from m import (\n"
+        "    a_very_long_attribute as y,\n"
+        ")\n"
+    )
+    output = isort.code(
+        test_input,
+        combine_as_imports=combine_as_imports,
+        force_single_line=force_single_line,
+        single_line_exclusions=["m"],
+        use_parentheses=True,
+        include_trailing_comma=True,
+        multi_line_output=3,
+        line_length=30,
+    )
+
+    assert output == expected_output
+    assert (
+        isort.code(
+            output,
+            combine_as_imports=combine_as_imports,
+            force_single_line=force_single_line,
+            single_line_exclusions=["m"],
+            use_parentheses=True,
+            include_trailing_comma=True,
+            multi_line_output=3,
+            line_length=30,
+        )
+        == output
+    )
+
+
 def test_incorrect_grouping_when_comments_issue_1396() -> None:
     """Test to ensure isort groups import correct independent of the comments present.
     See: https://github.com/pycqa/isort/issues/1396

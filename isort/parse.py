@@ -266,6 +266,18 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 item.replace("{|", "{ ").replace("|}", " }")
                 for item in strip_syntax(import_string).split()
             ]
+            if (
+                type_of_import is _ImportType.FROM
+                and config.combine_as_imports
+                and config.force_single_line
+                and len(just_imports) == 4
+                and just_imports[0] not in config.single_line_exclusions
+                and just_imports[2] == "as"
+                and comments
+            ):
+                # A single alias owns all its comments, even across backslash continuations.
+                nested_comments[" ".join(just_imports[1:])] = "; ".join(comments)
+                comments = []
 
             attach_comments_to: list[str] | None = None
             direct_imports = just_imports[1:]
@@ -293,7 +305,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         associated_comment = nested_comments.get(full_name)
                         if associated_comment is not None:
                             categorized_comments["nested"].setdefault(top_level_module, {})[
-                                full_name
+                                nested_module
+                                if nested_module == as_name and config.remove_redundant_aliases
+                                else full_name
                             ] = associated_comment
                             if associated_comment in comments:  # pragma: no branch
                                 comments.pop(comments.index(associated_comment))
