@@ -357,10 +357,9 @@ def _in_memory_output_stream_context(source_file: File, changed: Event) -> Itera
     yield stream
 
     if changed.is_set():
+        encoded_output = stream.getvalue().encode(source_file.encoding)
         source_file.stream.close()
-        with source_file.path.open("w", encoding=source_file.encoding, newline="") as fs:
-            stream.seek(0)
-            shutil.copyfileobj(stream, fs)
+        source_file.path.write_bytes(encoded_output)
 
 
 @contextlib.contextmanager

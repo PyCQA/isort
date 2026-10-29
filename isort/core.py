@@ -1,4 +1,6 @@
 import textwrap
+import tokenize
+from collections.abc import Iterator
 from io import StringIO
 from itertools import chain
 from typing import NamedTuple, TextIO
@@ -60,6 +62,36 @@ def _is_comment_or_string_start(line: str) -> bool:
 def _has_skip_comment(import_statement: str) -> bool:
     """Return whether an import statement carries a per-line ``isort: skip`` directive."""
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
+
+
+def _is_yield_from_continuation(line: str) -> bool:
+    """Return whether a line following bare ``yield`` continues a ``yield from`` expression."""
+    try:
+        meaningful_tokens = [
+            token
+            for token in tokenize.generate_tokens(StringIO(line).readline)
+            if token.type
+            not in (
+                tokenize.COMMENT,
+                tokenize.DEDENT,
+                tokenize.ENDMARKER,
+                tokenize.INDENT,
+                tokenize.NEWLINE,
+                tokenize.NL,
+            )
+        ]
+    except (IndentationError, tokenize.TokenError):
+        return False
+
+    return (
+        len(meaningful_tokens) > 1
+        and meaningful_tokens[0].type == tokenize.NAME
+        and meaningful_tokens[0].string == "from"
+        and not any(
+            token.type == tokenize.NAME and token.string == "import"
+            for token in meaningful_tokens[1:]
+        )
+    )
 
 
 class _FloatToTopResult(NamedTuple):
@@ -193,7 +225,7 @@ def process(
         original_input = input_stream.read()
         original_input_ended_with_newline = original_input.endswith(("\n", "\r"))
         float_to_top_result = _float_to_top(
-            input_stream=StringIO(original_input),
+            input_stream=StringIO(original_input, newline=""),
             add_imports=add_imports,
             config=config,
             extension=extension,
@@ -228,6 +260,7 @@ def process(
     reexport_rollback: int = 0
     last_line_ended_with_newline: bool = True
     last_line_has_content: bool = False
+    pending_input_lines: list[str] = []
 
     def write_output(content: str) -> None:
         nonlocal output_ends_with_newline
@@ -241,7 +274,15 @@ def process(
             last_line_ended_with_newline = line.endswith(("\n", "\r"))
             last_line_has_content = bool(line.strip())
 
-    for index, line in enumerate(chain(input_stream, (None,))):
+    def read_input_line() -> str:
+        return pending_input_lines.pop() if pending_input_lines else input_stream.readline()
+
+    def input_lines() -> Iterator[str | None]:
+        while line := read_input_line():
+            yield line
+        yield None
+
+    for index, line in enumerate(input_lines()):
         if line is None:
             if index == 0 and not config.force_adds:
                 return False
@@ -420,13 +461,13 @@ def process(
                     ):
                         if stripped_line.endswith("\\"):
                             while stripped_line and stripped_line.endswith("\\"):
-                                line = input_stream.readline()
+                                line = read_input_line()
                                 track_input_line(line)
                                 stripped_line = line.strip().split("#")[0]
                                 import_statement += line
                         else:
                             while ")" not in stripped_line:
-                                line = input_stream.readline()
+                                line = read_input_line()
                                 track_input_line(line)
 
                                 if not line:  # end of file without closing parenthesis
@@ -612,9 +653,30 @@ def process(
                 not_imports = False
 
             if stripped_line and not in_quote and not import_section and not next_import_section:
+                if stripped_line == "yield":
+                    looked_ahead: list[str] = []
+                    while True:
+                        next_line = read_input_line()
+                        if not next_line:
+                            pending_input_lines.extend(reversed(looked_ahead))
+                            break
+
+                        looked_ahead.append(next_line)
+                        next_stripped_line = next_line.strip().split("#")[0]
+                        if not next_stripped_line or next_stripped_line == "yield":
+                            continue
+                        if _is_yield_from_continuation(next_line):
+                            for consumed_line in looked_ahead:
+                                track_input_line(consumed_line)
+                                write_output(consumed_line)
+                            stripped_line = next_stripped_line
+                        else:
+                            pending_input_lines.extend(reversed(looked_ahead))
+                        break
+
                 if stripped_line.startswith(("raise", "yield")):
                     while stripped_line.endswith("\\"):
-                        new_line = input_stream.readline()
+                        new_line = read_input_line()
                         if not new_line:
                             break
 

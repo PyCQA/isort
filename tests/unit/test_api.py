@@ -141,6 +141,11 @@ def test_sort_code_string_tracks_imports_after_bare_yield() -> None:
     assert api.sort_code_string(source).endswith("import os\n")
 
 
+def test_sort_code_string_preserves_parenthesized_yield_from() -> None:
+    source = 'def f():\n    (\n        yield\n        from " import z a"\n    )\n'
+    assert api.sort_code_string(source) == source
+
+
 def test_sort_file_writes_final_newline_for_already_sorted_imports(tmp_path: Path) -> None:
     source = "import os\n\n\ndef main():\n    pass"
     path = tmp_path / "test.py"
@@ -159,6 +164,26 @@ def test_sort_file_preserves_encoding_and_line_endings_when_adding_final_newline
 
     assert api.sort_file(path, overwrite_in_place=True)
     assert path.read_bytes() == source + b"\r\n"
+
+
+def test_sort_file_encoding_error_does_not_truncate_source(tmp_path: Path) -> None:
+    source = b"# coding: ascii\nimport os\n"
+    path = tmp_path / "test.py"
+    path.write_bytes(source)
+
+    with pytest.raises(UnicodeEncodeError):
+        api.sort_file(path, overwrite_in_place=True, import_heading_stdlib="é")
+
+    assert path.read_bytes() == source
+
+
+def test_float_to_top_preserves_cr_only_directive_boundaries(tmp_path: Path) -> None:
+    source = b"# header\rimport z\r# isort: off\rimport y\rimport a\r# isort: on\r"
+    path = tmp_path / "test.py"
+    path.write_bytes(source)
+
+    assert not api.sort_file(path, float_to_top=True)
+    assert path.read_bytes() == source
 
 
 def test_float_to_top_detects_final_newline_normalization(tmp_path: Path) -> None:
