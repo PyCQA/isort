@@ -3087,3 +3087,67 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
+
+
+def test_sort_reexports_followed_by_code_without_blank_line_issue_2286() -> None:
+    """``--sort-reexports`` must stop the ``__all__`` literal where it ends.
+
+    A statement placed directly after ``__all__``, with no blank line in between, used
+    to be read as part of the literal, so isort failed to parse the file.
+    See issue #2286: https://github.com/pycqa/isort/issues/2286
+    """
+    test_input = """#!/usr/bin/env python
+import importlib.metadata
+
+__all__ = [
+    "FooType",
+    "BarType",
+    "some_method",
+]
+__version__ = importlib.metadata.version("my-package")
+"""
+    expected_output = """#!/usr/bin/env python
+import importlib.metadata
+
+__all__ = ["BarType", "FooType", "some_method"]
+__version__ = importlib.metadata.version("my-package")
+"""
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+    assert isort.code(expected_output, sort_reexports=True) == expected_output
+    assert isort.check_code(expected_output, sort_reexports=True)
+
+
+@pytest.mark.parametrize(
+    ("test_input", "expected_output"),
+    [
+        (
+            '__all__ = ["b", "a"]\n__version__ = "1.0"\n',
+            '__all__ = ["a", "b"]\n__version__ = "1.0"\n',
+        ),
+        (
+            '__all__ = [\n    "b",\n    "a",\n]  # exports\nx = 1\n',
+            '__all__ = ["a", "b"]  # exports\nx = 1\n',
+        ),
+        (
+            '__all__ = ["b", "a"]\n__all__ += ["d", "c"]\n',
+            '__all__ = ["a", "b"]\n__all__ += ["c", "d"]\n',
+        ),
+        (
+            'if True:\n    __all__ = [\n        "b",\n        "a",\n    ]\n    x = 1\n',
+            'if True:\n    __all__ = ["a", "b"]\n    x = 1\n',
+        ),
+        (
+            '__all__ = ["b", "a"]\nimport sys\nimport os\n',
+            '__all__ = ["a", "b"]\nimport os\nimport sys\n',
+        ),
+    ],
+)
+def test_sort_reexports_ends_at_end_of_literal_issue_2286(
+    test_input: str, expected_output: str
+) -> None:
+    """The line after a sorted ``__all__`` is kept and handled as normal code.
+
+    See issue #2286: https://github.com/pycqa/isort/issues/2286
+    """
+    assert isort.code(test_input, sort_reexports=True) == expected_output
+    assert isort.code(expected_output, sort_reexports=True) == expected_output
