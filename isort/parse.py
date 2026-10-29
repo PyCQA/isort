@@ -345,6 +345,11 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                 root = imports[placed_module]["lazy_from" if is_lazy else "from"]
                 for import_name in just_imports:
+                    if import_name not in direct_imports and not config.remove_redundant_aliases:
+                        # Only imported as `X as X`: a comment found under the bare name
+                        # comes from a continuation line holding just the alias, and
+                        # belongs to the aliased import.
+                        continue
                     associated_comment = nested_comments.get(import_name)
                     if associated_comment is not None:
                         categorized_comments["nested"].setdefault(import_from, {})[import_name] = (
