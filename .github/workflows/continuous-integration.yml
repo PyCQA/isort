@@ -75,7 +75,7 @@ jobs:
         run: uv sync --all-extras --frozen
 
       - name: Run tests (non-compiled)
-        run: uv run --with tox-uv tox -e py,coverage_report-ci
+        run: uv run --no-sync --with tox-uv tox -e py,coverage_report-ci
 
       - name: Report Coverage
         uses: codecov/codecov-action@v7
@@ -89,7 +89,8 @@ jobs:
         env:
           HATCH_BUILD_HOOK_ENABLE_MYPYC: true
           COVERAGE_FAIL_UNDER: 0
-        run: uv run --with tox-uv tox --recreate -e py,coverage_report-ci
+        # Syncing again here would rebuild the compiled editable package.
+        run: uv run --no-sync --with tox-uv tox --recreate -e py,coverage_report-ci
 
 
   integration:
