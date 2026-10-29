@@ -99,9 +99,8 @@ def test_src_path_pointing_at_namespace_package_directory(tmp_path: Path) -> Non
 
 
 def test_directory_named_like_module_without_python_source(tmp_path: Path) -> None:
-    """The project root does not make a like-named module first-party
-    when it contains no Python source at its top level, even if the
-    root is also listed in src_paths explicitly."""
+    """The project root does not make a like-named module first-party,
+    even if the root is also listed in src_paths explicitly."""
     container = tmp_path / "some_name"
     (container / "docs").mkdir(parents=True)
     (container / "pyproject.toml").touch()
