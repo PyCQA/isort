@@ -142,9 +142,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 if splitter == "as ":
                     output = f"{content}{splitter}{cont_line.lstrip()}"
                 else:
-                    _comma = (
-                        "," if config.include_trailing_comma and comment is None else ""
-                    )
+                    _comma = "," if config.include_trailing_comma and comment is None else ""
 
                     if is_vertical_mode:
                         _separator = line_separator

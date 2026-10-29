@@ -3101,6 +3101,4 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     """The same empty-comment check dropped the '#' from star imports."""
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
-    assert (
-        isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
-    )
+    assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
