@@ -104,6 +104,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
     }
     imports: OrderedDict[str, ParsedImports] = OrderedDict()
     verbose_output: list[str] = []
+    from_import_placements: dict[tuple[bool, str], str] = {}
 
     for section in chain(config.sections, config.forced_separate):
         imports[section] = {
@@ -334,17 +335,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
             if type_of_import is _ImportType.FROM:
                 import_from = just_imports.pop(0)
                 placed_module = finder(import_from)
-                if from_import_names and "*" not in from_import_names:
-                    nested_results = [
-                        place.module_with_reason(f"{import_from}.{import_name}", config=config)
-                        for import_name in from_import_names
-                    ]
-                    nested_placements = {nested_placement for nested_placement, _ in nested_results}
-                    if len(nested_placements) == 1 and all(
-                        reason.startswith("Matched configured known pattern")
-                        for _, reason in nested_results
-                    ):
-                        placed_module = nested_results[0][0]
+                from_import_placements[(is_lazy, import_from)] = placed_module
                 if config.verbose and not config.only_modified:
                     print(f"from-type place_module for {import_from} returned {placed_module}")
 
@@ -387,7 +378,29 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     comments = []
 
                 if comments and attach_comments_to is None:
-                    attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
+                    if (
+                        from_import_names
+                        and all(
+                            comment.lower() == "noqa" or comment.lower().startswith("noqa:")
+                            for comment in comments
+                        )
+                        and "*" not in from_import_names
+                        and not config.combine_star
+                    ):
+                        nested_from_comments = categorized_comments["nested"].setdefault(
+                            import_from, {}
+                        )
+                        for import_name in from_import_names:
+                            existing_comment = nested_from_comments.get(import_name, "")
+                            nested_from_comments[import_name] = (
+                                f"{existing_comment}{'; ' if existing_comment else ''}"
+                                f"{'; '.join(comments)}"
+                            )
+                        comments = []
+                    else:
+                        attach_comments_to = categorized_comments["from"].setdefault(
+                            import_from, []
+                        )
 
                 if len(out_lines) > max(import_index, 1) - 1:
                     last = out_lines[-1].rstrip() if out_lines else ""
@@ -495,6 +508,27 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     )
                     straight_import |= imports[placed_module][import_bucket].get(module, False)
                     imports[placed_module][import_bucket][module] = straight_import
+
+    # Classify all names from a parent together so splitting statements cannot change placement.
+    for (is_lazy, import_from), base_section in from_import_placements.items():
+        from_key: Literal["lazy_from", "from"] = "lazy_from" if is_lazy else "from"
+        imported_names = imports[base_section][from_key][import_from]
+        if not imported_names or "*" in imported_names:
+            continue
+
+        nested_results = [
+            place.module_with_reason(f"{import_from}.{import_name}", config=config)
+            for import_name in imported_names
+        ]
+        nested_placements = {section for section, _ in nested_results}
+        if len(nested_placements) == 1 and all(
+            reason.startswith("Matched configured known pattern") for _, reason in nested_results
+        ):
+            section = nested_results[0][0]
+            if section != base_section:
+                imports[section][from_key][import_from] = imports[base_section][from_key].pop(
+                    import_from
+                )
 
     change_count = len(out_lines) - original_line_count
 

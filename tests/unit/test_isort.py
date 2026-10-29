@@ -2280,6 +2280,126 @@ def test_from_import_placement_uses_full_module_path() -> None:
     )
 
 
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+@pytest.mark.parametrize("collapse_option", ["no_sections", "force_alphabetical_sort"])
+def test_from_import_placement_does_not_drop_imports_without_sections(
+    import_prefix: str, collapse_option: str
+) -> None:
+    test_input = (
+        f"{import_prefix} namespace import mymodule\n{import_prefix} namespace import other\n"
+    )
+    config = Config(
+        known_first_party=["namespace.mymodule"],
+        default_section="THIRDPARTY",
+        no_sections=collapse_option == "no_sections",
+        force_alphabetical_sort=collapse_option == "force_alphabetical_sort",
+    )
+    test_output = isort.code(
+        test_input,
+        config=config,
+    )
+
+    assert test_output == f"{import_prefix} namespace import mymodule, other\n"
+    assert isort.code(test_output, config=config) == test_output
+
+
+@pytest.mark.parametrize("known_names", [["namespace.mymodule"], ["namespace.*"]])
+def test_from_import_placement_is_idempotent_with_force_single_line(
+    known_names: list[str],
+) -> None:
+    test_input = "import external\nfrom namespace import mymodule, other\n"
+    config = Config(
+        known_first_party=known_names,
+        default_section="THIRDPARTY",
+        force_single_line=True,
+    )
+
+    test_output = isort.code(test_input, config=config)
+
+    section_break = "\n" if known_names == ["namespace.*"] else ""
+    assert test_output == (
+        f"import external\n{section_break}"
+        "from namespace import mymodule\nfrom namespace import other\n"
+    )
+    assert isort.code(test_output, config=config) == test_output
+
+
+def test_from_import_placement_preserves_noqa_scope() -> None:
+    test_input = "from namespace import alpha, beta  # noqa: F401\nfrom namespace import other\n"
+    test_output = isort.code(
+        test_input,
+        known_first_party=["namespace.alpha", "namespace.beta"],
+        default_section="THIRDPARTY",
+    )
+
+    assert test_output == (
+        "from namespace import alpha, beta  # noqa: F401\nfrom namespace import other\n"
+    )
+    assert (
+        isort.code(
+            test_output,
+            known_first_party=["namespace.alpha", "namespace.beta"],
+            default_section="THIRDPARTY",
+        )
+        == test_output
+    )
+
+
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+def test_from_import_placement_does_not_duplicate_aliases(import_prefix: str) -> None:
+    test_input = (
+        f"{import_prefix} namespace import mymodule as renamed\n"
+        f"{import_prefix} namespace import mymodule, other\n"
+    )
+    test_output = isort.code(
+        test_input,
+        known_first_party=["namespace.mymodule"],
+        default_section="THIRDPARTY",
+    )
+
+    assert test_output == (
+        f"{import_prefix} namespace import mymodule, other\n"
+        f"{import_prefix} namespace import mymodule as renamed\n"
+    )
+    assert (
+        isort.code(
+            test_output, known_first_party=["namespace.mymodule"], default_section="THIRDPARTY"
+        )
+        == test_output
+    )
+
+
+def test_from_import_placement_is_idempotent_when_splitting_aliases() -> None:
+    config = Config(
+        known_first_party=["namespace.mymodule"],
+        default_section="THIRDPARTY",
+    )
+    test_input = "from namespace import mymodule as renamed, other\n"
+    test_output = isort.code(test_input, config=config)
+
+    assert test_output == (
+        "from namespace import mymodule as renamed\nfrom namespace import other\n"
+    )
+    assert isort.code(test_output, config=config) == test_output
+
+
+@pytest.mark.parametrize("import_prefix", ["from", "lazy from"])
+def test_from_import_placement_groups_known_names_across_statements(import_prefix: str) -> None:
+    config = Config(
+        known_first_party=["namespace.alpha", "namespace.beta"],
+        default_section="THIRDPARTY",
+    )
+    test_input = (
+        "import external\n"
+        f"{import_prefix} namespace import alpha\n"
+        f"{import_prefix} namespace import beta\n"
+    )
+    test_output = isort.code(test_input, config=config)
+
+    assert test_output == f"import external\n\n{import_prefix} namespace import alpha, beta\n"
+    assert isort.code(test_output, config=config) == test_output
+
+
 def test_custom_sections() -> None:
     """Ensure that most specific placement control match wins"""
     test_input = (

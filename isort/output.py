@@ -712,6 +712,7 @@ def _with_from_imports_for_module(
         from_import_section = []
         module_imports = parsed.imports[section][import_key][module]
         nested_comments = parsed.categorized_comments["nested"].get(module, {})
+        scoped_pragma_comments: set[str] = set()
 
         while from_imports:
             from_import = from_imports.pop(0)
@@ -744,10 +745,11 @@ def _with_from_imports_for_module(
                     continue
 
             from_import_section.append(from_import)
-
             comment = nested_comments.pop(from_import, None)
             if comment is not None:
                 comments.append(comment)
+                if comment.lower().startswith(("noqa", "type: ignore")):
+                    scoped_pragma_comments.add(comment)
 
             pragma_comments = {
                 c for c in comments if c.lower().startswith(("noqa", "type: ignore"))
@@ -757,6 +759,8 @@ def _with_from_imports_for_module(
             )
             for grouped_plain_import in from_imports[:]:
                 grouped_comment = nested_comments.get(grouped_plain_import)
+                if scoped_pragma_comments and grouped_comment not in scoped_pragma_comments:
+                    break
                 if grouped_comment:
                     grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
                     if grouped_is_pragma and (
@@ -785,6 +789,7 @@ def _with_from_imports_for_module(
                     comments.append(grouped_comment)
                     if grouped_comment.lower().startswith(("noqa", "type: ignore")):
                         pragma_comments.add(grouped_comment)
+                        scoped_pragma_comments.add(grouped_comment)
                     elif grouped_comment:
                         has_explanatory_comments = True
 

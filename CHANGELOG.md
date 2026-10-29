@@ -11,6 +11,8 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Use known nested-module patterns to place `from` imports consistently, preserving imports, aliases, and suppression comments (#1208).
+
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord
