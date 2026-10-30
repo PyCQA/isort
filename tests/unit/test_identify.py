@@ -285,3 +285,21 @@ def test_indented() -> None:
     assert not imports_in_code("import os")[0].indented
     assert imports_in_code("     import os")[0].indented
     assert imports_in_code("\timport os")[0].indented
+
+
+def test_lazy_imports_identify_underlying_statement() -> None:
+    """PEP 810 lazy imports are identified as the import statement after the ``lazy`` prefix."""
+    lazy_from = imports_in_code("lazy from x import y\n")
+    assert [i.statement() for i in lazy_from] == ["from x import y"]
+    assert lazy_from[0].module == "x"
+
+    lazy_straight = imports_in_code("lazy import z\n")
+    assert [i.statement() for i in lazy_straight] == ["import z"]
+    assert lazy_straight[0].module == "z"
+
+
+def test_lazy_prefix_is_not_reported_as_an_import() -> None:
+    """The ``lazy`` keyword itself must not surface as an extra import."""
+    assert len(imports_in_code("lazy import z\n")) == 1
+    assert len(imports_in_code("lazy from x import y\n")) == 1
+    assert len(imports_in_code("lazy import z\nlazy import os\n")) == 2
