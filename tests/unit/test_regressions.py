@@ -3102,3 +3102,20 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+def test_merging_bare_hash_with_text_comment_is_idempotent_issue_2754() -> None:
+    """Bare '#' comments merged with non-empty comments should not produce trailing '; '.
+    See: https://github.com/PyCQA/isort/issues/2754
+    """
+    # Text comment then bare comment
+    src = "from sys import a # x\nfrom sys import b # \n"
+    first = isort.code(src)
+    assert first == "from sys import a, b  # x\n"
+    assert isort.code(first) == first
+
+    # Bare comment then text comment
+    src_rev = "from sys import a # \nfrom sys import b # y\n"
+    first_rev = isort.code(src_rev)
+    assert first_rev == "from sys import a, b  # y\n"
+    assert isort.code(first_rev) == first_rev

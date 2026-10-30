@@ -32,7 +32,7 @@ def add_to_line(
     for comment in comments:
         if comment not in unique_comments:
             unique_comments.append(comment)
-    comment_text = "; ".join(unique_comments)
+    comment_text = "; ".join(c for c in unique_comments if c)
     base, existing_comment = parse(original_string)
     if existing_comment is not None:
         # An existing comment was stripped off, leaving the whitespace that used to
