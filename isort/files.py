@@ -8,23 +8,26 @@ from isort.settings import Config
 def _find_git_root(path: Path) -> Path | None:
     """Find the source Git repository, allowing a symlinked repository alias."""
     absolute_path = path.absolute()
-    start = absolute_path.parent if path.is_symlink() or not path.is_dir() else absolute_path
+    start = absolute_path if absolute_path.is_dir() else absolute_path.parent
     directories = (start, *start.parents)
-    symlink_index = next(
-        (i for i, directory in enumerate(directories) if directory.is_symlink()), -1
-    )
-    root_below_link = None
-    # Prefer the source repository above the closest directory symlink: a
-    # .git entry below it may belong to an external target. If there is no
-    # source repository, the link may simply alias the repository itself.
-    for i, directory in enumerate(directories):
+    git_root = None
+    # Check links from the source side before accepting a target-side .git.
+    # Internal aliases may still lead to a nearer, nested repository.
+    for directory in reversed(directories):
+        if directory.is_symlink():
+            resolved = directory.resolve()
+            if git_root is not None and not resolved.is_relative_to(git_root.resolve()):
+                return git_root
+            # An alias can skip a physical repository marker, including a
+            # nested repository inside the current boundary.
+            git_root = next(
+                (parent for parent in (resolved, *resolved.parents) if (parent / ".git").exists()),
+                git_root,
+            )
         if (directory / ".git").exists():
-            if i > symlink_index:
-                return directory
-            if root_below_link is None:
-                root_below_link = directory
+            git_root = directory
 
-    return root_below_link
+    return git_root
 
 
 def _is_external_git_symlink(path: Path) -> bool:
@@ -39,21 +42,8 @@ def _is_external_git_symlink(path: Path) -> bool:
         return False
 
     absolute_path = path.absolute()
-    absolute_root = git_root.absolute()
-    try:
-        relative_path = absolute_path.relative_to(absolute_root)
-    except ValueError:
-        return False
-
-    current_path = absolute_root
-    contains_symlink = False
-    for part in relative_path.parts:
-        current_path /= part
-        if current_path.is_symlink():
-            contains_symlink = True
-            break
-
-    if not contains_symlink:
+    # The root may be physical rather than a lexical parent of an alias.
+    if not any(directory.is_symlink() for directory in (absolute_path, *absolute_path.parents)):
         return False
 
     try:

@@ -21,6 +21,158 @@ def isolate_git_markers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr(Path, "exists", exists)
 
 
+@pytest.fixture(params=["directory", "file"])
+def git_marker(request: pytest.FixtureRequest) -> str:
+    return str(request.param)
+
+
+@pytest.fixture(
+    params=[
+        "subdirectory_alias",
+        "external_alias_chain",
+        "nested_repository_alias",
+        "nested_subdirectory_alias",
+    ]
+)
+def repository_alias_case(
+    tmp_path: Path, request: pytest.FixtureRequest, git_marker: str
+) -> tuple[Path, Path]:
+    """Return an aliased input and the outside file it must not select."""
+
+    def repository(path: Path) -> Path:
+        path.mkdir(parents=True)
+        if git_marker == "directory":
+            (path / ".git").mkdir()
+        else:
+            (path / ".git").write_text("gitdir: elsewhere\n")
+        return path
+
+    if request.param == "subdirectory_alias":
+        project = repository(tmp_path / "project")
+        package = project / "package"
+        package.mkdir()
+        outside = tmp_path / "outside.py"
+        (package / "escape.py").symlink_to(outside)
+        alias = tmp_path / "alias"
+        alias.symlink_to(package, target_is_directory=True)
+        source = alias / "escape.py"
+    elif request.param == "external_alias_chain":
+        project = repository(tmp_path / "project")
+        external = repository(tmp_path / "external")
+        package = external / "package"
+        package.mkdir()
+        outside = package / "module.py"
+        (external / "alias").symlink_to(package, target_is_directory=True)
+        (project / "link").symlink_to(external, target_is_directory=True)
+        source = project / "link" / "alias" / "module.py"
+    else:
+        project = repository(tmp_path / "project")
+        package = repository(project / "physical" / "inner")
+        outside = project / "shared.py"
+        alias = project / "alias"
+        if request.param == "nested_subdirectory_alias":
+            package = package / "package"
+            package.mkdir()
+            alias.symlink_to(package, target_is_directory=True)
+            source = alias / "escape.py"
+        else:
+            alias.symlink_to(package.parent, target_is_directory=True)
+            source = alias / "inner" / "escape.py"
+        (package / "escape.py").symlink_to(outside)
+
+    outside.write_text("import sys\nimport os\n")
+    return source, outside
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+@pytest.mark.parametrize("direct_file", [False, True])
+@pytest.mark.parametrize("follow_links", [False, True])
+def test_find_preserves_repository_boundary_through_aliases(
+    tmp_path: Path,
+    repository_alias_case: tuple[Path, Path],
+    direct_file: bool,
+    follow_links: bool,
+) -> None:
+    source, _ = repository_alias_case
+    target = source if direct_file else source.parent
+    skipped: list[str] = []
+    broken: list[str] = []
+
+    found = tuple(
+        files.find(
+            [target],
+            Config(directory=str(tmp_path), follow_links=follow_links),
+            skipped,
+            broken,
+        )
+    )
+
+    assert found == ()
+    assert str(source) in skipped or str(target) in skipped
+    assert set(skipped) <= {str(source), str(target), str(target / ".git")}
+    assert broken == []
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+@pytest.mark.parametrize("direct_file", [False, True])
+def test_cli_preserves_outside_file_through_repository_aliases(
+    repository_alias_case: tuple[Path, Path], direct_file: bool
+) -> None:
+    source, outside = repository_alias_case
+    before = outside.read_bytes()
+
+    main([str(source if direct_file else source.parent)])
+
+    assert outside.read_bytes() == before
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+def test_find_allows_explicit_physical_inputs(
+    tmp_path: Path, repository_alias_case: tuple[Path, Path]
+) -> None:
+    _, physical_file = repository_alias_case
+
+    assert tuple(files.find([physical_file], Config(directory=str(tmp_path)), [], [])) == (
+        physical_file,
+    )
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+def test_find_preserves_internal_files_below_subdirectory_alias(tmp_path: Path) -> None:
+    package = tmp_path / "project" / "package"
+    package.mkdir(parents=True)
+    (package.parent / ".git").mkdir()
+    (package / "module.py").write_text("import os\n")
+    alias = tmp_path / "alias"
+    alias.symlink_to(package, target_is_directory=True)
+
+    assert tuple(files.find([alias], Config(directory=str(tmp_path)), [], [])) == (
+        str(alias / "module.py"),
+    )
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
+@pytest.mark.parametrize("aliased", [False, True])
+def test_find_preserves_physical_and_aliased_nested_repository_boundary(
+    tmp_path: Path, aliased: bool
+) -> None:
+    project = tmp_path / "project"
+    inner = project / "physical" / "inner"
+    inner.mkdir(parents=True)
+    (project / ".git").mkdir()
+    (inner / ".git").mkdir()
+    outside = project / "shared.py"
+    outside.write_text("import os\n")
+    (inner / "escape.py").symlink_to(outside)
+    alias = project / "alias"
+    alias.symlink_to(inner.parent, target_is_directory=True)
+    source = (alias / "inner" if aliased else inner) / "escape.py"
+    skipped: list[str] = []
+
+    assert tuple(files.find([source], Config(directory=str(project)), skipped, [])) == ()
+    assert skipped == [str(source)]
+
+
 @pytest.mark.skipif(os.name == "nt", reason="Creating symlinks requires extra privileges")
 def test_find_git_root_prefers_nearest_repository_below_alias(tmp_path: Path) -> None:
     physical = tmp_path / "physical"
