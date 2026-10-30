@@ -142,7 +142,7 @@ def test_known_pattern_directory_with_forward_slash(tmp_path: Path) -> None:
     )
 
     config = Config(settings_path=str(tmp_path))
-    assert config.known_other["plugins"] == frozenset({os.path.join(str(tmp_path), "plugins/")})
+    assert config.known_other["plugins"] == frozenset({f"{tmp_path.as_posix()}/plugins/"})
     assert place_module("foo", config=config) == "FIRSTPARTY"
     assert place_module("bar", config=config) == "FIRSTPARTY"
     assert place_module("baz", config=config) == "PLUGINS"
