@@ -158,14 +158,35 @@ def _src_path_is_module(src_path: Path, module_name: str, config: Config) -> boo
     # packages, not a package itself: a third-party module that merely
     # shares the root directory's name must not become first-party
     # (issue #2240). It only counts as the module when the directory
-    # itself holds package content: an __init__.py (regular package)
-    # or module files directly inside it (namespace package).
-    if _is_module(src_path):
+    # itself holds package content: an __init__.py (regular package),
+    # module files directly inside it (namespace package), or nothing
+    # but subpackages (subpackage-only namespace package). Only files
+    # inside the directory count: a sibling module that happens to
+    # share the directory's name is outside the configured src_paths.
+    if exists_case_sensitive(str(src_path / "__init__.py")):
         return True
     try:
-        return any(
-            child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
-            for child in src_path.iterdir()
-        )
+        children = list(src_path.iterdir())
     except OSError:
         return False
+    if any(
+        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
+        for child in children
+    ):
+        return True
+    return bool(children) and all(
+        child.is_dir() and _is_package_directory(child, config) for child in children
+    )
+
+
+def _is_package_directory(path: Path, config: Config) -> bool:
+    if exists_case_sensitive(str(path / "__init__.py")):
+        return True
+    try:
+        children = list(path.iterdir())
+    except OSError:
+        return False
+    return any(
+        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
+        for child in children
+    ) or any(child.is_dir() and _is_package_directory(child, config) for child in children)

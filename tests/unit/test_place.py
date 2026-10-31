@@ -127,3 +127,30 @@ def test_directory_named_like_module_without_python_source(tmp_path: Path) -> No
     (container / "pyproject.toml").touch()
     config = Config(directory=str(container), src_paths=[container])
     assert place.module("some_name", config=config) == sections.THIRDPARTY
+
+
+def test_directory_named_like_module_with_sibling_module_file(tmp_path: Path) -> None:
+    """A module file next to the project root (a sibling sharing the
+    root directory's name) is outside the configured src_paths and does
+    not make the like-named module first-party."""
+    container = tmp_path / "some_name"
+    (container / "docs").mkdir(parents=True)
+    (container / "pyproject.toml").touch()
+    (tmp_path / "some_name.py").touch()
+    config = Config(directory=str(container), src_paths=[container])
+    assert place.module("some_name", config=config) == sections.THIRDPARTY
+
+
+def test_namespace_root_with_only_subpackages_that_is_also_the_project_root(
+    tmp_path: Path,
+) -> None:
+    """A namespace package directory containing only subpackages still
+    identifies its package as first-party when it is also
+    config.directory."""
+    package = tmp_path / "mynamespace"
+    nested = package / "nested"
+    nested.mkdir(parents=True)
+    (nested / "__init__.py").touch()
+    config = Config(directory=str(package), src_paths=[package])
+    assert place.module("mynamespace", config=config) == sections.FIRSTPARTY
+    assert place.module("mynamespace.nested", config=config) == sections.FIRSTPARTY
