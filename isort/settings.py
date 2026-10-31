@@ -561,8 +561,7 @@ class Config(_Config):
         if self._matches_skip(file_path):
             return True
 
-        os_path = str(file_path)
-        if not (os.path.isfile(os_path) or os.path.isdir(os_path) or os.path.islink(os_path)):
+        if not (file_path.is_file() or file_path.is_dir() or file_path.is_symlink()):
             return True
 
         return self.skip_gitignore and self._is_gitignored(file_path)
