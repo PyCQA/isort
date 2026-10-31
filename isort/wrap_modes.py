@@ -119,11 +119,23 @@ def vertical(
         # comma would be left dangling after the continuation indent. Keep it on
         # the same line as the import and let the comment follow the closing
         # parenthesis instead of being swallowed by it.
-        return isort.comments.add_to_line(
+        single_line = isort.comments.add_to_line(
             comments,
             f"{statement}({imports[0]}{_comma_maybe})",
             removed=remove_comments,
             comment_prefix=comment_prefix,
+        )
+        # Only take the single-line form when it actually fits. Handing an
+        # overlong statement back to the caller makes it fall through to
+        # wrap.line()'s fallback, which re-splits on the dots of the module path
+        # and produces "from a.b.(\n c import (d))" - invalid Python.
+        if len(single_line.split(line_separator)[0]) <= line_length:
+            return single_line
+        # Doesn't fit: emit the multiline form directly. The generic path below
+        # pops the only import and then appends a lone trailing comma after the
+        # continuation indent, producing "(lib1,\n ,)" - invalid Python.
+        return (
+            f"{statement}({line_separator}{white_space}{imports[0]}{_comma_maybe}{line_separator})"
         )
 
     first_import = (
@@ -138,6 +150,10 @@ def vertical(
     )
 
     _imports = ("," + line_separator + white_space).join(imports)
+    # Avoid doubling the comma when the last import already carries one (the
+    # single-import path above appends it, and callers may pass it through).
+    if _comma_maybe and _imports.rstrip().endswith(","):
+        _comma_maybe = ""
     return f"{statement}({first_import}{_imports}{_comma_maybe})"
 
 
