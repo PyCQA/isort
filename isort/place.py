@@ -76,7 +76,11 @@ def _src_path(
 
     for src_path in src_paths:
         module_path = (src_path / root_module_name).resolve()
-        if not prefix and not module_path.is_dir() and src_path.name == root_module_name:
+        if (
+            not prefix
+            and not module_path.is_dir()
+            and _src_path_is_module(src_path, root_module_name, config)
+        ):
             module_path = src_path.resolve()
         if nested_module and (
             namespace in config.namespace_packages
@@ -89,7 +93,7 @@ def _src_path(
         if (
             _is_module(module_path)
             or _is_package(module_path)
-            or _src_path_is_module(src_path, root_module_name)
+            or _src_path_is_module(src_path, root_module_name, config)
         ):
             return (sections.FIRSTPARTY, f"Found in one of the configured src_paths: {src_path}.")
 
@@ -140,7 +144,49 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
     return True
 
 
-def _src_path_is_module(src_path: Path, module_name: str) -> bool:
-    return (
-        module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
+def _src_path_is_module(src_path: Path, module_name: str, config: Config) -> bool:
+    if (
+        module_name != src_path.name
+        or not src_path.is_dir()
+        or not exists_case_sensitive(str(src_path))
+    ):
+        return False
+    if src_path.resolve() != Path(config.directory).resolve():
+        return True
+    # The src_path is the project root (config.directory, the cwd by
+    # default). The root is normally a container for the project's
+    # packages, not a package itself: a third-party module that merely
+    # shares the root directory's name must not become first-party
+    # (issue #2240). It only counts as the module when the directory
+    # itself holds package content: an __init__.py (regular package),
+    # module files directly inside it (namespace package), or nothing
+    # but subpackages (subpackage-only namespace package). Only files
+    # inside the directory count: a sibling module that happens to
+    # share the directory's name is outside the configured src_paths.
+    if exists_case_sensitive(str(src_path / "__init__.py")):
+        return True
+    try:
+        children = list(src_path.iterdir())
+    except OSError:
+        return False
+    if any(
+        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
+        for child in children
+    ):
+        return True
+    return bool(children) and all(
+        child.is_dir() and _is_package_directory(child, config) for child in children
     )
+
+
+def _is_package_directory(path: Path, config: Config) -> bool:
+    if exists_case_sensitive(str(path / "__init__.py")):
+        return True
+    try:
+        children = list(path.iterdir())
+    except OSError:
+        return False
+    return any(
+        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
+        for child in children
+    ) or any(child.is_dir() and _is_package_directory(child, config) for child in children)
