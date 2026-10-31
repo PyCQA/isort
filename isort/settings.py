@@ -129,7 +129,7 @@ class _Config:
     """
 
     py_version: str = "3"
-    force_to_top: frozenset[str] = frozenset()
+    force_to_top: tuple[str, ...] = ()
     skip: frozenset[str] = DEFAULT_SKIP
     extend_skip: frozenset[str] = frozenset()
     skip_glob: frozenset[str] = frozenset()
@@ -264,6 +264,12 @@ class _Config:
                 "wrap_length must be set lower than or equal to line_length: "
                 f"{self.wrap_length} > {self.line_length}."
             )
+
+        force_to_top = self.force_to_top
+        if isinstance(force_to_top, (set, frozenset)):
+            object.__setattr__(self, "force_to_top", tuple(sorted(force_to_top)))
+        elif not isinstance(force_to_top, tuple):
+            object.__setattr__(self, "force_to_top", tuple(force_to_top))
 
     def __hash__(self) -> int:
         return id(self)
@@ -413,6 +419,8 @@ class Config(_Config):
             if default_value is None:
                 continue
 
+            if key == "force_to_top" and isinstance(value, (set, frozenset)):
+                value = sorted(value)
             if isinstance(value, str) and isinstance(default_value, (frozenset, tuple)):
                 # A single string holds a list of items for list-like settings, just as it does
                 # in a configuration file (e.g. `no_lines_before=LOCALFOLDER`). Without this it
