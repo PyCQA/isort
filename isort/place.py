@@ -145,14 +145,27 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
 
 
 def _src_path_is_module(src_path: Path, module_name: str, config: Config) -> bool:
-    # The project root (config.directory, the cwd by default) is never
-    # itself a module: the default src_paths always include it, but it
-    # is a container for the project's packages, not a package. Without
-    # this, a third-party module that merely shares the root directory's
-    # name would be misclassified as first-party (issue #2240).
-    return (
-        module_name == src_path.name
-        and src_path.is_dir()
-        and exists_case_sensitive(str(src_path))
-        and src_path.resolve() != Path(config.directory).resolve()
-    )
+    if (
+        module_name != src_path.name
+        or not src_path.is_dir()
+        or not exists_case_sensitive(str(src_path))
+    ):
+        return False
+    if src_path.resolve() != Path(config.directory).resolve():
+        return True
+    # The src_path is the project root (config.directory, the cwd by
+    # default). The root is normally a container for the project's
+    # packages, not a package itself: a third-party module that merely
+    # shares the root directory's name must not become first-party
+    # (issue #2240). It only counts as the module when the directory
+    # itself holds package content: an __init__.py (regular package)
+    # or module files directly inside it (namespace package).
+    if _is_module(src_path):
+        return True
+    try:
+        return any(
+            child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
+            for child in src_path.iterdir()
+        )
+    except OSError:
+        return False

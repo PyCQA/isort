@@ -98,6 +98,27 @@ def test_src_path_pointing_at_namespace_package_directory(tmp_path: Path) -> Non
     assert place.module("mynamespace", config=config) == sections.FIRSTPARTY
 
 
+def test_package_directory_that_is_also_the_project_root(tmp_path: Path) -> None:
+    """A regular package directory still identifies its package as
+    first-party when it is also config.directory (its own project root)."""
+    package = tmp_path / "mypackage"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").touch()
+    config = Config(directory=str(package), src_paths=[package])
+    assert place.module("mypackage", config=config) == sections.FIRSTPARTY
+
+
+def test_namespace_package_directory_that_is_also_the_project_root(tmp_path: Path) -> None:
+    """Same as above for a namespace package directory (no __init__.py,
+    but with module files in it) that is also config.directory."""
+    package = tmp_path / "mynamespace"
+    package.mkdir()
+    (package / "module.py").touch()
+    config = Config(directory=str(package), src_paths=[package])
+    assert place.module("mynamespace", config=config) == sections.FIRSTPARTY
+
+
 def test_directory_named_like_module_without_python_source(tmp_path: Path) -> None:
     """The project root does not make a like-named module first-party,
     even if the root is also listed in src_paths explicitly."""
