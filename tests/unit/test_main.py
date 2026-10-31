@@ -140,6 +140,33 @@ def test_cli_skip_existing_file_path(
     assert target.read_text(encoding="utf-8") == expected
 
 
+@pytest.mark.skipif(os.sep != "/", reason="POSIX paths can contain literal backslashes")
+@pytest.mark.parametrize("skip_option", ["--skip", "--extend-skip"])
+@pytest.mark.parametrize("invocation", ["directory", "filtered-file"])
+def test_cli_skip_existing_file_path_with_literal_backslash(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    skip_option: str,
+    invocation: str,
+) -> None:
+    target = tmp_path / "generated\\legacy" / "resources.py"
+    target.parent.mkdir()
+    original = "import sys\nimport os\n"
+    target.write_text(original, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    arguments = [
+        str(target.parent) if invocation == "directory" else str(target),
+        skip_option,
+        str(target),
+    ]
+    if invocation == "filtered-file":
+        arguments.append("--filter-files")
+
+    main.main(arguments)
+
+    assert target.read_text(encoding="utf-8") == original
+
+
 @pytest.mark.skipif(reason="Can't use these mocks in mypyc-compiled code.", condition=_IS_COMPILED)
 def test_sort_imports_error_handling(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     tmp_file = tmp_path / "file.py"
