@@ -2755,14 +2755,10 @@ def test_noqa_mode_reaches_a_fixpoint_with_an_opening_line_comment() -> None:
         "  # type: ignore\n"
     )
 
-    first_pass = isort.code(
-        to_sort, multi_line_output=7, use_parentheses=True, line_length=40
-    )
+    first_pass = isort.code(to_sort, multi_line_output=7, use_parentheses=True, line_length=40)
     assert first_pass.count("# NOQA") == 1
 
-    second_pass = isort.code(
-        first_pass, multi_line_output=7, use_parentheses=True, line_length=40
-    )
+    second_pass = isort.code(first_pass, multi_line_output=7, use_parentheses=True, line_length=40)
     assert second_pass == first_pass
     assert second_pass.count("# NOQA") == 1
 
