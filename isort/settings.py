@@ -782,13 +782,14 @@ def _find_config(path: str) -> tuple[str, dict[str, Any]]:
     return (path, {})
 
 
-def find_all_configs(path: str) -> Trie:
+def find_all_configs(path: str, config_overrides: dict[str, Any] | None = None) -> Trie:
     """
     Looks for config files in the path provided and in all of its sub-directories.
     Parses and stores any config file encountered in a trie and returns the root of
-    the trie
+    the trie. Any config_overrides take precedence over the settings of every config file.
     """
-    trie_root = Trie("default", {})
+    config_overrides = config_overrides or {}
+    trie_root = Trie("default", config_overrides)
 
     for dirpath, _, _ in os.walk(path):
         for config_file_name in CONFIG_SOURCES:
@@ -807,7 +808,7 @@ def find_all_configs(path: str) -> Trie:
                     config_data = {}
 
                 if config_data:
-                    trie_root.insert(potential_config_file, config_data)
+                    trie_root.insert(potential_config_file, {**config_data, **config_overrides})
                     break
 
     return trie_root
