@@ -3142,3 +3142,18 @@ def test_isort_assignments_in_an_indented_block_keeps_its_indentation() -> None:
     """The sorted assignments were indented a second time, which broke the code."""
     test_input = "class C:\n    # isort: assignments\n    b = 1\n    a = 2\n"
     assert isort.code(test_input) == "class C:\n    # isort: assignments\n    a = 2\n    b = 1\n"
+
+
+def test_a_bare_hash_survives_a_wrapped_import_line() -> None:
+    """An empty comment was treated as no comment, so the '#' was dropped."""
+    code = "from sys import super_long_name  #\n"
+    expected = "from sys import \\\n    super_long_name  #\n"
+    assert isort.code(code, force_grid_wrap=3, line_length=30) == expected
+    assert isort.code(expected, force_grid_wrap=3, line_length=30) == expected
+
+
+def test_a_bare_hash_survives_on_a_star_import() -> None:
+    """The same empty-comment check dropped the '#' from star imports."""
+    assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
+    expected = "from some.really.long.module.name import \\\n    *  #\n"
+    assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
