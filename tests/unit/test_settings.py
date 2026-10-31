@@ -150,6 +150,28 @@ def test_as_list() -> None:
     assert settings._as_list("one,two") == ["one", "two"]
 
 
+def test_known_pattern_directory_with_forward_slash(tmp_path: Path) -> None:
+    """A known_* entry ending in "/" names a directory of packages on every platform,
+    including Windows, where os.path.sep is a backslash.
+    """
+    (tmp_path / "vendor" / "foo").mkdir(parents=True)
+    (tmp_path / "vendor" / "bar").mkdir()
+    (tmp_path / "plugins" / "baz").mkdir(parents=True)
+    (tmp_path / ".isort.cfg").write_text(
+        "[isort]\n"
+        "known_first_party = vendor/\n"
+        "known_plugins = plugins/\n"
+        "sections = FUTURE,STDLIB,THIRDPARTY,PLUGINS,FIRSTPARTY,LOCALFOLDER\n",
+        "utf8",
+    )
+
+    config = Config(settings_path=str(tmp_path))
+    assert config.known_other["plugins"] == frozenset({f"{tmp_path.as_posix()}/plugins/"})
+    assert place_module("foo", config=config) == "FIRSTPARTY"
+    assert place_module("bar", config=config) == "FIRSTPARTY"
+    assert place_module("baz", config=config) == "PLUGINS"
+
+
 def _write_simple_settings(tmp_file: Path) -> None:
     tmp_file.write_text(
         """
