@@ -29,6 +29,30 @@ class TestConfig:
             known_third_party=["one"], known_thirdparty=["two"]
         ).known_third_party == frozenset({"one"})
 
+    def test_multi_value_setting_provided_as_string(self) -> None:
+        """A single string holds a separated list of items for list-like settings.
+
+        Previously such a value was iterated over character by character, which silently made
+        the documented `no_lines_before` of the `appnexus` profile a no-op.
+        """
+        assert Config(no_lines_before="LOCALFOLDER").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(no_lines_before="future,stdlib").no_lines_before == frozenset(
+            {"future", "stdlib"}
+        )
+        assert Config(profile="appnexus").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(sections="STDLIB,FIRSTPARTY").sections == ("STDLIB", "FIRSTPARTY")
+
+        source = "import os\n\nimport app\n\nimport app_mod\n\nfrom . import local\n"
+        assert (
+            code(
+                source,
+                profile="appnexus",
+                known_first_party=["app"],
+                known_application=["app_mod"],
+            )
+            == "import os\n\nimport app\n\nimport app_mod\nfrom . import local\n"
+        )
+
     def test_invalid_settings_path(self) -> None:
         with pytest.raises(exceptions.InvalidSettingsPath):
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")

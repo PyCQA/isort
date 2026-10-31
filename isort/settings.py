@@ -421,6 +421,11 @@ class Config(_Config):
 
             if key == "force_to_top" and isinstance(value, (set, frozenset)):
                 value = sorted(value)
+            if isinstance(value, str) and isinstance(default_value, (frozenset, tuple)):
+                # A single string holds a list of items for list-like settings, just as it does
+                # in a configuration file (e.g. `no_lines_before=LOCALFOLDER`). Without this it
+                # would be iterated over character by character instead.
+                value = _as_list(value)
 
             combined_config[key] = type(default_value)(value)
 
