@@ -663,6 +663,7 @@ def _with_from_imports_for_module(
 
     # Handle force_single_line
     if config.force_single_line and module not in config.single_line_exclusions:
+        comments.extend(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", []))
         for from_import in from_imports:
             if from_import in as_imports:
                 output.extend(

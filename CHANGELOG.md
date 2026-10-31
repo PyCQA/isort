@@ -11,6 +11,8 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Preserve aliased-import comments with `combine_as_imports` and `force_single_line`, including redundant aliases.
+
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord
