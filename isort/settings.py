@@ -665,8 +665,9 @@ class Config(_Config):
             return self._posix_skips
 
         self._posix_skips = frozenset(
-            Path(os.path.abspath(skip_path.replace("\\", "/"))).as_posix()
+            Path(os.path.abspath(path)).as_posix()
             for skip_path in self.skips
+            for path in (skip_path, skip_path.replace("\\", "/"))
         )
         return self._posix_skips
 

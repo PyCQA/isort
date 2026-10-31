@@ -147,6 +147,17 @@ class TestConfig:
         assert _skip_config(setting_name, target.as_posix()).is_skipped(target)
         assert not _skip_config(setting_name, other_path).is_skipped(target)
 
+    @pytest.mark.skipif(os.sep != "/", reason="POSIX paths can contain literal backslashes")
+    @pytest.mark.parametrize("setting_name", ["skip", "extend_skip"])
+    def test_skip_path_preserves_literal_backslash(self, tmp_path: Path, setting_name: str) -> None:
+        target = tmp_path / "generated\\legacy" / "resources.py"
+        target.parent.mkdir()
+        target.touch()
+
+        config = _skip_config(setting_name, str(target))
+
+        assert config.is_skipped(target)
+
     def test_is_supported_filetype(self) -> None:
         assert self.instance.is_supported_filetype("file.py")
         assert self.instance.is_supported_filetype("file.pyi")
