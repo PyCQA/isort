@@ -169,24 +169,46 @@ def _src_path_is_module(src_path: Path, module_name: str, config: Config) -> boo
         children = list(src_path.iterdir())
     except OSError:
         return False
-    if any(
-        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
-        for child in children
-    ):
+    if any(_is_importable_module_file(child, config) for child in children):
         return True
     return bool(children) and all(
         child.is_dir() and _is_package_directory(child, config) for child in children
     )
 
 
-def _is_package_directory(path: Path, config: Config) -> bool:
+def _is_importable_module_file(child: Path, config: Config) -> bool:
+    """Whether a file counts as an importable module for package detection.
+
+    ``.py`` files and native extension modules are importable regardless
+    of ``supported_extensions``: that setting is a formatting filter for
+    the files isort processes, not a limit on what Python can import.
+    Configured extensions are honoured on top of those.
+    """
+    if not child.is_file():
+        return False
+    if child.suffix == ".py":
+        return True
+    if any(child.name.endswith(ext) for ext in importlib.machinery.EXTENSION_SUFFIXES):
+        return True
+    return child.suffix.lstrip(".") in config.supported_extensions
+
+
+def _is_package_directory(path: Path, config: Config, _visited: set[Path] | None = None) -> bool:
+    if _visited is None:
+        _visited = set()
+    try:
+        resolved = path.resolve()
+    except OSError:
+        return False
+    if resolved in _visited:
+        return False
+    _visited.add(resolved)
     if exists_case_sensitive(str(path / "__init__.py")):
         return True
     try:
         children = list(path.iterdir())
     except OSError:
         return False
-    return any(
-        child.is_file() and child.suffix.lstrip(".") in config.supported_extensions
-        for child in children
-    ) or any(child.is_dir() and _is_package_directory(child, config) for child in children)
+    return any(_is_importable_module_file(child, config) for child in children) or any(
+        child.is_dir() and _is_package_directory(child, config, _visited) for child in children
+    )
