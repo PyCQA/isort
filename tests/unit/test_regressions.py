@@ -2763,6 +2763,39 @@ def test_noqa_mode_reaches_a_fixpoint_with_an_opening_line_comment() -> None:
     assert second_pass.count("# NOQA") == 1
 
 
+def test_non_noqa_mode_wraps_with_an_ignored_opening_line_comment_issue_2093() -> None:
+    """A non-NOQA wrap mode keeps the parentheses clean of an ignored comment.
+
+    With ``use_parentheses`` and an opening-line comment the statement is wrapped
+    first and the comment is added to the ``from X import (`` line afterwards.
+    When ``ignore_comments`` strips that comment there is nothing to add, so the
+    first line must stay untouched. NOQA mode no longer takes this path, because
+    it never parenthesises the statement.
+    """
+    to_sort = (
+        "from my_package.my_module import super_long_file_name as super_long_alias"
+        "  # type: ignore\n"
+    )
+
+    first_pass = isort.code(
+        to_sort,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
+    )
+    assert first_pass == (
+        "from my_package.my_module import (\n    super_long_file_name as super_long_alias)\n"
+    )
+    assert first_pass == isort.code(
+        first_pass,
+        multi_line_output=0,
+        use_parentheses=True,
+        ignore_comments=True,
+        line_length=40,
+    )
+
+
 def test_noqa_added_to_long_combined_straight_imports_with_bare_comment_issue_2093() -> None:
     """A bare ``#`` comment with ``combine_straight_imports`` gets ``# NOQA``.
 
