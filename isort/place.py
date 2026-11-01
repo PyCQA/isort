@@ -98,17 +98,17 @@ def _src_path(
 
 def _is_module(path: Path) -> bool:
     return (
-        exists_case_sensitive(str(path.with_suffix(".py")))
+        exists_case_sensitive(path.with_suffix(".py"))
         or any(
-            exists_case_sensitive(str(path.with_suffix(ext_suffix)))
+            exists_case_sensitive(path.with_suffix(ext_suffix))
             for ext_suffix in importlib.machinery.EXTENSION_SUFFIXES
         )
-        or exists_case_sensitive(str(path / "__init__.py"))
+        or exists_case_sensitive(path / "__init__.py")
     )
 
 
 def _is_package(path: Path) -> bool:
-    return exists_case_sensitive(str(path)) and path.is_dir()
+    return exists_case_sensitive(path) and path.is_dir()
 
 
 def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
@@ -141,6 +141,4 @@ def _is_namespace_package(path: Path, src_extensions: frozenset[str]) -> bool:
 
 
 def _src_path_is_module(src_path: Path, module_name: str) -> bool:
-    return (
-        module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(str(src_path))
-    )
+    return module_name == src_path.name and src_path.is_dir() and exists_case_sensitive(src_path)

@@ -60,15 +60,15 @@ class Trie:
 
 
 @lru_cache(maxsize=1000)
-def exists_case_sensitive(path: str) -> bool:
+def exists_case_sensitive(path: Path) -> bool:
     """Returns if the given path exists and also matches the case on Windows.
 
     When finding files that can be imported, it is important for the cases to match because while
     file os.path.exists("module.py") and os.path.exists("MODULE.py") both return True on Windows,
     Python can only import using the case of the real file.
     """
-    result = os.path.exists(path)
+    result = path.exists()
     if result and (sys.platform.startswith("win") or sys.platform == "darwin"):  # pragma: no cover
-        directory, basename = os.path.split(path)
-        result = basename in os.listdir(directory)
+        directory, basename = path.parent, path.name
+        result = any(p.name == basename for p in directory.iterdir())
     return result

@@ -3065,16 +3065,16 @@ def test_exists_case_sensitive_file(tmp_path: Path) -> None:
     """Test exists_case_sensitive function for a file."""
     exists_case_sensitive.cache_clear()
     (tmp_path / "module.py").touch()
-    assert exists_case_sensitive(str(tmp_path / "module.py"))
-    assert not exists_case_sensitive(str(tmp_path / "MODULE.py"))
+    assert exists_case_sensitive(tmp_path / "module.py")
+    assert not exists_case_sensitive(tmp_path / "MODULE.py")
 
 
 def test_exists_case_sensitive_directory(tmp_path: Path) -> None:
     """Test exists_case_sensitive function for a directory."""
     exists_case_sensitive.cache_clear()
     (tmp_path / "pkg").mkdir()
-    assert exists_case_sensitive(str(tmp_path / "pkg"))
-    assert not exists_case_sensitive(str(tmp_path / "PKG"))
+    assert exists_case_sensitive(tmp_path / "pkg")
+    assert not exists_case_sensitive(tmp_path / "PKG")
 
 
 def test_sys_path_mutation(tmp_path: Path) -> None:
