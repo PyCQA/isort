@@ -367,7 +367,7 @@ def _build_as_imports(
             opening_line_comments
             and config.use_parentheses
             # NOQA mode appends a marker to lines that are too long, in front of other comments.
-            # Without skipping here this creates an infinte loope of adding markers before existing
+            # Without skipping here this creates an infinite loop of adding markers before existing
             # comments, which can include the marker from a previous run.
             and config.multi_line_output is not wrap_modes.WrapModes.NOQA
         ):
