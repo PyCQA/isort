@@ -1067,7 +1067,14 @@ def main(argv: Sequence[str] | None = None, stdin: TextIOWrapper | None = None) 
 
     config_trie: Trie | None = None
     if resolve_all_configs:
-        config_trie = find_all_configs(config_dict.pop("config_root", "."))
+        config_root = config_dict.pop("config_root", ".")
+        # Leave out settings_path/settings_file so each file keeps its own nearest config.
+        config_overrides = {
+            key: value
+            for key, value in config_dict.items()
+            if key not in ("settings_path", "settings_file")
+        }
+        config_trie = find_all_configs(config_root, config_overrides)
 
     if "src_paths" in config_dict:
         # Keep CLI-provided values as-is so wildcard patterns can be expanded later
