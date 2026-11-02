@@ -7,6 +7,7 @@ import isort.literal
 from isort.settings import DEFAULT_CONFIG, Config
 
 from . import output, parse
+from ._parse_utils import skip_line
 from .exceptions import ExistingSyntaxErrors, FileSkipComment
 from .format import format_natural, remove_whitespace
 from .settings import FILE_SKIP_COMMENTS
@@ -36,6 +37,54 @@ PYLINT_DISABLE_NEXT_COMMENT = "# pylint: disable-next"
 SKIP_IMPORT_COMMENTS = ("isort:skip", "isort: skip")
 
 
+def _is_future_addition(addition: str) -> bool:
+    """Whether an --add-import line is a future import (see #1970)."""
+    return addition.split("#", 1)[0].split()[:3] == ["from", "__future__", "import"]
+
+
+def _stream_has_imports(lines: list[str]) -> bool:
+    """Whether any line is a real import; strings and comments are skipped (see #1970)."""
+    in_quote = ""
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        in_quote = skip_line(line, in_quote).in_quote
+        if in_quote:
+            continue
+        if stripped.startswith(IMPORT_START_IDENTIFIERS):
+            return True
+    return False
+
+
+def _has_future_addition(add_imports: list[str]) -> bool:
+    """Whether any pending addition is a future import (see #1970)."""
+    return any(_is_future_addition(addition) for addition in add_imports)
+
+
+def _drop_future_adds_without_imports(
+    config: Config, add_imports: list[str], input_stream: TextIO
+) -> tuple[list[str], TextIO]:
+    """Drop future adds when append_only has no imports to attach to (see #1970)."""
+    if not (config.append_only and _has_future_addition(add_imports)):
+        return add_imports, input_stream
+    peeked_lines = list(input_stream)
+    if not _stream_has_imports(peeked_lines):
+        add_imports = [addition for addition in add_imports if not _is_future_addition(addition)]
+    return add_imports, StringIO("".join(peeked_lines))
+
+
+def _split_early_additions(config: Config, add_imports: list[str]) -> tuple[list[str], list[str]]:
+    """Split additions for the early insertion path (see #1970).
+
+    In append_only mode only future imports may go first; the rest keep the old path.
+    """
+    if not config.append_only:
+        return add_imports, []
+    early = [addition for addition in add_imports if _is_future_addition(addition)]
+    return early, [addition for addition in add_imports if addition not in early]
+
+
 def _strip_string_prefix(line: str) -> str:
     """Return `line` without a leading Python string prefix (`r`, `b`, `f`, `u`
     or a legal combination of them), so quote-based heuristics see the quote itself.
@@ -55,6 +104,14 @@ def _is_comment_or_string_start(line: str) -> bool:
     first, so a prefixed docstring is recognised exactly as an unprefixed one is.
     """
     return _strip_string_prefix(line.lstrip()).startswith(COMMENT_INDICATORS)
+
+
+def _is_fstring_expression(line: str) -> bool:
+    """Whether `line` starts with an f-string literal, which can never be a docstring."""
+    stripped = line.lstrip().lower()
+    return stripped[:2] in ("f'", 'f"') or (
+        stripped[:2] in ("fr", "rf") and stripped[2:3] in ("'", '"')
+    )
 
 
 def _has_skip_comment(import_statement: str) -> bool:
@@ -199,6 +256,8 @@ def process(
             extension=extension,
         )
         add_imports = []
+
+    add_imports, input_stream = _drop_future_adds_without_imports(config, add_imports, input_stream)
 
     line_separator: str = config.line_ending
     import_section: str = ""
@@ -490,18 +549,21 @@ def process(
             if (
                 add_imports
                 and (stripped_line or end_of_file)
-                and not config.append_only
+                and (not config.append_only or _has_future_addition(add_imports))
                 and not in_top_comment
                 and not was_in_quote
                 and not import_section
-                and not _is_comment_or_string_start(line)
+                and (
+                    not _is_comment_or_string_start(line)
+                    or (config.append_only and _is_fstring_expression(line))
+                )
                 and not (line.rstrip().endswith(DOCSTRING_INDICATORS) and "=" not in line)
             ):
-                import_section = line_separator.join(add_imports) + line_separator
+                early_adds, add_imports = _split_early_additions(config, add_imports)
+                import_section = line_separator.join(early_adds) + line_separator
                 if end_of_file and index != 0:
                     output_stream.write(line_separator)
                 contains_imports = True
-                add_imports = []
 
             if next_import_section and not import_section:  # pragma: no cover
                 raw_import_section = import_section = next_import_section
