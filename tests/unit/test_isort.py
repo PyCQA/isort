@@ -666,6 +666,26 @@ def test_length_sort_section() -> None:
     )
 
 
+def test_length_sort_native_order_issue_2698() -> None:
+    """Length sorting must stay in length order when the native sort order is used."""
+    test_input = "import i\nimport hhhhhhhh\nimport bbbbbbbbbb\n"
+    assert isort.code(test_input, length_sort=True, sort_order="native") == (
+        "import i\nimport hhhhhhhh\nimport bbbbbbbbbb\n"
+    )
+    assert isort.code(test_input, length_sort=True, sort_order="native", reverse_sort=True) == (
+        "import bbbbbbbbbb\nimport hhhhhhhh\nimport i\n"
+    )
+    assert isort.code(
+        test_input, length_sort=True, sort_order="native", force_sort_within_sections=True
+    ) == ("import i\nimport hhhhhhhh\nimport bbbbbbbbbb\n")
+    assert isort.code(test_input, length_sort_straight=True, sort_order="native") == (
+        "import i\nimport hhhhhhhh\nimport bbbbbbbbbb\n"
+    )
+    assert isort.code(
+        "from z import bbbbbbbbbb, i, bb\n", length_sort=True, sort_order="native"
+    ) == ("from z import i, bb, bbbbbbbbbb\n")
+
+
 def test_convert_hanging() -> None:
     """Ensure that isort will convert hanging indents to correct indent
     method."""
