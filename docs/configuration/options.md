@@ -1549,7 +1549,7 @@ Manually specify one or more namespace packages.
 
 ## Follow Links
 
-If `True` isort will follow symbolic links when doing recursive sorting.
+If `True`, isort follows symbolic links during path discovery. Within a Git repository, links are followed only when their targets remain inside that repository. Outside Git repositories, symlinks are always followed.
 
 **Type:** Bool  
 **Default:** `True`  
