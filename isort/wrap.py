@@ -99,6 +99,11 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
 
     for splitter in ("import ", "cimport ", ".", "as "):
         exp = r"\b" + re.escape(splitter) + r"\b"
+        # Never split a module path that is already inside a parenthesized
+        # import. Re-splitting "from a.b import (c)" on "." yields
+        # "from a.b.(\n    c import (c))", which is not valid Python.
+        if splitter == "." and "import (" in line_without_comment:
+            continue
         if re.search(exp, line_without_comment) and not line_without_comment.strip().startswith(
             splitter
         ):

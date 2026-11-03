@@ -2046,6 +2046,95 @@ def test_include_trailing_comma() -> None:
     assert trailing_comma_with_comment == expected_trailing_comma_with_comment
 
 
+def test_vertical_single_import_keeps_trailing_comma_on_the_import_line() -> None:
+    """VERTICAL mode must not strand the trailing comma on its own line.
+
+    With a single import there is no continuation line for the trailing comma to
+    sit on, so the wrapped statement used to come out as ``(lib1,\\n ,)``, which
+    is not valid Python.
+    """
+    assert (
+        isort.code(
+            code=SINGLE_FROM_IMPORT,
+            multi_line_output=WrapModes.VERTICAL,
+            force_grid_wrap=1,
+            include_trailing_comma=True,
+            use_parentheses=True,
+            line_length=40,
+        )
+        == "from third_party import (lib1,)\n"
+    )
+    assert (
+        isort.code(
+            code=SINGLE_FROM_IMPORT,
+            multi_line_output=WrapModes.VERTICAL,
+            force_grid_wrap=1,
+            include_trailing_comma=False,
+            use_parentheses=True,
+            line_length=40,
+        )
+        == "from third_party import (lib1)\n"
+    )
+
+
+def test_single_import_wrap_stays_valid_python_when_it_does_not_fit() -> None:
+    """A wrapped single import must never come out as invalid Python.
+
+    Two separate defects used to fire here. When the statement did not fit, it
+    was handed back to ``wrap.line()``, whose dot splitter re-broke the module
+    path into ``from third_party.(\n    tools import (lib1,),)``. And VERTICAL
+    could leave the trailing comma stranded on its own line as ``(lib1,\n ,)``.
+    Both are syntax errors, so run every wrap mode over a set of line lengths
+    and assert the result still compiles.
+    """
+    source = "from third_party.tools import lib1\n"
+    modes = (
+        WrapModes.GRID,
+        WrapModes.VERTICAL,
+        WrapModes.HANGING_INDENT,
+        WrapModes.VERTICAL_HANGING_INDENT,
+        WrapModes.VERTICAL_GRID,
+        WrapModes.VERTICAL_GRID_GROUPED,
+        WrapModes.HANGING_INDENT_WITH_PARENTHESES,
+    )
+    for mode in modes:
+        for line_length in (10, 20, 30, 40, 80):
+            for trailing_comma in (True, False):
+                wrapped = isort.code(
+                    code=source,
+                    multi_line_output=mode,
+                    force_grid_wrap=1,
+                    include_trailing_comma=trailing_comma,
+                    use_parentheses=True,
+                    line_length=line_length,
+                )
+                compile(wrapped, "<isort>", "exec")
+
+    # The exact shapes that used to be emitted.
+    assert (
+        isort.code(
+            code=source,
+            multi_line_output=WrapModes.VERTICAL,
+            force_grid_wrap=1,
+            include_trailing_comma=True,
+            use_parentheses=True,
+            line_length=10,
+        )
+        == "from third_party.tools import (\n                               lib1,\n)\n"
+    )
+    assert (
+        isort.code(
+            code=source,
+            multi_line_output=WrapModes.GRID,
+            force_grid_wrap=1,
+            include_trailing_comma=True,
+            use_parentheses=True,
+            line_length=30,
+        )
+        == "from third_party.tools import (\n    lib1,)\n"
+    )
+
+
 def test_similar_to_std_library() -> None:
     """Test to ensure modules that are named similarly to a standard library import
     don't end up clobbered
