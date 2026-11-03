@@ -184,3 +184,29 @@ def import_type(
     if line.startswith("lazy from "):
         return "lazy_from"
     return None
+
+
+def split_semicolon_statements(line: str, config: Config) -> list[str]:
+    """Split a line on semicolons, keeping a trailing comment attached to its code.
+
+    A trailing directive that makes the whole line unparsable ('isort: skip' and,
+    when 'honor_noqa' is set, 'noqa') keeps the line as one statement, so callers
+    can preserve it byte-identically instead of reporting its imports.
+    """
+    code, *end_of_line_comment = line.split("#", 1)
+    if ";" not in code or code[0].isspace():
+        return [line]
+
+    statements = [part.strip() for part in code.split(";")]
+    if not statements[-1] and len(statements) > 1:
+        statements.pop()
+
+    if end_of_line_comment and import_type(f"{code}#{end_of_line_comment[0]}", config) is None:
+        return [f"{code}#{end_of_line_comment[0]}"]
+
+    separator = code[len(code.rstrip()) :]
+    if separator:
+        statements[-1] = f"{statements[-1]}{separator}"
+    if end_of_line_comment:
+        statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+    return statements

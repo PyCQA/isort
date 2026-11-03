@@ -2125,6 +2125,31 @@ def test_same_line_statements_with_trailing_comments() -> None:
     assert isort.code("import sys; # noqa\n") == "import sys  # noqa\n"
 
 
+def test_find_imports_in_code_sees_semicolon_directives() -> None:
+    """find_imports_in_code has to see skip/noqa directives after a semicolon.
+
+    Formatted output already preserved these lines; the identifier used to attach
+    the trailing comment to the empty statement after the final semicolon, so the
+    import in front of a skip/noqa directive was still reported.
+    """
+
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # isort: skip\n")] == []
+    assert [
+        str(imp) for imp in isort.find_imports_in_code("import os; import sys  # isort: skip\n")
+    ] == []
+    assert [
+        str(imp) for imp in isort.find_imports_in_code("import sys; # noqa\n", honor_noqa=True)
+    ] == []
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # noqa\n")] == [
+        ":1 import sys"
+    ]
+
+    # Ordinary trailing comments do not hide the import.
+    assert [str(imp) for imp in isort.find_imports_in_code("import sys; # comment\n")] == [
+        ":1 import sys"
+    ]
+
+
 def test_long_line_comments() -> None:
     """Ensure isort correctly handles comments at the end of extremely long lines"""
     test_input = (

@@ -13,6 +13,7 @@ from ._parse_utils import (
     normalize_from_import_string,
     normalize_line,
     skip_line,
+    split_semicolon_statements,
     strip_syntax,
 )
 from .comments import parse as parse_comments
@@ -193,25 +194,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
 
                         starting_line = in_lines[import_index]
 
-        line, *end_of_line_comment = line.split("#", 1)
-        if ";" in line and not line[0].isspace():
-            statements = [line.strip() for line in line.split(";")]
-            if not statements[-1] and len(statements) > 1:
-                statements.pop()
-            if (
-                end_of_line_comment
-                and import_type(f"{line}#{end_of_line_comment[0]}", config) is None
-            ):
-                statements = [f"{line}#{end_of_line_comment[0]}"]
-                end_of_line_comment = []
-            else:
-                separator = line[len(line.rstrip()) :]
-                if separator:
-                    statements[-1] = f"{statements[-1]}{separator}"
-        else:
-            statements = [line]
-        if end_of_line_comment:
-            statements[-1] = f"{statements[-1]}#{end_of_line_comment[0]}"
+        statements = split_semicolon_statements(line, config)
 
         for statement in statements:
             line, raw_line = normalize_line(statement)
