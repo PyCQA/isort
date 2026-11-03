@@ -44,16 +44,38 @@ py_version=39
 
 ## Force To Top
 
-Force specific imports to the top of their appropriate section.
+Force specific imports to the top of their appropriate section. The order of specified modules is preserved at the top of the section.
 
 **Type:** List of Strings  
-**Default:** `frozenset()`  
+**Default:** `()`
 **Config default:** `[]`  
 **Python & Config File Name:** force_to_top  
 **CLI Flags:**
 
 - -t
 - --top
+
+**Examples:**
+
+### Example `.isort.cfg`
+
+```
+[settings]
+force_to_top=torch,tensorflow
+
+```
+
+### Example `pyproject.toml`
+
+```
+[tool.isort]
+force_to_top = ["torch", "tensorflow"]
+
+```
+
+### Example cli usage
+
+`isort -t torch -t tensorflow`
 
 ## Skip
 

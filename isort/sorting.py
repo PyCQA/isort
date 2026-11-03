@@ -48,7 +48,11 @@ def module_key(
         or str(section_name).lower() in config.length_sort_sections
     )
     _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
-    return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
+    if module_name in config.force_to_top:
+        top_prefix = f"A{config.force_to_top.index(module_name):05d}_"
+    else:
+        top_prefix = "B"
+    return f"{top_prefix}{prefix}{_length_sort_maybe}"
 
 
 def section_key(line: str, config: Config) -> str:
@@ -73,8 +77,9 @@ def section_key(line: str, config: Config) -> str:
     if config.sort_relative_in_force_sorted_sections:
         sep = " " if config.reverse_relative else "_"
         line = re.sub(r"^(\.+)", rf"\1{sep}", line)
-    if line.split(" ")[0] in config.force_to_top:
-        section = "A"
+    module_name = line.split(" ")[0]
+    if module_name in config.force_to_top:
+        section = f"A{config.force_to_top.index(module_name):05d}_"
     # * If honor_case_in_force_sorted_sections is true, and case_sensitive and
     #   order_by_type are different, only ignore case in part of the line.
     # * Otherwise, let order_by_type decide the sorting of the whole line. This
