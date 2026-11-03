@@ -29,6 +29,30 @@ class TestConfig:
             known_third_party=["one"], known_thirdparty=["two"]
         ).known_third_party == frozenset({"one"})
 
+    def test_multi_value_setting_provided_as_string(self) -> None:
+        """A single string holds a separated list of items for list-like settings.
+
+        Previously such a value was iterated over character by character, which silently made
+        the documented `no_lines_before` of the `appnexus` profile a no-op.
+        """
+        assert Config(no_lines_before="LOCALFOLDER").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(no_lines_before="future,stdlib").no_lines_before == frozenset(
+            {"future", "stdlib"}
+        )
+        assert Config(profile="appnexus").no_lines_before == frozenset({"LOCALFOLDER"})
+        assert Config(sections="STDLIB,FIRSTPARTY").sections == ("STDLIB", "FIRSTPARTY")
+
+        source = "import os\n\nimport app\n\nimport app_mod\n\nfrom . import local\n"
+        assert (
+            code(
+                source,
+                profile="appnexus",
+                known_first_party=["app"],
+                known_application=["app_mod"],
+            )
+            == "import os\n\nimport app\n\nimport app_mod\nfrom . import local\n"
+        )
+
     def test_invalid_settings_path(self) -> None:
         with pytest.raises(exceptions.InvalidSettingsPath):
             Config(settings_path="this_couldnt_possibly_actually_exists/could_it")
@@ -40,6 +64,26 @@ class TestConfig:
     def test_invalid_profile(self) -> None:
         with pytest.raises(exceptions.ProfileDoesNotExist):
             Config(profile="blackandwhitestylemixedwithpep8")
+
+    @pytest.mark.parametrize(
+        ("indent", "expected"),
+        [
+            ("tab", "\t"),
+            ("Tab", "\t"),
+            ('"tab"', "\t"),
+            ("\t", "\t"),
+            ("\\t", "\t"),
+            ("\\t\\t", "\t\t"),
+            ("2", "  "),
+            ("'  '", "  "),
+        ],
+    )
+    def test_indent(self, indent: str, expected: str) -> None:
+        assert Config(indent=indent).indent == expected
+
+    def test_indent_escaped_tab_in_config_file(self, tmp_path: Path) -> None:
+        (tmp_path / ".isort.cfg").write_text("[settings]\nindent=\\t\n", encoding="utf8")
+        assert Config(settings_path=str(tmp_path)).indent == "\t"
 
     def test_is_skipped(self) -> None:
         assert Config().is_skipped(Path("C:\\path\\isort.py"))
@@ -57,11 +101,6 @@ class TestConfig:
     def test_is_supported_filetype_ioerror(self, tmp_path: Path) -> None:
         does_not_exist = tmp_path / "fake.txt"
         assert not self.instance.is_supported_filetype(str(does_not_exist))
-
-    def test_is_supported_filetype_shebang(self, tmp_path: Path) -> None:
-        path = tmp_path / "myscript"
-        path.write_text("#!/usr/bin/env python\n")
-        assert self.instance.is_supported_filetype(str(path))
 
     def test_is_supported_filetype_editor_backup(self, tmp_path: Path) -> None:
         path = tmp_path / "myscript~"

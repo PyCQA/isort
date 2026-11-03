@@ -20,7 +20,7 @@ def assignments(code: str) -> str:
             continue
         if " = " not in line:
             raise AssignmentsFormatMismatch(code)
-        variable_name, value = line.split(" = ", 1)
+        variable_name, value = line.lstrip().split(" = ", 1)
         values[variable_name] = value
 
     return "".join(
@@ -40,31 +40,17 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
             f"Defined sort types are {', '.join(type_mapping.keys())}."
         )
 
-    variable_name, literal = code.split("=", 1)
-    variable_name = variable_name.strip()
+    target, literal = code.split("=", 1)
+    target = target.strip()
+    # an augmented assignment such as ``__all__ += [...]`` keeps its operator
+    variable_name = target.rstrip("+-*/%@&|^<>").rstrip()
+    operator = target[len(variable_name) :].strip() + "="
     literal = literal.lstrip()
-    preserve_trailing_comma = config.include_trailing_comma and _has_trailing_comma(literal)
     try:
         parsed = ast.parse(literal, mode="eval")
         value = ast.literal_eval(parsed.body)
     except Exception as error:
         raise LiteralParsingFailure(code, error)
-
-    expected_type, sort_function = type_mapping[sort_type]
-    if type(value) is not expected_type:
-        raise LiteralSortTypeMismatch(type(value), expected_type)
-
-    line_separator = _infer_line_separator(code, config.line_ending)
-
-    prefix_length = len(f"{variable_name} = ")
-    variable_value = sort_function(
-        value, config, prefix_length, preserve_trailing_comma, line_separator
-    )
-    sorted_value_code = f"{variable_name} = {variable_value}"
-    if config.formatting_function:
-        sorted_value_code = config.formatting_function(
-            sorted_value_code, extension, config
-        ).rstrip()
 
     # Preserve anything that followed the literal (e.g. a trailing comment like
     # ``__all__ = ["b", "a"]  # exports``). The value node's end position marks
@@ -73,6 +59,26 @@ def assignment(code: str, sort_type: str, extension: str, config: Config = DEFAU
     end_col_offset = parsed.body.end_col_offset or 0
     lines = literal.splitlines(keepends=True)
     value_end = sum(len(line) for line in lines[: end_lineno - 1]) + end_col_offset
+    preserve_trailing_comma = config.include_trailing_comma and _has_trailing_comma(
+        literal[:value_end]
+    )
+
+    expected_type, sort_function = type_mapping[sort_type]
+    if type(value) is not expected_type:
+        raise LiteralSortTypeMismatch(type(value), expected_type)
+
+    line_separator = _infer_line_separator(code, config.line_ending)
+
+    prefix_length = len(f"{variable_name} {operator} ")
+    variable_value = sort_function(
+        value, config, prefix_length, preserve_trailing_comma, line_separator
+    )
+    sorted_value_code = f"{variable_name} {operator} {variable_value}"
+    if config.formatting_function:
+        sorted_value_code = config.formatting_function(
+            sorted_value_code, extension, config
+        ).rstrip()
+
     sorted_value_code += literal[value_end:]
     return sorted_value_code
 
@@ -121,7 +127,7 @@ def _black_quote(value: str) -> str:
     return '"' + value.replace('"', '\\"') + '"'
 
 
-def _repr_element(value: Any) -> str:
+def _repr_element(value: object) -> str:
     """Render a single sorted element: strings via black's quote rule, everything else
     via repr() (so ints and other literals in ``# isort: list`` etc. keep working).
     """

@@ -94,7 +94,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             return content
 
         prefix, keyword, _ = line_without_comment.rstrip().rsplit(" ", 2)
-        comment_suffix = f"  #{comment}" if comment else ""
+        comment_suffix = f"  #{comment}" if comment is not None else ""
         return f"{prefix} {keyword} \\{line_separator}{config.indent}*{comment_suffix}"
 
     for splitter in ("import ", "cimport ", ".", "as "):
@@ -109,11 +109,11 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
             # and for all comments in vertical hanging modes (when
             # use_parentheses is False), so that multi_line_output=3/5 is
             # respected even without an explicit use_parentheses=True setting.
-            _hoist_comment_to_paren = comment and (
+            _hoist_comment_to_paren = comment is not None and (
                 (config.use_parentheses and "noqa" in comment)
                 or (is_vertical_mode and not config.use_parentheses)
             )
-            if comment and not _hoist_comment_to_paren:
+            if comment is not None and not _hoist_comment_to_paren:
                 _comma_maybe = (
                     ","
                     if (
@@ -142,7 +142,7 @@ def line(content: str, line_separator: str, config: Config = DEFAULT_CONFIG) -> 
                 if splitter == "as ":
                     output = f"{content}{splitter}{cont_line.lstrip()}"
                 else:
-                    _comma = "," if config.include_trailing_comma and not comment else ""
+                    _comma = "," if config.include_trailing_comma and comment is None else ""
 
                     if is_vertical_mode:
                         _separator = line_separator

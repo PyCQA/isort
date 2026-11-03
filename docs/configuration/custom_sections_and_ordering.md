@@ -55,6 +55,72 @@ following mapping:
 This will likely be changed in isort 6.0.0+ in a backwards compatible way.
 
 
+## How imports are classified
+
+isort classifies each imported module before sorting it into a section. It uses
+these checks in order, stopping at the first match:
+
+1. A [forced separate](options.md#forced-separate) pattern that matches the
+   start of the module name puts the import in that separate section. isort
+   appends `*` to a pattern that does not end with one, so `django.contrib`
+   also matches `django.contrib.auth` and `django.contribfoo`.
+2. An import starting with a dot, such as `from .utils import helper`, goes in
+   `LOCALFOLDER`.
+3. A matching `known_*` setting selects its configured section. This includes
+   the standard library list for the configured [Python version](options.md#python-version).
+   isort checks the full module name before its parent names, so a setting for
+   `mypackage.special` can override one for `mypackage`. A `known_*` setting is
+   ignored when its section is not listed in [sections](options.md#sections).
+4. A module or package found under [source paths](options.md#src-paths) goes in
+   `FIRSTPARTY`. This includes Python modules, extension modules, packages and
+   directories. Namespace packages are checked for the imported submodule.
+5. Otherwise, the import goes in the [default section](options.md#default-section),
+   which is `THIRDPARTY` unless configured differently.
+
+With the default configuration, this means:
+
+| Import | Section | Reason |
+| --- | --- | --- |
+| `from __future__ import annotations` | `FUTURE` | Included in `known_future_library` |
+| `import os` | `STDLIB` | Included in the standard library list |
+| `import mypackage` | `FIRSTPARTY` | Found in the configured source paths |
+| `import external_package` | `THIRDPARTY` | No earlier rule matches |
+| `from . import utils` | `LOCALFOLDER` | Starts with a dot |
+
+### First-party imports and the project layout
+
+By default, isort searches the configuration directory and its `src`
+subdirectory for first-party imports. Without a configuration file, this is
+based on the directory used to resolve the configuration. Running isort from a
+different directory, or selecting a different settings file, can therefore
+change which imports are considered first-party.
+
+For a project with its packages under `lib`, configure that directory explicitly:
+
+```toml
+[tool.isort]
+src_paths = ["lib"]
+```
+
+Relative source paths are resolved from the configuration directory. A source
+path may also name the package directory itself. In that case, both the package
+and importable modules inside that directory can be classified as first-party.
+
+To classify a package independently of where isort runs or whether its source
+is present, use an explicit setting:
+
+```toml
+[tool.isort]
+known_first_party = ["mypackage"]
+known_third_party = ["external_package"]
+```
+
+These settings take precedence over source-path detection. isort does not need
+to import a package or find it in an installed environment to classify it.
+Use `isort --verbose path/to/file.py` to see each import's classification and
+`isort --show-config path/to/file.py` to check the settings and their sources.
+
+
 ## Auto-comment import sections
 
 Some projects prefer to have import sections uniquely titled to aid in

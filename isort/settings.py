@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess  # nosec # Needed for gitignore support.
 import sys
+import tomllib
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
 from importlib.metadata import EntryPoints
@@ -36,12 +37,6 @@ from .utils import Trie
 from .wrap_modes import WrapModes
 from .wrap_modes import from_string as wrap_mode_from_string
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    from ._vendored import tomli as tomllib
-
-_SHEBANG_RE = re.compile(rb"^#!.*\bpython[23w]?\b")
 CYTHON_EXTENSIONS = frozenset({"pyx", "pxd"})
 SUPPORTED_EXTENSIONS = frozenset({"py", "pyi", *CYTHON_EXTENSIONS})
 BLOCKED_EXTENSIONS = frozenset({"pex"})
@@ -195,7 +190,7 @@ class _Config:
     no_inline_sort: bool = False
     ignore_comments: bool = False
     case_sensitive: bool = False
-    sources: tuple[dict[str, Any], ...] = ()
+    sources: tuple[dict[str, object], ...] = ()
     virtual_env: str = ""
     conda_env: str = ""
     ensure_newline_before_comments: bool = False
@@ -229,7 +224,7 @@ class _Config:
     overwrite_in_place: bool = False
     reverse_sort: bool = False
     star_first: bool = False
-    git_ls_files: dict[Path, set[str]] = field(default_factory=dict)
+    git_ls_files: dict[Path, set[Path]] = field(default_factory=dict)
     format_error: str = "{error}: {message}"
     format_success: str = "{success}: {message}"
     sort_order: str = "natural"
@@ -365,6 +360,8 @@ class Config(_Config):
                 indent = indent.strip("'").strip('"')
                 if indent.lower() == "tab":
                     indent = "\t"
+                else:
+                    indent = indent.replace("\\t", "\t")
             combined_config["indent"] = indent
 
         known_other = {}
@@ -415,6 +412,12 @@ class Config(_Config):
             default_value = _DEFAULT_SETTINGS.get(key, None)
             if default_value is None:
                 continue
+
+            if isinstance(value, str) and isinstance(default_value, (frozenset, tuple)):
+                # A single string holds a list of items for list-like settings, just as it does
+                # in a configuration file (e.g. `no_lines_before=LOCALFOLDER`). Without this it
+                # would be iterated over character by character instead.
+                value = _as_list(value)
 
             combined_config[key] = type(default_value)(value)
 
@@ -512,12 +515,7 @@ class Config(_Config):
         except OSError:
             pass
 
-        try:
-            with open(file_name, "rb") as fp:
-                line = fp.readline(100)
-        except OSError:
-            return False
-        return bool(_SHEBANG_RE.match(line))
+        return False
 
     def _check_folder_git_ls_files(self, folder: str) -> Path | None:
         env = {**os.environ, "LANG": "C.UTF-8"}
@@ -551,9 +549,18 @@ class Config(_Config):
             .split("\0")
         )
 
-        self.git_ls_files[git_folder] = {
-            str(git_folder / Path(f)) for f in tracked_files + tracked_files_others
-        }
+        # the folders holding those files are allowed too, so that folders without
+        # any of them (e.g. ignored ones) are skipped instead of walked file by file
+        allowed = {git_folder}
+        for f in tracked_files + tracked_files_others:
+            path = git_folder / Path(f)
+            allowed.add(path)
+            for parent in path.parents:
+                if parent in allowed:
+                    break
+                allowed.add(parent)
+
+        self.git_ls_files[git_folder] = allowed
         return git_folder
 
     def is_skipped(self, file_path: Path) -> bool:
@@ -604,11 +611,7 @@ class Config(_Config):
 
             # git_ls_files are good files you should parse. If you're not in the allow list, skip.
 
-            if (
-                git_folder
-                and not file_path.is_dir()
-                and str(file_path.resolve()) not in self.git_ls_files[git_folder]
-            ):
+            if git_folder and file_path.resolve() not in self.git_ls_files[git_folder]:
                 return True
 
         return False
