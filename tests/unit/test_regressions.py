@@ -3191,3 +3191,62 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+def test_commented_from_imports_are_grouped_the_same_way_on_the_next_run() -> None:
+    """Names whose comments could not share a statement were spread over several statements that
+    each grouped more names. The next run attached the comments of all those statements to the
+    first one, so the output changed again and `--check` rejected isort's own output.
+    """
+    test_input = (
+        "from x import a  # explanation\n"
+        "from x import b\n"
+        "from x import c  # noqa: F401\n"
+        "from x import d\n"
+    )
+    expected = "from x import a, b, d  # explanation\nfrom x import c  # noqa: F401\n"
+    assert isort.code(test_input) == expected
+    assert isort.code(expected) == expected
+
+    test_input = (
+        "from ctypes import POINTER\n"
+        "from ctypes import WinDLL  # type: ignore[attr-defined]\n"
+        "from ctypes import WinError  # type: ignore[attr-defined]\n"
+        "from ctypes import c_char_p\n"
+    )
+    expected = (
+        "from ctypes import POINTER, c_char_p\n"
+        "from ctypes import WinDLL  # type: ignore[attr-defined]\n"
+        "from ctypes import WinError  # type: ignore[attr-defined]\n"
+    )
+    assert isort.code(test_input) == expected
+    assert isort.code(expected) == expected
+
+    # Only the first statement groups names with comments.
+    test_input = (
+        "from x import a  # noqa: F401\n"
+        "from x import b  # first note\n"
+        "from x import c  # second note\n"
+    )
+    assert isort.code(test_input) == test_input
+
+    # The same applies to comments on the names of a parenthesized import.
+    test_input = (
+        "from x import (\n    a,  # type: ignore\n    b,\n    c,  # type: ignore\n    d,\n)\n"
+    )
+    expected = (
+        "from x import (  # type: ignore\n    a,\n    b,\n    d,\n)\n"
+        "from x import c  # type: ignore\n"
+    )
+    assert isort.code(test_input, profile="black") == expected
+    assert isort.code(expected, profile="black") == expected
+
+    test_input = "from x import (\n    a,  # explanation\n    b,\n    c,  # noqa: F401\n)\n"
+    expected = "from x import (  # explanation\n    a,\n    b,\n)\nfrom x import c  # noqa: F401\n"
+    assert isort.code(test_input, profile="black") == expected
+    assert isort.code(expected, profile="black") == expected
+
+    test_input = "from x import (\n    a as aa,  # noqa\n    b,  # explanation\n    c,\n)\n"
+    expected = "from x import (  # noqa\n    a as aa,\n    c,\n)\nfrom x import b  # explanation\n"
+    assert isort.code(test_input, profile="black", combine_as_imports=True) == expected
+    assert isort.code(expected, profile="black", combine_as_imports=True) == expected
