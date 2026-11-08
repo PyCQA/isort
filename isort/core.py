@@ -62,6 +62,10 @@ def _has_skip_comment(import_statement: str) -> bool:
     return any(comment in import_statement for comment in SKIP_IMPORT_COMMENTS)
 
 
+def _is_future_import(import_statement: str) -> bool:
+    return import_statement.split()[:2] == ["from", "__future__"]
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -477,7 +481,11 @@ def process(
                             # Keep additions after leading skipped statements, using the
                             # complete statement already collected above. See #1962.
                             add_imports_start = len(import_section)
-                        else:
+                        elif not (
+                            _is_future_import(import_statement)
+                            and any(_is_future_import(addition) for addition in add_imports)
+                            and any(not _is_future_import(addition) for addition in add_imports)
+                        ):
                             contains_sortable_imports = True
                 else:
                     not_imports = True
@@ -520,11 +528,30 @@ def process(
                 next_import_section = ""
 
             if import_section:
+                before_skipped_imports = ""
                 if add_imports and (contains_imports or not config.append_only) and not indent:
-                    # Future additions must still precede all ordinary imports.
-                    if any(
-                        addition.split()[:2] == ["from", "__future__"] for addition in add_imports
-                    ):
+                    future_additions = [
+                        addition for addition in add_imports if _is_future_import(addition)
+                    ]
+                    ordinary_additions = [
+                        addition for addition in add_imports if not _is_future_import(addition)
+                    ]
+                    if future_additions:
+                        if ordinary_additions and add_imports_start:
+                            # Sort each side of the skipped statements independently so
+                            # ordinary additions cannot be moved ahead of them by the parser.
+                            parsed_prefix = parse.file_contents(
+                                line_separator.join(future_additions)
+                                + line_separator
+                                + import_section[:add_imports_start],
+                                config=config,
+                            )
+                            verbose_output += parsed_prefix.verbose_output
+                            before_skipped_imports = output.sorted_imports(
+                                parsed_prefix, config, extension, import_type="import"
+                            )
+                            import_section = import_section[add_imports_start:]
+                            add_imports = ordinary_additions
                         add_imports_start = 0
                     before_additions = import_section[:add_imports_start]
                     if before_additions and not before_additions.endswith(("\n", "\r")):
@@ -569,6 +596,7 @@ def process(
                         extension,
                         import_type="cimport" if cimports else "import",
                     )
+                    sorted_import_section = before_skipped_imports + sorted_import_section
                     if not (import_section.strip() and not sorted_import_section):
                         if indent:
                             if next_import_section and not next_indent:

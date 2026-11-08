@@ -91,6 +91,36 @@ def test_add_future_import_before_leading_skip_issue_1962(addition: str) -> None
     assert isort.code(result, add_imports=[addition]) == result
 
 
+@pytest.mark.parametrize("reverse_additions", [False, True])
+@pytest.mark.parametrize(
+    "skipped",
+    [
+        "import stay_on_top  # isort: skip\n",
+        "from stay_on_top import (  # isort: skip\n    name,\n)\n",
+        "import first  # isort: skip\nimport second  # isort: skip\n",
+    ],
+)
+@pytest.mark.parametrize("following", ["", "import b\n"])
+@pytest.mark.parametrize("final_newline", [False, True])
+@pytest.mark.parametrize("line_ending", ["\n", "\r\n"])
+def test_mixed_add_imports_preserves_leading_skip_issue_1962(
+    reverse_additions: bool, skipped: str, following: str, final_newline: bool, line_ending: str
+) -> None:
+    source = skipped + following
+    if not final_newline:
+        source = source.rstrip("\n")
+    additions = ["from __future__ import annotations", "import a"]
+    if reverse_additions:
+        additions.reverse()
+    expected = "from __future__ import annotations\n\n" + skipped + "import a\n" + following
+    source = source.replace("\n", line_ending)
+    expected = expected.replace("\n", line_ending)
+    result = isort.code(source, add_imports=additions, line_ending=line_ending)
+    assert result == expected
+    compile(result, "imports.py", "exec")
+    assert isort.code(result, add_imports=additions, line_ending=line_ending) == expected
+
+
 def test_isort_duplicating_comments_issue_1264() -> None:
     """Ensure isort doesn't duplicate comments when force_sort_within_sections is set to `True`
     as was the case in issue #1264: https://github.com/pycqa/isort/issues/1264
