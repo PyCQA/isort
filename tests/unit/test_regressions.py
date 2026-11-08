@@ -38,6 +38,14 @@ def test_add_imports_preserves_leading_skips_issue_1962(
     assert isort.code(result, add_imports=["import a"]) == expected
 
 
+def test_add_imports_converts_line_endings_after_leading_skip_issue_1962() -> None:
+    source = "import stay_on_top  # isort: skip\nimport b\n"
+    expected = "import stay_on_top  # isort: skip\r\nimport a\r\nimport b\r\n"
+    result = isort.code(source, add_imports=["import a"], line_ending="\r\n")
+    assert result == expected
+    assert isort.code(result, add_imports=["import a"], line_ending="\r\n") == expected
+
+
 @pytest.mark.parametrize("preceding", ["import z\n", "from __future__ import annotations\n"])
 def test_add_imports_preserves_skip_boundaries_issue_1962(preceding: str) -> None:
     skipped = "import stay_on_top  # isort: skip\n"

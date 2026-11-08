@@ -527,7 +527,7 @@ def process(
                     ):
                         add_imports_start = 0
                     before_additions = import_section[:add_imports_start]
-                    if before_additions and not before_additions.endswith(line_separator):
+                    if before_additions and not before_additions.endswith(("\n", "\r")):
                         before_additions += line_separator
                     import_section = (
                         before_additions
