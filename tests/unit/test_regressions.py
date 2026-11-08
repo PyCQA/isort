@@ -13,6 +13,76 @@ from isort.main import main
 from isort.wrap_modes import WrapModes
 
 
+@pytest.mark.parametrize("directive", ["isort: skip", "isort:skip"])
+@pytest.mark.parametrize(
+    "skipped",
+    [
+        "import stay_on_top  # {directive}\n",
+        "from stay_on_top import name  # {directive}\n",
+        "from stay_on_top import (  # {directive}\n    name,\n)\n",
+        "import first  # {directive}\nimport second  # {directive}\n",
+    ],
+)
+@pytest.mark.parametrize("following", ["", "import b\n"])
+@pytest.mark.parametrize("final_newline", [False, True])
+def test_add_imports_preserves_leading_skips_issue_1962(
+    directive: str, skipped: str, following: str, final_newline: bool
+) -> None:
+    skipped = skipped.format(directive=directive)
+    source = skipped + following
+    if not final_newline:
+        source = source.rstrip("\n")
+    expected = skipped + "import a\n" + following
+    result = isort.code(source, add_imports=["import a"])
+    assert result == expected
+    assert isort.code(result, add_imports=["import a"]) == expected
+
+
+@pytest.mark.parametrize("preceding", ["import z\n", "from __future__ import annotations\n"])
+def test_add_imports_preserves_skip_boundaries_issue_1962(preceding: str) -> None:
+    skipped = "import stay_on_top  # isort: skip\n"
+    source = preceding + skipped + "import b\n"
+    if preceding.startswith("from __future__"):
+        expected = preceding + "\nimport a\n\n" + skipped + "import b\n"
+    else:
+        expected = "import a\n" + preceding + "\n" + skipped + "import b\n"
+    result = isort.code(source, add_imports=["import a"])
+    assert result == expected
+    assert isort.code(result, add_imports=["import a"]) == expected
+
+
+def test_leading_skips_without_add_imports_issue_1962() -> None:
+    source = "import first  # isort: skip\nimport second  # isort: skip\n\n"
+    assert isort.code(source) == source
+
+
+def test_cli_add_import_preserves_leading_skip_issue_1962(tmp_path: Path) -> None:
+    target = tmp_path / "imports.py"
+    target.write_text("import stay_on_top  # isort: skip\nimport b\n", encoding="utf-8")
+    expected = "import stay_on_top  # isort: skip\nimport a\nimport b\n"
+    main([str(target), "--add-import", "import a"])
+    assert target.read_text(encoding="utf-8") == expected
+    main([str(target), "--add-import", "import a", "--check-only"])
+
+
+@pytest.mark.parametrize(
+    "addition",
+    [
+        "from __future__ import annotations",
+        "from __future__ import(annotations)",
+        "from  __future__ import annotations",
+    ],
+)
+def test_add_future_import_before_leading_skip_issue_1962(addition: str) -> None:
+    source = "import stay_on_top  # isort: skip\nimport b\n"
+    result = isort.code(source, add_imports=[addition])
+    assert result == (
+        "from __future__ import annotations\n\nimport b\n\nimport stay_on_top  # isort: skip\n"
+    )
+    compile(result, "imports.py", "exec")
+    assert isort.code(result, add_imports=[addition]) == result
+
+
 def test_isort_duplicating_comments_issue_1264() -> None:
     """Ensure isort doesn't duplicate comments when force_sort_within_sections is set to `True`
     as was the case in issue #1264: https://github.com/pycqa/isort/issues/1264
