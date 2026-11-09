@@ -92,6 +92,9 @@ class ImportContinuationResult(NamedTuple):
     remainder: str = ""
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It tracks
+# parenthesis depth across continuation lines, which is inherently branching.
+# skipcq: PY-R1000
 def collect_import_continuation(
     line: str,
     import_string: str,
