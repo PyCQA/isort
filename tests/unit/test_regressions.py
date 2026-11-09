@@ -3191,3 +3191,31 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+def test_semicolon_after_parenthesized_import_is_a_separate_statement() -> None:
+    """A ``;`` after the balancing close-paren of a parenthesized import must
+    start a new statement, not be folded into the import name list. Folding it
+    in produced invalid output like ``from pkg.mod import ;, import, os, y``
+    that ``isort --check`` wrongly passed (issue #2679).
+    """
+    import ast
+
+    cases = [
+        (
+            "from pkg.mod import (\n    y,\n); import os\n",
+            "import os\n\nfrom pkg.mod import y\n",
+        ),
+        (
+            "from pkg.mod import (\n    y,\n); from os import beta\n",
+            "from os import beta\n\nfrom pkg.mod import y\n",
+        ),
+        (
+            "from pkg.mod import (\n    y,\n); print(1)\n",
+            "from pkg.mod import y\n\nprint(1)\n",
+        ),
+    ]
+    for src, expected in cases:
+        assert isort.code(src) == expected
+        assert isort.code(expected) == expected
+        ast.parse(isort.code(src))

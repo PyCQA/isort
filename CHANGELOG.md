@@ -11,6 +11,8 @@ on [Github](https://github.com/PyCQA/isort/releases).
 
 ### Unreleased
 
+   - Fix statements after a parenthesized import's close-paren being folded into the import name list, producing invalid output (e.g. ``from pkg.mod import ;, import, os, y``) that ``isort --check`` wrongly passed (#2679)
+
 ### 9.0.0 August 26 2026
 
    - Remove logic for deprecated options (#2498) @DanielNoord
