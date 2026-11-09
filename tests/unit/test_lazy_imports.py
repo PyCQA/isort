@@ -138,3 +138,27 @@ def test_force_sort_within_sections_applies_to_lazy() -> None:
         "lazy from ast import parse\nlazy import zlib\n",
         force_sort_within_sections=True,
     )
+
+
+def test_lazy_from_import_keeps_its_own_comments() -> None:
+    """Comments of a lazy from import stay on it when the module is also imported eagerly."""
+    isort_test(
+        "# needed at import time\n"
+        "from os import path  # eager\n"
+        "# only used in main()\n"
+        "lazy from os import getcwd, sep  # type: ignore[attr-defined]\n"
+    )
+    isort_test(
+        "from os import path as p  # eager\nlazy from os import sep as s  # lazy\n",
+        combine_as_imports=True,
+    )
+
+
+def test_lazy_from_import_keeps_its_own_trailing_comma() -> None:
+    """A magic trailing comma only applies to the from import it was written in."""
+    isort_test(
+        "from os import path\nlazy from os import (\n    getcwd,\n    sep,\n)\n", profile="black"
+    )
+    isort_test(
+        "from os import (\n    getcwd,\n    sep,\n)\nlazy from os import path\n", profile="black"
+    )

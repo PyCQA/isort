@@ -421,6 +421,7 @@ def _build_grouped_from_imports(
     imports: list[str],
     comments: list[str],
     module: str,
+    is_lazy: bool,
     import_start: str,
     processed_as_imports_this_iteration: bool,
     parsed: parse.ParsedContent,
@@ -471,7 +472,7 @@ def _build_grouped_from_imports(
         # ``multi_line_output`` mode.
         config.split_on_trailing_comma
         and (
-            module in parsed.trailing_commas
+            (is_lazy, module) in parsed.trailing_commas
             or (config.include_trailing_comma and do_multiline_reformat)
         )
         and not processed_as_imports_this_iteration
@@ -626,9 +627,12 @@ def _with_from_imports_for_module(
                 else:
                     from_imports[idx : (idx + 1)] = as_imports.pop(from_import)
 
-    opening_line_comments: list[str] = parsed.categorized_comments["from"].pop(module, [])
+    is_lazy = import_key == "lazy_from"
+    opening_line_comments: list[str] = parsed.categorized_comments["from"].pop(
+        (is_lazy, module), []
+    )
     comments: list[str] = list(opening_line_comments)
-    above_comments = parsed.categorized_comments["above"]["from"].pop(module, None)
+    above_comments = parsed.categorized_comments["above"]["from"].pop((is_lazy, module), None)
     if above_comments:
         output.extend(above_comments)
 
@@ -806,7 +810,7 @@ def _with_from_imports_for_module(
         combined_as_comments: list[str] = []
         if config.combine_as_imports:
             combined_as_comments = parsed.categorized_comments["from"].pop(
-                f"{module}.__combined_as__", []
+                (is_lazy, f"{module}.__combined_as__"), []
             )
             comments = [*comments, *combined_as_comments]
 
@@ -814,6 +818,7 @@ def _with_from_imports_for_module(
             config=config,
             parsed=parsed,
             module=module,
+            is_lazy=is_lazy,
             imports=from_import_section,
             import_start=import_start,
             comments=comments,
