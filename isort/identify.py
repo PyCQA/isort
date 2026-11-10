@@ -119,7 +119,7 @@ def imports(
                 file_path=file_path,
             )
 
-            _, import_string, _ = collect_import_continuation(
+            _, import_string, _, _ = collect_import_continuation(
                 line,
                 import_string,
                 # We can disregard `index` here because it is no longer accessed after this line.
