@@ -92,6 +92,18 @@ class ImportContinuationResult(NamedTuple):
     remainder: str = ""
 
 
+def _find_balanced_close(line: str, depth: int) -> int:
+    """Locate the closing parenthesis that ends a continued import."""
+    for index, character in enumerate(line):
+        if character == "(":
+            depth += 1
+        elif character == ")":
+            depth -= 1
+            if depth == 0:
+                return index
+    return -1
+
+
 def collect_import_continuation(
     line: str,
     import_string: str,
@@ -102,6 +114,8 @@ def collect_import_continuation(
 
     Handles both parenthesised imports ``from X import (`` + newline + ``    Y, Z)``
     and backslash-continued imports ``import Y, \\`` + newline + ``    Z``.
+
+    Statements following a parenthesised import are returned separately in ``remainder``.
     """
     extra_lines: list[ExtraLine] = []
     remainder = ""
@@ -122,18 +136,9 @@ def collect_import_continuation(
                 # (e.g. a ``; import os`` on ``); import os``) is a separate
                 # statement, not part of the import, so remember it to be
                 # re-processed by the main loop.
-                d = prev_depth
-                close_pos = -1
-                for i, ch in enumerate(comment_free):
-                    if ch == "(":
-                        d += 1
-                    elif ch == ")":
-                        d -= 1
-                        if d == 0:
-                            close_pos = i
-                            break
+                close_pos = _find_balanced_close(comment_free, prev_depth)
                 kept = line[: close_pos + 1]
-                remainder = line[close_pos + 1:].lstrip("; ")
+                remainder = line[close_pos + 1 :].lstrip("; ")
                 extra_lines.append(ExtraLine(line=kept, comment=comment))
                 import_string += line_separator + kept
             else:
@@ -167,7 +172,9 @@ def collect_import_continuation(
                     import_string += line_separator + line
                 else:
                     extra_lines.append(ExtraLine(line=line, comment=comment))
-                    import_string = import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+                    import_string = (
+                        import_string.rstrip().rstrip("\\") + " " + line.lstrip()
+                    )
 
     return ImportContinuationResult(
         final_line=line,
@@ -184,7 +191,9 @@ def normalize_from_import_string(import_string: str) -> str:
     reconstructs the canonical ``from X import Y, Z`` form.
     """
     import_string = (
-        import_string.replace("import(", "import (").replace("\\", " ").replace("\n", " ")
+        import_string.replace("import(", "import (")
+        .replace("\\", " ")
+        .replace("\n", " ")
     )
     cimports = " cimport " in import_string
     parts = import_string.split(" cimport " if cimports else " import ")
