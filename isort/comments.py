@@ -30,7 +30,8 @@ def add_to_line(
 
     unique_comments: list[str] = []
     for comment in comments:
-        if comment not in unique_comments:
+        # Skip empty comments to avoid dangling `;` separators
+        if comment and comment not in unique_comments:
             unique_comments.append(comment)
     comment_text = "; ".join(unique_comments)
     base, existing_comment = parse(original_string)

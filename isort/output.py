@@ -362,7 +362,15 @@ def _build_as_imports(
             straight_comments.append(specific_comment)
 
         import_line = import_start + as_import
-        if opening_line_comments and config.use_parentheses:
+
+        if (
+            opening_line_comments
+            and config.use_parentheses
+            # NOQA mode appends a marker to lines that are too long, in front of other comments.
+            # Without skipping here this creates an infinite loop of adding markers before existing
+            # comments, which can include the marker from a previous run.
+            and config.multi_line_output is not wrap_modes.WrapModes.NOQA
+        ):
             # When parentheses are used, opening-line comments (e.g. "# noqa") must
             # remain on the "from X import (" line. If we naively embedded them in
             # the attribute string and then called wrap.line(), the comment would
@@ -389,8 +397,6 @@ def _build_as_imports(
             )
             if opening_comment:
                 lines[0] += opening_comment
-                if config.multi_line_output == wrap_modes.WrapModes.NOQA:
-                    lines[0] = wrap.line(lines[0], line_separator, config)
             output.append(line_separator.join(lines))
         else:
             output.append(
@@ -797,11 +803,12 @@ def _with_from_imports_for_module(
             break
 
         # If we are combining aliased imports we need to pop any associated comments.
+        combined_as_comments: list[str] = []
         if config.combine_as_imports:
-            comments = [
-                *comments,
-                *(parsed.categorized_comments["from"].pop(f"{module}.__combined_as__", ())),
-            ]
+            combined_as_comments = parsed.categorized_comments["from"].pop(
+                f"{module}.__combined_as__", []
+            )
+            comments = [*comments, *combined_as_comments]
 
         grouped_from_import_statement = _build_grouped_from_imports(
             config=config,
@@ -811,7 +818,7 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments),
+            preserve_comments_on_statement_line=bool(opening_line_comments or combined_as_comments),
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)
@@ -954,7 +961,7 @@ def _ensure_newline_before_comment(output: list[str]) -> list[str]:
 
 def _with_star_comments(parsed: parse.ParsedContent, module: str, comments: list[str]) -> list[str]:
     star_comment = parsed.categorized_comments["nested"].get(module, {}).pop("*", None)
-    if star_comment:
+    if star_comment is not None:
         return [*comments, star_comment]
     return comments
 

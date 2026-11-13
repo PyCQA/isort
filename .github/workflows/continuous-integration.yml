@@ -51,10 +51,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        compiled: [true, false]
+        os: [ubuntu-latest, macos-latest, windows-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
-    name: "Tests (Python: ${{ matrix.python-version }}, OS: ${{ matrix.os }}, Compiled: ${{ matrix.compiled }})"
+    name: "Tests (Python: ${{ matrix.python-version }}, OS: ${{ matrix.os }})"
     env:
       FORCE_COLOR: 1
 
@@ -70,18 +69,28 @@ jobs:
 
       - *setup-uv
       
-      - name: "Install dependencies (compiled: ${{ matrix.compiled }})"
+      - name: Install dependencies (non-compiled)
         env:
-          HATCH_BUILD_HOOK_ENABLE_MYPYC: ${{ matrix.compiled }}
+          HATCH_BUILD_HOOK_ENABLE_MYPYC: false
         run: uv sync --all-extras --frozen
 
-      - name: Run tests
-        env:
-          COVERAGE_FAIL_UNDER: ${{ matrix.compiled && '0' || '99' }}
-        run: uv run --with tox-uv tox -e py,coverage_report-ci
+      - name: Run tests (non-compiled)
+        run: uv run --no-sync --with tox-uv tox -e py,coverage_report-ci
 
       - name: Report Coverage
         uses: codecov/codecov-action@v7
+
+      - name: Install dependencies (compiled)
+        env:
+          HATCH_BUILD_HOOK_ENABLE_MYPYC: true
+        run: uv sync --all-extras --frozen --reinstall-package isort
+
+      - name: Run tests (compiled)
+        env:
+          HATCH_BUILD_HOOK_ENABLE_MYPYC: true
+          COVERAGE_FAIL_UNDER: 0
+        # Syncing again here would rebuild the compiled editable package.
+        run: uv run --no-sync --with tox-uv tox --recreate -e py,coverage_report-ci
 
 
   integration:

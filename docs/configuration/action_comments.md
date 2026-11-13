@@ -106,8 +106,8 @@ import a
 
 ## isort: dont-add-imports
 
-Tells isort to not automatically add imports to this file, even if --add-imports is set.
+Tells isort to not automatically add imports to this file, even if --add-import is set.
 
 ## isort: dont-add-import: [IMPORT_LINE]
 
-Tells isort to not automatically add a particular import, even if --add-imports says to add it.
+Tells isort to not automatically add a particular import, even if --add-import says to add it.
