@@ -849,8 +849,6 @@ def _with_from_imports_for_module(
     return output
 
 
-# Ignore DeepSource cyclomatic complexity check for this function.
-# skipcq: PY-R1000
 def _remove_redundant_straight_imports(
     modules: Iterable[str],
     as_map: dict[str, list[str]],
@@ -866,6 +864,8 @@ def _remove_redundant_straight_imports(
     return [m for m in modules_list if m not in redundant]
 
 
+# Ignore DeepSource cyclomatic complexity check for this function.
+# skipcq: PY-R1000
 def _with_straight_imports(
     parsed: parse.ParsedContent,
     config: Config,
