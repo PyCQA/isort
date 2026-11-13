@@ -856,15 +856,14 @@ def _remove_redundant_straight_imports(
     as_map: dict[str, list[str]],
 ) -> list[str]:
     """Drop a bare import that a deeper unaliased import already binds."""
-    modules = list(modules)
-    unaliased = {m for m in modules if m not in as_map}
-    redundant = set()
-    for m in modules:
-        if m in as_map:
-            continue
-        if any(c != m and c.startswith(m + ".") for c in unaliased):
-            redundant.add(m)
-    return [m for m in modules if m not in redundant] if redundant else modules
+    modules_list = list(modules)
+    unaliased = {m for m in modules_list if m not in as_map}
+    redundant = {
+        m
+        for m in unaliased
+        if any(other.startswith(f"{m}.") for other in unaliased - {m})
+    }
+    return [m for m in modules_list if m not in redundant]
 
 
 def _with_straight_imports(
