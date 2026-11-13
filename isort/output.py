@@ -851,6 +851,22 @@ def _with_from_imports_for_module(
 
 # Ignore DeepSource cyclomatic complexity check for this function.
 # skipcq: PY-R1000
+def _remove_redundant_straight_imports(
+    modules: Iterable[str],
+    as_map: dict[str, list[str]],
+) -> list[str]:
+    """Drop a bare import that a deeper unaliased import already binds."""
+    modules = list(modules)
+    unaliased = {m for m in modules if m not in as_map}
+    redundant = set()
+    for m in modules:
+        if m in as_map:
+            continue
+        if any(c != m and c.startswith(m + ".") for c in unaliased):
+            redundant.add(m)
+    return [m for m in modules if m not in redundant] if redundant else modules
+
+
 def _with_straight_imports(
     parsed: parse.ParsedContent,
     config: Config,
@@ -866,6 +882,11 @@ def _with_straight_imports(
     import_type = f"lazy {import_type}" if is_lazy else import_type
 
     as_imports = any(module in parsed.as_map["straight"] for module in straight_modules)
+
+    if config.remove_redundant_straight_imports and not is_lazy:
+        straight_modules = _remove_redundant_straight_imports(
+            straight_modules, parsed.as_map["straight"]
+        )
 
     # combine_straight_imports only works for bare imports, 'as' imports not included
     if config.combine_straight_imports and not as_imports:

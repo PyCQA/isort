@@ -1281,6 +1281,20 @@ Tells isort to remove redundant aliases from imports, such as `import os as os`.
 
 - --remove-redundant-aliases
 
+## Remove Redundant Straight Imports
+
+Tells isort to remove a straight import when another straight import in the same block already binds the same top-level name. When both `import a` and `import a.b` are present, Python binds `a` during `import a.b`, so `import a` is redundant.
+
+This only applies to unaliased imports: `import a.b as x` binds only `x`, so it does not make `import a` redundant. Aliased imports are never removed.
+
+**Type:** Bool  
+**Default:** `False`  
+**Config default:** `false`  
+**Python & Config File Name:** remove_redundant_straight_imports  
+**CLI Flags:**
+
+- --remove-redundant-straight-imports
+
 ## Float To Top
 
 Causes all non-indented imports to float to the top of the file having its imports sorted (immediately below the top of file comment).

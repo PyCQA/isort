@@ -199,6 +199,7 @@ class _Config:
     honor_noqa: bool = False
     src_paths: tuple[Path, ...] = ()
     remove_redundant_aliases: bool = False
+    remove_redundant_straight_imports: bool = False
     float_to_top: bool = False
     filter_files: bool = False
     formatter: str = ""
