@@ -564,7 +564,7 @@ class Config(_Config):
         if not (file_path.is_file() or file_path.is_dir() or file_path.is_symlink()):
             return True
 
-        return self.skip_gitignore and self._is_gitignored(file_path)
+        return self._is_gitignored(file_path)
 
     def _matches_skip(self, file_path: Path) -> bool:
         """Match configured paths, path components, and glob patterns."""
@@ -590,6 +590,9 @@ class Config(_Config):
 
     def _is_gitignored(self, file_path: Path) -> bool:
         """Check a path against the cached tracked and non-ignored Git files."""
+        if not self.skip_gitignore:
+            return False
+
         if file_path.name == ".git":  # pragma: no cover
             return True
 
