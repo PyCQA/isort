@@ -391,3 +391,40 @@ something = nothing
 
     config_info_4 = config_trie.search(str(tmp_path / "file4.py"))
     assert config_info_4[0] == "default"
+
+
+@pytest.mark.parametrize(
+    ("comment_prefix", "comment", "expected"),
+    [
+        ("", "#region Standard Library", "#region Standard Library"),
+        ("   ", "#region Standard Library", "#region Standard Library"),
+        ("  #", "Standard Library", "# Standard Library"),
+        (" #", "Standard Library", "# Standard Library"),
+        ("# ", "Standard Library", "# Standard Library"),
+        ("#\t", "Standard Library", "#\tStandard Library"),
+        ("##", "Standard Library", "## Standard Library"),
+        ("## ", "Standard Library", "## Standard Library"),
+    ],
+)
+def test_format_section_comment(comment_prefix: str, comment: str, expected: str) -> None:
+    assert settings.format_section_comment(comment_prefix, comment) == expected
+
+
+def test_section_comments_respect_comment_prefix() -> None:
+    config = Config(
+        comment_prefix="",
+        import_heading_stdlib="#region Standard Library",
+        import_heading_thirdparty="",
+        import_footer_stdlib="#endregion Standard Library",
+        import_footer_thirdparty="",
+    )
+    assert config.section_comments == ("#region Standard Library",)
+    assert config.section_comments_end == ("#endregion Standard Library",)
+
+    prefixed = Config(
+        comment_prefix="##",
+        import_heading_stdlib="Standard Library",
+        import_footer_stdlib="Standard Library End",
+    )
+    assert prefixed.section_comments == ("## Standard Library",)
+    assert prefixed.section_comments_end == ("## Standard Library End",)

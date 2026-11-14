@@ -645,7 +645,11 @@ class Config(_Config):
         if self._section_comments is not None:
             return self._section_comments
 
-        self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
+        self._section_comments = tuple(
+            format_section_comment(self.comment_prefix, heading)
+            for heading in self.import_headings.values()
+            if heading.strip()
+        )
         return self._section_comments
 
     @property
@@ -653,7 +657,11 @@ class Config(_Config):
         if self._section_comments_end is not None:
             return self._section_comments_end
 
-        self._section_comments_end = tuple(f"# {footer}" for footer in self.import_footers.values())
+        self._section_comments_end = tuple(
+            format_section_comment(self.comment_prefix, footer)
+            for footer in self.import_footers.values()
+            if footer.strip()
+        )
         return self._section_comments_end
 
     @property
@@ -904,6 +912,16 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
                 settings[key] = existing_value_type(value)
 
     return settings
+
+
+def format_section_comment(comment_prefix: str, comment: str) -> str:
+    """Format a standalone section heading or footer using ``comment_prefix``."""
+    prefix = comment_prefix.lstrip()
+    if not prefix:
+        return comment
+    if prefix.endswith((" ", "\t")):
+        return f"{prefix}{comment}"
+    return f"{prefix} {comment}"
 
 
 def _as_bool(value: object) -> bool:
