@@ -1559,6 +1559,128 @@ def test_titled_and_footered_imports() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("comment_prefix", "heading", "footer", "expected_heading", "expected_footer"),
+    [
+        (
+            "",
+            "#region Standard Library",
+            "#endregion Standard Library",
+            "#region Standard Library",
+            "#endregion Standard Library",
+        ),
+        (
+            "##",
+            "Standard Library",
+            "Standard Library End",
+            "## Standard Library",
+            "## Standard Library End",
+        ),
+        (
+            "# ",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+        (
+            " #",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+        (
+            "  #",
+            "Standard Library",
+            "Standard Library End",
+            "# Standard Library",
+            "# Standard Library End",
+        ),
+    ],
+)
+def test_titled_and_footered_imports_with_comment_prefix_issue_1922(
+    comment_prefix: str,
+    heading: str,
+    footer: str,
+    expected_heading: str,
+    expected_footer: str,
+) -> None:
+    """Section headings and footers should respect ``comment_prefix`` and remain idempotent."""
+    test_input = (
+        "# top comment\n"
+        "import django.settings\n"
+        "\n"
+        "import sys\n"
+        "\n"
+        "\n"
+        "def helper() -> None:\n"
+        "    import os\n"
+    )
+    first_output = isort.code(
+        code=test_input,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+    assert first_output == (
+        "# top comment\n"
+        f"{expected_heading}\n"
+        "import sys\n"
+        "\n"
+        f"{expected_footer}\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "\n"
+        "def helper() -> None:\n"
+        f"    {expected_heading}\n"
+        "    import os\n"
+        "\n"
+        f"    {expected_footer}\n"
+    )
+    second_output = isort.code(
+        code=first_output,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+    assert second_output == first_output
+    assert isort.check_code(
+        code=first_output,
+        show_diff=True,
+        comment_prefix=comment_prefix,
+        import_heading_stdlib=heading,
+        import_footer_stdlib=footer,
+    )
+
+
+def test_region_folding_comment_prefix_issue_1922() -> None:
+    """Empty ``comment_prefix`` allows region markers without adding a leading ``# ``."""
+    test_input = "import sys\nimport requests\n"
+    config = Config(
+        comment_prefix="",
+        import_heading_stdlib="#region Standard Library",
+        import_footer_stdlib="#endregion Standard Library",
+        import_heading_thirdparty="#region Third Party",
+        import_footer_thirdparty="#endregion Third Party",
+    )
+    first_output = isort.code(test_input, config=config)
+    assert first_output == (
+        "#region Standard Library\n"
+        "import sys\n"
+        "\n"
+        "#endregion Standard Library\n"
+        "\n"
+        "#region Third Party\n"
+        "import requests\n"
+        "\n"
+        "#endregion Third Party\n"
+    )
+    assert isort.code(first_output, config=config) == first_output
+    assert isort.check_code(first_output, config=config)
+
+
 def test_balanced_wrapping() -> None:
     """Tests balanced wrapping mode, where the length of individual lines maintain width."""
     test_input = (
