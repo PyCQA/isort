@@ -3191,3 +3191,23 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_issue_2775() -> None:
+    """The opening-line comment was added after wrapping and pushed the import past line_length."""
+    expected = (
+        "from some.package.with_a_rather_long_module_name import (  # noqa: N813\n"
+        "    SomeLongClassName as alias,\n"
+        ")\n"
+    )
+    assert isort.code(expected, profile="black") == expected
+    # black's output for the long single line
+    black_output = (
+        "from some.package.with_a_rather_long_module_name import (\n"
+        "    SomeLongClassName as alias,\n"
+        ")  # noqa: N813\n"
+    )
+    assert isort.code(black_output, profile="black") == expected
+    # also with a type: ignore comment
+    expected = expected.replace("# noqa: N813", "# type: ignore[attr-defined]")
+    assert isort.code(expected, profile="black") == expected
