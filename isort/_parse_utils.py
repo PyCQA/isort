@@ -89,8 +89,12 @@ class ImportContinuationResult(NamedTuple):
     final_line: str
     complete_import_string: str
     extra_lines: list[ExtraLine]
+    remainder: str = ""
 
 
+# Ignore DeepSource cyclomatic complexity check for this function. It tracks
+# parenthesis depth across continuation lines, which is inherently branching.
+# skipcq: PY-R1000
 def collect_import_continuation(
     line: str,
     import_string: str,
@@ -103,15 +107,41 @@ def collect_import_continuation(
     and backslash-continued imports ``import Y, \\`` + newline + ``    Z``.
     """
     extra_lines: list[ExtraLine] = []
+    remainder = ""
 
     if "(" in line.split("#", 1)[0]:
-        while not line.split("#", maxsplit=1)[0].strip().endswith(")"):
+        depth = line.split("#", 1)[0].count("(") - line.split("#", 1)[0].count(")")
+        while depth > 0:
             try:
                 line, comment = get_next_line()
             except StopIteration:
                 break
-            extra_lines.append(ExtraLine(line=line, comment=comment))
-            import_string += line_separator + line
+            comment_free = line.split("#", 1)[0]
+            prev_depth = depth
+            depth += comment_free.count("(") - comment_free.count(")")
+            if depth <= 0:
+                # The close-paren that balances the import's opening paren is on
+                # this line. Keep only up to and including it: anything after it
+                # (e.g. a ``; import os`` on ``); import os``) is a separate
+                # statement, not part of the import, so remember it to be
+                # re-processed by the main loop.
+                d = prev_depth
+                close_pos = -1
+                for i, ch in enumerate(comment_free):
+                    if ch == "(":
+                        d += 1
+                    elif ch == ")":
+                        d -= 1
+                        if d == 0:
+                            close_pos = i
+                            break
+                kept = line[: close_pos + 1]
+                remainder = line[close_pos + 1:].lstrip("; ")
+                extra_lines.append(ExtraLine(line=kept, comment=comment))
+                import_string += line_separator + kept
+            else:
+                extra_lines.append(ExtraLine(line=line, comment=comment))
+                import_string += line_separator + line
     else:
         while line.strip().endswith("\\"):
             try:
@@ -146,6 +176,7 @@ def collect_import_continuation(
         final_line=line,
         complete_import_string=import_string,
         extra_lines=extra_lines,
+        remainder=remainder,
     )
 
 

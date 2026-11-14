@@ -240,9 +240,15 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                 index += 1
                 return result
 
-            line, import_string, extra_lines = collect_import_continuation(
+            line, import_string, extra_lines, remainder = collect_import_continuation(
                 line, import_string, _get_next_line, line_separator
             )
+            if remainder:
+                # Text after the balancing close-paren (e.g. ``; import os`` on
+                # ``); import os``) is a separate statement. Re-insert it so the
+                # main loop processes it as such instead of dropping it.
+                in_lines.insert(index, remainder)
+                line_count = len(in_lines)
             for extra_line in extra_lines:
                 raw_lines.append(extra_line.line)
                 # If during parsing of the continuation lines we encounter a comment, we record it.
