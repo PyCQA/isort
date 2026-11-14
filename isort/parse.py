@@ -21,14 +21,17 @@ from .exceptions import MissingSection
 from .settings import DEFAULT_CONFIG, Config
 
 if TYPE_CHECKING:
+    # Comments that belong to a whole ``from`` statement are keyed by ``(is_lazy, module)``, so
+    # that a lazy import and an eager import of the same module each keep their own.
     CommentsAboveDict = TypedDict(
-        "CommentsAboveDict", {"straight": dict[str, list[str]], "from": dict[str, list[str]]}
+        "CommentsAboveDict",
+        {"straight": dict[str, list[str]], "from": dict[tuple[bool, str], list[str]]},
     )
 
     CommentsDict = TypedDict(
         "CommentsDict",
         {
-            "from": dict[str, list[str]],
+            "from": dict[tuple[bool, str], list[str]],
             "straight": dict[str, list[str]],
             "nested": dict[str, dict[str, str]],
             "above": CommentsAboveDict,
@@ -73,7 +76,7 @@ class ParsedContent(NamedTuple):
     line_separator: str
     sections: tuple[str, ...]
     verbose_output: list[str]
-    trailing_commas: set[str]
+    trailing_commas: set[tuple[bool, str]]
 
 
 # Ignore DeepSource cyclomatic complexity check for this function. It is one
@@ -119,7 +122,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
         "above": {"straight": {}, "from": {}},
     }
 
-    trailing_commas: set[str] = set()
+    trailing_commas: set[tuple[bool, str]] = set()
 
     index = 0
     import_index = -1
@@ -308,7 +311,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     if comments and attach_comments_to is None:
                         if nested_module and config.combine_as_imports:
                             attach_comments_to = categorized_comments["from"].setdefault(
-                                f"{top_level_module}.__combined_as__", []
+                                (is_lazy, f"{top_level_module}.__combined_as__"), []
                             )
                         else:
                             if type_of_import is _ImportType.FROM or (
@@ -368,7 +371,9 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     comments = []
 
                 if comments and attach_comments_to is None:
-                    attach_comments_to = categorized_comments["from"].setdefault(import_from, [])
+                    attach_comments_to = categorized_comments["from"].setdefault(
+                        (is_lazy, import_from), []
+                    )
 
                 if len(out_lines) > max(import_index, 1) - 1:
                     last = out_lines[-1].rstrip() if out_lines else ""
@@ -381,16 +386,16 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                         and not config.treat_all_comments_as_code
                         and last.strip() not in config.treat_comments_as_code
                     ):
-                        categorized_comments["above"]["from"].setdefault(import_from, []).insert(
-                            0, out_lines.pop(-1)
-                        )
+                        categorized_comments["above"]["from"].setdefault(
+                            (is_lazy, import_from), []
+                        ).insert(0, out_lines.pop(-1))
                         if out_lines:
                             last = out_lines[-1].rstrip()
                         else:
                             last = ""
                     if statement_index - 1 == import_index:  # pragma: no cover
                         import_index -= len(
-                            categorized_comments["above"]["from"].get(import_from, [])
+                            categorized_comments["above"]["from"].get((is_lazy, import_from), [])
                         )
 
                 if import_from not in root:
@@ -411,7 +416,7 @@ def file_contents(contents: str, config: Config = DEFAULT_CONFIG) -> ParsedConte
                     and just_imports[-1]
                     and "," in import_string.split(just_imports[-1])[-1]
                 ):
-                    trailing_commas.add(import_from)
+                    trailing_commas.add((is_lazy, import_from))
             else:
                 if comments and attach_comments_to is not None:
                     attach_comments_to.extend(comments)
