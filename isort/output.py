@@ -426,6 +426,7 @@ def _build_grouped_from_imports(
     parsed: parse.ParsedContent,
     config: Config,
     preserve_comments_on_statement_line: bool,
+    first_statement: bool,
 ) -> str:
     """
     Build a string of imports, wrapping them across multiple lines if necessary.
@@ -458,7 +459,11 @@ def _build_grouped_from_imports(
     ):
         do_multiline_reformat = True
 
-    has_noqa_comment = any(comment.lower().startswith("noqa") for comment in comments if comment)
+    # Only the first statement for a module may move a `noqa` comment to its opening line, see
+    # `_with_from_imports_for_module`.
+    has_noqa_comment = first_statement and any(
+        comment.lower().startswith("noqa") for comment in comments if comment
+    )
 
     if (
         # When ``include_trailing_comma`` is enabled isort always appends a
@@ -712,6 +717,11 @@ def _with_from_imports_for_module(
             comments = []
         return output
 
+    # When isort reads its output back, it attaches a comment on the opening line of a `from`
+    # statement to the first statement for the module, unless the statement imports a single name
+    # on one line. Only the first statement may therefore group names that carry their own comment;
+    # each later statement keeps a single commented name on one line.
+    first_statement = True
     while from_imports:
         # Tracks whether any aliased imports were emitted before the grouped
         # non-aliased imports in this pass of the outer loop.  When True it
@@ -724,6 +734,13 @@ def _with_from_imports_for_module(
         from_import_section = []
         module_imports = parsed.imports[section][import_key][module]
         nested_comments = parsed.categorized_comments["nested"].get(module, {})
+
+        # If we are combining aliased imports we need to pop any associated comments.
+        combined_as_comments: list[str] = []
+        if config.combine_as_imports:
+            combined_as_comments = parsed.categorized_comments["from"].pop(
+                f"{module}.__combined_as__", []
+            )
 
         while from_imports:
             from_import = from_imports.pop(0)
@@ -761,24 +778,27 @@ def _with_from_imports_for_module(
             if comment is not None:
                 comments.append(comment)
 
+            statement_comments = [*comments, *combined_as_comments]
             pragma_comments = {
-                c for c in comments if c.lower().startswith(("noqa", "type: ignore"))
+                c for c in statement_comments if c.lower().startswith(("noqa", "type: ignore"))
             }
             has_explanatory_comments = any(
-                c and not c.lower().startswith(("noqa", "type: ignore")) for c in comments
+                c and not c.lower().startswith(("noqa", "type: ignore")) for c in statement_comments
             )
             for grouped_plain_import in from_imports[:]:
                 grouped_comment = nested_comments.get(grouped_plain_import)
                 if grouped_comment:
+                    if not first_statement:
+                        continue
                     grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
                     if grouped_is_pragma and (
                         has_explanatory_comments
                         or (pragma_comments and grouped_comment not in pragma_comments)
                         or grouped_comment.lower().startswith("type: ignore")
                     ):
-                        break
+                        continue
                     if not grouped_is_pragma and pragma_comments:
-                        break
+                        continue
 
                 include_grouped_import = grouped_plain_import in as_imports and not (
                     module_imports[grouped_plain_import] and not only_show_as_imports
@@ -802,13 +822,7 @@ def _with_from_imports_for_module(
 
             break
 
-        # If we are combining aliased imports we need to pop any associated comments.
-        combined_as_comments: list[str] = []
-        if config.combine_as_imports:
-            combined_as_comments = parsed.categorized_comments["from"].pop(
-                f"{module}.__combined_as__", []
-            )
-            comments = [*comments, *combined_as_comments]
+        comments = [*comments, *combined_as_comments]
 
         grouped_from_import_statement = _build_grouped_from_imports(
             config=config,
@@ -818,10 +832,13 @@ def _with_from_imports_for_module(
             import_start=import_start,
             comments=comments,
             processed_as_imports_this_iteration=processed_as_imports_this_iteration,
-            preserve_comments_on_statement_line=bool(opening_line_comments or combined_as_comments),
+            preserve_comments_on_statement_line=first_statement
+            and bool(opening_line_comments or combined_as_comments),
+            first_statement=first_statement,
         )
         if grouped_from_import_statement:
             output.append(grouped_from_import_statement)
+            first_statement = False
 
         if config.no_inline_sort:
             aliased_from_imports.sort(key=lambda name: from_import_order[f"{module}.{name}"])
