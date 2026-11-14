@@ -3191,3 +3191,72 @@ def test_a_bare_hash_survives_on_a_star_import() -> None:
     assert isort.code("from sys import *  #\n") == "from sys import *  #\n"
     expected = "from some.really.long.module.name import \\\n    *  #\n"
     assert isort.code("from some.really.long.module.name import *  #\n", line_length=30) == expected
+
+
+def test_name_level_type_ignore_is_idempotent_issue_2694() -> None:
+    """A name-level ``type: ignore`` on a long import must settle in one pass.
+
+    ``isort --check`` was rejecting isort's own output: the first pass put the
+    comment on the opening parenthesis, and the next pass read that as a comment
+    on every name from the module. See https://github.com/PyCQA/isort/issues/2694.
+    """
+    module = "pkg.submodule.submodule.submodule.submodule"
+    comment = "type: ignore[import-untyped]"
+    merged = f"from {module} import (  # {comment}\n    alpha,\n    beta,\n    gamma,\n)\n"
+    reported = f"from {module} import (\n    alpha,  # {comment}\n    beta, gamma\n)\n"
+    assert isort.code(reported, profile="black") == merged
+    assert isort.code(merged, profile="black") == merged
+
+    middle = f"from {module} import (\n    alpha,\n    beta,  # {comment}\n    gamma,\n)\n"
+    assert isort.code(middle, profile="black") == merged
+    assert isort.code(merged, profile="black") == merged
+
+    # A comment on the last name still fits on that name under the black profile,
+    # so it must not be pulled onto the earlier names.
+    last_name = (
+        f"from {module} import (\n"
+        "    alpha,\n"
+        "    beta,\n"
+        ")\n"
+        f"from {module} import (\n"
+        f"    gamma,  # {comment}\n"
+        ")\n"
+    )
+    last_source = f"from {module} import (\n    alpha,\n    beta,\n    gamma,  # {comment}\n)\n"
+    assert isort.code(last_source, profile="black") == last_name
+    assert isort.code(last_name, profile="black") == last_name
+
+    # Identical comments that wrapping hoists onto the parenthesis merge once.
+    for multi_line_output, body in (
+        (3, "    alpha,\n    beta\n"),
+        (5, "    alpha, beta\n"),
+    ):
+        both = f"from {module} import (\n    alpha,  # {comment}\n    beta,  # {comment}\n)\n"
+        expected = f"from {module} import (  # {comment}\n{body})\n"
+        assert isort.code(both, multi_line_output=multi_line_output, line_length=88) == expected
+        assert isort.code(expected, multi_line_output=multi_line_output, line_length=88) == expected
+
+    # Short imports keep each type ignore on its own name.
+    separate = (
+        "from x import a  # type: ignore[attr-defined]\n"
+        "from x import b  # type: ignore[attr-defined]\n"
+    )
+    assert isort.code(separate) == separate
+
+    # A later uncommented name makes the comment describe the whole statement.
+    # That is already where the second pass landed, so the first pass must too.
+    short_middle = (
+        "from x import a\nfrom x import b  # type: ignore[attr-defined]\nfrom x import c\n"
+    )
+    short_fixed = "from x import a, b, c  # type: ignore[attr-defined]\n"
+    assert isort.code(short_middle) == short_fixed
+    assert isort.code(short_fixed) == short_fixed
+
+    # Vertical mode keeps the comment on the name, so the earlier name stays put.
+    vertical = (
+        f"from {module} import alpha\n"
+        f"from {module} import (beta,  # {comment}\n"
+        "                                                         gamma)\n"
+    )
+    assert isort.code(middle, multi_line_output=1, line_length=88) == vertical
+    assert isort.code(vertical, multi_line_output=1, line_length=88) == vertical

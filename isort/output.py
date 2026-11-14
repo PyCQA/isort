@@ -1,6 +1,6 @@
 import copy
 import itertools
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import Literal
 
 from isort.format import format_simplified
@@ -561,6 +561,85 @@ def _with_from_imports(
     return output
 
 
+def _plain_name_joins_group(
+    name: str,
+    *,
+    module_imports: Mapping[str, bool],
+    as_imports: Mapping[str, list[str]],
+    only_show_as_imports: bool,
+) -> bool:
+    """Return whether ``name`` is emitted in the plain from-import group."""
+    if name in as_imports and not (module_imports[name] and not only_show_as_imports):
+        return False
+    return True
+
+
+def _singleton_type_ignore_stays_on_name(
+    import_start: str, name: str, comment: str, config: Config
+) -> bool:
+    """Return whether one ``from module import name  # type: ignore`` keeps that comment.
+
+    A line that fits is parsed as a comment on ``name``. Wrapping keeps it there
+    except for the vertical modes that hoist every comment onto the parenthesis
+    when parentheses were not requested. That matches ``wrap.line``.
+    """
+    single_line = f"{import_start}{name}{config.comment_prefix} {comment}"
+    if len(single_line) <= config.line_length:
+        return True
+
+    hoists_to_parenthesis = (
+        config.multi_line_output
+        in (
+            wrap_modes.WrapModes.VERTICAL_HANGING_INDENT,
+            wrap_modes.WrapModes.VERTICAL_GRID_GROUPED,
+        )
+        and not config.use_parentheses
+    )
+    return not hoists_to_parenthesis
+
+
+def _type_ignore_split_round_trips(
+    *,
+    name: str,
+    comment: str,
+    following_names: list[str],
+    nested_comments: Mapping[str, str],
+    import_start: str,
+    config: Config,
+    module_imports: Mapping[str, bool],
+    as_imports: Mapping[str, list[str]],
+    only_show_as_imports: bool,
+) -> bool:
+    """Return whether splitting before this ``type: ignore`` survives a second pass.
+
+    Once formatting moves the comment off its name, the next parse treats it as
+    a comment on every import from the module and regroups them. Keep the split
+    only when this name would still carry the comment.
+    """
+    group = [name]
+    for later_name in following_names:
+        if nested_comments.get(later_name):
+            break
+        if _plain_name_joins_group(
+            later_name,
+            module_imports=module_imports,
+            as_imports=as_imports,
+            only_show_as_imports=only_show_as_imports,
+        ):
+            group.append(later_name)
+
+    if len(group) == 1:
+        return _singleton_type_ignore_stays_on_name(import_start, name, comment, config)
+
+    # Several names on one line attach the comment to the statement. Wrapped
+    # vertical mode is the exception: it leaves the comment on the first name.
+    single_line = f"{import_start}{', '.join(group)}{config.comment_prefix} {comment}"
+    wraps = len(single_line) > config.line_length or (
+        config.force_grid_wrap > 0 and len(group) >= config.force_grid_wrap
+    )
+    return wraps and config.multi_line_output == wrap_modes.WrapModes.VERTICAL
+
+
 # Ignore DeepSource cyclomatic complexity check for this function. It was
 # already complex when this check was enabled.
 # skipcq: PY-R1000
@@ -771,10 +850,25 @@ def _with_from_imports_for_module(
                 grouped_comment = nested_comments.get(grouped_plain_import)
                 if grouped_comment:
                     grouped_is_pragma = grouped_comment.lower().startswith(("noqa", "type: ignore"))
+                    type_ignore_stays_separate = grouped_comment.lower().startswith(
+                        "type: ignore"
+                    ) and _type_ignore_split_round_trips(
+                        name=grouped_plain_import,
+                        comment=grouped_comment,
+                        following_names=from_imports[
+                            from_imports.index(grouped_plain_import) + 1 :
+                        ],
+                        nested_comments=nested_comments,
+                        import_start=import_start,
+                        config=config,
+                        module_imports=module_imports,
+                        as_imports=as_imports,
+                        only_show_as_imports=only_show_as_imports,
+                    )
                     if grouped_is_pragma and (
                         has_explanatory_comments
                         or (pragma_comments and grouped_comment not in pragma_comments)
-                        or grouped_comment.lower().startswith("type: ignore")
+                        or type_ignore_stays_separate
                     ):
                         break
                     if not grouped_is_pragma and pragma_comments:
