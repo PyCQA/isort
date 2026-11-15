@@ -118,6 +118,13 @@ _STR_BOOLEAN_MAPPING = {
 }
 
 
+def _comment_lines(value: str | Iterable[str]) -> tuple[str, ...]:
+    """Render a heading or footer setting as the comment lines it stands for."""
+    values = [value] if isinstance(value, str) else value
+    lines = (line.strip() for item in values for line in str(item).splitlines())
+    return tuple(line if line.startswith("#") else f"# {line}" for line in lines if line)
+
+
 # TODO: Make this work as native class, see https://github.com/PyCQA/isort/issues/2629
 @mypyc_attr(native_class=False)
 @dataclass(frozen=True)
@@ -161,8 +168,8 @@ class _Config:
     force_single_line: bool = False
     single_line_exclusions: tuple[str, ...] = ()
     default_section: str = THIRDPARTY
-    import_headings: dict[str, str] = field(default_factory=dict)
-    import_footers: dict[str, str] = field(default_factory=dict)
+    import_headings: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    import_footers: dict[str, tuple[str, ...]] = field(default_factory=dict)
     balanced_wrapping: bool = False
     use_parentheses: bool = False
     order_by_type: bool = True
@@ -265,6 +272,15 @@ class _Config:
                 f"{self.wrap_length} > {self.line_length}."
             )
 
+        for block_name in ("import_headings", "import_footers"):
+            blocks: dict[str, str | Iterable[str]] = getattr(self, block_name)
+            if blocks:
+                object.__setattr__(
+                    self,
+                    block_name,
+                    {key: _comment_lines(value) for key, value in blocks.items()},
+                )
+
     def __hash__(self) -> int:
         return id(self)
 
@@ -365,8 +381,8 @@ class Config(_Config):
             combined_config["indent"] = indent
 
         known_other = {}
-        import_headings = {}
-        import_footers = {}
+        import_headings: dict[str, object] = {}
+        import_footers: dict[str, object] = {}
         for key, value in tuple(combined_config.items()):
             # Collect all known sections beyond those that have direct entries
             if key.startswith(KNOWN_PREFIX) and key not in (
@@ -404,9 +420,9 @@ class Config(_Config):
                             stacklevel=2,
                         )
             if key.startswith(IMPORT_HEADING_PREFIX):
-                import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = str(value)
+                import_headings[key[len(IMPORT_HEADING_PREFIX) :].lower()] = value
             if key.startswith(IMPORT_FOOTER_PREFIX):
-                import_footers[key[len(IMPORT_FOOTER_PREFIX) :].lower()] = str(value)
+                import_footers[key[len(IMPORT_FOOTER_PREFIX) :].lower()] = value
 
             # Coerce all provided config values into their correct type
             default_value = _DEFAULT_SETTINGS.get(key, None)
@@ -645,7 +661,9 @@ class Config(_Config):
         if self._section_comments is not None:
             return self._section_comments
 
-        self._section_comments = tuple(f"# {heading}" for heading in self.import_headings.values())
+        self._section_comments = tuple(
+            line for block in self.import_headings.values() for line in block
+        )
         return self._section_comments
 
     @property
@@ -653,7 +671,9 @@ class Config(_Config):
         if self._section_comments_end is not None:
             return self._section_comments_end
 
-        self._section_comments_end = tuple(f"# {footer}" for footer in self.import_footers.values())
+        self._section_comments_end = tuple(
+            line for block in self.import_footers.values() for line in block
+        )
         return self._section_comments_end
 
     @property
@@ -880,6 +900,8 @@ def _get_config_data(file_path: str, sections: tuple[str, ...]) -> dict[str, obj
             }
 
         for key, value in settings.items():
+            if key.startswith((IMPORT_HEADING_PREFIX, IMPORT_FOOTER_PREFIX)):
+                continue
             existing_value_type = _get_str_to_type_converter(key)
             if existing_value_type is tuple:
                 settings[key] = tuple(_as_list(value))

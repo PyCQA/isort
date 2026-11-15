@@ -6,11 +6,14 @@ import warnings
 from functools import partial
 from io import StringIO
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 import isort
 from isort import Config, exceptions
+
+from .utils import isort_test
 
 
 def test_semicolon_ignored_for_dynamic_lines_after_import_issue_1178() -> None:
@@ -1263,3 +1266,134 @@ from foo import a, b, e  # comment
 from foo import c as d
 """
     assert isort.code(code) == code
+
+
+def test_multi_line_import_headings_issue_1923() -> None:
+    """isort should render headings that span several comment lines as one block.
+
+    See: https://github.com/PyCQA/isort/issues/1923
+    """
+    config: dict[str, Any] = {
+        "import_heading_stdlib": "#===\n#region stdlib",
+        "import_heading_thirdparty": "#===\n#region third party",
+    }
+    expected = (
+        "#===\n"
+        "#region stdlib\n"
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "#===\n"
+        "#region third party\n"
+        "import django.settings\n"
+    )
+    isort_test("import sys\nimport django.settings\nimport os\n", expected, **config)
+    assert isort.check_code(expected, config=Config(**config))
+
+
+def test_existing_multi_line_heading_is_not_duplicated_issue_1923() -> None:
+    """An existing multi-line heading should be understood instead of repeated.
+
+    See: https://github.com/PyCQA/isort/issues/1923
+    """
+    config = {"import_heading_stdlib": ["#===", "#region stdlib"]}
+    source = "#===\n#region stdlib\nimport sys\nimport os\n"
+    isort_test(source, "#===\n#region stdlib\nimport os\nimport sys\n", **config)
+
+
+def test_multi_line_import_footers_issue_1923() -> None:
+    """isort should render footers that span several comment lines as one block.
+
+    See: https://github.com/PyCQA/isort/issues/1923
+    """
+    config: dict[str, Any] = {
+        "import_footer_stdlib": ["#endregion stdlib", "#==="],
+        "import_footer_thirdparty": ["#endregion third party", "#==="],
+    }
+    expected = (
+        "import os\n"
+        "\n"
+        "#endregion stdlib\n"
+        "#===\n"
+        "\n"
+        "import django.settings\n"
+        "\n"
+        "#endregion third party\n"
+        "#===\n"
+    )
+    isort_test("import os\nimport django.settings\n", expected, **config)
+    assert isort.check_code(expected, config=Config(**config))
+
+
+def test_region_folding_example_issue_1923() -> None:
+    """The nested region markers from the issue should survive a run, with blank
+    lines between a heading and its imports normalized away.
+
+    See: https://github.com/PyCQA/isort/issues/1923
+    """
+    banner = "#" * 80
+    region = "#" + "=" * 79
+    config: dict[str, Any] = {
+        "import_heading_stdlib": [region, "#region stdlib", ""],
+        "import_footer_stdlib": ["", "#endregion stdlib", region],
+        "import_heading_thirdparty": [region, "#region third party", ""],
+        "import_footer_thirdparty": ["", "#endregion third party", region],
+    }
+    code = f"""\
+{banner}
+#region Imports
+
+{region}
+#region stdlib
+
+import sys
+
+#endregion stdlib
+{region}
+
+{region}
+#region third party
+
+import pytest
+
+#endregion third party
+{region}
+
+#endregion Imports
+{banner}
+"""
+    expected = f"""\
+{banner}
+#region Imports
+
+{region}
+#region stdlib
+import sys
+
+#endregion stdlib
+{region}
+
+{region}
+#region third party
+import pytest
+
+#endregion third party
+{region}
+
+#endregion Imports
+{banner}
+"""
+    isort_test(code, expected, **config)
+
+
+def test_multi_line_import_headings_from_toml_issue_1923(tmp_path: Path) -> None:
+    """TOML arrays should define the same multi-line heading as a newline string.
+
+    See: https://github.com/PyCQA/isort/issues/1923
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.isort]\nimport_heading_stdlib = ["#===", "#region stdlib", ""]\n'
+    )
+    expected = "#===\n#region stdlib\nimport os\n"
+    assert isort.code("import os\n", settings_path=str(tmp_path)) == expected
+    assert isort.code(expected, settings_path=str(tmp_path)) == expected
