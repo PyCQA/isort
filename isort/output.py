@@ -395,11 +395,7 @@ def _build_as_imports(
                 removed=config.ignore_comments,
                 comment_prefix=config.comment_prefix,
             )
-            if (
-                len(lines) == 1
-                and len(lines[0] + opening_comment) > config.line_length
-                and config.multi_line_output != wrap_modes.WrapModes.NOQA
-            ):
+            if len(lines) == 1 and len(lines[0] + opening_comment) > config.line_length:
                 # The import only fits without its comment: wrap it with room for the comment.
                 lines = wrap.line(
                     lines[0],
