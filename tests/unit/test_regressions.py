@@ -2859,6 +2859,64 @@ def test_isort_skip_is_honored_with_future_import_issue_2092() -> None:
     assert isort.code(sorted_interleaved) == sorted_interleaved
 
 
+def test_add_imports_keeps_leading_skip_in_place_issue_1962() -> None:
+    """``add_imports`` must not relocate a leading ``isort: skip`` import below the block.
+
+    A skipped import at the very start of a file is collected into the import section
+    before any other import sets ``contains_imports``, so the section-boundary guard
+    (#2092) never applies to it. Prepending the added imports ahead of it moved the
+    sorted block's insertion point in front of the skipped line, relocating it below
+    the block and into its own section. See issue #1962.
+    """
+    reported = "import stay_on_top  # isort: skip\nimport b\n"
+    expected = "import stay_on_top  # isort: skip\nimport a\nimport b\n"
+    assert isort.code(reported, add_imports={"import a"}) == expected
+    # The added import must not be emitted a second time on a re-run.
+    assert isort.code(expected, add_imports={"import a"}) == expected
+
+    # A file containing nothing but the skipped import gets the same treatment.
+    only_skip = "import stay_on_top  # isort: skip\n"
+    expected_only = "import stay_on_top  # isort: skip\nimport a\n"
+    assert isort.code(only_skip, add_imports={"import a"}) == expected_only
+    assert isort.code(expected_only, add_imports={"import a"}) == expected_only
+
+    # A leading skipped ``from`` import stays first as well.
+    from_skip = "from foo import bar  # isort: skip\nimport b\n"
+    expected_from = "from foo import bar  # isort: skip\nimport a\nimport b\n"
+    assert isort.code(from_skip, add_imports={"import a"}) == expected_from
+    assert isort.code(expected_from, add_imports={"import a"}) == expected_from
+
+    # CRLF line endings are preserved.
+    crlf = "import stay_on_top  # isort: skip\r\nimport b\r\n"
+    expected_crlf = "import stay_on_top  # isort: skip\r\nimport a\r\nimport b\r\n"
+    assert isort.code(crlf, add_imports={"import a"}) == expected_crlf
+
+    # A skipped import that follows a regular import keeps the #2092 boundary
+    # behavior: the added import joins the block above it.
+    mid = "import b\nimport s  # isort: skip\nimport c\n"
+    assert isort.code(mid, add_imports={"import a"}) == (
+        "import a\nimport b\n\nimport s  # isort: skip\nimport c\n"
+    )
+
+    # A leading skipped statement spanning several physical lines stays whole:
+    # the added imports must land after the complete statement, never inside
+    # its parentheses.
+    multiline = "from foo import (  # isort: skip\n    bar,\n    baz,\n)\nimport b\n"
+    expected_multiline = (
+        "from foo import (  # isort: skip\n    bar,\n    baz,\n)\nimport a\nimport b\n"
+    )
+    assert isort.code(multiline, add_imports={"import a"}) == expected_multiline
+    compile(expected_multiline, "<test>", "exec")
+    assert isort.code(expected_multiline, add_imports={"import a"}) == expected_multiline
+
+    # A file without a trailing newline: the skipped line needs a separator
+    # before the added import follows it.
+    no_newline = "import stay_on_top  # isort: skip"
+    expected_no_newline = "import stay_on_top  # isort: skip\nimport a\n"
+    assert isort.code(no_newline, add_imports={"import a"}) == expected_no_newline
+    assert isort.code(expected_no_newline, add_imports={"import a"}) == expected_no_newline
+
+
 def test_isort_does_not_drop_aliased_import_when_plain_name_has_a_comment() -> None:
     """A name imported both plainly (with a trailing comment) and aliased must keep its
     alias when a sibling sorts ahead of it.
