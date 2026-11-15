@@ -76,6 +76,11 @@ st.register_type_strategy(isort.Config, configs())
 @hypothesis.example(
     "from zlib import (\n    x,\n)  # isort: split\nimport os\n", isort.Config(), False
 )
+@hypothesis.example(
+    "from zlib import (\n    x,\n)  # isort: split\nimport os\n",
+    isort.Config(float_to_top=True),
+    False,
+)
 @hypothesis.given(
     source_code=st.lists(
         from_grammar(auto_target=False)

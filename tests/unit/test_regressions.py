@@ -3252,6 +3252,45 @@ def test_split_comment_on_continuation_line_ends_the_section_issue_2678() -> Non
         assert isort.check_code(expected, show_diff=True)
 
 
+def test_split_comment_on_a_continuation_line_with_float_to_top_issue_2678() -> None:
+    """The float-to-top prepass keeps a statement carrying the directive whole.
+
+    The prepass ended its chunk on the line carrying the directive, so a parenthesised
+    import was sorted without its closing parenthesis and the parenthesis was written on a
+    line of its own: the result was invalid Python. The statement is collected before the
+    directive is looked for now, so ``float_to_top`` writes what the default path writes.
+    See issue #2678.
+    """
+    cases = {
+        # The directive on the closing parenthesis: the statement keeps its parentheses.
+        "import abc\nfrom zlib import (\n    x,\n)  # isort: split\nimport sys\nimport os\n": (
+            "import abc\n\nfrom zlib import (\n    x,\n)  # isort: split\nimport os\nimport sys\n"
+        ),
+        # The directive on one of the imported names.
+        "import abc\nfrom zlib import (\n    x,  # isort: split\n)\nimport os\n": (
+            "import abc\n\nfrom zlib import (\n    x,  # isort: split\n)\nimport os\n"
+        ),
+        # The directive on the opening line, which already ended the section before.
+        "from zlib import (  # isort: split\n    x,\n)\nimport os\n": (
+            "from zlib import (  # isort: split\n    x,\n)\nimport os\n"
+        ),
+        # A backslash continuation carries its directive the same way.
+        "import abc\nfrom zlib import x, \\\n    y  # isort: split\nimport os\n": (
+            "import abc\n\nfrom zlib import x, \\\n    y  # isort: split\nimport os\n"
+        ),
+        # Code above the statement is not floated over it.
+        "x = 1\nfrom zlib import (\n    x,\n)  # isort: split\nimport os\n": (
+            "x = 1\nfrom zlib import (\n    x,\n)  # isort: split\nimport os\n"
+        ),
+    }
+
+    for to_sort, expected in cases.items():
+        assert isort.code(to_sort, float_to_top=True) == expected
+        assert isort.code(to_sort) == expected
+        assert isort.code(expected, float_to_top=True) == expected
+        assert isort.check_code(expected, float_to_top=True, show_diff=True)
+
+
 def test_a_bare_hash_survives_a_wrapped_import_line() -> None:
     """An empty comment was treated as no comment, so the '#' was dropped."""
     code = "from sys import super_long_name  #\n"

@@ -75,6 +75,43 @@ def _has_split_comment(import_statement: str) -> bool:
     )
 
 
+class _ImportStatement(NamedTuple):
+    """An import statement collected from a stream, continuation lines included.
+
+    ``stripped_line`` is the last line read, stripped of its comment, because that is the
+    value ``process`` keeps in its own ``stripped_line`` after collecting a statement.
+    """
+
+    statement: str
+    stripped_line: str
+    complete: bool
+
+
+def _collect_import_statement(line: str, input_stream: TextIO) -> _ImportStatement:
+    """Return the import statement that starts with `line`, continuation lines included.
+
+    A directive can sit on a continuation line, so a statement is followed to its closing
+    parenthesis or to the end of its backslash continuations before a caller looks for one.
+    ``complete`` is False when the stream ended while the parenthesis was still open.
+    """
+    import_statement = line
+    stripped_line = line.strip().split("#")[0]
+    while stripped_line.endswith("\\") or ("(" in stripped_line and ")" not in stripped_line):
+        if stripped_line.endswith("\\"):
+            while stripped_line and stripped_line.endswith("\\"):
+                line = input_stream.readline()
+                stripped_line = line.strip().split("#")[0]
+                import_statement += line
+        else:
+            while ")" not in stripped_line:
+                line = input_stream.readline()
+                if not line:  # end of file without closing parenthesis
+                    return _ImportStatement(import_statement, stripped_line, False)
+                stripped_line = line.strip().split("#")[0]
+                import_statement += line
+    return _ImportStatement(import_statement, stripped_line, True)
+
+
 class _FloatToTopResult(NamedTuple):
     input_stream: TextIO
     verbose_output: list[str]
@@ -98,11 +135,23 @@ def _float_to_top(
             if stripped_line == "# isort: on":
                 isort_off = False
             new_input += line
-        elif (
-            line is None
-            or stripped_line in (SPLIT_IMPORT_COMMENT, "# isort: off")
-            or line.rstrip().endswith(SPLIT_IMPORT_COMMENT)
-        ):
+            continue
+        if line is not None and stripped_line.startswith(IMPORT_START_IDENTIFIERS):
+            # A directive can sit on a continuation line, so the statement is collected
+            # whole: a boundary inside it would cut it off from its closing parenthesis.
+            collected = _collect_import_statement(line, input_stream)
+            if not collected.complete or not _has_split_comment(collected.statement):
+                current += collected.statement
+                continue
+            line = collected.statement
+            ends_section = True
+        else:
+            ends_section = (
+                line is None
+                or stripped_line in (SPLIT_IMPORT_COMMENT, "# isort: off")
+                or line.rstrip().endswith(SPLIT_IMPORT_COMMENT)
+            )
+        if ends_section:
             if stripped_line == "# isort: off":
                 isort_off = True
             if current:
@@ -404,25 +453,11 @@ def process(
                     import_section += line
                 elif stripped_line.startswith(IMPORT_START_IDENTIFIERS):
                     new_indent = line[: -len(line.lstrip())]
-                    import_statement = line
-                    stripped_line = line.strip().split("#")[0]
-                    while stripped_line.endswith("\\") or (
-                        "(" in stripped_line and ")" not in stripped_line
-                    ):
-                        if stripped_line.endswith("\\"):
-                            while stripped_line and stripped_line.endswith("\\"):
-                                line = input_stream.readline()
-                                stripped_line = line.strip().split("#")[0]
-                                import_statement += line
-                        else:
-                            while ")" not in stripped_line:
-                                line = input_stream.readline()
-
-                                if not line:  # end of file without closing parenthesis
-                                    raise ExistingSyntaxErrors("Parenthesis is not closed")
-
-                                stripped_line = line.strip().split("#")[0]
-                                import_statement += line
+                    collected = _collect_import_statement(line, input_stream)
+                    if not collected.complete:  # end of file without closing parenthesis
+                        raise ExistingSyntaxErrors("Parenthesis is not closed")
+                    import_statement = collected.statement
+                    stripped_line = collected.stripped_line
 
                     # The second clause keeps a per-line ``isort: skip`` import exactly
                     # where it is: when earlier imports have already been collected into
