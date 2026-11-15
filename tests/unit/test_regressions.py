@@ -3250,7 +3250,7 @@ def test_aliased_import_with_an_opening_line_comment_stays_within_line_length_is
     assert isort.code(expected, profile="black") == expected
 
 
-def test_semicolon_from_backslash_continuation_splits_trailing_code_issue_1918():
+def test_semicolon_from_backslash_continuation_splits_trailing_code_issue_1918() -> None:
     """A semicolon after a backslash-continued import separates following code."""
     source = "from os import \\\n    name; print(name)\n"
     output = isort.code(source)
@@ -3259,7 +3259,7 @@ def test_semicolon_from_backslash_continuation_splits_trailing_code_issue_1918()
     assert isort.code(output) == output
 
 
-def test_semicolon_from_paren_continuation_emitted_as_is_issue_1918():
+def test_semicolon_from_paren_continuation_emitted_as_is_issue_1918() -> None:
     """Same guard through the parenthesized continuation path.
 
     The input itself is invalid Python (``;`` cannot appear in an import
@@ -3272,7 +3272,7 @@ def test_semicolon_from_paren_continuation_emitted_as_is_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_from_straight_backslash_continuation_splits_trailing_code_issue_1918():
+def test_semicolon_from_straight_backslash_continuation_splits_trailing_code_issue_1918() -> None:
     """The same handling applies to straight imports broken across lines."""
     source = "import a, \\\n    b; print(b)\n"
     output = isort.code(source)
@@ -3281,7 +3281,7 @@ def test_semicolon_from_straight_backslash_continuation_splits_trailing_code_iss
     assert isort.code(output) == output
 
 
-def test_semicolon_continuation_slice_covers_comment_lines_issue_1918():
+def test_semicolon_continuation_slice_covers_comment_lines_issue_1918() -> None:
     """The raw emit spans first line through closing line, comments included.
     See: https://github.com/PyCQA/isort/issues/1918
     """
@@ -3291,7 +3291,7 @@ def test_semicolon_continuation_slice_covers_comment_lines_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_continuation_does_not_shift_later_imports_issue_1918():
+def test_semicolon_continuation_does_not_shift_later_imports_issue_1918() -> None:
     """Imports following the continued statement still sort and output stably."""
     source = "from os import \\\n    name; print(name)\nimport b\nimport a\n"
     expected = "from os import name\n\nimport a\nimport b\n\nprint(name)\n"
@@ -3300,7 +3300,7 @@ def test_semicolon_continuation_does_not_shift_later_imports_issue_1918():
     assert isort.code(output) == output
 
 
-def test_semicolon_split_first_line_with_continuation_issue_1918():
+def test_semicolon_split_first_line_with_continuation_issue_1918() -> None:
     """A continued import after another statement also splits its trailing code."""
     source = "import a; from os import \\\n    b; print(b)\n"
     expected = "from os import b\n\nimport a\n\nprint(b)\n"
