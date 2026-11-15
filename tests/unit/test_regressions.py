@@ -3097,3 +3097,37 @@ def test_comment_kept_on_wrapped_import_aliased_to_its_own_name() -> None:
         isort.code("from a import b as \\\n    b  # comment\n", remove_redundant_aliases=True)
         == "from a import b  # comment\n"
     )
+
+
+def test_comment_kept_on_the_wrapped_alias_it_was_written_on() -> None:
+    """With several `X as X` imports in one statement, the comment of a wrapped alias
+    must stay on that alias instead of moving to the first one.
+    """
+    expected_output = (
+        "from pkg import a as a\nfrom pkg import b as b  # type: ignore[attr-defined]\n"
+    )
+    assert (
+        isort.code("from pkg import (a as a, b as\n    b)  # type: ignore[attr-defined]\n")
+        == expected_output
+    )
+    assert (
+        isort.code("from pkg import a as a, b as \\\n    b  # type: ignore[attr-defined]\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
+
+    expected_output = (
+        "from pkg import a as a  # type: ignore[attr-defined]\nfrom pkg import b as b\n"
+    )
+    assert (
+        isort.code("from pkg import (a as\n    a,  # type: ignore[attr-defined]\n    b as b)\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
+
+    expected_output = "from pkg import a as a  # first\nfrom pkg import b as b  # second\n"
+    assert (
+        isort.code("from pkg import (a as\n    a,  # first\n    b as\n    b)  # second\n")
+        == expected_output
+    )
+    assert isort.code(expected_output) == expected_output
