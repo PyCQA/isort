@@ -47,7 +47,11 @@ def module_key(
         or (config.length_sort_straight and straight_import)
         or str(section_name).lower() in config.length_sort_sections
     )
-    _length_sort_maybe = (str(len(module_name)) + ":" + module_name) if length_sort else module_name
+    # Zero-pad the length to a fixed width so keys also order by length under plain
+    # lexicographic sorting (sort_order="native"). Six digits cover any realistic import line.
+    _length_sort_maybe = (
+        str(len(module_name)).zfill(6) + module_name if length_sort else module_name
+    )
     return f"{(module_name in config.force_to_top and 'A') or 'B'}{prefix}{_length_sort_maybe}"
 
 
@@ -93,7 +97,9 @@ def section_key(line: str, config: Config) -> str:
     elif not config.order_by_type:
         line = line.lower()
 
-    return f"{section}{len(line) if config.length_sort else ''}{line}"
+    # Zero-padded like module_key above so length order survives plain lexicographic sorting.
+    length_prefix = str(len(line)).zfill(6) if config.length_sort else ""
+    return f"{section}{length_prefix}{line}"
 
 
 def sort(
