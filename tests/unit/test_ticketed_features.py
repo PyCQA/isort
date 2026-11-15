@@ -30,6 +30,16 @@ def test_thing(): pass
     )
 
 
+def test_parenthesized_import_with_trailing_statement_issue_2679() -> None:
+    """Statements after the balancing close-paren (e.g. ``; import os``) must not be
+    swallowed into the parenthesized import list, producing invalid output.
+    See: https://github.com/pycqa/isort/issues/2679.
+    """
+    src = "from pkg.mod import (\n    y,\n); import os\n"
+    out = isort.code(src)
+    assert out == "import os\n\nfrom pkg.mod import y\n"
+    assert isort.check_code(out)
+
 def test_isort_automatically_removes_duplicate_aliases_issue_1193() -> None:
     """Test to ensure isort can automatically remove duplicate aliases.
     See: https://github.com/pycqa/isort/issues/1281
